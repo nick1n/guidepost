@@ -1,0 +1,27 @@
+{
+  "name": "Kingdom Death: Collection Tracker",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json"
+  },
+  "dependencies": {
+    "@lucide/svelte": "^1.31.0"
+  },
+  "devDependencies": {
+    "@sveltejs/adapter-auto": "^7.0.1",
+    "@unocss/preset-wind4": "^66.7.5",
+    "@sveltejs/kit": "^2.70.2",
+    "@sveltejs/vite-plugin-svelte": "^7.3.0",
+    "@typescript/native": "npm:typescript@^7.0.2",
+    "svelte": "^5.56.9",
+    "svelte-check": "^4.7.6",
+    "typescript": "6.0.3",
+    "unocss": "^66.7.5",
+    "vite": "^8.2.1"
+  }
+}
