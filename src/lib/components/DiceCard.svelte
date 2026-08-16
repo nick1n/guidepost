@@ -2,8 +2,8 @@
   import { ExternalLink } from "@lucide/svelte";
   import OwnedCheckbox from "./OwnedCheckbox.svelte";
   import WishlistButton from "./WishlistButton.svelte";
-  import { type DiceSet, formatPrice, storeUrl } from "$lib/kdm-data";
-  import type { EntryState } from "$lib/collection.svelte";
+  import { type DiceSet, formatPrice, storeUrl } from "#lib/kdm-data.js";
+  import type { EntryState } from "#lib/collection.svelte.js";
 
   type Props = {
     item: DiceSet;

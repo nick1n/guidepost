@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { formatPrice } from "$lib/kdm-data";
+  import { formatPrice } from "#lib/kdm-data.js";
   import Stat from "./Stat.svelte";
 
   type Props = {

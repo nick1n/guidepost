@@ -1,4 +1,4 @@
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 
 const STORAGE_KEY = 'kdm-collection-v1';
 
@@ -69,10 +69,15 @@ class Collection {
         ...entry,
         owned,
         wishlisted: owned ? false : entry.wishlisted,
-        versions: owned ? (defaults?.version ? [defaults.version] : entry.versions) : undefined,
-        editions: owned ? (defaults?.edition ? [defaults.edition] : entry.editions) : undefined,
-        editionNumbers: owned ? entry.editionNumbers : undefined,
-      },
+        versions: owned
+          ? defaults?.version ? [defaults.version] : entry.versions
+          : undefined,
+
+        editions: owned
+          ? defaults?.edition ? [defaults.edition] : entry.editions
+          : undefined,
+        editionNumbers: owned ? entry.editionNumbers : undefined
+      }
     };
     persist(this.state);
   }
@@ -110,7 +115,7 @@ class Collection {
     const nextEditions = editions.includes(edition)
       ? editions.filter((e) => e !== edition)
       : [...editions, edition];
-    const numbers = { ...(entry.editionNumbers ?? {}) };
+    const numbers = { ...entry.editionNumbers ?? {} };
     if (!nextEditions.includes(edition)) delete numbers[edition];
     this.state = {
       ...this.state,
@@ -127,9 +132,10 @@ class Collection {
 
   setEditionNumber(id: string, edition: string, editionNumber?: number) {
     const entry = this.state[id] ?? {};
-    const numbers = { ...(entry.editionNumbers ?? {}) };
-    if (editionNumber == null) delete numbers[edition];
-    else numbers[edition] = editionNumber;
+    const numbers = { ...entry.editionNumbers ?? {} };
+
+    if (editionNumber == null) delete numbers[edition]; else numbers[edition] = editionNumber;
+
     this.state = {
       ...this.state,
       [id]: {
@@ -143,7 +149,11 @@ class Collection {
   setManyOwned(ids: string[], owned: boolean) {
     const next = { ...this.state };
     for (const id of ids) {
-      next[id] = { ...(next[id] ?? {}), owned, wishlisted: owned ? false : next[id]?.wishlisted };
+      next[id] = {
+        ...next[id] ?? {},
+        owned,
+        wishlisted: owned ? false : next[id]?.wishlisted
+      };
     }
     this.state = next;
     persist(this.state);

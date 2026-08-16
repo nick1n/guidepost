@@ -1,10 +1,10 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import ContentCard from "$lib/components/ContentCard.svelte";
-  import DiceCard from "$lib/components/DiceCard.svelte";
-  import BundleCard from "$lib/components/BundleCard.svelte";
-  import CollectionStats from "$lib/components/CollectionStats.svelte";
-  import FilterBar from "$lib/components/FilterBar.svelte";
+  import ContentCard from "#lib/components/ContentCard.svelte";
+  import DiceCard from "#lib/components/DiceCard.svelte";
+  import BundleCard from "#lib/components/BundleCard.svelte";
+  import CollectionStats from "#lib/components/CollectionStats.svelte";
+  import FilterBar from "#lib/components/FilterBar.svelte";
   import {
     allContentTags,
     allDiceTags,
@@ -13,9 +13,9 @@
     dice,
     effectivePrice,
     type ContentItem,
-  } from "$lib/kdm-data";
-  import { collection } from "$lib/collection.svelte";
-  import { defaultFilters, type Filters } from "$lib/filters";
+  } from "#lib/kdm-data.js";
+  import { collection } from "#lib/collection.svelte.js";
+  import { defaultFilters, type Filters } from "#lib/filters.js";
 
   type Tab = "content" | "dice" | "bundles";
 

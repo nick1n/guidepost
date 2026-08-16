@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Edition } from "$lib/kdm-data";
+  import type { Edition } from "#lib/kdm-data.js";
 
   type Props = {
     versions: Edition[];

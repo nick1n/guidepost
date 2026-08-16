@@ -4,8 +4,8 @@
   import WishlistButton from "./WishlistButton.svelte";
   import Pill from "./Pill.svelte";
   import TagRail from "./TagRail.svelte";
-  import { type Bundle, formatPrice, nameById, storeUrl } from "$lib/kdm-data";
-  import type { CollectionState, EntryState } from "$lib/collection.svelte";
+  import { type Bundle, formatPrice, nameById, storeUrl } from "#lib/kdm-data.js";
+  import type { CollectionState, EntryState } from "#lib/collection.svelte.js";
 
   type Props = {
     bundle: Bundle;

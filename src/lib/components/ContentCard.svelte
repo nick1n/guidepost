@@ -12,8 +12,8 @@
     formatPrice,
     nameById,
     storeUrl,
-  } from "$lib/kdm-data";
-  import type { EntryState } from "$lib/collection.svelte";
+  } from "#lib/kdm-data.js";
+  import type { EntryState } from "#lib/collection.svelte.js";
 
   type Props = {
     item: ContentItem;

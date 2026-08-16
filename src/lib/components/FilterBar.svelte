@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Search, SlidersHorizontal, X } from "@lucide/svelte";
-  import { defaultFilters, type Filters } from "$lib/filters";
+  import { defaultFilters, type Filters } from "#lib/filters.js";
   import Segmented from "./Segmented.svelte";
 
   type Props = {
