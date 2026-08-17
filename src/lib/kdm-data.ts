@@ -42,8 +42,8 @@ export type DiceSet = {
   id: string
   name: string
   price?: number
-  colors: string[]
-  text?: string[]
+  colors: [string,string]
+  text: [string,string]
   tags: string[]
   url?: string
 }
@@ -510,8 +510,8 @@ export const dice: DiceSet[] = [
     tags: ["dice"],
   },
   {
-    id: "white-death-dice",
-    name: "White Death Dice",
+    id: "Classic-death-dice",
+    name: "Classic Death Dice",
     price: 2000,
     colors: ["#fdfffe", "#151313"],
     text: ["White", "Black"],
@@ -526,26 +526,12 @@ export const dice: DiceSet[] = [
     tags: ["dice", "gold-smoke-knight"],
   },
   {
-    id: "phoenix-dice",
-    name: "Phoenix Dice",
-    price: 2000,
-    colors: ["#e0655b", "#f0c26b"],
-    tags: ["dice", "phoenix"],
-  },
-  {
     id: "sunstalker-dice",
     name: "Sunstalker Dice",
     price: 12000,
     colors: ["#f0c26b", "#2b2b6b"],
     text: ["Yellow", "Foil"],
     tags: ["dice", "monster-sunstalker"],
-  },
-  {
-    id: "lantern-dice",
-    name: "Lantern Dice",
-    price: 2000,
-    colors: ["#5ecef1", "#151313"],
-    tags: ["dice", "lantern"],
   },
 ]
 

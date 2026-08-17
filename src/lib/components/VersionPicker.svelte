@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Edition } from "#lib/kdm-data.js";
+  import type { Edition } from "#lib/kdm-data.ts";
 
   type Props = {
     versions: Edition[];
@@ -24,9 +24,7 @@
       class={[
         "min-w-11 cursor-pointer rounded-lg px-2 py-1 tabular-nums transition-colors",
         "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
-        active
-          ? "bg-accent text-accent-foreground"
-          : "bg-panel text-foreground hover:bg-panel hover:text-foreground",
+        active ? "bg-accent text-accent-foreground" : "bg-panel text-foreground hover:bg-panel hover:text-foreground",
       ]}
     >
       {version.v}

@@ -1,19 +1,12 @@
 <script lang="ts">
-  import { ExternalLink, Lock, Unlock } from "@lucide/svelte";
   import OwnedCheckbox from "./OwnedCheckbox.svelte";
   import WishlistButton from "./WishlistButton.svelte";
   import VersionPicker from "./VersionPicker.svelte";
   import EditionPicker from "./EditionPicker.svelte";
   import TagRail from "./TagRail.svelte";
   import Pill from "./Pill.svelte";
-  import {
-    type ContentItem,
-    effectivePrice,
-    formatPrice,
-    nameById,
-    storeUrl,
-  } from "#lib/kdm-data.js";
-  import type { EntryState } from "#lib/collection.svelte.js";
+  import { type ContentItem, effectivePrice, formatPrice, nameById, storeUrl } from "#lib/kdm-data.ts";
+  import type { EntryState } from "#lib/collection.svelte.ts";
 
   type Props = {
     item: ContentItem;
@@ -53,17 +46,10 @@
       entry.editions ?? (entry.edition ? [entry.edition] : []),
     ),
   );
-  const editionValue = $derived(
-    entry.editions ?? (entry.edition ? [entry.edition] : []),
-  );
-  const versionValue = $derived(
-    entry.versions ?? (entry.version ? [entry.version] : []),
-  );
+  const editionValue = $derived(entry.editions ?? (entry.edition ? [entry.edition] : []));
+  const versionValue = $derived(entry.versions ?? (entry.version ? [entry.version] : []));
   const copyNumbers = $derived(
-    entry.editionNumbers ??
-      (entry.edition && entry.editionNumber != null
-        ? { [entry.edition]: entry.editionNumber }
-        : undefined),
+    entry.editionNumbers ?? (entry.edition && entry.editionNumber != null ? { [entry.edition]: entry.editionNumber } : undefined),
   );
 </script>
 
@@ -75,10 +61,7 @@
   ]}
 >
   {#if isBeta}
-    <div
-      class="pointer-events-none absolute -left-10 top-4 w-32 rotate-135 bg-beta py-1 h-4"
-      aria-hidden={true}
-    ></div>
+    <div class="pointer-events-none absolute -left-10 top-4 w-32 rotate-135 bg-beta py-1 h-4" aria-hidden={true}></div>
   {/if}
 
   <div
@@ -105,11 +88,7 @@
       {/if}
     </div>
     {#if !owned}
-      <WishlistButton
-        active={!!entry.wishlisted}
-        onchange={onToggleWishlist}
-        label={item.name}
-      />
+      <WishlistButton active={!!entry.wishlisted} onchange={onToggleWishlist} label={item.name} />
     {/if}
   </div>
 
@@ -117,15 +96,10 @@
     <div class="flex flex-wrap items-center gap-2">
       <span class="tabular-nums text-accent">{formatPrice(price)}</span>
       <span class="h-5 w-px bg-border" aria-hidden={true}></span>
-      <Pill
-        tone={item.gameplay ? "accent" : "outline"}
-        onclick={() => onGameplayClick(item.gameplay)}
-      >
+      <Pill tone={item.gameplay ? "accent" : "outline"} onclick={() => onGameplayClick(item.gameplay)}>
         {item.gameplay ? "Gameplay" : "Models only"}
       </Pill>
-      <Pill tone="neutral" onclick={() => onKindClick(item.kind)}
-        >{item.kind}</Pill
-      >
+      <Pill tone="neutral" onclick={() => onKindClick(item.kind)}>{item.kind}</Pill>
       {#if url}
         <a
           href={url}
@@ -133,7 +107,7 @@
           rel="noopener noreferrer"
           class="inline-flex px-2 py-1 items-center ml-auto gap-1 text-accent underline-offset-4 hover:underline"
         >
-          Shop <ExternalLink class="size-4" aria-hidden={true} />
+          Shop <span class="i-material-symbols:open-in-new size-4" aria-hidden="true"></span>
           <span class="sr-only">page for {item.name}</span>
         </a>
       {/if}
@@ -152,11 +126,7 @@
     {/if}
 
     {#if item.versions}
-      <VersionPicker
-        versions={item.versions}
-        value={versionValue}
-        onselect={onSetVersion}
-      />
+      <VersionPicker versions={item.versions} value={versionValue} onselect={onSetVersion} />
     {/if}
 
     {#if item.requires && item.requires.length > 0}
@@ -168,16 +138,13 @@
       >
         <span class="rounded-full bg-black p-1 shrink-0 font-bold">
           {#if requiresOwned}
-            <Unlock class="size-3" aria-hidden={true} />
+            <span class="i-material-symbols:lock-open size-3" aria-hidden="true"></span>
           {:else}
-            <Lock class="size-3" aria-hidden={true} />
+            <span class="i-material-symbols:lock size-3" aria-hidden="true"></span>
           {/if}
         </span>
-        <span class="font-bold"
-          >{item.requires
-            .map((r) => nameById[r]?.replace(/ expansion/gi, "") ?? r)
-            .join(", ")}</span
-        ><span>Required</span>
+        <span class="font-bold">{item.requires.map((r) => nameById[r]?.replace(/ expansion/gi, "") ?? r).join(", ")}</span>
+        <span>Required</span>
       </div>
     {/if}
   </div>

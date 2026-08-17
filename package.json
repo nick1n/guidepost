@@ -9,10 +9,9 @@
     "preview": "vite preview",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json"
   },
-  "dependencies": {
-    "@lucide/svelte": "^1.31.0"
-  },
+  "dependencies": {},
   "devDependencies": {
+    "@iconify-json/material-symbols": "^1.2.42",
     "@sveltejs/adapter-auto": "next",
     "@sveltejs/kit": "next",
     "@sveltejs/vite-plugin-svelte": "^7.3.0",

@@ -1,4 +1,5 @@
 {
+  "svelte.plugin.svelte.format.config.printWidth": 140,
   "cSpell.words": [
     "allister",
     "aprimavista",

@@ -5,12 +5,12 @@ const STORAGE_KEY = 'kdm-collection-v1';
 export type EntryState = {
   owned?: boolean;
   wishlisted?: boolean;
-  versions?: string[];
-  editions?: string[];
-  editionNumbers?: Record<string, number>;
   version?: string;
+  versions?: string[];
   edition?: string;
+  editions?: string[];
   editionNumber?: number;
+  editionNumbers?: Record<string, number>;
 };
 
 export type CollectionState = Record<string, EntryState>;
@@ -72,7 +72,6 @@ class Collection {
         versions: owned
           ? defaults?.version ? [defaults.version] : entry.versions
           : undefined,
-
         editions: owned
           ? defaults?.edition ? [defaults.edition] : entry.editions
           : undefined,

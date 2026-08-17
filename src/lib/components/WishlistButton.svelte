@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { Star } from "@lucide/svelte";
 
   type Props = {
     active: boolean;
@@ -23,7 +22,10 @@
     active ? "text-amber-600" : "text-muted-foreground hover:text-foreground",
   ]}
 >
-  <Star class="size-5" fill={active ? "currentColor" : "none"} />
+  <span
+    class={[active ? "i-material-symbols:star" : "i-material-symbols:star-outline", "size-5"]}
+    aria-hidden="true"
+  ></span>
   <span class="sr-only">
     {active ? `Wishlisted: ${label}` : `Add ${label} to wishlist`}
   </span>
