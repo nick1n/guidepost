@@ -1,5 +1,4 @@
 <script lang="ts">
-
   type Props = {
     active: boolean;
     onchange: () => void;
@@ -7,23 +6,25 @@
   };
 
   let { active, onchange, label }: Props = $props();
+
+  function onclick(event: Event) {
+    event.stopPropagation();
+    onchange();
+  }
 </script>
 
 <button
   type="button"
   aria-pressed={active}
-  onclick={(event) => {
-    event.stopPropagation();
-    onchange();
-  }}
+  {onclick}
   class={[
-    "-my-3 flex w-14 cursor-pointer shrink-0 self-stretch items-center justify-center transition-colors",
+    "-my-3 flex w-14 cursor-pointer shrink-0 items-center justify-center transition-colors",
     "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
     active ? "text-amber-600" : "text-muted-foreground hover:text-foreground",
   ]}
 >
   <span
-    class={[active ? "i-material-symbols:star" : "i-material-symbols:star-outline", "size-5"]}
+    class={[active ? "i-material-symbols:bookmark-heart-sharp" : "i-material-symbols:bookmark-heart-outline-sharp", "size-10"]}
     aria-hidden="true"
   ></span>
   <span class="sr-only">

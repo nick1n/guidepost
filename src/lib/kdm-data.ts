@@ -42,8 +42,8 @@ export type DiceSet = {
   id: string
   name: string
   price?: number
-  colors: [string,string]
-  text: [string,string]
+  colors: [string, string]
+  text: [string, string]
   tags: string[]
   url?: string
 }
@@ -624,7 +624,7 @@ export const nameById: Record<string, string> = Object.fromEntries([
 
 export function formatPrice(cents?: number) {
   if (cents == null) return "—"
-  return `$${(cents / 100).toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`
+  return "$" + (cents / 100).toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 2 })
 }
 
 export function storeUrl(path?: string) {

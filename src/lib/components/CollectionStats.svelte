@@ -18,7 +18,7 @@
 
 <section aria-label="Collection totals" class=" top-0 sticky overflow-hidden bg-panel z-1">
   <div class="flex items-end justify-between gap-4 py-2 px-3">
-    <Stat pos="left" label="Owned" value={`${ownedCount}`} />
+    <Stat pos="left" label="Owned" value={ownedCount} />
     <Stat pos="center" label="Value" value={formatPrice(ownedValue)} accent />
     <Stat pos="right" label="Wishlist" value={`${wishlistCount} · ${formatPrice(wishlistValue)}`} />
   </div>

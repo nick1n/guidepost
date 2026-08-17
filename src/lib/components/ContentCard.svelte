@@ -136,7 +136,7 @@
           requiresOwned ? "text-muted-foreground" : "text-foreground",
         ]}
       >
-        <span class="rounded-full bg-black p-1 shrink-0 font-bold">
+        <span class="inline-flex size-5 shrink-0 items-center justify-center rounded-full bg-black font-bold text-white">
           {#if requiresOwned}
             <span class="i-material-symbols:lock-open size-3" aria-hidden="true"></span>
           {:else}
