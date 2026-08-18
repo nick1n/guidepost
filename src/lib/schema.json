@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Kingdom Death catalog",
+  "type": "object",
+  "required": ["content", "dice", "bundles"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "content": { "$ref": "#/$defs/content" },
+    "dice": { "$ref": "#/$defs/dice" },
+    "bundles": { "$ref": "#/$defs/bundles" }
+  },
+  "$defs": {
+    "edition": {
+      "type": "object",
+      "required": ["v", "$"],
+      "additionalProperties": false,
+      "properties": {
+        "v": { "type": "string" },
+        "$": { "type": "array", "items": { "type": "number" } },
+        "limit": { "type": "boolean" },
+        "r": { "type": "string" }
+      }
+    },
+    "contentItem": {
+      "type": "object",
+      "required": ["name", "kind", "gameplay", "tags"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string" },
+        "alt": { "type": "string" },
+        "kind": {
+          "enum": ["core", "beta", "promo", "expansion", "white-box", "set"]
+        },
+        "gameplay": { "type": "boolean" },
+        "price": { "type": "number" },
+        "versions": { "type": "array", "items": { "$ref": "#/$defs/edition" } },
+        "editions": { "type": "array", "items": { "$ref": "#/$defs/edition" } },
+        "tags": { "type": "array", "items": { "type": "string" } },
+        "requires": { "type": "array", "items": { "type": "string" } },
+        "url": { "type": "string" }
+      }
+    },
+    "content": {
+      "type": "object",
+      "additionalProperties": { "$ref": "#/$defs/contentItem" }
+    },
+    "diceItem": {
+      "type": "object",
+      "required": ["name", "colors", "text", "tags"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string" },
+        "price": { "type": "number" },
+        "colors": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "items": { "type": "string" }
+        },
+        "text": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "items": { "type": "string" }
+        },
+        "tags": { "type": "array", "items": { "type": "string" } },
+        "url": { "type": "string" }
+      }
+    },
+    "dice": {
+      "type": "object",
+      "additionalProperties": { "$ref": "#/$defs/diceItem" }
+    },
+    "bundleItem": {
+      "type": "object",
+      "required": ["name", "gameplay", "tags", "includes"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string" },
+        "price": { "type": "number" },
+        "gameplay": { "type": "boolean" },
+        "tags": { "type": "array", "items": { "type": "string" } },
+        "includes": { "type": "array", "items": { "type": "string" } },
+        "url": { "type": "string" }
+      }
+    },
+    "bundles": {
+      "type": "object",
+      "additionalProperties": { "$ref": "#/$defs/bundleItem" }
+    }
+  }
+}

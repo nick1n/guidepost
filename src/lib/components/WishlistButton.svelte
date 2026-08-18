@@ -23,10 +23,7 @@
     active ? "text-amber-600" : "text-muted-foreground hover:text-foreground",
   ]}
 >
-  <span
-    class={[active ? "i-material-symbols:bookmark-heart-sharp" : "i-material-symbols:bookmark-heart-outline-sharp", "size-10"]}
-    aria-hidden="true"
-  ></span>
+  <span class={[active ? "i-material-symbols:favorite" : "i-material-symbols:favorite-outline", "size-7"]} aria-hidden="true"></span>
   <span class="sr-only">
     {active ? `Wishlisted: ${label}` : `Add ${label} to wishlist`}
   </span>

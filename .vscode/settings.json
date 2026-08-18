@@ -1,5 +1,4 @@
 {
-  "svelte.plugin.svelte.format.config.printWidth": 140,
   "cSpell.words": [
     "allister",
     "aprimavista",
@@ -119,5 +118,17 @@
     "xenomelia",
     "zanbato",
     "zaniyah"
-  ]
+  ],
+  "svelte.plugin.svelte.format.config.printWidth": 140,
+  "editor.defaultFormatter": "svelte.svelte-vscode",
+  "editor.formatOnSave": true,
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[svelte]": {
+    "editor.defaultFormatter": "svelte.svelte-vscode"
+  }
 }

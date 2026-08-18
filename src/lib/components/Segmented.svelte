@@ -22,9 +22,7 @@
         onclick={() => onchange(option.value)}
         class={[
           "rounded-lg px-3 py-2 transition-colors",
-          active
-            ? "bg-accent text-accent-foreground"
-            : "bg-panel/70 text-foreground/70 hover:bg-panel hover:text-foreground",
+          active ? "bg-accent text-accent-foreground" : "bg-panel/70 text-foreground/70 hover:bg-panel hover:text-foreground",
         ]}
       >
         {option.label}

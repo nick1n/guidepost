@@ -1,7 +1,7 @@
-export type SortKey = 'name' | 'price-desc' | 'price-asc';
-export type GameplayFilter = 'any' | 'gameplay' | 'models';
-export type KindFilter = 'any' | 'core' | 'expansion' | 'white-box' | 'beta' | 'promo' | 'set';
-export type StatusFilter = 'any' | 'owned' | 'unowned' | 'wishlisted';
+export type SortKey = "name" | "price-desc" | "price-asc";
+export type GameplayFilter = "any" | "gameplay" | "models";
+export type KindFilter = "any" | "core" | "expansion" | "white-box" | "beta" | "promo" | "set";
+export type StatusFilter = "any" | "owned" | "unowned" | "wishlisted";
 
 export type Filters = {
   query: string;
@@ -13,10 +13,10 @@ export type Filters = {
 };
 
 export const defaultFilters: Filters = {
-  query: '',
-  sort: 'price-desc',
-  gameplay: 'any',
-  kind: 'any',
-  status: 'any',
+  query: "",
+  sort: "price-desc",
+  gameplay: "any",
+  kind: "any",
+  status: "any",
   tags: [],
 };

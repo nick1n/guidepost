@@ -67,8 +67,9 @@
         <kbd
           aria-hidden="true"
           class="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 rounded border border-muted-foreground px-2 py-1 text-xs leading-none text-muted-foreground"
-          >/</kbd
         >
+          /
+        </kbd>
       {/if}
     </div>
     <button
@@ -76,7 +77,7 @@
       onclick={() => (open = !open)}
       aria-expanded={open}
       class={[
-        "flex h-10 items-center gap-2 rounded-br-2xl px-3 transition-colors",
+        "flex h-10 items-center gap-2 rounded-br-2xl px-3 transition-colors cursor-pointer",
         open || activeCount > 0 ? "bg-accent text-accent-foreground" : "bg-card text-muted-foreground",
       ]}
     >

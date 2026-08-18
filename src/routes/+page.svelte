@@ -214,6 +214,6 @@
   {/if}
 
   <p class="mt-2 text-center text-muted-foreground">
-    Saved in this browser · {stats.totalCount} catalog entries
+    Saved in this browser - {stats.totalCount} catalog entries
   </p>
 </main>
