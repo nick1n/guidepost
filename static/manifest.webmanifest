@@ -1,0 +1,10 @@
+{
+  "name": "Kingdom Death Collection Tracker",
+  "short_name": "KDM Tracker",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#151313",
+  "theme_color": "#151313",
+  "description": "Track your Kingdom Death collection.",
+  "icons": []
+}

@@ -4,27 +4,35 @@
   import Pill from "./Pill.svelte";
   import TagRail from "./TagRail.svelte";
   import { type Bundle, formatPrice, nameById, storeUrl } from "#lib/kdm-data.ts";
-  import type { CollectionState, EntryState } from "#lib/collection.svelte.ts";
+  import { collection } from "#lib/state/collection.svelte.ts";
 
   type Props = {
     bundle: Bundle;
-    entry: EntryState;
-    collectionState: CollectionState;
     partsValue: number;
-    onToggleOwned: () => void;
-    onToggleWishlist: () => void;
-    onSetPartsOwned: (owned: boolean) => void;
   };
 
-  let { bundle, entry, collectionState, partsValue, onToggleOwned, onToggleWishlist, onSetPartsOwned }: Props = $props();
+  let { bundle, partsValue }: Props = $props();
 
   let expanded = $state(false);
 
+  const entry = $derived(collection.get(bundle.id));
   const owned = $derived(!!entry.owned);
   const url = $derived(storeUrl(bundle.url));
-  const ownedCount = $derived(bundle.includes.filter((id) => collectionState[id]?.owned).length);
+  const ownedCount = $derived(bundle.includes.filter((id) => collection.state[id]?.owned).length);
   const total = $derived(bundle.includes.length);
   const savings = $derived(bundle.price != null ? partsValue - bundle.price : 0);
+
+  function onclick() {
+    const nextOwned = !collection.state[bundle.id]?.owned;
+    collection.toggleOwned(bundle.id);
+    collection.setManyOwned(bundle.includes, nextOwned);
+  }
+
+  function toggleBundleOwnedFromKeyboard(event: KeyboardEvent) {
+    if (event.key !== "Enter" && event.key !== " ") return;
+    event.preventDefault();
+    onclick();
+  }
 </script>
 
 <li
@@ -36,15 +44,10 @@
     tabindex={0}
     aria-pressed={owned}
     aria-label={`${owned ? "Unmark" : "Mark"} ${bundle.name} as owned`}
-    onclick={onToggleOwned}
-    onkeydown={(e) => {
-      if (e.key === "Enter" || e.key === " ") {
-        e.preventDefault();
-        onToggleOwned();
-      }
-    }}
+    {onclick}
+    onkeydown={toggleBundleOwnedFromKeyboard}
   >
-    <OwnedCheckbox checked={owned} onchange={onToggleOwned} label={bundle.name} />
+    <OwnedCheckbox checked={owned} onchange={onclick} label={bundle.name} />
     <div class="min-w-0 flex-1">
       <h3 class="font-display text-2xl font-semibold leading-tight text-balance">
         {bundle.name}
@@ -54,7 +57,7 @@
       </p>
     </div>
     {#if !owned}
-      <WishlistButton active={!!entry.wishlisted} onchange={onToggleWishlist} label={bundle.name} />
+      <WishlistButton active={!!entry.wishlisted} onchange={() => collection.toggleWishlisted(bundle.id)} label={bundle.name} />
     {/if}
   </div>
 
@@ -92,7 +95,7 @@
     <div class="flex flex-wrap gap-2">
       <button
         type="button"
-        onclick={() => onSetPartsOwned(true)}
+        onclick={() => collection.setManyOwned(bundle.includes, true)}
         class="inline-flex items-center gap-2 rounded-lg bg-accent px-3 py-2 font-semibold text-accent-foreground transition-opacity hover:opacity-85"
       >
         <span class="i-material-symbols:check size-4" aria-hidden="true"></span>
@@ -100,7 +103,7 @@
       </button>
       <button
         type="button"
-        onclick={() => onSetPartsOwned(false)}
+        onclick={() => collection.setManyOwned(bundle.includes, false)}
         class="rounded-lg bg-panel px-3 py-2 text-foreground/80 transition-colors hover:text-foreground"
       >
         Clear all
@@ -120,7 +123,7 @@
     {#if expanded}
       <ul class="flex flex-col gap-1 border-t border-border/60 pt-2">
         {#each bundle.includes as id (id)}
-          {@const isOwned = !!collectionState[id]?.owned}
+          {@const isOwned = !!collection.state[id]?.owned}
           <li class="flex items-center gap-2">
             <span
               class={["i-material-symbols:check size-4 shrink-0", isOwned ? "text-accent" : "text-muted-foreground/30"]}

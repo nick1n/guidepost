@@ -8,6 +8,11 @@
   };
 
   let { versions, value = [], onselect }: Props = $props();
+
+  function selectVersion(event: MouseEvent, version: string) {
+    event.stopPropagation();
+    onselect(version);
+  }
 </script>
 
 <div class="flex items-center gap-1" role="group" aria-label="Versions owned">
@@ -17,10 +22,7 @@
     <button
       type="button"
       aria-pressed={active}
-      onclick={(event) => {
-        event.stopPropagation();
-        onselect(version.v);
-      }}
+      onclick={(event) => selectVersion(event, version.v)}
       class={[
         "min-w-11 cursor-pointer rounded-lg px-2 py-1 tabular-nums transition-colors",
         "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",

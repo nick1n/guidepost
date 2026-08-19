@@ -1,12 +1,13 @@
 <script lang="ts">
-  import { onMount } from "svelte";
   import ContentCard from "#lib/components/ContentCard.svelte";
   import DiceCard from "#lib/components/DiceCard.svelte";
   import BundleCard from "#lib/components/BundleCard.svelte";
   import CollectionStats from "#lib/components/CollectionStats.svelte";
   import FilterBar from "#lib/components/FilterBar.svelte";
   import { allContentTags, allDiceTags, bundles, content, dice, effectivePrice, type ContentItem } from "#lib/kdm-data.ts";
-  import { collection } from "#lib/collection.svelte.ts";
+  import { collection } from "#lib/state/collection.svelte.ts";
+  import { db } from "#lib/state/instant.ts";
+  import { InstantStore, LocalGuestStore } from "#lib/state/stores.ts";
   import { defaultFilters, type Filters } from "#lib/filters.ts";
 
   type Tab = "content" | "dice" | "bundles";
@@ -26,8 +27,39 @@
   let tab = $state<Tab>("content");
   let filters = $state<Filters>({ ...defaultFilters });
 
-  onMount(() => {
-    collection.init();
+  const auth = db.useAuth();
+  const states = db.useQuery(() => auth.user && !auth.user.isGuest ? { contentStates: { $: { where: { userId: auth.user.id } } } } : null);
+  let guestSignInStarted = false;
+  let localGuestStore: LocalGuestStore | undefined;
+  let instantStore: InstantStore | undefined;
+
+  // Required side effect: guest authentication is an external InstantDB operation that must begin only after the auth state finishes loading.
+  // A derived value cannot perform this sign-in or guard against repeated attempts.
+  $effect(() => {
+    if (!auth.isLoading && !auth.user && !auth.error && !guestSignInStarted) {
+      guestSignInStarted = true;
+      db.auth.signInAsGuest().catch(() => {
+        guestSignInStarted = false;
+      });
+    }
+  });
+
+  // Required side effect: this copies the current authenticated user and remote InstantDB rows into the command-based collection store.
+  // The store owns local mutations, so it must be synchronized whenever the user or query result changes.
+  $effect(() => {
+    const user = auth.user;
+    if (!user) return;
+
+    collection.setUser(user.id);
+    if (user.isGuest) {
+      localGuestStore ??= new LocalGuestStore(user.id);
+      void collection.setStore(localGuestStore);
+    } else {
+      instantStore ??= new InstantStore(user.id);
+      void collection.setStore(instantStore, localGuestStore);
+      if (states.data?.contentStates) instantStore.setRows(states.data.contentStates);
+      collection.refresh();
+    }
   });
 
   const stats = $derived.by(() => {
@@ -164,17 +196,6 @@
         {#each visible.visibleContent as item (item.id)}
           <ContentCard
             {item}
-            entry={collection.get(item.id)}
-            requiresOwned={(item.requires ?? []).every((r) => collection.state[r]?.owned)}
-            onToggleOwned={() =>
-              collection.toggleOwned(item.id, {
-                version: item.versions?.[item.versions.length - 1]?.v,
-                edition: item.editions?.[item.editions.length - 1]?.v,
-              })}
-            onToggleWishlist={() => collection.toggleWishlisted(item.id)}
-            onSetVersion={(v) => collection.setVersion(item.id, v)}
-            onSetEdition={(e) => collection.setEdition(item.id, e)}
-            onSetEditionNumber={(edition, n) => collection.setEditionNumber(item.id, edition, n)}
             onTagClick={toggleTagFilter}
             onKindClick={toggleKindFilter}
             onGameplayClick={toggleGameplayFilter}
@@ -187,8 +208,6 @@
           <DiceCard
             {item}
             entry={collection.get(item.id)}
-            onToggleOwned={() => collection.toggleOwned(item.id)}
-            onToggleWishlist={() => collection.toggleWishlisted(item.id)}
           />
         {/each}
       {/if}
@@ -197,16 +216,7 @@
         {#each visible.visibleBundles as bundle (bundle.id)}
           <BundleCard
             {bundle}
-            entry={collection.get(bundle.id)}
-            collectionState={collection.state}
             partsValue={bundle.includes.reduce((sum, id) => sum + priceOf(id), 0)}
-            onToggleOwned={() => {
-              const nextOwned = !collection.state[bundle.id]?.owned;
-              collection.toggleOwned(bundle.id);
-              collection.setManyOwned(bundle.includes, nextOwned);
-            }}
-            onToggleWishlist={() => collection.toggleWishlisted(bundle.id)}
-            onSetPartsOwned={(owned) => collection.setManyOwned(bundle.includes, owned)}
           />
         {/each}
       {/if}

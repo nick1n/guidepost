@@ -1,8 +1,9 @@
 {
-  "extends": "$app/tsconfig",
+  "extends": ["$app/tsconfig", "$app/tsconfig/service-worker"],
   "compilerOptions": {
     "sourceMap": true,
     "strict": true
   },
-  "include": ["src"]
+  "include": ["src", "test"],
+  "exclude": ["src/service-worker.ts"]
 }

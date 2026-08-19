@@ -6,16 +6,18 @@
   };
 
   let { checked, onchange, label }: Props = $props();
+
+  function onclick(event: MouseEvent) {
+    event.stopPropagation();
+    onchange();
+  }
 </script>
 
 <button
   type="button"
   role="checkbox"
   aria-checked={checked}
-  onclick={(event) => {
-    event.stopPropagation();
-    onchange();
-  }}
+  {onclick}
   class={[
     "flex size-7 shrink-0 items-center justify-center border-2 transition-colors isolate border-foreground inset-ring-2 inset-ring-black",
     "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",

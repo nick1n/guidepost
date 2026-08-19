@@ -2,19 +2,24 @@
   import OwnedCheckbox from "./OwnedCheckbox.svelte";
   import WishlistButton from "./WishlistButton.svelte";
   import { type DiceSet, formatPrice, storeUrl } from "#lib/kdm-data.ts";
-  import type { EntryState } from "#lib/collection.svelte.ts";
+  import type { EntryState } from "#lib/state/collection.svelte.ts";
+  import { collection } from "#lib/state/collection.svelte.ts";
 
   type Props = {
     item: DiceSet;
     entry: EntryState;
-    onToggleOwned: () => void;
-    onToggleWishlist: () => void;
   };
 
-  let { item, entry, onToggleOwned, onToggleWishlist }: Props = $props();
+  let { item, entry }: Props = $props();
 
   const owned = $derived(!!entry.owned);
   const url = $derived(storeUrl(item.url));
+
+  function onkeydown(event: KeyboardEvent) {
+    if (event.key !== "Enter" && event.key !== " ") return;
+    event.preventDefault();
+    collection.toggleOwned(item.id);
+  }
 </script>
 
 <li
@@ -26,20 +31,15 @@
     tabindex={0}
     aria-pressed={owned}
     aria-label={`${owned ? "Unmark" : "Mark"} ${item.name} as owned`}
-    onclick={onToggleOwned}
-    onkeydown={(e) => {
-      if (e.key === "Enter" || e.key === " ") {
-        e.preventDefault();
-        onToggleOwned();
-      }
-    }}
+    onclick={() => collection.toggleOwned(item.id)}
+    {onkeydown}
   >
-    <OwnedCheckbox checked={owned} onchange={onToggleOwned} label={item.name} />
+    <OwnedCheckbox checked={owned} onchange={() => collection.toggleOwned(item.id)} label={item.name} />
     <h3 class="flex-1 text-2xl font-display font-semibold leading-tight">
       {item.name}
     </h3>
     {#if !owned}
-      <WishlistButton active={!!entry.wishlisted} onchange={onToggleWishlist} label={item.name} />
+      <WishlistButton active={!!entry.wishlisted} onchange={() => collection.toggleWishlisted(item.id)} label={item.name} />
     {/if}
   </div>
 

@@ -5,5 +5,12 @@ import UnoCSS from "unocss/vite";
 import { defineConfig } from "vite";
 
 export default defineConfig({
-  plugins: [UnoCSS(), sveltekit({ preprocess: vitePreprocess(), adapter: adapter() })],
+  envPrefix: ["PUBLIC_"],
+  plugins: [
+    UnoCSS({
+      // HACK: temp fix for vite 8 compat
+      mode: "per-module",
+    }),
+    sveltekit({ preprocess: vitePreprocess(), adapter: adapter() }),
+  ],
 });

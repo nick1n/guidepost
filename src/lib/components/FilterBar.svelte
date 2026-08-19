@@ -32,7 +32,7 @@
     return target instanceof HTMLElement && (target.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName));
   }
 
-  function handleShortcut(event: KeyboardEvent) {
+  function onkeydown(event: KeyboardEvent) {
     if (isEditableTarget(event.target)) return;
 
     const isSlash = event.key === "/";
@@ -45,7 +45,7 @@
   }
 </script>
 
-<svelte:window onkeydown={handleShortcut} />
+<svelte:window {onkeydown} />
 
 <div class="flex flex-col gap-2">
   <div class="flex items-center gap-2">

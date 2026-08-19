@@ -6,17 +6,10 @@
   import TagRail from "./TagRail.svelte";
   import Pill from "./Pill.svelte";
   import { type ContentItem, effectivePrice, formatPrice, nameById, storeUrl } from "#lib/kdm-data.ts";
-  import type { EntryState } from "#lib/collection.svelte.ts";
+  import { collection } from "#lib/state/collection.svelte.ts";
 
   type Props = {
     item: ContentItem;
-    entry: EntryState;
-    requiresOwned: boolean;
-    onToggleOwned: () => void;
-    onToggleWishlist: () => void;
-    onSetVersion: (v: string) => void;
-    onSetEdition: (id: string) => void;
-    onSetEditionNumber: (id: string, n?: number) => void;
     onTagClick: (tag: string) => void;
     onKindClick: (kind: ContentItem["kind"]) => void;
     onGameplayClick: (gameplay: boolean) => void;
@@ -24,18 +17,13 @@
 
   let {
     item,
-    entry,
-    requiresOwned,
-    onToggleOwned,
-    onToggleWishlist,
-    onSetVersion,
-    onSetEdition,
-    onSetEditionNumber,
     onTagClick,
     onKindClick,
     onGameplayClick,
   }: Props = $props();
 
+  const entry = $derived(collection.get(item.id));
+  const requiresOwned = $derived((item.requires ?? []).every((id) => collection.state[id]?.owned));
   const owned = $derived(!!entry.owned);
   const url = $derived(storeUrl(item.url));
   const isBeta = $derived(!!item.editions);
@@ -51,6 +39,12 @@
   const copyNumbers = $derived(
     entry.editionNumbers ?? (entry.edition && entry.editionNumber != null ? { [entry.edition]: entry.editionNumber } : undefined),
   );
+
+  function onkeydown(event: KeyboardEvent) {
+    if (event.key !== "Enter" && event.key !== " ") return;
+    event.preventDefault();
+    collection.toggleOwned(item.id, { version: item.versions?.at(-1)?.v, edition: item.editions?.at(-1)?.v });
+  }
 </script>
 
 <li
@@ -70,15 +64,10 @@
     tabindex={0}
     aria-pressed={owned}
     aria-label={`${owned ? "Unmark" : "Mark"} ${item.name} as owned`}
-    onclick={onToggleOwned}
-    onkeydown={(e) => {
-      if (e.key === "Enter" || e.key === " ") {
-        e.preventDefault();
-        onToggleOwned();
-      }
-    }}
+    onclick={() => collection.toggleOwned(item.id, { version: item.versions?.at(-1)?.v, edition: item.editions?.at(-1)?.v })}
+    {onkeydown}
   >
-    <OwnedCheckbox checked={owned} onchange={onToggleOwned} label={item.name} />
+    <OwnedCheckbox checked={owned} onchange={() => collection.toggleOwned(item.id)} label={item.name} />
     <div class="min-w-0 flex-1">
       <h3 class="font-display text-2xl truncate font-semibold leading-tight">
         {item.name}
@@ -88,7 +77,7 @@
       {/if}
     </div>
     {#if !owned}
-      <WishlistButton active={!!entry.wishlisted} onchange={onToggleWishlist} label={item.name} />
+      <WishlistButton active={!!entry.wishlisted} onchange={() => collection.toggleWishlisted(item.id)} label={item.name} />
     {/if}
   </div>
 
@@ -120,13 +109,13 @@
         editions={item.editions}
         value={editionValue}
         {copyNumbers}
-        onselect={onSetEdition}
-        onSetCopyNumber={onSetEditionNumber}
+        onselect={(edition) => collection.setEdition(item.id, edition)}
+        onSetCopyNumber={(edition, number) => collection.setEditionNumber(item.id, edition, number)}
       />
     {/if}
 
     {#if item.versions}
-      <VersionPicker versions={item.versions} value={versionValue} onselect={onSetVersion} />
+      <VersionPicker versions={item.versions} value={versionValue} onselect={(version) => collection.setVersion(item.id, version)} />
     {/if}
 
     {#if item.requires && item.requires.length > 0}

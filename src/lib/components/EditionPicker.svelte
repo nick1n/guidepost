@@ -12,6 +12,17 @@
   let { editions, value, copyNumbers, onselect, onSetCopyNumber }: Props = $props();
 
   const selected = $derived(editions.filter((edition) => value.includes(edition.v)));
+
+  function selectEdition(event: MouseEvent, edition: string) {
+    event.stopPropagation();
+    onselect(edition);
+  }
+
+  function setCopyNumber(event: Event, edition: string) {
+    const input = event.currentTarget as HTMLInputElement;
+    const raw = input.value;
+    onSetCopyNumber(edition, raw === "" ? undefined : Math.min(999, Math.max(1, Number.parseInt(raw, 10) || 1)));
+  }
 </script>
 
 <div class="flex flex-col gap-2">
@@ -21,10 +32,7 @@
       <button
         type="button"
         aria-pressed={active}
-        onclick={(event) => {
-          event.stopPropagation();
-          onselect(edition.v);
-        }}
+        onclick={(event) => selectEdition(event, edition.v)}
         class={[
           "min-w-16 rounded-lg px-2 py-1 transition-colors cursor-pointer",
           "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
@@ -49,10 +57,7 @@
         max={999}
         value={copyNumbers?.[edition.v] ?? ""}
         placeholder="13"
-        oninput={(event) => {
-          const raw = event.currentTarget.value;
-          onSetCopyNumber(edition.v, raw === "" ? undefined : Math.min(999, Math.max(1, Number.parseInt(raw, 10) || 1)));
-        }}
+        oninput={(event) => setCopyNumber(event, edition.v)}
         class="w-24 rounded-lg border border-border bg-panel/60 px-2 py-1 tabular-nums text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent placeholder:text-foreground/30"
       />
     </label>

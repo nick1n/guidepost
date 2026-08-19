@@ -11,6 +11,9 @@
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },
+  "dependencies": {
+    "@instantdb/svelte": "^1.0.65"
+  },
   "devDependencies": {
     "@iconify-json/material-symbols": "^1.2.89",
     "@sveltejs/adapter-auto": "next",
