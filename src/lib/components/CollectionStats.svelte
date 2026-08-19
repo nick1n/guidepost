@@ -18,12 +18,11 @@
 
 <section aria-label="Collection totals" class=" top-0 sticky overflow-hidden bg-panel z-1">
   <div class="flex items-end justify-between gap-4 py-2 px-3">
-    <Stat pos="left" label="Owned" value={ownedCount} />
-    <Stat pos="center" label="Value" value={formatPrice(ownedValue)} accent />
-    <Stat pos="right" label="Wishlist" value={`${wishlistCount} · ${formatPrice(wishlistValue)}`} />
+    <Stat pos="left" label="Owned" count={ownedCount} value={formatPrice(ownedValue)} />
+    <Stat pos="right" label="Wishlist" count={wishlistCount} value={formatPrice(wishlistValue)} />
   </div>
-  <div class="flex justify-between h-1 overflow-hidden" title="{pct}%">
+  <div class="flex justify-between h-2px overflow-hidden" title="{pct}%">
     <div class="h-full bg-accent transition-all" style:width="{pct}%"></div>
-    <div class="h-full bg-amber-600 transition-all" style:width="{wishPct}%"></div>
+    <div class="h-full bg-secondary transition-all" style:width="{wishPct}%"></div>
   </div>
 </section>

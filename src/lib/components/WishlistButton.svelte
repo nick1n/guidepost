@@ -20,7 +20,7 @@
   class={[
     "-my-3 flex w-14 cursor-pointer shrink-0 items-center justify-center transition-colors",
     "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
-    active ? "text-amber-600" : "text-muted-foreground hover:text-foreground",
+    active ? "text-secondary" : "text-muted-foreground hover:text-foreground",
   ]}
 >
   <span class={[active ? "i-material-symbols:favorite" : "i-material-symbols:favorite-outline", "size-7"]} aria-hidden="true"></span>

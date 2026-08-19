@@ -138,7 +138,7 @@
       >
         <span class="inline-flex size-5 shrink-0 items-center justify-center rounded-full bg-black font-bold text-white">
           {#if requiresOwned}
-            <span class="i-material-symbols:lock-open size-3" aria-hidden="true"></span>
+            <span class="i-material-symbols:check size-3 text-accent" aria-hidden="true"></span>
           {:else}
             <span class="i-material-symbols:lock size-3" aria-hidden="true"></span>
           {/if}

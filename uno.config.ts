@@ -13,6 +13,7 @@ export default defineConfig({
       accent: "var(--accent)",
       "accent-foreground": "var(--accent-foreground)",
       destructive: "var(--destructive)",
+      secondary: "var(--secondary)",
       border: "var(--border)",
       panel: "var(--panel)",
       beta: "var(--beta)",
