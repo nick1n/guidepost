@@ -18,8 +18,8 @@
   aria-pressed={active}
   {onclick}
   class={[
-    "-my-3 flex w-14 cursor-pointer shrink-0 items-center justify-center transition-colors",
-    "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
+    "-my-3 flex w-14 shrink-0 cursor-pointer items-center justify-center transition-colors",
+    "focus-visible:outline-accent focus-visible:outline-2 focus-visible:outline-offset-2",
     active ? "text-secondary" : "text-muted-foreground hover:text-foreground",
   ]}
 >

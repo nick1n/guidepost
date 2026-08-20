@@ -42,21 +42,30 @@
     const next = gameplay ? "gameplay" : "models";
     filters = { ...filters, gameplay: filters.gameplay === next ? "any" : next };
   }
+
+  function toggleStatusFilter(status: Extract<Filters["status"], "owned" | "wishlisted">) {
+    filters = { ...filters, status: filters.status === status ? "any" : status };
+  }
 </script>
 
 <CollectionSession />
 
-<main class="mx-auto flex min-h-screen w-full max-w-2xl flex-col gap-2 px-3 pb-16 pt-4">
+<main class="mx-auto flex min-h-screen w-full max-w-2xl flex-col gap-2 px-3 pt-4 pb-16">
   <header>
-    <h1 class="font-display text-2xl font-bold leading-none tracking-tight">
+    <h1 class="font-display text-2xl leading-none font-bold tracking-tight">
       Kingdom Death: <span class="text-accent">Collection</span>
     </h1>
-    <p class="mt-1 text-muted-foreground">Content &amp; Dice collection tracker</p>
+    <p class="text-muted-foreground mt-1">Content &amp; Dice collection tracker</p>
   </header>
 
-  <CollectionStats {...stats} />
+  <CollectionStats
+    {...stats}
+    status={filters.status}
+    onownedclick={() => toggleStatusFilter("owned")}
+    onwishlistclick={() => toggleStatusFilter("wishlisted")}
+  />
 
-  <nav aria-label="Sections" class="flex gap-1 bg-card p-1">
+  <nav aria-label="Sections" class="bg-card flex gap-1 p-1">
     {#each TABS as t (t.value)}
       <button
         type="button"
@@ -81,9 +90,9 @@
   />
 
   {#if !collection.hydrated}
-    <p class="py-10 text-center text-muted-foreground">Loading collection…</p>
+    <p class="text-muted-foreground py-10 text-center">Loading collection…</p>
   {:else if resultCount === 0}
-    <p class="py-10 text-center text-muted-foreground">Nothing matches these filters</p>
+    <p class="text-muted-foreground py-10 text-center">Nothing matches these filters</p>
   {:else}
     <ul class="flex flex-col gap-3">
       {#if tab === "content"}
@@ -102,5 +111,5 @@
     </ul>
   {/if}
 
-  <p class="mt-2 text-center text-muted-foreground">Saved in this browser - {stats.totalCount} catalog entries</p>
+  <p class="text-muted-foreground mt-2 text-center">Saved in this browser - {stats.totalCount} catalog entries</p>
 </main>

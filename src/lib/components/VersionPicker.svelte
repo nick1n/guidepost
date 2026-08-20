@@ -16,7 +16,7 @@
 </script>
 
 <div class="flex items-center gap-1" role="group" aria-label="Versions owned">
-  <span class="mr-1 text-muted-foreground">Version</span>
+  <span class="text-muted-foreground mr-1">Version</span>
   {#each versions as version (version.v)}
     {@const active = value.includes(version.v)}
     <button
@@ -25,7 +25,7 @@
       onclick={(event) => selectVersion(event, version.v)}
       class={[
         "min-w-11 cursor-pointer rounded-lg px-2 py-1 tabular-nums transition-colors",
-        "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
+        "focus-visible:outline-accent focus-visible:outline-2 focus-visible:outline-offset-2",
         active ? "bg-accent text-accent-foreground" : "bg-panel text-foreground hover:bg-panel hover:text-foreground",
       ]}
     >

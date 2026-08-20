@@ -17,7 +17,7 @@
     <button
       type="button"
       onclick={(event) => selectTag(event, tag)}
-      class="shrink-0 cursor-pointer whitespace-nowrap rounded-lg bg-panel px-2 py-1 text-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+      class="bg-panel text-foreground hover:bg-accent hover:text-accent-foreground shrink-0 cursor-pointer rounded-lg px-2 py-1 whitespace-nowrap transition-colors"
     >
       {tag}
     </button>

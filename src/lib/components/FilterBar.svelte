@@ -51,7 +51,7 @@
   <div class="flex items-center gap-2">
     <div class="relative flex-1">
       <span
-        class="i-material-symbols:search pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
+        class="i-material-symbols:search text-muted-foreground pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2"
         aria-hidden="true"
       ></span>
       <input
@@ -61,12 +61,12 @@
         oninput={(e) => set("query", e.currentTarget.value)}
         placeholder="Search"
         aria-label="Search items"
-        class="h-10 w-full rounded-bl-2xl border-2 border-card bg-card pl-8 pr-2 placeholder:text-muted-foreground focus:border-accent focus:outline-none"
+        class="border-card bg-card placeholder:text-muted-foreground focus:border-accent h-10 w-full rounded-bl-2xl border-2 pr-2 pl-8 focus:outline-none"
       />
       {#if !filters.query}
         <kbd
           aria-hidden="true"
-          class="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 rounded border border-muted-foreground px-2 py-1 text-xs leading-none text-muted-foreground"
+          class="border-muted-foreground text-muted-foreground pointer-events-none absolute top-1/2 right-2 -translate-y-1/2 rounded border px-2 py-1 text-xs leading-none"
         >
           /
         </kbd>
@@ -77,7 +77,7 @@
       onclick={() => (open = !open)}
       aria-expanded={open}
       class={[
-        "flex h-10 items-center gap-2 rounded-br-2xl px-3 transition-colors cursor-pointer",
+        "flex h-10 cursor-pointer items-center gap-2 rounded-br-2xl px-3 transition-colors",
         open || activeCount > 0 ? "bg-accent text-accent-foreground" : "bg-card text-muted-foreground",
       ]}
     >
@@ -90,7 +90,7 @@
   </div>
 
   {#if open}
-    <div class="flex flex-col gap-3 rounded-2xl border border-border bg-card p-3">
+    <div class="border-border bg-card flex flex-col gap-3 rounded-2xl border p-3">
       <Segmented
         label="Sort by"
         value={filters.sort}
@@ -145,7 +145,7 @@
         <div class="flex items-center justify-between">
           <span class="text-muted-foreground">Tags</span>
           {#if filters.tags.length > 0}
-            <button type="button" onclick={() => set("tags", [])} class="inline-flex items-center gap-1 text-accent">
+            <button type="button" onclick={() => set("tags", [])} class="text-accent inline-flex items-center gap-1">
               <span class="i-material-symbols:close size-3" aria-hidden="true"></span> Clear
             </button>
           {/if}
@@ -168,8 +168,8 @@
         </div>
       </div>
 
-      <div class="flex items-center justify-between border-t border-border/60 pt-2">
-        <span class="tabular-nums text-muted-foreground">{resultCount} shown</span>
+      <div class="border-border/60 flex items-center justify-between border-t pt-2">
+        <span class="text-muted-foreground tabular-nums">{resultCount} shown</span>
         <button type="button" onclick={() => onchange({ ...defaultFilters, query: filters.query })} class="text-accent">
           Reset filters
         </button>

@@ -23,6 +23,7 @@
     "@unocss/preset-wind4": "^66.7.5",
     "prettier": "^3.9.6",
     "prettier-plugin-svelte": "^3.5.2",
+    "prettier-plugin-tailwindcss": "^0.8.1",
     "svelte": "^5.56.9",
     "svelte-check": "^4.7.6",
     "typescript": "6.0.3",

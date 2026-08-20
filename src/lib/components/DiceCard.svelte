@@ -22,10 +22,10 @@
 </script>
 
 <li
-  class={["overflow-hidden rounded-2xl border-2 bg-card transition-colors bg-clip-padding", owned ? "border-accent" : "border-transparent"]}
+  class={["bg-card overflow-hidden rounded-2xl border-2 bg-clip-padding transition-colors", owned ? "border-accent" : "border-transparent"]}
 >
   <div
-    class="flex cursor-pointer items-center gap-3 bg-panel pl-3 py-3"
+    class="bg-panel flex cursor-pointer items-center gap-3 py-3 pl-3"
     role="button"
     tabindex={0}
     aria-pressed={owned}
@@ -34,7 +34,7 @@
     {onkeydown}
   >
     <OwnedCheckbox checked={owned} onchange={() => collection.toggleOwned(item.id)} label={item.name} />
-    <h3 class="flex-1 text-2xl font-display font-semibold leading-tight">
+    <h3 class="font-display flex-1 text-2xl leading-tight font-semibold">
       {item.name}
     </h3>
     {#if !owned}
@@ -44,11 +44,11 @@
 
   <div class="flex flex-col gap-3 px-3 py-3">
     <div class="flex flex-wrap items-center gap-2">
-      <span class="tabular-nums text-accent">{formatPrice(item.price)}</span>
-      <span class="h-3 w-px bg-border" aria-hidden={true}></span>
+      <span class="text-accent tabular-nums">{formatPrice(item.price)}</span>
+      <span class="bg-border h-3 w-px" aria-hidden={true}></span>
       <div class="flex items-center gap-2" aria-label={`Colors: ${item.colors.join(", ")}`}>
         {#each item.colors as c, i (c + i)}
-          <span class="rounded-lg font-bold py-1 px-2" style:background-color={c} style:color={item.colors[i]}>
+          <span class="rounded-lg px-2 py-1 font-bold" style:background-color={c} style:color={item.colors[i]}>
             {item.text[i]}
           </span>
         {/each}
@@ -58,7 +58,7 @@
           href={url}
           target="_blank"
           rel="noopener noreferrer"
-          class="inline-flex ml-auto w-fit items-center gap-1 text-accent underline-offset-4 hover:underline"
+          class="text-accent ml-auto inline-flex w-fit items-center gap-1 underline-offset-4 hover:underline"
         >
           Store <span class="i-material-symbols:open-in-new size-4" aria-hidden="true"></span>
           <span class="sr-only">page for {item.name}</span>

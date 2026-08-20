@@ -33,17 +33,17 @@
 
 <li
   class={[
-    "relative overflow-hidden border-2 bg-card transition-colors bg-clip-padding",
+    "bg-card relative overflow-hidden border-2 bg-clip-padding transition-colors",
     owned ? "border-accent" : "border-transparent",
     isBeta ? "" : "rounded-2xl",
   ]}
 >
   {#if isBeta}
-    <div class="pointer-events-none absolute -left-10 top-4 w-32 rotate-135 bg-beta py-1 h-4" aria-hidden={true}></div>
+    <div class="bg-beta pointer-events-none absolute top-4 -left-10 h-4 w-32 rotate-135 py-1" aria-hidden={true}></div>
   {/if}
 
   <div
-    class="flex cursor-pointer items-center gap-3 bg-panel pl-3 py-3"
+    class="bg-panel flex cursor-pointer items-center gap-3 py-3 pl-3"
     role="button"
     tabindex={0}
     aria-pressed={owned}
@@ -53,11 +53,11 @@
   >
     <OwnedCheckbox checked={owned} onchange={() => collection.toggleOwned(item.id)} label={item.name} />
     <div class="min-w-0 flex-1">
-      <h3 class="font-display text-2xl truncate font-semibold leading-tight">
+      <h3 class="font-display truncate text-2xl leading-tight font-semibold">
         {item.name}
       </h3>
       {#if item.alt}
-        <p class="mt-1 truncate text-foreground/60">{item.alt}</p>
+        <p class="text-foreground/60 mt-1 truncate">{item.alt}</p>
       {/if}
     </div>
     {#if !owned}
@@ -67,8 +67,8 @@
 
   <div class="flex flex-col gap-3 px-3 py-3">
     <div class="flex flex-wrap items-center gap-2">
-      <span class="tabular-nums text-accent">{formatPrice(price)}</span>
-      <span class="h-5 w-px bg-border" aria-hidden={true}></span>
+      <span class="text-accent tabular-nums">{formatPrice(price)}</span>
+      <span class="bg-border h-5 w-px" aria-hidden={true}></span>
       <Pill tone={item.gameplay ? "accent" : "outline"} onclick={() => onGameplayClick(item.gameplay)}>
         {item.gameplay ? "Gameplay" : "Models only"}
       </Pill>
@@ -78,7 +78,7 @@
           href={url}
           target="_blank"
           rel="noopener noreferrer"
-          class="inline-flex px-2 py-1 items-center ml-auto gap-1 text-accent underline-offset-4 hover:underline"
+          class="text-accent ml-auto inline-flex items-center gap-1 px-2 py-1 underline-offset-4 hover:underline"
         >
           Shop <span class="i-material-symbols:open-in-new size-4" aria-hidden="true"></span>
           <span class="sr-only">page for {item.name}</span>
@@ -105,13 +105,13 @@
     {#if item.requires && item.requires.length > 0}
       <div
         class={[
-          "flex items-center -mx-3 -mb-3 px-3 py-1 gap-2 leading-relaxed bg-destructive",
+          "bg-destructive -mx-3 -mb-3 flex items-center gap-2 px-3 py-1 leading-relaxed",
           requiresOwned ? "text-muted-foreground" : "text-foreground",
         ]}
       >
         <span class="inline-flex size-5 shrink-0 items-center justify-center rounded-full bg-black font-bold text-white">
           {#if requiresOwned}
-            <span class="i-material-symbols:check size-3 text-accent" aria-hidden="true"></span>
+            <span class="i-material-symbols:check text-accent size-3" aria-hidden="true"></span>
           {:else}
             <span class="i-material-symbols:lock size-3" aria-hidden="true"></span>
           {/if}

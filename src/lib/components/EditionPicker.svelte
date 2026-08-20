@@ -32,21 +32,21 @@
         aria-pressed={active}
         onclick={(event) => selectEdition(event, edition.v)}
         class={[
-          "min-w-16 rounded-lg px-2 py-1 transition-colors cursor-pointer",
-          "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
+          "min-w-16 cursor-pointer rounded-lg px-2 py-1 transition-colors",
+          "focus-visible:outline-accent focus-visible:outline-2 focus-visible:outline-offset-2",
           active ? "bg-accent text-accent-foreground" : "bg-panel text-foreground hover:bg-panel hover:text-foreground",
         ]}
       >
         {edition.v}
       </button>
     {/each}
-    <span class="ml-1 text-muted-foreground">Edition{value.length > 1 ? "s" : ""}</span>
+    <span class="text-muted-foreground ml-1">Edition{value.length > 1 ? "s" : ""}</span>
   </div>
 </div>
 
 {#each editions as edition (edition.v)}
   {#if value.includes(edition.v) && edition.limit}
-    <label class="flex items-center gap-2 text-muted-foreground">
+    <label class="text-muted-foreground flex items-center gap-2">
       <span class="shrink-0">{edition.v} #</span>
       <input
         type="number"
@@ -56,7 +56,7 @@
         value={copyNumbers?.[edition.v] ?? ""}
         placeholder="13"
         oninput={(event) => setCopyNumber(event, edition.v)}
-        class="w-24 rounded-lg border border-border bg-panel/60 px-2 py-1 tabular-nums text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent placeholder:text-foreground/30"
+        class="border-border bg-panel/60 text-foreground focus-visible:outline-accent placeholder:text-foreground/30 w-24 rounded-lg border px-2 py-1 tabular-nums focus-visible:outline-2 focus-visible:outline-offset-2"
       />
     </label>
   {/if}
