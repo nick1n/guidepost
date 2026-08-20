@@ -4,7 +4,7 @@ import { resolve } from "$app/paths";
 
 const worker = self as unknown as ServiceWorkerGlobalScope;
 const cacheName = `cache-${version}`;
-const appAssets = [...immutable, ...assets, ...prerendered].map(resolve);
+const appAssets = [...immutable, ...assets, ...prerendered].map(({ path }) => resolve(path));
 
 worker.addEventListener("install", (event) => {
   event.waitUntil(
