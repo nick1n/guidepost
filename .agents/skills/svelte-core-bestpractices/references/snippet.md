@@ -12,19 +12,19 @@ Snippets, and [render tags](https://svelte.dev/docs/svelte/@render/llms.txt), ar
 
 ```svelte
 {#each images as image}
-	{#if image.href}
-		<a href={image.href}>
-			<figure>
-				<img src={image.src} alt={image.caption} width={image.width} height={image.height} />
-				<figcaption>{image.caption}</figcaption>
-			</figure>
-		</a>
-	{:else}
-		<figure>
-			<img src={image.src} alt={image.caption} width={image.width} height={image.height} />
-			<figcaption>{image.caption}</figcaption>
-		</figure>
-	{/if}
+  {#if image.href}
+    <a href={image.href}>
+      <figure>
+        <img src={image.src} alt={image.caption} width={image.width} height={image.height} />
+        <figcaption>{image.caption}</figcaption>
+      </figure>
+    </a>
+  {:else}
+    <figure>
+      <img src={image.src} alt={image.caption} width={image.width} height={image.height} />
+      <figcaption>{image.caption}</figcaption>
+    </figure>
+  {/if}
 {/each}
 ```
 
@@ -32,20 +32,20 @@ Snippets, and [render tags](https://svelte.dev/docs/svelte/@render/llms.txt), ar
 
 ```svelte
 {#snippet figure(image)}
-	<figure>
-		<img src={image.src} alt={image.caption} width={image.width} height={image.height} />
-		<figcaption>{image.caption}</figcaption>
-	</figure>
+  <figure>
+    <img src={image.src} alt={image.caption} width={image.width} height={image.height} />
+    <figcaption>{image.caption}</figcaption>
+  </figure>
 {/snippet}
 
 {#each images as image}
-	{#if image.href}
-		<a href={image.href}>
-			{@render figure(image)}
-		</a>
-	{:else}
-		{@render figure(image)}
-	{/if}
+  {#if image.href}
+    <a href={image.href}>
+      {@render figure(image)}
+    </a>
+  {:else}
+    {@render figure(image)}
+  {/if}
 {/each}
 ```
 
@@ -60,15 +60,15 @@ Snippets can be declared anywhere inside your component. They can reference valu
 ```svelte
 <!--- file: App.svelte --->
 <script>
-	let { message = `it's great to see you!` } = $props();
+  let { message = `it's great to see you!` } = $props();
 </script>
 
 {#snippet hello(name)}
-	<p>hello {name}! {message}!</p>
+  <p>hello {name}! {message}!</p>
 {/snippet}
 
-{@render hello('alice')}
-{@render hello('bob')}
+{@render hello("alice")}
+{@render hello("bob")}
 ```
 
 <!-- codeblock:end -->
@@ -77,15 +77,15 @@ Snippets can be declared anywhere inside your component. They can reference valu
 
 ```svelte
 <div>
-	{#snippet x()}
-		{#snippet y()}...{/snippet}
+  {#snippet x()}
+    {#snippet y()}...{/snippet}
 
-		<!-- this is fine -->
-		{@render y()}
-	{/snippet}
+    <!-- this is fine -->
+    {@render y()}
+  {/snippet}
 
-	<!-- this will error, as `y` is not in scope -->
-	{@render y()}
+  <!-- this will error, as `y` is not in scope -->
+  {@render y()}
 </div>
 
 <!-- this will also error, as `x` is not in scope -->
@@ -99,16 +99,16 @@ Snippets can reference themselves and each other:
 ```svelte
 <!--- file: App.svelte --->
 {#snippet blastoff()}
-	<span>🚀</span>
+  <span>🚀</span>
 {/snippet}
 
 {#snippet countdown(n)}
-	{#if n > 0}
-		<span>{n}...</span>
-		{@render countdown(n - 1)}
-	{:else}
-		{@render blastoff()}
-	{/if}
+  {#if n > 0}
+    <span>{n}...</span>
+    {@render countdown(n - 1)}
+  {:else}
+    {@render blastoff()}
+  {/if}
 {/snippet}
 
 {@render countdown(10)}
@@ -127,65 +127,66 @@ Within the template, snippets are values just like any other. As such, they can 
 ```svelte
 <!--- file: App.svelte --->
 <script>
-	import Table from './Table.svelte';
+  import Table from "./Table.svelte";
 
-	const fruits = [
-		{ name: 'apples', qty: 5, price: 2 },
-		{ name: 'bananas', qty: 10, price: 1 },
-		{ name: 'cherries', qty: 20, price: 0.5 }
-	];
+  const fruits = [
+    { name: "apples", qty: 5, price: 2 },
+    { name: "bananas", qty: 10, price: 1 },
+    { name: "cherries", qty: 20, price: 0.5 },
+  ];
 </script>
 
 {#snippet header()}
-	<th>fruit</th>
-	<th>qty</th>
-	<th>price</th>
-	<th>total</th>
+  <th>fruit</th>
+  <th>qty</th>
+  <th>price</th>
+  <th>total</th>
 {/snippet}
 
 {#snippet row(d)}
-	<td>{d.name}</td>
-	<td>{d.qty}</td>
-	<td>{d.price}</td>
-	<td>{d.qty * d.price}</td>
+  <td>{d.name}</td>
+  <td>{d.qty}</td>
+  <td>{d.price}</td>
+  <td>{d.qty * d.price}</td>
 {/snippet}
 
-<Table data={fruits} +++{header} {row}+++ />
+<Table data={fruits} +++{header} {row} +++ />
 ```
 
 ```svelte
 <!--- file: Table.svelte --->
 <script>
-	let { data, header, row } = $props();
+  let { data, header, row } = $props();
 </script>
 
 <table>
-	{#if header}
-		<thead>
-			<tr>{@render header()}</tr>
-		</thead>
-	{/if}
+  {#if header}
+    <thead>
+      <tr>{@render header()}</tr>
+    </thead>
+  {/if}
 
-	<tbody>
-		{#each data as d}
-			<tr>{@render row(d)}</tr>
-		{/each}
-	</tbody>
+  <tbody>
+    {#each data as d}
+      <tr>{@render row(d)}</tr>
+    {/each}
+  </tbody>
 </table>
 
 <style>
-	table {
-		text-align: left;
-		border-spacing: 0;
-	}
+  table {
+    text-align: left;
+    border-spacing: 0;
+  }
 
-	tbody tr:nth-child(2n+1) {
-		background: ButtonFace;
-	}
+  tbody tr:nth-child(2n + 1) {
+    background: ButtonFace;
+  }
 
-	table :global(th), table :global(td) {
-		padding: 0.5em;
-	}
+  table :global(th),
+  table :global(td) {
+    padding: 0.5em;
+  }
 </style>
 ```
 
@@ -202,65 +203,66 @@ As an authoring convenience, snippets declared directly _inside_ a component imp
 ```svelte
 <!--- file: App.svelte --->
 <script>
-	import Table from './Table.svelte';
+  import Table from "./Table.svelte";
 
-	const fruits = [
-		{ name: 'apples', qty: 5, price: 2 },
-		{ name: 'bananas', qty: 10, price: 1 },
-		{ name: 'cherries', qty: 20, price: 0.5 }
-	];
+  const fruits = [
+    { name: "apples", qty: 5, price: 2 },
+    { name: "bananas", qty: 10, price: 1 },
+    { name: "cherries", qty: 20, price: 0.5 },
+  ];
 </script>
 
 <Table data={fruits}>
-	{#snippet header()}
-		<th>fruit</th>
-		<th>qty</th>
-		<th>price</th>
-		<th>total</th>
-	{/snippet}
+  {#snippet header()}
+    <th>fruit</th>
+    <th>qty</th>
+    <th>price</th>
+    <th>total</th>
+  {/snippet}
 
-	{#snippet row(d)}
-		<td>{d.name}</td>
-		<td>{d.qty}</td>
-		<td>{d.price}</td>
-		<td>{d.qty * d.price}</td>
-	{/snippet}
+  {#snippet row(d)}
+    <td>{d.name}</td>
+    <td>{d.qty}</td>
+    <td>{d.price}</td>
+    <td>{d.qty * d.price}</td>
+  {/snippet}
 </Table>
 ```
 
 ```svelte
 <!--- file: Table.svelte --->
 <script>
-	let { data, header, row } = $props();
+  let { data, header, row } = $props();
 </script>
 
 <table>
-	{#if header}
-		<thead>
-			<tr>{@render header()}</tr>
-		</thead>
-	{/if}
+  {#if header}
+    <thead>
+      <tr>{@render header()}</tr>
+    </thead>
+  {/if}
 
-	<tbody>
-		{#each data as d}
-			<tr>{@render row(d)}</tr>
-		{/each}
-	</tbody>
+  <tbody>
+    {#each data as d}
+      <tr>{@render row(d)}</tr>
+    {/each}
+  </tbody>
 </table>
 
 <style>
-	table {
-		text-align: left;
-		border-spacing: 0;
-	}
+  table {
+    text-align: left;
+    border-spacing: 0;
+  }
 
-	tbody tr:nth-child(2n+1) {
-		background: ButtonFace;
-	}
+  tbody tr:nth-child(2n + 1) {
+    background: ButtonFace;
+  }
 
-	table :global(th), table :global(td) {
-		padding: 0.5em;
-	}
+  table :global(th),
+  table :global(td) {
+    padding: 0.5em;
+  }
 </style>
 ```
 
@@ -275,7 +277,7 @@ Any content inside the component tags that is _not_ a snippet declaration implic
 ```svelte
 <!--- file: App.svelte --->
 <script>
-	import Button from './Button.svelte';
+  import Button from "./Button.svelte";
 </script>
 
 <Button>click me</Button>
@@ -284,7 +286,7 @@ Any content inside the component tags that is _not_ a snippet declaration implic
 ```svelte
 <!--- file: Button.svelte --->
 <script>
-	let { children } = $props();
+  let { children } = $props();
 </script>
 
 <!-- result will be <button>click me</button> -->
@@ -301,7 +303,7 @@ You can declare snippet props as being optional. You can either use optional cha
 
 ```svelte
 <script>
-    let { children } = $props();
+  let { children } = $props();
 </script>
 
 {@render children?.()}
@@ -311,13 +313,13 @@ You can declare snippet props as being optional. You can either use optional cha
 
 ```svelte
 <script>
-    let { children } = $props();
+  let { children } = $props();
 </script>
 
 {#if children}
-    {@render children()}
+  {@render children()}
 {:else}
-    fallback content
+  fallback content
 {/if}
 ```
 
@@ -327,15 +329,15 @@ Snippets implement the `Snippet` interface imported from `'svelte'`:
 
 ```svelte
 <script lang="ts">
-	import type { Snippet } from 'svelte';
+  import type { Snippet } from "svelte";
 
-	interface Props {
-		data: any[];
-		children: Snippet;
-		row: Snippet<[any]>;
-	}
+  interface Props {
+    data: any[];
+    children: Snippet;
+    row: Snippet<[any]>;
+  }
 
-	let { data, children, row }: Props = $props();
+  let { data, children, row }: Props = $props();
 </script>
 ```
 
@@ -345,17 +347,17 @@ We can tighten things up further by declaring a generic, so that `data` and `row
 
 ```svelte
 <script lang="ts" generics="T">
-	import type { Snippet } from 'svelte';
+  import type { Snippet } from "svelte";
 
-	let {
-		data,
-		children,
-		row
-	}: {
-		data: T[];
-		children: Snippet;
-		row: Snippet<[T]>;
-	} = $props();
+  let {
+    data,
+    children,
+    row,
+  }: {
+    data: T[];
+    children: Snippet;
+    row: Snippet<[T]>;
+  } = $props();
 </script>
 ```
 
@@ -368,21 +370,20 @@ Snippets declared at the top level of a `.svelte` file can be exported from a `<
 ```svelte
 <!--- file: App.svelte --->
 <script>
-	import { add } from './snippets.svelte';
+  import { add } from "./snippets.svelte";
 </script>
 
 {@render add(1, 2)}
-
 ```
 
 ```svelte
 <!--- file: snippets.svelte --->
 <script module>
-	export { add };
+  export { add };
 </script>
 
 {#snippet add(a, b)}
-	{a} + {b} = {a + b}
+  {a} + {b} = {a + b}
 {/snippet}
 ```
 
