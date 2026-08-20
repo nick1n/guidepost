@@ -1,60 +1,22 @@
 import catalog from "./kdm-data.json";
+import type { Bundle, Catalog, ContentItem, DiceSet, Filters } from "./types";
 
 export const STORE_BASE = "https://shop.kingdomdeath.com";
-export type ItemKind = "core" | "beta" | "promo" | "expansion" | "white-box" | "set";
-
-export type Edition = {
-  v: string;
-  $: number[];
-  limit?: boolean;
-  r?: string;
-};
-
-export type ContentItem = {
-  id: string;
-  name: string;
-  alt?: string;
-  kind: ItemKind;
-  gameplay: boolean;
-  price?: number;
-  versions?: Edition[];
-  editions?: Edition[];
-  tags: string[];
-  requires?: string[];
-  url?: string;
-};
-
-export type DiceSet = {
-  id: string;
-  name: string;
-  price?: number;
-  colors: [string, string];
-  text: [string, string];
-  tags: string[];
-  url?: string;
-};
-
-export type Bundle = {
-  id: string;
-  name: string;
-  price?: number;
-  gameplay: boolean;
-  tags: string[];
-  includes: string[];
-  url?: string;
-};
-
-type Catalog = {
-  content: Record<string, Omit<ContentItem, "id">>;
-  dice: Record<string, Omit<DiceSet, "id">>;
-  bundles: Record<string, Omit<Bundle, "id">>;
-};
 
 const data = catalog as unknown as Catalog;
 
 export const content: ContentItem[] = Object.entries(data.content).map(([id, item]) => ({ id, ...item }));
 export const dice: DiceSet[] = Object.entries(data.dice).map(([id, item]) => ({ id, ...item }));
 export const bundles: Bundle[] = Object.entries(data.bundles).map(([id, item]) => ({ id, ...item }));
+
+export const defaultFilters: Filters = {
+  query: "",
+  sort: "price-desc",
+  gameplay: "any",
+  kind: "any",
+  status: "any",
+  tags: [],
+};
 
 export const nameById: Record<string, string> = Object.fromEntries([...content, ...dice].map((item) => [item.id, item.name]));
 export const priceById: Record<string, number> = Object.fromEntries([...content, ...dice].map((item) => [item.id, item.price ?? 0]));

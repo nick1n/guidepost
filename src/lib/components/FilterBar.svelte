@@ -1,31 +1,35 @@
 <script lang="ts">
-  import { defaultFilters, type Filters } from "#lib/filters.ts";
+  import type { Filters } from "#lib/types.ts";
+  import { getFilterState } from "#lib/state/filters.svelte.ts";
   import Segmented from "./Segmented.svelte";
 
   type Props = {
-    filters: Filters;
-    onchange: (f: Filters) => void;
     tagOptions: string[];
     showKind?: boolean;
     showGameplay?: boolean;
     resultCount: number;
   };
 
-  let { filters, onchange, tagOptions, showKind = true, showGameplay = true, resultCount }: Props = $props();
+  let { tagOptions, showKind = true, showGameplay = true, resultCount }: Props = $props();
+
+  const filters = getFilterState();
 
   let open = $state(false);
   let searchInput: HTMLInputElement;
 
   const activeCount = $derived(
-    filters.tags.length + (filters.gameplay !== "any" ? 1 : 0) + (filters.kind !== "any" ? 1 : 0) + (filters.status !== "any" ? 1 : 0),
+    filters.value.tags.length +
+      (filters.value.gameplay !== "any" ? 1 : 0) +
+      (filters.value.kind !== "any" ? 1 : 0) +
+      (filters.value.status !== "any" ? 1 : 0),
   );
 
   function set<K extends keyof Filters>(key: K, value: Filters[K]) {
-    onchange({ ...filters, [key]: value });
+    filters.set(key, value);
   }
 
   function toggleTag(tag: string) {
-    set("tags", filters.tags.includes(tag) ? filters.tags.filter((t) => t !== tag) : [...filters.tags, tag]);
+    filters.toggleTag(tag);
   }
 
   function isEditableTarget(target: EventTarget | null) {
@@ -57,13 +61,13 @@
       <input
         bind:this={searchInput}
         type="search"
-        value={filters.query}
+        value={filters.value.query}
         oninput={(e) => set("query", e.currentTarget.value)}
         placeholder="Search"
         aria-label="Search items"
         class="border-card bg-card placeholder:text-muted-foreground focus:border-accent h-10 w-full rounded-bl-2xl border-2 pr-2 pl-8 focus:outline-none"
       />
-      {#if !filters.query}
+      {#if !filters.value.query}
         <kbd
           aria-hidden="true"
           class="border-muted-foreground text-muted-foreground pointer-events-none absolute top-1/2 right-2 -translate-y-1/2 rounded border px-2 py-1 text-xs leading-none"
@@ -93,7 +97,7 @@
     <div class="border-border bg-card flex flex-col gap-3 rounded-2xl border p-3">
       <Segmented
         label="Sort by"
-        value={filters.sort}
+        value={filters.value.sort}
         onchange={(v) => set("sort", v)}
         options={[
           { value: "name", label: "Name" },
@@ -103,7 +107,7 @@
       />
       <Segmented
         label="Status"
-        value={filters.status}
+        value={filters.value.status}
         onchange={(v) => set("status", v)}
         options={[
           { value: "any", label: "All" },
@@ -115,7 +119,7 @@
       {#if showGameplay}
         <Segmented
           label="Content"
-          value={filters.gameplay}
+          value={filters.value.gameplay}
           onchange={(v) => set("gameplay", v)}
           options={[
             { value: "any", label: "All" },
@@ -127,7 +131,7 @@
       {#if showKind}
         <Segmented
           label="Release"
-          value={filters.kind}
+          value={filters.value.kind}
           onchange={(v) => set("kind", v)}
           options={[
             { value: "any", label: "All" },
@@ -144,7 +148,7 @@
       <div class="flex flex-col gap-2">
         <div class="flex items-center justify-between">
           <span class="text-muted-foreground">Tags</span>
-          {#if filters.tags.length > 0}
+          {#if filters.value.tags.length > 0}
             <button type="button" onclick={() => set("tags", [])} class="text-accent inline-flex items-center gap-1">
               <span class="i-material-symbols:close size-3" aria-hidden="true"></span> Clear
             </button>
@@ -152,7 +156,7 @@
         </div>
         <div class="flex max-h-40 flex-wrap gap-1 overflow-y-auto">
           {#each tagOptions as tag (tag)}
-            {@const active = filters.tags.includes(tag)}
+            {@const active = filters.value.tags.includes(tag)}
             <button
               type="button"
               aria-pressed={active}
@@ -170,9 +174,7 @@
 
       <div class="border-border/60 flex items-center justify-between border-t pt-2">
         <span class="text-muted-foreground tabular-nums">{resultCount} shown</span>
-        <button type="button" onclick={() => onchange({ ...defaultFilters, query: filters.query })} class="text-accent">
-          Reset filters
-        </button>
+        <button type="button" onclick={() => filters.reset(true)} class="text-accent">Reset filters</button>
       </div>
     </div>
   {/if}

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { formatPrice } from "#lib/kdm-data.ts";
-  import type { StatusFilter } from "#lib/filters.ts";
+  import { getFilterState } from "#lib/state/filters.svelte.ts";
   import Stat from "./Stat.svelte";
 
   type Props = {
@@ -9,12 +9,11 @@
     ownedValue: number;
     wishlistCount: number;
     wishlistValue: number;
-    status: StatusFilter;
-    onownedclick: () => void;
-    onwishlistclick: () => void;
   };
 
-  let { ownedCount, totalCount, ownedValue, wishlistCount, wishlistValue, status, onownedclick, onwishlistclick }: Props = $props();
+  let { ownedCount, totalCount, ownedValue, wishlistCount, wishlistValue }: Props = $props();
+
+  const filters = getFilterState();
 
   const pct = $derived(totalCount ? Math.round((ownedCount / totalCount) * 100) : 0);
   const wishPct = $derived(totalCount ? Math.round((wishlistCount / totalCount) * 100) : 0);
@@ -22,14 +21,21 @@
 
 <section aria-label="Collection totals" class=" bg-panel sticky top-0 z-1 overflow-hidden">
   <div class="grid grid-cols-2">
-    <Stat pos="left" label="Owned" count={ownedCount} value={formatPrice(ownedValue)} active={status === "owned"} onclick={onownedclick} />
+    <Stat
+      pos="left"
+      label="Owned"
+      count={ownedCount}
+      value={formatPrice(ownedValue)}
+      active={filters.value.status === "owned"}
+      onclick={() => filters.toggleStatus("owned")}
+    />
     <Stat
       pos="right"
       label="Wishlist"
       count={wishlistCount}
       value={formatPrice(wishlistValue)}
-      active={status === "wishlisted"}
-      onclick={onwishlistclick}
+      active={filters.value.status === "wishlisted"}
+      onclick={() => filters.toggleStatus("wishlisted")}
     />
   </div>
   <div class="h-2px flex justify-between overflow-hidden" title="{pct}%">

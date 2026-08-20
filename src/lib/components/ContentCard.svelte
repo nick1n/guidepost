@@ -5,17 +5,18 @@
   import EditionPicker from "./EditionPicker.svelte";
   import TagRail from "./TagRail.svelte";
   import Pill from "./Pill.svelte";
-  import { type ContentItem, effectivePrice, formatPrice, nameById, storeUrl } from "#lib/kdm-data.ts";
+  import { effectivePrice, formatPrice, nameById, storeUrl } from "#lib/kdm-data.ts";
   import { collection } from "#lib/state/collection.svelte.ts";
+  import { getFilterState } from "#lib/state/filters.svelte.ts";
+  import type { ContentItem } from "#lib/types.ts";
 
   type Props = {
     item: ContentItem;
-    onTagClick: (tag: string) => void;
-    onKindClick: (kind: ContentItem["kind"]) => void;
-    onGameplayClick: (gameplay: boolean) => void;
   };
 
-  let { item, onTagClick, onKindClick, onGameplayClick }: Props = $props();
+  let { item }: Props = $props();
+
+  const filters = getFilterState();
 
   const entry = $derived(collection.get(item.id));
   const requiresOwned = $derived((item.requires ?? []).every((id) => collection.state[id]?.owned));
@@ -69,10 +70,10 @@
     <div class="flex flex-wrap items-center gap-2">
       <span class="text-accent tabular-nums">{formatPrice(price)}</span>
       <span class="bg-border h-5 w-px" aria-hidden={true}></span>
-      <Pill tone={item.gameplay ? "accent" : "outline"} onclick={() => onGameplayClick(item.gameplay)}>
+      <Pill tone={item.gameplay ? "accent" : "outline"} onclick={() => filters.toggleGameplay(item.gameplay)}>
         {item.gameplay ? "Gameplay" : "Models only"}
       </Pill>
-      <Pill tone="neutral" onclick={() => onKindClick(item.kind)}>{item.kind}</Pill>
+      <Pill tone="neutral" onclick={() => filters.toggleKind(item.kind)}>{item.kind}</Pill>
       {#if url}
         <a
           href={url}
@@ -86,7 +87,7 @@
       {/if}
     </div>
 
-    <TagRail tags={item.tags} {onTagClick} />
+    <TagRail tags={item.tags} onTagClick={(tag) => filters.toggleTag(tag)} />
 
     {#if isBeta && item.editions}
       <EditionPicker

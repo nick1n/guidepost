@@ -22,7 +22,16 @@ pnpm format
 pnpm format:check
 ```
 
-Always run `pnpm check` after TypeScript or Svelte changes. The project may emit known UnoCSS Vite warnings during builds; do not change the UnoCSS/Vite integration without confirming that generated production CSS is still complete.
+Always run `pnpm check` after TypeScript or Svelte changes. Ignore the following expected warning when running `pnpm dev` or `pnpm check`; it does not indicate a failed command:
+
+```text
+The following plugins may not work correctly because they use the `transformIndexHtml` hook which is not supported:
+  - unocss:transformers:pre
+  - unocss:transformers:default
+  - unocss:transformers:post
+```
+
+The project may also emit known UnoCSS Vite warnings during builds. Do not change the UnoCSS/Vite integration without confirming that generated production CSS is still complete.
 
 ## TypeScript
 

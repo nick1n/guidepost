@@ -3,7 +3,8 @@
   import WishlistButton from "./WishlistButton.svelte";
   import Pill from "./Pill.svelte";
   import TagRail from "./TagRail.svelte";
-  import { type Bundle, formatPrice, nameById, storeUrl } from "#lib/kdm-data.ts";
+  import { formatPrice, nameById, storeUrl } from "#lib/kdm-data.ts";
+  import type { Bundle } from "#lib/types.ts";
   import { collection } from "#lib/state/collection.svelte.ts";
 
   type Props = {

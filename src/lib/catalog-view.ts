@@ -1,5 +1,5 @@
-import { bundles, content, dice, effectivePrice, type Bundle, type ContentItem, type DiceSet } from "./kdm-data";
-import type { Filters } from "./filters";
+import { bundles, content, dice, effectivePrice } from "./kdm-data";
+import type { Bundle, ContentItem, DiceSet, Filters } from "./types";
 import type { CollectionState } from "./state/types";
 
 type CatalogItem = ContentItem | DiceSet | Bundle;

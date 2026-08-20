@@ -1,7 +1,8 @@
 <script lang="ts">
   import OwnedCheckbox from "./OwnedCheckbox.svelte";
   import WishlistButton from "./WishlistButton.svelte";
-  import { type DiceSet, formatPrice, storeUrl } from "#lib/kdm-data.ts";
+  import { formatPrice, storeUrl } from "#lib/kdm-data.ts";
+  import type { DiceSet } from "#lib/types.ts";
   import { collection } from "#lib/state/collection.svelte.ts";
 
   type Props = {
@@ -48,7 +49,7 @@
       <span class="bg-border h-3 w-px" aria-hidden={true}></span>
       <div class="flex items-center gap-2" aria-label={`Colors: ${item.colors.join(", ")}`}>
         {#each item.colors as c, i (c + i)}
-          <span class="rounded-lg px-2 py-1 font-bold" style:background-color={c} style:color={item.colors[i]}>
+          <span class="rounded-lg px-2 py-1 font-bold" style:background-color={c} style:color={item.colors[+!i]}>
             {item.text[i]}
           </span>
         {/each}

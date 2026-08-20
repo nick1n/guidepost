@@ -10,20 +10,20 @@
 
   let { tone = "neutral", onclick, active = false, children }: Props = $props();
 
-  const className = $derived([
+  const classes = $derived([
     "inline-flex items-center rounded-lg px-2 py-1 transition-colors",
-    tone === "accent" && "bg-black text-foreground",
+    tone === "accent" && "text-foreground bg-black",
     tone === "neutral" && "bg-panel text-foreground/80",
-    tone === "outline" && "border border-foreground/25 text-muted-foreground",
-    onclick && "cursor-pointer hover:bg-accent hover:text-accent-foreground",
+    tone === "outline" && "border-foreground/25 text-muted-foreground border",
+    onclick && "hover:bg-accent hover:text-accent-foreground cursor-pointer",
     active && "bg-accent text-accent-foreground",
   ]);
 </script>
 
 {#if onclick}
-  <button type="button" aria-pressed={active} {onclick} class={className}>
+  <button type="button" aria-pressed={active} {onclick} class={classes}>
     {@render children()}
   </button>
 {:else}
-  <span class={className}>{@render children()}</span>
+  <span class={classes}>{@render children()}</span>
 {/if}
