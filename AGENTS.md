@@ -24,6 +24,10 @@ pnpm format:check
 
 Always run `pnpm check` after TypeScript or Svelte changes. The project may emit known UnoCSS Vite warnings during builds; do not change the UnoCSS/Vite integration without confirming that generated production CSS is still complete.
 
+## TypeScript
+
+Prefer inferred TypeScript types when the compiler can determine them clearly. Add explicit annotations for public APIs, complex values, or cases where they improve readability or prevent an incorrect widening; do not add redundant annotations solely to restate an inferred type.
+
 ## Svelte conventions
 
 Use Svelte 5 runes and callback props.
