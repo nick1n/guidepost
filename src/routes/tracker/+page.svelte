@@ -45,7 +45,7 @@
 
   <CollectionStats {...stats} />
 
-  <nav aria-label="Sections" class="bg-card relative isolate flex gap-1 p-1">
+  <nav aria-label="Sections" class="bg-card relative isolate flex gap-1">
     <span class="tab-highlight bg-panel pointer-events-none" aria-hidden="true"></span>
     {#each TABS as t (t.value)}
       <button
@@ -53,8 +53,8 @@
         aria-current={tab === t.value ? "page" : undefined}
         onclick={() => (tab = t.value)}
         class={[
-          "tab-button flex-1 cursor-pointer px-2 py-2 font-semibold transition-colors",
-          tab === t.value ? "tab-active text-foreground" : "text-muted-foreground hover:bg-panel/50 hover:text-foreground",
+          "tab-button flex-1 cursor-pointer px-2 py-3 font-semibold transition-colors",
+          tab === t.value ? "tab-active text-foreground" : "text-muted-foreground hover:text-foreground",
         ]}
       >
         {t.label}

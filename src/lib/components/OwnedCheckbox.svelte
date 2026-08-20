@@ -19,7 +19,7 @@
   aria-checked={checked}
   {onclick}
   class={[
-    "border-foreground isolate flex size-30px shrink-0 items-center justify-center border-2 inset-ring-2 inset-ring-black transition-colors",
+    "border-foreground size-30px isolate flex shrink-0 cursor-pointer items-center justify-center border-2 inset-ring-2 inset-ring-black transition-colors",
     "focus-visible:outline-accent focus-visible:outline-2 focus-visible:outline-offset-2",
     checked ? "bg-foreground" : "bg-black",
   ]}
