@@ -1,14 +1,14 @@
 <script lang="ts">
+  import { bundleTags, getCollectionStats, getVisibleCatalog } from "#lib/catalog-view.ts";
+  import BundleCard from "#lib/components/BundleCard.svelte";
+  import CollectionSession from "#lib/components/CollectionSession.svelte";
+  import CollectionStats from "#lib/components/CollectionStats.svelte";
   import ContentCard from "#lib/components/ContentCard.svelte";
   import DiceCard from "#lib/components/DiceCard.svelte";
-  import BundleCard from "#lib/components/BundleCard.svelte";
-  import CollectionStats from "#lib/components/CollectionStats.svelte";
   import FilterBar from "#lib/components/FilterBar.svelte";
-  import { allContentTags, allDiceTags, bundles, content, dice, effectivePrice, type ContentItem } from "#lib/kdm-data.ts";
-  import { collection } from "#lib/state/collection.svelte.ts";
-  import { db } from "#lib/state/instant.ts";
-  import { InstantStore, LocalGuestStore } from "#lib/state/stores.ts";
+  import { allContentTags, allDiceTags, bundles, content, dice, priceById, type ContentItem } from "#lib/kdm-data.ts";
   import { defaultFilters, type Filters } from "#lib/filters.ts";
+  import { collection } from "#lib/state/collection.svelte.ts";
 
   type Tab = "content" | "dice" | "bundles";
 
@@ -18,116 +18,11 @@
     { value: "bundles", label: "Bundles", count: bundles.length },
   ];
 
-  const bundleTags = Array.from(new Set(bundles.flatMap((b) => b.tags))).sort();
-
-  function priceOf(id: string) {
-    return content.find((c) => c.id === id)?.price ?? dice.find((d) => d.id === id)?.price ?? 0;
-  }
-
   let tab = $state<Tab>("content");
   let filters = $state<Filters>({ ...defaultFilters });
 
-  const auth = db.useAuth();
-  const states = db.useQuery(() => auth.user && !auth.user.isGuest ? { contentStates: { $: { where: { userId: auth.user.id } } } } : null);
-  let guestSignInStarted = false;
-  let localGuestStore: LocalGuestStore | undefined;
-  let instantStore: InstantStore | undefined;
-
-  // Required side effect: guest authentication is an external InstantDB operation that must begin only after the auth state finishes loading.
-  // A derived value cannot perform this sign-in or guard against repeated attempts.
-  $effect(() => {
-    if (!auth.isLoading && !auth.user && !auth.error && !guestSignInStarted) {
-      guestSignInStarted = true;
-      db.auth.signInAsGuest().catch(() => {
-        guestSignInStarted = false;
-      });
-    }
-  });
-
-  // Required side effect: this copies the current authenticated user and remote InstantDB rows into the command-based collection store.
-  // The store owns local mutations, so it must be synchronized whenever the user or query result changes.
-  $effect(() => {
-    const user = auth.user;
-    if (!user) return;
-
-    collection.setUser(user.id);
-    if (user.isGuest) {
-      localGuestStore ??= new LocalGuestStore(user.id);
-      void collection.setStore(localGuestStore);
-    } else {
-      instantStore ??= new InstantStore(user.id);
-      void collection.setStore(instantStore, localGuestStore);
-      if (states.data?.contentStates) instantStore.setRows(states.data.contentStates);
-      collection.refresh();
-    }
-  });
-
-  const stats = $derived.by(() => {
-    const all = [...content, ...dice];
-    let ownedCount = 0;
-    let ownedValue = 0;
-    let wishlistCount = 0;
-    let wishlistValue = 0;
-    for (const item of all) {
-      const entry = collection.state[item.id];
-      const price =
-        "editions" in item || "versions" in item
-          ? (effectivePrice(
-              item as ContentItem,
-              entry?.versions ?? (entry?.version ? [entry.version] : []),
-              entry?.editions ?? (entry?.edition ? [entry.edition] : []),
-            ) ?? 0)
-          : (item.price ?? 0);
-      if (entry?.owned) {
-        ownedCount += 1;
-        ownedValue += price;
-      } else if (entry?.wishlisted) {
-        wishlistCount += 1;
-        wishlistValue += price;
-      }
-    }
-    return {
-      ownedCount,
-      totalCount: all.length,
-      ownedValue,
-      wishlistCount,
-      wishlistValue,
-    };
-  });
-
-  const visible = $derived.by(() => {
-    const q = filters.query.trim().toLowerCase();
-
-    const matches = (item: { id: string; name: string; alt?: string; tags: string[]; gameplay?: boolean; kind?: string }) => {
-      if (q && !`${item.name} ${item.alt ?? ""} ${item.tags.join(" ")}`.toLowerCase().includes(q)) return false;
-      if (filters.tags.length && !filters.tags.every((t) => item.tags.includes(t))) return false;
-      if (filters.kind !== "any" && item.kind !== filters.kind) return false;
-      if (filters.gameplay !== "any" && item.gameplay !== undefined) {
-        if (filters.gameplay === "gameplay" && !item.gameplay) return false;
-        if (filters.gameplay === "models" && item.gameplay) return false;
-      }
-      const entry = collection.state[item.id];
-      if (filters.status === "owned" && !entry?.owned) return false;
-      if (filters.status === "unowned" && entry?.owned) return false;
-      if (filters.status === "wishlisted" && !entry?.wishlisted) return false;
-      return true;
-    };
-
-    const sortItems = <T extends { name: string; price?: number }>(items: T[]) => {
-      const sorted = [...items];
-      if (filters.sort === "name") sorted.sort((a, b) => a.name.localeCompare(b.name));
-      if (filters.sort === "price-asc") sorted.sort((a, b) => (a.price ?? 0) - (b.price ?? 0));
-      if (filters.sort === "price-desc") sorted.sort((a, b) => (b.price ?? 0) - (a.price ?? 0));
-      return sorted;
-    };
-
-    return {
-      visibleContent: sortItems(content.filter(matches)),
-      visibleDice: sortItems(dice.filter(matches)),
-      visibleBundles: sortItems(bundles.filter(matches)),
-    };
-  });
-
+  const stats = $derived(getCollectionStats(collection.state));
+  const visible = $derived(getVisibleCatalog(filters, collection.state));
   const resultCount = $derived(
     tab === "content" ? visible.visibleContent.length : tab === "dice" ? visible.visibleDice.length : visible.visibleBundles.length,
   );
@@ -145,12 +40,11 @@
 
   function toggleGameplayFilter(gameplay: boolean) {
     const next = gameplay ? "gameplay" : "models";
-    filters = {
-      ...filters,
-      gameplay: filters.gameplay === next ? "any" : next,
-    };
+    filters = { ...filters, gameplay: filters.gameplay === next ? "any" : next };
   }
 </script>
+
+<CollectionSession />
 
 <main class="mx-auto flex min-h-screen w-full max-w-2xl flex-col gap-2 px-3 pb-16 pt-4">
   <header>
@@ -194,36 +88,19 @@
     <ul class="flex flex-col gap-3">
       {#if tab === "content"}
         {#each visible.visibleContent as item (item.id)}
-          <ContentCard
-            {item}
-            onTagClick={toggleTagFilter}
-            onKindClick={toggleKindFilter}
-            onGameplayClick={toggleGameplayFilter}
-          />
+          <ContentCard {item} onTagClick={toggleTagFilter} onKindClick={toggleKindFilter} onGameplayClick={toggleGameplayFilter} />
         {/each}
-      {/if}
-
-      {#if tab === "dice"}
+      {:else if tab === "dice"}
         {#each visible.visibleDice as item (item.id)}
-          <DiceCard
-            {item}
-            entry={collection.get(item.id)}
-          />
+          <DiceCard {item} />
         {/each}
-      {/if}
-
-      {#if tab === "bundles"}
+      {:else}
         {#each visible.visibleBundles as bundle (bundle.id)}
-          <BundleCard
-            {bundle}
-            partsValue={bundle.includes.reduce((sum, id) => sum + priceOf(id), 0)}
-          />
+          <BundleCard {bundle} partsValue={bundle.includes.reduce((sum, id) => sum + (priceById[id] ?? 0), 0)} />
         {/each}
       {/if}
     </ul>
   {/if}
 
-  <p class="mt-2 text-center text-muted-foreground">
-    Saved in this browser - {stats.totalCount} catalog entries
-  </p>
+  <p class="mt-2 text-center text-muted-foreground">Saved in this browser - {stats.totalCount} catalog entries</p>
 </main>

@@ -1,6 +1,6 @@
 import type { InstaQLEntity } from "@instantdb/svelte";
 import type { AppSchema } from "../../instant.schema";
-import type { CollectionState, EntryState } from "./collection.svelte";
+import type { CollectionState, EntryState } from "./types";
 import { db } from "./instant";
 
 export interface ContentStateStore {

@@ -1,17 +1,5 @@
 import type { ContentStateStore } from "./stores";
-
-export type EntryState = {
-  owned?: boolean;
-  wishlisted?: boolean;
-  version?: string;
-  versions?: string[];
-  edition?: string;
-  editions?: string[];
-  editionNumber?: number;
-  editionNumbers?: Record<string, number>;
-};
-
-export type CollectionState = Record<string, EntryState>;
+import type { CollectionState, EntryState } from "./types";
 
 class ContentState {
   state = $state<CollectionState>({});
@@ -54,16 +42,26 @@ class ContentState {
 
   private async commit(itemId: string, next: EntryState) {
     if (!this.store) return;
-    this.state[itemId] = next;
-    await this.store.save(itemId, next);
+    const previous = this.state;
+    this.state = { ...this.state, [itemId]: next };
+    try {
+      await this.store.save(itemId, next);
+    } catch (error) {
+      this.state = previous;
+      throw error;
+    }
   }
 
   private async commitMany(nextState: Record<string, EntryState>) {
     if (!this.store) return;
-    for (const [itemId, next] of Object.entries(nextState)) {
-      this.state[itemId] = next;
+    const previous = this.state;
+    this.state = { ...this.state, ...nextState };
+    try {
+      await this.store.saveMany(nextState);
+    } catch (error) {
+      this.state = previous;
+      throw error;
     }
-    await this.store.saveMany(nextState);
   }
 
   async toggleOwned(itemId: string, defaults?: { version?: string; edition?: string }) {
@@ -86,7 +84,7 @@ class ContentState {
 
   async setVersion(itemId: string, version: string) {
     return this.update(itemId, (entry) => {
-      const versions = entry.versions ?? (entry.version ? [entry.version] : []);
+      const versions = entry.versions ?? [];
       const next = versions.includes(version) ? versions.filter((value) => value !== version) : [...versions, version];
       return {
         ...entry,
@@ -99,7 +97,7 @@ class ContentState {
 
   async setEdition(itemId: string, edition: string) {
     return this.update(itemId, (entry) => {
-      const editions = entry.editions ?? (entry.edition ? [entry.edition] : []);
+      const editions = entry.editions ?? [];
       const next = editions.includes(edition) ? editions.filter((value) => value !== edition) : [...editions, edition];
       const numbers = { ...(entry.editionNumbers ?? {}) };
       if (!next.includes(edition)) delete numbers[edition];
@@ -133,10 +131,15 @@ class ContentState {
   }
 
   async reset() {
+    const previous = this.state;
     this.state = {};
-    await this.store?.clear();
+    try {
+      await this.store?.clear();
+    } catch (error) {
+      this.state = previous;
+      throw error;
+    }
   }
-
 }
 
 export const collection = new ContentState();

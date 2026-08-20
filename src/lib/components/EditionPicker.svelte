@@ -3,15 +3,13 @@
 
   type Props = {
     editions: Edition[];
-    value: string[];
+    value?: string[];
     copyNumbers?: Record<string, number>;
     onselect: (id: string) => void;
     onSetCopyNumber: (id: string, n?: number) => void;
   };
 
-  let { editions, value, copyNumbers, onselect, onSetCopyNumber }: Props = $props();
-
-  const selected = $derived(editions.filter((edition) => value.includes(edition.v)));
+  let { editions, value = [], copyNumbers, onselect, onSetCopyNumber }: Props = $props();
 
   function selectEdition(event: MouseEvent, edition: string) {
     event.stopPropagation();
@@ -46,8 +44,8 @@
   </div>
 </div>
 
-{#each selected as edition (edition.v)}
-  {#if edition.limit}
+{#each editions as edition (edition.v)}
+  {#if value.includes(edition.v) && edition.limit}
     <label class="flex items-center gap-2 text-muted-foreground">
       <span class="shrink-0">{edition.v} #</span>
       <input

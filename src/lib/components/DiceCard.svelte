@@ -2,16 +2,15 @@
   import OwnedCheckbox from "./OwnedCheckbox.svelte";
   import WishlistButton from "./WishlistButton.svelte";
   import { type DiceSet, formatPrice, storeUrl } from "#lib/kdm-data.ts";
-  import type { EntryState } from "#lib/state/collection.svelte.ts";
   import { collection } from "#lib/state/collection.svelte.ts";
 
   type Props = {
     item: DiceSet;
-    entry: EntryState;
   };
 
-  let { item, entry }: Props = $props();
+  let { item }: Props = $props();
 
+  const entry = $derived(collection.get(item.id));
   const owned = $derived(!!entry.owned);
   const url = $derived(storeUrl(item.url));
 

@@ -15,30 +15,14 @@
     onGameplayClick: (gameplay: boolean) => void;
   };
 
-  let {
-    item,
-    onTagClick,
-    onKindClick,
-    onGameplayClick,
-  }: Props = $props();
+  let { item, onTagClick, onKindClick, onGameplayClick }: Props = $props();
 
   const entry = $derived(collection.get(item.id));
   const requiresOwned = $derived((item.requires ?? []).every((id) => collection.state[id]?.owned));
   const owned = $derived(!!entry.owned);
   const url = $derived(storeUrl(item.url));
   const isBeta = $derived(!!item.editions);
-  const price = $derived(
-    effectivePrice(
-      item,
-      entry.versions ?? (entry.version ? [entry.version] : []),
-      entry.editions ?? (entry.edition ? [entry.edition] : []),
-    ),
-  );
-  const editionValue = $derived(entry.editions ?? (entry.edition ? [entry.edition] : []));
-  const versionValue = $derived(entry.versions ?? (entry.version ? [entry.version] : []));
-  const copyNumbers = $derived(
-    entry.editionNumbers ?? (entry.edition && entry.editionNumber != null ? { [entry.edition]: entry.editionNumber } : undefined),
-  );
+  const price = $derived(effectivePrice(item, entry.versions ?? [], entry.editions ?? []));
 
   function onkeydown(event: KeyboardEvent) {
     if (event.key !== "Enter" && event.key !== " ") return;
@@ -107,15 +91,15 @@
     {#if isBeta && item.editions}
       <EditionPicker
         editions={item.editions}
-        value={editionValue}
-        {copyNumbers}
+        value={entry.editions}
+        copyNumbers={entry.editionNumbers}
         onselect={(edition) => collection.setEdition(item.id, edition)}
         onSetCopyNumber={(edition, number) => collection.setEditionNumber(item.id, edition, number)}
       />
     {/if}
 
     {#if item.versions}
-      <VersionPicker versions={item.versions} value={versionValue} onselect={(version) => collection.setVersion(item.id, version)} />
+      <VersionPicker versions={item.versions} value={entry.versions} onselect={(version) => collection.setVersion(item.id, version)} />
     {/if}
 
     {#if item.requires && item.requires.length > 0}

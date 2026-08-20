@@ -20,7 +20,6 @@
   const url = $derived(storeUrl(bundle.url));
   const ownedCount = $derived(bundle.includes.filter((id) => collection.state[id]?.owned).length);
   const total = $derived(bundle.includes.length);
-  const savings = $derived(bundle.price != null ? partsValue - bundle.price : 0);
 
   function onclick() {
     const nextOwned = !collection.state[bundle.id]?.owned;
@@ -68,7 +67,7 @@
   <div class="flex flex-col gap-3 px-3 py-3">
     <div class="flex flex-wrap items-center gap-2">
       <span class="tabular-nums text-accent">{formatPrice(bundle.price)}</span>
-      {#if savings > 0}
+      {#if bundle.price != null && partsValue > bundle.price}
         <span class="tabular-nums text-muted-foreground line-through">
           {formatPrice(partsValue)}
         </span>

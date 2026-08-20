@@ -42,13 +42,13 @@ onclick={(event) => selectVersion(event, version.v)}
 
 Avoid `$effect` when a derived value or direct event handler is sufficient. Effects are reserved for external synchronization, such as guest authentication or synchronizing InstantDB query results with the state store. Add a comment above every required effect explaining why it cannot be replaced.
 
-Prefer Svelte class arrays for conditional classes:
+Prefer Svelte class arrays for conditional classes over template strings:
 
 ```svelte
 <div class={["base-class", active && "text-accent"]}></div>
 ```
 
-Do not use template strings for class attributes, `class:` directives for new code, or utility helpers such as `cn`.
+Do not use `class:` directives for new code.
 
 ```svelte
 <!-- Avoid --><div class={`rounded-lg ${active ? "bg-accent" : "bg-panel"}`}></div><div class:active></div>

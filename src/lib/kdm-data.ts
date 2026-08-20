@@ -57,6 +57,7 @@ export const dice: DiceSet[] = Object.entries(data.dice).map(([id, item]) => ({ 
 export const bundles: Bundle[] = Object.entries(data.bundles).map(([id, item]) => ({ id, ...item }));
 
 export const nameById: Record<string, string> = Object.fromEntries([...content, ...dice].map((item) => [item.id, item.name]));
+export const priceById: Record<string, number> = Object.fromEntries([...content, ...dice].map((item) => [item.id, item.price ?? 0]));
 
 export function formatPrice(cents?: number) {
   if (cents == null) return "—";
