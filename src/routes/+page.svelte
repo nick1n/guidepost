@@ -6,16 +6,17 @@
   import ContentCard from "#lib/components/ContentCard.svelte";
   import DiceCard from "#lib/components/DiceCard.svelte";
   import FilterBar from "#lib/components/FilterBar.svelte";
-  import { allContentTags, allDiceTags, bundles, content, dice, priceById } from "#lib/kdm-data.ts";
+  import { allContentTags, allDiceTags, allHomebrewTags, priceById } from "#lib/kdm-data.ts";
   import { collection } from "#lib/state/collection.svelte.ts";
   import { createFilterState } from "#lib/state/filters.svelte.ts";
 
-  type Tab = "content" | "dice" | "bundles";
+  type Tab = "content" | "dice" | "bundles" | "homebrew";
 
-  const TABS: { value: Tab; label: string; count: number }[] = [
-    { value: "content", label: "Content", count: content.length },
-    { value: "dice", label: "Dice", count: dice.length },
-    { value: "bundles", label: "Bundles", count: bundles.length },
+  const TABS: { value: Tab; label: string }[] = [
+    { value: "content", label: "Content" },
+    { value: "dice", label: "Dice" },
+    { value: "bundles", label: "Bundles" },
+    { value: "homebrew", label: "Homebrew" },
   ];
 
   let tab = $state<Tab>("content");
@@ -23,9 +24,13 @@
 
   const stats = $derived(getCollectionStats(collection.state));
   const visible = $derived(getVisibleCatalog(filters.value, collection.state));
-  const resultCount = $derived(
-    tab === "content" ? visible.visibleContent.length : tab === "dice" ? visible.visibleDice.length : visible.visibleBundles.length,
-  );
+  const tabCounts = $derived({
+    content: visible.visibleContent.length,
+    dice: visible.visibleDice.length,
+    bundles: visible.visibleBundles.length,
+    homebrew: visible.visibleHomebrew.length,
+  });
+  const resultCount = $derived(tabCounts[tab]);
 </script>
 
 <CollectionSession />
@@ -40,24 +45,26 @@
 
   <CollectionStats {...stats} />
 
-  <nav aria-label="Sections" class="bg-card flex gap-1 p-1">
+  <nav aria-label="Sections" class="bg-card relative isolate flex gap-1 p-1">
+    <span class="tab-highlight bg-panel pointer-events-none" aria-hidden="true"></span>
     {#each TABS as t (t.value)}
       <button
         type="button"
         aria-current={tab === t.value ? "page" : undefined}
         onclick={() => (tab = t.value)}
         class={[
-          "flex-1 cursor-pointer px-2 py-2 font-semibold transition-colors",
-          tab === t.value ? "bg-panel text-foreground" : "text-muted-foreground hover:bg-panel/50 hover:text-foreground",
+          "tab-button flex-1 cursor-pointer px-2 py-2 font-semibold transition-colors",
+          tab === t.value ? "tab-active text-foreground" : "text-muted-foreground hover:bg-panel/50 hover:text-foreground",
         ]}
       >
-        {t.label} <span class="tabular-nums opacity-50">{t.count}</span>
+        {t.label}
+        <span class="tabular-nums opacity-50">{tabCounts[t.value]}</span>
       </button>
     {/each}
   </nav>
 
   <FilterBar
-    tagOptions={tab === "content" ? allContentTags : tab === "dice" ? allDiceTags : bundleTags}
+    tagOptions={tab === "content" ? allContentTags : tab === "dice" ? allDiceTags : tab === "bundles" ? bundleTags : allHomebrewTags}
     showGameplay={tab !== "dice"}
     {resultCount}
   />
@@ -76,9 +83,13 @@
         {#each visible.visibleDice as item (item.id)}
           <DiceCard {item} />
         {/each}
-      {:else}
+      {:else if tab === "bundles"}
         {#each visible.visibleBundles as bundle (bundle.id)}
           <BundleCard {bundle} partsValue={bundle.includes.reduce((sum, id) => sum + (priceById[id] ?? 0), 0)} />
+        {/each}
+      {:else}
+        {#each visible.visibleHomebrew as item (item.id)}
+          <ContentCard {item} />
         {/each}
       {/if}
     </ul>
@@ -86,3 +97,40 @@
 
   <p class="text-muted-foreground mt-2 text-center">Saved in this browser - {stats.totalCount} catalog entries</p>
 </main>
+
+<style>
+  .tab-highlight {
+    display: none;
+  }
+
+  .tab-active {
+    background: var(--panel);
+  }
+
+  @supports (anchor-name: --active-tab) {
+    .tab-button {
+      position: relative;
+      z-index: 1;
+    }
+
+    .tab-active {
+      anchor-name: --active-tab;
+      background: transparent;
+    }
+
+    .tab-highlight {
+      display: block;
+      position: absolute;
+      position-anchor: --active-tab;
+      top: anchor(--active-tab top);
+      right: anchor(--active-tab right);
+      bottom: anchor(--active-tab bottom);
+      left: anchor(--active-tab left);
+      transition:
+        top 220ms cubic-bezier(0.16, 1, 0.3, 1),
+        right 220ms cubic-bezier(0.16, 1, 0.3, 1),
+        bottom 220ms cubic-bezier(0.16, 1, 0.3, 1),
+        left 220ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+  }
+</style>

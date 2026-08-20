@@ -26,7 +26,7 @@
   class={["bg-card overflow-hidden rounded-2xl border-2 bg-clip-padding transition-colors", owned ? "border-accent" : "border-transparent"]}
 >
   <div
-    class="bg-panel flex cursor-pointer items-center gap-3 py-3 pl-3"
+    class="bg-panel flex cursor-pointer items-start gap-3 py-3 pl-3"
     role="button"
     tabindex={0}
     aria-pressed={owned}

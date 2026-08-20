@@ -8,6 +8,7 @@ const data = catalog as unknown as Catalog;
 export const content: ContentItem[] = Object.entries(data.content).map(([id, item]) => ({ id, ...item }));
 export const dice: DiceSet[] = Object.entries(data.dice).map(([id, item]) => ({ id, ...item }));
 export const bundles: Bundle[] = Object.entries(data.bundles).map(([id, item]) => ({ id, ...item }));
+export const homebrew: ContentItem[] = Object.entries(data.homebrew).map(([id, item]) => ({ id, ...item }));
 
 export const defaultFilters: Filters = {
   query: "",
@@ -18,8 +19,10 @@ export const defaultFilters: Filters = {
   tags: [],
 };
 
-export const nameById: Record<string, string> = Object.fromEntries([...content, ...dice].map((item) => [item.id, item.name]));
-export const priceById: Record<string, number> = Object.fromEntries([...content, ...dice].map((item) => [item.id, item.price ?? 0]));
+export const nameById: Record<string, string> = Object.fromEntries([...content, ...dice, ...homebrew].map((item) => [item.id, item.name]));
+export const priceById: Record<string, number> = Object.fromEntries(
+  [...content, ...dice, ...homebrew].map((item) => [item.id, item.price ?? 0]),
+);
 
 export function formatPrice(cents?: number) {
   if (cents == null) return "—";
@@ -42,3 +45,4 @@ export function effectivePrice(item: ContentItem, versionIds: string[] = [], edi
 
 export const allContentTags = Array.from(new Set(content.flatMap((item) => item.tags))).sort();
 export const allDiceTags = Array.from(new Set(dice.flatMap((item) => item.tags))).sort();
+export const allHomebrewTags = Array.from(new Set(homebrew.flatMap((item) => item.tags))).sort();

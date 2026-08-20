@@ -1,4 +1,4 @@
-import { bundles, content, dice, effectivePrice } from "./kdm-data";
+import { bundles, content, dice, effectivePrice, homebrew } from "./kdm-data";
 import type { Bundle, ContentItem, DiceSet, Filters } from "./types";
 import type { CollectionState } from "./state/types";
 
@@ -13,7 +13,7 @@ export function getCollectionStats(state: CollectionState) {
   let wishlistCount = 0;
   let wishlistValue = 0;
 
-  for (const item of [...content, ...dice]) {
+  for (const item of [...content, ...dice, ...homebrew]) {
     const entry = state[item.id];
     const price = "versions" in item || "editions" in item ? effectivePrice(item, entry?.versions, entry?.editions) : (item.price ?? 0);
     if (entry?.owned) {
@@ -25,7 +25,7 @@ export function getCollectionStats(state: CollectionState) {
     }
   }
 
-  return { ownedCount, totalCount: content.length + dice.length, ownedValue, wishlistCount, wishlistValue };
+  return { ownedCount, totalCount: content.length + dice.length + homebrew.length, ownedValue, wishlistCount, wishlistValue };
 }
 
 export function getVisibleCatalog(filters: Filters, state: CollectionState) {
@@ -48,6 +48,7 @@ export function getVisibleCatalog(filters: Filters, state: CollectionState) {
     visibleContent: sort(content.filter(matches), filters.sort),
     visibleDice: sort(dice.filter(matches), filters.sort),
     visibleBundles: sort(bundles.filter(matches), filters.sort),
+    visibleHomebrew: sort(homebrew.filter(matches), filters.sort),
   };
 }
 

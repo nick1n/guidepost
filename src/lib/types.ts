@@ -45,6 +45,7 @@ export type Catalog = {
   content: Record<string, Omit<ContentItem, "id">>;
   dice: Record<string, Omit<DiceSet, "id">>;
   bundles: Record<string, Omit<Bundle, "id">>;
+  homebrew: Record<string, Omit<ContentItem, "id">>;
 };
 
 export type SortKey = "name" | "price-desc" | "price-asc";

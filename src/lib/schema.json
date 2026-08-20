@@ -2,13 +2,14 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Kingdom Death catalog",
   "type": "object",
-  "required": ["content", "dice", "bundles"],
+  "required": ["content", "dice", "bundles", "homebrew"],
   "additionalProperties": false,
   "properties": {
     "$schema": { "type": "string" },
     "content": { "$ref": "#/$defs/content" },
     "dice": { "$ref": "#/$defs/dice" },
-    "bundles": { "$ref": "#/$defs/bundles" }
+    "bundles": { "$ref": "#/$defs/bundles" },
+    "homebrew": { "$ref": "#/$defs/content" }
   },
   "$defs": {
     "edition": {

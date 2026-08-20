@@ -678,5 +678,21 @@
         "lantern-dice"
       ]
     }
+  },
+  "homebrew": {
+    "placeholder-homebrew-expansion": {
+      "name": "Placeholder Homebrew Expansion",
+      "alt": "Replace this sample entry with your own homebrew content.",
+      "kind": "expansion",
+      "gameplay": true,
+      "tags": ["homebrew", "placeholder", "expansion"]
+    },
+    "placeholder-homebrew-survivor-set": {
+      "name": "Placeholder Homebrew Survivor Set",
+      "alt": "A sample models-only homebrew entry.",
+      "kind": "set",
+      "gameplay": false,
+      "tags": ["homebrew", "placeholder", "survivor"]
+    }
   }
 }
