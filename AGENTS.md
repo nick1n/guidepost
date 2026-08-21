@@ -1,8 +1,20 @@
-# KDM Collection Tracker
+# Guidepost
 
 ## Project overview
 
-This is a SvelteKit 3 application using Svelte 5 runes, UnoCSS, Material Symbols, and InstantDB. The catalog is data-driven and the collection state supports local guest persistence plus authenticated cloud persistence.
+Guidepost is a personal hub for board game companion tools. It is a SvelteKit 3 application using Svelte 5 runes, UnoCSS, Material Symbols, and InstantDB.
+
+Kingdom Death: Monster is currently the largest set of tools. Its catalog is data-driven, and collection state supports local guest persistence plus authenticated cloud persistence. Guidepost may also link to tools and resources for other board games.
+
+## Landing page
+
+`src/routes/+page.svelte` is the Guidepost landing page and tool directory.
+
+Keep it lightweight, dark, and mobile-first. On mobile, the Guidepost header appears above the navigation and aligns right. At the wider layout breakpoint, it stays fixed in the bottom-left and aligns left while the navigation remains on the right.
+
+The window owns page scrolling as the link list grows. Do not create a separate scrolling container for the navigation.
+
+Preserve the full-bleed warm glow, subtle pointer or device-orientation movement, occasional flicker, slow pulse, and reduced-motion behavior unless a redesign explicitly changes them. The landing page may override the global stable scrollbar gutter so its background reaches the viewport edges.
 
 ## Required skills
 
@@ -94,6 +106,26 @@ Use Material Symbols through UnoCSS icon classes:
 For inline icons, use `inline-block` when width and height need to apply. Give icons an explicit text color when they sit on a contrasting background.
 
 Use the UnoCSS safelist in `uno.config.ts` for utilities that must be present in production but cannot reliably be extracted. Verify generated production CSS if a utility appears to work only in development.
+
+## Theme
+
+Global theme tokens are defined in `src/app.css` and exposed to UnoCSS through `uno.config.ts`. Treat those files as the source of truth. Keep each custom property declared once.
+
+Use semantic UnoCSS color utilities or `var(--token)` instead of hardcoding theme colors in components.
+
+The core palette is:
+
+- `--background`: `#151515`
+- `--panel`: `#1e1e1e`
+- `--card`: `#2b2b2b`
+- `--foreground`: `#fdfffe`
+- `--muted-foreground`: `#a29c9a`
+- `--accent-blue`: `#11b2e1`
+- `--accent-green`: `#4ae111`
+- `--accent-red`: `#e14011`
+- `--accent-purple`: `#a811e1`
+
+Prefer semantic aliases such as `--accent`, `--primary`, and `--destructive` when the color communicates a role. Use the named palette variables when no semantic token fits. If a listed token is missing from `src/app.css` or `uno.config.ts`, add it to the theme before using it instead of hardcoding its value in a component.
 
 ## Catalog data
 

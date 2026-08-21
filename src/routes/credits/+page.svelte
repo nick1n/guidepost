@@ -5,6 +5,8 @@
 <p>Bra Mithra https://www.youtube.com/@BraMithra</p>
 <p>Quackalope https://www.youtube.com/@Quackalope</p>
 <p>BGG</p>
+<p>CCG</p>
+<p>Scribe</p>
 
 <h2>Heat: Petal to the Metal</h2>
 <p>Days of Wonder</p>
