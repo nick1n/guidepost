@@ -33,8 +33,8 @@
 
 <main bind:this={landing} class="landing text-foreground relative isolate min-h-dvh overflow-x-hidden">
   <header class="site-header relative z-10 leading-none">
-    <h1 class="font-display text-[clamp(4rem,11vw,9rem)] font-bold tracking-tighter">Guidepost</h1>
-    <p class="text-muted-foreground text-shadow px-.5% -mt-2 text-sm text-pretty">
+    <h1 class="site-title font-display text-[clamp(5rem,11vw,9rem)] font-bold tracking-tighter">Guidepost</h1>
+    <p class="site-subtitle text-muted-foreground text-shadow -mt-2 text-sm text-pretty">
       some board game tools <a href="https://github.com/nick1n" target="_blank">I</a> wanted, left here for the next player
     </p>
   </header>
@@ -45,36 +45,43 @@
       <a class="tool-link tool-link-primary" href="/start">
         <span class="link-title">Quick start</span>
         <span class="link-note">Core game only - play prologue showdown</span>
-        <span class="tool-icon i-material-symbols:play-circle-outline size-5" aria-hidden="true"></span>
+        <span class="tool-icon i-material-symbols:play-circle-outline" aria-hidden="true"></span>
       </a>
       <a class="tool-link" href="/track">
         <span class="link-title">Collection</span>
         <span class="link-note">Keep track of all your content</span>
-        <span class="tool-icon i-material-symbols:inventory-2-outline-sharp size-5" aria-hidden="true"></span>
+        <span class="tool-icon i-material-symbols:inventory-2-outline-sharp" aria-hidden="true"></span>
       </a>
       <a class="tool-link" href="/hunt">
         <span class="link-title">Hunt Events</span>
         <span class="link-note">All 100 random hunt events</span>
-        <span class="tool-icon i-material-symbols:route-outline-sharp size-5" aria-hidden="true"></span>
+        <span class="tool-icon i-material-symbols:route-outline-sharp" aria-hidden="true"></span>
       </a>
       <a class="tool-link" href="https://drive.google.com/drive/folders/1s0UYjqfaR6urHFEDEpu58-42G8GFrXAR?usp=sharing" target="_blank">
-        <span class="link-title">Reference Cards</span>
+        <span class="link-title">Reference Cards <span class="i-material-symbols:arrow-outward inline-block size-4"></span></span>
         <span class="link-note">2x2 gear sized cards</span>
-        <span class="tool-icon i-material-symbols:arrow-outward size-5" aria-hidden="true"></span>
+        <span class="tool-icon i-material-symbols:arrow-outward" aria-hidden="true"></span>
       </a>
     </section>
 
     <section class="mt-6" aria-labelledby="other-tools">
       <h2 id="other-tools" class="section-label">Other games</h2>
       <a class="tool-link" href="https://boardgamegeek.com/filepage/262016/" target="_blank">
-        <span class="link-title">Star Wars: Imperial Assault</span>
+        <span class="link-title"
+          >Star Wars: Imperial Assault <span class="i-material-symbols:arrow-outward inline-block size-4"></span></span
+        >
         <span class="link-note">Campaign log & tracker</span>
-        <span class="tool-icon i-material-symbols:arrow-outward size-5" aria-hidden="true"></span>
+        <span class="tool-icon i-game-icons:light-sabers" aria-hidden="true"></span>
+      </a>
+      <a class="tool-link" href="https://cults3d.com/en/3d-model/game/queens-dilemma-treasury-insert-ideology-markers" target="_blank">
+        <span class="link-title">The Queen's Dilemma <span class="i-material-symbols:arrow-outward inline-block size-4"></span></span>
+        <span class="link-note">3d prints: treasury insert and ideology upgrades</span>
+        <span class="tool-icon i-material-symbols:chess-queen-outline" aria-hidden="true"></span>
       </a>
       <div class="tool-link tool-link-muted" aria-disabled="true">
         <span class="link-title">The King's Dilemma</span>
         <span class="link-note">Printable reference cards</span>
-        <span class="tool-icon i-material-symbols:crown-outline size-5" aria-label="Coming soon"></span>
+        <span class="tool-icon i-material-symbols:crown-outline" aria-label="Coming soon"></span>
       </div>
       <div class="tool-link tool-link-muted" aria-disabled="true">
         <span class="link-title">Heat: Pedal to the Metal</span>
@@ -86,14 +93,14 @@
     <section class="mt-6" aria-labelledby="links">
       <h2 id="links" class="section-label">Links</h2>
       <a class="tool-link" href="https://github.com/nick1n/guidepost" target="_blank">
-        <span class="link-title">Repo</span>
+        <span class="link-title">Repo <span class="i-material-symbols:arrow-outward inline-block size-4"></span></span>
         <span class="link-note">Please report any issues</span>
-        <span class="tool-icon i-mdi:github size-5" aria-hidden="true"></span>
+        <span class="tool-icon i-mdi:github" aria-hidden="true"></span>
       </a>
-      <a class="tool-link" href="/credits">
+      <a class="tool-link tool-link-accent-red" href="/credits">
         <span class="link-title">Credits</span>
         <span class="link-note">Thank yous</span>
-        <span class="tool-icon i-material-symbols:favorite-outline size-5" aria-hidden="true"></span>
+        <span class="tool-icon i-material-symbols:favorite-outline" aria-hidden="true"></span>
       </a>
     </section>
   </nav>
@@ -107,7 +114,10 @@
   }
 
   .site-header {
+    inline-size: fit-content;
+    max-inline-size: 100%;
     margin-bottom: 2rem;
+    margin-inline-start: auto;
     text-align: right;
     text-shadow:
       0 0 1px #000,
@@ -122,7 +132,17 @@
       max-width: calc(100% - 31rem);
       text-align: left;
       margin-bottom: 0;
+      margin-inline-start: 0;
     }
+  }
+
+  .site-title {
+    margin: 0;
+  }
+
+  .site-subtitle {
+    contain: inline-size;
+    inline-size: 100%;
   }
 
   .landing {
@@ -138,53 +158,75 @@
     inset: 0;
     z-index: -1;
     background:
-      linear-gradient(115deg in oklch, transparent 20%, rgb(255 255 255 / 0.018) 50%, transparent 70%),
-      radial-gradient(circle at 80% 15% in oklch, rgb(255 255 255 / 0.025), transparent 32%);
+      linear-gradient(115deg in oklch, transparent 20%, color-mix(in srgb, var(--foreground) 1.8%, transparent) 50%, transparent 70%),
+      radial-gradient(circle at 80% 15% in oklch, color-mix(in srgb, var(--foreground) 2.5%, transparent), transparent 32%);
     content: "";
   }
 
   .ambient {
     position: fixed;
-    inset: -5%;
+    inset: 0;
     z-index: -1;
     overflow: hidden;
     pointer-events: none;
     transform: translate3d(var(--glow-shift-x), var(--glow-shift-y), 0);
     will-change: transform;
+
+    @media (min-width: 46rem) {
+      inset: -5%;
+    }
   }
 
   .ambient::before,
   .ambient::after {
     position: absolute;
-    bottom: -22%;
+    bottom: -5%;
     left: -10%;
     border-radius: 9999px;
     content: "";
     transform-origin: 42% 70%;
     aspect-ratio: 1;
     animation: glow-pulse 32s ease-in-out infinite;
+
+    @media (min-width: 46rem) {
+      bottom: -22%;
+    }
   }
 
   .ambient::before {
     width: min(72rem, 125vw);
-    background: radial-gradient(ellipse at center in oklch, rgb(225 64 17 / 0.22) 0%, rgb(207 85 20 / 0.1) 30%, transparent 70%);
+    background: radial-gradient(
+      ellipse at center in oklch,
+      color-mix(in oklch, var(--accent-red) 22%, transparent) 0%,
+      color-mix(in oklch, var(--accent-red) 10%, transparent) 30%,
+      transparent 70%
+    );
   }
 
   .ambient::after {
-    bottom: -15%;
+    bottom: 4%;
     left: 3%;
     width: min(36rem, 62vw);
-    background: radial-gradient(ellipse at center in oklch, rgb(255 190 99 / 0.28) 0%, rgb(225 64 17 / 0.08) 42%, transparent 72%);
+    background: radial-gradient(
+      ellipse at center in oklch,
+      color-mix(in oklch, var(--secondary) 28%, transparent) 0%,
+      color-mix(in oklch, var(--accent-red) 8%, transparent) 42%,
+      transparent 72%
+    );
     animation:
       glow-pulse 32s ease-in-out infinite 16s,
       flicker 13s linear infinite;
+
+    @media (min-width: 46rem) {
+      bottom: -15%;
+    }
   }
 
   .section-label {
     margin-bottom: clamp(0.4rem, 1vw, 0.7rem);
     color: var(--muted-foreground);
     font-size: 0.7rem;
-    border-bottom: 2px solid rgb(253 255 254 / 0.12);
+    border-bottom: 2px solid color-mix(in srgb, var(--foreground) 12%, transparent);
   }
 
   .tool-link {
@@ -196,7 +238,7 @@
     grid-template-columns: minmax(0, 1fr) auto;
     align-content: center;
     column-gap: 1rem;
-    border-bottom: 2px solid rgb(253 255 254 / 0.12);
+    border-bottom: 2px solid color-mix(in srgb, var(--foreground) 12%, transparent);
     color: var(--foreground);
     text-decoration: none;
     transition:
@@ -208,30 +250,30 @@
   .tool-link:hover,
   .tool-link:focus-visible {
     padding-right: 0.4rem;
-    border-color: rgb(17 178 225 / 0.65);
+    border-color: color-mix(in srgb, var(--accent) 65%, transparent);
     color: var(--accent);
     outline: none;
   }
 
   .tool-link-primary {
-    color: #4ae111;
+    color: var(--accent-green);
   }
 
   .tool-link-primary:hover,
   .tool-link-primary:focus-visible {
-    border-color: rgb(74 225 17 / 0.7);
-    color: #77ed4b;
+    border-color: color-mix(in srgb, var(--accent-green) 70%, transparent);
+    color: color-mix(in oklch, var(--accent-green) 80%, var(--foreground));
   }
 
   .tool-link-muted {
-    color: rgb(253 255 254 / 0.5);
+    color: color-mix(in srgb, var(--foreground) 50%, transparent);
     cursor: default;
   }
 
   .tool-link-muted:hover {
     padding-right: 0;
-    border-color: rgb(253 255 254 / 0.12);
-    color: rgb(253 255 254 / 0.5);
+    border-color: color-mix(in srgb, var(--foreground) 12%, transparent);
+    color: color-mix(in srgb, var(--foreground) 50%, transparent);
   }
 
   .link-title {

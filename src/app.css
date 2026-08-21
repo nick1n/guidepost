@@ -30,6 +30,11 @@
 
   --beta: #11b2e1;
   --beta-foreground: #fdfffe;
+
+  --accent-blue: #11b2e1;
+  --accent-green: #4ae111;
+  --accent-red: #e14011;
+  --accent-purple: #a811e1;
 }
 
 * {
