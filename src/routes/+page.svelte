@@ -31,77 +31,72 @@
 
 <svelte:window {onpointermove} {ondeviceorientation} />
 
-<main
-  bind:this={landing}
-  class="landing text-foreground relative isolate flex min-h-dvh flex-col justify-between overflow-hidden p-[clamp(1.25rem,4vw,3rem)]"
->
-  <header class="relative z-10 order-last leading-none">
+<main bind:this={landing} class="landing text-foreground relative isolate min-h-dvh overflow-x-hidden">
+  <header class="site-header relative z-10 leading-none">
     <h1 class="font-display text-[clamp(4rem,11vw,9rem)] font-bold tracking-tighter">Guidepost</h1>
-    <p class="text-muted-foreground text-shadow px-.5% -mt-2 text-sm">
+    <p class="text-muted-foreground text-shadow px-.5% -mt-2 text-sm text-pretty">
       some board game tools <a href="https://github.com/nick1n" target="_blank">I</a> wanted, left here for the next player
     </p>
   </header>
 
-  <div class="relative z-10 flex justify-end gap-6">
-    <nav aria-label="Guidepost tools" class="w-full max-w-96">
-      <section aria-labelledby="kdm-tools">
-        <h2 id="kdm-tools" class="section-label">Kingdom Death: Monster</h2>
-        <a class="tool-link tool-link-primary" href="/start">
-          <span class="link-title">Quick start</span>
-          <span class="link-note">Core game only - play prologue showdown</span>
-          <span class="tool-icon i-material-symbols:play-circle-outline size-5" aria-hidden="true"></span>
-        </a>
-        <a class="tool-link" href="/track">
-          <span class="link-title">Collection</span>
-          <span class="link-note">Keep track of all your content</span>
-          <span class="tool-icon i-material-symbols:inventory-2-outline-sharp size-5" aria-hidden="true"></span>
-        </a>
-        <a class="tool-link" href="/hunt">
-          <span class="link-title">Hunt Events</span>
-          <span class="link-note">All 100 random hunt events</span>
-          <span class="tool-icon i-material-symbols:route-outline-sharp size-5" aria-hidden="true"></span>
-        </a>
-        <a class="tool-link" href="https://drive.google.com/drive/folders/1s0UYjqfaR6urHFEDEpu58-42G8GFrXAR?usp=sharing" target="_blank">
-          <span class="link-title">Reference Cards</span>
-          <span class="link-note">2x2 gear sized cards</span>
-          <span class="tool-icon i-material-symbols:arrow-outward size-5" aria-hidden="true"></span>
-        </a>
-      </section>
+  <nav aria-label="Guidepost tools" class="nav-region relative z-10 ml-auto w-full max-w-96">
+    <section aria-labelledby="kdm-tools">
+      <h2 id="kdm-tools" class="section-label">Kingdom Death: Monster</h2>
+      <a class="tool-link tool-link-primary" href="/start">
+        <span class="link-title">Quick start</span>
+        <span class="link-note">Core game only - play prologue showdown</span>
+        <span class="tool-icon i-material-symbols:play-circle-outline size-5" aria-hidden="true"></span>
+      </a>
+      <a class="tool-link" href="/track">
+        <span class="link-title">Collection</span>
+        <span class="link-note">Keep track of all your content</span>
+        <span class="tool-icon i-material-symbols:inventory-2-outline-sharp size-5" aria-hidden="true"></span>
+      </a>
+      <a class="tool-link" href="/hunt">
+        <span class="link-title">Hunt Events</span>
+        <span class="link-note">All 100 random hunt events</span>
+        <span class="tool-icon i-material-symbols:route-outline-sharp size-5" aria-hidden="true"></span>
+      </a>
+      <a class="tool-link" href="https://drive.google.com/drive/folders/1s0UYjqfaR6urHFEDEpu58-42G8GFrXAR?usp=sharing" target="_blank">
+        <span class="link-title">Reference Cards</span>
+        <span class="link-note">2x2 gear sized cards</span>
+        <span class="tool-icon i-material-symbols:arrow-outward size-5" aria-hidden="true"></span>
+      </a>
+    </section>
 
-      <section class="mt-6" aria-labelledby="other-tools">
-        <h2 id="other-tools" class="section-label">Other games</h2>
-        <a class="tool-link" href="https://boardgamegeek.com/filepage/262016/" target="_blank">
-          <span class="link-title">Star Wars: Imperial Assault</span>
-          <span class="link-note">Campaign log & tracker</span>
-          <span class="tool-icon i-material-symbols:arrow-outward size-5" aria-hidden="true"></span>
-        </a>
-        <div class="tool-link tool-link-muted" aria-disabled="true">
-          <span class="link-title">The King's Dilemma</span>
-          <span class="link-note">Printable reference cards</span>
-          <span class="tool-icon i-material-symbols:crown-outline size-5" aria-label="Coming soon"></span>
-        </div>
-        <div class="tool-link tool-link-muted" aria-disabled="true">
-          <span class="link-title">Heat: Pedal to the Metal</span>
-          <span class="link-note">Legends Module</span>
-          <span class="tool-icon i-material-symbols:readiness-score-outline" aria-label="Coming soon"></span>
-        </div>
-      </section>
+    <section class="mt-6" aria-labelledby="other-tools">
+      <h2 id="other-tools" class="section-label">Other games</h2>
+      <a class="tool-link" href="https://boardgamegeek.com/filepage/262016/" target="_blank">
+        <span class="link-title">Star Wars: Imperial Assault</span>
+        <span class="link-note">Campaign log & tracker</span>
+        <span class="tool-icon i-material-symbols:arrow-outward size-5" aria-hidden="true"></span>
+      </a>
+      <div class="tool-link tool-link-muted" aria-disabled="true">
+        <span class="link-title">The King's Dilemma</span>
+        <span class="link-note">Printable reference cards</span>
+        <span class="tool-icon i-material-symbols:crown-outline size-5" aria-label="Coming soon"></span>
+      </div>
+      <div class="tool-link tool-link-muted" aria-disabled="true">
+        <span class="link-title">Heat: Pedal to the Metal</span>
+        <span class="link-note">Legends Module</span>
+        <span class="tool-icon i-material-symbols:readiness-score-outline" aria-label="Coming soon"></span>
+      </div>
+    </section>
 
-      <section class="mt-6" aria-labelledby="links">
-        <h2 id="other-tools" class="section-label">Links</h2>
-        <a class="tool-link" href="https://github.com/nick1n/guidepost" target="_blank">
-          <span class="link-title">Repo</span>
-          <span class="link-note">Please report any issues</span>
-          <span class="tool-icon i-mdi:github size-5" aria-hidden="true"></span>
-        </a>
-        <a class="tool-link" href="/credits">
-          <span class="link-title">Credits</span>
-          <span class="link-note">Thank yous</span>
-          <span class="tool-icon i-material-symbols:favorite-outline size-5" aria-hidden="true"></span>
-        </a>
-      </section>
-    </nav>
-  </div>
+    <section class="mt-6" aria-labelledby="links">
+      <h2 id="links" class="section-label">Links</h2>
+      <a class="tool-link" href="https://github.com/nick1n/guidepost" target="_blank">
+        <span class="link-title">Repo</span>
+        <span class="link-note">Please report any issues</span>
+        <span class="tool-icon i-mdi:github size-5" aria-hidden="true"></span>
+      </a>
+      <a class="tool-link" href="/credits">
+        <span class="link-title">Credits</span>
+        <span class="link-note">Thank yous</span>
+        <span class="tool-icon i-material-symbols:favorite-outline size-5" aria-hidden="true"></span>
+      </a>
+    </section>
+  </nav>
 
   <div class="ambient" aria-hidden="true"></div>
 </main>
@@ -111,17 +106,31 @@
     scrollbar-gutter: auto;
   }
 
-  header {
+  .site-header {
+    margin-bottom: 2rem;
+    text-align: right;
     text-shadow:
       0 0 1px #000,
       0 0 2px #000,
       0 0 3px #000,
       0 0 2px #000;
+
+    @media (min-width: 46rem) {
+      position: fixed;
+      bottom: var(--page-padding);
+      left: var(--page-padding);
+      max-width: calc(100% - 31rem);
+      text-align: left;
+      margin-bottom: 0;
+    }
   }
 
   .landing {
     --glow-shift-x: 0px;
     --glow-shift-y: 0px;
+    --page-padding: clamp(1.25rem, 4vw, 3rem);
+
+    padding: var(--page-padding);
   }
 
   .landing::before {
@@ -135,7 +144,7 @@
   }
 
   .ambient {
-    position: absolute;
+    position: fixed;
     inset: -5%;
     z-index: -1;
     overflow: hidden;
