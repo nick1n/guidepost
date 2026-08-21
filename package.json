@@ -16,6 +16,7 @@
   },
   "devDependencies": {
     "@iconify-json/material-symbols": "^1.2.89",
+    "@iconify-json/mdi": "^1.2.3",
     "@sveltejs/adapter-auto": "next",
     "@sveltejs/kit": "next",
     "@sveltejs/vite-plugin-svelte": "^7.3.0",

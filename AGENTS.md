@@ -41,16 +41,28 @@ Prefer inferred TypeScript types when the compiler can determine them clearly. A
 
 Use Svelte 5 runes and callback props.
 
-Prefer event shorthand when a component has a single named handler. If an inline handler is more than one line, move it into the `<script>` block.
+Use event attribute shorthand whenever a local handler's name matches the attribute. Apply this to each binding independently, including bindings on Svelte special elements such as `<svelte:window>` and `<svelte:document>`. When a handler serves only one event binding, prefer naming it after the event attribute.
 
 ```svelte
-<button {onclick} />
+<script lang="ts">
+  function onclick() {
+    // ...
+  }
+
+  function onpointermove(event: PointerEvent) {
+    // ...
+  }
+</script>
+
+<svelte:window {onpointermove} />
+<button {onclick}>Save</button>
 ```
 
-Keep parameterized handlers explicit when they need an item value, event transformation, or propagation control:
+Keep the attribute explicit when passing arguments, transforming the event, controlling propagation, or using a shared or imported handler whose descriptive name is clearer. Do not rename shared or domain-specific handlers solely to force shorthand. Move an inline handler into the `<script>` block when it is more than one line.
 
 ```svelte
-onclick={(event) => selectVersion(event, version.v)}
+<button onclick={(event) => selectVersion(event, version.v)}>Select</button>
+<button onclick={saveCampaign}>Save</button>
 ```
 
 Avoid `$effect` when a derived value or direct event handler is sufficient. Effects are reserved for external synchronization, such as guest authentication or synchronizing InstantDB query results with the state store. Add a comment above every required effect explaining why it cannot be replaced.
@@ -70,6 +82,8 @@ Do not use `class:` directives for new code.
 ## Styling and icons
 
 Use UnoCSS utilities from `@unocss/preset-wind4`. Do not add Tailwind, `clsx`, `tailwind-merge`, or `cn` utilities.
+
+Write responsive styles mobile-first. Let mobile and tablet layouts share base styles, then add an occasional min-width override when a wider layout needs one. Treat UnoCSS prefixes such as `sm:`, `md:`, and `lg:` as media queries and use them with the same restraint. Do not add prefixes for small spacing or type changes that can share a base value or use fluid sizing. Prefer normal flow and values such as `clamp()`, `min()`, and `max()` before adding a breakpoint. Avoid max-width and viewport-height queries unless the layout cannot stay usable without one. Accessibility and capability queries such as `prefers-reduced-motion` are not layout breakpoints and should remain when needed.
 
 Use Material Symbols through UnoCSS icon classes:
 
