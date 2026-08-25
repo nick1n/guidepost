@@ -1,10 +1,10 @@
 {
-  "name": "Kingdom Death Collection Tracker",
-  "short_name": "KDM Tracker",
-  "start_url": "/",
+  "name": "Guidepost",
+  "short_name": "Guidepost",
+  "start_url": ".",
   "display": "standalone",
-  "background_color": "#151313",
-  "theme_color": "#151313",
-  "description": "Track your Kingdom Death collection.",
+  "background_color": "#151515",
+  "theme_color": "#151515",
+  "description": "some board game tools I wanted, left here for the next player",
   "icons": []
 }

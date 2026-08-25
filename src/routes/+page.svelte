@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { resolve } from "$app/paths";
+
   let landing: HTMLElement;
 
   function moveGlow(x: number, y: number) {
@@ -42,17 +44,17 @@
   <nav aria-label="Guidepost tools" class="nav-region relative z-10 ml-auto w-full max-w-96">
     <section aria-labelledby="kdm-tools">
       <h2 id="kdm-tools" class="section-label">Kingdom Death: Monster</h2>
-      <a class="tool-link tool-link-primary" href="/start">
+      <a class="tool-link tool-link-primary" href={resolve("/start")}>
         <span class="link-title">Quick start</span>
         <span class="link-note">Core game only - play prologue showdown</span>
         <span class="tool-icon i-material-symbols:play-circle-outline" aria-hidden="true"></span>
       </a>
-      <a class="tool-link" href="/track">
+      <a class="tool-link" href={resolve("/track")}>
         <span class="link-title">Collection</span>
         <span class="link-note">Keep track of all your content</span>
         <span class="tool-icon i-material-symbols:inventory-2-outline-sharp" aria-hidden="true"></span>
       </a>
-      <a class="tool-link" href="/hunt">
+      <a class="tool-link" href="./hunt">
         <span class="link-title">Hunt Events</span>
         <span class="link-note">All 100 random hunt events</span>
         <span class="tool-icon i-material-symbols:route-outline-sharp" aria-hidden="true"></span>
@@ -97,7 +99,7 @@
         <span class="link-note">Please report any issues</span>
         <span class="tool-icon i-mdi:github" aria-hidden="true"></span>
       </a>
-      <a class="tool-link tool-link-accent-red" href="/credits">
+      <a class="tool-link tool-link-accent-red" href={resolve("/credits")}>
         <span class="link-title">Credits</span>
         <span class="link-note">Thank yous</span>
         <span class="tool-icon i-material-symbols:favorite-outline" aria-hidden="true"></span>
