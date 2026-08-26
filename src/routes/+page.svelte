@@ -1,110 +1,167 @@
 <script lang="ts">
   import { resolve } from "$app/paths";
 
-  let landing: HTMLElement;
+  type Accents = "primary" | "muted" | "red";
 
+  type NavigationItem = {
+    title: string;
+    note: string;
+    icon: string;
+    href?: string;
+    accent?: Accents;
+  };
+
+  type NavigationSection = {
+    id: string;
+    label: string;
+    items: NavigationItem[];
+  };
+
+  const navigationSections: NavigationSection[] = [
+    {
+      id: "kdm",
+      label: "Kingdom Death: Monster",
+      items: [
+        {
+          title: "Quick start",
+          note: "Core game only - play prologue showdown",
+          icon: "i-material-symbols:play-circle-outline",
+          href: resolve("/start"),
+          accent: "primary",
+        },
+        {
+          title: "Collection",
+          note: "Keep track of all your content",
+          icon: "i-material-symbols:inventory-2-outline-sharp",
+          href: resolve("/track"),
+        },
+        {
+          title: "Hunt Events",
+          note: "All 100 random hunt events",
+          icon: "i-material-symbols:route-outline-sharp",
+          href: resolve("/hunt"),
+        },
+        {
+          title: "Reference Cards",
+          note: "2x2 gear sized cards",
+          icon: "i-material-symbols:cards-stack-outline-sharp",
+          href: "https://drive.google.com/drive/folders/1s0UYjqfaR6urHFEDEpu58-42G8GFrXAR?usp=sharing",
+        },
+      ],
+    },
+    {
+      id: "other",
+      label: "Other games",
+      items: [
+        {
+          title: "Star Wars: Imperial Assault",
+          note: "Campaign log & tracker",
+          icon: "i-game-icons:light-sabers",
+          href: "https://boardgamegeek.com/filepage/262016/",
+        },
+        {
+          title: "The Queen's Dilemma",
+          note: "3d prints: treasury insert and ideology upgrades",
+          icon: "i-material-symbols:chess-queen-outline",
+          href: "https://cults3d.com/en/3d-model/game/queens-dilemma-treasury-insert-ideology-markers",
+        },
+        {
+          title: "The King's Dilemma",
+          note: "Printable reference cards",
+          icon: "i-material-symbols:crown-outline",
+          accent: "muted",
+        },
+        {
+          title: "Heat: Pedal to the Metal",
+          note: "Legends Module",
+          icon: "i-material-symbols:readiness-score-outline",
+          accent: "muted",
+        },
+      ],
+    },
+    {
+      id: "links",
+      label: "Links",
+      items: [
+        {
+          title: "Repo",
+          note: "Please report any issues",
+          icon: "i-mdi:github",
+          href: "https://github.com/nick1n/guidepost",
+        },
+        {
+          title: "Credits",
+          note: "Thank yous",
+          icon: "i-material-symbols:favorite-outline",
+          href: resolve("/credits"),
+          accent: "red",
+        },
+      ],
+    },
+  ];
+
+  let landing: HTMLElement;
   function moveGlow(x: number, y: number) {
-    landing.style.setProperty("--glow-shift-x", `${x}px`);
-    landing.style.setProperty("--glow-shift-y", `${y}px`);
+    landing.style.setProperty("--glow-shift-x", x + "px");
+    landing.style.setProperty("--glow-shift-y", y + "px");
   }
 
   function onpointermove(event: PointerEvent) {
     const x = (event.clientX / window.innerWidth - 0.5) * 30;
     const y = (event.clientY / window.innerHeight - 0.5) * 22;
-
     moveGlow(x, y);
   }
 
   function ondeviceorientation(event: DeviceOrientationEvent) {
     const x = Math.max(-1, Math.min(1, (event.gamma ?? 0) / 35)) * 18;
     const y = Math.max(-1, Math.min(1, (event.beta ?? 45) / 45 - 1)) * 14;
-
     moveGlow(x, y);
   }
 </script>
 
-<svelte:head>
-  <title>Guidepost — Board game companions</title>
-  <meta
-    name="description"
-    content="Collection tracking, campaign tools, and play aids for Kingdom Death: Monster and other tabletop games."
-  />
-</svelte:head>
-
 <svelte:window {onpointermove} {ondeviceorientation} />
+
+{#snippet toolContent(item: NavigationItem)}
+  <span class="link-title">
+    {item.title}
+    {#if item.href?.startsWith("http")}
+      <span class="i-material-symbols:arrow-outward inline-block size-4" aria-hidden="true"></span>
+    {/if}
+  </span>
+  <span class="link-note">{item.note}</span>
+  <span class={["tool-icon", item.icon]} aria-hidden={item.href ? true : undefined} aria-label={item.href ? undefined : "Coming soon"}
+  ></span>
+{/snippet}
 
 <main bind:this={landing} class="landing text-foreground relative isolate min-h-dvh overflow-x-hidden">
   <header class="site-header relative z-10 leading-none">
-    <h1 class="site-title font-display text-[clamp(5rem,11vw,9rem)] font-bold tracking-tighter">Guidepost</h1>
-    <p class="site-subtitle text-muted-foreground text-shadow -mt-2 text-sm text-pretty">
+    <h1 class="site-title font-display text-[clamp(5rem,10vw,9rem)] font-bold tracking-tighter">Guidepost</h1>
+    <p class="site-subtitle text-muted-foreground text-shadow -mt-2 text-[.8rem] text-pretty">
       some board game tools <a href="https://github.com/nick1n" target="_blank">I</a> wanted, left here for the next player
     </p>
   </header>
 
-  <nav aria-label="Guidepost tools" class="nav-region relative z-10 ml-auto w-full max-w-96">
-    <section aria-labelledby="kdm-tools">
-      <h2 id="kdm-tools" class="section-label">Kingdom Death: Monster</h2>
-      <a class="tool-link tool-link-primary" href={resolve("/start")}>
-        <span class="link-title">Quick start</span>
-        <span class="link-note">Core game only - play prologue showdown</span>
-        <span class="tool-icon i-material-symbols:play-circle-outline" aria-hidden="true"></span>
-      </a>
-      <a class="tool-link" href={resolve("/track")}>
-        <span class="link-title">Collection</span>
-        <span class="link-note">Keep track of all your content</span>
-        <span class="tool-icon i-material-symbols:inventory-2-outline-sharp" aria-hidden="true"></span>
-      </a>
-      <a class="tool-link" href="./hunt">
-        <span class="link-title">Hunt Events</span>
-        <span class="link-note">All 100 random hunt events</span>
-        <span class="tool-icon i-material-symbols:route-outline-sharp" aria-hidden="true"></span>
-      </a>
-      <a class="tool-link" href="https://drive.google.com/drive/folders/1s0UYjqfaR6urHFEDEpu58-42G8GFrXAR?usp=sharing" target="_blank">
-        <span class="link-title">Reference Cards <span class="i-material-symbols:arrow-outward inline-block size-4"></span></span>
-        <span class="link-note">2x2 gear sized cards</span>
-        <span class="tool-icon i-material-symbols:cards-stack-outline-sharp" aria-hidden="true"></span>
-      </a>
-    </section>
-
-    <section class="mt-6" aria-labelledby="other-tools">
-      <h2 id="other-tools" class="section-label">Other games</h2>
-      <a class="tool-link" href="https://boardgamegeek.com/filepage/262016/" target="_blank">
-        <span class="link-title"
-          >Star Wars: Imperial Assault <span class="i-material-symbols:arrow-outward inline-block size-4"></span></span
-        >
-        <span class="link-note">Campaign log & tracker</span>
-        <span class="tool-icon i-game-icons:light-sabers" aria-hidden="true"></span>
-      </a>
-      <a class="tool-link" href="https://cults3d.com/en/3d-model/game/queens-dilemma-treasury-insert-ideology-markers" target="_blank">
-        <span class="link-title">The Queen's Dilemma <span class="i-material-symbols:arrow-outward inline-block size-4"></span></span>
-        <span class="link-note">3d prints: treasury insert and ideology upgrades</span>
-        <span class="tool-icon i-material-symbols:chess-queen-outline" aria-hidden="true"></span>
-      </a>
-      <div class="tool-link tool-link-muted" aria-disabled="true">
-        <span class="link-title">The King's Dilemma</span>
-        <span class="link-note">Printable reference cards</span>
-        <span class="tool-icon i-material-symbols:crown-outline" aria-label="Coming soon"></span>
-      </div>
-      <div class="tool-link tool-link-muted" aria-disabled="true">
-        <span class="link-title">Heat: Pedal to the Metal</span>
-        <span class="link-note">Legends Module</span>
-        <span class="tool-icon i-material-symbols:readiness-score-outline" aria-label="Coming soon"></span>
-      </div>
-    </section>
-
-    <section class="mt-6" aria-labelledby="links">
-      <h2 id="links" class="section-label">Links</h2>
-      <a class="tool-link" href="https://github.com/nick1n/guidepost" target="_blank">
-        <span class="link-title">Repo <span class="i-material-symbols:arrow-outward inline-block size-4"></span></span>
-        <span class="link-note">Please report any issues</span>
-        <span class="tool-icon i-mdi:github" aria-hidden="true"></span>
-      </a>
-      <a class="tool-link tool-link-accent-red" href={resolve("/credits")}>
-        <span class="link-title">Credits</span>
-        <span class="link-note">Thank yous</span>
-        <span class="tool-icon i-material-symbols:favorite-outline" aria-hidden="true"></span>
-      </a>
-    </section>
+  <nav aria-label="Guidepost tools" class="nav-region relative z-10 ml-auto flex w-full max-w-96 flex-col gap-6">
+    {#each navigationSections as { id, label, items } (id)}
+      <section aria-labelledby={id}>
+        <h2 {id} class="section-label">{label}</h2>
+        {#each items as item (item.title)}
+          {#if item.href}
+            <a
+              class={["tool-link", item.accent && `accent-${item.accent}`]}
+              href={item.href}
+              target={item.href.startsWith("http") ? "_blank" : undefined}
+            >
+              {@render toolContent(item)}
+            </a>
+          {:else}
+            <div class={["tool-link", item.accent && `accent-${item.accent}`]} aria-disabled="true">
+              {@render toolContent(item)}
+            </div>
+          {/if}
+        {/each}
+      </section>
+    {/each}
   </nav>
 
   <div class="ambient" aria-hidden="true"></div>
@@ -232,6 +289,9 @@
   }
 
   .tool-link {
+    --link-accent: var(--accent);
+    --link-accent-hover: var(--accent);
+
     display: grid;
     min-height: clamp(3.15rem, 2.8rem + 1vw, 3.7rem);
     grid-template-areas:
@@ -252,30 +312,37 @@
   .tool-link:hover,
   .tool-link:focus-visible {
     padding-right: 0.4rem;
-    border-color: color-mix(in srgb, var(--accent) 65%, transparent);
-    color: var(--accent);
+    border-color: color-mix(in srgb, var(--link-accent) 65%, transparent);
+    color: var(--link-accent-hover);
     outline: none;
   }
 
-  .tool-link-primary {
-    color: var(--accent-green);
+  .accent-primary {
+    --link-accent: var(--accent-green);
+    --link-accent-hover: color-mix(in oklch, var(--accent-green) 80%, var(--foreground));
+
+    color: var(--link-accent);
   }
 
-  .tool-link-primary:hover,
-  .tool-link-primary:focus-visible {
-    border-color: color-mix(in srgb, var(--accent-green) 70%, transparent);
-    color: color-mix(in oklch, var(--accent-green) 80%, var(--foreground));
+  .accent-red {
+    --link-accent: var(--accent-red);
+    --link-accent-hover: color-mix(in oklch, var(--accent-red) 80%, var(--foreground));
+
+    color: var(--link-accent);
   }
 
-  .tool-link-muted {
-    color: color-mix(in srgb, var(--foreground) 50%, transparent);
+  .accent-muted {
+    --link-accent: color-mix(in srgb, var(--foreground) 50%, transparent);
+    --link-accent-hover: var(--link-accent);
+
+    color: var(--link-accent);
     cursor: default;
   }
 
-  .tool-link-muted:hover {
+  .accent-muted:hover {
     padding-right: 0;
     border-color: color-mix(in srgb, var(--foreground) 12%, transparent);
-    color: color-mix(in srgb, var(--foreground) 50%, transparent);
+    color: var(--link-accent);
   }
 
   .link-title {
@@ -290,7 +357,7 @@
     grid-area: note;
     margin-top: 0.2rem;
     color: var(--muted-foreground);
-    font-size: 0.7rem;
+    font-size: 0.8rem;
     line-height: 1.25;
   }
 
