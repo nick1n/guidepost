@@ -80,36 +80,61 @@ Avoid `$effect` when a derived value or direct event handler is sufficient. Effe
 Prefer Svelte class arrays for conditional classes over template strings:
 
 ```svelte
-<div class={["base-class", active && "text-accent"]}></div>
+<div class={["item", active && "is-active"]}></div>
 ```
 
 Do not use `class:` directives for new code.
 
 ```svelte
-<!-- Avoid --><div class={`rounded-lg ${active ? "bg-accent" : "bg-panel"}`}></div><div class:active></div>
+<!-- Avoid --><div class={`item ${active ? "is-active" : ""}`}></div><div class:active></div>
 ```
 
 ## Styling and icons
 
-Use UnoCSS utilities from `@unocss/preset-wind4`. Do not add Tailwind, `clsx`, `tailwind-merge`, or `cn` utilities.
+Prefer standard, component-scoped CSS in `<style>` blocks for layout, spacing, typography, and interaction. Do not add new Tailwind-style UnoCSS utilities for those concerns. Migrate existing utility-heavy components incrementally when they are touched. Keep UnoCSS for icon classes while the current icon integration remains. Do not add Tailwind, `clsx`, `tailwind-merge`, or `cn` utilities.
 
-Write responsive styles mobile-first. Let mobile and tablet layouts share base styles, then add an occasional min-width override when a wider layout needs one. Treat UnoCSS prefixes such as `sm:`, `md:`, and `lg:` as media queries and use them with the same restraint. Do not add prefixes for small spacing or type changes that can share a base value or use fluid sizing. Prefer normal flow and values such as `clamp()`, `min()`, and `max()` before adding a breakpoint. Avoid max-width and viewport-height queries unless the layout cannot stay usable without one. Accessibility and capability queries such as `prefers-reduced-motion` are not layout breakpoints and should remain when needed.
+Keep markup plain and semantic:
+
+- In a scoped component, style a unique semantic element with a tag selector instead of giving it a redundant class. Prefer nested selectors such as `> header`, `h1`, `nav`, and `h2` when the structure makes their purpose clear.
+- Keep a role class when one style spans different tags, when repeated elements of the same tag need distinct roles, or when a stable hook is clearer than the DOM structure. Do not replace a useful class with a positional selector such as `:nth-child()`.
+- Use short class names that describe purpose, usually one word or two words joined by a hyphen. Avoid long utility strings and elaborate naming schemes.
+- Prefer no more than two classes on an element: one role and, when needed, one state, variant, or generated icon class.
+
+Use native CSS nesting, pseudo-classes such as `:is()` and `:where()`, and logical properties such as `inline-size`, `block-size`, and `margin-inline`. Keep selectors shallow enough to understand without tracing the entire DOM.
+
+Use custom properties as a small design-token system:
+
+- Put shared colors, type sizes, font weights, line heights, border sizes, radii, and motion values in `src/app.css`.
+- Put page- or component-specific layout values and complex effects on that component's root selector.
+- Give tokens names based on purpose. Remove unused or duplicate tokens, and do not merge unrelated tokens merely because their current values match.
+- Use variables for hardcoded design values that are reused or likely to be tuned. Structural values such as `0`, `100%`, `auto`, grid ratios, and media-query thresholds may remain literal when a variable would obscure the rule or cannot be used by CSS.
+- Open Props may be used as a naming and scale reference. Do not add the full dependency unless the project needs a substantial portion of it.
+
+Write responsive styles mobile-first. Let mobile and tablet layouts share base styles, then add an occasional min-width override when a wider layout needs one. Do not add breakpoints for small spacing or type changes that can share a base value or use fluid sizing. Prefer normal flow and values such as `clamp()`, `min()`, and `max()` before adding a breakpoint. Avoid max-width and viewport-height queries unless the layout cannot stay usable without one. Accessibility and capability queries such as `prefers-reduced-motion` are not layout breakpoints and should remain when needed.
 
 Use Material Symbols through UnoCSS icon classes:
 
 ```svelte
-<span class="i-material-symbols:search inline-block size-4" aria-hidden="true"></span>
+<span class="search-icon i-material-symbols:search" aria-hidden="true"></span>
+
+<style>
+  .search-icon {
+    display: inline-block;
+    inline-size: 1rem;
+    block-size: 1rem;
+  }
+</style>
 ```
 
 For inline icons, use `inline-block` when width and height need to apply. Give icons an explicit text color when they sit on a contrasting background.
 
-Use the UnoCSS safelist in `uno.config.ts` for utilities that must be present in production but cannot reliably be extracted. Verify generated production CSS if a utility appears to work only in development.
+Use the UnoCSS safelist in `uno.config.ts` for icon classes that must be present in production but cannot reliably be extracted. Verify generated production CSS if an icon appears to work only in development.
 
 ## Theme
 
 Global theme tokens are defined in `src/app.css` and exposed to UnoCSS through `uno.config.ts`. Treat those files as the source of truth. Keep each custom property declared once.
 
-Use semantic UnoCSS color utilities or `var(--token)` instead of hardcoding theme colors in components.
+Use `var(--token)` instead of hardcoding theme colors in components. When maintaining existing utility markup, use semantic UnoCSS color utilities rather than palette literals.
 
 The core palette is:
 

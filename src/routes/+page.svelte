@@ -122,40 +122,40 @@
 <svelte:window {onpointermove} {ondeviceorientation} />
 
 {#snippet toolContent(item: NavigationItem)}
-  <span class="link-title">
+  <span class="tool-title">
     {item.title}
     {#if item.href?.startsWith("http")}
-      <span class="i-material-symbols:arrow-outward inline-block size-4" aria-hidden="true"></span>
+      <span class="i-material-symbols:arrow-outward" aria-hidden="true"></span>
     {/if}
   </span>
-  <span class="link-note">{item.note}</span>
+  <span class="tool-note">{item.note}</span>
   <span class={["tool-icon", item.icon]} aria-hidden={item.href ? true : undefined} aria-label={item.href ? undefined : "Coming soon"}
   ></span>
 {/snippet}
 
-<main bind:this={landing} class="landing text-foreground relative isolate min-h-dvh overflow-x-hidden">
-  <header class="site-header relative z-10 leading-none">
-    <h1 class="site-title font-display text-[clamp(5rem,10vw,9rem)] font-bold tracking-tighter">Guidepost</h1>
-    <p class="site-subtitle text-muted-foreground text-shadow -mt-2 text-[.8rem] text-pretty">
+<main bind:this={landing} class="landing">
+  <header>
+    <h1>Guidepost</h1>
+    <p>
       some board game tools <a href="https://github.com/nick1n" target="_blank">I</a> wanted, left here for the next player
     </p>
   </header>
 
-  <nav aria-label="Guidepost tools" class="nav-region relative z-10 ml-auto flex w-full max-w-96 flex-col gap-6">
+  <nav aria-label="Guidepost tools">
     {#each navigationSections as { id, label, items } (id)}
       <section aria-labelledby={id}>
-        <h2 {id} class="section-label">{label}</h2>
+        <h2 {id}>{label}</h2>
         {#each items as item (item.title)}
           {#if item.href}
             <a
-              class={["tool-link", item.accent && `accent-${item.accent}`]}
+              class={["tool", item.accent && `accent-${item.accent}`]}
               href={item.href}
               target={item.href.startsWith("http") ? "_blank" : undefined}
             >
               {@render toolContent(item)}
             </a>
           {:else}
-            <div class={["tool-link", item.accent && `accent-${item.accent}`]} aria-disabled="true">
+            <div class={["tool", item.accent && `accent-${item.accent}`]} aria-disabled="true">
               {@render toolContent(item)}
             </div>
           {/if}
@@ -164,7 +164,7 @@
     {/each}
   </nav>
 
-  <div class="ambient" aria-hidden="true"></div>
+  <div class="glow" aria-hidden="true"></div>
 </main>
 
 <style>
@@ -172,201 +172,256 @@
     scrollbar-gutter: auto;
   }
 
-  .site-header {
-    inline-size: fit-content;
-    max-inline-size: 100%;
-    margin-bottom: 2rem;
-    margin-inline-start: auto;
-    text-align: right;
-    text-shadow:
-      0 0 1px #000,
-      0 0 2px #000,
-      0 0 3px #000,
-      0 0 2px #000;
-
-    @media (min-width: 46rem) {
-      position: fixed;
-      bottom: var(--page-padding);
-      left: var(--page-padding);
-      max-width: calc(100% - 31rem);
-      text-align: left;
-      margin-bottom: 0;
-      margin-inline-start: 0;
-    }
-  }
-
-  .site-title {
-    margin: 0;
-  }
-
-  .site-subtitle {
-    contain: inline-size;
-    inline-size: 100%;
-  }
-
   .landing {
     --glow-shift-x: 0px;
     --glow-shift-y: 0px;
-    --page-padding: clamp(1.25rem, 4vw, 3rem);
-
-    padding: var(--page-padding);
-  }
-
-  .landing::before {
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    background:
+    --page-space: clamp(1.25rem, 4vw, 3rem);
+    --header-space: 2rem;
+    --header-clearance: 31rem;
+    --tagline-offset: -0.5rem;
+    --nav-width: 24rem;
+    --nav-gap: 1.5rem;
+    --tool-height: clamp(3.15rem, 2.8rem + 1vw, 3.7rem);
+    --tool-gap: 1rem;
+    --note-space: 2px;
+    --hover-shift: 0.4rem;
+    --icon-size: 1.5rem;
+    --external-size: 1rem;
+    --content-layer: 1;
+    --backdrop-layer: -1;
+    --line-color: color-mix(in srgb, var(--foreground) 12%, transparent);
+    --primary-hover: color-mix(in oklch, var(--accent-green) 80%, var(--foreground));
+    --red-hover: color-mix(in oklch, var(--accent-red) 80%, var(--foreground));
+    --accent-muted: color-mix(in srgb, var(--foreground) 50%, transparent);
+    --title-shadow: 0 0 1px var(--background), 0 0 2px var(--background), 0 0 3px var(--background), 0 0 2px var(--background);
+    --glow-cycle: 32s;
+    --flicker-cycle: 13s;
+    --large-glow: min(72rem, 125vw);
+    --small-glow: min(36rem, 62vw);
+    --page-sheen:
       linear-gradient(115deg in oklch, transparent 20%, color-mix(in srgb, var(--foreground) 1.8%, transparent) 50%, transparent 70%),
       radial-gradient(circle at 80% 15% in oklch, color-mix(in srgb, var(--foreground) 2.5%, transparent), transparent 32%);
-    content: "";
-  }
-
-  .ambient {
-    position: fixed;
-    inset: 0;
-    z-index: -1;
-    overflow: hidden;
-    pointer-events: none;
-    transform: translate3d(var(--glow-shift-x), var(--glow-shift-y), 0);
-    will-change: transform;
-
-    @media (min-width: 46rem) {
-      inset: -5%;
-    }
-  }
-
-  .ambient::before,
-  .ambient::after {
-    position: absolute;
-    bottom: -5%;
-    left: -10%;
-    border-radius: 9999px;
-    content: "";
-    transform-origin: 42% 70%;
-    aspect-ratio: 1;
-    animation: glow-pulse 32s ease-in-out infinite;
-
-    @media (min-width: 46rem) {
-      bottom: -22%;
-    }
-  }
-
-  .ambient::before {
-    width: min(72rem, 125vw);
-    background: radial-gradient(
+    --large-light: radial-gradient(
       ellipse at center in oklch,
       color-mix(in oklch, var(--accent-red) 22%, transparent) 0%,
       color-mix(in oklch, var(--accent-red) 10%, transparent) 30%,
       transparent 70%
     );
-  }
-
-  .ambient::after {
-    bottom: 4%;
-    left: 3%;
-    width: min(36rem, 62vw);
-    background: radial-gradient(
+    --small-light: radial-gradient(
       ellipse at center in oklch,
       color-mix(in oklch, var(--secondary) 28%, transparent) 0%,
       color-mix(in oklch, var(--accent-red) 8%, transparent) 42%,
       transparent 72%
     );
-    animation:
-      glow-pulse 32s ease-in-out infinite 16s,
-      flicker 13s linear infinite;
 
-    @media (min-width: 46rem) {
-      bottom: -15%;
-    }
-  }
-
-  .section-label {
-    margin-bottom: clamp(0.4rem, 1vw, 0.7rem);
-    color: var(--muted-foreground);
-    font-size: 0.7rem;
-    border-bottom: 2px solid color-mix(in srgb, var(--foreground) 12%, transparent);
-  }
-
-  .tool-link {
-    --link-accent: var(--accent);
-    --link-accent-hover: var(--accent);
-
-    display: grid;
-    min-height: clamp(3.15rem, 2.8rem + 1vw, 3.7rem);
-    grid-template-areas:
-      "title icon"
-      "note icon";
-    grid-template-columns: minmax(0, 1fr) auto;
-    align-content: center;
-    column-gap: 1rem;
-    border-bottom: 2px solid color-mix(in srgb, var(--foreground) 12%, transparent);
+    position: relative;
+    isolation: isolate;
+    min-block-size: 100dvb;
+    padding: var(--page-space);
+    overflow-x: clip;
     color: var(--foreground);
-    text-decoration: none;
-    transition:
-      color 180ms ease,
-      border-color 180ms ease,
-      padding 180ms ease;
-  }
+    font-family: var(--font-sans);
 
-  .tool-link:hover,
-  .tool-link:focus-visible {
-    padding-right: 0.4rem;
-    border-color: color-mix(in srgb, var(--link-accent) 65%, transparent);
-    color: var(--link-accent-hover);
-    outline: none;
-  }
+    &::before {
+      position: absolute;
+      inset: 0;
+      z-index: var(--backdrop-layer);
+      background: var(--page-sheen);
+      content: "";
+    }
 
-  .accent-primary {
-    --link-accent: var(--accent-green);
-    --link-accent-hover: color-mix(in oklch, var(--accent-green) 80%, var(--foreground));
+    > header {
+      position: relative;
+      z-index: var(--content-layer);
+      inline-size: fit-content;
+      max-inline-size: 100%;
+      margin-block-end: var(--header-space);
+      margin-inline-start: auto;
+      line-height: var(--line-height-none);
+      text-align: right;
+      text-shadow: var(--title-shadow);
 
-    color: var(--link-accent);
-  }
+      @media (width >= 46rem) {
+        position: fixed;
+        inset-block-end: var(--page-space);
+        inset-inline-start: var(--page-space);
+        max-inline-size: calc(100% - var(--header-clearance));
+        margin-block-end: 0;
+        margin-inline-start: 0;
+        text-align: left;
+      }
 
-  .accent-red {
-    --link-accent: var(--accent-red);
-    --link-accent-hover: color-mix(in oklch, var(--accent-red) 80%, var(--foreground));
+      h1 {
+        margin: 0;
+        font-family: var(--font-display);
+        font-size: var(--text-hero);
+        font-weight: var(--font-bold);
+        letter-spacing: var(--letter-spacing-tight);
+      }
 
-    color: var(--link-accent);
-  }
+      p {
+        contain: inline-size;
+        inline-size: 100%;
+        margin-block-start: var(--tagline-offset);
+        color: var(--muted-foreground);
+        font-size: var(--text-sm);
+        text-wrap: pretty;
+        text-align: center;
+      }
+    }
 
-  .accent-muted {
-    --link-accent: color-mix(in srgb, var(--foreground) 50%, transparent);
-    --link-accent-hover: var(--link-accent);
+    > nav {
+      position: relative;
+      z-index: var(--content-layer);
+      display: flex;
+      flex-direction: column;
+      gap: var(--nav-gap);
+      inline-size: 100%;
+      max-inline-size: var(--nav-width);
+      margin-inline-start: auto;
 
-    color: var(--link-accent);
-    cursor: default;
-  }
+      h2 {
+        border-block-end: var(--border-size) solid var(--line-color);
+        color: var(--muted-foreground);
+        font-size: var(--text-sm);
+      }
+    }
 
-  .accent-muted:hover {
-    padding-right: 0;
-    border-color: color-mix(in srgb, var(--foreground) 12%, transparent);
-    color: var(--link-accent);
-  }
+    .tool {
+      --link-accent: var(--accent);
+      --link-accent-hover: var(--accent);
+      --line-hover: color-mix(in srgb, var(--link-accent) 65%, transparent);
 
-  .link-title {
-    grid-area: title;
-    font-family: var(--font-display, "Barlow Condensed", "Inter", sans-serif);
-    font-size: 1.2rem;
-    font-weight: 650;
-    line-height: 1.1;
-  }
+      display: grid;
+      min-block-size: var(--tool-height);
+      grid-template-areas:
+        "title icon"
+        "note icon";
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-content: center;
+      column-gap: var(--tool-gap);
+      border-block-end: var(--border-size) solid var(--line-color);
+      color: var(--foreground);
+      text-decoration: none;
+      transition:
+        color var(--duration-fast) var(--ease-standard),
+        border-color var(--duration-fast) var(--ease-standard),
+        padding var(--duration-fast) var(--ease-standard);
 
-  .link-note {
-    grid-area: note;
-    margin-top: 0.2rem;
-    color: var(--muted-foreground);
-    font-size: 0.8rem;
-    line-height: 1.25;
-  }
+      &:is(:hover, :focus-visible) {
+        padding-inline-end: var(--hover-shift);
+        border-color: var(--line-hover);
+        color: var(--link-accent-hover);
+        outline: none;
+      }
 
-  .tool-icon {
-    grid-area: icon;
-    align-self: center;
-    justify-self: end;
-    width: 24px;
-    height: 24px;
+      &.accent-primary {
+        --link-accent: var(--accent-green);
+        --link-accent-hover: var(--primary-hover);
+
+        color: var(--link-accent);
+      }
+
+      &.accent-red {
+        --link-accent: var(--accent-red);
+        --link-accent-hover: var(--red-hover);
+
+        color: var(--link-accent);
+      }
+
+      &.accent-muted {
+        --link-accent: var(--accent-muted);
+        --link-accent-hover: var(--link-accent);
+
+        color: var(--link-accent);
+
+        &:hover {
+          padding-inline-end: 0;
+          border-color: var(--line-color);
+          color: var(--link-accent);
+        }
+      }
+    }
+
+    .tool-title {
+      grid-area: title;
+      font-family: var(--font-display);
+      font-size: var(--text-lg);
+      font-weight: var(--font-semibold);
+      line-height: var(--line-height-tight);
+
+      > span {
+        display: inline-block;
+        inline-size: var(--external-size);
+        block-size: var(--external-size);
+      }
+    }
+
+    .tool-note {
+      grid-area: note;
+      margin-block-start: var(--note-space);
+      color: var(--muted-foreground);
+      font-size: var(--text-sm);
+      line-height: var(--line-height-snug);
+    }
+
+    .tool-icon {
+      display: inline-block;
+      grid-area: icon;
+      align-self: center;
+      justify-self: end;
+      inline-size: var(--icon-size);
+      block-size: var(--icon-size);
+    }
+
+    .glow {
+      position: fixed;
+      inset: 0;
+      z-index: var(--backdrop-layer);
+      overflow: hidden;
+      pointer-events: none;
+      transform: translate3d(var(--glow-shift-x), var(--glow-shift-y), 0);
+      will-change: transform;
+
+      @media (width >= 46rem) {
+        inset: -5%;
+      }
+
+      &::before,
+      &::after {
+        position: absolute;
+        bottom: -5%;
+        left: -10%;
+        aspect-ratio: 1;
+        border-radius: var(--radius-full);
+        content: "";
+        transform-origin: 42% 70%;
+        animation: glow-pulse var(--glow-cycle) ease-in-out infinite;
+
+        @media (width >= 46rem) {
+          bottom: -22%;
+        }
+      }
+
+      &::before {
+        inline-size: var(--large-glow);
+        background: var(--large-light);
+      }
+
+      &::after {
+        bottom: 4%;
+        left: 3%;
+        inline-size: var(--small-glow);
+        background: var(--small-light);
+        animation:
+          glow-pulse var(--glow-cycle) ease-in-out infinite calc(var(--glow-cycle) / 2),
+          flicker var(--flicker-cycle) linear infinite;
+
+        @media (width >= 46rem) {
+          bottom: -15%;
+        }
+      }
+    }
   }
 
   @keyframes glow-pulse {
@@ -377,29 +432,6 @@
 
     50% {
       transform: scale(1.2);
-    }
-  }
-
-  @keyframes firelight {
-    0%,
-    57%,
-    59%,
-    61%,
-    64%,
-    100% {
-      opacity: 0.7;
-    }
-
-    58% {
-      opacity: 0.2;
-    }
-
-    60% {
-      opacity: 0.9;
-    }
-
-    62% {
-      opacity: 0.4;
     }
   }
 
@@ -425,14 +457,14 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .ambient {
+    .glow {
       transform: none;
       transition: none;
-    }
 
-    .ambient::before,
-    .ambient::after {
-      animation: none;
+      &::before,
+      &::after {
+        animation: none;
+      }
     }
   }
 </style>

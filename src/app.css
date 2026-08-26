@@ -35,6 +35,24 @@
   --accent-green: #4ae111;
   --accent-red: #e14011;
   --accent-purple: #a811e1;
+
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-display: "Barlow Condensed", "Inter", sans-serif;
+
+  --text-sm: 0.8rem;
+  --text-lg: 1.2rem;
+  --text-hero: clamp(5rem, 10vw, 9rem);
+  --font-semibold: 600;
+  --font-bold: 700;
+
+  --line-height-none: 1;
+  --line-height-tight: 1.1;
+  --line-height-snug: 1.25;
+  --letter-spacing-tight: -0.05em;
+  --border-size: 2px;
+  --radius-full: 9999px;
+  --duration-fast: 180ms;
+  --ease-standard: ease;
 }
 
 * {
