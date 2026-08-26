@@ -2,7 +2,7 @@
   import OwnedCheckbox from "./OwnedCheckbox.svelte";
   import WishlistButton from "./WishlistButton.svelte";
   import { formatPrice, storeUrl } from "#lib/kdm-data.ts";
-  import type { DiceSet } from "#lib/types.ts";
+  import type { DiceSet } from "#lib/types/index.ts";
   import { collection } from "#lib/state/collection.svelte.ts";
 
   type Props = {

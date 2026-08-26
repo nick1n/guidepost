@@ -1,4 +1,4 @@
-import type { CollectionState, EntryState } from "#lib/types.ts";
+import type { CollectionState, EntryState } from "#lib/types/index.ts";
 
 export interface ContentStateStore {
   load(): CollectionState;

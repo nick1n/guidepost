@@ -8,7 +8,7 @@
   import { effectivePrice, formatPrice, nameById, storeUrl } from "#lib/kdm-data.ts";
   import { collection } from "#lib/state/collection.svelte.ts";
   import { getFilterState } from "#lib/state/filters.svelte.ts";
-  import type { ContentItem } from "#lib/types.ts";
+  import type { ContentItem } from "#lib/types/index.ts";
 
   type Props = {
     item: ContentItem;

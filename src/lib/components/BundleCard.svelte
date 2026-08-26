@@ -4,7 +4,7 @@
   import Pill from "./Pill.svelte";
   import TagRail from "./TagRail.svelte";
   import { formatPrice, nameById, storeUrl } from "#lib/kdm-data.ts";
-  import type { Bundle } from "#lib/types.ts";
+  import type { Bundle } from "#lib/types/index.ts";
   import { collection } from "#lib/state/collection.svelte.ts";
 
   type Props = {

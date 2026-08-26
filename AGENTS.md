@@ -143,7 +143,7 @@ Do not add `id` fields back into catalog objects. Update `src/lib/schema.json` w
 
 ## State and persistence
 
-`ContentState` owns collection commands. `ContentStateStore` and `LocalGuestStore` are defined in `src/lib/state/stores.ts`; collection-state data types are defined in `src/lib/types.ts`.
+`ContentState` owns collection commands. `ContentStateStore` and `LocalGuestStore` are defined in `src/lib/state/stores.ts`; collection-state data types are defined in `src/lib/types`.
 
 ```text
 ContentState -> ContentStateStore -> LocalGuestStore

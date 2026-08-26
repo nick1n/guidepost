@@ -1,5 +1,5 @@
 import catalog from "./kdm-data.json";
-import type { Bundle, Catalog, ContentItem, DiceSet, Filters } from "#lib/types.ts";
+import type { Bundle, Catalog, ContentItem, DiceSet, Filters } from "#lib/types/index.ts";
 
 export const STORE_BASE = "https://shop.kingdomdeath.com";
 

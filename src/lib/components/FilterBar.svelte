@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Filters } from "#lib/types.ts";
+  import type { Filters } from "#lib/types/index.ts";
   import { getFilterState } from "#lib/state/filters.svelte.ts";
   import Segmented from "./Segmented.svelte";
 

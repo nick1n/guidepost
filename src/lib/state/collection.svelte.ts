@@ -1,5 +1,5 @@
 import type { ContentStateStore } from "./stores";
-import type { CollectionState, EntryState } from "#lib/types.ts";
+import type { CollectionState, EntryState } from "#lib/types/index.ts";
 
 class ContentState {
   state = $state<CollectionState>({});

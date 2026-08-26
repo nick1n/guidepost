@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Edition } from "#lib/types.ts";
+  import type { Edition } from "#lib/types/index.ts";
 
   type Props = {
     editions: Edition[];

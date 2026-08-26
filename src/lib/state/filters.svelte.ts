@@ -1,6 +1,6 @@
 import { createContext } from "svelte";
 import { defaultFilters } from "#lib/kdm-data.ts";
-import type { Filters, KindFilter, StatusFilter } from "#lib/types.ts";
+import type { Filters, KindFilter, StatusFilter } from "#lib/types/index.ts";
 
 function createDefaultFilters(): Filters {
   return { ...defaultFilters, tags: [...defaultFilters.tags] };
