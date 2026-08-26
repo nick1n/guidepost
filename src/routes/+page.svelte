@@ -62,7 +62,7 @@
       <a class="tool-link" href="https://drive.google.com/drive/folders/1s0UYjqfaR6urHFEDEpu58-42G8GFrXAR?usp=sharing" target="_blank">
         <span class="link-title">Reference Cards <span class="i-material-symbols:arrow-outward inline-block size-4"></span></span>
         <span class="link-note">2x2 gear sized cards</span>
-        <span class="tool-icon i-material-symbols:arrow-outward" aria-hidden="true"></span>
+        <span class="tool-icon i-material-symbols:cards-stack-outline-sharp" aria-hidden="true"></span>
       </a>
     </section>
 

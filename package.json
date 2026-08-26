@@ -12,9 +12,6 @@
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },
-  "dependencies": {
-    "@instantdb/svelte": "^1.0.65"
-  },
   "devDependencies": {
     "@iconify-json/game-icons": "^1.2.4",
     "@iconify-json/material-symbols": "^1.2.89",
@@ -22,6 +19,7 @@
     "@sveltejs/adapter-static": "4.0.0-next.4",
     "@sveltejs/kit": "next",
     "@sveltejs/vite-plugin-svelte": "^7.3.0",
+    "@types/node": "^24.13.3",
     "@typescript/native": "npm:typescript@^7.0.2",
     "@unocss/preset-wind4": "^66.7.5",
     "prettier": "^3.9.6",

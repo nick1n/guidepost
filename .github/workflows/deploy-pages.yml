@@ -31,18 +31,12 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Verify InstantDB configuration
-        env:
-          PUBLIC_INSTANT_APP_ID: ${{ vars.PUBLIC_INSTANT_APP_ID }}
-        run: test -n "$PUBLIC_INSTANT_APP_ID" || (echo "::error::Set the PUBLIC_INSTANT_APP_ID repository variable before deploying." && exit 1)
-
       - name: Check
         run: pnpm check
 
       - name: Build
         env:
           BASE_PATH: /${{ github.event.repository.name }}
-          PUBLIC_INSTANT_APP_ID: ${{ vars.PUBLIC_INSTANT_APP_ID }}
         run: pnpm build
 
       - name: Configure GitHub Pages

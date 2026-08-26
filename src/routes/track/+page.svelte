@@ -1,7 +1,6 @@
 <script lang="ts">
   import { bundleTags, getCollectionStats, getVisibleCatalog } from "#lib/catalog-view.ts";
   import BundleCard from "#lib/components/BundleCard.svelte";
-  import CollectionSession from "#lib/components/CollectionSession.svelte";
   import CollectionStats from "#lib/components/CollectionStats.svelte";
   import ContentCard from "#lib/components/ContentCard.svelte";
   import DiceCard from "#lib/components/DiceCard.svelte";
@@ -32,8 +31,6 @@
   });
   const resultCount = $derived(tabCounts[tab]);
 </script>
-
-<CollectionSession />
 
 <main class="mx-auto flex min-h-screen w-full max-w-2xl flex-col gap-2 px-3 pt-4 pb-16">
   <header>

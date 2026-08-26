@@ -2,9 +2,9 @@
 
 ## Project overview
 
-Guidepost is a personal hub for board game companion tools. It is a SvelteKit 3 application using Svelte 5 runes, UnoCSS, Material Symbols, and InstantDB.
+Guidepost is a personal hub for board game companion tools. It is a SvelteKit 3 application using Svelte 5 runes, UnoCSS, and Material Symbols.
 
-Kingdom Death: Monster is currently the largest set of tools. Its catalog is data-driven, and collection state supports local guest persistence plus authenticated cloud persistence. Guidepost may also link to tools and resources for other board games.
+Kingdom Death: Monster is currently the largest set of tools. Its catalog is data-driven, and collection state is stored locally in the browser. Guidepost may also link to tools and resources for other board games.
 
 ## Landing page
 
@@ -19,8 +19,6 @@ Preserve the full-bleed warm glow, subtle pointer or device-orientation movement
 ## Required skills
 
 - For creating, editing, reviewing, or debugging `.svelte`, `.svelte.ts`, or `.svelte.js` files, always use `svelte-code-writer` and `svelte-core-bestpractices`.
-- For InstantDB initialization, auth, queries, transactions, schema, permissions, or persistence adapters, always use `instantdb`.
-- When a change involves both Svelte and InstantDB, use all applicable skills.
 
 ## Commands
 
@@ -77,7 +75,7 @@ Keep the attribute explicit when passing arguments, transforming the event, cont
 <button onclick={saveCampaign}>Save</button>
 ```
 
-Avoid `$effect` when a derived value or direct event handler is sufficient. Effects are reserved for external synchronization, such as guest authentication or synchronizing InstantDB query results with the state store. Add a comment above every required effect explaining why it cannot be replaced.
+Avoid `$effect` when a derived value or direct event handler is sufficient. Effects are reserved for external synchronization that cannot happen directly in an event handler. Add a comment above every required effect explaining why it cannot be replaced.
 
 Prefer Svelte class arrays for conditional classes over template strings:
 
@@ -145,15 +143,13 @@ Do not add `id` fields back into catalog objects. Update `src/lib/schema.json` w
 
 ## State and persistence
 
-`ContentState` owns collection commands. `ContentStateStore`, `LocalGuestStore`, and `InstantStore` are defined in `src/lib/state/stores.ts`; collection-state data types are defined in `src/lib/state/types.ts`.
+`ContentState` owns collection commands. `ContentStateStore` and `LocalGuestStore` are defined in `src/lib/state/stores.ts`; collection-state data types are defined in `src/lib/types.ts`.
 
 ```text
-ContentState -> ContentStateStore -> LocalGuestStore or InstantStore
+ContentState -> ContentStateStore -> LocalGuestStore
 ```
 
-Keep `ContentState` backend-agnostic. Do not import InstantDB types into the shared store interface or command logic. Instant-specific entity decoding, UUID handling, and transactions belong in `InstantStore`.
-
-Guests use `LocalGuestStore`; authenticated users use `InstantStore`. When a guest becomes a full user, migrate local state before clearing the guest store.
+`LocalGuestStore` persists collection state to `localStorage`. Keep browser-storage details out of `ContentState` so collection commands remain separate from persistence.
 
 State commands should update optimistically and restore the previous state if persistence fails. Batch related updates with one transaction through `saveMany()`.
 
@@ -165,27 +161,6 @@ await store.saveMany(nextStates);
 await Promise.all(ids.map((id) => store.save(id, nextStates[id])));
 ```
 
-Do not write guest state to InstantDB when the app is intentionally using local-only guest persistence. InstantDB permissions cannot redirect rejected writes into local IndexedDB.
-
-## InstantDB
-
-Keep schema and permissions in `src/instant.schema.ts` and `src/instant.perms.ts`. Push changes with the authenticated Instant CLI when the schema changes:
-
-```bash
-pnpm dlx instant-cli push schema --yes
-pnpm dlx instant-cli push perms --yes
-```
-
-Instant entity IDs must be UUIDs. Never construct IDs from strings such as `userId:itemId`.
-
-```ts
-// Do
-const entityId = crypto.randomUUID();
-
-// Avoid
-const entityId = `${userId}:${itemId}`;
-```
-
 ## PWA and service worker
 
 The service worker uses SvelteKit 3 APIs:
@@ -193,10 +168,11 @@ The service worker uses SvelteKit 3 APIs:
 - `immutable`, `assets`, and `prerendered` from `$app/manifest`
 - `version` from `$app/env`
 - `resolve` from `$app/paths`
+- `self` from `$app/service-worker`
 
 Do not use the removed `$service-worker` module. Precache assets individually so one unavailable asset does not reject the entire service-worker install.
 
-The service worker is for app-shell and asset caching. Do not use it to proxy InstantDB state or replace the storage adapters. InstantDB and the local store own persistence and synchronization.
+The service worker is for app-shell and asset caching. Do not use it as a collection-state persistence layer; `LocalGuestStore` owns that responsibility.
 
 ## Formatting
 

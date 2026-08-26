@@ -1,6 +1,5 @@
 import { bundles, content, dice, effectivePrice, homebrew } from "./kdm-data";
-import type { Bundle, ContentItem, DiceSet, Filters } from "./types";
-import type { CollectionState } from "./state/types";
+import type { Bundle, ContentItem, DiceSet, Filters, CollectionState } from "#lib/types.ts";
 
 type CatalogItem = ContentItem | DiceSet | Bundle;
 type FilterableItem = Pick<CatalogItem, "id" | "name" | "tags"> & Partial<Pick<ContentItem, "alt" | "gameplay" | "kind">>;
