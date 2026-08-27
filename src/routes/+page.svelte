@@ -43,7 +43,7 @@
         },
         {
           title: "Reference Cards",
-          note: "2x2 gear sized cards",
+          note: "Printable 2x2 gear sized cards",
           icon: "i-material-symbols:cards-stack-outline-sharp",
           href: "https://drive.google.com/drive/folders/1s0UYjqfaR6urHFEDEpu58-42G8GFrXAR?usp=sharing",
         },
@@ -193,116 +193,80 @@
     --layer-content: 1;
     --layer-vignette: 0;
     --layer-backdrop: -1;
-    --color-line: color-mix(in srgb, var(--foreground) 12%, transparent);
+    --background-nav: color-mix(var(--background) 25%, transparent);
+    --color-line: color-mix(var(--foreground) 25%, transparent);
     --color-primary-hover: color-mix(in oklch, var(--accent-green) 80%, var(--foreground));
     --color-red-hover: color-mix(in oklch, var(--accent-red) 80%, var(--foreground));
-    --color-accent-muted: color-mix(in srgb, var(--foreground) 50%, transparent);
+    --color-accent-muted: color-mix(var(--foreground) 25%, transparent);
     --shadow-title: 0 0 1px var(--background), 0 0 2px var(--background), 0 0 3px var(--background), 0 0 2px var(--background);
-    --duration-pulse: 28s;
+    --duration-pulse: 8s;
     --duration-flicker: 21s;
-    --duration-ambient: 96s;
+    --duration-ambient: 45s;
     --gradient-page-sheen:
-      linear-gradient(115deg in oklch, transparent 20%, color-mix(in srgb, #ffd6ad 2%, transparent) 50%, transparent 70%),
-      radial-gradient(circle at 80% 15% in oklch, color-mix(in srgb, #ffc48e 2.5%, transparent), transparent 32%);
-    --gradient-vignette-warm:
-      radial-gradient(circle at 0% 0%, color-mix(in srgb, #dc7044 6%, transparent) 0%, transparent 31%),
-      radial-gradient(circle at 100% 0%, color-mix(in srgb, #c65538 4%, transparent) 0%, transparent 29%),
-      radial-gradient(circle at 100% 100%, color-mix(in srgb, #a63b30 6%, transparent) 0%, transparent 32%),
-      radial-gradient(circle at 0% 100%, color-mix(in srgb, #f09a55 10%, transparent) 0%, transparent 35%),
-      radial-gradient(
-        ellipse at center in oklch,
-        transparent 44%,
-        color-mix(in srgb, #743025 7%, transparent) 72%,
-        color-mix(in srgb, #160807 48%, transparent) 100%
-      );
+      linear-gradient(115deg in oklch, transparent 20%, #ffd6ad0e 50%, transparent 80%),
+      radial-gradient(circle at 80% 15% in oklch, #ffc48e06, transparent 32%);
+    --gradient-vignette-warm: radial-gradient(ellipse at center in oklch, transparent 70%, #fff0bd0a 100%);
     --gradient-light-ambient:
-      radial-gradient(circle at 52% 54% in oklch, color-mix(in srgb, #f3a25d 13%, transparent) 0%, transparent 36%),
-      radial-gradient(
-        ellipse at center in oklch,
-        color-mix(in srgb, #e56f3f 21%, transparent) 0%,
-        color-mix(in srgb, #ad4735 14%, transparent) 31%,
-        color-mix(in srgb, #662a27 8%, transparent) 54%,
-        transparent 76%
-      );
+      radial-gradient(circle at 52% 54% in oklch, #f3a25d21 0%, transparent 36%),
+      radial-gradient(ellipse at center in oklch, #e56f3f36 0%, #ad473524 31%, #662a2714 54%, transparent 76%);
     --gradient-light-pulse:
-      radial-gradient(
-        circle at 45% 47% in oklch,
-        color-mix(in srgb, #ffe4ad 28%, transparent) 0%,
-        color-mix(in srgb, #ffb35d 18%, transparent) 18%,
-        transparent 42%
-      ),
-      radial-gradient(
-        ellipse at center in oklch,
-        color-mix(in srgb, #f08445 23%, transparent) 0%,
-        color-mix(in srgb, #c74335 13%, transparent) 43%,
-        transparent 75%
-      );
+      radial-gradient(circle at 45% 47% in oklch, #ffe4ad47 0%, #ffb35d2e 18%, transparent 42%),
+      radial-gradient(ellipse at center in oklch, #f084453b 0%, #c7433521 43%, transparent 75%);
     --gradient-light-flicker:
-      radial-gradient(
-        circle at 44% 43% in oklch,
-        color-mix(in srgb, #fff0bd 42%, transparent) 0%,
-        color-mix(in srgb, #ffc45e 30%, transparent) 16%,
-        transparent 42%
-      ),
-      radial-gradient(
-        ellipse at 50% 57% in oklch,
-        color-mix(in srgb, #ff9b3f 29%, transparent) 0%,
-        color-mix(in srgb, #e4582f 19%, transparent) 38%,
-        color-mix(in srgb, #8e2d26 10%, transparent) 60%,
-        transparent 76%
-      );
+      radial-gradient(circle at 44% 43% in oklch, #fff0bd6b 0%, #ffc45e4d 16%, transparent 42%),
+      radial-gradient(ellipse at 50% 57% in oklch, #ff9b3f4a 0%, #e4582f30 38%, #8e2d261a 60%, transparent 76%);
 
     position: relative;
-    isolation: isolate;
     min-block-size: 100dvb;
     padding: var(--space-page);
     overflow-x: clip;
+    isolation: isolate;
     color: var(--foreground);
     font-family: var(--font-sans);
 
     &::before {
+      z-index: var(--layer-backdrop);
       position: absolute;
       inset: 0;
-      z-index: var(--layer-backdrop);
       background: var(--gradient-page-sheen);
       content: "";
     }
 
     &::after {
+      z-index: var(--layer-vignette);
       position: fixed;
       inset: 0;
-      z-index: var(--layer-vignette);
       background: var(--gradient-vignette-warm);
       content: "";
       pointer-events: none;
     }
 
     > header {
-      position: relative;
       z-index: var(--layer-content);
+      position: relative;
       inline-size: fit-content;
       max-inline-size: 100%;
-      margin-block-end: var(--space-header);
       margin-inline-start: auto;
+      margin-block-end: var(--space-header);
       line-height: var(--line-height-none);
       text-align: right;
       text-shadow: var(--shadow-title);
 
       @media (width >= 46rem) {
         position: fixed;
+        max-inline-size: calc(100% - var(--clearance-header));
+        margin-inline-start: 0;
+        margin-block-end: 0;
         inset-block-end: var(--space-page);
         inset-inline-start: var(--space-page);
-        max-inline-size: calc(100% - var(--clearance-header));
-        margin-block-end: 0;
-        margin-inline-start: 0;
         text-align: left;
       }
 
       h1 {
         margin: 0;
-        font-family: var(--font-display);
-        font-size: var(--text-hero);
         font-weight: var(--font-bold);
+        font-size: var(--text-hero);
+        font-family: var(--font-display);
         letter-spacing: var(--letter-spacing-tight);
       }
 
@@ -312,20 +276,22 @@
         margin-block-start: var(--offset-tagline);
         color: var(--muted-foreground);
         font-size: var(--text-sm);
-        text-wrap: pretty;
         text-align: center;
+        text-wrap: pretty;
       }
     }
 
     > nav {
-      position: relative;
-      z-index: var(--layer-content);
       display: flex;
+      z-index: var(--layer-content);
+      position: relative;
       flex-direction: column;
-      gap: var(--gap-nav);
       inline-size: 100%;
       max-inline-size: var(--width-nav);
       margin-inline-start: auto;
+      padding: 1rem;
+      gap: var(--gap-nav);
+      background: var(--background-nav);
 
       h2 {
         border-block-end: var(--border-size) solid var(--color-line);
@@ -335,20 +301,19 @@
     }
 
     .tool {
-      --color-link-accent: var(--accent);
-      --color-link-accent-hover: var(--accent);
-      --color-line-hover: color-mix(in srgb, var(--color-link-accent) 65%, transparent);
+      --color: var(--foreground);
+      --color-hover: var(--accent);
 
       display: grid;
-      min-block-size: var(--height-tool);
+      grid-template-columns: minmax(0, 1fr) auto;
       grid-template-areas:
         "title icon"
         "note icon";
-      grid-template-columns: minmax(0, 1fr) auto;
-      align-content: center;
       column-gap: var(--gap-tool);
+      align-content: center;
+      min-block-size: var(--height-tool);
       border-block-end: var(--border-size) solid var(--color-line);
-      color: var(--foreground);
+      color: var(--color);
       text-decoration: none;
       transition:
         color var(--duration-fast) var(--ease-standard),
@@ -357,45 +322,37 @@
 
       &:is(:hover, :focus-visible) {
         padding-inline-end: var(--shift-hover);
-        border-color: var(--color-line-hover);
-        color: var(--color-link-accent-hover);
+        border-color: var(--color-hover);
         outline: none;
+        color: var(--color-hover);
       }
 
       &.accent-primary {
-        --color-link-accent: var(--accent-green);
-        --color-link-accent-hover: var(--color-primary-hover);
-
-        color: var(--color-link-accent);
+        --color: var(--accent-green);
+        --color-hover: var(--accent-green);
       }
 
       &.accent-red {
-        --color-link-accent: var(--accent-red);
-        --color-link-accent-hover: var(--color-red-hover);
-
-        color: var(--color-link-accent);
+        --color-hover: var(--accent-red);
       }
 
       &.accent-muted {
-        --color-link-accent: var(--color-accent-muted);
-        --color-link-accent-hover: var(--color-link-accent);
-
-        color: var(--color-link-accent);
+        --color: var(--color-accent-muted);
+        --color-hover: var(--color-accent-muted);
 
         &:hover {
           padding-inline-end: 0;
           border-color: var(--color-line);
-          color: var(--color-link-accent);
         }
       }
     }
 
     .tool-title {
       grid-area: title;
-      font-family: var(--font-display);
-      font-size: var(--text-lg);
       font-weight: var(--font-semibold);
+      font-size: var(--text-lg);
       line-height: var(--line-height-tight);
+      font-family: var(--font-display);
 
       > span {
         display: inline-block;
@@ -422,12 +379,12 @@
     }
 
     .glow {
-      position: fixed;
-      inset: 0;
       z-index: var(--layer-backdrop);
+      position: fixed;
+      inset: -2rem;
       overflow: hidden;
-      pointer-events: none;
       translate: var(--shift-glow-x) var(--shift-glow-y);
+      pointer-events: none;
       will-change: translate;
 
       @media (width >= 46rem) {
@@ -437,19 +394,19 @@
       .glow-source {
         position: absolute;
         aspect-ratio: 1;
+        transform-origin: 42% 68%;
         border-radius: var(--radius-full);
         mix-blend-mode: screen;
-        transform-origin: 42% 68%;
 
         &.ambient {
           bottom: -76%;
           left: 8%;
           inline-size: var(--size-glow-ambient);
+          translate: -50% 0;
           background: var(--gradient-light-ambient);
+          animation: ambient-pulse var(--duration-ambient) ease-in-out infinite -29s;
           filter: saturate(1.12);
           opacity: 0.68;
-          translate: -50% 0;
-          animation: ambient-pulse var(--duration-ambient) ease-in-out infinite -29s;
         }
 
         &.pulse {
@@ -457,9 +414,9 @@
           left: -14%;
           inline-size: var(--size-glow-pulse);
           background: var(--gradient-light-pulse);
+          animation: glow-pulse var(--duration-pulse) ease-in-out infinite -7s;
           filter: saturate(1.12);
           opacity: 0.82;
-          animation: glow-pulse var(--duration-pulse) ease-in-out infinite -7s;
         }
 
         &.flicker {
@@ -467,9 +424,9 @@
           left: 8%;
           inline-size: var(--size-glow-flicker);
           background: var(--gradient-light-flicker);
+          animation: flicker var(--duration-flicker) linear infinite;
           filter: saturate(1.16);
           opacity: 0.88;
-          animation: flicker var(--duration-flicker) linear infinite;
         }
 
         @media (width >= 46rem) {
@@ -495,32 +452,32 @@
   @keyframes glow-pulse {
     0%,
     100% {
+      scale: 0.9;
       filter: saturate(1.08) brightness(0.94);
       opacity: 0.72;
-      scale: 0.9;
     }
 
     50% {
+      scale: 1.12;
       filter: saturate(1.16) brightness(1.04);
       opacity: 0.9;
-      scale: 1.12;
     }
   }
 
   @keyframes ambient-pulse {
     0%,
     100% {
+      translate: -52% 2%;
+      scale: 0.86;
       filter: saturate(1.08) brightness(0.94);
       opacity: 0.52;
-      scale: 0.86;
-      translate: -52% 2%;
     }
 
     50% {
+      translate: -48% -1%;
+      scale: 1.14;
       filter: saturate(1.16) brightness(1.03);
       opacity: 0.76;
-      scale: 1.14;
-      translate: -48% -1%;
     }
   }
 
@@ -532,25 +489,25 @@
     70%,
     70.8%,
     100% {
+      scale: 1;
       filter: saturate(1.16) brightness(1);
       opacity: 0.88;
-      scale: 1;
     }
 
     68%,
     69.4%,
     70.1% {
+      scale: 0.97;
       filter: saturate(1.28) brightness(0.76) hue-rotate(-6deg);
       opacity: 0.5;
-      scale: 0.97;
     }
 
     68.2%,
     69.65%,
     70.35% {
+      scale: 1.035;
       filter: saturate(1.08) brightness(1.18) hue-rotate(3deg);
       opacity: 1;
-      scale: 1.035;
     }
   }
 
