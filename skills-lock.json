@@ -1,11 +1,29 @@
 {
   "version": 1,
   "skills": {
+    "pwa-development": {
+      "source": "alinaqi/maggy",
+      "sourceType": "github",
+      "skillPath": "skills/pwa-development/SKILL.md",
+      "computedHash": "356d9a26a8435778bb3bb906f5198814c48872ae87485ae97f4da3c10a0cfcc5"
+    },
     "unslop": {
       "source": "poteto/noodle",
       "sourceType": "github",
       "skillPath": ".agents/skills/unslop/SKILL.md",
       "computedHash": "96ca1f318c41bd0e4adaffc1c881a85555a736b5824d1a9a6ee6139d5851774a"
+    },
+    "ux-audit": {
+      "source": "jezweb/claude-skills",
+      "sourceType": "github",
+      "skillPath": "plugins/dev-tools/skills/ux-audit/SKILL.md",
+      "computedHash": "154f60e2331a26d5776dec0254342f0a516ce8b3deb7fec094d1c33d3069e22a"
+    },
+    "vitest": {
+      "source": "jezweb/claude-skills",
+      "sourceType": "github",
+      "skillPath": "plugins/dev-tools/skills/vitest/SKILL.md",
+      "computedHash": "3a4698dc81220502d2fce75aa905db4f924dfa289cb5854fd6ac5a132a5bb072"
     }
   }
 }

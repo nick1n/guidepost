@@ -89,6 +89,14 @@ Do not use `class:` directives for new code.
 <!-- Avoid --><div class={`item ${active ? "is-active" : ""}`}></div><div class:active></div>
 ```
 
+## Accessibility and ARIA
+
+Start with semantic HTML. Native elements such as `<a href>`, `<button>`, `<nav>`, and headings already provide roles, names, and behavior; do not restate those semantics with redundant `role` or ARIA attributes.
+
+Add ARIA when HTML alone cannot expose a needed name, description, state, or relationship. Prefer visible text for accessible names. Use `aria-label` only when no suitable visible label exists, since it overrides descendant text, and use `aria-describedby` for supplemental information. Keep every referenced ID unique and present in the document. Do not use the `title` attribute as a substitute for an accessible name or description.
+
+Mark non-focusable decorative icons and visual effects with `aria-hidden="true"`. Never apply `aria-hidden` to a focusable element or an ancestor of focusable content. Informative icons need an accessible text equivalent instead of being hidden.
+
 ## Styling and icons
 
 Prefer standard, component-scoped CSS in `<style>` blocks for layout, spacing, typography, and interaction. Do not add new Tailwind-style UnoCSS utilities for those concerns. Migrate existing utility-heavy components incrementally when they are touched. Keep UnoCSS for icon classes while the current icon integration remains. Do not add Tailwind, `clsx`, `tailwind-merge`, or `cn` utilities.
