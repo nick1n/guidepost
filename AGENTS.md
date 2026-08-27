@@ -102,11 +102,14 @@ Keep markup plain and semantic:
 
 Use native CSS nesting, pseudo-classes such as `:is()` and `:where()`, and logical properties such as `inline-size`, `block-size`, and `margin-inline`. Keep selectors shallow enough to understand without tracing the entire DOM.
 
+Prefer the simplest modern CSS that expresses the intent clearly. Use focused properties and native platform features when they reduce indirection, extra markup, or duplicated declarations. Avoid legacy workarounds and performance folklore unless a verified browser-support or profiling need justifies them; use more complex CSS only when the simpler form cannot preserve the required behavior.
+
 Use custom properties as a small design-token system:
 
 - Put shared colors, type sizes, font weights, line heights, border sizes, radii, and motion values in `src/app.css`.
 - Put page- or component-specific layout values and complex effects on that component's root selector.
 - Give tokens names based on purpose. Remove unused or duplicate tokens, and do not merge unrelated tokens merely because their current values match.
+- Name multiword custom properties from broad category to specific label or purpose, following Open Props-style grouping. Prefer `--layer-content`, `--size-icon`, and `--duration-pulse` over `--content-layer`, `--icon-size`, and `--pulse-cycle`. Keep related properties grouped under the same leading category.
 - Use variables for hardcoded design values that are reused or likely to be tuned. Structural values such as `0`, `100%`, `auto`, grid ratios, and media-query thresholds may remain literal when a variable would obscure the rule or cannot be used by CSS.
 - Open Props may be used as a naming and scale reference. Do not add the full dependency unless the project needs a substantial portion of it.
 

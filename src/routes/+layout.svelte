@@ -6,7 +6,7 @@
 </script>
 
 <svelte:head>
-  <title>Kingdom Death: Collection Tracker</title>
+  <title>Guidepost</title>
 </svelte:head>
 
 {@render children()}

@@ -11,11 +11,11 @@
 
   type Tab = "content" | "dice" | "bundles" | "homebrew";
 
-  const TABS: { value: Tab; label: string }[] = [
-    { value: "content", label: "Content" },
-    { value: "dice", label: "Dice" },
-    { value: "bundles", label: "Bundles" },
-    { value: "homebrew", label: "Homebrew" },
+  const TABS: { id: Tab; label: string }[] = [
+    { id: "content", label: "Content" },
+    { id: "dice", label: "Dice" },
+    { id: "bundles", label: "Bundles" },
+    { id: "homebrew", label: "Homebrew" },
   ];
 
   let tab = $state<Tab>("content");
@@ -32,7 +32,7 @@
   const resultCount = $derived(tabCounts[tab]);
 </script>
 
-<main class="mx-auto flex min-h-screen w-full max-w-2xl flex-col gap-2 px-3 pt-4 pb-16">
+<main class="scrollbar-gutter mx-auto flex min-h-screen w-full max-w-2xl flex-col gap-2 px-3 pt-4 pb-16">
   <header>
     <h1 class="font-display text-2xl leading-none font-bold tracking-tight">
       Kingdom Death: <span class="text-accent">Collection</span>
@@ -44,18 +44,18 @@
 
   <nav aria-label="Sections" class="bg-card relative isolate flex gap-1">
     <span class="tab-highlight bg-panel pointer-events-none" aria-hidden="true"></span>
-    {#each TABS as t (t.value)}
+    {#each TABS as t (t.id)}
       <button
         type="button"
-        aria-current={tab === t.value ? "page" : undefined}
-        onclick={() => (tab = t.value)}
+        aria-current={tab === t.id ? "page" : undefined}
+        onclick={() => (tab = t.id)}
         class={[
           "tab-button flex-1 cursor-pointer px-2 py-3 font-semibold transition-colors",
-          tab === t.value ? "tab-active text-foreground" : "text-muted-foreground hover:text-foreground",
+          tab === t.id ? "tab-active text-foreground" : "text-muted-foreground hover:text-foreground",
         ]}
       >
         {t.label}
-        <span class="tabular-nums opacity-50">{tabCounts[t.value]}</span>
+        <span class="tabular-nums opacity-50">{tabCounts[t.id]}</span>
       </button>
     {/each}
   </nav>
