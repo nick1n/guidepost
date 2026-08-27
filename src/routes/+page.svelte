@@ -137,11 +137,7 @@
 
   <header>
     <h1>Guidepost</h1>
-    <p>
-      some board game tools
-      <a href="https://github.com/nick1n" target="_blank" aria-label="link to my GitHub page" aria-describedby="new-tab-description">I</a>
-      wanted, left here for the next player
-    </p>
+    <p>some board game tools I wanted, left here for the next player</p>
   </header>
 
   <nav aria-label="Guidepost tools">
