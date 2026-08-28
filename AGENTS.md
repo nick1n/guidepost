@@ -6,6 +6,10 @@ Guidepost is a personal hub for board game companion tools. It is a SvelteKit 3 
 
 Kingdom Death: Monster is currently the largest set of tools. Its catalog is data-driven, and collection state is stored locally in the browser. Guidepost may also link to tools and resources for other board games.
 
+## AI output style
+
+Never use em dashes or centered dots in user-facing output. Use commas, colons, semicolons, parentheses, bullets, or separate sentences instead.
+
 ## Landing page
 
 `src/routes/+page.svelte` is the Guidepost landing page and tool directory.

@@ -302,20 +302,36 @@
       "note icon";
     column-gap: var(--gap-tool);
     align-content: center;
+    position: relative;
     min-block-size: var(--height-tool);
     border-block-end: var(--border-size) solid var(--color-line);
     color: var(--color);
     text-decoration: none;
     transition:
       color var(--duration-fast) var(--ease-standard),
-      border-color var(--duration-fast) var(--ease-standard),
       padding var(--duration-fast) var(--ease-standard);
+
+    &::after {
+      position: absolute;
+      inset-block-end: calc(-1 * var(--border-size));
+      inset-inline: 0;
+      block-size: var(--border-size);
+      transform: scaleX(0);
+      transform-origin: right;
+      background: var(--color-hover);
+      content: "";
+      pointer-events: none;
+      transition: transform var(--duration-fast) var(--ease-standard);
+    }
 
     &:is(:hover, :focus-visible) {
       padding-inline-end: var(--shift-hover);
-      border-color: var(--color-hover);
       outline: none;
       color: var(--color-hover);
+
+      &::after {
+        transform: scaleX(1);
+      }
     }
 
     &.accent-primary {
@@ -333,7 +349,10 @@
 
       &:hover {
         padding-inline-end: 0;
-        border-color: var(--color-line);
+      }
+
+      &::after {
+        display: none;
       }
     }
   }
@@ -514,6 +533,10 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
+    .tool::after {
+      transition: none;
+    }
+
     .glow {
       translate: none;
       transition: none;
