@@ -103,12 +103,23 @@ Prefer standard, component-scoped CSS in `<style>` blocks for layout, spacing, t
 
 Keep markup plain and semantic:
 
-- In a scoped component, style a unique semantic element with a tag selector instead of giving it a redundant class. Prefer nested selectors such as `> header`, `h1`, `nav`, and `h2` when the structure makes their purpose clear.
-- Keep a role class when one style spans different tags, when repeated elements of the same tag need distinct roles, or when a stable hook is clearer than the DOM structure. Do not replace a useful class with a positional selector such as `:nth-child()`.
+- In a scoped component, use a top-level, unqualified tag selector when an element is unique or every instance shares the same styling. Prefer `header`, `nav`, `h1`, and `h2` over `.page > header`, `header h1`, or other ancestor-qualified selectors; Svelte already provides component scope.
+- When instances of the same element need different styling, add a short role class rather than distinguishing them through an ancestor chain. Keep a role class when one style spans different tags or when a stable hook is clearer than the DOM structure. Do not replace a useful class with a positional selector such as `:nth-child()`.
 - Use short class names that describe purpose, usually one word or two words joined by a hyphen. Avoid long utility strings and elaborate naming schemes.
 - Prefer no more than two classes on an element: one role and, when needed, one state, variant, or generated icon class.
 
-Use native CSS nesting, pseudo-classes such as `:is()` and `:where()`, and logical properties such as `inline-size`, `block-size`, and `margin-inline`. Keep selectors shallow enough to understand without tracing the entire DOM.
+Keep scoped selectors shallow and low-specificity. Use native CSS nesting to keep closely related rules together; the goal is purposeful nesting, not a completely flat stylesheet:
+
+- Do not wrap an entire component stylesheet in the component's root selector or qualify semantic element selectors with a root or ancestor merely to scope them.
+- Do not nest type selectors or mirror the markup hierarchy in CSS. Keep semantic element rules top-level within the style block or their containing at-rule.
+- Reserve selector nesting for rules that extend the same subject: pseudo-elements, states, and variants such as `&::before`, `&:hover`, and `&.accent-primary`.
+- Prefer one selector-nesting level. A second level is acceptable for a tightly related variant state such as `.tool { &.muted { &:hover { ... } } }`.
+- Express a state or variant on the same element with `&`, such as `&.accent-primary`, rather than repeating the full selector or adding an ancestor chain.
+- Aim for no more than two classes in a selector. Lower specificity keeps component states and future overrides predictable.
+- When several rules in a small component share one layout breakpoint, group their overrides in one top-level media query. Keep capability queries such as `prefers-reduced-motion` separate.
+- Do not flatten or nest selectors mechanically, add redundant classes, or use positional selectors. Choose the shallowest structure that keeps related rules together and their ownership clear.
+
+Use modern pseudo-classes such as `:is()` and `:where()`, and logical properties such as `inline-size`, `block-size`, and `margin-inline`.
 
 Prefer the simplest modern CSS that expresses the intent clearly. Use focused properties and native platform features when they reduce indirection, extra markup, or duplicated declarations. Avoid legacy workarounds and performance folklore unless a verified browser-support or profiling need justifies them; use more complex CSS only when the simpler form cannot preserve the required behavior.
 
