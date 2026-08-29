@@ -204,17 +204,21 @@
     --background-nav: color-mix(var(--background) 50%, transparent);
     --color-line: color-mix(var(--foreground) 15%, transparent);
     --color-accent-muted: color-mix(var(--foreground) 25%, transparent);
-    --shadow-title: 0 0 1px var(--background), 0 0 2px var(--background), 0 0 3px var(--background), 0 0 2px var(--background);
+    --color-shadow-edge: color-mix(var(--background) 90%, transparent);
+    --color-shadow-soft: color-mix(var(--background) 55%, transparent);
+    --shadow-title:
+      -1px 0 0 var(--color-shadow-edge), 1px 0 0 var(--color-shadow-edge), 0 -1px 0 var(--color-shadow-edge),
+      0 1px 0 var(--color-shadow-edge), 0 2px 4px var(--color-shadow-soft);
     --duration-pulse: 7s;
     --duration-flicker: 23s;
     --duration-ambient: 43s;
     --duration-candle: 3s;
     --gradient-page-sheen:
-      linear-gradient(115deg in oklch, transparent 20%, #ffd6ad0e 50%, transparent 80%),
-      radial-gradient(circle at 80% 15% in oklch, #ffc48e06, transparent 32%);
-    --gradient-vignette-warm: radial-gradient(ellipse at center in oklch, transparent 70%, #fff0bd14 100%);
+      linear-gradient(115deg, transparent 20%, #ffd6ad0e 50%, transparent 80%),
+      radial-gradient(circle at 80% 15%, #ffc48e06, transparent 32%);
+    --gradient-vignette-warm: radial-gradient(ellipse at center, transparent 70%, #fff0bd14 100%);
     --gradient-light-ambient:
-      radial-gradient(circle at 52% 54% in oklch, #f3a25d21 0%, transparent 36%),
+      radial-gradient(circle at 52% 54%, #f3a25d21 0%, transparent 36%),
       radial-gradient(ellipse at center in oklch, #e56f3f36 0%, #ad473524 31%, #662a2714 54%, transparent 76%);
     --gradient-light-pulse:
       radial-gradient(circle at 45% 47% in oklch, #ffe4ad47 0%, #ffb35d2e 18%, transparent 42%),
@@ -343,9 +347,9 @@
 
     &::after {
       position: absolute;
+      block-size: var(--border-size);
       inset-block-end: calc(-1 * var(--border-size));
       inset-inline: 0;
-      block-size: var(--border-size);
       transform: scaleX(0);
       transform-origin: right;
       background: var(--color-tool-hover);
@@ -408,9 +412,9 @@
 
   .glow-source {
     position: absolute;
+    aspect-ratio: 1;
     inset-block-end: var(--position-glow-y);
     inset-inline-start: var(--position-glow-x);
-    aspect-ratio: 1;
     translate: -50% 50%;
     border-radius: var(--radius-full);
     mix-blend-mode: screen;
