@@ -100,22 +100,25 @@
     },
   ];
 
+  const vignetteMovement = 0.6;
   let landing: HTMLElement;
-  function moveGlow(x: number, y: number) {
+  function moveLighting(x: number, y: number) {
     landing.style.setProperty("--shift-glow-x", x + "px");
     landing.style.setProperty("--shift-glow-y", y + "px");
+    landing.style.setProperty("--shift-vignette-x", x * vignetteMovement + "px");
+    landing.style.setProperty("--shift-vignette-y", y * vignetteMovement + "px");
   }
 
   function onpointermove(event: PointerEvent) {
     const x = (event.clientX / window.innerWidth - 0.5) * 30;
     const y = (event.clientY / window.innerHeight - 0.5) * 22;
-    moveGlow(x, y);
+    moveLighting(x, y);
   }
 
   function ondeviceorientation(event: DeviceOrientationEvent) {
     const x = Math.max(-1, Math.min(1, (event.gamma ?? 0) / 35)) * 18;
     const y = Math.max(-1, Math.min(1, (event.beta ?? 45) / 45 - 1)) * 14;
-    moveGlow(x, y);
+    moveLighting(x, y);
   }
 </script>
 
@@ -176,15 +179,19 @@
   .landing {
     --space-page: clamp(1.25rem, 4vw, 3rem);
     --space-header: 2rem;
-    --space-note: 2px;
+    --space-note: 3px;
     --clearance-header: 31rem;
     --offset-tagline: -0.5rem;
     --width-nav: 24rem;
     --gap-nav: 1.5rem;
     --gap-tool: 1rem;
     --height-tool: clamp(3.15rem, 2.8rem + 1vw, 3.7rem);
+    --position-glow-x: 35%;
+    --position-glow-y: 6rem;
     --shift-glow-x: 0px;
     --shift-glow-y: 0px;
+    --shift-vignette-x: 0px;
+    --shift-vignette-y: 0px;
     --shift-hover: 0.4rem;
     --size-icon: 1.5rem;
     --size-external: 1rem;
@@ -193,20 +200,19 @@
     --size-glow-flicker: clamp(18rem, 38vw, 32rem);
     --size-glow-candle: clamp(16rem, 32vw, 26rem);
     --layer-content: 1;
-    --layer-vignette: 0;
     --layer-backdrop: -1;
     --background-nav: color-mix(var(--background) 50%, transparent);
     --color-line: color-mix(var(--foreground) 15%, transparent);
     --color-accent-muted: color-mix(var(--foreground) 25%, transparent);
     --shadow-title: 0 0 1px var(--background), 0 0 2px var(--background), 0 0 3px var(--background), 0 0 2px var(--background);
-    --duration-pulse: 8s;
-    --duration-flicker: 21s;
-    --duration-ambient: 45s;
+    --duration-pulse: 7s;
+    --duration-flicker: 23s;
+    --duration-ambient: 43s;
     --duration-candle: 3s;
     --gradient-page-sheen:
       linear-gradient(115deg in oklch, transparent 20%, #ffd6ad0e 50%, transparent 80%),
       radial-gradient(circle at 80% 15% in oklch, #ffc48e06, transparent 32%);
-    --gradient-vignette-warm: radial-gradient(ellipse at center in oklch, transparent 70%, #fff0bd0a 100%);
+    --gradient-vignette-warm: radial-gradient(ellipse at center in oklch, transparent 70%, #fff0bd14 100%);
     --gradient-light-ambient:
       radial-gradient(circle at 52% 54% in oklch, #f3a25d21 0%, transparent 36%),
       radial-gradient(ellipse at center in oklch, #e56f3f36 0%, #ad473524 31%, #662a2714 54%, transparent 76%);
@@ -242,9 +248,9 @@
     }
 
     &::after {
-      z-index: var(--layer-vignette);
       position: fixed;
-      inset: 0;
+      inset: -1rem;
+      translate: var(--shift-vignette-x) var(--shift-vignette-y);
       background: var(--gradient-vignette-warm);
       content: "";
       pointer-events: none;
@@ -275,7 +281,7 @@
     contain: inline-size;
     inline-size: 100%;
     margin-block-start: var(--offset-tagline);
-    color: var(--muted-foreground);
+    color: var(--foreground);
     font-size: var(--text-sm);
     text-align: center;
     text-wrap: pretty;
@@ -402,16 +408,15 @@
 
   .glow-source {
     position: absolute;
+    inset-block-end: var(--position-glow-y);
+    inset-inline-start: var(--position-glow-x);
     aspect-ratio: 1;
-    transform-origin: 42% 68%;
+    translate: -50% 50%;
     border-radius: var(--radius-full);
     mix-blend-mode: screen;
 
     &.ambient {
-      bottom: -76%;
-      left: 8%;
       inline-size: var(--size-glow-ambient);
-      translate: -50% 0;
       background: var(--gradient-light-ambient);
       animation: ambient-pulse var(--duration-ambient) ease-in-out infinite -29s;
       filter: saturate(1.12);
@@ -419,8 +424,6 @@
     }
 
     &.pulse {
-      bottom: -16%;
-      left: -14%;
       inline-size: var(--size-glow-pulse);
       background: var(--gradient-light-pulse);
       animation: glow-pulse var(--duration-pulse) ease-in-out infinite -7s;
@@ -429,8 +432,6 @@
     }
 
     &.flicker {
-      bottom: 5%;
-      left: 8%;
       inline-size: var(--size-glow-flicker);
       background: var(--gradient-light-flicker);
       animation: flicker var(--duration-flicker) linear infinite;
@@ -439,8 +440,6 @@
     }
 
     &.candle {
-      bottom: -3%;
-      left: 12%;
       inline-size: var(--size-glow-candle);
       background: var(--gradient-light-candle);
       animation: candle-flicker var(--duration-candle) linear infinite -1.3s;
@@ -450,6 +449,11 @@
   }
 
   @media (width >= 46rem) {
+    .landing {
+      --position-glow-x: 22%;
+      --position-glow-y: 8rem;
+    }
+
     header {
       position: fixed;
       max-inline-size: calc(100% - var(--clearance-header));
@@ -462,28 +466,6 @@
 
     .glow {
       inset: -5%;
-    }
-
-    .glow-source {
-      &.ambient {
-        bottom: -98%;
-        left: 12%;
-      }
-
-      &.pulse {
-        bottom: -31%;
-        left: -10%;
-      }
-
-      &.flicker {
-        bottom: -8%;
-        left: 9%;
-      }
-
-      &.candle {
-        bottom: -12%;
-        left: 11%;
-      }
     }
   }
 
@@ -505,14 +487,14 @@
   @keyframes ambient-pulse {
     0%,
     100% {
-      translate: -52% 2%;
+      translate: -52% 52%;
       scale: 0.86;
       filter: saturate(1.08) brightness(0.94);
       opacity: 0.52;
     }
 
     50% {
-      translate: -48% -1%;
+      translate: -48% 49%;
       scale: 1.14;
       filter: saturate(1.16) brightness(1.03);
       opacity: 0.76;
@@ -552,42 +534,42 @@
   @keyframes candle-flicker {
     0%,
     100% {
-      translate: 0 1%;
+      translate: -50% 51%;
       scale: 0.96;
       filter: saturate(1.28) brightness(0.9);
       opacity: 0.6;
     }
 
     17% {
-      translate: -1% -1%;
+      translate: -51% 49%;
       scale: 1.04;
       filter: saturate(1.38) brightness(1.08);
       opacity: 0.78;
     }
 
     34% {
-      translate: 1% 0;
+      translate: -49% 50%;
       scale: 0.99;
       filter: saturate(1.32) brightness(0.96);
       opacity: 0.67;
     }
 
     51% {
-      translate: -0.5% -1.5%;
+      translate: -50.5% 48.5%;
       scale: 1.07;
       filter: saturate(1.4) brightness(1.12);
       opacity: 0.82;
     }
 
     68% {
-      translate: 1.2% 0.8%;
+      translate: -48.8% 50.8%;
       scale: 0.94;
       filter: saturate(1.25) brightness(0.86);
       opacity: 0.56;
     }
 
     84% {
-      translate: -0.8% -0.5%;
+      translate: -50.8% 49.5%;
       scale: 1.02;
       filter: saturate(1.35) brightness(1.03);
       opacity: 0.74;
@@ -600,6 +582,10 @@
     }
 
     .glow {
+      translate: none;
+    }
+
+    .landing::after {
       translate: none;
     }
 
