@@ -127,11 +127,21 @@ Use modern pseudo-classes such as `:is()` and `:where()`, and logical properties
 
 Prefer the simplest modern CSS that expresses the intent clearly. Use focused properties and native platform features when they reduce indirection, extra markup, or duplicated declarations. Avoid legacy workarounds and performance folklore unless a verified browser-support or profiling need justifies them; use more complex CSS only when the simpler form cannot preserve the required behavior.
 
+Treat every declaration as an active dependency, not boilerplate:
+
+- Before adding or keeping a property, identify the browser default, inherited value, global or preflight rule, or layout behavior it overrides. Remove it when none of the supported layouts or states change without it.
+- Do not repeat inherited colors or fonts, reset values already guaranteed by the project preflight, or sizing that normal block and grid layout already provides.
+- Do not add `position`, `z-index`, `overflow`, `isolation`, `contain`, `will-change`, or `pointer-events` defensively. Each must solve a specific containing-block, stacking, clipping, containment, compositing, or interaction problem. Preserve companion declarations when the behavior depends on their combination.
+- Prefer layout-driven defaults. Avoid declarations such as `inline-size: 100%` on a normal block, `display: inline-block` on a grid item, or alignment on an item that already fills its track unless the declaration changes a verified layout.
+- When touching a rule, remove declarations and custom properties that another change made obsolete. Check the base and wide layouts plus relevant interaction and reduced-motion states before treating a declaration as redundant.
+- Do not remove a declaration solely because its computed pixels match at one viewport. Confirm why it is redundant so future content, breakpoints, and states remain safe.
+
 Use custom properties as a small design-token system:
 
 - Put shared colors, type sizes, font weights, line heights, border sizes, radii, and motion values in `src/app.css`.
 - Put page- or component-specific layout values and complex effects on that component's root selector.
 - Give tokens names based on purpose. Remove unused or duplicate tokens, and do not merge unrelated tokens merely because their current values match.
+- Do not introduce a custom property merely to rename a simple value used once. A one-use token should communicate a meaningful concept, be locally overridden, or hold a complex value that is clearer out of line.
 - Name multiword custom properties from broad category to specific label or purpose, following Open Props-style grouping. Prefer `--layer-content`, `--size-icon`, and `--duration-pulse` over `--content-layer`, `--icon-size`, and `--pulse-cycle`. Keep related properties grouped under the same leading category.
 - Use alpha hex notation (`#RRGGBBAA`) for hardcoded translucent colors. Do not use `color-mix()` merely to add transparency to a fixed color; reserve it for colors that must remain derived from custom properties or blended from multiple source colors. Use an explicit interpolation space such as `in oklch` only when blending distinct colors benefits from that space. Omit it from `color-mix()` calls and gradients that combine one color with transparent.
 - Use variables for hardcoded design values that are reused or likely to be tuned. Structural values such as `0`, `100%`, `auto`, grid ratios, and media-query thresholds may remain literal when a variable would obscure the rule or cannot be used by CSS.
