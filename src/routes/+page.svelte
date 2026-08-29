@@ -125,7 +125,7 @@
   <span class="tool-title">
     {i.title}
     {#if i.href?.startsWith("http")}
-      <span class="i-material-symbols:arrow-outward" aria-hidden="true"></span>
+      <span class="external-icon i-material-symbols:arrow-outward" aria-hidden="true"></span>
     {/if}
   </span>
   <span class="tool-note">{i.note}{i.href ? "" : " - Coming soon"}</span>
@@ -168,6 +168,7 @@
     <span class="glow-source ambient"></span>
     <span class="glow-source pulse"></span>
     <span class="glow-source flicker"></span>
+    <span class="glow-source candle"></span>
   </div>
 </main>
 
@@ -190,18 +191,18 @@
     --size-glow-ambient: max(84rem, 150vw);
     --size-glow-pulse: clamp(28rem, 68vw, 58rem);
     --size-glow-flicker: clamp(18rem, 38vw, 32rem);
+    --size-glow-candle: clamp(16rem, 32vw, 26rem);
     --layer-content: 1;
     --layer-vignette: 0;
     --layer-backdrop: -1;
     --background-nav: color-mix(var(--background) 50%, transparent);
     --color-line: color-mix(var(--foreground) 15%, transparent);
-    --color-primary-hover: color-mix(in oklch, var(--accent-green) 80%, var(--foreground));
-    --color-red-hover: color-mix(in oklch, var(--accent-red) 80%, var(--foreground));
     --color-accent-muted: color-mix(var(--foreground) 25%, transparent);
     --shadow-title: 0 0 1px var(--background), 0 0 2px var(--background), 0 0 3px var(--background), 0 0 2px var(--background);
     --duration-pulse: 8s;
     --duration-flicker: 21s;
     --duration-ambient: 45s;
+    --duration-candle: 3s;
     --gradient-page-sheen:
       linear-gradient(115deg in oklch, transparent 20%, #ffd6ad0e 50%, transparent 80%),
       radial-gradient(circle at 80% 15% in oklch, #ffc48e06, transparent 32%);
@@ -215,6 +216,14 @@
     --gradient-light-flicker:
       radial-gradient(circle at 44% 43% in oklch, #fff0bd6b 0%, #ffc45e4d 16%, transparent 42%),
       radial-gradient(ellipse at 50% 57% in oklch, #ff9b3f4a 0%, #e4582f30 38%, #8e2d261a 60%, transparent 76%);
+    --gradient-light-candle: radial-gradient(
+      circle at 44% 56% in oklch,
+      #ffe49a52 0%,
+      #ff9a333d 20%,
+      #ff572b2e 42%,
+      #a92f1512 64%,
+      transparent 78%
+    );
 
     position: relative;
     min-block-size: 100dvb;
@@ -252,31 +261,30 @@
     line-height: var(--line-height-none);
     text-align: right;
     text-shadow: var(--shadow-title);
+  }
 
-    h1 {
-      margin: 0;
-      font-weight: var(--font-bold);
-      font-size: var(--text-hero);
-      font-family: var(--font-display);
-      letter-spacing: var(--letter-spacing-tight);
-    }
+  h1 {
+    margin: 0;
+    font-weight: var(--font-bold);
+    font-size: var(--text-hero);
+    font-family: var(--font-display);
+    letter-spacing: var(--letter-spacing-tight);
+  }
 
-    p {
-      contain: inline-size;
-      inline-size: 100%;
-      margin-block-start: var(--offset-tagline);
-      color: var(--muted-foreground);
-      font-size: var(--text-sm);
-      text-align: center;
-      text-wrap: pretty;
-    }
+  p {
+    contain: inline-size;
+    inline-size: 100%;
+    margin-block-start: var(--offset-tagline);
+    color: var(--muted-foreground);
+    font-size: var(--text-sm);
+    text-align: center;
+    text-wrap: pretty;
   }
 
   nav {
-    display: flex;
+    display: grid;
     z-index: var(--layer-content);
     position: relative;
-    flex-direction: column;
     inline-size: 100%;
     max-inline-size: var(--width-nav);
     margin-inline-start: auto;
@@ -292,8 +300,8 @@
   }
 
   .tool {
-    --color: var(--foreground);
-    --color-hover: var(--accent);
+    --color-tool: var(--foreground);
+    --color-tool-hover: var(--accent);
 
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
@@ -302,10 +310,26 @@
       "note icon";
     column-gap: var(--gap-tool);
     align-content: center;
-    position: relative;
     min-block-size: var(--height-tool);
     border-block-end: var(--border-size) solid var(--color-line);
-    color: var(--color);
+    color: var(--color-tool);
+
+    &.accent-primary {
+      --color-tool: var(--accent-green);
+      --color-tool-hover: var(--accent-green);
+    }
+
+    &.accent-red {
+      --color-tool-hover: var(--accent-red);
+    }
+
+    &.accent-muted {
+      --color-tool: var(--color-accent-muted);
+    }
+  }
+
+  a.tool {
+    position: relative;
     text-decoration: none;
     transition:
       color var(--duration-fast) var(--ease-standard),
@@ -318,7 +342,7 @@
       block-size: var(--border-size);
       transform: scaleX(0);
       transform-origin: right;
-      background: var(--color-hover);
+      background: var(--color-tool-hover);
       content: "";
       pointer-events: none;
       transition: transform var(--duration-fast) var(--ease-standard);
@@ -327,32 +351,10 @@
     &:is(:hover, :focus-visible) {
       padding-inline-end: var(--shift-hover);
       outline: none;
-      color: var(--color-hover);
+      color: var(--color-tool-hover);
 
       &::after {
         transform: scaleX(1);
-      }
-    }
-
-    &.accent-primary {
-      --color: var(--accent-green);
-      --color-hover: var(--accent-green);
-    }
-
-    &.accent-red {
-      --color-hover: var(--accent-red);
-    }
-
-    &.accent-muted {
-      --color: var(--color-accent-muted);
-      --color-hover: var(--color-accent-muted);
-
-      &:hover {
-        padding-inline-end: 0;
-      }
-
-      &::after {
-        display: none;
       }
     }
   }
@@ -363,12 +365,12 @@
     font-size: var(--text-lg);
     line-height: var(--line-height-tight);
     font-family: var(--font-display);
+  }
 
-    > span {
-      display: inline-block;
-      inline-size: var(--size-external);
-      block-size: var(--size-external);
-    }
+  .external-icon {
+    display: inline-block;
+    inline-size: var(--size-external);
+    block-size: var(--size-external);
   }
 
   .tool-note {
@@ -435,10 +437,20 @@
       filter: saturate(1.16);
       opacity: 0.88;
     }
+
+    &.candle {
+      bottom: -3%;
+      left: 12%;
+      inline-size: var(--size-glow-candle);
+      background: var(--gradient-light-candle);
+      animation: candle-flicker var(--duration-candle) linear infinite -1.3s;
+      filter: saturate(1.28);
+      opacity: 0.68;
+    }
   }
 
   @media (width >= 46rem) {
-    .landing > header {
+    header {
       position: fixed;
       max-inline-size: calc(100% - var(--clearance-header));
       margin-inline-start: 0;
@@ -466,6 +478,11 @@
       &.flicker {
         bottom: -8%;
         left: 9%;
+      }
+
+      &.candle {
+        bottom: -12%;
+        left: 11%;
       }
     }
   }
@@ -532,14 +549,58 @@
     }
   }
 
+  @keyframes candle-flicker {
+    0%,
+    100% {
+      translate: 0 1%;
+      scale: 0.96;
+      filter: saturate(1.28) brightness(0.9);
+      opacity: 0.6;
+    }
+
+    17% {
+      translate: -1% -1%;
+      scale: 1.04;
+      filter: saturate(1.38) brightness(1.08);
+      opacity: 0.78;
+    }
+
+    34% {
+      translate: 1% 0;
+      scale: 0.99;
+      filter: saturate(1.32) brightness(0.96);
+      opacity: 0.67;
+    }
+
+    51% {
+      translate: -0.5% -1.5%;
+      scale: 1.07;
+      filter: saturate(1.4) brightness(1.12);
+      opacity: 0.82;
+    }
+
+    68% {
+      translate: 1.2% 0.8%;
+      scale: 0.94;
+      filter: saturate(1.25) brightness(0.86);
+      opacity: 0.56;
+    }
+
+    84% {
+      translate: -0.8% -0.5%;
+      scale: 1.02;
+      filter: saturate(1.35) brightness(1.03);
+      opacity: 0.74;
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
-    .tool::after {
+    a.tool::after {
       transition: none;
     }
 
     .glow {
       translate: none;
-      transition: none;
     }
 
     .glow-source {
