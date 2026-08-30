@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { resolve } from "$app/paths";
+  import { asset, resolve } from "$app/paths";
 
   type Accents = "primary" | "muted" | "red";
 
@@ -119,14 +119,14 @@
   }
 
   function onpointermove(event: PointerEvent) {
-    const x = (event.clientX / window.innerWidth - 0.5) * 30;
-    const y = (event.clientY / window.innerHeight - 0.5) * 22;
+    const x = (event.clientX / window.innerWidth - 0.5) * 4;
+    const y = (event.clientY / window.innerHeight - 0.5) * 3;
     moveLighting(x, y);
   }
 
   function ondeviceorientation(event: DeviceOrientationEvent) {
-    const x = Math.max(-1, Math.min(1, (event.gamma ?? 0) / 35)) * 18;
-    const y = Math.max(-1, Math.min(1, (event.beta ?? 45) / 45 - 1)) * 14;
+    const x = Math.max(-1, Math.min(1, (event.gamma ?? 0) / 35)) * 3;
+    const y = Math.max(-1, Math.min(1, (event.beta ?? 45) / 45 - 1)) * 2;
     moveLighting(x, y);
   }
 </script>
@@ -149,7 +149,7 @@
 
   <header>
     <h1>Guidepost</h1>
-    <p>some board game tools I wanted, left here for the next player</p>
+    <p>board game aids left here for the next player</p>
   </header>
 
   <nav aria-label="Guidepost tools">
@@ -179,6 +179,7 @@
   <div class="glow" aria-hidden="true">
     <span class="glow-source ambient"></span>
     <span class="glow-source pulse"></span>
+    <img class="guidepost" src={asset("guidepost-min.svg")} alt="guidepost" />
     <span class="glow-source flicker"></span>
     <span class="glow-source candle"></span>
   </div>
@@ -196,7 +197,9 @@
     --gap-tool: 1rem;
     --height-tool: clamp(3.15rem, 2.8rem + 1vw, 3.7rem);
     --position-glow-x: 35%;
-    --position-glow-y: 6rem;
+    --position-glow-y: 12rem;
+    --position-guidepost-orb-x: 50%;
+    --position-guidepost-orb-y: 44%;
     --shift-x: 0px;
     --shift-y: 0px;
     --shift-hover: 0.4rem;
@@ -206,34 +209,35 @@
     --size-glow-pulse: clamp(28rem, 68vw, 58rem);
     --size-glow-flicker: clamp(18rem, 38vw, 32rem);
     --size-glow-candle: clamp(16rem, 32vw, 26rem);
+    --size-guidepost: clamp(23rem, 55vw, 38rem);
     --layer-backdrop: -1;
     --background-nav: color-mix(var(--background) 50%, transparent);
     --color-line: color-mix(var(--foreground) 15%, transparent);
-    --color-accent-muted: color-mix(var(--foreground) 25%, transparent);
-    --color-accent-hover: color-mix(var(--foreground) 75%, transparent);
+    --color-muted: color-mix(var(--foreground) 25%, transparent);
+    --color-muted-hover: color-mix(var(--foreground) 75%, transparent);
     --color-shadow-edge: color-mix(var(--background) 90%, transparent);
     --color-shadow-soft: color-mix(var(--background) 55%, transparent);
     --shadow-title:
       -1px 0 0 var(--color-shadow-edge), 1px 0 0 var(--color-shadow-edge), 0 -1px 0 var(--color-shadow-edge),
       0 1px 0 var(--color-shadow-edge), 0 2px 4px var(--color-shadow-soft);
-    --duration-pulse: 7s;
-    --duration-flicker: 23s;
+    --duration-pulse: 11s;
+    --duration-flicker: 5s;
     --duration-ambient: 43s;
-    --duration-candle: 5s;
+    --duration-candle: 7s;
     --gradient-page-sheen-vignette:
       linear-gradient(150deg, transparent 20%, #ffd6ad0f 50%, transparent 80%),
       radial-gradient(ellipse at center, transparent 70%, #fff0bd04 100%);
     --gradient-light-ambient:
-      radial-gradient(circle at 52% 54%, #fba15321 0%, transparent 36%),
+      radial-gradient(circle at center, #fba15321 0%, transparent 36%),
       radial-gradient(ellipse at center in oklch, #f16c3736 0%, #b7453024 31%, #6c282514 54%, transparent 76%);
     --gradient-light-pulse:
-      radial-gradient(circle at 45% 47% in oklch, #ffe4a647 0%, #ffb2512e 18%, transparent 42%),
+      radial-gradient(circle at center in oklch, #ffe4a647 0%, #ffb2512e 18%, transparent 42%),
       radial-gradient(ellipse at center in oklch, #fb823b3b 0%, #d4403021 43%, transparent 75%);
     --gradient-light-flicker:
-      radial-gradient(circle at 44% 43% in oklch, #fff0b56b 0%, #ffc34d4d 16%, transparent 42%),
-      radial-gradient(ellipse at 50% 57% in oklch, #ff992e4a 0%, #f6542430 38%, #9a2a221a 60%, transparent 76%);
+      radial-gradient(circle at center in oklch, #fff0b56b 0%, #ffc34d4d 16%, transparent 42%),
+      radial-gradient(ellipse at center in oklch, #ff992e4a 0%, #f6542430 38%, #9a2a221a 60%, transparent 76%);
     --gradient-light-candle: radial-gradient(
-      circle at 44% 56% in oklch,
+      circle at center in oklch,
       #ffe48552 0%,
       #ff96123d 20%,
       #ff4e162e 40%,
@@ -270,7 +274,6 @@
   p {
     contain: inline-size;
     margin-block-start: var(--offset-tagline);
-    font-size: var(--text-sm);
     text-align: center;
     text-wrap: pretty;
   }
@@ -321,7 +324,7 @@
     }
 
     &.accent-muted {
-      color: var(--color-accent-muted);
+      color: var(--color-muted);
     }
   }
 
@@ -355,7 +358,7 @@
       }
 
       .tool-note {
-        color: var(--color-accent-hover);
+        color: var(--color-muted-hover);
       }
     }
   }
@@ -391,12 +394,22 @@
     will-change: translate;
   }
 
-  .glow-source {
+  :is(.guidepost, .glow-source) {
     position: absolute;
-    aspect-ratio: 1;
     inset-block-end: var(--position-glow-y);
     inset-inline-start: var(--position-glow-x);
     translate: -50% 50%;
+  }
+
+  .guidepost {
+    inline-size: var(--size-guidepost);
+    transform-origin: var(--position-guidepost-orb-x) var(--position-guidepost-orb-y);
+    translate: calc(0% - var(--position-guidepost-orb-x)) calc(100% - var(--position-guidepost-orb-y));
+    rotate: -9deg;
+  }
+
+  .glow-source {
+    aspect-ratio: 1;
     mix-blend-mode: screen;
 
     &.ambient {
@@ -430,8 +443,8 @@
 
   @media (width >= 46rem) {
     .landing {
-      --position-glow-x: 22%;
-      --position-glow-y: 8rem;
+      --position-glow-x: clamp(10rem, 20%, 20rem);
+      --position-glow-y: 18rem;
     }
 
     header {
@@ -456,13 +469,11 @@
   @keyframes ambient-pulse {
     0%,
     100% {
-      translate: -52% 52%;
       scale: 0.86;
       opacity: 0.52;
     }
 
     50% {
-      translate: -48% 49%;
       scale: 1.14;
       opacity: 0.76;
     }
@@ -498,37 +509,31 @@
   @keyframes candle-flicker {
     0%,
     100% {
-      translate: -50% 51%;
       scale: 0.96;
       opacity: 0.6;
     }
 
     17% {
-      translate: -51% 49%;
       scale: 1.04;
       opacity: 0.78;
     }
 
     34% {
-      translate: -49% 50%;
       scale: 0.99;
       opacity: 0.67;
     }
 
     51% {
-      translate: -50.5% 48.5%;
       scale: 1.07;
       opacity: 0.82;
     }
 
     68% {
-      translate: -48.8% 50.8%;
       scale: 0.94;
       opacity: 0.56;
     }
 
     84% {
-      translate: -50.8% 49.5%;
       scale: 1.02;
       opacity: 0.74;
     }
