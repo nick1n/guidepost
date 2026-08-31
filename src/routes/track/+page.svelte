@@ -1,13 +1,15 @@
 <script lang="ts">
+  import { onMount } from "svelte";
   import { bundleTags, getCollectionStats, getVisibleCatalog } from "#lib/catalog-view.ts";
-  import BundleCard from "#lib/components/BundleCard.svelte";
-  import CollectionStats from "#lib/components/CollectionStats.svelte";
-  import ContentCard from "#lib/components/ContentCard.svelte";
-  import DiceCard from "#lib/components/DiceCard.svelte";
-  import FilterBar from "#lib/components/FilterBar.svelte";
+  import BundleCard from "#lib/components/track/BundleCard.svelte";
+  import CollectionStats from "#lib/components/track/CollectionStats.svelte";
+  import ContentCard from "#lib/components/track/ContentCard.svelte";
+  import DiceCard from "#lib/components/track/DiceCard.svelte";
+  import FilterBar from "#lib/components/track/FilterBar.svelte";
   import { allContentTags, allDiceTags, allHomebrewTags, priceById } from "#lib/kdm-data.ts";
   import { collection } from "#lib/state/collection.svelte.ts";
   import { createFilterState } from "#lib/state/filters.svelte.ts";
+  import { LocalGuestStore } from "#lib/state/stores.ts";
 
   type Tab = "content" | "dice" | "bundles" | "homebrew";
 
@@ -21,6 +23,12 @@
   let tab = $state<Tab>("content");
   const filters = createFilterState();
 
+  onMount(() => {
+    const userId = "guest";
+    collection.setUser(userId);
+    collection.setStore(new LocalGuestStore(userId));
+  });
+
   const stats = $derived(getCollectionStats(collection.state));
   const visible = $derived(getVisibleCatalog(filters.value, collection.state));
   const tabCounts = $derived({
@@ -32,30 +40,20 @@
   const resultCount = $derived(tabCounts[tab]);
 </script>
 
-<main class="scrollbar-gutter mx-auto flex min-h-screen w-full max-w-2xl flex-col gap-2 px-3 pt-4 pb-16">
+<main class="scrollbar-gutter">
   <header>
-    <h1 class="font-display text-2xl leading-none font-bold tracking-tight">
-      Kingdom Death: <span class="text-accent">Collection</span>
-    </h1>
-    <p class="text-muted-foreground mt-1">Content &amp; Dice collection tracker</p>
+    <h1>Kingdom Death: <span class="accent">Collection</span></h1>
+    <p class="subtitle">Content &amp; Dice collection tracker</p>
   </header>
 
   <CollectionStats {...stats} />
 
-  <nav aria-label="Sections" class="bg-card relative isolate flex gap-1">
-    <span class="tab-highlight bg-panel pointer-events-none" aria-hidden="true"></span>
+  <nav aria-label="Sections">
+    <span class="tab-highlight" aria-hidden="true"></span>
     {#each TABS as t (t.id)}
-      <button
-        type="button"
-        aria-current={tab === t.id ? "page" : undefined}
-        onclick={() => (tab = t.id)}
-        class={[
-          "tab-button flex-1 cursor-pointer px-2 py-3 font-semibold transition-colors",
-          tab === t.id ? "tab-active text-foreground" : "text-muted-foreground hover:text-foreground",
-        ]}
-      >
+      <button class="tab-button" type="button" aria-current={tab === t.id ? "page" : undefined} onclick={() => (tab = t.id)}>
         {t.label}
-        <span class="tabular-nums opacity-50">{tabCounts[t.id]}</span>
+        <span class="tab-count">{tabCounts[t.id]}</span>
       </button>
     {/each}
   </nav>
@@ -67,11 +65,11 @@
   />
 
   {#if !collection.hydrated}
-    <p class="text-muted-foreground py-10 text-center">Loading collection…</p>
+    <p class="message">Loading collection…</p>
   {:else if resultCount === 0}
-    <p class="text-muted-foreground py-10 text-center">Nothing matches these filters</p>
+    <p class="message">Nothing matches these filters</p>
   {:else}
-    <ul class="flex flex-col gap-3">
+    <ul>
       {#if tab === "content"}
         {#each visible.visibleContent as item (item.id)}
           <ContentCard {item} />
@@ -92,42 +90,126 @@
     </ul>
   {/if}
 
-  <p class="text-muted-foreground mt-2 text-center">Saved in this browser - {stats.totalCount} catalog entries</p>
+  <p class="summary">Saved in this browser - {stats.totalCount} catalog entries</p>
 </main>
 
 <style>
+  main {
+    --duration-tab: 220ms;
+    --ease-tab: cubic-bezier(0.16, 1, 0.3, 1);
+
+    display: flex;
+    flex-direction: column;
+    min-block-size: 100vh;
+    max-inline-size: 36rem;
+    margin-inline: auto;
+    padding-block: 1rem 4rem;
+    padding-inline: 2px;
+    gap: 0.5rem;
+  }
+
+  h1 {
+    font-weight: var(--font-bold);
+    font-size: 1.5rem;
+    line-height: var(--line-height-none);
+    font-family: var(--font-display);
+    letter-spacing: var(--letter-spacing-tight);
+  }
+
+  .accent {
+    color: var(--accent);
+  }
+
+  .subtitle {
+    margin-block-start: 0.25rem;
+    color: var(--muted-foreground);
+  }
+
+  nav {
+    position: relative;
+    display: flex;
+    isolation: isolate;
+    gap: 0.25rem;
+    background-color: var(--card);
+  }
+
+  .tab-button {
+    flex: 1;
+    padding-block: 0.75rem;
+    padding-inline: 0.5rem;
+    color: var(--muted-foreground);
+    font-weight: var(--font-semibold);
+    cursor: pointer;
+    transition:
+      color var(--duration-fast) var(--ease-standard),
+      background-color var(--duration-fast) var(--ease-standard);
+
+    &:is(:hover, [aria-current="page"]) {
+      color: var(--foreground);
+    }
+
+    &[aria-current="page"] {
+      background-color: var(--panel);
+    }
+  }
+
+  .tab-count {
+    font-variant-numeric: tabular-nums;
+    opacity: 0.5;
+  }
+
   .tab-highlight {
     display: none;
   }
 
-  .tab-active {
-    background: var(--panel);
+  .message {
+    padding-block: 2.5rem;
+    color: var(--muted-foreground);
+    text-align: center;
+  }
+
+  ul {
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .summary {
+    margin-block-start: 0.5rem;
+    color: var(--muted-foreground);
+    text-align: center;
   }
 
   @supports (anchor-name: --active-tab) {
     .tab-button {
       position: relative;
       z-index: 1;
-    }
 
-    .tab-active {
-      anchor-name: --active-tab;
-      background: transparent;
+      &[aria-current="page"] {
+        anchor-name: --active-tab;
+        background-color: transparent;
+      }
     }
 
     .tab-highlight {
-      display: block;
       position: absolute;
       position-anchor: --active-tab;
-      top: anchor(--active-tab top);
-      right: anchor(--active-tab right);
-      bottom: anchor(--active-tab bottom);
-      left: anchor(--active-tab left);
+      inset-block-start: anchor(--active-tab top);
+      inset-block-end: anchor(--active-tab bottom);
+      inset-inline-start: anchor(--active-tab left);
+      inset-inline-end: anchor(--active-tab right);
+      display: block;
+      background-color: var(--panel);
       transition:
-        top 220ms cubic-bezier(0.16, 1, 0.3, 1),
-        right 220ms cubic-bezier(0.16, 1, 0.3, 1),
-        bottom 220ms cubic-bezier(0.16, 1, 0.3, 1),
-        left 220ms cubic-bezier(0.16, 1, 0.3, 1);
+        inset-block-start var(--duration-tab) var(--ease-tab),
+        inset-block-end var(--duration-tab) var(--ease-tab),
+        inset-inline-start var(--duration-tab) var(--ease-tab),
+        inset-inline-end var(--duration-tab) var(--ease-tab);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :is(.tab-button, .tab-highlight) {
+      transition: none;
     }
   }
 </style>
