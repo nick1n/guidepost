@@ -234,11 +234,6 @@
       background: var(--accent);
       color: var(--accent-foreground);
     }
-
-    &:focus-visible {
-      outline: var(--border-size) solid var(--accent);
-      outline-offset: var(--border-size);
-    }
   }
 
   .filter-icon {
@@ -286,11 +281,6 @@
       text-decoration: underline;
       text-underline-offset: 0.25rem;
     }
-
-    &:focus-visible {
-      outline: var(--border-size) solid var(--accent);
-      outline-offset: var(--border-size);
-    }
   }
 
   .clear {
@@ -330,11 +320,6 @@
     &:not([aria-pressed="true"]):hover {
       background: var(--panel);
       color: var(--foreground);
-    }
-
-    &:focus-visible {
-      outline: var(--border-size) solid var(--accent);
-      outline-offset: var(--border-size);
     }
   }
 

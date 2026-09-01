@@ -3,7 +3,6 @@ import { presetWind4 } from "@unocss/preset-wind4";
 
 export default defineConfig({
   presets: [presetWind4(), presetIcons()],
-  safelist: ["text-left", "text-center", "text-right", "select-none"],
   theme: {
     colors: {
       background: "var(--background)",

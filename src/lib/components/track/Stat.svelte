@@ -45,10 +45,6 @@
     &:not([aria-pressed="true"]):hover {
       background: color-mix(var(--card) 70%, transparent);
     }
-
-    &:focus-visible {
-      outline: var(--border-size) solid var(--accent);
-    }
   }
 
   .value {

@@ -15,7 +15,7 @@
 
 <button type="button" aria-pressed={active} {onclick}>
   <span class={["icon", active ? "i-material-symbols:favorite" : "i-material-symbols:favorite-outline"]} aria-hidden="true"></span>
-  <span class="label">
+  <span class="visually-hidden">
     {active ? `Wishlisted: ${label}` : `Add ${label} to wishlist`}
   </span>
 </button>
@@ -23,7 +23,7 @@
 <style>
   button {
     display: flex;
-    flex: 0 0 3.5rem;
+    flex-shrink: 0;
     align-items: flex-start;
     align-self: stretch;
     justify-content: center;
@@ -34,16 +34,11 @@
     transition: color var(--duration-fast) var(--ease-standard);
 
     &[aria-pressed="true"] {
-      color: var(--secondary);
+      color: var(--accent-red);
     }
 
     &:not([aria-pressed="true"]):hover {
-      color: var(--foreground);
-    }
-
-    &:focus-visible {
-      outline: var(--border-size) solid var(--accent);
-      outline-offset: var(--border-size);
+      color: var(--accent-red);
     }
   }
 
@@ -51,14 +46,5 @@
     display: inline-block;
     inline-size: 1.875rem;
     block-size: 1.875rem;
-  }
-
-  .label {
-    position: absolute;
-    overflow: hidden;
-    inline-size: 1px;
-    block-size: 1px;
-    clip-path: inset(50%);
-    white-space: nowrap;
   }
 </style>

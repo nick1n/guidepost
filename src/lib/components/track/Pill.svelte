@@ -4,19 +4,18 @@
   type Props = {
     tone?: "neutral" | "accent" | "outline";
     onclick?: () => void;
-    active?: boolean;
     children: Snippet;
   };
 
-  let { tone = "neutral", onclick, active = false, children }: Props = $props();
+  let { tone = "neutral", onclick, children }: Props = $props();
 </script>
 
 {#if onclick}
-  <button type="button" aria-pressed={active} {onclick} class="pill" data-tone={tone}>
+  <button type="button" {onclick} class="pill" data-tone={tone}>
     {@render children()}
   </button>
 {:else}
-  <span class="pill" data-tone={tone} data-active={active}>{@render children()}</span>
+  <span class="pill" data-tone={tone}>{@render children()}</span>
 {/if}
 
 <style>
@@ -43,22 +42,12 @@
       border: 1px solid color-mix(var(--foreground) 25%, transparent);
       color: var(--muted-foreground);
     }
-
-    &:is([data-active="true"], [aria-pressed="true"]) {
-      background: var(--accent);
-      color: var(--accent-foreground);
-    }
   }
 
   button {
     &:hover {
       background: var(--accent);
       color: var(--accent-foreground);
-    }
-
-    &:focus-visible {
-      outline: var(--border-size) solid var(--accent);
-      outline-offset: var(--border-size);
     }
   }
 </style>

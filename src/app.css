@@ -2,33 +2,23 @@
 .dark {
   color-scheme: dark;
 
+  /* Active tokens */
   --background: #151515;
   --foreground: #fdfffe;
 
   --card: #2b2b2b;
-  --card-foreground: #fdfffe;
-  --popover: #2b2b2b;
-  --popover-foreground: #fdfffe;
-  --muted: #2b2b2b;
   --muted-foreground: #a29c9a;
-  --secondary-foreground: #fdfffe;
 
   --panel: #1e1e1e;
-  --panel-foreground: #fdfffe;
   --border: #1e1e1e;
-  --input: #1e1e1e;
 
   --accent: #11b2e1;
   --accent-foreground: #fdfffe;
-  --primary: #11b2e1;
-  --primary-foreground: #fdfffe;
-  --ring: #11b2e1;
 
   --destructive: #86551e;
   --secondary: #d97706;
 
   --beta: #11b2e1;
-  --beta-foreground: #fdfffe;
 
   --accent-blue: #11b2e1;
   --accent-green: #4ae111;
@@ -37,7 +27,6 @@
   --contrast: #000;
   --contrast-foreground: #fff;
 
-  --font-sans: "Inter", system-ui, sans-serif;
   --font-display: "Barlow Condensed", "Inter", sans-serif;
 
   --text-sm: 0.75rem;
@@ -56,6 +45,20 @@
   --radius-card: 1rem;
   --duration-fast: 180ms;
   --ease-standard: ease;
+
+  /* Reserved tokens, currently unused */
+  --card-foreground: #fdfffe;
+  --popover: #2b2b2b;
+  --popover-foreground: #fdfffe;
+  --muted: #2b2b2b;
+  --secondary-foreground: #fdfffe;
+  --panel-foreground: #fdfffe;
+  --input: #1e1e1e;
+  --primary: #11b2e1;
+  --primary-foreground: #fdfffe;
+  --ring: #11b2e1;
+  --beta-foreground: #fdfffe;
+  --font-sans: "Inter", system-ui, sans-serif;
 }
 
 * {
@@ -73,4 +76,18 @@ body {
 
 button {
   cursor: pointer;
+}
+
+:where(a, button, input, select, textarea, [role="button"]):focus-visible {
+  outline: var(--border-size) solid var(--accent);
+  outline-offset: var(--border-size);
+}
+
+.visually-hidden {
+  position: absolute;
+  overflow: hidden;
+  inline-size: 1px;
+  block-size: 1px;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }

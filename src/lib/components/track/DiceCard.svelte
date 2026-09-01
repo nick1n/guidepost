@@ -1,6 +1,7 @@
 <script lang="ts">
   import OwnedCheckbox from "./OwnedCheckbox.svelte";
   import WishlistButton from "./WishlistButton.svelte";
+  import StoreLink from "./StoreLink.svelte";
   import { formatPrice, storeUrl } from "#lib/kdm-data.ts";
   import type { DiceSet } from "#lib/types/index.ts";
   import { collection } from "#lib/state/collection.svelte.ts";
@@ -53,10 +54,7 @@
         {/each}
       </div>
       {#if url}
-        <a href={url} target="_blank" rel="noopener noreferrer" class="store">
-          Store <span class="external-icon i-material-symbols:open-in-new" aria-hidden="true"></span>
-          <span class="store-label">page for {item.name}</span>
-        </a>
+        <StoreLink href={url} label="Store" itemName={item.name} />
       {/if}
     </div>
   </div>
@@ -86,7 +84,6 @@
     cursor: pointer;
 
     &:focus-visible {
-      outline: var(--border-size) solid var(--accent);
       outline-offset: calc(-1 * var(--border-size));
     }
   }
@@ -131,38 +128,5 @@
     border-radius: var(--radius-control);
     padding: 0.25rem 0.5rem;
     font-weight: var(--font-bold);
-  }
-
-  .store {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.25rem;
-    margin-inline-start: auto;
-    color: var(--accent);
-    text-underline-offset: 0.25rem;
-
-    &:hover {
-      text-decoration: underline;
-    }
-
-    &:focus-visible {
-      outline: var(--border-size) solid var(--accent);
-      outline-offset: var(--border-size);
-    }
-  }
-
-  .external-icon {
-    display: inline-block;
-    inline-size: 1rem;
-    block-size: 1rem;
-  }
-
-  .store-label {
-    position: absolute;
-    overflow: hidden;
-    inline-size: 1px;
-    block-size: 1px;
-    clip-path: inset(50%);
-    white-space: nowrap;
   }
 </style>

@@ -49,7 +49,6 @@
     z-index: 1;
     position: sticky;
     inset-block-start: 0;
-    overflow: hidden;
     background: var(--panel);
   }
 
@@ -76,6 +75,6 @@
   }
 
   .wishlist {
-    background: var(--secondary);
+    background: var(--accent-red);
   }
 </style>

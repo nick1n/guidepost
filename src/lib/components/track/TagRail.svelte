@@ -6,15 +6,75 @@
 
   let { tags, onTagClick }: Props = $props();
 
+  let dragging = $state(false);
+  let dragged = false;
+  let startX = 0;
+  let startScrollLeft = 0;
+
   function selectTag(event: MouseEvent, tag: string) {
     event.stopPropagation();
+
+    if (dragged) {
+      event.preventDefault();
+      dragged = false;
+      return;
+    }
+
     onTagClick?.(tag);
+  }
+
+  function dragScroll(rail: HTMLDivElement) {
+    function onpointerdown(event: PointerEvent) {
+      if (event.pointerType !== "mouse" || event.button !== 0) return;
+
+      dragging = true;
+      dragged = false;
+      startX = event.clientX;
+      startScrollLeft = rail.scrollLeft;
+      rail.setPointerCapture(event.pointerId);
+    }
+
+    function onpointermove(event: PointerEvent) {
+      if (!dragging) return;
+
+      const distance = event.clientX - startX;
+      if (!dragged && Math.abs(distance) < 4) return;
+
+      dragged = true;
+      event.preventDefault();
+      rail.scrollLeft = startScrollLeft - distance;
+    }
+
+    function finishDrag(event: PointerEvent) {
+      if (!dragging) return;
+
+      dragging = false;
+      if (rail.hasPointerCapture(event.pointerId)) rail.releasePointerCapture(event.pointerId);
+    }
+
+    function onlostpointercapture() {
+      dragging = false;
+    }
+
+    rail.addEventListener("pointerdown", onpointerdown);
+    rail.addEventListener("pointermove", onpointermove);
+    rail.addEventListener("pointerup", finishDrag);
+    rail.addEventListener("pointercancel", finishDrag);
+    rail.addEventListener("lostpointercapture", onlostpointercapture);
+
+    return () => {
+      rail.removeEventListener("pointerdown", onpointerdown);
+      rail.removeEventListener("pointermove", onpointermove);
+      rail.removeEventListener("pointerup", finishDrag);
+      rail.removeEventListener("pointercancel", finishDrag);
+      rail.removeEventListener("lostpointercapture", onlostpointercapture);
+    };
   }
 </script>
 
-<div class="rail">
+<div class={["rail", dragging && "is-dragging"]} {@attach dragScroll}>
   {#each tags as tag (tag)}
-    <button type="button" onclick={(event) => selectTag(event, tag)}>
+    <button type="button" onclick={(event) => selectTag(event, tag)} class={[dragging && "is-dragging"]}>
       {tag}
     </button>
   {/each}
@@ -27,10 +87,16 @@
     overflow-x: auto;
     margin-inline: -0.75rem;
     padding: 0.25rem 0.75rem;
+    cursor: grab;
     scrollbar-width: none;
 
     &::-webkit-scrollbar {
       display: none;
+    }
+
+    &.is-dragging {
+      cursor: grabbing;
+      user-select: none;
     }
   }
 
@@ -50,9 +116,8 @@
       color: var(--accent-foreground);
     }
 
-    &:focus-visible {
-      outline: var(--border-size) solid var(--accent);
-      outline-offset: var(--border-size);
+    &.is-dragging {
+      cursor: grabbing;
     }
   }
 </style>

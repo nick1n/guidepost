@@ -2,6 +2,7 @@
   import OwnedCheckbox from "./OwnedCheckbox.svelte";
   import WishlistButton from "./WishlistButton.svelte";
   import Pill from "./Pill.svelte";
+  import StoreLink from "./StoreLink.svelte";
   import TagRail from "./TagRail.svelte";
   import { formatPrice, nameById, storeUrl } from "#lib/kdm-data.ts";
   import type { Bundle } from "#lib/types/index.ts";
@@ -76,10 +77,7 @@
         {bundle.gameplay ? "Gameplay" : "Models only"}
       </Pill>
       {#if url}
-        <a href={url} target="_blank" rel="noopener noreferrer" class="store">
-          Store <span class="external-icon i-material-symbols:open-in-new" aria-hidden="true"></span>
-          <span class="store-label">page for {bundle.name}</span>
-        </a>
+        <StoreLink href={url} label="Store" itemName={bundle.name} />
       {/if}
     </div>
 
@@ -140,7 +138,6 @@
     cursor: pointer;
 
     &:focus-visible {
-      outline: var(--border-size) solid var(--accent);
       outline-offset: calc(-1 * var(--border-size));
     }
   }
@@ -210,41 +207,12 @@
     background: var(--border);
   }
 
-  .store {
-    display: inline-flex;
-    align-items: center;
-    align-self: center;
-    gap: 0.25rem;
-    margin-inline-start: auto;
-    color: var(--accent);
-    text-underline-offset: 0.25rem;
-
-    &:hover {
-      text-decoration: underline;
-    }
-
-    &:focus-visible {
-      outline: var(--border-size) solid var(--accent);
-      outline-offset: var(--border-size);
-    }
-  }
-
-  .external-icon,
   .button-icon,
   .expand-icon,
   .item-icon {
     display: inline-block;
     inline-size: 1rem;
     block-size: 1rem;
-  }
-
-  .store-label {
-    position: absolute;
-    overflow: hidden;
-    inline-size: 1px;
-    block-size: 1px;
-    clip-path: inset(50%);
-    white-space: nowrap;
   }
 
   .actions {
@@ -256,11 +224,6 @@
   :is(.mark-all, .clear-all) {
     border-radius: var(--radius-control);
     padding: 0.5rem 0.75rem;
-
-    &:focus-visible {
-      outline: var(--border-size) solid var(--accent);
-      outline-offset: var(--border-size);
-    }
   }
 
   .mark-all {
@@ -296,11 +259,6 @@
 
     &:hover {
       color: var(--foreground);
-    }
-
-    &:focus-visible {
-      outline: var(--border-size) solid var(--accent);
-      outline-offset: var(--border-size);
     }
   }
 

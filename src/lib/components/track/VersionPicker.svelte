@@ -52,10 +52,5 @@
       background: var(--accent);
       color: var(--accent-foreground);
     }
-
-    &:focus-visible {
-      outline: var(--border-size) solid var(--accent);
-      outline-offset: var(--border-size);
-    }
   }
 </style>

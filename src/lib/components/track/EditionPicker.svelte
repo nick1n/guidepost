@@ -71,11 +71,6 @@
       background: var(--accent);
       color: var(--accent-foreground);
     }
-
-    &:focus-visible {
-      outline: var(--border-size) solid var(--accent);
-      outline-offset: var(--border-size);
-    }
   }
 
   .caption {
@@ -105,11 +100,6 @@
 
     &::placeholder {
       color: color-mix(var(--foreground) 30%, transparent);
-    }
-
-    &:focus-visible {
-      outline: var(--border-size) solid var(--accent);
-      outline-offset: var(--border-size);
     }
   }
 </style>
