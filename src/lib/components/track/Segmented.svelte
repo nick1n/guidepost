@@ -11,22 +11,57 @@
   let { label, value, options, onchange }: Props = $props();
 </script>
 
-<div class="flex flex-col gap-2">
-  <span class="text-muted-foreground">{label}</span>
-  <div class="flex flex-wrap gap-1">
+<div class="segmented">
+  <span>{label}</span>
+  <div class="options">
     {#each options as option (option.value)}
       {@const active = option.value === value}
-      <button
-        type="button"
-        aria-pressed={active}
-        onclick={() => onchange(option.value)}
-        class={[
-          "rounded-lg px-3 py-2 transition-colors",
-          active ? "bg-accent text-accent-foreground" : "bg-panel/70 text-foreground/70 hover:bg-panel hover:text-foreground",
-        ]}
-      >
+      <button type="button" aria-pressed={active} onclick={() => onchange(option.value)}>
         {option.label}
       </button>
     {/each}
   </div>
 </div>
+
+<style>
+  .segmented {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  span {
+    color: var(--muted-foreground);
+  }
+
+  .options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+  }
+
+  button {
+    border-radius: var(--radius-control);
+    padding: 0.5rem 0.75rem;
+    background: color-mix(var(--panel) 70%, transparent);
+    color: color-mix(var(--foreground) 70%, transparent);
+    transition:
+      color var(--duration-fast) var(--ease-standard),
+      background-color var(--duration-fast) var(--ease-standard);
+
+    &[aria-pressed="true"] {
+      background: var(--accent);
+      color: var(--accent-foreground);
+    }
+
+    &:not([aria-pressed="true"]):hover {
+      background: var(--panel);
+      color: var(--foreground);
+    }
+
+    &:focus-visible {
+      outline: var(--border-size) solid var(--accent);
+      outline-offset: var(--border-size);
+    }
+  }
+</style>

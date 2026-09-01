@@ -12,18 +12,54 @@
   let { pos, label, count, value, accent = false, active = false, onclick }: Props = $props();
 </script>
 
-<button
-  type="button"
-  aria-pressed={active}
-  {onclick}
-  class={[
-    "flex w-full cursor-pointer flex-col px-3 py-2",
-    "text-" + pos,
-    active ? "bg-accent/15 text-accent" : "hover:bg-card/70 focus-visible:outline-accent focus-visible:outline-2",
-  ]}
->
-  <span class="text-foreground">{label}</span>
-  <span class={["font-display text-xl leading-tight font-semibold tabular-nums", accent ? "text-accent" : "text-foreground"]}>
+<button type="button" aria-pressed={active} data-align={pos} {onclick}>
+  <span>{label}</span>
+  <span class={["value", accent && "is-accent"]}>
     {count} - {value}
   </span>
 </button>
+
+<style>
+  button {
+    display: flex;
+    flex-direction: column;
+    padding: 0.5rem 0.75rem;
+    color: var(--foreground);
+
+    &[data-align="left"] {
+      text-align: left;
+    }
+
+    &[data-align="center"] {
+      text-align: center;
+    }
+
+    &[data-align="right"] {
+      text-align: right;
+    }
+
+    &[aria-pressed="true"] {
+      background: color-mix(var(--accent) 15%, transparent);
+    }
+
+    &:not([aria-pressed="true"]):hover {
+      background: color-mix(var(--card) 70%, transparent);
+    }
+
+    &:focus-visible {
+      outline: var(--border-size) solid var(--accent);
+    }
+  }
+
+  .value {
+    font-weight: var(--font-semibold);
+    font-size: var(--text-lg);
+    line-height: var(--line-height-tight);
+    font-family: var(--font-display);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .value.is-accent {
+    color: var(--accent);
+  }
+</style>

@@ -12,25 +12,47 @@
   }
 </script>
 
-<div class="no-scrollbar -mx-3 flex gap-2 overflow-x-auto px-3 py-1">
+<div class="rail">
   {#each tags as tag (tag)}
-    <button
-      type="button"
-      onclick={(event) => selectTag(event, tag)}
-      class="bg-panel text-foreground hover:bg-accent hover:text-accent-foreground shrink-0 cursor-pointer rounded-lg px-2 py-1 whitespace-nowrap transition-colors"
-    >
+    <button type="button" onclick={(event) => selectTag(event, tag)}>
       {tag}
     </button>
   {/each}
 </div>
 
 <style>
-  .no-scrollbar {
+  .rail {
+    display: flex;
+    gap: 0.5rem;
+    overflow-x: auto;
+    margin-inline: -0.75rem;
+    padding: 0.25rem 0.75rem;
     scrollbar-width: none;
-    -ms-overflow-style: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
   }
 
-  .no-scrollbar::-webkit-scrollbar {
-    display: none;
+  button {
+    flex-shrink: 0;
+    border-radius: var(--radius-control);
+    padding: 0.25rem 0.5rem;
+    background: var(--panel);
+    color: var(--foreground);
+    white-space: nowrap;
+    transition:
+      color var(--duration-fast) var(--ease-standard),
+      background-color var(--duration-fast) var(--ease-standard);
+
+    &:hover {
+      background: var(--accent);
+      color: var(--accent-foreground);
+    }
+
+    &:focus-visible {
+      outline: var(--border-size) solid var(--accent);
+      outline-offset: var(--border-size);
+    }
   }
 </style>

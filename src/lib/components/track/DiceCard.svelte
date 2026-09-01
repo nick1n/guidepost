@@ -22,11 +22,9 @@
   }
 </script>
 
-<li
-  class={["bg-card overflow-hidden rounded-2xl border-2 bg-clip-padding transition-colors", owned ? "border-accent" : "border-transparent"]}
->
+<li class="card" data-owned={owned}>
   <div
-    class="bg-panel flex cursor-pointer items-start gap-3 py-3 pl-3"
+    class="header"
     role="button"
     tabindex={0}
     aria-pressed={owned}
@@ -35,7 +33,7 @@
     {onkeydown}
   >
     <OwnedCheckbox checked={owned} onchange={() => collection.toggleOwned(item.id)} label={item.name} />
-    <h3 class="font-display flex-1 text-2xl leading-tight font-semibold">
+    <h3>
       {item.name}
     </h3>
     {#if !owned}
@@ -43,28 +41,128 @@
     {/if}
   </div>
 
-  <div class="flex flex-col gap-3 px-3 py-3">
-    <div class="flex flex-wrap items-center gap-2">
-      <span class="text-accent tabular-nums">{formatPrice(item.price)}</span>
-      <span class="bg-border h-3 w-px" aria-hidden={true}></span>
-      <div class="flex items-center gap-2" aria-label={`Colors: ${item.colors.join(", ")}`}>
+  <div class="body">
+    <div class="details">
+      <span class="price">{formatPrice(item.price)}</span>
+      <span class="divider" aria-hidden={true}></span>
+      <div class="colors" aria-label={`Colors: ${item.colors.join(", ")}`}>
         {#each item.colors as c, i (c + i)}
-          <span class="rounded-lg px-2 py-1 font-bold" style:background-color={c} style:color={item.colors[+!i]}>
+          <span class="die" style:background-color={c} style:color={item.colors[+!i]}>
             {item.text[i]}
           </span>
         {/each}
       </div>
       {#if url}
-        <a
-          href={url}
-          target="_blank"
-          rel="noopener noreferrer"
-          class="text-accent ml-auto inline-flex w-fit items-center gap-1 underline-offset-4 hover:underline"
-        >
-          Store <span class="i-material-symbols:open-in-new size-4" aria-hidden="true"></span>
-          <span class="sr-only">page for {item.name}</span>
+        <a href={url} target="_blank" rel="noopener noreferrer" class="store">
+          Store <span class="external-icon i-material-symbols:open-in-new" aria-hidden="true"></span>
+          <span class="store-label">page for {item.name}</span>
         </a>
       {/if}
     </div>
   </div>
 </li>
+
+<style>
+  .card {
+    overflow: hidden;
+    border: var(--border-size) solid transparent;
+    border-radius: var(--radius-card);
+    background: var(--card);
+    background-clip: padding-box;
+    transition: border-color var(--duration-fast) var(--ease-standard);
+
+    &[data-owned="true"] {
+      border-color: var(--accent);
+    }
+  }
+
+  .header {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding-block: 0.75rem;
+    padding-inline-start: 0.75rem;
+    background: var(--panel);
+    cursor: pointer;
+
+    &:focus-visible {
+      outline: var(--border-size) solid var(--accent);
+      outline-offset: calc(-1 * var(--border-size));
+    }
+  }
+
+  h3 {
+    flex: 1;
+    font-weight: var(--font-semibold);
+    font-size: var(--text-card-title);
+    line-height: var(--line-height-tight);
+    font-family: var(--font-display);
+  }
+
+  .body {
+    padding: 0.75rem;
+  }
+
+  .details {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .price {
+    color: var(--accent);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .divider {
+    inline-size: 1px;
+    block-size: 0.75rem;
+    background: var(--border);
+  }
+
+  .colors {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .die {
+    border-radius: var(--radius-control);
+    padding: 0.25rem 0.5rem;
+    font-weight: var(--font-bold);
+  }
+
+  .store {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    margin-inline-start: auto;
+    color: var(--accent);
+    text-underline-offset: 0.25rem;
+
+    &:hover {
+      text-decoration: underline;
+    }
+
+    &:focus-visible {
+      outline: var(--border-size) solid var(--accent);
+      outline-offset: var(--border-size);
+    }
+  }
+
+  .external-icon {
+    display: inline-block;
+    inline-size: 1rem;
+    block-size: 1rem;
+  }
+
+  .store-label {
+    position: absolute;
+    overflow: hidden;
+    inline-size: 1px;
+    block-size: 1px;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+</style>

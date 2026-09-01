@@ -13,16 +13,41 @@
   }
 </script>
 
-<button
-  type="button"
-  role="checkbox"
-  aria-checked={checked}
-  {onclick}
-  class={[
-    "border-foreground size-30px isolate flex shrink-0 cursor-pointer items-center justify-center border-2 inset-ring-2 inset-ring-black transition-colors",
-    "focus-visible:outline-accent focus-visible:outline-2 focus-visible:outline-offset-2",
-    checked ? "bg-foreground" : "bg-black",
-  ]}
->
-  <span class="sr-only">{checked ? `Owned: ${label}` : `Mark ${label} as owned`}</span>
+<button type="button" role="checkbox" aria-checked={checked} {onclick}>
+  <span>{checked ? `Owned: ${label}` : `Mark ${label} as owned`}</span>
 </button>
+
+<style>
+  button {
+    z-index: var(--layer-control, auto);
+    position: relative;
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    inline-size: 1.875rem;
+    block-size: 1.875rem;
+    border: var(--border-size) solid var(--foreground);
+    box-shadow: inset 0 0 0 var(--border-size) var(--contrast);
+    background: var(--contrast);
+    transition: background-color var(--duration-fast) var(--ease-standard);
+
+    &[aria-checked="true"] {
+      background: var(--foreground);
+    }
+
+    &:focus-visible {
+      outline: var(--border-size) solid var(--accent);
+      outline-offset: var(--border-size);
+    }
+  }
+
+  span {
+    position: absolute;
+    overflow: hidden;
+    inline-size: 1px;
+    block-size: 1px;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+</style>

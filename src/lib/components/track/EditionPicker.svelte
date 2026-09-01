@@ -23,31 +23,20 @@
   }
 </script>
 
-<div class="flex flex-col gap-2">
-  <div class="flex items-center gap-1" role="group" aria-label="Beta editions owned">
-    {#each editions as edition (edition.v)}
-      {@const active = value.includes(edition.v)}
-      <button
-        type="button"
-        aria-pressed={active}
-        onclick={(event) => selectEdition(event, edition.v)}
-        class={[
-          "min-w-16 cursor-pointer rounded-lg px-2 py-1 transition-colors",
-          "focus-visible:outline-accent focus-visible:outline-2 focus-visible:outline-offset-2",
-          active ? "bg-accent text-accent-foreground" : "bg-panel text-foreground hover:bg-panel hover:text-foreground",
-        ]}
-      >
-        {edition.v}
-      </button>
-    {/each}
-    <span class="text-muted-foreground ml-1">Edition{value.length > 1 ? "s" : ""}</span>
-  </div>
+<div class="editions" role="group" aria-label="Beta editions owned">
+  {#each editions as edition (edition.v)}
+    {@const active = value.includes(edition.v)}
+    <button type="button" aria-pressed={active} onclick={(event) => selectEdition(event, edition.v)}>
+      {edition.v}
+    </button>
+  {/each}
+  <span class="caption">Edition{value.length > 1 ? "s" : ""}</span>
 </div>
 
 {#each editions as edition (edition.v)}
   {#if value.includes(edition.v) && edition.limit}
-    <label class="text-muted-foreground flex items-center gap-2">
-      <span class="shrink-0">{edition.v} #</span>
+    <label>
+      <span class="edition-name">{edition.v} #</span>
       <input
         type="number"
         inputmode="numeric"
@@ -56,8 +45,71 @@
         value={copyNumbers?.[edition.v] ?? ""}
         placeholder="13"
         oninput={(event) => setCopyNumber(event, edition.v)}
-        class="border-border bg-panel/60 text-foreground focus-visible:outline-accent placeholder:text-foreground/30 w-24 rounded-lg border px-2 py-1 tabular-nums focus-visible:outline-2 focus-visible:outline-offset-2"
       />
     </label>
   {/if}
 {/each}
+
+<style>
+  .editions {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  button {
+    min-inline-size: 4rem;
+    border-radius: var(--radius-control);
+    padding: 0.25rem 0.5rem;
+    background: var(--panel);
+    color: var(--foreground);
+    transition:
+      color var(--duration-fast) var(--ease-standard),
+      background-color var(--duration-fast) var(--ease-standard);
+
+    &[aria-pressed="true"] {
+      background: var(--accent);
+      color: var(--accent-foreground);
+    }
+
+    &:focus-visible {
+      outline: var(--border-size) solid var(--accent);
+      outline-offset: var(--border-size);
+    }
+  }
+
+  .caption {
+    margin-inline-start: 0.25rem;
+    color: var(--muted-foreground);
+  }
+
+  label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--muted-foreground);
+  }
+
+  .edition-name {
+    flex-shrink: 0;
+  }
+
+  input {
+    inline-size: 6rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-control);
+    padding: 0.25rem 0.5rem;
+    background: color-mix(var(--panel) 60%, transparent);
+    color: var(--foreground);
+    font-variant-numeric: tabular-nums;
+
+    &::placeholder {
+      color: color-mix(var(--foreground) 30%, transparent);
+    }
+
+    &:focus-visible {
+      outline: var(--border-size) solid var(--accent);
+      outline-offset: var(--border-size);
+    }
+  }
+</style>

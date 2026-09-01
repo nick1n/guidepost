@@ -13,18 +13,52 @@
   }
 </script>
 
-<button
-  type="button"
-  aria-pressed={active}
-  {onclick}
-  class={[
-    "-my-3 flex w-14 shrink-0 cursor-pointer items-start justify-center self-stretch pt-3 transition-colors",
-    "focus-visible:outline-accent focus-visible:outline-2 focus-visible:outline-offset-2",
-    active ? "text-secondary" : "text-muted-foreground hover:text-foreground",
-  ]}
->
-  <span class={[active ? "i-material-symbols:favorite" : "i-material-symbols:favorite-outline", "size-30px"]} aria-hidden="true"></span>
-  <span class="sr-only">
+<button type="button" aria-pressed={active} {onclick}>
+  <span class={["icon", active ? "i-material-symbols:favorite" : "i-material-symbols:favorite-outline"]} aria-hidden="true"></span>
+  <span class="label">
     {active ? `Wishlisted: ${label}` : `Add ${label} to wishlist`}
   </span>
 </button>
+
+<style>
+  button {
+    display: flex;
+    flex: 0 0 3.5rem;
+    align-items: flex-start;
+    align-self: stretch;
+    justify-content: center;
+    inline-size: 3.5rem;
+    margin-block: -0.75rem;
+    padding-block-start: 0.75rem;
+    color: var(--muted-foreground);
+    transition: color var(--duration-fast) var(--ease-standard);
+
+    &[aria-pressed="true"] {
+      color: var(--secondary);
+    }
+
+    &:not([aria-pressed="true"]):hover {
+      color: var(--foreground);
+    }
+
+    &:focus-visible {
+      outline: var(--border-size) solid var(--accent);
+      outline-offset: var(--border-size);
+    }
+  }
+
+  .icon {
+    display: inline-block;
+    inline-size: 1.875rem;
+    block-size: 1.875rem;
+  }
+
+  .label {
+    position: absolute;
+    overflow: hidden;
+    inline-size: 1px;
+    block-size: 1px;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+</style>

@@ -51,13 +51,10 @@
 
 <svelte:window {onkeydown} />
 
-<div class="flex flex-col gap-2">
-  <div class="flex items-center gap-2">
-    <div class="relative flex-1">
-      <span
-        class="i-material-symbols:search text-muted-foreground pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2"
-        aria-hidden="true"
-      ></span>
+<div class="filter-bar">
+  <div class="toolbar">
+    <div class="search">
+      <span class="search-icon i-material-symbols:search" aria-hidden="true"></span>
       <input
         bind:this={searchInput}
         type="search"
@@ -65,36 +62,22 @@
         oninput={(e) => set("query", e.currentTarget.value)}
         placeholder="Search"
         aria-label="Search items"
-        class="border-card bg-card placeholder:text-muted-foreground focus:border-accent h-10 w-full rounded-bl-2xl border-2 pr-2 pl-8 focus:outline-none"
       />
       {#if !filters.value.query}
-        <kbd
-          aria-hidden="true"
-          class="border-muted-foreground text-muted-foreground pointer-events-none absolute top-1/2 right-2 -translate-y-1/2 rounded border px-2 py-1 text-xs leading-none"
-        >
-          /
-        </kbd>
+        <kbd aria-hidden="true">/</kbd>
       {/if}
     </div>
-    <button
-      type="button"
-      onclick={() => (open = !open)}
-      aria-expanded={open}
-      class={[
-        "flex h-10 cursor-pointer items-center gap-2 rounded-br-2xl px-3 transition-colors",
-        open || activeCount > 0 ? "bg-accent text-accent-foreground" : "bg-card text-muted-foreground",
-      ]}
-    >
-      <span class="i-material-symbols:tune size-4" aria-hidden="true"></span>
+    <button type="button" onclick={() => (open = !open)} aria-expanded={open} class="filter-toggle" data-active={open || activeCount > 0}>
+      <span class="filter-icon i-material-symbols:tune" aria-hidden="true"></span>
       Filter
       {#if activeCount > 0}
-        <span class="tabular-nums">({activeCount})</span>
+        <span class="count">({activeCount})</span>
       {/if}
     </button>
   </div>
 
   {#if open}
-    <div class="border-border bg-card flex flex-col gap-3 rounded-2xl border p-3">
+    <div class="panel">
       <Segmented
         label="Sort by"
         value={filters.value.sort}
@@ -145,37 +128,218 @@
         />
       {/if}
 
-      <div class="flex flex-col gap-2">
-        <div class="flex items-center justify-between">
-          <span class="text-muted-foreground">Tags</span>
+      <div class="tags">
+        <div class="tags-header">
+          <span class="label">Tags</span>
           {#if filters.value.tags.length > 0}
-            <button type="button" onclick={() => set("tags", [])} class="text-accent inline-flex items-center gap-1">
-              <span class="i-material-symbols:close size-3" aria-hidden="true"></span> Clear
+            <button type="button" onclick={() => set("tags", [])} class="clear">
+              <span class="close-icon i-material-symbols:close" aria-hidden="true"></span> Clear
             </button>
           {/if}
         </div>
-        <div class="flex max-h-40 flex-wrap gap-1 overflow-y-auto">
+        <div class="tag-list">
           {#each tagOptions as tag (tag)}
             {@const active = filters.value.tags.includes(tag)}
-            <button
-              type="button"
-              aria-pressed={active}
-              onclick={() => toggleTag(tag)}
-              class={[
-                "rounded-lg px-2 py-1 transition-colors",
-                active ? "bg-accent text-accent-foreground" : "bg-panel/70 text-foreground/70 hover:bg-panel hover:text-foreground",
-              ]}
-            >
+            <button type="button" aria-pressed={active} onclick={() => toggleTag(tag)} class="tag">
               {tag}
             </button>
           {/each}
         </div>
       </div>
 
-      <div class="border-border/60 flex items-center justify-between border-t pt-2">
-        <span class="text-muted-foreground tabular-nums">{resultCount} shown</span>
-        <button type="button" onclick={() => filters.reset(true)} class="text-accent">Reset filters</button>
+      <div class="footer">
+        <span class="results">{resultCount} shown</span>
+        <button type="button" onclick={() => filters.reset(true)} class="reset">Reset filters</button>
       </div>
     </div>
   {/if}
 </div>
+
+<style>
+  .filter-bar {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .toolbar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .search {
+    position: relative;
+    flex: 1;
+  }
+
+  .search-icon {
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-start: 0.75rem;
+    display: inline-block;
+    inline-size: 1rem;
+    block-size: 1rem;
+    translate: 0 -50%;
+    color: var(--muted-foreground);
+    pointer-events: none;
+  }
+
+  input {
+    inline-size: 100%;
+    block-size: 2.5rem;
+    border: var(--border-size) solid var(--card);
+    border-end-start-radius: var(--radius-card);
+    padding-inline: 2rem 0.5rem;
+    background: var(--card);
+
+    &::placeholder {
+      color: var(--muted-foreground);
+    }
+
+    &:focus {
+      border-color: var(--accent);
+      outline: none;
+    }
+  }
+
+  kbd {
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-end: 0.5rem;
+    border: 1px solid var(--muted-foreground);
+    border-radius: 0.25rem;
+    padding: 0.25rem 0.5rem;
+    translate: 0 -50%;
+    color: var(--muted-foreground);
+    font-size: 0.75rem;
+    line-height: var(--line-height-none);
+    pointer-events: none;
+  }
+
+  .filter-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    block-size: 2.5rem;
+    border-end-end-radius: var(--radius-card);
+    padding-inline: 0.75rem;
+    background: var(--card);
+    color: var(--muted-foreground);
+    transition:
+      color var(--duration-fast) var(--ease-standard),
+      background-color var(--duration-fast) var(--ease-standard);
+
+    &[data-active="true"] {
+      background: var(--accent);
+      color: var(--accent-foreground);
+    }
+
+    &:focus-visible {
+      outline: var(--border-size) solid var(--accent);
+      outline-offset: var(--border-size);
+    }
+  }
+
+  .filter-icon {
+    display: inline-block;
+    inline-size: 1rem;
+    block-size: 1rem;
+  }
+
+  .count,
+  .results {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .panel {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-card);
+    padding: 0.75rem;
+    background: var(--card);
+  }
+
+  .tags {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .tags-header,
+  .footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  :is(.label, .results) {
+    color: var(--muted-foreground);
+  }
+
+  :is(.clear, .reset) {
+    color: var(--accent);
+
+    &:hover {
+      text-decoration: underline;
+      text-underline-offset: 0.25rem;
+    }
+
+    &:focus-visible {
+      outline: var(--border-size) solid var(--accent);
+      outline-offset: var(--border-size);
+    }
+  }
+
+  .clear {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .close-icon {
+    display: inline-block;
+    inline-size: 0.75rem;
+    block-size: 0.75rem;
+  }
+
+  .tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    overflow-y: auto;
+    max-block-size: 10rem;
+  }
+
+  .tag {
+    border-radius: var(--radius-control);
+    padding: 0.25rem 0.5rem;
+    background: color-mix(var(--panel) 70%, transparent);
+    color: color-mix(var(--foreground) 70%, transparent);
+    transition:
+      color var(--duration-fast) var(--ease-standard),
+      background-color var(--duration-fast) var(--ease-standard);
+
+    &[aria-pressed="true"] {
+      background: var(--accent);
+      color: var(--accent-foreground);
+    }
+
+    &:not([aria-pressed="true"]):hover {
+      background: var(--panel);
+      color: var(--foreground);
+    }
+
+    &:focus-visible {
+      outline: var(--border-size) solid var(--accent);
+      outline-offset: var(--border-size);
+    }
+  }
+
+  .footer {
+    border-block-start: 1px solid color-mix(var(--border) 60%, transparent);
+    padding-block-start: 0.5rem;
+  }
+</style>

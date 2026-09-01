@@ -139,7 +139,6 @@
     padding-inline: 0.5rem;
     color: var(--muted-foreground);
     font-weight: var(--font-semibold);
-    cursor: pointer;
     transition:
       color var(--duration-fast) var(--ease-standard),
       background-color var(--duration-fast) var(--ease-standard);
