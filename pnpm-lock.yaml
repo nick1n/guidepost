@@ -7,6 +7,10 @@ settings:
 importers:
 
   .:
+    dependencies:
+      '@unocss/reset':
+        specifier: ^66.9.1
+        version: 66.9.1
     devDependencies:
       '@iconify-json/game-icons':
         specifier: ^1.2.4
@@ -32,9 +36,6 @@ importers:
       '@typescript/native':
         specifier: npm:typescript@^7.0.2
         version: typescript@7.0.2
-      '@unocss/preset-wind4':
-        specifier: ^66.7.5
-        version: 66.7.5
       prettier:
         specifier: ^3.9.6
         version: 3.9.6
@@ -561,6 +562,9 @@ packages:
 
   '@unocss/preset-wind@66.7.5':
     resolution: {integrity: sha512-LVKgGr0A9Lc7F85xGXrrb71DDXMlHGA8bcj/Kht8BCsuRdBZadNbLlnv5qnSJiHYhi3/blzcgVoaeRor6L9yNA==}
+
+  '@unocss/reset@66.9.1':
+    resolution: {integrity: sha512-QB4gp2ek/G3HzOh1pBN6h2gCTCILBVRQ7mN1WLx2Y5ZNQRqoffwWfBsEfxxgqoiX2HDPRpvpTK9Nrb5GZXdgRQ==}
 
   '@unocss/rule-utils@66.7.5':
     resolution: {integrity: sha512-/AKHBRF6ZOexE3EDDv8ZEYh40P5e2Eha41IYUbE1wjigW7++ssmvimSTdufJzZvU5DGP++E3B3WEsFPprZMjAg==}
@@ -1456,6 +1460,8 @@ snapshots:
     dependencies:
       '@unocss/core': 66.7.5
       '@unocss/preset-wind3': 66.7.5
+
+  '@unocss/reset@66.9.1': {}
 
   '@unocss/rule-utils@66.7.5':
     dependencies:

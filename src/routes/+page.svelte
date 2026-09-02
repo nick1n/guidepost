@@ -179,7 +179,7 @@
   <div class="glow" aria-hidden="true">
     <span class="glow-source ambient"></span>
     <span class="glow-source pulse"></span>
-    <img class="guidepost" src={asset("guidepost-min.svg")} alt="guidepost" />
+    <img class="guidepost" src={asset("logo/guidepost-min.svg")} alt="guidepost" />
     <span class="glow-source flicker"></span>
     <span class="glow-source candle"></span>
   </div>
