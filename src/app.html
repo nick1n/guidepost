@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" class="dark bg-background select-none">
+<html lang="en" class="dark" style="background:#151515">
   <head>
     <meta charset="utf-8" />
     <link rel="manifest" href="%sveltekit.assets%/manifest.webmanifest" />
@@ -17,9 +17,10 @@
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75,700&family=Inter:wght@500;700&display=swap"
     />
+    %unocss-svelte-scoped.global%
     %sveltekit.head%
   </head>
-  <body data-sveltekit-preload-data="hover" class="bg-background font-sans antialiased">
+  <body data-sveltekit-preload-data="hover">
     <div>%sveltekit.body%</div>
   </body>
 </html>

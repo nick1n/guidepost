@@ -1,6 +1,5 @@
 <script lang="ts">
   import "@unocss/reset/tailwind-v4.css";
-  import "virtual:uno.css";
   import "../app.css";
 
   let { children } = $props();

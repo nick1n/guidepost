@@ -66,15 +66,19 @@
   border-color: var(--border);
 }
 
-html:has(.scrollbar-gutter) {
-  scrollbar-gutter: stable both-edges;
+html {
+  user-select: none;
+
+  &:has(.scrollbar-stable) {
+    scrollbar-gutter: stable both-edges;
+  }
 }
 
 body {
   min-block-size: 100dvh;
   border-top: var(--border-size) solid transparent;
-  background-color: var(--background);
   color: var(--foreground);
+  font-family: var(--font-sans);
 }
 
 button {

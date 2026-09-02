@@ -40,7 +40,7 @@
   const resultCount = $derived(tabCounts[tab]);
 </script>
 
-<main class="scrollbar-gutter">
+<main class="scrollbar-stable">
   <header>
     <h1>Kingdom Death: <span class="accent">Collection</span></h1>
     <p class="subtitle">Content &amp; Dice collection tracker</p>

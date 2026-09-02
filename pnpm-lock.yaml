@@ -36,6 +36,9 @@ importers:
       '@typescript/native':
         specifier: npm:typescript@^7.0.2
         version: typescript@7.0.2
+      '@unocss/svelte-scoped':
+        specifier: 66.9.1
+        version: 66.9.1
       prettier:
         specifier: ^3.9.6
         version: 3.9.6
@@ -571,6 +574,9 @@ packages:
 
   '@unocss/rule-utils@66.9.1':
     resolution: {integrity: sha512-4Du8AAauGzLoMBfic0C7S1oo2PFuDYeM8etiE8ZBR66T+utIWUrP6JZWE1h5ti6DNrhf7OFWRM/EuOFus1AjjQ==}
+
+  '@unocss/svelte-scoped@66.9.1':
+    resolution: {integrity: sha512-ZB/jUC/oTK3L8Hf5ro8t0qA7RhN2xyzrobpgwIIwxu0jcTKHffKwBTEU9qPK6/IAk5pLTjswCq2dTdoukHFdqw==}
 
   '@unocss/transformer-attributify-jsx@66.9.1':
     resolution: {integrity: sha512-O9jcC+WRAfgOXGxmJ1MR8Od2hqRRxE/muzXAEARgYPb07A4SNRpSjq2hUDwCxzcbKLWW7IrWrLGfv327XLkf+Q==}
@@ -1472,6 +1478,19 @@ snapshots:
     dependencies:
       '@unocss/core': 66.9.1
       magic-string: 1.2.3
+
+  '@unocss/svelte-scoped@66.9.1':
+    dependencies:
+      '@unocss/config': 66.9.1
+      '@unocss/core': 66.9.1
+      '@unocss/preset-uno': 66.9.1
+      '@unocss/preset-wind3': 66.9.1
+      '@unocss/reset': 66.9.1
+      acorn: 8.18.0
+      css-tree: 3.2.1
+      magic-string: 1.2.3
+      pathe: 2.0.3
+      zimmerframe: 1.1.4
 
   '@unocss/transformer-attributify-jsx@66.9.1':
     dependencies:

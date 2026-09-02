@@ -191,6 +191,8 @@
 
 <style>
   .landing {
+    /* isolation: isolate; */
+
     --space-page: clamp(1.25rem, 4vw, 3rem);
     --space-nav: 1rem;
     --space-note: 3px;
@@ -265,7 +267,6 @@
     line-height: var(--line-height-none);
     text-align: right;
     text-shadow: var(--shadow-title);
-    /* mix-blend-mode: color-burn, difference, exclusion, hard-light, luminosity, multiply, normal, overlay, soft-light */
   }
 
   h1 {
