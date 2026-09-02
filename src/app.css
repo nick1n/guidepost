@@ -2,7 +2,7 @@
 .dark {
   color-scheme: dark;
 
-  /* Active tokens */
+  /* Active vars */
   --background: #151515;
   --foreground: #fdfffe;
 
@@ -46,7 +46,7 @@
   --duration-fast: 180ms;
   --ease-standard: ease;
 
-  /* Reserved tokens, currently unused */
+  /* Currently unused vars */
   --card-foreground: #fdfffe;
   --popover: #2b2b2b;
   --popover-foreground: #fdfffe;
