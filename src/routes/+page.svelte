@@ -1,5 +1,6 @@
 <script lang="ts">
   import { asset, resolve } from "$app/paths";
+  import type { PointerEventHandler } from "svelte/elements";
 
   type Accents = "primary" | "muted" | "red";
 
@@ -104,6 +105,7 @@
   let lightingFrame: number | undefined;
   let lightingX = 0;
   let lightingY = 0;
+  let onpointermove = $state<PointerEventHandler<Window> | null>(moveLightingFromPointer);
 
   function moveLighting(x: number, y: number) {
     lightingX = x;
@@ -118,13 +120,15 @@
     });
   }
 
-  function onpointermove(event: PointerEvent) {
+  function moveLightingFromPointer(event: PointerEvent) {
     const x = (event.clientX / window.innerWidth - 0.5) * 4;
     const y = (event.clientY / window.innerHeight - 0.5) * 3;
     moveLighting(x, y);
   }
 
   function ondeviceorientation(event: DeviceOrientationEvent) {
+    if (event.beta === null && event.gamma === null) return;
+    onpointermove = null;
     const x = Math.max(-1, Math.min(1, (event.gamma ?? 0) / 35)) * 3;
     const y = Math.max(-1, Math.min(1, (event.beta ?? 45) / 45 - 1)) * 2;
     moveLighting(x, y);
@@ -191,7 +195,7 @@
     --space-nav: 1rem;
     --space-note: 3px;
     --clearance-header: 31rem;
-    --offset-tagline: -5px;
+    --offset-tagline: -10px;
     --width-nav: 24rem;
     --gap-nav: 1rem;
     --gap-tool: 1rem;

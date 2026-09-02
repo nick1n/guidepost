@@ -27,13 +27,14 @@
   --contrast: #000;
   --contrast-foreground: #fff;
 
-  --font-display: "Barlow Condensed", "Inter", sans-serif;
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-display: "Archivo", "Inter", sans-serif;
 
   --text-sm: 0.75rem;
   --text-lg: 1.25rem;
   --text-card-title: 1.5rem;
   --text-hero: clamp(5rem, 10vw, 9rem);
-  --font-semibold: 600;
+  --font-semibold: 700;
   --font-bold: 700;
 
   --line-height-none: 1;
@@ -70,6 +71,8 @@ html:has(.scrollbar-gutter) {
 }
 
 body {
+  min-block-size: 100dvh;
+  border-top: var(--border-size) solid transparent;
   background-color: var(--background);
   color: var(--foreground);
 }
@@ -85,9 +88,9 @@ button {
 
 .visually-hidden {
   position: absolute;
-  overflow: hidden;
   inline-size: 1px;
   block-size: 1px;
-  clip-path: inset(50%);
+  overflow: hidden;
   white-space: nowrap;
+  clip-path: inset(50%);
 }
