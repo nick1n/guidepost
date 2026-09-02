@@ -68,7 +68,7 @@
         { name: "Claude", href: "https://claude.com/" },
       ],
     },
-  ] as const;
+  ];
 </script>
 
 <svelte:head>
@@ -194,7 +194,6 @@
   footer {
     margin-block-start: 2rem;
     color: var(--muted-foreground);
-    /* font-size: var(--text-sm); */
     text-align: center;
   }
 
