@@ -88,24 +88,26 @@
     <p class="intro">Creators, artists, groups, and tools that helped shape this site</p>
   </header>
 
-  {#each credits as { id, title, list } (id)}
-    <section aria-labelledby={id}>
-      <h2 {id}>{title}</h2>
-      <ul>
-        {#each list as { name, href } (name)}
-          <li>
-            {#if href}
-              <a class="credit" {href} target="_blank" aria-describedby="new-tab-description">
-                {name}<span class="external-icon i-material-symbols:arrow-outward" aria-hidden="true"></span>
-              </a>
-            {:else}
-              <span class="credit">{name}</span>
-            {/if}
-          </li>
-        {/each}
-      </ul>
-    </section>
-  {/each}
+  <div class="groups">
+    {#each credits as { id, title, list } (id)}
+      <section aria-labelledby={id}>
+        <h2 {id}>{title}</h2>
+        <ul>
+          {#each list as { name, href } (name)}
+            <li>
+              {#if href}
+                <a class="credit" {href} target="_blank" aria-describedby="new-tab-description">
+                  {name}<span class="external-icon i-material-symbols:arrow-outward" aria-hidden="true"></span>
+                </a>
+              {:else}
+                <span class="credit">{name}</span>
+              {/if}
+            </li>
+          {/each}
+        </ul>
+      </section>
+    {/each}
+  </div>
 
   <footer>
     <span class="heart-icon i-material-symbols:favorite" aria-hidden="true"></span>
@@ -115,15 +117,15 @@
 
 <style>
   main {
-    max-inline-size: 52rem;
-    margin-inline: auto;
+    --color-line: color-mix(var(--foreground) 15%, transparent);
+
     padding: 1rem;
   }
 
   .home-link {
     display: inline-flex;
     align-items: center;
-    gap: 0.4rem;
+    gap: 0.5rem;
     color: var(--muted-foreground);
     font-weight: var(--font-bold);
     font-size: var(--text-sm);
@@ -140,7 +142,7 @@
   }
 
   header {
-    margin-block: clamp(2rem, 6vw, 3.5rem);
+    text-align: right;
   }
 
   :is(h1, h2) {
@@ -155,51 +157,89 @@
   }
 
   .intro {
-    max-inline-size: 36rem;
-    margin-block-start: 1rem;
     color: var(--muted-foreground);
     text-wrap: pretty;
   }
 
   section {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(15rem, 100%), 2fr));
-    padding-block: 1.5rem;
-    gap: 1rem clamp(1.5rem, 5vw, 3rem);
-    border-block-start: var(--border-size) solid var(--muted-foreground);
+    padding-block: 1rem;
+    border-block-start: var(--border-size) solid var(--color-line);
+
+    &:first-of-type {
+      border: 0;
+    }
   }
 
   h2 {
+    align-self: self-end;
+    padding-inline: 1rem;
     font-size: var(--text-lg);
     line-height: 2rem;
     text-align: right;
-    text-wrap: balance;
-    align-self: self-end;
   }
 
   .credit {
     padding-inline: 1rem;
-    line-height: 2;
+    line-height: 2rem;
   }
 
   .external-icon {
     display: inline-block;
-    inline-size: 0.85rem;
-    block-size: 0.85rem;
-    margin-inline-start: 0.2rem;
+    inline-size: 1rem;
+    block-size: 1rem;
     color: var(--muted-foreground);
-    vertical-align: -0.08em;
   }
 
   footer {
-    margin-block-start: 2rem;
+    margin-block-start: 1rem;
     color: var(--muted-foreground);
-    text-align: center;
+    text-align: right;
   }
 
   .heart-icon {
     margin-inline-end: 0.25rem;
     color: var(--accent-red);
-    vertical-align: -0.2em;
+    vertical-align: -0.125em;
+  }
+
+  @media (width >= 42rem) {
+    .groups {
+      display: grid;
+      grid-template-columns: 0 max-content max-content;
+      justify-content: end;
+    }
+
+    section {
+      grid-template-columns: subgrid;
+      grid-column: 1 / -1;
+    }
+
+    h2 {
+      grid-column: 2;
+    }
+
+    ul {
+      grid-column: 3;
+    }
+
+    :is(h2, ul) {
+      inline-size: auto;
+    }
+  }
+
+  @media (width >= 64rem) {
+    header {
+      position: fixed;
+      max-inline-size: 22rem;
+      inset-block-end: 1rem;
+      inset-inline-start: 1rem;
+      text-align: center;
+    }
+
+    :is(.groups, footer) {
+      max-inline-size: fit-content;
+      margin-inline-start: auto;
+    }
   }
 </style>

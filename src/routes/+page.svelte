@@ -4,11 +4,18 @@
 
   type Accents = "primary" | "muted" | "red";
 
+  type NavigationDestination = {
+    label: string;
+    href: string;
+    brand: "makerworld" | "cults3d";
+  };
+
   type NavigationItem = {
     title: string;
     note: string;
     icon: string;
     href?: string;
+    destinations?: [NavigationDestination, ...NavigationDestination[]];
     accent?: Accents;
   };
 
@@ -24,7 +31,7 @@
       label: "Kingdom Death: Monster",
       items: [
         {
-          title: "Quick start",
+          title: "Quick Start",
           note: "Core game only - play prologue showdown",
           icon: "i-material-symbols:play-circle-outline",
           href: resolve("/start"),
@@ -64,7 +71,18 @@
           title: "The Queen's Dilemma",
           note: "Treasury insert and Ideology upgrades",
           icon: "i-material-symbols:3d-outline-sharp",
-          href: "https://cults3d.com/en/3d-model/game/queens-dilemma-treasury-insert-ideology-markers",
+          destinations: [
+            {
+              label: "MakerWorld",
+              href: "https://makerworld.com/en/models/2958034",
+              brand: "makerworld",
+            },
+            {
+              label: "Cults3D",
+              href: "https://cults3d.com/en/3d-model/game/queens-dilemma-treasury-insert-ideology-markers",
+              brand: "cults3d",
+            },
+          ],
         },
         {
           title: "The King's Dilemma",
@@ -135,6 +153,10 @@
   }
 </script>
 
+<svelte:head>
+  <title>Guidepost</title>
+</svelte:head>
+
 <svelte:window {onpointermove} {ondeviceorientation} />
 
 {#snippet toolContent(i: NavigationItem)}
@@ -144,7 +166,7 @@
       <span class="external-icon i-material-symbols:arrow-outward" aria-hidden="true"></span>
     {/if}
   </span>
-  <span class="tool-note">{i.note}{i.href ? "" : " - Coming soon"}</span>
+  <span class="tool-note">{i.note}{i.href || i.destinations ? "" : " - Coming soon"}</span>
   <span class={["tool-icon", i.icon]} aria-hidden="true"></span>
 {/snippet}
 
@@ -161,7 +183,26 @@
       <section aria-labelledby={id}>
         <h2 {id}>{label}</h2>
         {#each items as i (i.title)}
-          {#if i.href}
+          {#if i.destinations}
+            <div class={["tool", "has-destinations", i.accent && `accent-${i.accent}`]}>
+              <a class="tool-main" href={i.destinations[0].href} target="_blank" aria-describedby="new-tab-description">
+                {@render toolContent(i)}
+              </a>
+              <span class="tool-destinations">
+                {#each i.destinations as destination (destination.href)}
+                  <a
+                    class={["destination", destination.brand]}
+                    href={destination.href}
+                    target="_blank"
+                    aria-describedby="new-tab-description"
+                  >
+                    {destination.label}
+                    <span class="external-icon i-material-symbols:arrow-outward" aria-hidden="true"></span>
+                  </a>
+                {/each}
+              </span>
+            </div>
+          {:else if i.href}
             <a
               class={["tool", i.accent && `accent-${i.accent}`]}
               href={i.href}
@@ -191,17 +232,10 @@
 
 <style>
   .landing {
-    /* isolation: isolate; */
-
     --space-page: clamp(1.25rem, 4vw, 3rem);
-    --space-nav: 1rem;
-    --space-note: 3px;
-    --clearance-header: 31rem;
     --offset-tagline: -10px;
     --width-nav: 24rem;
-    --gap-nav: 1rem;
-    --gap-tool: 1rem;
-    --height-tool: clamp(3.15rem, 2.8rem + 1vw, 3.7rem);
+    --gap-tool: 0.5rem;
     --position-glow-x: 35%;
     --position-glow-y: 12rem;
     --position-guidepost-orb-x: 50%;
@@ -217,15 +251,13 @@
     --size-glow-candle: clamp(16rem, 32vw, 26rem);
     --size-guidepost: clamp(23rem, 55vw, 38rem);
     --layer-backdrop: -1;
-    --background-nav: color-mix(var(--background) 50%, transparent);
-    --color-line: color-mix(var(--foreground) 15%, transparent);
-    --color-muted: color-mix(var(--foreground) 25%, transparent);
     --color-muted-hover: color-mix(var(--foreground) 75%, transparent);
+    --color-makerworld: #08bf08;
+    --color-cults3d: #822ef5;
     --color-shadow-edge: color-mix(var(--background) 90%, transparent);
-    --color-shadow-soft: color-mix(var(--background) 55%, transparent);
     --shadow-title:
       -1px 0 0 var(--color-shadow-edge), 1px 0 0 var(--color-shadow-edge), 0 -1px 0 var(--color-shadow-edge),
-      0 1px 0 var(--color-shadow-edge), 0 2px 4px var(--color-shadow-soft);
+      0 1px 0 var(--color-shadow-edge), 0 2px 4px color-mix(var(--background) 55%, transparent);
     --duration-pulse: 11s;
     --duration-flicker: 5s;
     --duration-ambient: 43s;
@@ -287,10 +319,10 @@
     display: grid;
     max-inline-size: var(--width-nav);
     margin-inline-start: auto;
-    margin-block: var(--space-nav);
+    margin-block: 1rem;
     padding: 1rem;
-    gap: var(--gap-nav);
-    background: var(--background-nav);
+    gap: 1rem;
+    background: color-mix(var(--background) 50%, transparent);
   }
 
   h2 {
@@ -301,22 +333,46 @@
 
   .tool-note {
     grid-area: note;
-    margin-block-start: var(--space-note);
-    color: var(--muted-foreground);
-    font-size: var(--text-sm);
-    line-height: var(--line-height-snug);
+    color: var(--color-tool-note, var(--muted-foreground));
   }
 
-  .tool {
+  :is(.tool, .tool-main) {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
     grid-template-areas:
       "title icon"
       "note icon";
-    column-gap: var(--gap-tool);
-    align-content: center;
-    min-block-size: var(--height-tool);
-    border-block-end: var(--border-size) solid var(--color-line);
+    gap: var(--gap-tool);
+  }
+
+  .tool {
+    --color-tool-hover: var(--accent);
+
+    padding-block: var(--gap-tool);
+    border-block-end: var(--border-size) solid color-mix(var(--foreground) 15%, transparent);
+    font-size: var(--text-sm);
+    line-height: var(--line-height-none);
+
+    &.has-destinations {
+      --color-primary-destination: var(--muted-foreground);
+      --scale-primary-destination: 0;
+
+      display: block;
+      padding-block-end: 0;
+      transition: color var(--duration-fast) var(--ease-standard);
+
+      &:has(:is(.tool-main, .destination):is(:hover, :focus-visible)) {
+        --color-tool-note: var(--color-muted-hover);
+        --shift-tool-icon: calc(-1 * var(--shift-hover));
+
+        color: var(--color-tool-hover);
+      }
+
+      &:has(.tool-main:is(:hover, :focus-visible)) {
+        --color-primary-destination: var(--foreground);
+        --scale-primary-destination: 1;
+      }
+    }
 
     &.accent-primary {
       --color-tool-hover: var(--accent-green);
@@ -329,13 +385,11 @@
     }
 
     &.accent-muted {
-      color: var(--color-muted);
+      color: color-mix(var(--foreground) 25%, transparent);
     }
   }
 
   a.tool {
-    --color-tool-hover: var(--accent);
-
     position: relative;
     transition:
       color var(--duration-fast) var(--ease-standard),
@@ -354,16 +408,14 @@
     }
 
     &:is(:hover, :focus-visible) {
+      --color-tool-note: var(--color-muted-hover);
+
       padding-inline-end: var(--shift-hover);
       outline: none;
       color: var(--color-tool-hover);
 
       &::after {
         transform: scaleX(1);
-      }
-
-      .tool-note {
-        color: var(--color-muted-hover);
       }
     }
   }
@@ -372,7 +424,6 @@
     grid-area: title;
     font-weight: var(--font-semibold);
     font-size: var(--text-lg);
-    line-height: var(--line-height-tight);
     font-family: var(--font-display);
   }
 
@@ -387,6 +438,69 @@
     align-self: center;
     inline-size: var(--size-icon);
     block-size: var(--size-icon);
+    translate: var(--shift-tool-icon, 0);
+    transition: translate var(--duration-fast) var(--ease-standard);
+  }
+
+  .tool-main {
+    &:focus-visible {
+      outline: none;
+    }
+  }
+
+  .tool-destinations {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .destination {
+    --color-destination: var(--accent);
+    --scale-destination: 0;
+
+    display: inline-flex;
+    position: relative;
+    align-items: center;
+    padding-block: var(--gap-tool);
+    color: var(--muted-foreground);
+    transition: color var(--duration-fast) var(--ease-standard);
+
+    &::after {
+      position: absolute;
+      block-size: var(--border-size);
+      inset-block-end: calc(-1 * var(--border-size));
+      inset-inline: 0;
+      transform: scaleX(var(--scale-destination));
+      transform-origin: right;
+      background: var(--color-destination);
+      content: "";
+      transition: transform var(--duration-fast) var(--ease-standard);
+    }
+
+    &.makerworld {
+      --color-destination: var(--color-makerworld);
+    }
+
+    &.cults3d {
+      --color-destination: var(--color-cults3d);
+    }
+
+    &:first-child {
+      --scale-destination: var(--scale-primary-destination);
+
+      order: 1;
+      color: var(--color-primary-destination);
+    }
+
+    &:is(:hover, :focus-visible) {
+      --scale-destination: 1;
+
+      color: var(--foreground);
+    }
+
+    &:focus-visible {
+      outline: calc(2 * var(--border-size)) solid var(--color-destination);
+      outline-offset: 2px;
+    }
   }
 
   .glow {
@@ -545,7 +659,11 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    a.tool::after {
+    :is(a.tool, .has-destinations, .destination, .tool-icon) {
+      transition: none;
+    }
+
+    :is(a.tool, .destination)::after {
       transition: none;
     }
 

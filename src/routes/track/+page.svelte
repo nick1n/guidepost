@@ -40,6 +40,10 @@
   const resultCount = $derived(tabCounts[tab]);
 </script>
 
+<svelte:head>
+  <title>Collection | Guidepost</title>
+</svelte:head>
+
 <main class="scrollbar-stable">
   <header>
     <h1>Kingdom Death: <span class="accent">Collection</span></h1>
