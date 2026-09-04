@@ -1,5 +1,8 @@
 <script lang="ts">
-  type Segment = { kind: "text"; value: string } | { kind: "strong" | "em"; value: string };
+  type Segment = {
+    kind: "text" | "strong" | "em";
+    value: string;
+  };
 
   type Props = {
     text: string;
