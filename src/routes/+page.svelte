@@ -1,6 +1,11 @@
 <script lang="ts">
+  import { goto } from "$app/navigation";
   import { asset, resolve } from "$app/paths";
   import type { PointerEventHandler } from "svelte/elements";
+  import ConfirmDialog from "#lib/components/ConfirmDialog.svelte";
+  import VersionPicker from "#lib/components/track/VersionPicker.svelte";
+  import { content } from "#lib/kdm-data.ts";
+  import { collection } from "#lib/state/collection.svelte.ts";
 
   type Accents = "primary" | "muted" | "red";
 
@@ -10,6 +15,7 @@
     icon: string;
     href?: string;
     accent?: Accents;
+    requiresCore?: boolean;
   };
 
   type NavigationSection = {
@@ -17,6 +23,10 @@
     label: string;
     items: NavigationItem[];
   };
+
+  const quickStartHref = resolve("/start");
+  const coreVersions = content.find((item) => item.id === "core")?.versions ?? [];
+  const latestCoreVersion = coreVersions.at(-1)?.v;
 
   const navigationSections: NavigationSection[] = [
     {
@@ -27,8 +37,9 @@
           title: "Quick start",
           note: "Core game only - play prologue showdown",
           icon: "i-material-symbols:play-circle-outline",
-          href: resolve("/start"),
+          href: quickStartHref,
           accent: "primary",
+          requiresCore: true,
         },
         {
           title: "Collection",
@@ -102,6 +113,9 @@
   ];
 
   let landing: HTMLElement;
+  let ownershipDialog: { show: () => void };
+  let quickStartTrigger: HTMLAnchorElement | undefined;
+  let selectedCoreVersion = $state(latestCoreVersion);
   let lightingFrame: number | undefined;
   let lightingX = 0;
   let lightingY = 0;
@@ -132,6 +146,32 @@
     const x = Math.max(-1, Math.min(1, (event.gamma ?? 0) / 35)) * 3;
     const y = Math.max(-1, Math.min(1, (event.beta ?? 45) / 45 - 1)) * 2;
     moveLighting(x, y);
+  }
+
+  function openQuickStart(event: MouseEvent) {
+    if (collection.state.core?.owned) return;
+    if (!(event.currentTarget instanceof HTMLAnchorElement)) return;
+
+    quickStartTrigger = event.currentTarget;
+    event.preventDefault();
+    selectedCoreVersion = latestCoreVersion;
+    ownershipDialog.show();
+  }
+
+  function selectCoreVersion(version: string) {
+    selectedCoreVersion = version;
+  }
+
+  async function confirmCoreOwnership() {
+    if (!collection.state.core?.owned) await collection.toggleOwned("core", { version: selectedCoreVersion });
+  }
+
+  async function continueToQuickStart() {
+    await goto(quickStartHref);
+  }
+
+  function restoreQuickStartFocus() {
+    quickStartTrigger?.focus();
   }
 </script>
 
@@ -167,6 +207,7 @@
               href={i.href}
               target={i.href.startsWith("http") ? "_blank" : undefined}
               aria-describedby={i.href.startsWith("http") ? "new-tab-description" : undefined}
+              onclick={i.requiresCore ? openQuickStart : undefined}
             >
               {@render toolContent(i)}
             </a>
@@ -179,6 +220,25 @@
       </section>
     {/each}
   </nav>
+
+  <ConfirmDialog
+    bind:this={ownershipDialog}
+    title="Core game required"
+    description="The quick start prologue showdown requires the **Kingdom Death: Monster** core box. Please choose the version you own to add it to your collection."
+    confirmLabel="Add and continue"
+    confirmingLabel="Adding…"
+    onconfirm={confirmCoreOwnership}
+    onconfirmed={continueToQuickStart}
+    oncancel={restoreQuickStartFocus}
+  >
+    <VersionPicker
+      versions={coreVersions}
+      value={selectedCoreVersion ? [selectedCoreVersion] : []}
+      onselect={selectCoreVersion}
+      groupLabel="Kingdom Death: Monster core version"
+      focusActive
+    />
+  </ConfirmDialog>
 
   <div class="glow" aria-hidden="true">
     <span class="glow-source ambient"></span>

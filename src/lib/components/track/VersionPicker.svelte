@@ -5,9 +5,12 @@
     versions: Edition[];
     value?: string[];
     onselect: (v: string) => void;
+    label?: string;
+    groupLabel?: string;
+    focusActive?: boolean;
   };
 
-  let { versions, value = [], onselect }: Props = $props();
+  let { versions, value = [], onselect, label = "Version", groupLabel = "Versions owned", focusActive = false }: Props = $props();
 
   function selectVersion(event: MouseEvent, version: string) {
     event.stopPropagation();
@@ -15,11 +18,16 @@
   }
 </script>
 
-<div role="group" aria-label="Versions owned">
-  <span>Version</span>
+<div role="group" aria-label={groupLabel}>
+  <span>{label}</span>
   {#each versions as version (version.v)}
     {@const active = value.includes(version.v)}
-    <button type="button" aria-pressed={active} onclick={(event) => selectVersion(event, version.v)}>
+    <button
+      type="button"
+      aria-pressed={active}
+      data-dialog-initial-focus={focusActive && active ? "true" : undefined}
+      onclick={(event) => selectVersion(event, version.v)}
+    >
       {version.v}
     </button>
   {/each}
@@ -28,6 +36,7 @@
 <style>
   div {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: 0.25rem;
   }

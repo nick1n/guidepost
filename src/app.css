@@ -64,14 +64,11 @@
 
 * {
   border-color: var(--border);
+  user-select: none;
 }
 
-html {
-  user-select: none;
-
-  &:has(.scrollbar-stable) {
-    scrollbar-gutter: stable both-edges;
-  }
+html:has(.scrollbar-stable) {
+  scrollbar-gutter: stable both-edges;
 }
 
 body {
