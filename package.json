@@ -38,6 +38,7 @@
     "#lib/*": "./src/lib/*"
   },
   "dependencies": {
-    "@unocss/reset": "^66.9.1"
+    "@unocss/reset": "^66.9.1",
+    "effect": "4.0.0-rc.112"
   }
 }

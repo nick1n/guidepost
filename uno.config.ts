@@ -12,6 +12,7 @@ export default defineConfig({
     "i-material-symbols:readiness-score-outline",
     "i-mdi:github",
     "i-material-symbols:favorite-outline",
+    "i-material-symbols:warning-outline",
   ],
   presets: [presetIcons()],
 });

@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { onMount } from "svelte";
   import { bundleTags, getCollectionStats, getVisibleCatalog } from "#lib/catalog-view.ts";
   import BundleCard from "#lib/components/track/BundleCard.svelte";
   import CollectionStats from "#lib/components/track/CollectionStats.svelte";
@@ -9,7 +8,6 @@
   import { allContentTags, allDiceTags, allHomebrewTags, priceById } from "#lib/kdm-data.ts";
   import { collection } from "#lib/state/collection.svelte.ts";
   import { createFilterState } from "#lib/state/filters.svelte.ts";
-  import { LocalGuestStore } from "#lib/state/stores.ts";
 
   type Tab = "content" | "dice" | "bundles" | "homebrew";
 
@@ -22,12 +20,6 @@
 
   let tab = $state<Tab>("content");
   const filters = createFilterState();
-
-  onMount(() => {
-    const userId = "guest";
-    collection.setUser(userId);
-    collection.setStore(new LocalGuestStore(userId));
-  });
 
   const stats = $derived(getCollectionStats(collection.state));
   const visible = $derived(getVisibleCatalog(filters.value, collection.state));
