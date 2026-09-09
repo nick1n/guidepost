@@ -8,6 +8,7 @@
   import StoreLink from "./StoreLink.svelte";
   import { effectivePrice, formatPrice, nameById, storeUrl } from "#lib/kdm-data.ts";
   import { collection } from "#lib/state/collection.svelte.ts";
+  import { collectionActions } from "#lib/state/collection-actions.svelte.ts";
   import { getFilterState } from "#lib/state/filters.svelte.ts";
   import type { ContentItem } from "#lib/types/index.ts";
 
@@ -29,7 +30,7 @@
   function onkeydown(event: KeyboardEvent) {
     if (event.key !== "Enter" && event.key !== " ") return;
     event.preventDefault();
-    collection.toggleOwned(item.id, { version: item.versions?.at(-1)?.v, edition: item.editions?.at(-1)?.v });
+    collectionActions.run(collection.toggleOwned(item.id, { version: item.versions?.at(-1)?.v, edition: item.editions?.at(-1)?.v }));
   }
 </script>
 
@@ -44,10 +45,16 @@
     tabindex={0}
     aria-pressed={owned}
     aria-label={`${owned ? "Unmark" : "Mark"} ${item.name} as owned`}
-    onclick={() => collection.toggleOwned(item.id, { version: item.versions?.at(-1)?.v, edition: item.editions?.at(-1)?.v })}
+    onclick={() =>
+      collectionActions.run(collection.toggleOwned(item.id, { version: item.versions?.at(-1)?.v, edition: item.editions?.at(-1)?.v }))}
     {onkeydown}
   >
-    <OwnedCheckbox checked={owned} onchange={() => collection.toggleOwned(item.id)} label={item.name} --layer-control="1" />
+    <OwnedCheckbox
+      checked={owned}
+      onchange={() => collectionActions.run(collection.toggleOwned(item.id))}
+      label={item.name}
+      --layer-control="1"
+    />
     <div class="summary">
       <h3>
         {item.name}
@@ -57,7 +64,11 @@
       {/if}
     </div>
     {#if !owned}
-      <WishlistButton active={!!entry.wishlisted} onchange={() => collection.toggleWishlisted(item.id)} label={item.name} />
+      <WishlistButton
+        active={!!entry.wishlisted}
+        onchange={() => collectionActions.run(collection.toggleWishlisted(item.id))}
+        label={item.name}
+      />
     {/if}
   </div>
 
@@ -81,13 +92,17 @@
         editions={item.editions}
         value={entry.editions}
         copyNumbers={entry.editionNumbers}
-        onselect={(edition) => collection.setEdition(item.id, edition)}
-        onSetCopyNumber={(edition, number) => collection.setEditionNumber(item.id, edition, number)}
+        onselect={(edition) => collectionActions.run(collection.setEdition(item.id, edition))}
+        onSetCopyNumber={(edition, number) => collectionActions.run(collection.setEditionNumber(item.id, edition, number))}
       />
     {/if}
 
     {#if item.versions}
-      <VersionPicker versions={item.versions} value={entry.versions} onselect={(version) => collection.setVersion(item.id, version)} />
+      <VersionPicker
+        versions={item.versions}
+        value={entry.versions}
+        onselect={(version) => collectionActions.run(collection.setVersion(item.id, version))}
+      />
     {/if}
 
     {#if item.requires && item.requires.length > 0}

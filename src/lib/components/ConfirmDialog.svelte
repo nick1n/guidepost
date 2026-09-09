@@ -1,12 +1,17 @@
 <script lang="ts">
+  import { Effect } from "effect";
   import type { Snippet } from "svelte";
+
+  type DialogFailure = {
+    readonly message: string;
+  };
 
   type Props = {
     title: string;
     description: string;
-    onconfirm: () => void | Promise<void>;
-    onconfirmed?: () => void | Promise<void>;
-    oncancel?: () => void | Promise<void>;
+    onconfirm: () => Effect.Effect<unknown, DialogFailure>;
+    onconfirmed?: () => Effect.Effect<unknown, DialogFailure>;
+    oncancel?: () => Effect.Effect<unknown, unknown>;
     children?: Snippet;
     confirmLabel?: string;
     confirmingLabel?: string;
@@ -19,7 +24,7 @@
     description,
     onconfirm,
     onconfirmed,
-    oncancel: oncancelCallback,
+    oncancel,
     children,
     confirmLabel = "Confirm",
     confirmingLabel = "Working…",
@@ -28,44 +33,35 @@
   }: Props = $props();
 
   const id = $props.id();
+  const closeDuration = 180;
   let dialog: HTMLDialogElement;
   let confirming = $state(false);
   let errorMessage = $state<string | undefined>();
-  let closePromise: Promise<void> | undefined;
+  let confirmed = false;
+  let closing = false;
+
+  function reportUnexpected(cause: unknown) {
+    console.error("Unexpected dialog failure", cause);
+  }
 
   export function show() {
-    if (dialog.open || closePromise) return;
+    if (dialog.open || closing) return;
 
     errorMessage = undefined;
     confirming = false;
+    confirmed = false;
     dialog.showModal();
     queueMicrotask(() => dialog.querySelector<HTMLElement>("[data-dialog-initial-focus]")?.focus());
   }
 
-  function parseTime(value: string) {
-    const amount = Number.parseFloat(value);
-    if (!Number.isFinite(amount)) return 0;
-    return value.trim().endsWith("ms") ? amount : amount * 1000;
-  }
-
-  function closeDuration() {
-    const styles = getComputedStyle(dialog);
-    const duration = styles.transitionDuration.split(",")[0] ?? "0s";
-    const delay = styles.transitionDelay.split(",")[0] ?? "0s";
-    return parseTime(duration) + parseTime(delay);
-  }
-
   export function close(returnValue?: string) {
-    if (!dialog.open) return closePromise ?? Promise.resolve();
-    if (closePromise) return closePromise;
+    return Effect.callback((resume) => {
+      if (!dialog.open || closing) {
+        resume(Effect.void);
+        return;
+      }
 
-    const duration = closeDuration();
-    if (duration <= 0) {
-      dialog.close(returnValue);
-      return Promise.resolve();
-    }
-
-    closePromise = new Promise<void>((resolve) => {
+      closing = true;
       let settled = false;
       let timeout: ReturnType<typeof setTimeout>;
 
@@ -74,8 +70,8 @@
         settled = true;
         dialog.removeEventListener("transitionend", ontransitionend);
         clearTimeout(timeout);
-        closePromise = undefined;
-        resolve();
+        closing = false;
+        resume(Effect.void);
       };
 
       function ontransitionend(event: TransitionEvent) {
@@ -84,46 +80,97 @@
 
       dialog.addEventListener("transitionend", ontransitionend);
       dialog.close(returnValue);
-      timeout = setTimeout(finish, duration + 50);
-    });
+      timeout = setTimeout(finish, closeDuration + 50);
 
-    return closePromise;
+      return Effect.sync(() => {
+        settled = true;
+        dialog.removeEventListener("transitionend", ontransitionend);
+        clearTimeout(timeout);
+        closing = false;
+      });
+    });
   }
 
-  async function confirm() {
+  function showError(message: string) {
+    errorMessage = message;
+  }
+
+  function showFollowUpError(message: string) {
+    errorMessage = message;
+    if (!dialog.open) dialog.showModal();
+    queueMicrotask(() => dialog.querySelector<HTMLButtonElement>(".confirm")?.focus());
+  }
+
+  function confirm() {
     if (confirming) return;
 
     confirming = true;
     errorMessage = undefined;
 
-    try {
-      await onconfirm();
-    } catch {
-      errorMessage = "We couldn't save that change. Please try again.";
-      confirming = false;
-      return;
-    }
+    const confirmation = confirmed
+      ? Effect.void
+      : Effect.suspend(onconfirm).pipe(
+          Effect.tap(() =>
+            Effect.sync(() => {
+              confirmed = true;
+            }),
+          ),
+        );
+    const followUp = onconfirmed
+      ? close("confirm").pipe(
+          Effect.andThen(Effect.suspend(onconfirmed)),
+          Effect.catch((error) => Effect.sync(() => showFollowUpError(error.message))),
+          Effect.catchCause((cause) =>
+            Effect.sync(() => {
+              reportUnexpected(cause);
+              showFollowUpError("The change was saved, but the next page could not be opened. Please try again.");
+            }),
+          ),
+        )
+      : close("confirm");
 
-    await close("confirm");
-    confirming = false;
-    await onconfirmed?.();
+    Effect.runFork(
+      confirmation.pipe(
+        Effect.tapError((error) => Effect.sync(() => showError(error.message))),
+        Effect.andThen(followUp),
+        Effect.catch(() => Effect.void),
+        Effect.catchCause((cause) =>
+          Effect.sync(() => {
+            reportUnexpected(cause);
+            showError("We couldn't save that change. Please try again.");
+          }),
+        ),
+        Effect.ensuring(
+          Effect.sync(() => {
+            confirming = false;
+          }),
+        ),
+      ),
+    );
   }
 
-  async function cancel() {
-    if (confirming) return;
+  function cancel() {
+    if (confirming || closing) return;
 
     errorMessage = undefined;
-    await close("cancel");
-    await oncancelCallback?.();
+    Effect.runFork(
+      Effect.gen(function* () {
+        yield* close("cancel");
+        if (oncancel) yield* Effect.suspend(oncancel);
+      }).pipe(
+        Effect.catch((error) => Effect.sync(() => reportUnexpected(error))),
+        Effect.catchCause((cause) => Effect.sync(() => reportUnexpected(cause))),
+      ),
+    );
   }
 
   function onclick(event: MouseEvent) {
     if (event.target === event.currentTarget) cancel();
   }
 
-  function oncancel(event: Event) {
+  function handleCancel(event: Event) {
     event.preventDefault();
-    void cancel();
+    cancel();
   }
 </script>
 
@@ -132,8 +179,8 @@
   aria-labelledby={`${id}-title`}
   aria-describedby={errorMessage ? `${id}-description ${id}-error` : `${id}-description`}
   aria-busy={confirming}
+  oncancel={handleCancel}
   {onclick}
-  {oncancel}
 >
   <form method="dialog">
     <div class="heading">
@@ -164,11 +211,11 @@
 
     inline-size: min(26rem, calc(100% - 2rem));
     margin: auto;
-    border: var(--border-size) solid var(--accent);
     padding: 0;
+    border: var(--border-size) solid var(--accent);
     background: var(--popover);
-    color: var(--popover-foreground);
     box-shadow: 0 1.5rem 4rem #0009;
+    color: var(--popover-foreground);
     opacity: 0;
     transition:
       opacity var(--duration-fast) var(--ease-standard),
@@ -203,9 +250,9 @@
 
   fieldset {
     min-inline-size: 0;
-    border: 0;
     margin: 0;
     padding: 0;
+    border: 0;
   }
 
   .heading {
@@ -219,8 +266,8 @@
     display: inline-block;
     inline-size: 2rem;
     block-size: 2rem;
-    color: var(--accent);
     margin-inline-start: auto;
+    color: var(--accent);
   }
 
   h2 {
@@ -249,9 +296,9 @@
 
   .action {
     min-block-size: 2.5rem;
+    padding-inline: 0.875rem;
     border: var(--border-size) solid var(--muted-foreground);
     border-radius: var(--radius-control);
-    padding-inline: 0.875rem;
     font-weight: var(--font-semibold);
     transition:
       border-color var(--duration-fast) var(--ease-standard),

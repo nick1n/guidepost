@@ -1,6 +1,7 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { asset, resolve } from "$app/paths";
+  import { Effect } from "effect";
   import type { PointerEventHandler } from "svelte/elements";
   import ConfirmDialog from "#lib/components/ConfirmDialog.svelte";
   import VersionPicker from "#lib/components/track/VersionPicker.svelte";
@@ -162,16 +163,23 @@
     selectedCoreVersion = version;
   }
 
-  async function confirmCoreOwnership() {
-    if (!collection.state.core?.owned) await collection.toggleOwned("core", { version: selectedCoreVersion });
+  function confirmCoreOwnership() {
+    if (collection.state.core?.owned) return Effect.void;
+    return collection.toggleOwned("core", { version: selectedCoreVersion });
   }
 
-  async function continueToQuickStart() {
-    await goto(quickStartHref);
+  function continueToQuickStart() {
+    return Effect.tryPromise({
+      try: () => goto(quickStartHref),
+      catch: (cause) => ({
+        message: "The core game was added, but Quick start could not be opened. Please try again.",
+        cause,
+      }),
+    });
   }
 
   function restoreQuickStartFocus() {
-    quickStartTrigger?.focus();
+    return Effect.sync(() => quickStartTrigger?.focus());
   }
 </script>
 

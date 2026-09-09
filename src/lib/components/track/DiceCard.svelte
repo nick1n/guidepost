@@ -5,6 +5,7 @@
   import { formatPrice, storeUrl } from "#lib/kdm-data.ts";
   import type { DiceSet } from "#lib/types/index.ts";
   import { collection } from "#lib/state/collection.svelte.ts";
+  import { collectionActions } from "#lib/state/collection-actions.svelte.ts";
 
   type Props = {
     item: DiceSet;
@@ -19,7 +20,7 @@
   function onkeydown(event: KeyboardEvent) {
     if (event.key !== "Enter" && event.key !== " ") return;
     event.preventDefault();
-    collection.toggleOwned(item.id);
+    collectionActions.run(collection.toggleOwned(item.id));
   }
 </script>
 
@@ -30,15 +31,19 @@
     tabindex={0}
     aria-pressed={owned}
     aria-label={`${owned ? "Unmark" : "Mark"} ${item.name} as owned`}
-    onclick={() => collection.toggleOwned(item.id)}
+    onclick={() => collectionActions.run(collection.toggleOwned(item.id))}
     {onkeydown}
   >
-    <OwnedCheckbox checked={owned} onchange={() => collection.toggleOwned(item.id)} label={item.name} />
+    <OwnedCheckbox checked={owned} onchange={() => collectionActions.run(collection.toggleOwned(item.id))} label={item.name} />
     <h3>
       {item.name}
     </h3>
     {#if !owned}
-      <WishlistButton active={!!entry.wishlisted} onchange={() => collection.toggleWishlisted(item.id)} label={item.name} />
+      <WishlistButton
+        active={!!entry.wishlisted}
+        onchange={() => collectionActions.run(collection.toggleWishlisted(item.id))}
+        label={item.name}
+      />
     {/if}
   </div>
 

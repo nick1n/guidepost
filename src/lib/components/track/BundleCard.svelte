@@ -7,6 +7,7 @@
   import { formatPrice, nameById, storeUrl } from "#lib/kdm-data.ts";
   import type { Bundle } from "#lib/types/index.ts";
   import { collection } from "#lib/state/collection.svelte.ts";
+  import { collectionActions } from "#lib/state/collection-actions.svelte.ts";
 
   type Props = {
     bundle: Bundle;
@@ -25,8 +26,7 @@
 
   function onclick() {
     const nextOwned = !collection.state[bundle.id]?.owned;
-    collection.toggleOwned(bundle.id);
-    collection.setManyOwned(bundle.includes, nextOwned);
+    collectionActions.run(collection.setBundleOwned(bundle.id, bundle.includes, nextOwned));
   }
 
   function toggleBundleOwnedFromKeyboard(event: KeyboardEvent) {
@@ -56,7 +56,11 @@
       </p>
     </div>
     {#if !owned}
-      <WishlistButton active={!!entry.wishlisted} onchange={() => collection.toggleWishlisted(bundle.id)} label={bundle.name} />
+      <WishlistButton
+        active={!!entry.wishlisted}
+        onchange={() => collectionActions.run(collection.toggleWishlisted(bundle.id))}
+        label={bundle.name}
+      />
     {/if}
   </div>
 
@@ -84,11 +88,13 @@
     <TagRail tags={bundle.tags} />
 
     <div class="actions">
-      <button type="button" onclick={() => collection.setManyOwned(bundle.includes, true)} class="mark-all">
+      <button type="button" onclick={() => collectionActions.run(collection.setManyOwned(bundle.includes, true))} class="mark-all">
         <span class="button-icon i-material-symbols:check" aria-hidden="true"></span>
         Mark all owned
       </button>
-      <button type="button" onclick={() => collection.setManyOwned(bundle.includes, false)} class="clear-all"> Clear all </button>
+      <button type="button" onclick={() => collectionActions.run(collection.setManyOwned(bundle.includes, false))} class="clear-all">
+        Clear all
+      </button>
     </div>
 
     <button type="button" onclick={() => (expanded = !expanded)} aria-expanded={expanded} class="contents-toggle">
