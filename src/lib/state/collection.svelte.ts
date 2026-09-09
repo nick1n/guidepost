@@ -1,35 +1,103 @@
-import type { ContentStateStore } from "./stores";
+import { Effect } from "effect";
+import type { ContentStateStore, ContentStateStoreError } from "./stores";
 import type { CollectionState, EntryState } from "#lib/types/index.ts";
+
+export type CollectionPersistenceError = {
+  readonly _tag: "CollectionPersistenceError";
+  readonly message: string;
+  readonly operation: "load" | "save" | "clear";
+  readonly itemIds: readonly string[];
+  readonly cause: unknown;
+};
+
+function persistenceError(itemIds: readonly string[], error: ContentStateStoreError): CollectionPersistenceError {
+  const message =
+    error.operation === "load"
+      ? error.reason === "invalid-data"
+        ? "Your saved collection data is invalid and could not be loaded."
+        : "We couldn't access your saved collection. Please try again."
+      : "We couldn't save that change. Please try again.";
+
+  return {
+    _tag: "CollectionPersistenceError",
+    message,
+    operation: error.operation,
+    itemIds,
+    cause: error,
+  };
+}
+
+function unavailableStoreError(operation: CollectionPersistenceError["operation"], itemIds: readonly string[]): CollectionPersistenceError {
+  return {
+    _tag: "CollectionPersistenceError",
+    message: "Collection storage is unavailable. Reload the page and try again.",
+    operation,
+    itemIds,
+    cause: "Content state store is not initialized",
+  };
+}
 
 class ContentState {
   state = $state<CollectionState>({});
-  hydrated = $state(false);
+  loadStatus = $state<"idle" | "loading" | "ready" | "error">("idle");
   userId = $state<string | undefined>();
   private store?: ContentStateStore;
 
-  async setStore(store: ContentStateStore, migrateFrom?: ContentStateStore) {
-    if (this.store === store) return;
-    const localState = migrateFrom?.load() ?? {};
-    this.store = store;
-    this.state = { ...store.load(), ...localState };
-    this.hydrated = true;
-    if (Object.keys(localState).length) {
-      await store.saveMany(localState);
-      await migrateFrom?.clear();
-    }
+  setStore(store: ContentStateStore, migrateFrom?: ContentStateStore) {
+    const self = this;
+    return Effect.suspend(() => {
+      self.store = store;
+      self.loadStatus = "loading";
+
+      return Effect.gen(function* () {
+        const localState = migrateFrom ? yield* migrateFrom.load().pipe(Effect.mapError((error) => persistenceError([], error))) : {};
+        const storedState = yield* store.load().pipe(Effect.mapError((error) => persistenceError([], error)));
+        const itemIds = Object.keys(localState);
+
+        if (itemIds.length) {
+          yield* store.saveMany(localState).pipe(Effect.mapError((error) => persistenceError(itemIds, error)));
+          if (migrateFrom) yield* migrateFrom.clear().pipe(Effect.mapError((error) => persistenceError(itemIds, error)));
+        }
+
+        self.state = { ...storedState, ...localState };
+        self.loadStatus = "ready";
+      }).pipe(
+        Effect.tapCause(() =>
+          Effect.sync(() => {
+            self.loadStatus = "error";
+          }),
+        ),
+      );
+    });
   }
 
   setUser(userId?: string) {
     if (this.userId === userId) return;
     this.userId = userId;
+    this.store = undefined;
     this.state = {};
-    this.hydrated = false;
+    this.loadStatus = "idle";
   }
 
   refresh() {
-    if (!this.store) return;
-    this.state = this.store.load();
-    this.hydrated = true;
+    return Effect.suspend(() => {
+      if (!this.store) return Effect.fail(unavailableStoreError("load", []));
+      this.loadStatus = "loading";
+      return this.store.load().pipe(
+        Effect.mapError((error) => persistenceError([], error)),
+        Effect.tap((state) =>
+          Effect.sync(() => {
+            this.state = state;
+            this.loadStatus = "ready";
+          }),
+        ),
+        Effect.tapCause(() =>
+          Effect.sync(() => {
+            this.loadStatus = "error";
+          }),
+        ),
+      );
+    });
   }
 
   get(id: string) {
@@ -37,34 +105,48 @@ class ContentState {
   }
 
   private update(itemId: string, change: (entry: EntryState) => EntryState) {
-    return this.commit(itemId, change(this.get(itemId)));
+    return Effect.suspend(() => this.commit(itemId, change(this.get(itemId))));
   }
 
-  private async commit(itemId: string, next: EntryState) {
-    if (!this.store) return;
-    const previous = this.state;
-    this.state = { ...this.state, [itemId]: next };
-    try {
-      await this.store.save(itemId, next);
-    } catch (error) {
-      this.state = previous;
-      throw error;
-    }
+  private commit(itemId: string, next: EntryState) {
+    return Effect.suspend(() => {
+      if (!this.store) return Effect.fail(unavailableStoreError("save", [itemId]));
+
+      const store = this.store;
+      const previous = this.state;
+      this.state = { ...this.state, [itemId]: next };
+
+      return store.save(itemId, next).pipe(
+        Effect.mapError((error) => persistenceError([itemId], error)),
+        Effect.tapError(() =>
+          Effect.sync(() => {
+            this.state = previous;
+          }),
+        ),
+      );
+    });
   }
 
-  private async commitMany(nextState: Record<string, EntryState>) {
-    if (!this.store) return;
-    const previous = this.state;
-    this.state = { ...this.state, ...nextState };
-    try {
-      await this.store.saveMany(nextState);
-    } catch (error) {
-      this.state = previous;
-      throw error;
-    }
+  private commitMany(nextState: Record<string, EntryState>) {
+    return Effect.suspend(() => {
+      if (!this.store) return Effect.fail(unavailableStoreError("save", Object.keys(nextState)));
+
+      const store = this.store;
+      const previous = this.state;
+      this.state = { ...this.state, ...nextState };
+
+      return store.saveMany(nextState).pipe(
+        Effect.mapError((error) => persistenceError(Object.keys(nextState), error)),
+        Effect.tapError(() =>
+          Effect.sync(() => {
+            this.state = previous;
+          }),
+        ),
+      );
+    });
   }
 
-  async toggleOwned(itemId: string, defaults?: { version?: string; edition?: string }) {
+  toggleOwned(itemId: string, defaults?: { version?: string; edition?: string }) {
     return this.update(itemId, (entry) => {
       const owned = !entry.owned;
       return {
@@ -78,11 +160,11 @@ class ContentState {
     });
   }
 
-  async toggleWishlisted(itemId: string) {
+  toggleWishlisted(itemId: string) {
     return this.update(itemId, (entry) => ({ ...entry, wishlisted: !entry.wishlisted }));
   }
 
-  async setVersion(itemId: string, version: string) {
+  setVersion(itemId: string, version: string) {
     return this.update(itemId, (entry) => {
       const versions = entry.versions ?? [];
       const next = versions.includes(version) ? versions.filter((value) => value !== version) : [...versions, version];
@@ -95,7 +177,7 @@ class ContentState {
     });
   }
 
-  async setEdition(itemId: string, edition: string) {
+  setEdition(itemId: string, edition: string) {
     return this.update(itemId, (entry) => {
       const editions = entry.editions ?? [];
       const next = editions.includes(edition) ? editions.filter((value) => value !== edition) : [...editions, edition];
@@ -111,7 +193,7 @@ class ContentState {
     });
   }
 
-  async setEditionNumber(itemId: string, edition: string, editionNumber?: number) {
+  setEditionNumber(itemId: string, edition: string, editionNumber?: number) {
     return this.update(itemId, (entry) => {
       const numbers = { ...(entry.editionNumbers ?? {}) };
       if (editionNumber == null) delete numbers[edition];
@@ -120,25 +202,38 @@ class ContentState {
     });
   }
 
-  async setManyOwned(ids: string[], owned: boolean) {
-    const nextState = Object.fromEntries(
-      ids.map((itemId) => {
-        const entry = this.get(itemId);
-        return [itemId, { ...entry, owned, wishlisted: owned ? false : entry.wishlisted }];
-      }),
-    );
-    await this.commitMany(nextState);
+  setManyOwned(ids: string[], owned: boolean) {
+    return Effect.suspend(() => {
+      const nextState = Object.fromEntries(
+        ids.map((itemId) => {
+          const entry = this.get(itemId);
+          return [itemId, { ...entry, owned, wishlisted: owned ? false : entry.wishlisted }];
+        }),
+      );
+      return this.commitMany(nextState);
+    });
   }
 
-  async reset() {
-    const previous = this.state;
-    this.state = {};
-    try {
-      await this.store?.clear();
-    } catch (error) {
-      this.state = previous;
-      throw error;
-    }
+  setBundleOwned(bundleId: string, ids: string[], owned: boolean) {
+    return this.setManyOwned([bundleId, ...ids], owned);
+  }
+
+  reset() {
+    return Effect.suspend(() => {
+      const store = this.store;
+      const previous = this.state;
+      if (!store) return Effect.fail(unavailableStoreError("clear", Object.keys(previous)));
+      this.state = {};
+
+      return store.clear().pipe(
+        Effect.mapError((error) => persistenceError(Object.keys(previous), error)),
+        Effect.tapError(() =>
+          Effect.sync(() => {
+            this.state = previous;
+          }),
+        ),
+      );
+    });
   }
 }
 

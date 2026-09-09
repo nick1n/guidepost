@@ -7,6 +7,7 @@
   import FilterBar from "#lib/components/track/FilterBar.svelte";
   import { allContentTags, allDiceTags, allHomebrewTags, priceById } from "#lib/kdm-data.ts";
   import { collection } from "#lib/state/collection.svelte.ts";
+  import { collectionActions } from "#lib/state/collection-actions.svelte.ts";
   import { createFilterState } from "#lib/state/filters.svelte.ts";
 
   type Tab = "content" | "dice" | "bundles" | "homebrew";
@@ -51,6 +52,11 @@
     const bundle = visible.visibleBundles[0];
     if (!collection.get(bundle.id).owned) collection.setManyOwned([bundle.id, ...bundle.includes], true);
   }
+
+  function retryLoad() {
+    collectionActions.run(collection.refresh());
+  }
+  }
 </script>
 
 <svelte:head>
@@ -64,6 +70,15 @@
   </header>
 
   <CollectionStats {...stats} />
+
+  {#if collectionActions.error && collectionActions.error.operation !== "load"}
+    <div class="error" role="alert">
+      <span>{collectionActions.error.message}</span>
+      <button class="dismiss" type="button" onclick={() => collectionActions.dismiss()} aria-label="Dismiss collection error">
+        <span class="dismiss-icon i-material-symbols:close" aria-hidden="true"></span>
+      </button>
+    </div>
+  {/if}
 
   <nav aria-label="Sections">
     <span class="tab-highlight" aria-hidden="true"></span>
@@ -82,7 +97,12 @@
     {onenter}
   />
 
-  {#if !collection.hydrated}
+  {#if collection.loadStatus === "error"}
+    <div class="load-error">
+      <p>{collectionActions.error?.operation === "load" ? collectionActions.error.message : "Collection unavailable"}</p>
+      <button class="retry" type="button" onclick={retryLoad}>Try again</button>
+    </div>
+  {:else if collection.loadStatus !== "ready"}
     <p class="message">Loading collection…</p>
   {:else if resultCount === 0}
     <p class="message">Nothing matches these filters</p>
@@ -183,6 +203,54 @@
     padding-block: 2.5rem;
     color: var(--muted-foreground);
     text-align: center;
+  }
+
+  .load-error {
+    display: grid;
+    justify-items: center;
+    padding-block: 2.5rem;
+    gap: 0.75rem;
+    color: var(--muted-foreground);
+  }
+
+  .retry {
+    padding-block: 0.5rem;
+    padding-inline: 0.75rem;
+    border: var(--border-size) solid var(--accent);
+    color: var(--foreground);
+
+    &:hover {
+      background: var(--accent);
+      color: var(--contrast);
+    }
+  }
+
+  .error {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem;
+    border: var(--border-size) solid var(--accent-red);
+    gap: 0.75rem;
+    background: color-mix(var(--accent-red) 12%, var(--panel));
+    color: var(--foreground);
+  }
+
+  .dismiss-icon {
+    display: inline-block;
+    inline-size: 1.25rem;
+    block-size: 1.25rem;
+    color: var(--accent-red);
+  }
+
+  .dismiss {
+    display: inline-flex;
+    padding: 0.25rem;
+    border-radius: var(--radius-control);
+
+    &:is(:hover, :focus-visible) {
+      background: color-mix(var(--accent-red) 18%, transparent);
+    }
   }
 
   ul {
