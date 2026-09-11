@@ -2,6 +2,32 @@
 
 Guidepost is a personal hub for board game companion tools.
 
+## Catalog types
+
+`src/lib/schema.json` defines the catalog shape. `pnpm generate:types` uses `json-schema-to-typescript` to generate
+`src/lib/types/gen/kdm-data.d.ts`. Edit the schema, then regenerate the types; do not edit generated files by hand.
+
+`pnpm dev`, `pnpm build`, and `pnpm check` regenerate the types before starting. The dev server also regenerates them whenever the schema
+changes. Generation writes only when the output changes; invalid schemas report an error in the terminal and preserve the last valid types.
+The app's types in `src/lib/types/index.ts` extend the generated types with catalog IDs.
+
+## Known UnoCSS warning
+
+Development, checks, and builds may print:
+
+```text
+The following plugins may not work correctly because they use the `transformIndexHtml` hook which is not supported:
+  - unocss:svelte-scoped:global-styles
+```
+
+This warning is safe to ignore with the current integration. SvelteKit detects the declared hook, but UnoCSS skips it for SvelteKit and
+uses `transform` and `renderChunk` to include global styles instead. See the
+[UnoCSS implementation](https://github.com/unocss/unocss/blob/main/packages-integrations/svelte-scoped/src/_vite/globalStylesPlugin.ts).
+
+The production build has been verified to link the global stylesheet and include all safelisted icons. Keep the integration as-is;
+after UnoCSS/SvelteKit upgrades or integration changes, rebuild and recheck those outputs and confirm no `%unocss-svelte-scoped.global%`
+placeholders remain in generated HTML. Other warnings need their own investigation.
+
 ## License
 
 Original Guidepost source code is licensed under the [GNU Affero General Public License v3.0 only](LICENSE).

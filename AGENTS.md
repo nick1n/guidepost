@@ -36,16 +36,16 @@ pnpm format
 pnpm format:check
 ```
 
-Always run `pnpm check` after TypeScript or Svelte changes. Ignore the following expected warning when running `pnpm dev` or `pnpm check`; it does not indicate a failed command:
+Always run `pnpm check` after TypeScript or Svelte changes. The following warning may appear during `pnpm dev`, `pnpm check`, or `pnpm build` and is safe to ignore with the current UnoCSS integration:
 
 ```text
 The following plugins may not work correctly because they use the `transformIndexHtml` hook which is not supported:
-  - unocss:transformers:pre
-  - unocss:transformers:default
-  - unocss:transformers:post
+  - unocss:svelte-scoped:global-styles
 ```
 
-The project may also emit known UnoCSS Vite warnings during builds. Do not change the UnoCSS/Vite integration without confirming that generated production CSS is still complete.
+SvelteKit warns because the plugin declares `transformIndexHtml`, but UnoCSS skips that hook for SvelteKit and uses `transform` and `renderChunk` instead. This warning alone does not indicate missing styles or a failed command. Keep the integration as-is rather than adding a workaround solely to silence it.
+
+After changing UnoCSS/SvelteKit dependencies or their integration, run `pnpm build` and verify that generated app pages link to an existing global UnoCSS stylesheet, safelisted icons have CSS rules, and no `%unocss-svelte-scoped.global%` placeholders remain in the generated HTML. Investigate other warnings separately.
 
 ## TypeScript
 

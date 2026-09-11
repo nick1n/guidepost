@@ -3,12 +3,14 @@ import UnoCSS from "@unocss/svelte-scoped/vite";
 import { vitePreprocess } from "@sveltejs/vite-plugin-svelte";
 import { sveltekit } from "@sveltejs/kit/vite";
 import { defineConfig } from "vite";
+import { schemaTypes } from "./scripts/schema-types.ts";
 
 const base = (process.env.BASE_PATH ?? "") as "" | `/${string}`;
 
 export default defineConfig({
   envPrefix: ["PUBLIC_"],
   plugins: [
+    schemaTypes(),
     UnoCSS(),
     sveltekit({
       preprocess: vitePreprocess(),
