@@ -164,8 +164,8 @@
   function ondeviceorientation(event: DeviceOrientationEvent) {
     if (event.beta === null && event.gamma === null) return;
     onpointermove = null;
-    const x = Math.max(-1, Math.min(1, (event.gamma ?? 0) / 35)) * 3;
-    const y = Math.max(-1, Math.min(1, (event.beta ?? 45) / 45 - 1)) * 2;
+    const x = Math.max(-1, Math.min(1, (event.gamma ?? 0) / 35)) * 4;
+    const y = Math.max(-1, Math.min(1, (event.beta ?? 45) / 45 - 1)) * 3;
     moveLighting(x, y);
   }
 </script>
@@ -535,7 +535,9 @@
   .glow {
     z-index: var(--layer-backdrop);
     position: fixed;
-    inset: -2rem;
+    block-size: calc(100lvh + 4rem);
+    inset-block-end: -2rem;
+    inset-inline: -2rem;
     overflow: hidden;
     translate: var(--shift-x) var(--shift-y);
     pointer-events: none;
