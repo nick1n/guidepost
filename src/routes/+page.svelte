@@ -224,7 +224,21 @@
   <div class="glow" aria-hidden="true">
     <span class="glow-source ambient"></span>
     <span class="glow-source pulse"></span>
-    <img class="guidepost" src={asset("logo/guidepost-min.svg")} alt="guidepost" />
+    <svg class="guidepost" viewBox="0 0 850 1100" focusable="false">
+      <defs>
+        <radialGradient id="lantern-glass" gradientUnits="userSpaceOnUse" cx="425" cy="504" r="78">
+          <stop class="lantern-core" offset="0%" />
+          <stop class="lantern-honey" offset="42%" />
+          <stop class="lantern-ember" offset="100%" />
+        </radialGradient>
+      </defs>
+      <image href={asset("logo/guidepost-min.svg")} width="850" height="1100" />
+      <path
+        class="lantern-glass"
+        fill="url(#lantern-glass)"
+        d="M360 469q0 22 8 36c5 9 3 8 11 11q24 9 40 27c8 9 12-3 25-13q41-46 22-69c-23 10-24-8-41-21l-35 20c-18 1-19 2-30 9 9-2 20-3 24-8l3 8c14 0 23-13 38-29 11 11 19 26 35 30l6-9c11 28-7 49-22 69l10-6c17-10 19-5 27-17 10-16 9-31 6-48q-15-1-24-9-3 10-7 7c-11-2-23-18-31-30-8 12-20 28-36 30l-2-7c-11 7-11 6-25 9z"
+      />
+    </svg>
     <span class="glow-source flicker"></span>
     <span class="glow-source candle"></span>
   </div>
@@ -259,9 +273,12 @@
       -1px 0 0 var(--color-shadow-edge), 1px 0 0 var(--color-shadow-edge), 0 -1px 0 var(--color-shadow-edge),
       0 1px 0 var(--color-shadow-edge), 0 2px 4px color-mix(var(--background) 55%, transparent);
     --duration-pulse: 11s;
-    --duration-flicker: 5s;
+    --duration-flicker: 13s;
     --duration-ambient: 43s;
     --duration-candle: 7s;
+    --color-lantern-core: #fff3cc;
+    --color-lantern-honey: #ffc66d;
+    --color-lantern-ember: #ce6b29;
     --gradient-page-sheen-vignette:
       linear-gradient(150deg, transparent 20%, #ffd6ad0f 50%, transparent 80%),
       radial-gradient(ellipse at center, transparent 70%, #fff0bd04 100%);
@@ -548,8 +565,6 @@
     &.flicker {
       inline-size: var(--size-glow-flicker);
       background: var(--gradient-light-flicker);
-      animation: flicker var(--duration-flicker) linear infinite;
-      opacity: 0.88;
     }
 
     &.candle {
@@ -558,6 +573,25 @@
       animation: candle-flicker var(--duration-candle) linear infinite -1.3s;
       opacity: 0.68;
     }
+  }
+
+  /* The glass and nearby light share a clock, including the brief gusts. */
+  :is(.lantern-glass, .glow-source.flicker) {
+    animation: flicker var(--duration-flicker) linear infinite -3s;
+    opacity: 0.88;
+  }
+
+  .lantern-core {
+    stop-color: var(--color-lantern-core);
+    animation: lantern-heat var(--duration-candle) ease-in-out infinite -1.3s;
+  }
+
+  .lantern-honey {
+    stop-color: var(--color-lantern-honey);
+  }
+
+  .lantern-ember {
+    stop-color: var(--color-lantern-ember);
   }
 
   @media (width >= 46rem) {
@@ -600,28 +634,41 @@
 
   @keyframes flicker {
     0%,
-    67.9%,
-    68.5%,
-    69.3%,
-    70%,
-    70.8%,
+    18%,
+    20.8%,
+    62%,
+    65.2%,
     100% {
-      scale: 1;
       opacity: 0.88;
     }
 
-    68%,
-    69.4%,
-    70.1% {
-      scale: 0.97;
-      opacity: 0.5;
+    18.7%,
+    63.8% {
+      opacity: 0.64;
     }
 
-    68.2%,
-    69.65%,
-    70.35% {
-      scale: 1.035;
+    19.5%,
+    62.8%,
+    64.5% {
       opacity: 1;
+    }
+  }
+
+  @keyframes lantern-heat {
+    0%,
+    34%,
+    100% {
+      stop-color: var(--color-lantern-core);
+    }
+
+    17%,
+    51%,
+    84% {
+      stop-color: var(--foreground);
+    }
+
+    68% {
+      stop-color: var(--color-lantern-honey);
     }
   }
 
@@ -671,7 +718,7 @@
       translate: none;
     }
 
-    .glow-source {
+    :is(.glow-source.ambient, .glow-source.pulse, .glow-source.flicker, .glow-source.candle, .lantern-glass, .lantern-core) {
       animation: none;
     }
   }
