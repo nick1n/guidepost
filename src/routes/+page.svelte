@@ -32,7 +32,7 @@
       items: [
         {
           title: "Quick Start",
-          note: "Core game only - play prologue showdown",
+          note: "Core - play first story showdown",
           icon: "i-material-symbols:play-circle-outline",
           href: resolve("/start"),
           accent: "primary",
@@ -70,6 +70,23 @@
         {
           title: "The Queen's Dilemma",
           note: "Treasury insert and Ideology upgrades",
+          icon: "i-material-symbols:3d-outline-sharp",
+          destinations: [
+            {
+              label: "MakerWorld",
+              href: "https://makerworld.com/en/models/2958034",
+              brand: "makerworld",
+            },
+            {
+              label: "Cults3D",
+              href: "https://cults3d.com/en/3d-model/game/queens-dilemma-treasury-insert-ideology-markers",
+              brand: "cults3d",
+            },
+          ],
+        },
+        {
+          title: "Dune: Imperium",
+          note: "Player marker upgrades",
           icon: "i-material-symbols:3d-outline-sharp",
           destinations: [
             {
@@ -184,8 +201,13 @@
         <h2 {id}>{label}</h2>
         {#each items as i (i.title)}
           {#if i.destinations}
-            <div class={["tool", "has-destinations", i.accent && `accent-${i.accent}`]}>
-              <a class="tool-main" href={i.destinations[0].href} target="_blank" aria-describedby="new-tab-description">
+            <div class={["tool has-destinations", i.accent && `accent-${i.accent}`]}>
+              <a
+                class={["tool-main", i.destinations[0].brand]}
+                href={i.destinations[0].href}
+                target="_blank"
+                aria-describedby="new-tab-description"
+              >
                 {@render toolContent(i)}
               </a>
               <span class="tool-destinations">
@@ -246,51 +268,40 @@
 
 <style>
   .landing {
-    --space-page: clamp(1.25rem, 4vw, 3rem);
+    --color-cults3d: #822ef5;
+    --color-makerworld: #08bf08;
+    --color-muted-hover: color-mix(var(--foreground) 75%, transparent);
+    --color-shadow-edge: color-mix(var(--background) 90%, transparent);
+    --gap-tool: round(clamp(0.5rem, 0.8vh, 0.75rem), 1px);
+    --layer-backdrop: -1;
     --offset-tagline: -10px;
-    --width-nav: 24rem;
-    --gap-tool: 0.5rem;
     --position-glow-x: 35%;
     --position-glow-y: 12rem;
     --position-guidepost-orb-x: 50%;
     --position-guidepost-orb-y: 44%;
-    --shift-x: 0px;
-    --shift-y: 0px;
-    --shift-hover: 0.4rem;
-    --size-icon: 1.5rem;
-    --size-external: 1rem;
-    --size-glow-ambient: max(84rem, 150vw);
-    --size-glow-pulse: clamp(28rem, 68vw, 58rem);
-    --size-glow-flicker: clamp(18rem, 38vw, 32rem);
-    --size-glow-candle: clamp(16rem, 32vw, 26rem);
-    --size-guidepost: clamp(23rem, 55vw, 38rem);
-    --layer-backdrop: -1;
-    --color-muted-hover: color-mix(var(--foreground) 75%, transparent);
-    --color-makerworld: #08bf08;
-    --color-cults3d: #822ef5;
-    --color-shadow-edge: color-mix(var(--background) 90%, transparent);
     --shadow-title:
       -1px 0 0 var(--color-shadow-edge), 1px 0 0 var(--color-shadow-edge), 0 -1px 0 var(--color-shadow-edge),
       0 1px 0 var(--color-shadow-edge), 0 2px 4px color-mix(var(--background) 55%, transparent);
-    --duration-pulse: 11s;
-    --duration-flicker: 13s;
+    --shift-hover: -0.5rem;
+    --shift-x: 0px;
+    --shift-y: 0px;
+    --size-external: 1rem;
+    --size-icon: 1.5rem;
+    --space-page: round(clamp(1rem, 4vw, 3rem), 1px);
+    --width-nav: 25rem;
+
     --duration-ambient: 43s;
     --duration-candle: 7s;
-    --color-lantern-core: #fff3cc;
-    --color-lantern-honey: #ffc66d;
-    --color-lantern-ember: #ce6b29;
-    --gradient-page-sheen-vignette:
-      linear-gradient(150deg, transparent 20%, #ffd6ad0f 50%, transparent 80%),
-      radial-gradient(ellipse at center, transparent 70%, #fff0bd04 100%);
+    --duration-flicker: 5s;
+    --duration-pulse: 11s;
+    --size-glow-ambient: max(84rem, 150vw);
+    --size-glow-candle: clamp(16rem, 32vw, 26rem);
+    --size-glow-flicker: clamp(18rem, 38vw, 32rem);
+    --size-glow-pulse: clamp(28rem, 68vw, 58rem);
+    --size-guidepost: clamp(23rem, 55vw, 38rem);
     --gradient-light-ambient:
       radial-gradient(circle at center, #fba15321 0%, transparent 36%),
       radial-gradient(ellipse at center in oklch, #f16c3736 0%, #b7453024 31%, #6c282514 54%, transparent 76%);
-    --gradient-light-pulse:
-      radial-gradient(circle at center in oklch, #ffe4a647 0%, #ffb2512e 18%, transparent 42%),
-      radial-gradient(ellipse at center in oklch, #fb823b3b 0%, #d4403021 43%, transparent 75%);
-    --gradient-light-flicker:
-      radial-gradient(circle at center in oklch, #fff0b56b 0%, #ffc34d4d 16%, transparent 42%),
-      radial-gradient(ellipse at center in oklch, #ff992e4a 0%, #f6542430 38%, #9a2a221a 60%, transparent 76%);
     --gradient-light-candle: radial-gradient(
       circle at center in oklch,
       #ffe48552 0%,
@@ -299,6 +310,15 @@
       #c4280712 47%,
       transparent 54%
     );
+    --gradient-light-flicker:
+      radial-gradient(circle at center in oklch, #fff0b56b 0%, #ffc34d4d 16%, transparent 42%),
+      radial-gradient(ellipse at center in oklch, #ff992e4a 0%, #f6542430 38%, #9a2a221a 60%, transparent 76%);
+    --gradient-light-pulse:
+      radial-gradient(circle at center in oklch, #ffe4a647 0%, #ffb2512e 18%, transparent 42%),
+      radial-gradient(ellipse at center in oklch, #fb823b3b 0%, #d4403021 43%, transparent 75%);
+    --gradient-page-sheen-vignette:
+      linear-gradient(150deg, transparent 20%, #ffd6ad0f 50%, transparent 80%),
+      radial-gradient(ellipse at center, transparent 70%, #fff0bd04 100%);
 
     &::before {
       z-index: var(--layer-backdrop);
@@ -329,7 +349,6 @@
     contain: inline-size;
     margin-block-start: var(--offset-tagline);
     text-align: center;
-    text-wrap: pretty;
   }
 
   nav {
@@ -363,12 +382,28 @@
   }
 
   .tool {
-    --color-tool-hover: var(--accent);
+    --color-tool-accent: var(--accent);
 
     padding-block: var(--gap-tool);
-    border-block-end: var(--border-size) solid color-mix(var(--foreground) 15%, transparent);
-    font-size: var(--text-sm);
+    border-block-end: var(--border-size) solid var(--color-divider);
     line-height: var(--line-height-none);
+    transition: color var(--duration-fast) var(--ease-standard);
+
+    &:any-link:is(:hover, :focus-visible),
+    &:has(:any-link:is(:hover, :focus-visible)) {
+      --color-tool-note: var(--color-muted-hover);
+      --shift-tool-icon: var(--shift-hover);
+
+      color: var(--color-tool-accent);
+    }
+
+    &:has(.makerworld:is(:hover, :focus-visible)) {
+      --color-tool-accent: var(--color-makerworld);
+    }
+
+    &:has(.cults3d:is(:hover, :focus-visible)) {
+      --color-tool-accent: var(--color-cults3d);
+    }
 
     &.has-destinations {
       --color-primary-destination: var(--muted-foreground);
@@ -376,14 +411,6 @@
 
       display: block;
       padding-block-end: 0;
-      transition: color var(--duration-fast) var(--ease-standard);
-
-      &:has(:is(.tool-main, .destination):is(:hover, :focus-visible)) {
-        --color-tool-note: var(--color-muted-hover);
-        --shift-tool-icon: calc(-1 * var(--shift-hover));
-
-        color: var(--color-tool-hover);
-      }
 
       &:has(.tool-main:is(:hover, :focus-visible)) {
         --color-primary-destination: var(--foreground);
@@ -392,46 +419,39 @@
     }
 
     &.accent-primary {
-      --color-tool-hover: var(--accent-green);
+      --color-tool-accent: var(--accent-green);
 
-      color: var(--accent-green);
+      color: var(--color-tool-accent);
     }
 
     &.accent-red {
-      --color-tool-hover: var(--accent-red);
+      --color-tool-accent: var(--accent-red);
     }
 
     &.accent-muted {
       color: color-mix(var(--foreground) 25%, transparent);
     }
-  }
 
-  a.tool {
-    position: relative;
-    transition:
-      color var(--duration-fast) var(--ease-standard),
-      padding var(--duration-fast) var(--ease-standard);
-
-    &::after {
-      position: absolute;
-      block-size: var(--border-size);
-      inset-block-end: calc(-1 * var(--border-size));
-      inset-inline: 0;
-      transform: scaleX(0);
-      transform-origin: right;
-      background: var(--color-tool-hover);
-      content: "";
-      transition: transform var(--duration-fast) var(--ease-standard);
-    }
-
-    &:is(:hover, :focus-visible) {
-      --color-tool-note: var(--color-muted-hover);
-
-      padding-inline-end: var(--shift-hover);
-      outline: none;
-      color: var(--color-tool-hover);
+    &:any-link {
+      position: relative;
 
       &::after {
+        position: absolute;
+        block-size: var(--border-size);
+        inset-block-end: calc(-1 * var(--border-size));
+        inset-inline: 0;
+        transform: scaleX(0);
+        transform-origin: right;
+        background: var(--color-tool-accent);
+        content: "";
+        transition: transform var(--duration-fast) var(--ease-standard);
+      }
+
+      &:focus-visible {
+        outline: none;
+      }
+
+      &:is(:hover, :focus-visible)::after {
         transform: scaleX(1);
       }
     }
@@ -440,7 +460,7 @@
   .tool-title {
     grid-area: title;
     font-weight: var(--font-semibold);
-    font-size: var(--text-lg);
+    font-size: var(--text-xl);
     font-family: var(--font-display);
   }
 
@@ -459,10 +479,8 @@
     transition: translate var(--duration-fast) var(--ease-standard);
   }
 
-  .tool-main {
-    &:focus-visible {
-      outline: none;
-    }
+  .tool-main:focus-visible {
+    outline: none;
   }
 
   .tool-destinations {
@@ -471,7 +489,6 @@
   }
 
   .destination {
-    --color-destination: var(--accent);
     --scale-destination: 0;
 
     display: inline-flex;
@@ -488,17 +505,9 @@
       inset-inline: 0;
       transform: scaleX(var(--scale-destination));
       transform-origin: right;
-      background: var(--color-destination);
+      background: var(--color-tool-accent);
       content: "";
       transition: transform var(--duration-fast) var(--ease-standard);
-    }
-
-    &.makerworld {
-      --color-destination: var(--color-makerworld);
-    }
-
-    &.cults3d {
-      --color-destination: var(--color-cults3d);
     }
 
     &:first-child {
@@ -515,7 +524,7 @@
     }
 
     &:focus-visible {
-      outline: calc(2 * var(--border-size)) solid var(--color-destination);
+      outline: var(--border-size) solid var(--color-tool-accent);
       outline-offset: 2px;
     }
   }
@@ -706,7 +715,7 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    :is(a.tool, .has-destinations, .destination, .tool-icon) {
+    :is(.tool, .destination, .tool-icon) {
       transition: none;
     }
 

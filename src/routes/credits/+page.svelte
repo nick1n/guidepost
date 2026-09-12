@@ -117,14 +117,13 @@
 
 <style>
   main {
-    --color-line: color-mix(var(--foreground) 15%, transparent);
-
-    padding: 1rem;
+    justify-self: center;
   }
 
   .home-link {
     display: inline-flex;
     align-items: center;
+    padding: 1rem;
     gap: 0.5rem;
     color: var(--muted-foreground);
     font-weight: var(--font-bold);
@@ -142,7 +141,8 @@
   }
 
   header {
-    text-align: right;
+    padding-inline: 1rem;
+    text-align: center;
   }
 
   :is(h1, h2) {
@@ -151,20 +151,19 @@
   }
 
   h1 {
-    font-size: clamp(3.5rem, 12vw, 6rem);
+    font-size: 5rem;
     line-height: var(--line-height-none);
     letter-spacing: var(--letter-spacing-tight);
   }
 
   .intro {
     color: var(--muted-foreground);
-    text-wrap: pretty;
   }
 
   section {
     display: grid;
     padding-block: 1rem;
-    border-block-start: var(--border-size) solid var(--color-line);
+    border-block-start: var(--border-size) solid var(--color-divider);
 
     &:first-of-type {
       border: 0;
@@ -180,6 +179,7 @@
   }
 
   .credit {
+    display: inline-block;
     padding-inline: 1rem;
     line-height: 2rem;
   }
@@ -194,7 +194,7 @@
   footer {
     margin-block-start: 1rem;
     color: var(--muted-foreground);
-    text-align: right;
+    text-align: center;
   }
 
   .heart-icon {
@@ -207,7 +207,6 @@
     .groups {
       display: grid;
       grid-template-columns: 0 max-content max-content;
-      justify-content: end;
     }
 
     section {
@@ -225,21 +224,6 @@
 
     :is(h2, ul) {
       inline-size: auto;
-    }
-  }
-
-  @media (width >= 64rem) {
-    header {
-      position: fixed;
-      max-inline-size: 22rem;
-      inset-block-end: 1rem;
-      inset-inline-start: 1rem;
-      text-align: center;
-    }
-
-    :is(.groups, footer) {
-      max-inline-size: fit-content;
-      margin-inline-start: auto;
     }
   }
 </style>
