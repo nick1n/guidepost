@@ -269,6 +269,9 @@
 <style>
   .landing {
     --color-cults3d: #822ef5;
+    --color-lantern-core: #fff3cc;
+    --color-lantern-ember: #ce6b29;
+    --color-lantern-honey: #ffc66d;
     --color-makerworld: #08bf08;
     --color-muted-hover: color-mix(var(--foreground) 75%, transparent);
     --color-shadow-edge: color-mix(var(--background) 90%, transparent);
