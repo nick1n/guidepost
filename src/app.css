@@ -77,7 +77,7 @@ html {
 }
 
 body {
-  min-block-size: 100dvh;
+  min-block-size: 100lvh;
   border-top: var(--border-size) solid transparent;
   color: var(--foreground);
   font-family: var(--font-sans);
