@@ -1,39 +1,26 @@
-import { Effect, Schema } from "effect";
-import type { CollectionState, EntryState } from "#lib/types/index.ts";
+import { Data, Effect, Schema as S } from "effect";
+import { type CollectionState, CollectionStateSchema } from "#lib/types/index.ts";
 
-export type ContentStateStoreError = {
-  readonly _tag: "ContentStateStoreError";
+export class StoreError extends Data.TaggedError("StoreError")<{
   readonly operation: "load" | "save" | "clear";
   readonly reason: "unavailable" | "invalid-data";
   readonly cause: unknown;
-};
-
-function storeError(
-  operation: ContentStateStoreError["operation"],
-  reason: ContentStateStoreError["reason"],
-  cause: unknown,
-): ContentStateStoreError {
-  return { _tag: "ContentStateStoreError", operation, reason, cause };
+}> {
+  get message() {
+    if (this.reason === "invalid-data") return `Cannot ${this.operation} collection: stored data is invalid.`;
+    return `Cannot ${this.operation} collection: browser storage is unavailable.`;
+  }
 }
 
-const EntryStateSchema = Schema.Struct({
-  owned: Schema.optionalKey(Schema.Boolean),
-  wishlisted: Schema.optionalKey(Schema.Boolean),
-  versions: Schema.optionalKey(Schema.Array(Schema.String).pipe(Schema.mutable)),
-  editions: Schema.optionalKey(Schema.Array(Schema.String).pipe(Schema.mutable)),
-  editionNumbers: Schema.optionalKey(Schema.Record(Schema.String, Schema.Number)),
-});
+const CollectionJson = S.fromJsonString(CollectionStateSchema);
 
-const CollectionStateSchema = Schema.Record(Schema.String, EntryStateSchema);
-
-export interface ContentStateStore {
-  load(): Effect.Effect<CollectionState, ContentStateStoreError>;
-  save(itemId: string, state: EntryState): Effect.Effect<void, ContentStateStoreError>;
-  saveMany(states: CollectionState): Effect.Effect<void, ContentStateStoreError>;
-  clear(): Effect.Effect<void, ContentStateStoreError>;
+export interface CollectionStore {
+  load(): Effect.Effect<CollectionState, StoreError>;
+  saveMany(states: CollectionState): Effect.Effect<void, StoreError>;
+  clear(): Effect.Effect<void, StoreError>;
 }
 
-export class LocalGuestStore implements ContentStateStore {
+export class GuestStore implements CollectionStore {
   private readonly key: string;
   private state: CollectionState;
 
@@ -43,70 +30,49 @@ export class LocalGuestStore implements ContentStateStore {
   }
 
   load() {
-    return Effect.suspend(() => {
-      if (typeof localStorage === "undefined") return Effect.succeed({});
-
-      return Effect.try({
-        try: () => localStorage.getItem(this.key),
-        catch: (cause) => storeError("load", "unavailable", cause),
-      }).pipe(
-        Effect.flatMap((stored) => {
-          if (stored === null) return Effect.succeed({});
-          return Effect.try({
-            try: () => JSON.parse(stored) as unknown,
-            catch: (cause) => storeError("load", "invalid-data", cause),
-          });
-        }),
-        Effect.flatMap((value) =>
-          Schema.decodeUnknownEffect(CollectionStateSchema)(value).pipe(
-            Effect.mapError((cause) => storeError("load", "invalid-data", cause)),
-          ),
-        ),
-        Effect.tap((state) =>
-          Effect.sync(() => {
-            this.state = state;
-          }),
-        ),
-      );
+    const self = this;
+    return Effect.gen(function* () {
+      const stored = yield* Effect.try({
+        try: () => (typeof localStorage === "undefined" ? null : localStorage.getItem(self.key)),
+        catch: (cause) => new StoreError({ operation: "load", reason: "unavailable", cause }),
+      });
+      const state =
+        stored == null
+          ? {}
+          : yield* S.decodeUnknownEffect(CollectionJson)(stored).pipe(
+              Effect.mapError((cause) => new StoreError({ operation: "load", reason: "invalid-data", cause })),
+            );
+      self.state = state;
+      return state;
     });
   }
 
-  save(itemId: string, state: EntryState) {
-    return this.saveMany({ [itemId]: state });
-  }
-
   saveMany(states: CollectionState) {
-    return Effect.suspend(() => {
-      const next = { ...this.state, ...states };
-      return Effect.try({
-        try: () => this.write(next),
-        catch: (cause) => storeError("save", "unavailable", cause),
-      }).pipe(
-        Effect.tap(() =>
-          Effect.sync(() => {
-            this.state = next;
-          }),
-        ),
-      );
+    const self = this;
+    return Effect.gen(function* () {
+      const next = { ...self.state, ...states };
+      yield* Effect.try({
+        try: () => self.write(next),
+        catch: (cause) => new StoreError({ operation: "save", reason: "unavailable", cause }),
+      });
+      self.state = next;
     });
   }
 
   clear() {
-    return Effect.try({
-      try: () => {
-        if (typeof localStorage !== "undefined") localStorage.removeItem(this.key);
-      },
-      catch: (cause) => storeError("clear", "unavailable", cause),
-    }).pipe(
-      Effect.tap(() =>
-        Effect.sync(() => {
-          this.state = {};
-        }),
-      ),
-    );
+    const self = this;
+    return Effect.gen(function* () {
+      yield* Effect.try({
+        try: () => {
+          localStorage.removeItem(self.key);
+        },
+        catch: (cause) => new StoreError({ operation: "clear", reason: "unavailable", cause }),
+      });
+      self.state = {};
+    });
   }
 
   private write(state: CollectionState) {
-    if (typeof localStorage !== "undefined") localStorage.setItem(this.key, JSON.stringify(state));
+    localStorage.setItem(this.key, JSON.stringify(state));
   }
 }

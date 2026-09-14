@@ -4,14 +4,14 @@
   import { onMount } from "svelte";
   import { collection } from "#lib/state/collection.svelte.ts";
   import { collectionActions } from "#lib/state/collection-actions.svelte.ts";
-  import { LocalGuestStore } from "#lib/state/stores.ts";
+  import { GuestStore } from "#lib/state/stores.ts";
 
   let { children } = $props();
 
   onMount(() => {
     const userId = "guest";
     collection.setUser(userId);
-    collectionActions.run(collection.setStore(new LocalGuestStore(userId)));
+    collectionActions.run(collection.setStore(new GuestStore(userId)));
   });
 </script>
 

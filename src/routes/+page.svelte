@@ -164,8 +164,10 @@
   }
 
   function confirmCoreOwnership() {
-    if (collection.state.core?.owned) return Effect.void;
-    return collection.toggleOwned("core", { version: selectedCoreVersion });
+    return Effect.suspend(() => {
+      if (collection.state.core?.owned) return Effect.void;
+      return collection.toggleOwned("core", { version: selectedCoreVersion });
+    });
   }
 
   function continueToQuickStart() {
@@ -234,7 +236,6 @@
     title="Core game required"
     description="The quick start prologue showdown requires the **Kingdom Death: Monster** core box. Please choose the version you own to add it to your collection."
     confirmLabel="Add and continue"
-    confirmingLabel="Adding…"
     onconfirm={confirmCoreOwnership}
     onconfirmed={continueToQuickStart}
     oncancel={restoreQuickStartFocus}
