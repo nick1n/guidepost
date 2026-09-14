@@ -51,6 +51,8 @@ After changing UnoCSS/SvelteKit dependencies or their integration, run `pnpm bui
 
 Prefer inferred TypeScript types when the compiler can determine them clearly. Add explicit annotations for public APIs, complex values, or cases where they improve readability or prevent an incorrect widening; do not add redundant annotations solely to restate an inferred type.
 
+Prefer concise type names, ideally one or two words. Use a longer type name when shortening it would make its purpose unclear. Function and method names may be longer when the extra words clearly describe their behavior; do not shorten them solely to match the type-name guideline.
+
 ## Svelte conventions
 
 Use Svelte 5 runes and callback props.
@@ -205,13 +207,13 @@ Do not add `id` fields back into catalog objects. Update `src/lib/schema.json` w
 
 ## State and persistence
 
-`ContentState` owns collection commands. `ContentStateStore` and `LocalGuestStore` are defined in `src/lib/state/stores.ts`; collection-state data types are defined in `src/lib/types`.
+`ContentState` owns collection commands. `CollectionStore` and `GuestStore` are defined in `src/lib/state/stores.ts`; collection-state data types are defined in `src/lib/types`.
 
 ```text
-ContentState -> ContentStateStore -> LocalGuestStore
+ContentState -> CollectionStore -> GuestStore
 ```
 
-`LocalGuestStore` persists collection state to `localStorage`. Keep browser-storage details out of `ContentState` so collection commands remain separate from persistence.
+`GuestStore` persists collection state to `localStorage`. Keep browser-storage details out of `ContentState` so collection commands remain separate from persistence.
 
 State commands should update optimistically and restore the previous state if persistence fails. Batch related updates with one transaction through `saveMany()`.
 
@@ -234,7 +236,7 @@ The service worker uses SvelteKit 3 APIs:
 
 Do not use the removed `$service-worker` module. Precache assets individually so one unavailable asset does not reject the entire service-worker install.
 
-The service worker is for app-shell and asset caching. Do not use it as a collection-state persistence layer; `LocalGuestStore` owns that responsibility.
+The service worker is for app-shell and asset caching. Do not use it as a collection-state persistence layer; `GuestStore` owns that responsibility.
 
 ## Formatting
 

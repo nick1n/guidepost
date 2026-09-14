@@ -1,4 +1,7 @@
+import { Schema as S } from "effect";
 import type * as Schema from "./gen/kdm-data";
+
+export type ItemKind = "core" | "beta" | "promo" | "expansion" | "white-box" | "set";
 
 type Id = { id: string };
 
@@ -24,12 +27,16 @@ export type Filters = {
   tags: string[];
 };
 
-export type EntryState = {
-  owned?: boolean;
-  wishlisted?: boolean;
-  versions?: string[];
-  editions?: string[];
-  editionNumbers?: Record<string, number>;
-};
+export const EntryStateSchema = S.Struct({
+  owned: S.optionalKey(S.Boolean),
+  wishlisted: S.optionalKey(S.Boolean),
+  versions: S.optionalKey(S.Array(S.String).pipe(S.mutable)),
+  editions: S.optionalKey(S.Array(S.String).pipe(S.mutable)),
+  editionNumbers: S.optionalKey(S.Record(S.String, S.Number)),
+});
 
-export type CollectionState = Record<string, EntryState>;
+export type EntryState = S.Schema.Type<typeof EntryStateSchema>;
+
+export const CollectionStateSchema = S.Record(S.String, EntryStateSchema);
+
+export type CollectionState = S.Schema.Type<typeof CollectionStateSchema>;

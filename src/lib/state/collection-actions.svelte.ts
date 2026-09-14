@@ -1,16 +1,16 @@
 import { Effect } from "effect";
-import type { CollectionPersistenceError } from "./collection.svelte.ts";
+import type { CollectionError } from "./collection.svelte.ts";
 
-type CollectionActionError = Pick<CollectionPersistenceError, "message" | "cause"> & Partial<Pick<CollectionPersistenceError, "operation">>;
+type ActionError = Pick<CollectionError, "message" | "cause"> & Partial<Pick<CollectionError, "operation">>;
 
 function reportUnexpected(cause: unknown) {
   console.error("Unexpected collection action failure", cause);
 }
 
 class CollectionActions {
-  error = $state.raw<CollectionActionError | undefined>();
+  error = $state.raw<ActionError | undefined>();
 
-  run<A>(effect: Effect.Effect<A, CollectionPersistenceError>) {
+  run<A>(effect: Effect.Effect<A, CollectionError>) {
     this.error = undefined;
     Effect.runFork(
       effect.pipe(

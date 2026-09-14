@@ -1,6 +1,7 @@
 <script lang="ts">
   import { Effect } from "effect";
   import type { Snippet } from "svelte";
+  import { DURATION_FAST } from "#lib/constants.ts";
 
   type DialogFailure = {
     readonly message: string;
@@ -14,7 +15,8 @@
     oncancel?: () => Effect.Effect<unknown, unknown>;
     children?: Snippet;
     confirmLabel?: string;
-    confirmingLabel?: string;
+    pendingLabel?: string;
+    retryLabel?: string;
     cancelLabel?: string;
     icon?: string;
   };
@@ -27,28 +29,33 @@
     oncancel,
     children,
     confirmLabel = "Confirm",
-    confirmingLabel = "Working…",
+    pendingLabel = "Working…",
+    retryLabel = "Continue",
     cancelLabel = "Cancel",
     icon = "i-material-symbols:warning-outline",
   }: Props = $props();
 
   const id = $props.id();
-  const closeDuration = 180;
   let dialog: HTMLDialogElement;
-  let confirming = $state(false);
+  let pending = $state(false);
   let errorMessage = $state<string | undefined>();
-  let confirmed = false;
+  let confirmed = $state(false);
   let closing = false;
+  const confirmButtonLabel = $derived.by(() => {
+    if (pending) return pendingLabel;
+    if (confirmed) return retryLabel;
+    return confirmLabel;
+  });
 
   function reportUnexpected(cause: unknown) {
     console.error("Unexpected dialog failure", cause);
   }
 
   export function show() {
-    if (dialog.open || closing) return;
+    if (dialog.open || closing || pending) return;
 
     errorMessage = undefined;
-    confirming = false;
+    pending = false;
     confirmed = false;
     dialog.showModal();
     queueMicrotask(() => dialog.querySelector<HTMLElement>("[data-dialog-initial-focus]")?.focus());
@@ -80,7 +87,7 @@
 
       dialog.addEventListener("transitionend", ontransitionend);
       dialog.close(returnValue);
-      timeout = setTimeout(finish, closeDuration + 50);
+      timeout = setTimeout(finish, DURATION_FAST + 50);
 
       return Effect.sync(() => {
         settled = true;
@@ -101,10 +108,32 @@
     queueMicrotask(() => dialog.querySelector<HTMLButtonElement>(".confirm")?.focus());
   }
 
-  function confirm() {
-    if (confirming) return;
+  function handleConfirmError(error: DialogFailure) {
+    return Effect.sync(() => showError(error.message));
+  }
 
-    confirming = true;
+  function handleFollowUpError(error: DialogFailure) {
+    return Effect.sync(() => showFollowUpError(error.message));
+  }
+
+  function handleConfirmCause(cause: unknown) {
+    return Effect.sync(() => {
+      reportUnexpected(cause);
+      showError("We couldn't save that change. Please try again.");
+    });
+  }
+
+  function handleFollowUpCause(cause: unknown) {
+    return Effect.sync(() => {
+      reportUnexpected(cause);
+      showFollowUpError("The change was saved, but the next page could not be opened. Please try again.");
+    });
+  }
+
+  function confirm() {
+    if (pending) return;
+
+    pending = true;
     errorMessage = undefined;
 
     const confirmation = confirmed
@@ -119,30 +148,19 @@
     const followUp = onconfirmed
       ? close("confirm").pipe(
           Effect.andThen(Effect.suspend(onconfirmed)),
-          Effect.catch((error) => Effect.sync(() => showFollowUpError(error.message))),
-          Effect.catchCause((cause) =>
-            Effect.sync(() => {
-              reportUnexpected(cause);
-              showFollowUpError("The change was saved, but the next page could not be opened. Please try again.");
-            }),
-          ),
+          Effect.catch(handleFollowUpError),
+          Effect.catchCause(handleFollowUpCause),
         )
       : close("confirm");
 
     Effect.runFork(
       confirmation.pipe(
-        Effect.tapError((error) => Effect.sync(() => showError(error.message))),
         Effect.andThen(followUp),
-        Effect.catch(() => Effect.void),
-        Effect.catchCause((cause) =>
-          Effect.sync(() => {
-            reportUnexpected(cause);
-            showError("We couldn't save that change. Please try again.");
-          }),
-        ),
+        Effect.catch(handleConfirmError),
+        Effect.catchCause(handleConfirmCause),
         Effect.ensuring(
           Effect.sync(() => {
-            confirming = false;
+            pending = false;
           }),
         ),
       ),
@@ -150,17 +168,14 @@
   }
 
   function cancel() {
-    if (confirming || closing) return;
+    if (pending || closing) return;
 
     errorMessage = undefined;
     Effect.runFork(
       Effect.gen(function* () {
         yield* close("cancel");
         if (oncancel) yield* Effect.suspend(oncancel);
-      }).pipe(
-        Effect.catch((error) => Effect.sync(() => reportUnexpected(error))),
-        Effect.catchCause((cause) => Effect.sync(() => reportUnexpected(cause))),
-      ),
+      }).pipe(Effect.catchCause((cause) => Effect.sync(() => reportUnexpected(cause)))),
     );
   }
 
@@ -178,7 +193,7 @@
   bind:this={dialog}
   aria-labelledby={`${id}-title`}
   aria-describedby={errorMessage ? `${id}-description ${id}-error` : `${id}-description`}
-  aria-busy={confirming}
+  aria-busy={pending}
   oncancel={handleCancel}
   {onclick}
 >
@@ -188,7 +203,7 @@
       <span class={["icon", icon]} aria-hidden="true"></span>
     </div>
     <p id={`${id}-description`}>{description}</p>
-    <fieldset disabled={confirming}>
+    <fieldset disabled={pending || confirmed}>
       <legend class="visually-hidden">Dialog options</legend>
       {@render children?.()}
     </fieldset>
@@ -196,9 +211,9 @@
       <p class="error" id={`${id}-error`} role="alert">{errorMessage}</p>
     {/if}
     <div class="actions">
-      <button class="action" type="button" onclick={cancel} disabled={confirming}>{cancelLabel}</button>
-      <button class="action confirm" type="button" onclick={confirm} disabled={confirming}>
-        {confirming ? confirmingLabel : confirmLabel}
+      <button class="action" type="button" onclick={cancel} disabled={pending}>{cancelLabel}</button>
+      <button class="action confirm" type="button" onclick={confirm} disabled={pending}>
+        {confirmButtonLabel}
       </button>
     </div>
   </form>
