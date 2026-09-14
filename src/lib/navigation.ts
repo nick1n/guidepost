@@ -1,14 +1,17 @@
 import { goto } from "$app/navigation";
-import { Data, Effect } from "effect";
+import { Effect, Schema } from "effect";
 
-export class NavigationError extends Data.TaggedError("NavigationError")<{
-  readonly message: string;
-  readonly cause: unknown;
-}> {}
+export class NavigationError extends Schema.TaggedError<NavigationError>()("NavigationError", {
+  message: Schema.String,
+  cause: Schema.Defect(),
+}) {}
 
-export function navigate(href: string, message = "The page could not be opened. Please try again.") {
-  return Effect.tryPromise({
+export const navigate = Effect.fn("Navigation.navigate")(function* (
+  href: string,
+  message = "The page could not be opened. Please try again.",
+) {
+  return yield* Effect.tryPromise({
     try: () => goto(href),
     catch: (cause) => new NavigationError({ message, cause }),
   });
-}
+});

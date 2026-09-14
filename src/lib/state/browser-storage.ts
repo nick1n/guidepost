@@ -1,9 +1,9 @@
-import { Context, Data, Effect, Layer } from "effect";
+import { Context, Effect, Layer, Schema } from "effect";
 
-export class StorageError extends Data.TaggedError("StorageError")<{
-  readonly operation: "get" | "set" | "remove";
-  readonly cause: unknown;
-}> {
+export class StorageError extends Schema.TaggedError<StorageError>()("StorageError", {
+  operation: Schema.Literals(["get", "set", "remove"]),
+  cause: Schema.Defect(),
+}) {
   get message() {
     return `Browser storage ${this.operation} failed.`;
   }
@@ -17,20 +17,23 @@ export interface StorageApi {
 
 export class BrowserStorage extends Context.Service<BrowserStorage, StorageApi>()("guidepost/BrowserStorage") {
   static readonly layer = Layer.succeed(BrowserStorage, {
-    get: (key) =>
+    get: Effect.fn("BrowserStorage.get")((key: string) =>
       Effect.try({
         try: () => localStorage.getItem(key),
         catch: (cause) => new StorageError({ operation: "get", cause }),
       }),
-    set: (key, value) =>
+    ),
+    set: Effect.fn("BrowserStorage.set")((key: string, value: string) =>
       Effect.try({
         try: () => localStorage.setItem(key, value),
         catch: (cause) => new StorageError({ operation: "set", cause }),
       }),
-    remove: (key) =>
+    ),
+    remove: Effect.fn("BrowserStorage.remove")((key: string) =>
       Effect.try({
         try: () => localStorage.removeItem(key),
         catch: (cause) => new StorageError({ operation: "remove", cause }),
       }),
+    ),
   });
 }

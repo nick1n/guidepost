@@ -8,7 +8,7 @@ export class Notifications extends Context.Service<
   }
 >()("guidepost/Notifications") {
   static readonly layer = Layer.succeed(Notifications, {
-    success: (message) => Console.info(message),
-    error: (message, cause) => Console.error(message, cause),
+    success: Effect.fn("Notifications.success")((message: string) => Console.info(message)),
+    error: Effect.fn("Notifications.error")((message: string, cause?: unknown) => Console.error(message, cause)),
   });
 }

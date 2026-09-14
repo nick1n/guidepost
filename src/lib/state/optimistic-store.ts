@@ -29,8 +29,8 @@ export class OptimisticStore {
     this.publish(this.pending.reduce(applyChange, this.committed));
   }
 
-  load() {
-    return this.writes.withPermit(
+  load = Effect.fn("OptimisticStore.load")({ self: this }, function* () {
+    return yield* this.writes.withPermit(
       this.store.load().pipe(
         Effect.tap((state) =>
           Effect.sync(() => {
@@ -40,7 +40,7 @@ export class OptimisticStore {
         ),
       ),
     );
-  }
+  });
 
   saveMany(patch: CollectionState) {
     return this.commit(patch);
@@ -50,36 +50,34 @@ export class OptimisticStore {
     return this.commit(null);
   }
 
-  private commit(patch: CollectionState | null) {
-    return Effect.suspend(() => {
-      const change = { patch };
-      this.pending.push(change);
+  private commit = Effect.fn("OptimisticStore.commit")({ self: this }, function* (patch: CollectionState | null) {
+    const change = { patch };
+    this.pending.push(change);
+    this.render();
+
+    const settle = Effect.sync(() => {
+      if (!this.pending.includes(change)) return;
+      this.pending = this.pending.filter((entry) => entry !== change);
       this.render();
-
-      const settle = Effect.sync(() => {
-        if (!this.pending.includes(change)) return;
-        this.pending = this.pending.filter((entry) => entry !== change);
-        this.render();
-      });
-
-      const persist = Effect.suspend(() => {
-        const next = applyChange(this.committed, change);
-        const write = change.patch === null ? this.store.clear() : this.store.save(next);
-        return write.pipe(
-          Effect.tap(() =>
-            Effect.sync(() => {
-              this.committed = next;
-            }),
-          ),
-        );
-      });
-
-      // Once a write starts, finish recording its outcome before allowing the next write.
-      // The outer finalizer also removes an edit canceled while waiting for a permit.
-      // A timer yields to the browser before synchronous JSON/storage work begins.
-      return this.writes
-        .withPermit(Effect.sleep(0).pipe(Effect.andThen(persist), Effect.ensuring(settle), Effect.uninterruptible))
-        .pipe(Effect.ensuring(settle));
     });
-  }
+
+    const persist = Effect.suspend(() => {
+      const next = applyChange(this.committed, change);
+      const write = change.patch === null ? this.store.clear() : this.store.save(next);
+      return write.pipe(
+        Effect.tap(() =>
+          Effect.sync(() => {
+            this.committed = next;
+          }),
+        ),
+      );
+    });
+
+    // Once a write starts, finish recording its outcome before allowing the next write.
+    // The outer finalizer also removes an edit canceled while waiting for a permit.
+    // A timer yields to the browser before synchronous JSON/storage work begins.
+    return yield* this.writes
+      .withPermit(Effect.sleep(0).pipe(Effect.andThen(persist), Effect.ensuring(settle), Effect.uninterruptible))
+      .pipe(Effect.ensuring(settle));
+  });
 }

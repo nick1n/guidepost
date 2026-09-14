@@ -1,12 +1,12 @@
-import { Data, Effect, Schema as S } from "effect";
+import { Effect, Schema as S } from "effect";
 import { BrowserStorage, type StorageApi } from "./browser-storage";
 import { type CollectionState, CollectionStateSchema } from "#lib/types/index.ts";
 
-export class StoreError extends Data.TaggedError("StoreError")<{
-  readonly operation: "load" | "save" | "clear";
-  readonly reason: "unavailable" | "invalid-data" | "serialization";
-  readonly cause: unknown;
-}> {
+export class StoreError extends S.TaggedError<StoreError>()("StoreError", {
+  operation: S.Literals(["load", "save", "clear"]),
+  reason: S.Literals(["unavailable", "invalid-data", "serialization"]),
+  cause: S.Defect(),
+}) {
   get message() {
     if (this.reason === "invalid-data") return `Cannot ${this.operation} collection: stored data is invalid.`;
     if (this.reason === "serialization") return "Cannot save collection: data could not be serialized to JSON.";
@@ -36,34 +36,30 @@ export class GuestStore implements CollectionStore {
     return Effect.map(BrowserStorage, (storage) => new GuestStore(userId, storage));
   }
 
-  load() {
-    return Effect.gen({ self: this }, function* () {
-      const stored = yield* this.storage
-        .get(this.key)
-        .pipe(Effect.mapError((cause) => new StoreError({ operation: "load", reason: "unavailable", cause })));
-      return stored == null
-        ? {}
-        : yield* S.decodeUnknownEffect(CollectionJson)(stored).pipe(
-            Effect.mapError((cause) => new StoreError({ operation: "load", reason: "invalid-data", cause })),
-          );
-    });
-  }
+  load = Effect.fn("GuestStore.load")({ self: this }, function* () {
+    const stored = yield* this.storage
+      .get(this.key)
+      .pipe(Effect.mapError((cause) => new StoreError({ operation: "load", reason: "unavailable", cause })));
+    return stored == null
+      ? {}
+      : yield* S.decodeUnknownEffect(CollectionJson)(stored).pipe(
+          Effect.mapError((cause) => new StoreError({ operation: "load", reason: "invalid-data", cause })),
+        );
+  });
 
-  save(state: CollectionState) {
-    return Effect.gen({ self: this }, function* () {
-      const json = yield* Effect.try({
-        try: () => JSON.stringify(state),
-        catch: (cause) => new StoreError({ operation: "save", reason: "serialization", cause }),
-      });
-      yield* this.storage
-        .set(this.key, json)
-        .pipe(Effect.mapError((cause) => new StoreError({ operation: "save", reason: "unavailable", cause })));
+  save = Effect.fn("GuestStore.save")({ self: this }, function* (state: CollectionState) {
+    const json = yield* Effect.try({
+      try: () => JSON.stringify(state),
+      catch: (cause) => new StoreError({ operation: "save", reason: "serialization", cause }),
     });
-  }
+    yield* this.storage
+      .set(this.key, json)
+      .pipe(Effect.mapError((cause) => new StoreError({ operation: "save", reason: "unavailable", cause })));
+  });
 
-  clear() {
-    return this.storage
+  clear = Effect.fn("GuestStore.clear")({ self: this }, function* () {
+    return yield* this.storage
       .remove(this.key)
       .pipe(Effect.mapError((cause) => new StoreError({ operation: "clear", reason: "unavailable", cause })));
-  }
+  });
 }

@@ -68,8 +68,9 @@ class ContentState {
       this.loadError = error;
     });
 
-  setStore(store: CollectionStore, migrateFrom?: CollectionStore) {
-    return Effect.gen({ self: this }, function* () {
+  setStore = Effect.fn("ContentState.setStore")(
+    { self: this },
+    function* (store: CollectionStore, migrateFrom?: CollectionStore) {
       this.store = store;
       this.writer = undefined;
       this.loadStatus = "pending";
@@ -91,8 +92,9 @@ class ContentState {
       });
       this.writer = writer;
       this.loadStatus = "ready";
-    }).pipe(Effect.tapError(this.recordLoadError), Effect.tapCause(this.setLoadStatus()));
-  }
+    },
+    (effect) => effect.pipe(Effect.tapError(this.recordLoadError), Effect.tapCause(this.setLoadStatus())),
+  );
 
   setUser(userId?: string) {
     if (this.userId === userId) return;
@@ -104,16 +106,18 @@ class ContentState {
     this.loadError = undefined;
   }
 
-  refresh() {
-    return Effect.gen({ self: this }, function* () {
+  refresh = Effect.fn("ContentState.refresh")(
+    { self: this },
+    function* () {
       this.loadError = undefined;
       if (!this.store) return yield* unavailableStoreError("load");
       if (!this.writer) return yield* this.setStore(this.store);
       this.loadStatus = "pending";
       yield* this.writer.load().pipe(Effect.mapError(persistenceError()));
       this.loadStatus = "ready";
-    }).pipe(Effect.tapError(this.recordLoadError), Effect.tapCause(this.setLoadStatus()));
-  }
+    },
+    (effect) => effect.pipe(Effect.tapError(this.recordLoadError), Effect.tapCause(this.setLoadStatus())),
+  );
 
   get(id: string) {
     return this.state[id] ?? {};
@@ -123,36 +127,37 @@ class ContentState {
     return Effect.suspend(() => this.commitMany({ [itemId]: change(this.get(itemId)) }));
   }
 
-  private commitMany(nextState: CollectionState) {
-    return Effect.suspend(() => {
-      const itemIds = Object.keys(nextState);
-      if (!this.store) return Effect.fail(unavailableStoreError("save", itemIds));
-      if (this.loadStatus !== "ready") return Effect.fail(collectionNotReadyError("save", itemIds, this.loadStatus));
+  private commitMany = Effect.fn("ContentState.commitMany")({ self: this }, function* (nextState: CollectionState) {
+    const itemIds = Object.keys(nextState);
+    if (!this.store) return yield* Effect.fail(unavailableStoreError("save", itemIds));
+    if (this.loadStatus !== "ready") return yield* Effect.fail(collectionNotReadyError("save", itemIds, this.loadStatus));
 
-      if (!this.writer) return Effect.fail(unavailableStoreError("save", itemIds));
-      return this.writer.saveMany(nextState).pipe(Effect.mapError(persistenceError(itemIds)));
-    });
-  }
+    if (!this.writer) return yield* Effect.fail(unavailableStoreError("save", itemIds));
+    return yield* this.writer.saveMany(nextState).pipe(Effect.mapError(persistenceError(itemIds)));
+  });
 
-  toggleOwned(itemId: string, defaults?: { version?: string; edition?: string }) {
-    return this.update(itemId, (entry) => {
-      const owned = !entry.owned;
-      return {
-        owned,
-        ...(owned ? { wishlisted: false } : {}),
-        ...(!owned ? { versions: undefined } : defaults?.version ? { versions: [defaults.version] } : {}),
-        ...(!owned ? { editions: undefined } : defaults?.edition ? { editions: [defaults.edition] } : {}),
-        ...(!owned ? { editionNumbers: undefined } : {}),
-      };
-    });
-  }
+  toggleOwned = Effect.fn("ContentState.toggleOwned")(
+    { self: this },
+    function* (itemId: string, defaults?: { version?: string; edition?: string }) {
+      return yield* this.update(itemId, (entry) => {
+        const owned = !entry.owned;
+        return {
+          owned,
+          ...(owned ? { wishlisted: false } : {}),
+          ...(!owned ? { versions: undefined } : defaults?.version ? { versions: [defaults.version] } : {}),
+          ...(!owned ? { editions: undefined } : defaults?.edition ? { editions: [defaults.edition] } : {}),
+          ...(!owned ? { editionNumbers: undefined } : {}),
+        };
+      });
+    },
+  );
 
-  toggleWishlisted(itemId: string) {
-    return this.update(itemId, (entry) => ({ wishlisted: !entry.wishlisted }));
-  }
+  toggleWishlisted = Effect.fn("ContentState.toggleWishlisted")({ self: this }, function* (itemId: string) {
+    return yield* this.update(itemId, (entry) => ({ wishlisted: !entry.wishlisted }));
+  });
 
-  setVersion(itemId: string, version: string) {
-    return this.update(itemId, (entry) => {
+  setVersion = Effect.fn("ContentState.setVersion")({ self: this }, function* (itemId: string, version: string) {
+    return yield* this.update(itemId, (entry) => {
       const versions = entry.versions ?? [];
       const next = versions.includes(version) ? versions.filter((value) => value !== version) : [...versions, version];
       return {
@@ -160,10 +165,10 @@ class ContentState {
         versions: next.length ? next : undefined,
       };
     });
-  }
+  });
 
-  setEdition(itemId: string, edition: string) {
-    return this.update(itemId, (entry) => {
+  setEdition = Effect.fn("ContentState.setEdition")({ self: this }, function* (itemId: string, edition: string) {
+    return yield* this.update(itemId, (entry) => {
       const editions = entry.editions ?? [];
       const next = editions.includes(edition) ? editions.filter((value) => value !== edition) : [...editions, edition];
       const numbers = { ...(entry.editionNumbers ?? {}) };
@@ -174,42 +179,44 @@ class ContentState {
         editionNumbers: Object.keys(numbers).length ? numbers : undefined,
       };
     });
-  }
+  });
 
-  setEditionNumber(itemId: string, edition: string, editionNumber?: number) {
-    return this.update(itemId, (entry) => {
-      const numbers = { ...(entry.editionNumbers ?? {}) };
-      if (editionNumber == null) delete numbers[edition];
-      else numbers[edition] = editionNumber;
-      return { editionNumbers: Object.keys(numbers).length ? numbers : undefined };
-    });
-  }
+  setEditionNumber = Effect.fn("ContentState.setEditionNumber")(
+    { self: this },
+    function* (itemId: string, edition: string, editionNumber?: number) {
+      return yield* this.update(itemId, (entry) => {
+        const numbers = { ...(entry.editionNumbers ?? {}) };
+        if (editionNumber == null) delete numbers[edition];
+        else numbers[edition] = editionNumber;
+        return { editionNumbers: Object.keys(numbers).length ? numbers : undefined };
+      });
+    },
+  );
 
-  setManyOwned(ids: readonly string[], owned: boolean) {
-    return Effect.suspend(() => {
-      const nextState = Object.fromEntries(
-        ids.map((itemId) => {
-          return [itemId, { owned, ...(owned ? { wishlisted: false } : {}) }];
-        }),
-      );
-      return this.commitMany(nextState);
-    });
-  }
+  setManyOwned = Effect.fn("ContentState.setManyOwned")({ self: this }, function* (ids: readonly string[], owned: boolean) {
+    const nextState = Object.fromEntries(
+      ids.map((itemId) => {
+        return [itemId, { owned, ...(owned ? { wishlisted: false } : {}) }];
+      }),
+    );
+    return yield* this.commitMany(nextState);
+  });
 
-  setBundleOwned(bundleId: string, ids: readonly string[], owned: boolean) {
-    return this.setManyOwned([bundleId, ...ids], owned);
-  }
+  setBundleOwned = Effect.fn("ContentState.setBundleOwned")(
+    { self: this },
+    function* (bundleId: string, ids: readonly string[], owned: boolean) {
+      return yield* this.setManyOwned([bundleId, ...ids], owned);
+    },
+  );
 
-  reset() {
-    return Effect.suspend(() => {
-      const store = this.store;
-      const itemIds = Object.keys(this.state);
-      if (!store) return Effect.fail(unavailableStoreError("clear", itemIds));
-      if (this.loadStatus !== "ready") return Effect.fail(collectionNotReadyError("clear", itemIds, this.loadStatus));
-      if (!this.writer) return Effect.fail(unavailableStoreError("clear", itemIds));
-      return this.writer.clear().pipe(Effect.mapError(persistenceError(itemIds)));
-    });
-  }
+  reset = Effect.fn("ContentState.reset")({ self: this }, function* () {
+    const store = this.store;
+    const itemIds = Object.keys(this.state);
+    if (!store) return yield* Effect.fail(unavailableStoreError("clear", itemIds));
+    if (this.loadStatus !== "ready") return yield* Effect.fail(collectionNotReadyError("clear", itemIds, this.loadStatus));
+    if (!this.writer) return yield* Effect.fail(unavailableStoreError("clear", itemIds));
+    return yield* this.writer.clear().pipe(Effect.mapError(persistenceError(itemIds)));
+  });
 }
 
 export const collection = new ContentState();

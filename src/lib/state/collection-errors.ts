@@ -1,8 +1,8 @@
-import { Data } from "effect";
+import { Schema } from "effect";
 
-export class CollectionError extends Data.TaggedError("CollectionError")<{
-  readonly message: string;
-  readonly operation: "load" | "save" | "clear";
-  readonly itemIds: readonly string[];
-  readonly cause: unknown;
-}> {}
+export class CollectionError extends Schema.TaggedError<CollectionError>()("CollectionError", {
+  message: Schema.String,
+  operation: Schema.Literals(["load", "save", "clear"]),
+  itemIds: Schema.Array(Schema.String),
+  cause: Schema.Defect(),
+}) {}
