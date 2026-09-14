@@ -273,7 +273,7 @@
     --color-lantern-ember: #ce6b29;
     --color-lantern-honey: #ffc66d;
     --color-makerworld: #08bf08;
-    --color-muted-hover: color-mix(var(--foreground) 75%, transparent);
+    --color-muted-hover: var(--foreground);
     --color-shadow-edge: color-mix(var(--background) 90%, transparent);
     --gap-tool: round(clamp(0.5rem, 0.8vh, 0.75rem), 1px);
     --layer-backdrop: -1;
@@ -288,8 +288,7 @@
     --shift-hover: -0.5rem;
     --shift-x: 0px;
     --shift-y: 0px;
-    --size-external: 1rem;
-    --size-icon: 1.5rem;
+    --size-icon: 1.875rem;
     --space-page: round(clamp(1rem, 4vw, 3rem), 1px);
     --width-nav: 25rem;
 
@@ -361,7 +360,7 @@
     margin-block: 1rem;
     padding: 1rem;
     gap: 1rem;
-    background: color-mix(var(--background) 50%, transparent);
+    background: color-mix(var(--background) 60%, transparent);
   }
 
   h2 {
@@ -416,7 +415,7 @@
       padding-block-end: 0;
 
       &:has(.tool-main:is(:hover, :focus-visible)) {
-        --color-primary-destination: var(--foreground);
+        --color-primary-destination: var(--color-muted-hover);
         --scale-primary-destination: 1;
       }
     }
@@ -517,7 +516,7 @@
     &:is(:hover, :focus-visible) {
       --scale-destination: 1;
 
-      color: var(--foreground);
+      color: var(--color-muted-hover);
     }
 
     &:focus-visible {
