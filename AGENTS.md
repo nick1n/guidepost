@@ -213,7 +213,7 @@ Do not add `id` fields back into catalog objects. Update `src/lib/schema.json` w
 ContentState -> CollectionStore -> GuestStore
 ```
 
-`GuestStore` persists collection state to `localStorage`. Keep browser-storage details out of `ContentState` so collection commands remain separate from persistence.
+`GuestStore` handles collection JSON and caching through the `BrowserStorage` Effect service in `src/lib/state/browser-storage.ts`. Only the browser service implementation accesses `localStorage`; it translates browser failures into `StorageError`. Provide `BrowserStorage.layer` when creating a store with `GuestStore.make()`. Keep browser-storage details out of `ContentState` so collection commands remain separate from persistence.
 
 State commands should update optimistically and restore the previous state if persistence fails. Batch related updates with one transaction through `saveMany()`.
 

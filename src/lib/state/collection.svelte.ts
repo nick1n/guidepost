@@ -16,8 +16,11 @@ function persistenceError(itemIds: readonly string[] = []) {
     let message = "We couldn't save that change. Please try again.";
     if (error.operation === "load") {
       message = "We couldn't access your saved collection. Please try again.";
-    } else if (error.reason === "invalid-data") {
-      message = "Your saved collection data is invalid and could not be loaded.";
+      if (error.reason === "invalid-data") {
+        message = "Your saved collection data is invalid and could not be loaded.";
+      }
+    } else if (error.reason === "serialization") {
+      message = "Your collection data could not be prepared for saving. The change was not saved.";
     }
 
     return new CollectionError({
