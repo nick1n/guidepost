@@ -1,8 +1,6 @@
 import { Schema as S } from "effect";
 import type * as Schema from "./gen/kdm-data";
 
-export type ItemKind = "core" | "beta" | "promo" | "expansion" | "white-box" | "set";
-
 type Id = { id: string };
 
 export type Edition = Schema.Edition;

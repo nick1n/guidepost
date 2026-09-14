@@ -56,7 +56,6 @@
   function retryLoad() {
     collectionActions.run(collection.refresh());
   }
-  }
 </script>
 
 <svelte:head>
