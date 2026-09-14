@@ -31,37 +31,39 @@
   --font-sans: "Inter", system-ui, sans-serif;
   --font-display: "Archivo", "Inter", sans-serif;
 
-  --text-sm: 0.75rem;
-  --text-lg: 1.25rem;
-  --text-xl: 1.5rem;
+  --font-bold: 700;
+  --font-semibold: 700;
   --text-card-title: 1.5rem;
   --text-hero: round(clamp(4.5rem, 10vw, 9rem), 1px);
-  --font-semibold: 700;
-  --font-bold: 700;
+  --text-lg: 1.25rem;
+  --text-sm: 0.75rem;
+  --text-xl: 1.5rem;
 
-  --line-height-none: 1;
-  --line-height-tight: 1.125;
-  --line-height-snug: 1.25;
-  --letter-spacing-tight: -0.03em;
   --border-size: 2px;
-  --radius-control: 0.5rem;
-  --radius-card: 1rem;
   --duration-fast: 180ms;
   --ease-standard: ease;
+  --letter-spacing-tight: -0.03em;
+  --line-height-none: 1;
+  --line-height-snug: 1.25;
+  --line-height-tight: 1.125;
+  --radius-card: 1rem;
+  --radius-control: 0.5rem;
+  --size-card-header: 1.875rem;
+  --size-external: 1rem;
 
   /* Currently unused vars */
-  --card-foreground: #fdfffe;
-  --popover: #2b2b2b;
-  --popover-foreground: #fdfffe;
-  --muted: #2b2b2b;
-  --secondary-foreground: #fdfffe;
-  --panel-foreground: #fdfffe;
-  --input: #1e1e1e;
-  --primary: #11b2e1;
-  --primary-foreground: #fdfffe;
-  --ring: #11b2e1;
   --beta-foreground: #fdfffe;
+  --card-foreground: #fdfffe;
   --font-sans: "Inter", system-ui, sans-serif;
+  --input: #1e1e1e;
+  --muted: #2b2b2b;
+  --panel-foreground: #fdfffe;
+  --popover-foreground: #fdfffe;
+  --popover: #2b2b2b;
+  --primary-foreground: #fdfffe;
+  --primary: #11b2e1;
+  --ring: #11b2e1;
+  --secondary-foreground: #fdfffe;
 }
 
 * {
@@ -100,4 +102,10 @@ button {
   overflow: hidden;
   white-space: nowrap;
   clip-path: inset(50%);
+}
+
+.external-icon {
+  display: inline-block;
+  inline-size: var(--size-external);
+  block-size: var(--size-external);
 }

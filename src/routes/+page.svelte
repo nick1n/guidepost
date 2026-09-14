@@ -86,7 +86,7 @@
         },
         {
           title: "Dune: Imperium",
-          note: "Player marker upgrades",
+          note: "Player token upgrades",
           icon: "i-material-symbols:3d-outline-sharp",
           destinations: [
             {
@@ -465,12 +465,6 @@
     font-weight: var(--font-semibold);
     font-size: var(--text-xl);
     font-family: var(--font-display);
-  }
-
-  .external-icon {
-    display: inline-block;
-    inline-size: var(--size-external);
-    block-size: var(--size-external);
   }
 
   .tool-icon {

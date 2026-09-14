@@ -1,6 +1,8 @@
 // See https://svelte.dev/docs/kit/types#app.d.ts
 // for information about these interfaces
 declare global {
+  type Noop = () => void;
+
   namespace App {
     // interface Error {}
     // interface Locals {}

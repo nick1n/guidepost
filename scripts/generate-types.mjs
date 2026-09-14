@@ -14,7 +14,6 @@ export async function generateTypes() {
   });
   const previous = await readFile(outputPath, "utf8").catch((error) => {
     if (error.code !== "ENOENT") throw error;
-    return undefined;
   });
   if (output === previous) return false;
 

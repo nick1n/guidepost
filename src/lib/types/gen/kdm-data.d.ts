@@ -13,9 +13,11 @@ export interface Content {
 export interface ContentItem {
   name: string;
   alt?: string;
-  kind: "core" | "beta" | "promo" | "expansion" | "white-box" | "set";
+  kind: "core" | "beta" | "promo" | "expansion" | "white-box" | "set" | "model" | "base" | "terrain" | "accessory";
   gameplay: boolean;
   price?: number;
+  currency?: "USD" | "EUR";
+  priceMinimum?: boolean;
   versions?: Edition[];
   editions?: Edition[];
   tags: string[];
@@ -34,6 +36,7 @@ export interface Dice {
 export interface DiceItem {
   name: string;
   price?: number;
+  currency?: "USD" | "EUR";
   /**
    * @minItems 2
    * @maxItems 2
@@ -53,6 +56,7 @@ export interface Bundles {
 export interface BundleItem {
   name: string;
   price?: number;
+  currency?: "USD" | "EUR";
   gameplay: boolean;
   tags: string[];
   includes: string[];

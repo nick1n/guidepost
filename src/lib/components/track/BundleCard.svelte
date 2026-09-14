@@ -66,10 +66,10 @@
 
   <div class="body">
     <div class="details">
-      <span class="price">{formatPrice(bundle.price)}</span>
+      <span class="price">{formatPrice(bundle.price, bundle.currency)}</span>
       {#if bundle.price != null && partsValue > bundle.price}
         <span class="original-price">
-          {formatPrice(partsValue)}
+          {formatPrice(partsValue, bundle.currency)}
         </span>
       {/if}
       <span class="divider" aria-hidden={true}></span>
@@ -77,7 +77,7 @@
         {bundle.gameplay ? "Gameplay" : "Models only"}
       </Pill>
       {#if url}
-        <StoreLink href={url} label="Store" itemName={bundle.name} />
+        <StoreLink href={url} name={bundle.name} />
       {/if}
     </div>
 
@@ -137,6 +137,10 @@
     background: var(--panel);
     cursor: pointer;
 
+    &:hover {
+      --color-checkbox: var(--color-divider);
+    }
+
     &:focus-visible {
       outline-offset: calc(-1 * var(--border-size));
     }
@@ -150,7 +154,7 @@
   h3 {
     font-weight: var(--font-semibold);
     font-size: var(--text-card-title);
-    line-height: var(--line-height-tight);
+    line-height: var(--size-card-header);
     font-family: var(--font-display);
     text-wrap: balance;
   }
@@ -162,8 +166,7 @@
   }
 
   .progress {
-    block-size: 0.25rem;
-    background: color-mix(var(--background) 60%, transparent);
+    block-size: var(--border-size);
   }
 
   .progress-value {

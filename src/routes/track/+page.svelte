@@ -38,6 +38,27 @@
     homebrew: visible.visibleHomebrew.length,
   });
   const resultCount = $derived(tabCounts[tab]);
+
+  function onenter() {
+    if (resultCount !== 1) return;
+
+    if (tab === "content" || tab === "homebrew") {
+      const item = tab === "content" ? visible.visibleContent[0] : visible.visibleHomebrew[0];
+      if (!collection.get(item.id).owned) {
+        collection.toggleOwned(item.id, { version: item.versions?.at(-1)?.v, edition: item.editions?.at(-1)?.v });
+      }
+      return;
+    }
+
+    if (tab === "dice") {
+      const item = visible.visibleDice[0];
+      if (!collection.get(item.id).owned) collection.toggleOwned(item.id);
+      return;
+    }
+
+    const bundle = visible.visibleBundles[0];
+    if (!collection.get(bundle.id).owned) collection.setManyOwned([bundle.id, ...bundle.includes], true);
+  }
 </script>
 
 <svelte:head>
@@ -66,6 +87,7 @@
     tagOptions={tab === "content" ? allContentTags : tab === "dice" ? allDiceTags : tab === "bundles" ? bundleTags : allHomebrewTags}
     showGameplay={tab !== "dice"}
     {resultCount}
+    {onenter}
   />
 
   {#if !collection.hydrated}

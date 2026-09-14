@@ -54,7 +54,7 @@
         {/each}
       </div>
       {#if url}
-        <StoreLink href={url} label="Store" itemName={item.name} />
+        <StoreLink href={url} name={item.name} />
       {/if}
     </div>
   </div>
@@ -83,6 +83,10 @@
     background: var(--panel);
     cursor: pointer;
 
+    &:hover {
+      --color-checkbox: var(--color-divider);
+    }
+
     &:focus-visible {
       outline-offset: calc(-1 * var(--border-size));
     }
@@ -92,7 +96,7 @@
     flex: 1;
     font-weight: var(--font-semibold);
     font-size: var(--text-card-title);
-    line-height: var(--line-height-tight);
+    line-height: var(--size-card-header);
     font-family: var(--font-display);
   }
 

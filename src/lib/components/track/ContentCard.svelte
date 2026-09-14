@@ -63,14 +63,14 @@
 
   <div class="body">
     <div class="details">
-      <span class="price">{formatPrice(price)}</span>
+      <span class="price">{formatPrice(price, item.currency)}{item.priceMinimum ? "+" : ""}</span>
       <span class="divider" aria-hidden={true}></span>
       <Pill tone={item.gameplay ? "accent" : "outline"} onclick={() => filters.toggleGameplay(item.gameplay)}>
         {item.gameplay ? "Gameplay" : "Models only"}
       </Pill>
       <Pill tone="neutral" onclick={() => filters.toggleKind(item.kind)}>{item.kind}</Pill>
       {#if url}
-        <StoreLink href={url} label="Shop" itemName={item.name} padded />
+        <StoreLink href={url} name={item.name} />
       {/if}
     </div>
 
@@ -146,6 +146,10 @@
     background: var(--panel);
     cursor: pointer;
 
+    &:hover {
+      --color-checkbox: var(--color-divider);
+    }
+
     &:focus-visible {
       outline-offset: calc(-1 * var(--border-size));
     }
@@ -166,7 +170,7 @@
   h3 {
     font-weight: var(--font-semibold);
     font-size: var(--text-card-title);
-    line-height: var(--line-height-tight);
+    line-height: var(--size-card-header);
     font-family: var(--font-display);
   }
 

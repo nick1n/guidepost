@@ -133,6 +133,25 @@
       "url": "/products/dung-beetle-knight-expansion-1-6",
       "tags": ["expansion", "monster-dung-beetle-knight", "knight", "node-4-quarry"]
     },
+    "expansion-frogdog": {
+      "name": "Frogdog Expansion",
+      "kind": "expansion",
+      "gameplay": true,
+      "versions": [
+        {
+          "v": "Sim",
+          "$": [1200],
+          "r": "2025-01-01"
+        },
+        {
+          "v": "1.6",
+          "$": [13500],
+          "r": "2024-01-01"
+        }
+      ],
+      "url": "/products/frogdog-expansion",
+      "tags": ["expansion", "monster-frogdog", "monster-bullfrogdog", "node-1-quarry", "gear", "armor"]
+    },
     "expansion-gorm": {
       "name": "Gorm Expansion",
       "kind": "expansion",
@@ -320,7 +339,7 @@
     },
     "expansion-green-knight-armor": {
       "name": "Green Knight Armor Expansion",
-      "kind": "expansion",
+      "kind": "white-box",
       "gameplay": true,
       "price": 8000,
       "versions": [
@@ -337,7 +356,7 @@
       ],
       "url": "/products/green-knight-armor-expansion-1-6",
       "requires": ["expansion-dung-beetle-knight", "expansion-gorm", "expansion-spidicules", "expansion-sunstalker"],
-      "tags": ["expansion", "monster-green-knight", "nemesis", "gear", "armor", "knight"]
+      "tags": ["expansion", "gear", "armor", "knight"]
     },
     "expansion-black-knight": {
       "name": "Black Knight Expansion",
@@ -534,35 +553,6 @@
         }
       ],
       "tags": ["white-box", "pillar", "beta", "trait", "grimmory"]
-    },
-    "promo-nightmare-ram": {
-      "name": "Nightmare Ram (Promo)",
-      "kind": "promo",
-      "gameplay": true,
-      "price": 2000,
-      "tags": ["promo", "monster", "special-showdown", "ram"]
-    },
-    "promo-halloween-white-speaker": {
-      "name": "Halloween White Speaker (Promo)",
-      "kind": "promo",
-      "gameplay": false,
-      "price": 2000,
-      "tags": ["promo", "pinup", "survivor", "female", "white-speaker", "halloween"]
-    },
-    "promo-holiday-white-speaker": {
-      "name": "Holiday White Speaker (Promo)",
-      "kind": "promo",
-      "gameplay": false,
-      "price": 2000,
-      "tags": ["promo", "pinup", "survivor", "female", "white-speaker", "holiday"]
-    },
-    "promo-gorm-pinup": {
-      "name": "Gorm Pinup (Promo)",
-      "kind": "promo",
-      "gameplay": false,
-      "price": 2000,
-      "requires": ["expansion-gorm"],
-      "tags": ["promo", "pinup", "survivor", "female", "monster-gorm"]
     }
   },
   "dice": {
@@ -588,7 +578,7 @@
       "text": ["Black", "Black"],
       "tags": ["dice"]
     },
-    "Classic-death-dice": {
+    "classic-death-dice": {
       "name": "Classic Death Dice",
       "price": 2000,
       "colors": ["#fdfffe", "#151313"],
@@ -611,6 +601,15 @@
     }
   },
   "bundles": {
+    "craft-of-death-phoenix-base-bundle": {
+      "name": "Phoenix Base Bundle",
+      "gameplay": false,
+      "tags": ["homebrew", "craft-of-death", "3d-print-files", "base", "terrain", "bundle", "monster-phoenix"],
+      "url": "https://ko-fi.com/s/cb9ee97746",
+      "price": 1200,
+      "currency": "EUR",
+      "includes": ["craft-of-death-phoenix-nightmare-tree", "craft-of-death-phoenix-base-materialize"]
+    },
     "expansion-of-death-vol-1-6": {
       "name": "Expansion of Death Vol 1.6",
       "price": 105500,
@@ -638,66 +637,150 @@
       "tags": ["bundle", "pinup"],
       "gameplay": true,
       "includes": ["pinups-of-death-1", "pinups-of-death-2", "pinups-of-death-3", "pinup-twilight-knight"]
-    },
-    "white-box-starter-bundle": {
-      "name": "White Box Starter Bundle",
-      "price": 18000,
-      "tags": ["bundle", "white-box"],
-      "gameplay": true,
-      "includes": [
-        "beyond-the-wall",
-        "white-box-percival",
-        "white-box-nico-bird-knight",
-        "white-box-aya-white-speaker",
-        "white-box-allison-twilight-knight",
-        "white-box-candy-and-cola",
-        "white-box-great-game-hunter"
-      ]
-    },
-    "black-friday-bundle": {
-      "name": "Black Friday Bundle",
-      "price": 24000,
-      "tags": ["bundle", "black-friday", "promo"],
-      "gameplay": true,
-      "includes": [
-        "promo-nightmare-ram",
-        "promo-halloween-white-speaker",
-        "promo-holiday-white-speaker",
-        "promo-gorm-pinup",
-        "black-friday-death-dice",
-        "black-out-death-dice"
-      ]
-    },
-    "dice-of-death-bundle": {
-      "name": "Dice of Death Bundle",
-      "price": 15000,
-      "tags": ["bundle", "dice"],
-      "gameplay": false,
-      "includes": [
-        "black-and-red-dice",
-        "black-out-death-dice",
-        "white-death-dice",
-        "gold-smoke-knight-dice",
-        "phoenix-dice",
-        "sunstalker-dice",
-        "lantern-dice"
-      ]
     }
   },
   "homebrew": {
-    "placeholder-homebrew-expansion": {
-      "name": "Placeholder Homebrew Expansion",
-      "alt": "Replace this sample entry with your own homebrew content.",
-      "kind": "expansion",
-      "gameplay": true,
-      "tags": ["homebrew", "placeholder", "expansion"]
-    },
-    "placeholder-homebrew-survivor-set": {
-      "name": "Placeholder Homebrew Survivor Set",
-      "alt": "A sample models-only homebrew entry.",
-      "kind": "set",
+    "craft-of-death-lion-monster": {
+      "name": "Lion Monster",
+      "alt": "Craft of Death digital model for 3D printing.",
+      "kind": "model",
       "gameplay": false,
-      "tags": ["homebrew", "placeholder", "survivor"]
+      "tags": ["homebrew", "craft-of-death", "3d-print-files", "monster", "monster-white-lion"],
+      "url": "https://ko-fi.com/s/0bd973fcfa",
+      "price": 900,
+      "currency": "EUR",
+      "priceMinimum": true
+    },
+    "craft-of-death-attribute-counters": {
+      "name": "Attribute Counters",
+      "alt": "Craft of Death digital counters for 3D printing, with 8 and 16-value discs.",
+      "kind": "accessory",
+      "gameplay": false,
+      "tags": ["homebrew", "craft-of-death", "3d-print-files", "accessory", "counter"],
+      "url": "https://ko-fi.com/s/efbd334f4f",
+      "price": 400,
+      "currency": "EUR",
+      "priceMinimum": true
+    },
+    "craft-of-death-phoenix-nightmare-tree": {
+      "name": "Phoenix Nightmare Tree",
+      "alt": "Craft of Death digital scenic base for 3D printing. Phoenix miniature not included.",
+      "kind": "terrain",
+      "gameplay": false,
+      "tags": ["homebrew", "craft-of-death", "3d-print-files", "terrain", "monster-phoenix"],
+      "url": "https://ko-fi.com/s/23394aac95",
+      "price": 900,
+      "currency": "EUR"
+    },
+    "craft-of-death-phoenix-base-materialize": {
+      "name": "Phoenix Base - Materialize",
+      "alt": "Craft of Death digital scenic base for 3D printing. Phoenix miniature not included.",
+      "kind": "base",
+      "gameplay": false,
+      "tags": ["homebrew", "craft-of-death", "3d-print-files", "base", "monster-phoenix"],
+      "url": "https://ko-fi.com/s/51e4b8a167",
+      "price": 600,
+      "currency": "EUR"
+    },
+    "craft-of-death-frogophant": {
+      "name": "Frogophant",
+      "alt": "Craft of Death digital model for 3D printing, supplied in 13 parts.",
+      "kind": "model",
+      "gameplay": false,
+      "tags": ["homebrew", "craft-of-death", "3d-print-files", "monster-bullfrogdog"],
+      "requires": ["expansion-frogdog"],
+      "url": "https://ko-fi.com/s/64351bf5db",
+      "price": 900,
+      "currency": "EUR",
+      "priceMinimum": true
+    },
+    "craft-of-death-scenic-terrain-lion-monster": {
+      "name": "Scenic Terrain - Lion Monster",
+      "alt": "Craft of Death digital terrain set containing four models. Available to members.",
+      "kind": "terrain",
+      "gameplay": false,
+      "tags": ["homebrew", "craft-of-death", "3d-print-files", "terrain", "monster-white-lion", "member-only"],
+      "url": "https://ko-fi.com/s/4ad38b4baa",
+      "price": 0,
+      "currency": "EUR",
+      "priceMinimum": true
+    },
+    "craft-of-death-hiding-bushes": {
+      "name": "Hiding Bushes",
+      "alt": "Craft of Death digital terrain set containing five models for 3D printing.",
+      "kind": "terrain",
+      "gameplay": false,
+      "tags": ["homebrew", "craft-of-death", "3d-print-files", "terrain"],
+      "url": "https://ko-fi.com/s/09aec6f2f4",
+      "price": 500,
+      "currency": "EUR",
+      "priceMinimum": true
+    },
+    "craft-of-death-acanthus-plants": {
+      "name": "Acanthus Plants",
+      "alt": "Craft of Death digital terrain set containing three models for 3D printing.",
+      "kind": "terrain",
+      "gameplay": false,
+      "tags": ["homebrew", "craft-of-death", "3d-print-files", "terrain"],
+      "url": "https://ko-fi.com/s/744d038dff",
+      "price": 500,
+      "currency": "EUR",
+      "priceMinimum": true
+    },
+    "craft-of-death-running-deer-base": {
+      "name": "Running Deer Base",
+      "alt": "Craft of Death digital base for 3D printing, supplied in two variations.",
+      "kind": "base",
+      "gameplay": false,
+      "tags": ["homebrew", "craft-of-death", "3d-print-files", "base", "monster-screaming-antelope"],
+      "url": "https://ko-fi.com/s/a1a7b30fdc",
+      "price": 800,
+      "currency": "EUR",
+      "priceMinimum": true
+    },
+    "craft-of-death-knight-of-hands-base": {
+      "name": "Knight of Hands Base",
+      "alt": "Craft of Death digital base for 3D printing.",
+      "kind": "base",
+      "gameplay": false,
+      "tags": ["homebrew", "craft-of-death", "3d-print-files", "base", "monster-hand"],
+      "url": "https://ko-fi.com/s/db104cca41",
+      "price": 800,
+      "currency": "EUR",
+      "priceMinimum": true
+    },
+    "craft-of-death-the-slaughterer-base": {
+      "name": "The Slaughterer Base",
+      "alt": "Craft of Death digital base for 3D printing.",
+      "kind": "base",
+      "gameplay": false,
+      "tags": ["homebrew", "craft-of-death", "3d-print-files", "base", "monster-butcher"],
+      "url": "https://ko-fi.com/s/85e10683ef",
+      "price": 500,
+      "currency": "EUR",
+      "priceMinimum": true
+    },
+    "craft-of-death-rock-base-lion-monster": {
+      "name": "Rock Base - Lion Monster",
+      "alt": "Craft of Death digital rock base containing three models. Available to members.",
+      "kind": "base",
+      "gameplay": false,
+      "tags": ["homebrew", "craft-of-death", "3d-print-files", "base", "monster-white-lion", "member-only"],
+      "url": "https://ko-fi.com/s/d3a4efca06",
+      "price": 0,
+      "currency": "EUR",
+      "priceMinimum": true
+    },
+    "craft-of-death-shield-location-dice": {
+      "name": "Shield Location Dice",
+      "alt": "Craft of Death digital dice set containing ten models for 3D printing.",
+      "kind": "accessory",
+      "gameplay": false,
+      "tags": ["homebrew", "craft-of-death", "3d-print-files", "accessory", "dice"],
+      "url": "https://ko-fi.com/s/c9d732bf63",
+      "price": 0,
+      "currency": "EUR",
+      "priceMinimum": true
     }
   }
 }

@@ -185,9 +185,6 @@
   }
 
   .external-icon {
-    display: inline-block;
-    inline-size: 1rem;
-    block-size: 1rem;
     color: var(--muted-foreground);
   }
 

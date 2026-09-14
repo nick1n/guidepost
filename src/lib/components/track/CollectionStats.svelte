@@ -1,15 +1,9 @@
 <script lang="ts">
-  import { formatPrice } from "#lib/kdm-data.ts";
+  import { formatPriceTotals } from "#lib/kdm-data.ts";
   import { getFilterState } from "#lib/state/filters.svelte.ts";
   import Stat from "./Stat.svelte";
 
-  type Props = {
-    ownedCount: number;
-    totalCount: number;
-    ownedValue: number;
-    wishlistCount: number;
-    wishlistValue: number;
-  };
+  type Props = ReturnType<typeof import("#lib/catalog-view.ts").getCollectionStats>;
 
   let { ownedCount, totalCount, ownedValue, wishlistCount, wishlistValue }: Props = $props();
 
@@ -25,7 +19,7 @@
       pos="left"
       label="Owned"
       count={ownedCount}
-      value={formatPrice(ownedValue)}
+      value={formatPriceTotals(ownedValue)}
       active={filters.value.status === "owned"}
       onclick={() => filters.toggleStatus("owned")}
     />
@@ -33,7 +27,7 @@
       pos="right"
       label="Wishlist"
       count={wishlistCount}
-      value={formatPrice(wishlistValue)}
+      value={formatPriceTotals(wishlistValue)}
       active={filters.value.status === "wishlisted"}
       onclick={() => filters.toggleStatus("wishlisted")}
     />

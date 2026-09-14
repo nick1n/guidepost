@@ -1,7 +1,7 @@
 <script lang="ts">
   type Props = {
     checked: boolean;
-    onchange: () => void;
+    onchange: Noop;
     label: string;
   };
 
@@ -22,15 +22,19 @@
     z-index: var(--layer-control, auto);
     position: relative;
     flex-shrink: 0;
-    inline-size: 1.875rem;
-    block-size: 1.875rem;
+    inline-size: var(--size-card-header);
+    block-size: var(--size-card-header);
     border: var(--border-size) solid var(--foreground);
+    background: var(--color-checkbox, var(--contrast));
     box-shadow: inset 0 0 0 var(--border-size) var(--contrast);
-    background: var(--contrast);
     transition: background-color var(--duration-fast) var(--ease-standard);
 
+    &:hover {
+      --color-checkbox: var(--color-divider);
+    }
+
     &[aria-checked="true"] {
-      background: var(--foreground);
+      --color-checkbox: var(--foreground);
     }
   }
 </style>

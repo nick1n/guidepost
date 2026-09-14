@@ -1,7 +1,5 @@
 import catalog from "./kdm-data.json";
-import type { Bundle, Catalog, ContentItem, DiceSet, Filters } from "#lib/types/index.ts";
-
-export const STORE_BASE = "https://shop.kingdomdeath.com";
+import type { Bundle, Catalog, ContentItem, DiceSet, Filters, Currency } from "#lib/types/index.ts";
 
 const data = catalog as unknown as Catalog;
 
@@ -24,13 +22,28 @@ export const priceById: Record<string, number> = Object.fromEntries(
   [...content, ...dice, ...homebrew].map((item) => [item.id, item.price ?? 0]),
 );
 
-export function formatPrice(cents?: number) {
-  if (cents == null) return "—";
-  return "$" + (cents / 100).toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+export function formatPrice(cents?: number, currency: Currency = "USD") {
+  if (cents == null) return "Not priced";
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency,
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
+  }).format(cents / 100);
 }
 
+// default exchange rate: 1 EUR = 1.13 USD.
+const EUR_TO_USD = 1.13;
+
+export function formatPriceTotals(totals: Partial<Record<Currency, number>>) {
+  const usdCents = (totals.USD ?? 0) + (totals.EUR ?? 0) * EUR_TO_USD;
+  return formatPrice(Math.round(usdCents));
+}
+
+export const STORE_BASE = "https://shop.kingdomdeath.com";
+
 export function storeUrl(path?: string) {
-  if (!path) return undefined;
+  if (!path) return;
   return path.startsWith("http") ? path : `${STORE_BASE}${path}`;
 }
 

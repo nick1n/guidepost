@@ -8,9 +8,10 @@
     showKind?: boolean;
     showGameplay?: boolean;
     resultCount: number;
+    onenter: Noop;
   };
 
-  let { tagOptions, showKind = true, showGameplay = true, resultCount }: Props = $props();
+  let { tagOptions, showKind = true, showGameplay = true, resultCount, onenter }: Props = $props();
 
   const filters = getFilterState();
 
@@ -37,6 +38,12 @@
   }
 
   function onkeydown(event: KeyboardEvent) {
+    if (event.target === searchInput && event.key === "Enter") {
+      event.preventDefault();
+      onenter();
+      return;
+    }
+
     if (isEditableTarget(event.target)) return;
 
     const isSlash = event.key === "/";

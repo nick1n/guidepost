@@ -1,7 +1,7 @@
 <script lang="ts">
   type Props = {
     active: boolean;
-    onchange: () => void;
+    onchange: Noop;
     label: string;
   };
 
@@ -44,7 +44,7 @@
 
   .icon {
     display: inline-block;
-    inline-size: 1.875rem;
-    block-size: 1.875rem;
+    inline-size: var(--size-card-header);
+    block-size: var(--size-card-header);
   }
 </style>

@@ -3,7 +3,7 @@
 
   type Props = {
     tone?: "neutral" | "accent" | "outline";
-    onclick?: () => void;
+    onclick?: Noop;
     children: Snippet;
   };
 

@@ -6,7 +6,7 @@
     value: string;
     accent?: boolean;
     active?: boolean;
-    onclick?: () => void;
+    onclick?: Noop;
   };
 
   let { pos, label, count, value, accent = false, active = false, onclick }: Props = $props();

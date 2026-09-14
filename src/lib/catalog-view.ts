@@ -1,5 +1,5 @@
 import { bundles, content, dice, effectivePrice, homebrew } from "./kdm-data";
-import type { Bundle, ContentItem, DiceSet, Filters, CollectionState } from "#lib/types/index.ts";
+import type { Bundle, ContentItem, DiceSet, Filters, CollectionState, Currency } from "#lib/types/index.ts";
 
 type CatalogItem = ContentItem | DiceSet | Bundle;
 type FilterableItem = Pick<CatalogItem, "id" | "name" | "tags"> & Partial<Pick<ContentItem, "alt" | "gameplay" | "kind">>;
@@ -8,19 +8,20 @@ export const bundleTags = Array.from(new Set(bundles.flatMap((bundle) => bundle.
 
 export function getCollectionStats(state: CollectionState) {
   let ownedCount = 0;
-  let ownedValue = 0;
+  const ownedValue: Partial<Record<Currency, number>> = {};
   let wishlistCount = 0;
-  let wishlistValue = 0;
+  const wishlistValue: Partial<Record<Currency, number>> = {};
 
   for (const item of [...content, ...dice, ...homebrew]) {
     const entry = state[item.id];
     const price = "versions" in item || "editions" in item ? effectivePrice(item, entry?.versions, entry?.editions) : (item.price ?? 0);
+    const currency = item.currency ?? "USD";
     if (entry?.owned) {
       ownedCount += 1;
-      ownedValue += price;
+      ownedValue[currency] = (ownedValue[currency] ?? 0) + price;
     } else if (entry?.wishlisted) {
       wishlistCount += 1;
-      wishlistValue += price;
+      wishlistValue[currency] = (wishlistValue[currency] ?? 0) + price;
     }
   }
 

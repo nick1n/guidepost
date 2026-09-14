@@ -31,10 +31,12 @@
         "name": { "type": "string" },
         "alt": { "type": "string" },
         "kind": {
-          "enum": ["core", "beta", "promo", "expansion", "white-box", "set"]
+          "enum": ["core", "beta", "promo", "expansion", "white-box", "set", "model", "base", "terrain", "accessory"]
         },
         "gameplay": { "type": "boolean" },
         "price": { "type": "number" },
+        "currency": { "enum": ["USD", "EUR"], "default": "USD" },
+        "priceMinimum": { "type": "boolean", "default": false },
         "versions": { "type": "array", "items": { "$ref": "#/$defs/edition" } },
         "editions": { "type": "array", "items": { "$ref": "#/$defs/edition" } },
         "tags": { "type": "array", "items": { "type": "string" } },
@@ -53,6 +55,7 @@
       "properties": {
         "name": { "type": "string" },
         "price": { "type": "number" },
+        "currency": { "enum": ["USD", "EUR"], "default": "USD" },
         "colors": {
           "type": "array",
           "minItems": 2,
@@ -80,6 +83,7 @@
       "properties": {
         "name": { "type": "string" },
         "price": { "type": "number" },
+        "currency": { "enum": ["USD", "EUR"], "default": "USD" },
         "gameplay": { "type": "boolean" },
         "tags": { "type": "array", "items": { "type": "string" } },
         "includes": { "type": "array", "items": { "type": "string" } },
