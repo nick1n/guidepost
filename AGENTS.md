@@ -205,25 +205,33 @@ The source of truth is `src/lib/kdm-data.json`. Data is grouped by category and 
 
 Do not add `id` fields back into catalog objects. Update `src/lib/schema.json` when the JSON shape changes. Keep catalog-derived helpers in `src/lib/kdm-data.ts` or `src/lib/catalog-view.ts`, rather than duplicating lookup logic in components.
 
+## Effect guidance
+
+This project uses Effect v4. Before writing or changing Effect code, read `node_modules/effect/AGENTS.md` completely and follow its linked references when relevant to the task. For APIs or behavior not covered there, inspect `node_modules/effect/src` and the installed type declarations. Prefer these version-matched sources over examples written for other Effect releases.
+
+If the installed guidance is unavailable, report that and consult official documentation matching the installed version. Do not install or upgrade Effect solely to obtain guidance. Keep the project-specific state, persistence, and UI boundaries below; library guidance is not a reason to convert every helper or component callback into an Effect.
+
 ## State and persistence
 
 `ContentState` owns collection commands. `CollectionStore` and `GuestStore` are defined in `src/lib/state/stores.ts`; collection-state data types are defined in `src/lib/types`.
 
 ```text
-ContentState -> CollectionStore -> GuestStore
+ContentState -> OptimisticStore -> GuestStore -> BrowserStorage
 ```
 
-`GuestStore` handles collection JSON and caching through the `BrowserStorage` Effect service in `src/lib/state/browser-storage.ts`. Only the browser service implementation accesses `localStorage`; it translates browser failures into `StorageError`. Provide `BrowserStorage.layer` when creating a store with `GuestStore.make()`. Keep browser-storage details out of `ContentState` so collection commands remain separate from persistence.
+`CollectionStore` is the persistence interface implemented by `GuestStore`, not an additional runtime layer. `GuestStore` reads and writes complete collection snapshots without keeping a second state cache. It handles collection JSON through the `BrowserStorage` Effect service in `src/lib/state/browser-storage.ts`. Only the browser service implementation accesses `localStorage`; it translates browser failures into `StorageError`. Provide `BrowserStorage.layer` when creating a store with `GuestStore.make()`. Keep browser-storage details out of `ContentState` so collection commands remain separate from persistence.
 
-State commands should update optimistically and restore the previous state if persistence fails. Batch related updates with one transaction through `saveMany()`.
+State commands apply field patches optimistically through `OptimisticStore`. It keeps confirmed state plus pending changes, serializes persistence, and removes failed changes without overwriting newer edits. Only persistence waits in the queue. Batch related updates with one transaction through `saveMany()`.
 
 ```ts
-// Do
-await store.saveMany(nextStates);
-
-// Avoid
-await Promise.all(ids.map((id) => store.save(id, nextStates[id])));
+collectionActions.run(collection.setManyOwned(ids, true));
 ```
+
+Run UI commands through `collectionActions.run()` so their Effects execute and report outcomes. This ordinary TypeScript module owns no reactive state. Collection loading errors belong to `ContentState.loadError`, alongside `loadStatus`, and are cleared when loading is retried or the user changes. The `Notifications` Effect service currently logs successes and errors to the console; a visible toast implementation will come later. Initialization uses `{ success: false }` to avoid announcing a save on startup.
+
+Reusable dialogs use ordinary callbacks and close immediately on confirmation. They own focus, dismissal, and closing-animation guards, not persistence or asynchronous pending state. The parent owns the workflow. Quick Start assumes core ownership, so navigation starts independently of collection persistence and still proceeds if saving fails.
+
+Run `node --test tests/optimistic-store.test.mts` after changing optimistic persistence. These tests use Node's built-in TypeScript support and require Node 22.18 or newer.
 
 ## PWA and service worker
 

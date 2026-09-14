@@ -1,12 +1,13 @@
 <script lang="ts">
-  import { goto } from "$app/navigation";
   import { asset, resolve } from "$app/paths";
   import { Effect } from "effect";
   import type { PointerEventHandler } from "svelte/elements";
   import ConfirmDialog from "#lib/components/ConfirmDialog.svelte";
   import VersionPicker from "#lib/components/track/VersionPicker.svelte";
   import { content } from "#lib/kdm-data.ts";
+  import { navigate } from "#lib/navigation.ts";
   import { collection } from "#lib/state/collection.svelte.ts";
+  import { collectionActions } from "#lib/state/collection-actions.ts";
 
   type Accents = "primary" | "muted" | "red";
 
@@ -199,24 +200,21 @@
   }
 
   function confirmCoreOwnership() {
-    return Effect.suspend(() => {
+    const version = selectedCoreVersion;
+    const save = Effect.suspend(() => {
       if (collection.state.core?.owned) return Effect.void;
-      return collection.toggleOwned("core", { version: selectedCoreVersion });
+      return collection.toggleOwned("core", { version });
     });
+    collectionActions.run(save, { success: "Core game saved to your collection." });
+    collectionActions.run(continueToQuickStart(), { success: false });
   }
 
   function continueToQuickStart() {
-    return Effect.tryPromise({
-      try: () => goto(quickStartHref),
-      catch: (cause) => ({
-        message: "The core game was added, but Quick start could not be opened. Please try again.",
-        cause,
-      }),
-    });
+    return navigate(quickStartHref, "Quick start could not be opened. Please try again.");
   }
 
   function restoreQuickStartFocus() {
-    return Effect.sync(() => quickStartTrigger?.focus());
+    quickStartTrigger?.focus();
   }
 </script>
 
@@ -300,7 +298,7 @@
     description="The quick start prologue showdown requires the **Kingdom Death: Monster** core box. Please choose the version you own to add it to your collection."
     confirmLabel="Add and continue"
     onconfirm={confirmCoreOwnership}
-    onconfirmed={continueToQuickStart}
+    confirmDisabled={!selectedCoreVersion}
     oncancel={restoreQuickStartFocus}
   >
     <VersionPicker

@@ -1,15 +1,10 @@
-import { Data, Effect } from "effect";
+import { Effect } from "effect";
+import { CollectionError } from "./collection-errors.ts";
 import type { CollectionStore, StoreError } from "./stores";
+import { OptimisticStore } from "./optimistic-store.ts";
 import type { CollectionState, EntryState } from "#lib/types/index.ts";
 
 type LoadStatus = "pending" | "ready" | "error";
-
-export class CollectionError extends Data.TaggedError("CollectionError")<{
-  readonly message: string;
-  readonly operation: "load" | "save" | "clear";
-  readonly itemIds: readonly string[];
-  readonly cause: unknown;
-}> {}
 
 function persistenceError(itemIds: readonly string[] = []) {
   return (error: StoreError) => {
@@ -56,15 +51,10 @@ function collectionNotReadyError(operation: CollectionError["operation"], itemId
 class ContentState {
   state = $state.raw<CollectionState>({});
   loadStatus = $state<LoadStatus>("pending");
+  loadError = $state.raw<CollectionError | undefined>();
   userId = $state<string | undefined>();
   private store?: CollectionStore;
-
-  private restoreState(previous: CollectionState) {
-    return () =>
-      Effect.sync(() => {
-        this.state = previous;
-      });
-  }
+  private writer?: OptimisticStore;
 
   private setLoadStatus(status: LoadStatus = "error") {
     return () =>
@@ -73,43 +63,56 @@ class ContentState {
       });
   }
 
+  private recordLoadError = (error: CollectionError) =>
+    Effect.sync(() => {
+      this.loadError = error;
+    });
+
   setStore(store: CollectionStore, migrateFrom?: CollectionStore) {
-    const self = this;
-    return Effect.gen(function* () {
-      self.store = store;
-      self.loadStatus = "pending";
+    return Effect.gen({ self: this }, function* () {
+      this.store = store;
+      this.writer = undefined;
+      this.loadStatus = "pending";
+      this.loadError = undefined;
 
       const localState = migrateFrom ? yield* migrateFrom.load().pipe(Effect.mapError(persistenceError())) : {};
       const storedState = yield* store.load().pipe(Effect.mapError(persistenceError()));
+      const state = { ...storedState, ...localState };
       const itemIds = Object.keys(localState);
 
       if (itemIds.length) {
-        yield* store.saveMany(localState).pipe(Effect.mapError(persistenceError(itemIds)));
+        yield* store.save(state).pipe(Effect.mapError(persistenceError(itemIds)));
         if (migrateFrom) yield* migrateFrom.clear().pipe(Effect.mapError(persistenceError(itemIds)));
       }
 
-      self.state = { ...storedState, ...localState };
-      self.loadStatus = "ready";
-    }).pipe(Effect.tapCause(self.setLoadStatus()));
+      this.state = state;
+      const writer = new OptimisticStore(store, this.state, (state) => {
+        if (this.writer === writer) this.state = state;
+      });
+      this.writer = writer;
+      this.loadStatus = "ready";
+    }).pipe(Effect.tapError(this.recordLoadError), Effect.tapCause(this.setLoadStatus()));
   }
 
   setUser(userId?: string) {
     if (this.userId === userId) return;
     this.userId = userId;
     this.store = undefined;
+    this.writer = undefined;
     this.state = {};
     this.loadStatus = "pending";
+    this.loadError = undefined;
   }
 
   refresh() {
-    const self = this;
-    return Effect.gen(function* () {
-      if (!self.store) return yield* unavailableStoreError("load");
-      self.loadStatus = "pending";
-      const state = yield* self.store.load().pipe(Effect.mapError(persistenceError()), Effect.tapCause(self.setLoadStatus()));
-      self.state = state;
-      self.loadStatus = "ready";
-    });
+    return Effect.gen({ self: this }, function* () {
+      this.loadError = undefined;
+      if (!this.store) return yield* unavailableStoreError("load");
+      if (!this.writer) return yield* this.setStore(this.store);
+      this.loadStatus = "pending";
+      yield* this.writer.load().pipe(Effect.mapError(persistenceError()));
+      this.loadStatus = "ready";
+    }).pipe(Effect.tapError(this.recordLoadError), Effect.tapCause(this.setLoadStatus()));
   }
 
   get(id: string) {
@@ -126,11 +129,8 @@ class ContentState {
       if (!this.store) return Effect.fail(unavailableStoreError("save", itemIds));
       if (this.loadStatus !== "ready") return Effect.fail(collectionNotReadyError("save", itemIds, this.loadStatus));
 
-      const store = this.store;
-      const previous = this.state;
-      this.state = { ...this.state, ...nextState };
-
-      return store.saveMany(nextState).pipe(Effect.mapError(persistenceError(itemIds)), Effect.tapError(this.restoreState(previous)));
+      if (!this.writer) return Effect.fail(unavailableStoreError("save", itemIds));
+      return this.writer.saveMany(nextState).pipe(Effect.mapError(persistenceError(itemIds)));
     });
   }
 
@@ -138,18 +138,17 @@ class ContentState {
     return this.update(itemId, (entry) => {
       const owned = !entry.owned;
       return {
-        ...entry,
         owned,
-        wishlisted: owned ? false : entry.wishlisted,
-        versions: owned ? (defaults?.version ? [defaults.version] : entry.versions) : undefined,
-        editions: owned ? (defaults?.edition ? [defaults.edition] : entry.editions) : undefined,
-        editionNumbers: owned ? entry.editionNumbers : undefined,
+        ...(owned ? { wishlisted: false } : {}),
+        ...(!owned ? { versions: undefined } : defaults?.version ? { versions: [defaults.version] } : {}),
+        ...(!owned ? { editions: undefined } : defaults?.edition ? { editions: [defaults.edition] } : {}),
+        ...(!owned ? { editionNumbers: undefined } : {}),
       };
     });
   }
 
   toggleWishlisted(itemId: string) {
-    return this.update(itemId, (entry) => ({ ...entry, wishlisted: !entry.wishlisted }));
+    return this.update(itemId, (entry) => ({ wishlisted: !entry.wishlisted }));
   }
 
   setVersion(itemId: string, version: string) {
@@ -157,9 +156,7 @@ class ContentState {
       const versions = entry.versions ?? [];
       const next = versions.includes(version) ? versions.filter((value) => value !== version) : [...versions, version];
       return {
-        ...entry,
-        owned: next.length ? true : entry.owned,
-        wishlisted: next.length ? false : entry.wishlisted,
+        ...(next.length ? { owned: true, wishlisted: false } : {}),
         versions: next.length ? next : undefined,
       };
     });
@@ -172,9 +169,7 @@ class ContentState {
       const numbers = { ...(entry.editionNumbers ?? {}) };
       if (!next.includes(edition)) delete numbers[edition];
       return {
-        ...entry,
-        owned: next.length ? true : entry.owned,
-        wishlisted: next.length ? false : entry.wishlisted,
+        ...(next.length ? { owned: true, wishlisted: false } : {}),
         editions: next.length ? next : undefined,
         editionNumbers: Object.keys(numbers).length ? numbers : undefined,
       };
@@ -186,7 +181,7 @@ class ContentState {
       const numbers = { ...(entry.editionNumbers ?? {}) };
       if (editionNumber == null) delete numbers[edition];
       else numbers[edition] = editionNumber;
-      return { ...entry, editionNumbers: Object.keys(numbers).length ? numbers : undefined };
+      return { editionNumbers: Object.keys(numbers).length ? numbers : undefined };
     });
   }
 
@@ -194,8 +189,7 @@ class ContentState {
     return Effect.suspend(() => {
       const nextState = Object.fromEntries(
         ids.map((itemId) => {
-          const entry = this.get(itemId);
-          return [itemId, { ...entry, owned, wishlisted: owned ? false : entry.wishlisted }];
+          return [itemId, { owned, ...(owned ? { wishlisted: false } : {}) }];
         }),
       );
       return this.commitMany(nextState);
@@ -209,13 +203,11 @@ class ContentState {
   reset() {
     return Effect.suspend(() => {
       const store = this.store;
-      const previous = this.state;
-      const itemIds = Object.keys(previous);
+      const itemIds = Object.keys(this.state);
       if (!store) return Effect.fail(unavailableStoreError("clear", itemIds));
       if (this.loadStatus !== "ready") return Effect.fail(collectionNotReadyError("clear", itemIds, this.loadStatus));
-      this.state = {};
-
-      return store.clear().pipe(Effect.mapError(persistenceError(itemIds)), Effect.tapError(this.restoreState(previous)));
+      if (!this.writer) return Effect.fail(unavailableStoreError("clear", itemIds));
+      return this.writer.clear().pipe(Effect.mapError(persistenceError(itemIds)));
     });
   }
 }

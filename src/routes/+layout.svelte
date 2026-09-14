@@ -5,7 +5,7 @@
   import { Effect } from "effect";
   import { BrowserStorage } from "#lib/state/browser-storage.ts";
   import { collection } from "#lib/state/collection.svelte.ts";
-  import { collectionActions } from "#lib/state/collection-actions.svelte.ts";
+  import { collectionActions } from "#lib/state/collection-actions.ts";
   import { GuestStore } from "#lib/state/stores.ts";
 
   let { children } = $props();
@@ -18,6 +18,7 @@
         Effect.provide(BrowserStorage.layer),
         Effect.flatMap((store) => collection.setStore(store)),
       ),
+      { success: false },
     );
   });
 </script>

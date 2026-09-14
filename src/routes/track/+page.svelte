@@ -7,7 +7,7 @@
   import FilterBar from "#lib/components/track/FilterBar.svelte";
   import { allContentTags, allDiceTags, allHomebrewTags, priceById } from "#lib/kdm-data.ts";
   import { collection } from "#lib/state/collection.svelte.ts";
-  import { collectionActions } from "#lib/state/collection-actions.svelte.ts";
+  import { collectionActions } from "#lib/state/collection-actions.ts";
   import { createFilterState } from "#lib/state/filters.svelte.ts";
 
   type Tab = "content" | "dice" | "bundles" | "homebrew";
@@ -38,23 +38,23 @@
     if (tab === "content" || tab === "homebrew") {
       const item = tab === "content" ? visible.visibleContent[0] : visible.visibleHomebrew[0];
       if (!collection.get(item.id).owned) {
-        collection.toggleOwned(item.id, { version: item.versions?.at(-1)?.v, edition: item.editions?.at(-1)?.v });
+        collectionActions.run(collection.toggleOwned(item.id, { version: item.versions?.at(-1)?.v, edition: item.editions?.at(-1)?.v }));
       }
       return;
     }
 
     if (tab === "dice") {
       const item = visible.visibleDice[0];
-      if (!collection.get(item.id).owned) collection.toggleOwned(item.id);
+      if (!collection.get(item.id).owned) collectionActions.run(collection.toggleOwned(item.id));
       return;
     }
 
     const bundle = visible.visibleBundles[0];
-    if (!collection.get(bundle.id).owned) collection.setManyOwned([bundle.id, ...bundle.includes], true);
+    if (!collection.get(bundle.id).owned) collectionActions.run(collection.setManyOwned([bundle.id, ...bundle.includes], true));
   }
 
   function retryLoad() {
-    collectionActions.run(collection.refresh());
+    collectionActions.run(collection.refresh(), { success: "Collection loaded." });
   }
 </script>
 
@@ -69,15 +69,6 @@
   </header>
 
   <CollectionStats {...stats} />
-
-  {#if collectionActions.error && collectionActions.error.operation !== "load"}
-    <div class="error" role="alert">
-      <span>{collectionActions.error.message}</span>
-      <button class="dismiss" type="button" onclick={() => collectionActions.dismiss()} aria-label="Dismiss collection error">
-        <span class="dismiss-icon i-material-symbols:close" aria-hidden="true"></span>
-      </button>
-    </div>
-  {/if}
 
   <nav aria-label="Sections">
     <span class="tab-highlight" aria-hidden="true"></span>
@@ -98,7 +89,7 @@
 
   {#if collection.loadStatus === "error"}
     <div class="load-error">
-      <p>{collectionActions.error?.operation === "load" ? collectionActions.error.message : "Collection unavailable"}</p>
+      <p>{collection.loadError?.message ?? "Collection unavailable"}</p>
       <button class="retry" type="button" onclick={retryLoad}>Try again</button>
     </div>
   {:else if collection.loadStatus !== "ready"}
@@ -221,34 +212,6 @@
     &:hover {
       background: var(--accent);
       color: var(--contrast);
-    }
-  }
-
-  .error {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0.75rem;
-    border: var(--border-size) solid var(--accent-red);
-    gap: 0.75rem;
-    background: color-mix(var(--accent-red) 12%, var(--panel));
-    color: var(--foreground);
-  }
-
-  .dismiss-icon {
-    display: inline-block;
-    inline-size: 1.25rem;
-    block-size: 1.25rem;
-    color: var(--accent-red);
-  }
-
-  .dismiss {
-    display: inline-flex;
-    padding: 0.25rem;
-    border-radius: var(--radius-control);
-
-    &:is(:hover, :focus-visible) {
-      background: color-mix(var(--accent-red) 18%, transparent);
     }
   }
 

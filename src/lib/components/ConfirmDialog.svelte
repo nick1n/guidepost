@@ -1,22 +1,15 @@
 <script lang="ts">
-  import { Effect } from "effect";
-  import type { Snippet } from "svelte";
+  import { onDestroy, type Snippet } from "svelte";
   import { DURATION_FAST } from "#lib/constants.ts";
-
-  type DialogFailure = {
-    readonly message: string;
-  };
 
   type Props = {
     title: string;
     description: string;
-    onconfirm: () => Effect.Effect<unknown, DialogFailure>;
-    onconfirmed?: () => Effect.Effect<unknown, DialogFailure>;
-    oncancel?: () => Effect.Effect<unknown, unknown>;
+    onconfirm: () => void;
+    oncancel?: () => void;
     children?: Snippet;
     confirmLabel?: string;
-    pendingLabel?: string;
-    retryLabel?: string;
+    confirmDisabled?: boolean;
     cancelLabel?: string;
     icon?: string;
   };
@@ -25,158 +18,55 @@
     title,
     description,
     onconfirm,
-    onconfirmed,
     oncancel,
     children,
     confirmLabel = "Confirm",
-    pendingLabel = "Working…",
-    retryLabel = "Continue",
+    confirmDisabled = false,
     cancelLabel = "Cancel",
     icon = "i-material-symbols:warning-outline",
   }: Props = $props();
 
   const id = $props.id();
   let dialog: HTMLDialogElement;
-  let pending = $state(false);
-  let errorMessage = $state<string | undefined>();
-  let confirmed = $state(false);
   let closing = false;
-  const confirmButtonLabel = $derived.by(() => {
-    if (pending) return pendingLabel;
-    if (confirmed) return retryLabel;
-    return confirmLabel;
-  });
+  let closeTimer: ReturnType<typeof setTimeout> | undefined;
 
-  function reportUnexpected(cause: unknown) {
-    console.error("Unexpected dialog failure", cause);
-  }
+  onDestroy(() => clearTimeout(closeTimer));
 
   export function show() {
-    if (dialog.open || closing || pending) return;
-
-    errorMessage = undefined;
-    pending = false;
-    confirmed = false;
+    if (dialog.open || closing) return;
     dialog.showModal();
-    queueMicrotask(() => dialog.querySelector<HTMLElement>("[data-dialog-initial-focus]")?.focus());
+    queueMicrotask(() => {
+      if (dialog.open) dialog.querySelector<HTMLElement>("[data-dialog-initial-focus]")?.focus();
+    });
   }
 
   export function close(returnValue?: string) {
-    return Effect.callback((resume) => {
-      if (!dialog.open || closing) {
-        resume(Effect.void);
-        return;
-      }
-
-      closing = true;
-      let settled = false;
-      let timeout: ReturnType<typeof setTimeout>;
-
-      const finish = () => {
-        if (settled) return;
-        settled = true;
-        dialog.removeEventListener("transitionend", ontransitionend);
-        clearTimeout(timeout);
-        closing = false;
-        resume(Effect.void);
-      };
-
-      function ontransitionend(event: TransitionEvent) {
-        if (event.target === dialog && event.propertyName === "opacity") finish();
-      }
-
-      dialog.addEventListener("transitionend", ontransitionend);
-      dialog.close(returnValue);
-      timeout = setTimeout(finish, DURATION_FAST + 50);
-
-      return Effect.sync(() => {
-        settled = true;
-        dialog.removeEventListener("transitionend", ontransitionend);
-        clearTimeout(timeout);
-        closing = false;
-      });
-    });
+    if (!dialog.open || closing) return;
+    closing = true;
+    dialog.close(returnValue);
+    closeTimer = setTimeout(finishClose, DURATION_FAST + 50);
   }
 
-  function showError(message: string) {
-    errorMessage = message;
+  function finishClose() {
+    clearTimeout(closeTimer);
+    closing = false;
   }
 
-  function showFollowUpError(message: string) {
-    errorMessage = message;
-    if (!dialog.open) dialog.showModal();
-    queueMicrotask(() => dialog.querySelector<HTMLButtonElement>(".confirm")?.focus());
-  }
-
-  function handleConfirmError(error: DialogFailure) {
-    return Effect.sync(() => showError(error.message));
-  }
-
-  function handleFollowUpError(error: DialogFailure) {
-    return Effect.sync(() => showFollowUpError(error.message));
-  }
-
-  function handleConfirmCause(cause: unknown) {
-    return Effect.sync(() => {
-      reportUnexpected(cause);
-      showError("We couldn't save that change. Please try again.");
-    });
-  }
-
-  function handleFollowUpCause(cause: unknown) {
-    return Effect.sync(() => {
-      reportUnexpected(cause);
-      showFollowUpError("The change was saved, but the next page could not be opened. Please try again.");
-    });
+  function ontransitionend(event: TransitionEvent) {
+    if (closing && event.target === dialog && event.propertyName === "opacity") finishClose();
   }
 
   function confirm() {
-    if (pending) return;
-
-    pending = true;
-    errorMessage = undefined;
-
-    const confirmation = confirmed
-      ? Effect.void
-      : Effect.suspend(onconfirm).pipe(
-          Effect.tap(() =>
-            Effect.sync(() => {
-              confirmed = true;
-            }),
-          ),
-        );
-    const followUp = onconfirmed
-      ? close("confirm").pipe(
-          Effect.andThen(Effect.suspend(onconfirmed)),
-          Effect.catch(handleFollowUpError),
-          Effect.catchCause(handleFollowUpCause),
-        )
-      : close("confirm");
-
-    Effect.runFork(
-      confirmation.pipe(
-        Effect.andThen(followUp),
-        Effect.catch(handleConfirmError),
-        Effect.catchCause(handleConfirmCause),
-        Effect.ensuring(
-          Effect.sync(() => {
-            pending = false;
-          }),
-        ),
-      ),
-    );
+    if (!dialog.open || closing || confirmDisabled) return;
+    close("confirm");
+    onconfirm();
   }
 
   function cancel() {
-    if (pending || closing) return;
-
-    errorMessage = undefined;
-    Effect.runFork(
-      Effect.gen(function* () {
-        yield* close("cancel");
-        if (oncancel) yield* Effect.suspend(oncancel);
-      }).pipe(Effect.catchCause((cause) => Effect.sync(() => reportUnexpected(cause)))),
-    );
+    if (!dialog.open || closing) return;
+    close("cancel");
+    oncancel?.();
   }
 
   function onclick(event: MouseEvent) {
@@ -192,10 +82,10 @@
 <dialog
   bind:this={dialog}
   aria-labelledby={`${id}-title`}
-  aria-describedby={errorMessage ? `${id}-description ${id}-error` : `${id}-description`}
-  aria-busy={pending}
+  aria-describedby={`${id}-description`}
   oncancel={handleCancel}
   {onclick}
+  {ontransitionend}
 >
   <form method="dialog">
     <div class="heading">
@@ -203,17 +93,14 @@
       <span class={["icon", icon]} aria-hidden="true"></span>
     </div>
     <p id={`${id}-description`}>{description}</p>
-    <fieldset disabled={pending || confirmed}>
+    <fieldset>
       <legend class="visually-hidden">Dialog options</legend>
       {@render children?.()}
     </fieldset>
-    {#if errorMessage}
-      <p class="error" id={`${id}-error`} role="alert">{errorMessage}</p>
-    {/if}
     <div class="actions">
-      <button class="action" type="button" onclick={cancel} disabled={pending}>{cancelLabel}</button>
-      <button class="action confirm" type="button" onclick={confirm} disabled={pending}>
-        {confirmButtonLabel}
+      <button class="action" type="button" onclick={cancel}>{cancelLabel}</button>
+      <button class="action confirm" type="button" onclick={confirm} disabled={confirmDisabled}>
+        {confirmLabel}
       </button>
     </div>
   </form>
@@ -295,11 +182,6 @@
   p {
     color: var(--muted-foreground);
     text-wrap: pretty;
-
-    &.error {
-      color: var(--accent-red);
-      font-size: var(--text-sm);
-    }
   }
 
   .actions {
@@ -338,7 +220,7 @@
     }
 
     &:disabled {
-      cursor: wait;
+      cursor: not-allowed;
       opacity: 0.65;
     }
   }

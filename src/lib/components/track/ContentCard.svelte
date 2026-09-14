@@ -8,7 +8,7 @@
   import StoreLink from "./StoreLink.svelte";
   import { effectivePrice, formatPrice, nameById, storeUrl } from "#lib/kdm-data.ts";
   import { collection } from "#lib/state/collection.svelte.ts";
-  import { collectionActions } from "#lib/state/collection-actions.svelte.ts";
+  import { collectionActions } from "#lib/state/collection-actions.ts";
   import { getFilterState } from "#lib/state/filters.svelte.ts";
   import type { ContentItem } from "#lib/types/index.ts";
 

@@ -7,7 +7,7 @@
   import { formatPrice, nameById, storeUrl } from "#lib/kdm-data.ts";
   import type { Bundle } from "#lib/types/index.ts";
   import { collection } from "#lib/state/collection.svelte.ts";
-  import { collectionActions } from "#lib/state/collection-actions.svelte.ts";
+  import { collectionActions } from "#lib/state/collection-actions.ts";
 
   type Props = {
     bundle: Bundle;
