@@ -23,6 +23,7 @@ Preserve the full-bleed warm glow, subtle pointer or device-orientation movement
 ## Required skills
 
 - For creating, editing, reviewing, or debugging `.svelte`, `.svelte.ts`, or `.svelte.js` files, always use `svelte-code-writer` and `svelte-core-bestpractices`.
+- For Effect workflows, services, errors, or tests, use the project-local `effect` skill in `.agents/skills/effect` alongside the installed-package guidance below.
 
 ## Commands
 
@@ -31,6 +32,7 @@ Run these from the project root:
 ```bash
 pnpm dev
 pnpm check
+pnpm test:run
 pnpm build
 pnpm format
 pnpm format:check
@@ -211,6 +213,8 @@ This project uses Effect v4. Before writing or changing Effect code, read `node_
 
 If the installed guidance is unavailable, report that and consult official documentation matching the installed version. Do not install or upgrade Effect solely to obtain guidance. Keep the project-specific state, persistence, and UI boundaries below; library guidance is not a reason to convert every helper or component callback into an Effect.
 
+Use `Schema.TaggedError` for concrete failures and unions of those classes at action boundaries. Keep errors in their owning feature modules. Use named `Effect.fn` for significant effectful operations, preserving deferred execution and instance binding. Keep pure helpers and UI callbacks ordinary functions. Preserve interruption when handling broad causes; cancellation must not produce failure notifications.
+
 ## State and persistence
 
 `ContentState` owns collection commands. `CollectionStore` and `GuestStore` are defined in `src/lib/state/stores.ts`; collection-state data types are defined in `src/lib/types`.
@@ -231,7 +235,7 @@ Run UI commands through `collectionActions.run()` so their Effects execute and r
 
 Reusable dialogs use ordinary callbacks and close immediately on confirmation. They own focus, dismissal, and closing-animation guards, not persistence or asynchronous pending state. The parent owns the workflow. Quick Start assumes core ownership, so navigation starts independently of collection persistence and still proceeds if saving fails.
 
-Run `node --test tests/optimistic-store.test.mts` after changing optimistic persistence. These tests use Node's built-in TypeScript support and require Node 22.18 or newer.
+Tests live in `test/` and run with Vitest 5 and the version-aligned `@effect/vitest` adapter. Use `pnpm test:run` for a single run or `pnpm test` for watch mode. Prefer `it.effect`, injected test services, `Deferred` synchronization, and `TestClock` for time-dependent behavior. Run the suite after changing Effect workflows or persistence. Keep optimistic-update, rollback, interruption, and finalization coverage when refactoring the queue.
 
 ## PWA and service worker
 

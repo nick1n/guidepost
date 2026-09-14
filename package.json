@@ -6,6 +6,8 @@
   "type": "module",
   "packageManager": "pnpm@12.4.1",
   "scripts": {
+    "test": "vitest",
+    "test:run": "vitest run",
     "generate:types": "node scripts/generate-types.mts",
     "dev": "pnpm generate:types && vite dev",
     "build": "pnpm generate:types && vite build",
@@ -15,6 +17,7 @@
     "format:check": "prettier --check ."
   },
   "devDependencies": {
+    "@effect/vitest": "4.0.0-rc.115",
     "@iconify-json/game-icons": "^1.2.4",
     "@iconify-json/material-symbols": "^1.2.90",
     "@iconify-json/mdi": "^1.2.3",
@@ -31,7 +34,8 @@
     "svelte-check": "^4.7.6",
     "typescript": "6.0.3",
     "unocss": "^66.9.1",
-    "vite": "^8.2.2"
+    "vite": "^8.2.2",
+    "vitest": "^5.0.0"
   },
   "imports": {
     "#lib": "./src/lib/index.ts",
@@ -39,6 +43,6 @@
   },
   "dependencies": {
     "@unocss/reset": "^66.9.1",
-    "effect": "4.0.0-rc.112"
+    "effect": "4.0.0-rc.115"
   }
 }

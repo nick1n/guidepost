@@ -2,12 +2,16 @@ import adapter from "@sveltejs/adapter-static";
 import UnoCSS from "@unocss/svelte-scoped/vite";
 import { vitePreprocess } from "@sveltejs/vite-plugin-svelte";
 import { sveltekit } from "@sveltejs/kit/vite";
-import { defineConfig } from "vite";
+import { defineConfig } from "vitest/config";
 import { schemaTypes } from "./scripts/schema-types.ts";
 
 const base = (process.env.BASE_PATH ?? "") as "" | `/${string}`;
 
 export default defineConfig({
+  test: {
+    environment: "node",
+    include: ["test/**/*.test.{ts,mts}"],
+  },
   envPrefix: ["PUBLIC_"],
   plugins: [
     schemaTypes(),
