@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from "svelte";
+  import { resolve } from "$app/paths";
   import { bundleTags, getCollectionStats, getVisibleCatalog } from "#lib/catalog-view.ts";
   import BundleCard from "#lib/components/track/BundleCard.svelte";
   import CollectionStats from "#lib/components/track/CollectionStats.svelte";
@@ -21,6 +22,7 @@
   ];
 
   let tab = $state<Tab>("content");
+  let tabNavigation: HTMLElement;
   const filters = createFilterState();
 
   onMount(() => {
@@ -38,28 +40,45 @@
     homebrew: visible.visibleHomebrew.length,
   });
   const resultCount = $derived(tabCounts[tab]);
+  const canSelect = $derived(collection.hydrated && resultCount > 0);
+
+  function onkeydown(event: KeyboardEvent) {
+    if (event.defaultPrevented || event.isComposing || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
+    if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+
+    const target = event.target;
+    if (target instanceof HTMLElement && (target.isContentEditable || target.closest("input, textarea, select"))) return;
+
+    event.preventDefault();
+    const direction = event.key === "ArrowRight" ? 1 : -1;
+    const index = (TABS.findIndex((item) => item.id === tab) + direction + TABS.length) % TABS.length;
+    tab = TABS[index].id;
+    if (target instanceof Node && tabNavigation.contains(target)) {
+      tabNavigation.querySelectorAll("button")[index]?.focus();
+    }
+  }
 
   function onenter() {
-    if (resultCount !== 1) return;
+    if (!canSelect) return;
 
     if (tab === "content" || tab === "homebrew") {
       const item = tab === "content" ? visible.visibleContent[0] : visible.visibleHomebrew[0];
-      if (!collection.get(item.id).owned) {
-        collection.toggleOwned(item.id, { version: item.versions?.at(-1)?.v, edition: item.editions?.at(-1)?.v });
-      }
+      collection.toggleOwned(item.id, { version: item.versions?.at(-1)?.v, edition: item.editions?.at(-1)?.v });
       return;
     }
 
     if (tab === "dice") {
       const item = visible.visibleDice[0];
-      if (!collection.get(item.id).owned) collection.toggleOwned(item.id);
+      collection.toggleOwned(item.id);
       return;
     }
 
     const bundle = visible.visibleBundles[0];
-    if (!collection.get(bundle.id).owned) collection.setManyOwned([bundle.id, ...bundle.includes], true);
+    collection.setManyOwned([bundle.id, ...bundle.includes], !collection.get(bundle.id).owned);
   }
 </script>
+
+<svelte:window {onkeydown} />
 
 <svelte:head>
   <title>Collection | Guidepost</title>
@@ -73,7 +92,7 @@
 
   <CollectionStats {...stats} />
 
-  <nav aria-label="Sections">
+  <nav bind:this={tabNavigation} aria-label="Sections">
     <span class="tab-highlight" aria-hidden="true"></span>
     {#each TABS as t (t.id)}
       <button class="tab-button" type="button" aria-current={tab === t.id ? "page" : undefined} onclick={() => (tab = t.id)}>
@@ -87,6 +106,7 @@
     tagOptions={tab === "content" ? allContentTags : tab === "dice" ? allDiceTags : tab === "bundles" ? bundleTags : allHomebrewTags}
     showGameplay={tab !== "dice"}
     {resultCount}
+    {canSelect}
     {onenter}
   />
 
