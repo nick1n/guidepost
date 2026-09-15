@@ -49,12 +49,7 @@
       collectionActions.run(collection.toggleOwned(item.id, { version: item.versions?.at(-1)?.v, edition: item.editions?.at(-1)?.v }))}
     {onkeydown}
   >
-    <OwnedCheckbox
-      checked={owned}
-      onchange={() => collectionActions.run(collection.toggleOwned(item.id))}
-      label={item.name}
-      --layer-control="1"
-    />
+    <OwnedCheckbox checked={owned} onchange={() => collectionActions.run(collection.toggleOwned(item.id))} label={item.name} />
     <div class="summary">
       <h3>
         {item.name}
@@ -162,7 +157,7 @@
     cursor: pointer;
 
     &:hover {
-      --color-checkbox: var(--color-divider);
+      --color-checkbox: var(--card);
     }
 
     &:focus-visible {

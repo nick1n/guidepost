@@ -144,7 +144,7 @@
     cursor: pointer;
 
     &:hover {
-      --color-checkbox: var(--color-divider);
+      --color-checkbox: var(--card);
     }
 
     &:focus-visible {

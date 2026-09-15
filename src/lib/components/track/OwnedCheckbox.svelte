@@ -19,7 +19,6 @@
 
 <style>
   button {
-    z-index: var(--layer-control, auto);
     position: relative;
     flex-shrink: 0;
     inline-size: var(--size-card-header);
@@ -30,7 +29,7 @@
     transition: background-color var(--duration-fast) var(--ease-standard);
 
     &:hover {
-      --color-checkbox: var(--color-divider);
+      --color-checkbox: var(--card);
     }
 
     &[aria-checked="true"] {
