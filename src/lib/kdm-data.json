@@ -327,74 +327,43 @@
       "tags": ["white-box", "legendary", "character", "savior", "survivor", "female", "hollow"],
       "shopReachable": false
     },
-    "white-box-nico-bird-knight": {
-      "name": "Nico the Bird Knight",
+    "pillar-percival": {
+      "name": "Pillar - Percival",
       "kind": "white-box",
       "gameplay": true,
-      "price": 3000,
-      "url": "/products/nico-the-bird-knight",
-      "tags": ["white-box", "character", "survivor", "female", "bird-knight", "gear"],
-      "shopReachable": false
-    },
-    "white-box-percival": {
-      "name": "Percival",
-      "kind": "white-box",
-      "gameplay": true,
-      "price": 3000,
-      "url": "/products/percival",
-      "tags": ["white-box", "character", "survivor", "male", "gear", "item"],
+      "price": 3400,
+      "url": "/products/pillar-percival",
+      "tags": ["white-box", "survivor", "female", "pillar", "hunt-event", "secret-fighting-art"],
       "shopReachable": true
     },
-    "white-box-candy-and-cola": {
-      "name": "Candy & Cola",
+    "wanderer-candy": {
+      "name": "Wanderer - Candy",
       "kind": "white-box",
       "gameplay": true,
-      "price": 3500,
+      "price": 5000,
+      "versions": [
+        { "v": "Sim", "$": [500], "r": "2025-11-25" },
+        { "v": "Box", "$": [5000], "r": "2025-11-26" }
+      ],
       "url": "/products/candy-and-cola",
-      "tags": ["white-box", "character", "survivor", "female", "gear", "twilight-knight"],
-      "shopReachable": false
-    },
-    "white-box-great-game-hunter": {
-      "name": "Great Game Hunter",
-      "kind": "white-box",
-      "gameplay": true,
-      "price": 3000,
-      "url": "/products/great-game-hunter",
-      "tags": ["white-box", "character", "survivor", "male", "gear", "hunter"],
-      "shopReachable": false
-    },
-    "white-box-aya-white-speaker": {
-      "name": "Aya the White Speaker",
-      "kind": "white-box",
-      "gameplay": true,
-      "price": 3000,
-      "url": "/products/aya-the-white-speaker",
-      "tags": ["white-box", "character", "survivor", "female", "white-speaker", "gear"],
-      "shopReachable": false
-    },
-    "white-box-allison-twilight-knight": {
-      "name": "Allison the Twilight Knight",
-      "kind": "white-box",
-      "gameplay": true,
-      "price": 3000,
-      "url": "/products/allison-the-twilight-knight",
-      "tags": ["white-box", "character", "survivor", "female", "twilight-knight", "gear"],
-      "shopReachable": true
+      "tags": ["white-box", "survivor", "female", "gear", "innovation", "wanderer", "gamblers-chest", "arc-survivor"],
+      "shopReachable": true,
+      "requires": ["gamblers-chest"]
     },
     "beta-pillar-summer-grimmory": {
       "name": "Summer Grimmory (Beta)",
       "alt": "Pillar - Summer Grimmory (Beta)",
       "kind": "beta",
       "gameplay": true,
-      "price": 3400,
+      "price": 7500,
       "editions": [
-        { "v": "First Run", "$": [3400], "limit": true },
-        { "v": "Deathgrey", "$": [3900], "limit": true },
-        { "v": "Encore", "$": [3400] }
+        { "v": "First Run", "$": [7500], "limit": true },
+        { "v": "Encore", "$": [7500] }
       ],
       "tags": ["white-box", "pillar", "beta", "pot-sun", "trait", "grimmory"],
       "requires": ["expansion-sunstalker"],
-      "shopReachable": null
+      "url": "/products/summer-grimmory",
+      "shopReachable": true
     },
     "beta-edlen": {
       "name": "Edlen (Beta)",
@@ -407,20 +376,6 @@
         { "v": "Encore", "$": [3400] }
       ],
       "tags": ["white-box", "beta", "survivor", "female", "gear", "item", "edlen"],
-      "shopReachable": null
-    },
-    "beta-pillar-winter-grimmory": {
-      "name": "Winter Grimmory (Beta)",
-      "alt": "Pillar - Winter Grimmory (Beta)",
-      "kind": "beta",
-      "gameplay": true,
-      "price": 3400,
-      "editions": [
-        { "v": "First Run", "$": [3400], "limit": true },
-        { "v": "Deathgrey", "$": [3900], "limit": true },
-        { "v": "Encore", "$": [3400] }
-      ],
-      "tags": ["white-box", "pillar", "beta", "trait", "grimmory"],
       "shopReachable": null
     }
   },
@@ -465,6 +420,15 @@
       "text": ["Gold", "Black"],
       "tags": ["dice", "gold-smoke-knight"],
       "shopReachable": null
+    },
+    "parasite-queen-death-dice": {
+      "name": "Parasite Queen Death Dice",
+      "price": 2000,
+      "colors": ["#CCBCB8", "#9B6263"],
+      "text": ["Flesh", "Bruise"],
+      "tags": ["dice", "parasite-queen"],
+      "url": "/products/parasite-queen-death-dice",
+      "shopReachable": true
     },
     "sunstalker-dice": {
       "name": "Sunstalker Dice",
