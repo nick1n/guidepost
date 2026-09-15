@@ -25,7 +25,7 @@
   const owned = $derived(!!entry.owned);
   const url = $derived(storeUrl(item.url));
   const isBeta = $derived(!!item.editions);
-  const price = $derived(effectivePrice(item, entry.versions ?? [], entry.editions ?? []));
+  const price = $derived(effectivePrice(item, entry.versions, entry.editions));
 
   function toggleOwned() {
     collectionActions.run(collection.toggleOwned(item.id, ownershipDefaults(item)));
@@ -71,7 +71,7 @@
 
     <TagRail tags={item.tags} onTagClick={(tag) => filters.toggleTag(tag)} />
 
-    {#if isBeta && item.editions}
+    {#if item.editions}
       <EditionPicker
         editions={item.editions}
         value={entry.editions}

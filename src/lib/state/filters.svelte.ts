@@ -7,7 +7,7 @@ function createDefaultFilters(): Filters {
 }
 
 export class FilterState {
-  value = $state<Filters>(createDefaultFilters());
+  value = $state.raw<Filters>(createDefaultFilters());
 
   set<K extends keyof Filters>(key: K, value: Filters[K]) {
     this.value = { ...this.value, [key]: value };

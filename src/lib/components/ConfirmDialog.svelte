@@ -93,10 +93,12 @@
       <span class={["icon", icon]} aria-hidden="true"></span>
     </div>
     <p id={`${id}-description`}>{description}</p>
-    <fieldset>
-      <legend class="visually-hidden">Dialog options</legend>
-      {@render children?.()}
-    </fieldset>
+    {#if children}
+      <fieldset>
+        <legend class="visually-hidden">Dialog options</legend>
+        {@render children()}
+      </fieldset>
+    {/if}
     <div class="actions">
       <button class="action" type="button" onclick={cancel}>{cancelLabel}</button>
       <button class="action confirm" type="button" onclick={confirm} disabled={confirmDisabled}>

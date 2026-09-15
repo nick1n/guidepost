@@ -19,7 +19,7 @@
 
     for (const match of source.matchAll(pattern)) {
       const value = match[0];
-      const start = match.index ?? 0;
+      const start = match.index;
       const delimiterSize = value.startsWith("**") ? 2 : 1;
 
       if (start > textStart) {

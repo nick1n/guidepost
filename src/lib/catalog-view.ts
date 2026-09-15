@@ -53,7 +53,7 @@ export function getVisibleCatalog(filters: Filters, state: CollectionState) {
 }
 
 function sort<T extends Pick<CatalogItem, "name" | "price">>(items: T[], key: Filters["sort"]) {
-  if (key === "name") return [...items].sort((a, b) => a.name.localeCompare(b.name));
+  if (key === "name") return items.toSorted((a, b) => a.name.localeCompare(b.name));
   const direction = key === "price-asc" ? 1 : -1;
-  return [...items].sort((a, b) => direction * ((a.price ?? 0) - (b.price ?? 0)));
+  return items.toSorted((a, b) => direction * ((a.price ?? 0) - (b.price ?? 0)));
 }

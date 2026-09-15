@@ -10,11 +10,18 @@
   };
 
   let { editions, value = [], copyNumbers, onselect, onSetCopyNumber }: Props = $props();
+  let drafts = $state<Record<string, string>>({});
 
-  function setCopyNumber(event: Event, edition: string) {
+  function oninput(event: Event, edition: string) {
     const input = event.currentTarget as HTMLInputElement;
-    const raw = input.value;
-    onSetCopyNumber(edition, raw === "" ? undefined : Math.min(999, Math.max(1, Number.parseInt(raw, 10) || 1)));
+    drafts[edition] = input.value;
+  }
+
+  function onchange(event: Event, edition: string) {
+    const input = event.currentTarget as HTMLInputElement;
+    const number = input.value === "" ? undefined : Math.min(999, Math.max(1, Number.parseInt(input.value, 10) || 1));
+    delete drafts[edition];
+    onSetCopyNumber(edition, number);
   }
 </script>
 
@@ -37,9 +44,10 @@
         inputmode="numeric"
         min={1}
         max={999}
-        value={copyNumbers?.[edition.v] ?? ""}
+        value={drafts[edition.v] ?? copyNumbers?.[edition.v] ?? ""}
         placeholder="13"
-        oninput={(event) => setCopyNumber(event, edition.v)}
+        oninput={(event) => oninput(event, edition.v)}
+        onchange={(event) => onchange(event, edition.v)}
       />
     </label>
   {/if}

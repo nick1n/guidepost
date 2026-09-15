@@ -1,5 +1,4 @@
 <script lang="ts">
-  import type { Filters } from "#lib/types/index.ts";
   import { getFilterState } from "#lib/state/filters.svelte.ts";
   import Segmented from "./Segmented.svelte";
 
@@ -24,14 +23,6 @@
       (filters.value.kind !== "any" ? 1 : 0) +
       (filters.value.status !== "any" ? 1 : 0),
   );
-
-  function set<K extends keyof Filters>(key: K, value: Filters[K]) {
-    filters.set(key, value);
-  }
-
-  function toggleTag(tag: string) {
-    filters.toggleTag(tag);
-  }
 
   function isEditableTarget(target: EventTarget | null) {
     return target instanceof HTMLElement && (target.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName));
@@ -66,7 +57,7 @@
         bind:this={searchInput}
         type="search"
         value={filters.value.query}
-        oninput={(e) => set("query", e.currentTarget.value)}
+        oninput={(e) => filters.set("query", e.currentTarget.value)}
         placeholder="Search"
         aria-label="Search items"
       />
@@ -88,7 +79,7 @@
       <Segmented
         label="Sort by"
         value={filters.value.sort}
-        onchange={(v) => set("sort", v)}
+        onchange={(v) => filters.set("sort", v)}
         options={[
           { value: "name", label: "Name" },
           { value: "price-desc", label: "Price high" },
@@ -98,7 +89,7 @@
       <Segmented
         label="Status"
         value={filters.value.status}
-        onchange={(v) => set("status", v)}
+        onchange={(v) => filters.set("status", v)}
         options={[
           { value: "any", label: "All" },
           { value: "owned", label: "Owned" },
@@ -110,7 +101,7 @@
         <Segmented
           label="Content"
           value={filters.value.gameplay}
-          onchange={(v) => set("gameplay", v)}
+          onchange={(v) => filters.set("gameplay", v)}
           options={[
             { value: "any", label: "All" },
             { value: "gameplay", label: "Gameplay" },
@@ -122,7 +113,7 @@
         <Segmented
           label="Release"
           value={filters.value.kind}
-          onchange={(v) => set("kind", v)}
+          onchange={(v) => filters.set("kind", v)}
           options={[
             { value: "any", label: "All" },
             { value: "core", label: "Core" },
@@ -139,7 +130,7 @@
         <div class="tags-header">
           <span class="label">Tags</span>
           {#if filters.value.tags.length > 0}
-            <button type="button" onclick={() => set("tags", [])} class="clear">
+            <button type="button" onclick={() => filters.set("tags", [])} class="clear">
               <span class="close-icon i-material-symbols:close" aria-hidden="true"></span> Clear
             </button>
           {/if}
@@ -147,7 +138,7 @@
         <div class="tag-list">
           {#each tagOptions as tag (tag)}
             {@const active = filters.value.tags.includes(tag)}
-            <button type="button" aria-pressed={active} onclick={() => toggleTag(tag)} class="tag">
+            <button type="button" aria-pressed={active} onclick={() => filters.toggleTag(tag)} class="tag">
               {tag}
             </button>
           {/each}
