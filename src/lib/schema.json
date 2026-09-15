@@ -29,7 +29,8 @@
       "additionalProperties": false,
       "properties": {
         "name": { "type": "string" },
-        "alt": { "type": "string" },
+        "alt": { "type": "string", "description": "Alternative or corrected name." },
+        "desc": { "type": "string", "description": "Item description." },
         "kind": {
           "enum": ["core", "beta", "promo", "expansion", "white-box", "set", "model", "base", "terrain", "accessory"]
         },

@@ -12,7 +12,14 @@ export interface Content {
 }
 export interface ContentItem {
   name: string;
+  /**
+   * Alternative or corrected name.
+   */
   alt?: string;
+  /**
+   * Item description.
+   */
+  desc?: string;
   kind: "core" | "beta" | "promo" | "expansion" | "white-box" | "set" | "model" | "base" | "terrain" | "accessory";
   gameplay: boolean;
   price?: number;
