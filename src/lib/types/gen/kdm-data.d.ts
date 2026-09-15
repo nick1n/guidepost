@@ -1,5 +1,10 @@
 /* Generated from src/lib/schema.json. Do not edit. Run pnpm generate:types to regenerate. */
 
+/**
+ * Latest HEAD check: true for HTTP 2xx after redirects, false for HTTP or request errors, null when no URL exists. Omitted until checked.
+ */
+export type ShopReachable = boolean | null;
+
 export interface KingdomDeathCatalog {
   $schema?: string;
   content: Content;
@@ -30,6 +35,7 @@ export interface ContentItem {
   tags: string[];
   requires?: string[];
   url?: string;
+  shopReachable?: ShopReachable;
 }
 export interface Edition {
   v: string;
@@ -56,6 +62,7 @@ export interface DiceItem {
   text: [string, string];
   tags: string[];
   url?: string;
+  shopReachable?: ShopReachable;
 }
 export interface Bundles {
   [k: string]: BundleItem;
@@ -68,4 +75,5 @@ export interface BundleItem {
   tags: string[];
   includes: string[];
   url?: string;
+  shopReachable?: ShopReachable;
 }

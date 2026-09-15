@@ -6,6 +6,7 @@
   "type": "module",
   "packageManager": "pnpm@11.25.0",
   "scripts": {
+    "check:shop-links": "node scripts/check-shop-links.mts",
     "generate:types": "node scripts/generate-types.mjs",
     "dev": "pnpm generate:types && vite dev",
     "build": "pnpm generate:types && vite build",

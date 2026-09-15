@@ -7,26 +7,10 @@
       "gameplay": true,
       "price": 44400,
       "versions": [
-        {
-          "v": "Sim",
-          "$": [2000],
-          "r": "2022-11-25"
-        },
-        {
-          "v": "1.3",
-          "$": [10000],
-          "r": "2015-09-15"
-        },
-        {
-          "v": "1.5",
-          "$": [25000],
-          "r": "2017-10-13"
-        },
-        {
-          "v": "1.6",
-          "$": [40000, 44400],
-          "r": "2021-11-26"
-        }
+        { "v": "Sim", "$": [2000], "r": "2022-11-25" },
+        { "v": "1.3", "$": [10000], "r": "2015-09-15" },
+        { "v": "1.5", "$": [25000], "r": "2017-10-13" },
+        { "v": "1.6", "$": [40000, 44400], "r": "2021-11-26" }
       ],
       "url": "/products/kingdom-death-monster-1-6",
       "tags": [
@@ -48,7 +32,8 @@
         "zachary",
         "novel-proficiency",
         "weapon-proficiency"
-      ]
+      ],
+      "shopReachable": true
     },
     "gamblers-chest": {
       "name": "Gambler's Chest Expansion",
@@ -56,18 +41,10 @@
       "gameplay": true,
       "price": 42000,
       "versions": [
-        {
-          "v": "Sim",
-          "$": [4200],
-          "r": "2022-11-25"
-        },
-        {
-          "v": "1.6",
-          "$": [37000, 42000],
-          "r": "2021-11-26"
-        }
+        { "v": "Sim", "$": [4200], "r": "2025-11-25" },
+        { "v": "1.6", "$": [37000, 42000], "r": "2021-11-26" }
       ],
-      "url": "/products/gamblers-chest",
+      "url": "/products/gamblers-chest-expansion",
       "tags": [
         "expansion",
         "core",
@@ -81,7 +58,8 @@
         "survivor",
         "male",
         "female"
-      ]
+      ],
+      "shopReachable": true
     },
     "expansion-flower-knight": {
       "name": "Flower Knight Expansion",
@@ -89,19 +67,12 @@
       "gameplay": true,
       "price": 8000,
       "versions": [
-        {
-          "v": "Sim",
-          "$": [700],
-          "r": "2025-11-25"
-        },
-        {
-          "v": "1.6",
-          "$": [6500, 8000],
-          "r": "2021-11-26"
-        }
+        { "v": "Sim", "$": [700], "r": "2025-11-25" },
+        { "v": "1.6", "$": [6500, 8000], "r": "2021-11-26" }
       ],
       "url": "/products/flower-knight-expansion-1-6",
-      "tags": ["expansion", "monster-flower-knight", "knight", "node-2-quarry"]
+      "tags": ["expansion", "monster-flower-knight", "knight", "node-2-quarry"],
+      "shopReachable": true
     },
     "expansion-dung-beetle-knight": {
       "name": "Dung Beetle Knight Expansion",
@@ -109,48 +80,26 @@
       "gameplay": true,
       "price": 8000,
       "versions": [
-        {
-          "v": "Sim",
-          "$": [700],
-          "r": "2025-11-25"
-        },
-        {
-          "v": "1.5",
-          "$": [8000],
-          "r": "2021-11-26"
-        },
-        {
-          "v": "1.6",
-          "$": [6500, 8000],
-          "r": "2021-11-26"
-        },
-        {
-          "v": "1.7",
-          "$": [8000],
-          "r": "Q4 2026"
-        }
+        { "v": "Sim", "$": [700], "r": "2025-11-25" },
+        { "v": "1.5", "$": [8000], "r": "2021-11-26" },
+        { "v": "1.6", "$": [6500, 8000], "r": "2021-11-26" },
+        { "v": "1.7", "$": [8000], "r": "Q4 2026" }
       ],
-      "url": "/products/dung-beetle-knight-expansion-1-6",
-      "tags": ["expansion", "monster-dung-beetle-knight", "knight", "node-4-quarry"]
+      "url": "/products/dung-beetle-expansion-1-6",
+      "tags": ["expansion", "monster-dung-beetle-knight", "knight", "node-4-quarry"],
+      "shopReachable": true
     },
     "expansion-frogdog": {
       "name": "Frogdog Expansion",
       "kind": "expansion",
       "gameplay": true,
       "versions": [
-        {
-          "v": "Sim",
-          "$": [1200],
-          "r": "2025-01-01"
-        },
-        {
-          "v": "1.6",
-          "$": [13500],
-          "r": "2024-01-01"
-        }
+        { "v": "Sim", "$": [1200], "r": "2025-01-01" },
+        { "v": "1.6", "$": [13500], "r": "2024-01-01" }
       ],
       "url": "/products/frogdog-expansion",
-      "tags": ["expansion", "monster-frogdog", "monster-bullfrogdog", "node-1-quarry", "gear", "armor"]
+      "tags": ["expansion", "monster-frogdog", "monster-bullfrogdog", "node-1-quarry", "gear", "armor"],
+      "shopReachable": true
     },
     "expansion-gorm": {
       "name": "Gorm Expansion",
@@ -158,19 +107,12 @@
       "gameplay": true,
       "price": 8000,
       "versions": [
-        {
-          "v": "Sim",
-          "$": [700],
-          "r": "2025-11-25"
-        },
-        {
-          "v": "1.6",
-          "$": [6500, 8000],
-          "r": "2021-11-26"
-        }
+        { "v": "Sim", "$": [700], "r": "2025-11-25" },
+        { "v": "1.6", "$": [6500, 8000], "r": "2021-11-26" }
       ],
       "url": "/products/gorm-expansion-1-6",
-      "tags": ["expansion", "monster-gorm", "node-1-quarry", "gear", "armor"]
+      "tags": ["expansion", "monster-gorm", "node-1-quarry", "gear", "armor"],
+      "shopReachable": true
     },
     "expansion-spidicules": {
       "name": "Spidicules Expansion",
@@ -178,19 +120,12 @@
       "gameplay": true,
       "price": 8000,
       "versions": [
-        {
-          "v": "Sim",
-          "$": [700],
-          "r": "2025-11-25"
-        },
-        {
-          "v": "1.6",
-          "$": [6500, 8000],
-          "r": "2021-11-26"
-        }
+        { "v": "Sim", "$": [700], "r": "2025-11-25" },
+        { "v": "1.6", "$": [6500, 8000], "r": "2021-11-26" }
       ],
       "url": "/products/spidicules-expansion-1-6",
-      "tags": ["expansion", "monster-spidicules", "node-2-quarry", "silk", "gear"]
+      "tags": ["expansion", "monster-spidicules", "node-2-quarry", "silk", "gear"],
+      "shopReachable": true
     },
     "expansion-sunstalker": {
       "name": "Sunstalker Expansion",
@@ -198,19 +133,12 @@
       "gameplay": true,
       "price": 8000,
       "versions": [
-        {
-          "v": "Sim",
-          "$": [700],
-          "r": "2025-11-25"
-        },
-        {
-          "v": "1.6",
-          "$": [6500, 8000],
-          "r": "2021-11-26"
-        }
+        { "v": "Sim", "$": [700], "r": "2025-11-25" },
+        { "v": "1.6", "$": [6500, 8000], "r": "2021-11-26" }
       ],
-      "url": "/products/sunstalker-expansion-1-6",
-      "tags": ["expansion", "monster-sunstalker", "campaign", "node-3-quarry", "pot-sun"]
+      "url": "/products/sunstalker-expansion",
+      "tags": ["expansion", "monster-sunstalker", "campaign", "node-3-quarry", "pot-sun"],
+      "shopReachable": true
     },
     "expansion-dragon-king": {
       "name": "Dragon King Expansion",
@@ -218,19 +146,12 @@
       "gameplay": true,
       "price": 8000,
       "versions": [
-        {
-          "v": "Sim",
-          "$": [700],
-          "r": "2025-11-25"
-        },
-        {
-          "v": "1.6",
-          "$": [6500, 8000],
-          "r": "2021-11-26"
-        }
+        { "v": "Sim", "$": [700], "r": "2025-11-25" },
+        { "v": "1.6", "$": [6500, 8000], "r": "2021-11-26" }
       ],
       "url": "/products/dragon-king-expansion-1-6",
-      "tags": ["expansion", "monster-dragon-king", "campaign", "node-4-quarry", "king"]
+      "tags": ["expansion", "monster-dragon-king", "campaign", "node-4-quarry", "king"],
+      "shopReachable": true
     },
     "expansion-lion-knight": {
       "name": "Lion Knight Expansion",
@@ -238,19 +159,12 @@
       "gameplay": true,
       "price": 8000,
       "versions": [
-        {
-          "v": "Sim",
-          "$": [700],
-          "r": "2025-11-25"
-        },
-        {
-          "v": "1.6",
-          "$": [6500, 8000],
-          "r": "2021-11-26"
-        }
+        { "v": "Sim", "$": [700], "r": "2025-11-25" },
+        { "v": "1.6", "$": [6500, 8000], "r": "2021-11-26" }
       ],
       "url": "/products/lion-knight-expansion-1-6",
-      "tags": ["expansion", "monster-lion-knight", "knight", "nemesis", "showdown"]
+      "tags": ["expansion", "monster-lion-knight", "knight", "nemesis", "showdown"],
+      "shopReachable": true
     },
     "expansion-lion-god": {
       "name": "Lion God Expansion",
@@ -258,19 +172,12 @@
       "gameplay": true,
       "price": 8000,
       "versions": [
-        {
-          "v": "Sim",
-          "$": [700],
-          "r": "2025-11-25"
-        },
-        {
-          "v": "1.6",
-          "$": [6500, 8000],
-          "r": "2021-11-26"
-        }
+        { "v": "Sim", "$": [700], "r": "2025-11-25" },
+        { "v": "1.6", "$": [6500, 8000], "r": "2021-11-26" }
       ],
       "url": "/products/lion-god-expansion-1-6",
-      "tags": ["expansion", "monster-lion-god", "nemesis", "scholar", "node-3-quarry"]
+      "tags": ["expansion", "monster-lion-god", "nemesis", "scholar", "node-3-quarry"],
+      "shopReachable": true
     },
     "expansion-manhunter": {
       "name": "Manhunter Expansion",
@@ -278,19 +185,12 @@
       "gameplay": true,
       "price": 8000,
       "versions": [
-        {
-          "v": "Sim",
-          "$": [700],
-          "r": "2025-11-25"
-        },
-        {
-          "v": "1.6",
-          "$": [6500, 8000],
-          "r": "2021-11-26"
-        }
+        { "v": "Sim", "$": [700], "r": "2025-11-25" },
+        { "v": "1.6", "$": [6500, 8000], "r": "2021-11-26" }
       ],
       "url": "/products/manhunter-expansion-1-6",
-      "tags": ["expansion", "monster-manhunter", "nemesis", "gear", "survivor", "male"]
+      "tags": ["expansion", "monster-manhunter", "nemesis", "gear", "survivor", "male"],
+      "shopReachable": true
     },
     "expansion-slenderman": {
       "name": "Slenderman Expansion",
@@ -298,24 +198,13 @@
       "gameplay": true,
       "price": 8000,
       "versions": [
-        {
-          "v": "Sim",
-          "$": [700],
-          "r": "2025-11-25"
-        },
-        {
-          "v": "1.6",
-          "$": [6500, 8000],
-          "r": "2021-11-26"
-        },
-        {
-          "v": "1.7",
-          "$": [8000],
-          "r": "Q4 2026"
-        }
+        { "v": "Sim", "$": [700], "r": "2025-11-25" },
+        { "v": "1.6", "$": [6500, 8000], "r": "2021-11-26" },
+        { "v": "1.7", "$": [8000], "r": "Q4 2026" }
       ],
       "url": "/products/slenderman-expansion-1-6",
-      "tags": ["expansion", "monster-slenderman", "nemesis", "dark"]
+      "tags": ["expansion", "monster-slenderman", "nemesis", "dark"],
+      "shopReachable": true
     },
     "expansion-lonely-tree": {
       "name": "Lonely Tree Expansion",
@@ -323,19 +212,12 @@
       "gameplay": true,
       "price": 3500,
       "versions": [
-        {
-          "v": "Sim",
-          "$": [700],
-          "r": "2025-11-25"
-        },
-        {
-          "v": "1.6",
-          "$": [6500, 8000],
-          "r": "2021-11-26"
-        }
+        { "v": "Sim", "$": [700], "r": "2025-11-25" },
+        { "v": "1.6", "$": [6500, 8000], "r": "2021-11-26" }
       ],
       "url": "/products/lonely-tree-expansion-1-6",
-      "tags": ["expansion", "monster-lonely-tree", "special-showdown", "terrain"]
+      "tags": ["expansion", "monster-lonely-tree", "special-showdown", "terrain"],
+      "shopReachable": true
     },
     "expansion-green-knight-armor": {
       "name": "Green Knight Armor Expansion",
@@ -343,20 +225,13 @@
       "gameplay": true,
       "price": 8000,
       "versions": [
-        {
-          "v": "Sim",
-          "$": [700],
-          "r": "2025-11-25"
-        },
-        {
-          "v": "1.6",
-          "$": [6500, 8000],
-          "r": "2021-11-26"
-        }
+        { "v": "Sim", "$": [700], "r": "2025-11-25" },
+        { "v": "1.6", "$": [6500, 8000], "r": "2021-11-26" }
       ],
       "url": "/products/green-knight-armor-expansion-1-6",
       "requires": ["expansion-dung-beetle-knight", "expansion-gorm", "expansion-spidicules", "expansion-sunstalker"],
-      "tags": ["expansion", "gear", "armor", "knight"]
+      "tags": ["expansion", "gear", "armor", "knight"],
+      "shopReachable": false
     },
     "expansion-black-knight": {
       "name": "Black Knight Expansion",
@@ -364,51 +239,66 @@
       "gameplay": true,
       "price": 8000,
       "versions": [
-        {
-          "v": "Sim",
-          "$": [700],
-          "r": "2025-11-25"
-        },
-        {
-          "v": "1.6",
-          "$": [6500, 8000],
-          "r": "2021-11-26"
-        }
+        { "v": "Sim", "$": [700], "r": "2025-11-25" },
+        { "v": "1.6", "$": [6500, 8000], "r": "2021-11-26" }
       ],
-      "url": "/products/black-knight-expansion-1-6",
-      "tags": ["expansion", "monster-black-knight", "nemesis", "knight", "gear"]
+      "url": "/products/black-knight-expansion",
+      "tags": ["expansion", "monster-black-knight", "nemesis", "knight", "gear"],
+      "shopReachable": true
     },
-    "pinups-of-death-1": {
+    "pinups-of-death-series-1": {
       "name": "Pinups Of Death I",
       "kind": "set",
       "gameplay": true,
       "price": 6000,
       "url": "/products/pinups-of-death-1",
-      "tags": ["pinup", "bundle", "survivor", "female"]
+      "tags": ["pinup", "bundle", "survivor", "female"],
+      "shopReachable": true
     },
-    "pinups-of-death-2": {
+    "pinups-of-death-series-2": {
       "name": "Pinups Of Death II",
       "kind": "set",
       "gameplay": true,
       "price": 6000,
-      "url": "/products/pinups-of-death-2",
-      "tags": ["pinup", "bundle", "survivor", "female"]
+      "url": "/products/pinups-of-death-series-2",
+      "tags": ["pinup", "bundle", "survivor", "female"],
+      "shopReachable": true
     },
-    "pinups-of-death-3": {
+    "pinups-of-death-series-3": {
       "name": "Pinups Of Death III",
       "kind": "set",
       "gameplay": false,
       "price": 6000,
-      "url": "/products/pinups-of-death-3",
-      "tags": ["pinup", "bundle", "survivor", "female"]
+      "url": "/products/pinups-of-death-series-3",
+      "tags": ["pinup", "bundle", "survivor", "female"],
+      "shopReachable": true
     },
-    "pinup-twilight-knight": {
-      "name": "Pinup Twilight Knight",
+    "pinups-of-death-series-4": {
+      "name": "Pinups Of Death IV",
       "kind": "set",
       "gameplay": false,
-      "price": 2000,
-      "url": "/products/pinup-twilight-knight",
-      "tags": ["pinup", "twilight-knight", "survivor", "female"]
+      "price": 6000,
+      "url": "/products/pinups-of-death-series-iv",
+      "tags": ["pinup", "bundle", "survivor", "female"],
+      "shopReachable": true
+    },
+    "pinups-of-death-series-5": {
+      "name": "Pinups Of Death V",
+      "kind": "set",
+      "gameplay": false,
+      "price": 6000,
+      "url": "/products/pinups-of-death-series-v",
+      "tags": ["pinup", "bundle", "survivor", "female"],
+      "shopReachable": true
+    },
+    "pinup-twilight-knight-deserter": {
+      "name": "Pinup Twilight Knight Deserter",
+      "kind": "model",
+      "gameplay": false,
+      "price": 3000,
+      "url": "/products/pinup-twilight-knight-deserter-1",
+      "tags": ["pinup", "twilight-knight", "survivor", "female"],
+      "shopReachable": true
     },
     "beyond-the-wall": {
       "name": "Beyond the Wall",
@@ -416,7 +306,8 @@
       "gameplay": true,
       "price": 3500,
       "url": "/products/beyond-the-wall-1a",
-      "tags": ["white-box", "gear", "armor", "item", "survivor", "female"]
+      "tags": ["white-box", "gear", "armor", "item", "survivor", "female"],
+      "shopReachable": true
     },
     "vignette-of-death-killennium-butcher": {
       "name": "Vignette of Death: Killennium Butcher",
@@ -424,7 +315,8 @@
       "gameplay": true,
       "price": 4000,
       "url": "/products/vignette-of-death-killennium-butcher",
-      "tags": ["core", "white-box", "vignette", "butcher", "survivor", "male", "female", "novel-proficiency"]
+      "tags": ["core", "white-box", "vignette", "butcher", "survivor", "male", "female", "novel-proficiency"],
+      "shopReachable": true
     },
     "legendary-character-hollow": {
       "name": "Legendary Character - Hollow",
@@ -432,7 +324,8 @@
       "gameplay": true,
       "price": 3000,
       "url": "/products/legendary-character-hollow",
-      "tags": ["white-box", "legendary", "character", "savior", "survivor", "female", "hollow"]
+      "tags": ["white-box", "legendary", "character", "savior", "survivor", "female", "hollow"],
+      "shopReachable": false
     },
     "white-box-nico-bird-knight": {
       "name": "Nico the Bird Knight",
@@ -440,7 +333,8 @@
       "gameplay": true,
       "price": 3000,
       "url": "/products/nico-the-bird-knight",
-      "tags": ["white-box", "character", "survivor", "female", "bird-knight", "gear"]
+      "tags": ["white-box", "character", "survivor", "female", "bird-knight", "gear"],
+      "shopReachable": false
     },
     "white-box-percival": {
       "name": "Percival",
@@ -448,7 +342,8 @@
       "gameplay": true,
       "price": 3000,
       "url": "/products/percival",
-      "tags": ["white-box", "character", "survivor", "male", "gear", "item"]
+      "tags": ["white-box", "character", "survivor", "male", "gear", "item"],
+      "shopReachable": true
     },
     "white-box-candy-and-cola": {
       "name": "Candy & Cola",
@@ -456,7 +351,8 @@
       "gameplay": true,
       "price": 3500,
       "url": "/products/candy-and-cola",
-      "tags": ["white-box", "character", "survivor", "female", "gear", "twilight-knight"]
+      "tags": ["white-box", "character", "survivor", "female", "gear", "twilight-knight"],
+      "shopReachable": false
     },
     "white-box-great-game-hunter": {
       "name": "Great Game Hunter",
@@ -464,7 +360,8 @@
       "gameplay": true,
       "price": 3000,
       "url": "/products/great-game-hunter",
-      "tags": ["white-box", "character", "survivor", "male", "gear", "hunter"]
+      "tags": ["white-box", "character", "survivor", "male", "gear", "hunter"],
+      "shopReachable": false
     },
     "white-box-aya-white-speaker": {
       "name": "Aya the White Speaker",
@@ -472,7 +369,8 @@
       "gameplay": true,
       "price": 3000,
       "url": "/products/aya-the-white-speaker",
-      "tags": ["white-box", "character", "survivor", "female", "white-speaker", "gear"]
+      "tags": ["white-box", "character", "survivor", "female", "white-speaker", "gear"],
+      "shopReachable": false
     },
     "white-box-allison-twilight-knight": {
       "name": "Allison the Twilight Knight",
@@ -480,7 +378,8 @@
       "gameplay": true,
       "price": 3000,
       "url": "/products/allison-the-twilight-knight",
-      "tags": ["white-box", "character", "survivor", "female", "twilight-knight", "gear"]
+      "tags": ["white-box", "character", "survivor", "female", "twilight-knight", "gear"],
+      "shopReachable": true
     },
     "beta-pillar-summer-grimmory": {
       "name": "Summer Grimmory (Beta)",
@@ -489,23 +388,13 @@
       "gameplay": true,
       "price": 3400,
       "editions": [
-        {
-          "v": "First Run",
-          "$": [3400],
-          "limit": true
-        },
-        {
-          "v": "Deathgrey",
-          "$": [3900],
-          "limit": true
-        },
-        {
-          "v": "Encore",
-          "$": [3400]
-        }
+        { "v": "First Run", "$": [3400], "limit": true },
+        { "v": "Deathgrey", "$": [3900], "limit": true },
+        { "v": "Encore", "$": [3400] }
       ],
       "tags": ["white-box", "pillar", "beta", "pot-sun", "trait", "grimmory"],
-      "requires": ["expansion-sunstalker"]
+      "requires": ["expansion-sunstalker"],
+      "shopReachable": null
     },
     "beta-edlen": {
       "name": "Edlen (Beta)",
@@ -513,22 +402,12 @@
       "gameplay": true,
       "price": 3400,
       "editions": [
-        {
-          "v": "First Run",
-          "$": [3400],
-          "limit": true
-        },
-        {
-          "v": "Deathgrey",
-          "$": [3900],
-          "limit": true
-        },
-        {
-          "v": "Encore",
-          "$": [3400]
-        }
+        { "v": "First Run", "$": [3400], "limit": true },
+        { "v": "Deathgrey", "$": [3900], "limit": true },
+        { "v": "Encore", "$": [3400] }
       ],
-      "tags": ["white-box", "beta", "survivor", "female", "gear", "item", "edlen"]
+      "tags": ["white-box", "beta", "survivor", "female", "gear", "item", "edlen"],
+      "shopReachable": null
     },
     "beta-pillar-winter-grimmory": {
       "name": "Winter Grimmory (Beta)",
@@ -537,22 +416,12 @@
       "gameplay": true,
       "price": 3400,
       "editions": [
-        {
-          "v": "First Run",
-          "$": [3400],
-          "limit": true
-        },
-        {
-          "v": "Deathgrey",
-          "$": [3900],
-          "limit": true
-        },
-        {
-          "v": "Encore",
-          "$": [3400]
-        }
+        { "v": "First Run", "$": [3400], "limit": true },
+        { "v": "Deathgrey", "$": [3900], "limit": true },
+        { "v": "Encore", "$": [3400] }
       ],
-      "tags": ["white-box", "pillar", "beta", "trait", "grimmory"]
+      "tags": ["white-box", "pillar", "beta", "trait", "grimmory"],
+      "shopReachable": null
     }
   },
   "dice": {
@@ -562,42 +431,48 @@
       "colors": ["#151313", "#8f1f22"],
       "text": ["Black", "Red"],
       "tags": ["dice"],
-      "url": "/products/black-and-red-dice"
+      "url": "/products/black-and-red-dice",
+      "shopReachable": true
     },
     "black-friday-death-dice": {
       "name": "Black Friday Death Dice",
       "price": 2000,
       "colors": ["#6f6a68", "#151313"],
       "text": ["Grey", "Black"],
-      "tags": ["dice", "black-friday", "promo"]
+      "tags": ["dice", "black-friday", "promo"],
+      "shopReachable": null
     },
     "black-out-death-dice": {
       "name": "Black Out Dice",
       "price": 2000,
       "colors": ["#151313", "#0b0a09"],
       "text": ["Black", "Black"],
-      "tags": ["dice"]
+      "tags": ["dice"],
+      "shopReachable": null
     },
     "classic-death-dice": {
       "name": "Classic Death Dice",
       "price": 2000,
       "colors": ["#fdfffe", "#151313"],
       "text": ["White", "Black"],
-      "tags": ["dice"]
+      "tags": ["dice"],
+      "shopReachable": null
     },
     "gold-smoke-knight-dice": {
       "name": "Gold Smoke Knight Dice",
       "price": 2000,
       "colors": ["#c9a227", "#151313"],
       "text": ["Gold", "Black"],
-      "tags": ["dice", "gold-smoke-knight"]
+      "tags": ["dice", "gold-smoke-knight"],
+      "shopReachable": null
     },
     "sunstalker-dice": {
       "name": "Sunstalker Dice",
       "price": 12000,
       "colors": ["#f0c26b", "#2b2b6b"],
       "text": ["Yellow", "Foil"],
-      "tags": ["dice", "monster-sunstalker"]
+      "tags": ["dice", "monster-sunstalker"],
+      "shopReachable": null
     }
   },
   "bundles": {
@@ -620,7 +495,8 @@
         "expansion-slenderman",
         "expansion-spidicules",
         "expansion-sunstalker"
-      ]
+      ],
+      "shopReachable": true
     },
     "pinups-of-death-collection": {
       "name": "Pinups of Death Collection",
@@ -631,9 +507,10 @@
         "pinups-of-death-series-1",
         "pinups-of-death-series-2",
         "pinups-of-death-series-3",
-        "pinups-of-death-series-iv",
-        "pinups-of-death-series-v"
-      ]
+        "pinups-of-death-series-4",
+        "pinups-of-death-series-5"
+      ],
+      "shopReachable": null
     },
     "revampedgame-full-catalog": {
       "name": "RevampedGame Full Catalog",
@@ -846,7 +723,8 @@
         "revampedgame-toppled-pillar-terrain",
         "revampedgame-weapon-crafter",
         "revampedgame-white-lion-persistent-injury"
-      ]
+      ],
+      "shopReachable": null
     },
     "craft-of-death-full-catalog": {
       "name": "Craft of Death Full Catalog",
@@ -885,7 +763,8 @@
         "craft-of-death-scenic-terrain-lion-monster",
         "craft-of-death-shield-location-dice",
         "craft-of-death-the-slaughterer-base"
-      ]
+      ],
+      "shopReachable": null
     },
     "craft-of-death-phoenix-base-bundle": {
       "name": "Phoenix Base Bundle",
@@ -894,7 +773,8 @@
       "url": "https://ko-fi.com/s/cb9ee97746",
       "price": 1200,
       "currency": "EUR",
-      "includes": ["craft-of-death-phoenix-nightmare-tree", "craft-of-death-phoenix-base-materialize"]
+      "includes": ["craft-of-death-phoenix-nightmare-tree", "craft-of-death-phoenix-base-materialize"],
+      "shopReachable": false
     },
     "revampedgame-gamblers-chest-bundle": {
       "name": "RevampedGame Gambler's Chest Catalog",
@@ -945,7 +825,8 @@
         "revampedgame-smog-incense-terrain",
         "revampedgame-stone-fingers-terrain",
         "revampedgame-the-gambler-chest-is-now-printing"
-      ]
+      ],
+      "shopReachable": null
     },
     "revampedgame-crests-bundle": {
       "name": "RevampedGame Crests",
@@ -975,7 +856,8 @@
         "revampedgame-screaming-god-crest",
         "revampedgame-slenderman-crest",
         "revampedgame-the-hands-crest"
-      ]
+      ],
+      "shopReachable": null
     },
     "revampedgame-settlement-locations-bundle": {
       "name": "RevampedGame Settlement Locations",
@@ -1024,7 +906,8 @@
         "revampedgame-stone-circle-ruin",
         "revampedgame-stone-circle-v1",
         "revampedgame-weapon-crafter"
-      ]
+      ],
+      "shopReachable": null
     }
   },
   "homebrew": {
