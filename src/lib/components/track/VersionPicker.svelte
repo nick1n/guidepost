@@ -11,11 +11,6 @@
   };
 
   let { versions, value = [], onselect, label = "Version", groupLabel = "Versions owned", focusActive = false }: Props = $props();
-
-  function selectVersion(event: MouseEvent, version: string) {
-    event.stopPropagation();
-    onselect(version);
-  }
 </script>
 
 <div role="group" aria-label={groupLabel}>
@@ -26,7 +21,7 @@
       type="button"
       aria-pressed={active}
       data-dialog-initial-focus={focusActive && active ? "true" : undefined}
-      onclick={(event) => selectVersion(event, version.v)}
+      onclick={() => onselect(version.v)}
     >
       {version.v}
     </button>

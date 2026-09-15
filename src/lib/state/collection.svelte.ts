@@ -101,36 +101,35 @@ export class ContentState {
   }
 
   setStore = Effect.fn("ContentState.setStore")({ self: this }, function* (store: CollectionStore, migrateFrom?: CollectionStore) {
-    const self = this;
     const generation = ++this.generation;
     this.store = store;
     this.writer = undefined;
     this.loadStatus = "pending";
     this.loadError = undefined;
 
-    return yield* Effect.gen(function* () {
+    return yield* Effect.gen({ self: this }, function* () {
       const localState = migrateFrom ? yield* migrateFrom.load().pipe(Effect.mapError(persistenceError())) : {};
       const storedState = yield* store.load().pipe(Effect.mapError(persistenceError()));
       const state = { ...storedState, ...localState };
       const itemIds = Object.keys(localState);
 
       if (itemIds.length) {
-        if (!self.isCurrent(generation)) return yield* Effect.interrupt;
+        if (!this.isCurrent(generation)) return yield* Effect.interrupt;
         yield* store.save(state).pipe(Effect.mapError(persistenceError(itemIds)));
         if (migrateFrom) {
-          if (!self.isCurrent(generation)) return yield* Effect.interrupt;
+          if (!this.isCurrent(generation)) return yield* Effect.interrupt;
           yield* migrateFrom.clear().pipe(Effect.mapError(persistenceError(itemIds)));
         }
       }
 
-      if (!self.isCurrent(generation)) return yield* Effect.interrupt;
-      self.state = state;
-      const writer = new OptimisticStore(store, self.state, (state) => {
-        if (self.writer === writer) self.state = state;
+      if (!this.isCurrent(generation)) return yield* Effect.interrupt;
+      this.state = state;
+      const writer = new OptimisticStore(store, this.state, (state) => {
+        if (this.writer === writer) this.state = state;
       });
-      self.writer = writer;
-      self.loadStatus = "ready";
-    }).pipe((effect) => self.finishLoad(effect, generation));
+      this.writer = writer;
+      this.loadStatus = "ready";
+    }).pipe((effect) => this.finishLoad(effect, generation));
   });
 
   setUser(userId?: string) {
@@ -146,16 +145,15 @@ export class ContentState {
 
   refresh = Effect.fn("ContentState.refresh")({ self: this }, function* () {
     if (this.store && !this.writer) return yield* this.setStore(this.store);
-    const self = this;
     const generation = ++this.generation;
     this.loadError = undefined;
-    return yield* Effect.gen(function* () {
-      if (!self.store) return yield* unavailableStoreError("load");
-      if (!self.writer) return yield* unavailableStoreError("load");
-      self.loadStatus = "pending";
-      yield* self.writer.load().pipe(Effect.mapError(persistenceError()));
-      if (self.isCurrent(generation)) self.loadStatus = "ready";
-    }).pipe((effect) => self.finishLoad(effect, generation));
+    return yield* Effect.gen({ self: this }, function* () {
+      if (!this.store) return yield* unavailableStoreError("load");
+      if (!this.writer) return yield* unavailableStoreError("load");
+      this.loadStatus = "pending";
+      yield* this.writer.load().pipe(Effect.mapError(persistenceError()));
+      if (this.isCurrent(generation)) this.loadStatus = "ready";
+    }).pipe((effect) => this.finishLoad(effect, generation));
   });
 
   get(id: string) {
@@ -168,12 +166,18 @@ export class ContentState {
 
   private commitMany = Effect.fn("ContentState.commitMany")({ self: this }, function* (nextState: CollectionState) {
     const itemIds = Object.keys(nextState);
-    if (!this.store) return yield* Effect.fail(unavailableStoreError("save", itemIds));
-    if (this.loadStatus !== "ready") return yield* Effect.fail(collectionNotReadyError("save", itemIds, this.loadStatus));
-
-    if (!this.writer) return yield* Effect.fail(unavailableStoreError("save", itemIds));
-    return yield* this.writer.saveMany(nextState).pipe(Effect.mapError(persistenceError(itemIds)));
+    const writer = yield* this.requireWriter("save", itemIds);
+    return yield* writer.saveMany(nextState).pipe(Effect.mapError(persistenceError(itemIds)));
   });
+
+  private requireWriter(operation: "save" | "clear", itemIds: readonly string[]) {
+    return Effect.suspend(() => {
+      if (!this.store) return Effect.fail(unavailableStoreError(operation, itemIds));
+      if (this.loadStatus !== "ready") return Effect.fail(collectionNotReadyError(operation, itemIds, this.loadStatus));
+      if (!this.writer) return Effect.fail(unavailableStoreError(operation, itemIds));
+      return Effect.succeed(this.writer);
+    });
+  }
 
   toggleOwned = Effect.fn("ContentState.toggleOwned")(
     { self: this },
@@ -236,12 +240,9 @@ export class ContentState {
   );
 
   reset = Effect.fn("ContentState.reset")({ self: this }, function* () {
-    const store = this.store;
     const itemIds = Object.keys(this.state);
-    if (!store) return yield* Effect.fail(unavailableStoreError("clear", itemIds));
-    if (this.loadStatus !== "ready") return yield* Effect.fail(collectionNotReadyError("clear", itemIds, this.loadStatus));
-    if (!this.writer) return yield* Effect.fail(unavailableStoreError("clear", itemIds));
-    return yield* this.writer.clear().pipe(Effect.mapError(persistenceError(itemIds)));
+    const writer = yield* this.requireWriter("clear", itemIds);
+    return yield* writer.clear().pipe(Effect.mapError(persistenceError(itemIds)));
   });
 }
 

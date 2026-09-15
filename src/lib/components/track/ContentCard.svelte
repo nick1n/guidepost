@@ -6,7 +6,7 @@
   import TagRail from "./TagRail.svelte";
   import Pill from "./Pill.svelte";
   import StoreLink from "./StoreLink.svelte";
-  import { effectivePrice, formatPrice, nameById, storeUrl } from "#lib/kdm-data.ts";
+  import { effectivePrice, formatPrice, nameById, ownershipDefaults, storeUrl } from "#lib/kdm-data.ts";
   import { collection } from "#lib/state/collection.svelte.ts";
   import { collectionActions } from "#lib/state/collection-actions.ts";
   import { getFilterState } from "#lib/state/filters.svelte.ts";
@@ -27,10 +27,8 @@
   const isBeta = $derived(!!item.editions);
   const price = $derived(effectivePrice(item, entry.versions ?? [], entry.editions ?? []));
 
-  function onkeydown(event: KeyboardEvent) {
-    if (event.key !== "Enter" && event.key !== " ") return;
-    event.preventDefault();
-    collectionActions.run(collection.toggleOwned(item.id, { version: item.versions?.at(-1)?.v, edition: item.editions?.at(-1)?.v }));
+  function toggleOwned() {
+    collectionActions.run(collection.toggleOwned(item.id, ownershipDefaults(item)));
   }
 </script>
 
@@ -39,25 +37,16 @@
     <div class="beta-ribbon" aria-hidden={true}></div>
   {/if}
 
-  <div
-    class="header"
-    role="button"
-    tabindex={0}
-    aria-pressed={owned}
-    aria-label={`${owned ? "Unmark" : "Mark"} ${item.name} as owned`}
-    onclick={() =>
-      collectionActions.run(collection.toggleOwned(item.id, { version: item.versions?.at(-1)?.v, edition: item.editions?.at(-1)?.v }))}
-    {onkeydown}
-  >
-    <OwnedCheckbox checked={owned} onchange={() => collectionActions.run(collection.toggleOwned(item.id))} label={item.name} />
-    <div class="summary">
-      <h3>
-        {item.name}
-      </h3>
-      {#if item.alt}
-        <p>{item.alt}</p>
-      {/if}
-    </div>
+  <div class="header">
+    <h3>
+      <button type="button" class="ownership" aria-pressed={owned} onclick={toggleOwned}>
+        <OwnedCheckbox checked={owned} />
+        <span class="summary">
+          <span class="name">{item.name}<span class="visually-hidden">{" owned"}</span></span>
+          {#if item.alt}<span class="subtitle">{item.alt}</span>{/if}
+        </span>
+      </button>
+    </h3>
     {#if !owned}
       <WishlistButton
         active={!!entry.wishlisted}
@@ -149,20 +138,30 @@
 
   .header {
     display: flex;
+    background: var(--panel);
+  }
+
+  .ownership {
+    flex: 1;
+    min-inline-size: 0;
+    display: flex;
     align-items: flex-start;
     gap: 0.75rem;
-    padding-block: 0.75rem;
-    padding-inline-start: 0.75rem;
-    background: var(--panel);
-    cursor: pointer;
+    padding: 0.75rem;
+    text-align: start;
 
     &:hover {
       --color-checkbox: var(--card);
     }
-
     &:focus-visible {
       outline-offset: calc(-1 * var(--border-size));
     }
+  }
+
+  h3 {
+    display: flex;
+    flex: 1;
+    min-inline-size: 0;
   }
 
   .summary {
@@ -170,21 +169,22 @@
     min-inline-size: 0;
   }
 
-  h3,
-  p {
+  .name,
+  .subtitle {
+    display: block;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 
-  h3 {
+  .name {
     font-weight: var(--font-semibold);
     font-size: var(--text-card-title);
     line-height: var(--size-card-header);
     font-family: var(--font-display);
   }
 
-  p {
+  .subtitle {
     margin-block-start: 0.25rem;
     color: color-mix(var(--foreground) 60%, transparent);
   }

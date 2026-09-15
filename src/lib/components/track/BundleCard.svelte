@@ -24,37 +24,23 @@
   const ownedCount = $derived(bundle.includes.filter((id) => collection.state[id]?.owned).length);
   const total = $derived(bundle.includes.length);
 
-  function onclick() {
+  function toggleOwned() {
     const nextOwned = !collection.state[bundle.id]?.owned;
     collectionActions.run(collection.setBundleOwned(bundle.id, bundle.includes, nextOwned));
-  }
-
-  function toggleBundleOwnedFromKeyboard(event: KeyboardEvent) {
-    if (event.key !== "Enter" && event.key !== " ") return;
-    event.preventDefault();
-    onclick();
   }
 </script>
 
 <li class="card" data-owned={owned}>
-  <div
-    class="header"
-    role="button"
-    tabindex={0}
-    aria-pressed={owned}
-    aria-label={`${owned ? "Unmark" : "Mark"} ${bundle.name} as owned`}
-    {onclick}
-    onkeydown={toggleBundleOwnedFromKeyboard}
-  >
-    <OwnedCheckbox checked={owned} onchange={onclick} label={bundle.name} />
-    <div class="summary">
-      <h3>
-        {bundle.name}
-      </h3>
-      <p>
-        {ownedCount}/{total} items owned
-      </p>
-    </div>
+  <div class="header">
+    <h3>
+      <button type="button" class="ownership" aria-pressed={owned} onclick={toggleOwned}>
+        <OwnedCheckbox checked={owned} />
+        <span class="summary">
+          <span class="name">{bundle.name}<span class="visually-hidden">{" owned"}</span></span>
+          <span class="subtitle">{ownedCount}/{total} items owned</span>
+        </span>
+      </button>
+    </h3>
     {#if !owned}
       <WishlistButton
         active={!!entry.wishlisted}
@@ -136,20 +122,30 @@
 
   .header {
     display: flex;
+    background: var(--panel);
+  }
+
+  .ownership {
+    flex: 1;
+    min-inline-size: 0;
+    display: flex;
     align-items: flex-start;
     gap: 0.75rem;
-    padding-block: 0.75rem;
-    padding-inline-start: 0.75rem;
-    background: var(--panel);
-    cursor: pointer;
+    padding: 0.75rem;
+    text-align: start;
 
     &:hover {
       --color-checkbox: var(--card);
     }
-
     &:focus-visible {
       outline-offset: calc(-1 * var(--border-size));
     }
+  }
+
+  h3 {
+    display: flex;
+    flex: 1;
+    min-inline-size: 0;
   }
 
   .summary {
@@ -157,7 +153,8 @@
     min-inline-size: 0;
   }
 
-  h3 {
+  .name {
+    display: block;
     font-weight: var(--font-semibold);
     font-size: var(--text-card-title);
     line-height: var(--size-card-header);
@@ -165,7 +162,8 @@
     text-wrap: balance;
   }
 
-  p {
+  .subtitle {
+    display: block;
     margin-block-start: 0.25rem;
     color: color-mix(var(--foreground) 60%, transparent);
     font-variant-numeric: tabular-nums;

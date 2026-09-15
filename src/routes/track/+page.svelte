@@ -5,7 +5,7 @@
   import ContentCard from "#lib/components/track/ContentCard.svelte";
   import DiceCard from "#lib/components/track/DiceCard.svelte";
   import FilterBar from "#lib/components/track/FilterBar.svelte";
-  import { allContentTags, allDiceTags, allHomebrewTags, priceById } from "#lib/kdm-data.ts";
+  import { allContentTags, allDiceTags, allHomebrewTags, ownershipDefaults, priceById } from "#lib/kdm-data.ts";
   import { collection } from "#lib/state/collection.svelte.ts";
   import { collectionActions } from "#lib/state/collection-actions.ts";
   import { createFilterState } from "#lib/state/filters.svelte.ts";
@@ -38,7 +38,7 @@
     if (tab === "content" || tab === "homebrew") {
       const item = tab === "content" ? visible.visibleContent[0] : visible.visibleHomebrew[0];
       if (!collection.get(item.id).owned) {
-        collectionActions.run(collection.toggleOwned(item.id, { version: item.versions?.at(-1)?.v, edition: item.editions?.at(-1)?.v }));
+        collectionActions.run(collection.toggleOwned(item.id, ownershipDefaults(item)));
       }
       return;
     }

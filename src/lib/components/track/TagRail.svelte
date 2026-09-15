@@ -12,8 +12,6 @@
   let startScrollLeft = 0;
 
   function selectTag(event: MouseEvent, tag: string) {
-    event.stopPropagation();
-
     if (dragged) {
       event.preventDefault();
       dragged = false;

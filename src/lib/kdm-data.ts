@@ -56,6 +56,10 @@ export function effectivePrice(item: ContentItem, versionIds: string[] = [], edi
   return item.price ?? 0;
 }
 
+export function ownershipDefaults(item: ContentItem) {
+  return { version: item.versions?.at(-1)?.v, edition: item.editions?.at(-1)?.v };
+}
+
 export const allContentTags = Array.from(new Set(content.flatMap((item) => item.tags))).sort();
 export const allDiceTags = Array.from(new Set(dice.flatMap((item) => item.tags))).sort();
 export const allHomebrewTags = Array.from(new Set(homebrew.flatMap((item) => item.tags))).sort();

@@ -17,26 +17,18 @@
   const owned = $derived(!!entry.owned);
   const url = $derived(storeUrl(item.url));
 
-  function onkeydown(event: KeyboardEvent) {
-    if (event.key !== "Enter" && event.key !== " ") return;
-    event.preventDefault();
+  function toggleOwned() {
     collectionActions.run(collection.toggleOwned(item.id));
   }
 </script>
 
 <li class="card" data-owned={owned}>
-  <div
-    class="header"
-    role="button"
-    tabindex={0}
-    aria-pressed={owned}
-    aria-label={`${owned ? "Unmark" : "Mark"} ${item.name} as owned`}
-    onclick={() => collectionActions.run(collection.toggleOwned(item.id))}
-    {onkeydown}
-  >
-    <OwnedCheckbox checked={owned} onchange={() => collectionActions.run(collection.toggleOwned(item.id))} label={item.name} />
+  <div class="header">
     <h3>
-      {item.name}
+      <button type="button" class="ownership" aria-pressed={owned} onclick={toggleOwned}>
+        <OwnedCheckbox checked={owned} />
+        <span>{item.name}<span class="visually-hidden">{" owned"}</span></span>
+      </button>
     </h3>
     {#if !owned}
       <WishlistButton
@@ -81,24 +73,30 @@
 
   .header {
     display: flex;
+    background: var(--panel);
+  }
+
+  .ownership {
+    flex: 1;
+    min-inline-size: 0;
+    display: flex;
     align-items: flex-start;
     gap: 0.75rem;
-    padding-block: 0.75rem;
-    padding-inline-start: 0.75rem;
-    background: var(--panel);
-    cursor: pointer;
+    padding: 0.75rem;
+    text-align: start;
 
     &:hover {
       --color-checkbox: var(--card);
     }
-
     &:focus-visible {
       outline-offset: calc(-1 * var(--border-size));
     }
   }
 
   h3 {
+    display: flex;
     flex: 1;
+    min-inline-size: 0;
     font-weight: var(--font-semibold);
     font-size: var(--text-card-title);
     line-height: var(--size-card-header);

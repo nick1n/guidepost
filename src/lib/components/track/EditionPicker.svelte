@@ -11,11 +11,6 @@
 
   let { editions, value = [], copyNumbers, onselect, onSetCopyNumber }: Props = $props();
 
-  function selectEdition(event: MouseEvent, edition: string) {
-    event.stopPropagation();
-    onselect(edition);
-  }
-
   function setCopyNumber(event: Event, edition: string) {
     const input = event.currentTarget as HTMLInputElement;
     const raw = input.value;
@@ -26,7 +21,7 @@
 <div class="editions" role="group" aria-label="Beta editions owned">
   {#each editions as edition (edition.v)}
     {@const active = value.includes(edition.v)}
-    <button type="button" aria-pressed={active} onclick={(event) => selectEdition(event, edition.v)}>
+    <button type="button" aria-pressed={active} onclick={() => onselect(edition.v)}>
       {edition.v}
     </button>
   {/each}

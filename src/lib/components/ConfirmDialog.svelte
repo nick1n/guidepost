@@ -87,7 +87,7 @@
   {onclick}
   {ontransitionend}
 >
-  <form method="dialog">
+  <div class="content">
     <div class="heading">
       <h2 id={`${id}-title`}>{title}</h2>
       <span class={["icon", icon]} aria-hidden="true"></span>
@@ -103,7 +103,7 @@
         {confirmLabel}
       </button>
     </div>
-  </form>
+  </div>
 </dialog>
 
 <style>
@@ -144,7 +144,7 @@
     }
   }
 
-  form {
+  .content {
     display: grid;
     padding: clamp(1rem, 4vw, 1.5rem);
     gap: 1rem;
