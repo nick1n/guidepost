@@ -4,6 +4,14 @@ Guidepost is a personal hub for board game companion tools.
 
 ## Catalog types
 
+Run `pnpm check:shop-links` to check catalog URLs with HEAD requests and update `shopReachable` on each item in
+`src/lib/kdm-data.json`. Relative URLs use `https://shop.kingdomdeath.com`. The script follows redirects, checks duplicate URLs once,
+and times out each request after 10 seconds. It never falls back to GET.
+
+Results are `true` for a final HTTP 2xx response, `false` for HTTP errors or failed requests, and `null` for items without URLs.
+The field is absent until checked. A failed check can reflect rate limiting, a temporary network failure, or a site rejecting HEAD;
+the result does not indicate whether a product is in stock. Each run overwrites previous results and logs response statuses or errors.
+
 `src/lib/schema.json` defines the catalog shape. `pnpm generate:types` uses `json-schema-to-typescript` to generate
 `src/lib/types/gen/kdm-data.d.ts`. Edit the schema, then regenerate the types; do not edit generated files by hand.
 

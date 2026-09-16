@@ -9,6 +9,7 @@
     "test": "vitest",
     "test:run": "vitest run",
     "generate:types": "node scripts/generate-types.mts",
+    "check:shop-links": "node scripts/check-shop-links.mts",
     "dev": "pnpm generate:types && vite dev",
     "build": "pnpm generate:types && vite build",
     "preview": "vite preview",

@@ -2,7 +2,7 @@ import { bundles, collectionItems, content, dice, effectivePrice, homebrew } fro
 import type { Bundle, ContentItem, DiceSet, Filters, CollectionState, Currency } from "#lib/types/index.ts";
 
 type CatalogItem = ContentItem | DiceSet | Bundle;
-type FilterableItem = Pick<CatalogItem, "id" | "name" | "tags"> & Partial<Pick<ContentItem, "alt" | "gameplay" | "kind">>;
+type FilterableItem = Pick<CatalogItem, "id" | "name" | "tags"> & Partial<Pick<ContentItem, "alt" | "desc" | "gameplay" | "kind">>;
 
 export const bundleTags = [...new Set(bundles.flatMap((bundle) => bundle.tags))].sort();
 
@@ -31,8 +31,8 @@ export function getCollectionStats(state: CollectionState) {
 export function getVisibleCatalog(filters: Filters, state: CollectionState) {
   const query = filters.query.trim().toLowerCase();
   const matches = (item: FilterableItem) => {
-    if (query && !`${item.name} ${item.alt ?? ""} ${item.tags.join(" ")}`.toLowerCase().includes(query)) return false;
-    if (!filters.tags.every((tag) => item.tags.includes(tag))) return false;
+    if (query && !`${item.name} ${item.alt ?? ""} ${item.desc ?? ""} ${item.tags.join(" ")}`.toLowerCase().includes(query)) return false;
+    if (filters.tags.length && !filters.tags.every((tag) => item.tags.includes(tag))) return false;
     if (filters.kind !== "any" && item.kind !== filters.kind) return false;
     if (filters.gameplay === "gameplay" && item.gameplay === false) return false;
     if (filters.gameplay === "models" && item.gameplay === true) return false;

@@ -18,6 +18,8 @@
 </script>
 
 <script lang="ts">
+  import { onMount } from "svelte";
+  import { resolve } from "$app/paths";
   import { getCollectionStats, getVisibleCatalog } from "#lib/catalog-view.ts";
   import BundleCard from "#lib/components/track/BundleCard.svelte";
   import CollectionStats from "#lib/components/track/CollectionStats.svelte";
@@ -30,6 +32,7 @@
   import { createFilterState } from "#lib/state/filters.svelte.ts";
 
   let tab = $state<Tab>("content");
+  let tabNavigation: HTMLElement;
   const filters = createFilterState();
 
   const stats = $derived(getCollectionStats(collection.state));
@@ -41,15 +44,30 @@
     homebrew: visible.homebrew.length,
   });
   const resultCount = $derived(tabCounts[tab]);
+  const canSelect = $derived(collection.hydrated && resultCount > 0);
+
+  function onkeydown(event: KeyboardEvent) {
+    if (event.defaultPrevented || event.isComposing || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
+    if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+
+    const target = event.target;
+    if (target instanceof HTMLElement && (target.isContentEditable || target.closest("input, textarea, select"))) return;
+
+    event.preventDefault();
+    const direction = event.key === "ArrowRight" ? 1 : -1;
+    const index = (TABS.findIndex((item) => item.id === tab) + direction + TABS.length) % TABS.length;
+    tab = TABS[index].id;
+    if (target instanceof Node && tabNavigation.contains(target)) {
+      tabNavigation.querySelectorAll("button")[index]?.focus();
+    }
+  }
 
   function onenter() {
-    if (resultCount !== 1) return;
+    if (!canSelect) return;
 
     if (tab === "content" || tab === "homebrew") {
       const item = tab === "content" ? visible.content[0] : visible.homebrew[0];
-      if (!collection.get(item.id).owned) {
-        collectionActions.run(collection.toggleOwned(item.id, ownershipDefaults(item)));
-      }
+      collectionActions.run(collection.toggleOwned(item.id, ownershipDefaults(item)));
       return;
     }
 
@@ -68,6 +86,8 @@
   }
 </script>
 
+<svelte:window {onkeydown} />
+
 <svelte:head>
   <title>Collection | Guidepost</title>
 </svelte:head>
@@ -80,7 +100,7 @@
 
   <CollectionStats {...stats} />
 
-  <nav aria-label="Sections">
+  <nav bind:this={tabNavigation} aria-label="Sections">
     <span class="tab-highlight" aria-hidden="true"></span>
     {#each TABS as t (t.id)}
       <button class="tab-button" type="button" aria-current={tab === t.id ? "page" : undefined} onclick={() => (tab = t.id)}>

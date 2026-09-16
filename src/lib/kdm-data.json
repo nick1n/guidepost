@@ -7,26 +7,10 @@
       "gameplay": true,
       "price": 44400,
       "versions": [
-        {
-          "v": "Sim",
-          "$": [2000],
-          "r": "2022-11-25"
-        },
-        {
-          "v": "1.3",
-          "$": [10000],
-          "r": "2015-09-15"
-        },
-        {
-          "v": "1.5",
-          "$": [25000],
-          "r": "2017-10-13"
-        },
-        {
-          "v": "1.6",
-          "$": [40000, 44400],
-          "r": "2021-11-26"
-        }
+        { "v": "Sim", "$": [2000], "r": "2022-11-25" },
+        { "v": "1.3", "$": [10000], "r": "2015-09-15" },
+        { "v": "1.5", "$": [25000], "r": "2017-10-13" },
+        { "v": "1.6", "$": [40000, 44400], "r": "2021-11-26" }
       ],
       "url": "/products/kingdom-death-monster-1-6",
       "tags": [
@@ -48,7 +32,8 @@
         "zachary",
         "novel-proficiency",
         "weapon-proficiency"
-      ]
+      ],
+      "shopReachable": true
     },
     "gamblers-chest": {
       "name": "Gambler's Chest Expansion",
@@ -56,18 +41,10 @@
       "gameplay": true,
       "price": 42000,
       "versions": [
-        {
-          "v": "Sim",
-          "$": [4200],
-          "r": "2022-11-25"
-        },
-        {
-          "v": "1.6",
-          "$": [37000, 42000],
-          "r": "2021-11-26"
-        }
+        { "v": "Sim", "$": [4200], "r": "2025-11-25" },
+        { "v": "1.6", "$": [37000, 42000], "r": "2021-11-26" }
       ],
-      "url": "/products/gamblers-chest",
+      "url": "/products/gamblers-chest-expansion",
       "tags": [
         "expansion",
         "core",
@@ -81,7 +58,8 @@
         "survivor",
         "male",
         "female"
-      ]
+      ],
+      "shopReachable": true
     },
     "expansion-flower-knight": {
       "name": "Flower Knight Expansion",
@@ -89,19 +67,12 @@
       "gameplay": true,
       "price": 8000,
       "versions": [
-        {
-          "v": "Sim",
-          "$": [700],
-          "r": "2025-11-25"
-        },
-        {
-          "v": "1.6",
-          "$": [6500, 8000],
-          "r": "2021-11-26"
-        }
+        { "v": "Sim", "$": [700], "r": "2025-11-25" },
+        { "v": "1.6", "$": [6500, 8000], "r": "2021-11-26" }
       ],
       "url": "/products/flower-knight-expansion-1-6",
-      "tags": ["expansion", "monster-flower-knight", "knight", "node-2-quarry"]
+      "tags": ["expansion", "monster-flower-knight", "knight", "node-2-quarry"],
+      "shopReachable": true
     },
     "expansion-dung-beetle-knight": {
       "name": "Dung Beetle Knight Expansion",
@@ -109,48 +80,26 @@
       "gameplay": true,
       "price": 8000,
       "versions": [
-        {
-          "v": "Sim",
-          "$": [700],
-          "r": "2025-11-25"
-        },
-        {
-          "v": "1.5",
-          "$": [8000],
-          "r": "2021-11-26"
-        },
-        {
-          "v": "1.6",
-          "$": [6500, 8000],
-          "r": "2021-11-26"
-        },
-        {
-          "v": "1.7",
-          "$": [8000],
-          "r": "Q4 2026"
-        }
+        { "v": "Sim", "$": [700], "r": "2025-11-25" },
+        { "v": "1.5", "$": [8000], "r": "2021-11-26" },
+        { "v": "1.6", "$": [6500, 8000], "r": "2021-11-26" },
+        { "v": "1.7", "$": [8000], "r": "Q4 2026" }
       ],
-      "url": "/products/dung-beetle-knight-expansion-1-6",
-      "tags": ["expansion", "monster-dung-beetle-knight", "knight", "node-4-quarry"]
+      "url": "/products/dung-beetle-expansion-1-6",
+      "tags": ["expansion", "monster-dung-beetle-knight", "knight", "node-4-quarry"],
+      "shopReachable": true
     },
     "expansion-frogdog": {
       "name": "Frogdog Expansion",
       "kind": "expansion",
       "gameplay": true,
       "versions": [
-        {
-          "v": "Sim",
-          "$": [1200],
-          "r": "2025-01-01"
-        },
-        {
-          "v": "1.6",
-          "$": [13500],
-          "r": "2024-01-01"
-        }
+        { "v": "Sim", "$": [1200], "r": "2025-01-01" },
+        { "v": "1.6", "$": [13500], "r": "2024-01-01" }
       ],
       "url": "/products/frogdog-expansion",
-      "tags": ["expansion", "monster-frogdog", "monster-bullfrogdog", "node-1-quarry", "gear", "armor"]
+      "tags": ["expansion", "monster-frogdog", "monster-bullfrogdog", "node-1-quarry", "gear", "armor"],
+      "shopReachable": true
     },
     "expansion-gorm": {
       "name": "Gorm Expansion",
@@ -158,19 +107,12 @@
       "gameplay": true,
       "price": 8000,
       "versions": [
-        {
-          "v": "Sim",
-          "$": [700],
-          "r": "2025-11-25"
-        },
-        {
-          "v": "1.6",
-          "$": [6500, 8000],
-          "r": "2021-11-26"
-        }
+        { "v": "Sim", "$": [700], "r": "2025-11-25" },
+        { "v": "1.6", "$": [6500, 8000], "r": "2021-11-26" }
       ],
       "url": "/products/gorm-expansion-1-6",
-      "tags": ["expansion", "monster-gorm", "node-1-quarry", "gear", "armor"]
+      "tags": ["expansion", "monster-gorm", "node-1-quarry", "gear", "armor"],
+      "shopReachable": true
     },
     "expansion-spidicules": {
       "name": "Spidicules Expansion",
@@ -178,19 +120,12 @@
       "gameplay": true,
       "price": 8000,
       "versions": [
-        {
-          "v": "Sim",
-          "$": [700],
-          "r": "2025-11-25"
-        },
-        {
-          "v": "1.6",
-          "$": [6500, 8000],
-          "r": "2021-11-26"
-        }
+        { "v": "Sim", "$": [700], "r": "2025-11-25" },
+        { "v": "1.6", "$": [6500, 8000], "r": "2021-11-26" }
       ],
       "url": "/products/spidicules-expansion-1-6",
-      "tags": ["expansion", "monster-spidicules", "node-2-quarry", "silk", "gear"]
+      "tags": ["expansion", "monster-spidicules", "node-2-quarry", "silk", "gear"],
+      "shopReachable": true
     },
     "expansion-sunstalker": {
       "name": "Sunstalker Expansion",
@@ -198,19 +133,12 @@
       "gameplay": true,
       "price": 8000,
       "versions": [
-        {
-          "v": "Sim",
-          "$": [700],
-          "r": "2025-11-25"
-        },
-        {
-          "v": "1.6",
-          "$": [6500, 8000],
-          "r": "2021-11-26"
-        }
+        { "v": "Sim", "$": [700], "r": "2025-11-25" },
+        { "v": "1.6", "$": [6500, 8000], "r": "2021-11-26" }
       ],
-      "url": "/products/sunstalker-expansion-1-6",
-      "tags": ["expansion", "monster-sunstalker", "campaign", "node-3-quarry", "pot-sun"]
+      "url": "/products/sunstalker-expansion",
+      "tags": ["expansion", "monster-sunstalker", "campaign", "node-3-quarry", "pot-sun"],
+      "shopReachable": true
     },
     "expansion-dragon-king": {
       "name": "Dragon King Expansion",
@@ -218,19 +146,12 @@
       "gameplay": true,
       "price": 8000,
       "versions": [
-        {
-          "v": "Sim",
-          "$": [700],
-          "r": "2025-11-25"
-        },
-        {
-          "v": "1.6",
-          "$": [6500, 8000],
-          "r": "2021-11-26"
-        }
+        { "v": "Sim", "$": [700], "r": "2025-11-25" },
+        { "v": "1.6", "$": [6500, 8000], "r": "2021-11-26" }
       ],
       "url": "/products/dragon-king-expansion-1-6",
-      "tags": ["expansion", "monster-dragon-king", "campaign", "node-4-quarry", "king"]
+      "tags": ["expansion", "monster-dragon-king", "campaign", "node-4-quarry", "king"],
+      "shopReachable": true
     },
     "expansion-lion-knight": {
       "name": "Lion Knight Expansion",
@@ -238,19 +159,12 @@
       "gameplay": true,
       "price": 8000,
       "versions": [
-        {
-          "v": "Sim",
-          "$": [700],
-          "r": "2025-11-25"
-        },
-        {
-          "v": "1.6",
-          "$": [6500, 8000],
-          "r": "2021-11-26"
-        }
+        { "v": "Sim", "$": [700], "r": "2025-11-25" },
+        { "v": "1.6", "$": [6500, 8000], "r": "2021-11-26" }
       ],
       "url": "/products/lion-knight-expansion-1-6",
-      "tags": ["expansion", "monster-lion-knight", "knight", "nemesis", "showdown"]
+      "tags": ["expansion", "monster-lion-knight", "knight", "nemesis", "showdown"],
+      "shopReachable": true
     },
     "expansion-lion-god": {
       "name": "Lion God Expansion",
@@ -258,19 +172,12 @@
       "gameplay": true,
       "price": 8000,
       "versions": [
-        {
-          "v": "Sim",
-          "$": [700],
-          "r": "2025-11-25"
-        },
-        {
-          "v": "1.6",
-          "$": [6500, 8000],
-          "r": "2021-11-26"
-        }
+        { "v": "Sim", "$": [700], "r": "2025-11-25" },
+        { "v": "1.6", "$": [6500, 8000], "r": "2021-11-26" }
       ],
       "url": "/products/lion-god-expansion-1-6",
-      "tags": ["expansion", "monster-lion-god", "nemesis", "scholar", "node-3-quarry"]
+      "tags": ["expansion", "monster-lion-god", "nemesis", "scholar", "node-3-quarry"],
+      "shopReachable": true
     },
     "expansion-manhunter": {
       "name": "Manhunter Expansion",
@@ -278,19 +185,12 @@
       "gameplay": true,
       "price": 8000,
       "versions": [
-        {
-          "v": "Sim",
-          "$": [700],
-          "r": "2025-11-25"
-        },
-        {
-          "v": "1.6",
-          "$": [6500, 8000],
-          "r": "2021-11-26"
-        }
+        { "v": "Sim", "$": [700], "r": "2025-11-25" },
+        { "v": "1.6", "$": [6500, 8000], "r": "2021-11-26" }
       ],
       "url": "/products/manhunter-expansion-1-6",
-      "tags": ["expansion", "monster-manhunter", "nemesis", "gear", "survivor", "male"]
+      "tags": ["expansion", "monster-manhunter", "nemesis", "gear", "survivor", "male"],
+      "shopReachable": true
     },
     "expansion-slenderman": {
       "name": "Slenderman Expansion",
@@ -298,24 +198,13 @@
       "gameplay": true,
       "price": 8000,
       "versions": [
-        {
-          "v": "Sim",
-          "$": [700],
-          "r": "2025-11-25"
-        },
-        {
-          "v": "1.6",
-          "$": [6500, 8000],
-          "r": "2021-11-26"
-        },
-        {
-          "v": "1.7",
-          "$": [8000],
-          "r": "Q4 2026"
-        }
+        { "v": "Sim", "$": [700], "r": "2025-11-25" },
+        { "v": "1.6", "$": [6500, 8000], "r": "2021-11-26" },
+        { "v": "1.7", "$": [8000], "r": "Q4 2026" }
       ],
       "url": "/products/slenderman-expansion-1-6",
-      "tags": ["expansion", "monster-slenderman", "nemesis", "dark"]
+      "tags": ["expansion", "monster-slenderman", "nemesis", "dark"],
+      "shopReachable": true
     },
     "expansion-lonely-tree": {
       "name": "Lonely Tree Expansion",
@@ -323,19 +212,12 @@
       "gameplay": true,
       "price": 3500,
       "versions": [
-        {
-          "v": "Sim",
-          "$": [700],
-          "r": "2025-11-25"
-        },
-        {
-          "v": "1.6",
-          "$": [6500, 8000],
-          "r": "2021-11-26"
-        }
+        { "v": "Sim", "$": [700], "r": "2025-11-25" },
+        { "v": "1.6", "$": [6500, 8000], "r": "2021-11-26" }
       ],
       "url": "/products/lonely-tree-expansion-1-6",
-      "tags": ["expansion", "monster-lonely-tree", "special-showdown", "terrain"]
+      "tags": ["expansion", "monster-lonely-tree", "special-showdown", "terrain"],
+      "shopReachable": true
     },
     "expansion-green-knight-armor": {
       "name": "Green Knight Armor Expansion",
@@ -343,20 +225,13 @@
       "gameplay": true,
       "price": 8000,
       "versions": [
-        {
-          "v": "Sim",
-          "$": [700],
-          "r": "2025-11-25"
-        },
-        {
-          "v": "1.6",
-          "$": [6500, 8000],
-          "r": "2021-11-26"
-        }
+        { "v": "Sim", "$": [700], "r": "2025-11-25" },
+        { "v": "1.6", "$": [6500, 8000], "r": "2021-11-26" }
       ],
       "url": "/products/green-knight-armor-expansion-1-6",
       "requires": ["expansion-dung-beetle-knight", "expansion-gorm", "expansion-spidicules", "expansion-sunstalker"],
-      "tags": ["expansion", "gear", "armor", "knight"]
+      "tags": ["expansion", "gear", "armor", "knight"],
+      "shopReachable": false
     },
     "expansion-black-knight": {
       "name": "Black Knight Expansion",
@@ -364,51 +239,66 @@
       "gameplay": true,
       "price": 8000,
       "versions": [
-        {
-          "v": "Sim",
-          "$": [700],
-          "r": "2025-11-25"
-        },
-        {
-          "v": "1.6",
-          "$": [6500, 8000],
-          "r": "2021-11-26"
-        }
+        { "v": "Sim", "$": [700], "r": "2025-11-25" },
+        { "v": "1.6", "$": [6500, 8000], "r": "2021-11-26" }
       ],
-      "url": "/products/black-knight-expansion-1-6",
-      "tags": ["expansion", "monster-black-knight", "nemesis", "knight", "gear"]
+      "url": "/products/black-knight-expansion",
+      "tags": ["expansion", "monster-black-knight", "nemesis", "knight", "gear"],
+      "shopReachable": true
     },
-    "pinups-of-death-1": {
+    "pinups-of-death-series-1": {
       "name": "Pinups Of Death I",
       "kind": "set",
       "gameplay": true,
       "price": 6000,
       "url": "/products/pinups-of-death-1",
-      "tags": ["pinup", "bundle", "survivor", "female"]
+      "tags": ["pinup", "bundle", "survivor", "female"],
+      "shopReachable": true
     },
-    "pinups-of-death-2": {
+    "pinups-of-death-series-2": {
       "name": "Pinups Of Death II",
       "kind": "set",
       "gameplay": true,
       "price": 6000,
-      "url": "/products/pinups-of-death-2",
-      "tags": ["pinup", "bundle", "survivor", "female"]
+      "url": "/products/pinups-of-death-series-2",
+      "tags": ["pinup", "bundle", "survivor", "female"],
+      "shopReachable": true
     },
-    "pinups-of-death-3": {
+    "pinups-of-death-series-3": {
       "name": "Pinups Of Death III",
       "kind": "set",
       "gameplay": false,
       "price": 6000,
-      "url": "/products/pinups-of-death-3",
-      "tags": ["pinup", "bundle", "survivor", "female"]
+      "url": "/products/pinups-of-death-series-3",
+      "tags": ["pinup", "bundle", "survivor", "female"],
+      "shopReachable": true
     },
-    "pinup-twilight-knight": {
-      "name": "Pinup Twilight Knight",
+    "pinups-of-death-series-4": {
+      "name": "Pinups Of Death IV",
       "kind": "set",
       "gameplay": false,
-      "price": 2000,
-      "url": "/products/pinup-twilight-knight",
-      "tags": ["pinup", "twilight-knight", "survivor", "female"]
+      "price": 6000,
+      "url": "/products/pinups-of-death-series-iv",
+      "tags": ["pinup", "bundle", "survivor", "female"],
+      "shopReachable": true
+    },
+    "pinups-of-death-series-5": {
+      "name": "Pinups Of Death V",
+      "kind": "set",
+      "gameplay": false,
+      "price": 6000,
+      "url": "/products/pinups-of-death-series-v",
+      "tags": ["pinup", "bundle", "survivor", "female"],
+      "shopReachable": true
+    },
+    "pinup-twilight-knight-deserter": {
+      "name": "Pinup Twilight Knight Deserter",
+      "kind": "model",
+      "gameplay": false,
+      "price": 3000,
+      "url": "/products/pinup-twilight-knight-deserter-1",
+      "tags": ["pinup", "twilight-knight", "survivor", "female"],
+      "shopReachable": true
     },
     "beyond-the-wall": {
       "name": "Beyond the Wall",
@@ -416,7 +306,8 @@
       "gameplay": true,
       "price": 3500,
       "url": "/products/beyond-the-wall-1a",
-      "tags": ["white-box", "gear", "armor", "item", "survivor", "female"]
+      "tags": ["white-box", "gear", "armor", "item", "survivor", "female"],
+      "shopReachable": true
     },
     "vignette-of-death-killennium-butcher": {
       "name": "Vignette of Death: Killennium Butcher",
@@ -424,7 +315,8 @@
       "gameplay": true,
       "price": 4000,
       "url": "/products/vignette-of-death-killennium-butcher",
-      "tags": ["core", "white-box", "vignette", "butcher", "survivor", "male", "female", "novel-proficiency"]
+      "tags": ["core", "white-box", "vignette", "butcher", "survivor", "male", "female", "novel-proficiency"],
+      "shopReachable": true
     },
     "legendary-character-hollow": {
       "name": "Legendary Character - Hollow",
@@ -432,80 +324,46 @@
       "gameplay": true,
       "price": 3000,
       "url": "/products/legendary-character-hollow",
-      "tags": ["white-box", "legendary", "character", "savior", "survivor", "female", "hollow"]
+      "tags": ["white-box", "legendary", "character", "savior", "survivor", "female", "hollow"],
+      "shopReachable": false
     },
-    "white-box-nico-bird-knight": {
-      "name": "Nico the Bird Knight",
+    "pillar-percival": {
+      "name": "Pillar - Percival",
       "kind": "white-box",
       "gameplay": true,
-      "price": 3000,
-      "url": "/products/nico-the-bird-knight",
-      "tags": ["white-box", "character", "survivor", "female", "bird-knight", "gear"]
+      "price": 3400,
+      "url": "/products/pillar-percival",
+      "tags": ["white-box", "survivor", "female", "pillar", "hunt-event", "secret-fighting-art"],
+      "shopReachable": true
     },
-    "white-box-percival": {
-      "name": "Percival",
+    "wanderer-candy": {
+      "name": "Wanderer - Candy",
       "kind": "white-box",
       "gameplay": true,
-      "price": 3000,
-      "url": "/products/percival",
-      "tags": ["white-box", "character", "survivor", "male", "gear", "item"]
-    },
-    "white-box-candy-and-cola": {
-      "name": "Candy & Cola",
-      "kind": "white-box",
-      "gameplay": true,
-      "price": 3500,
+      "price": 5000,
+      "versions": [
+        { "v": "Sim", "$": [500], "r": "2025-11-25" },
+        { "v": "Box", "$": [5000], "r": "2025-11-26" }
+      ],
       "url": "/products/candy-and-cola",
-      "tags": ["white-box", "character", "survivor", "female", "gear", "twilight-knight"]
-    },
-    "white-box-great-game-hunter": {
-      "name": "Great Game Hunter",
-      "kind": "white-box",
-      "gameplay": true,
-      "price": 3000,
-      "url": "/products/great-game-hunter",
-      "tags": ["white-box", "character", "survivor", "male", "gear", "hunter"]
-    },
-    "white-box-aya-white-speaker": {
-      "name": "Aya the White Speaker",
-      "kind": "white-box",
-      "gameplay": true,
-      "price": 3000,
-      "url": "/products/aya-the-white-speaker",
-      "tags": ["white-box", "character", "survivor", "female", "white-speaker", "gear"]
-    },
-    "white-box-allison-twilight-knight": {
-      "name": "Allison the Twilight Knight",
-      "kind": "white-box",
-      "gameplay": true,
-      "price": 3000,
-      "url": "/products/allison-the-twilight-knight",
-      "tags": ["white-box", "character", "survivor", "female", "twilight-knight", "gear"]
+      "tags": ["white-box", "survivor", "female", "gear", "innovation", "wanderer", "gamblers-chest", "arc-survivor"],
+      "shopReachable": true,
+      "requires": ["gamblers-chest"]
     },
     "beta-pillar-summer-grimmory": {
       "name": "Summer Grimmory (Beta)",
       "alt": "Pillar - Summer Grimmory (Beta)",
       "kind": "beta",
       "gameplay": true,
-      "price": 3400,
+      "price": 7500,
       "editions": [
-        {
-          "v": "First Run",
-          "$": [3400],
-          "limit": true
-        },
-        {
-          "v": "Deathgrey",
-          "$": [3900],
-          "limit": true
-        },
-        {
-          "v": "Encore",
-          "$": [3400]
-        }
+        { "v": "First Run", "$": [7500], "limit": true },
+        { "v": "Encore", "$": [7500] }
       ],
       "tags": ["white-box", "pillar", "beta", "pot-sun", "trait", "grimmory"],
-      "requires": ["expansion-sunstalker"]
+      "requires": ["expansion-sunstalker"],
+      "url": "/products/summer-grimmory",
+      "shopReachable": true
     },
     "beta-edlen": {
       "name": "Edlen (Beta)",
@@ -513,46 +371,12 @@
       "gameplay": true,
       "price": 3400,
       "editions": [
-        {
-          "v": "First Run",
-          "$": [3400],
-          "limit": true
-        },
-        {
-          "v": "Deathgrey",
-          "$": [3900],
-          "limit": true
-        },
-        {
-          "v": "Encore",
-          "$": [3400]
-        }
+        { "v": "First Run", "$": [3400], "limit": true },
+        { "v": "Deathgrey", "$": [3900], "limit": true },
+        { "v": "Encore", "$": [3400] }
       ],
-      "tags": ["white-box", "beta", "survivor", "female", "gear", "item", "edlen"]
-    },
-    "beta-pillar-winter-grimmory": {
-      "name": "Winter Grimmory (Beta)",
-      "alt": "Pillar - Winter Grimmory (Beta)",
-      "kind": "beta",
-      "gameplay": true,
-      "price": 3400,
-      "editions": [
-        {
-          "v": "First Run",
-          "$": [3400],
-          "limit": true
-        },
-        {
-          "v": "Deathgrey",
-          "$": [3900],
-          "limit": true
-        },
-        {
-          "v": "Encore",
-          "$": [3400]
-        }
-      ],
-      "tags": ["white-box", "pillar", "beta", "trait", "grimmory"]
+      "tags": ["white-box", "beta", "survivor", "female", "gear", "item", "edlen"],
+      "shopReachable": null
     }
   },
   "dice": {
@@ -562,54 +386,60 @@
       "colors": ["#151313", "#8f1f22"],
       "text": ["Black", "Red"],
       "tags": ["dice"],
-      "url": "/products/black-and-red-dice"
+      "url": "/products/black-and-red-dice",
+      "shopReachable": true
     },
     "black-friday-death-dice": {
       "name": "Black Friday Death Dice",
       "price": 2000,
       "colors": ["#6f6a68", "#151313"],
       "text": ["Grey", "Black"],
-      "tags": ["dice", "black-friday", "promo"]
+      "tags": ["dice", "black-friday", "promo"],
+      "shopReachable": null
     },
     "black-out-death-dice": {
       "name": "Black Out Dice",
       "price": 2000,
       "colors": ["#151313", "#0b0a09"],
       "text": ["Black", "Black"],
-      "tags": ["dice"]
+      "tags": ["dice"],
+      "shopReachable": null
     },
     "classic-death-dice": {
       "name": "Classic Death Dice",
       "price": 2000,
       "colors": ["#fdfffe", "#151313"],
       "text": ["White", "Black"],
-      "tags": ["dice"]
+      "tags": ["dice"],
+      "shopReachable": null
     },
     "gold-smoke-knight-dice": {
       "name": "Gold Smoke Knight Dice",
       "price": 2000,
       "colors": ["#c9a227", "#151313"],
       "text": ["Gold", "Black"],
-      "tags": ["dice", "gold-smoke-knight"]
+      "tags": ["dice", "gold-smoke-knight"],
+      "shopReachable": null
+    },
+    "parasite-queen-death-dice": {
+      "name": "Parasite Queen Death Dice",
+      "price": 2000,
+      "colors": ["#CCBCB8", "#9B6263"],
+      "text": ["Flesh", "Bruise"],
+      "tags": ["dice", "parasite-queen"],
+      "url": "/products/parasite-queen-death-dice",
+      "shopReachable": true
     },
     "sunstalker-dice": {
       "name": "Sunstalker Dice",
       "price": 12000,
       "colors": ["#f0c26b", "#2b2b6b"],
       "text": ["Yellow", "Foil"],
-      "tags": ["dice", "monster-sunstalker"]
+      "tags": ["dice", "monster-sunstalker"],
+      "shopReachable": null
     }
   },
   "bundles": {
-    "craft-of-death-phoenix-base-bundle": {
-      "name": "Phoenix Base Bundle",
-      "gameplay": false,
-      "tags": ["homebrew", "craft-of-death", "3d-print-files", "base", "terrain", "bundle", "monster-phoenix"],
-      "url": "https://ko-fi.com/s/cb9ee97746",
-      "price": 1200,
-      "currency": "EUR",
-      "includes": ["craft-of-death-phoenix-nightmare-tree", "craft-of-death-phoenix-base-materialize"]
-    },
     "expansion-of-death-vol-1-6": {
       "name": "Expansion of Death Vol 1.6",
       "price": 105500,
@@ -629,62 +459,466 @@
         "expansion-slenderman",
         "expansion-spidicules",
         "expansion-sunstalker"
-      ]
+      ],
+      "shopReachable": true
     },
     "pinups-of-death-collection": {
       "name": "Pinups of Death Collection",
       "price": 16000,
       "tags": ["bundle", "pinup"],
       "gameplay": true,
-      "includes": ["pinups-of-death-1", "pinups-of-death-2", "pinups-of-death-3", "pinup-twilight-knight"]
+      "includes": [
+        "pinups-of-death-series-1",
+        "pinups-of-death-series-2",
+        "pinups-of-death-series-3",
+        "pinups-of-death-series-4",
+        "pinups-of-death-series-5"
+      ],
+      "shopReachable": null
+    },
+    "revampedgame-full-catalog": {
+      "name": "RevampedGame Full Catalog",
+      "gameplay": true,
+      "tags": [
+        "bundle",
+        "homebrew",
+        "revampedgame",
+        "3d-print-files",
+        "accessory",
+        "base",
+        "berserk",
+        "ccg",
+        "core",
+        "crest",
+        "dice",
+        "expansion",
+        "gamblers-chest",
+        "15th-anniversary-survivors",
+        "gatherism",
+        "generic",
+        "hunt-event",
+        "innovation",
+        "member-only",
+        "model",
+        "monster-atnas",
+        "monster-black-knight",
+        "monster-bone-eaters",
+        "monster-butcher",
+        "monster-crimson-crocodile",
+        "monster-dragon-king",
+        "monster-flower-knight",
+        "monster-frogdog",
+        "monster-gorm",
+        "monster-hand",
+        "monster-killennium-butcher",
+        "monster-lion-god",
+        "monster-lonely-tree",
+        "monster-parasite-queen",
+        "monster-pariah",
+        "monster-phoenix",
+        "monster-screaming-antelope",
+        "monster-screaming-god",
+        "monster-slenderman",
+        "monster-smog-singers",
+        "monster-spidicules",
+        "monster-sunstalker",
+        "monster-white-lion",
+        "print-and-play",
+        "rosine",
+        "settlement-location",
+        "terrain",
+        "townsfolk-tussle",
+        "white-box"
+      ],
+      "includes": [
+        "revampedgame-ammonia-v1",
+        "revampedgame-ammonia-v2",
+        "revampedgame-baby-monster-controller",
+        "revampedgame-barber-surgeon-v1",
+        "revampedgame-barber-surgeon-v2-split-parts",
+        "revampedgame-beheaded-corpse-terrain",
+        "revampedgame-berserk-rosine",
+        "revampedgame-bk-bell",
+        "revampedgame-black-knight-board",
+        "revampedgame-black-knight-crest",
+        "revampedgame-black-knight-elastomer-statue-terrain",
+        "revampedgame-black-knight-tile-holder-storage",
+        "revampedgame-blacksmith-v1",
+        "revampedgame-blacksmith-v2",
+        "revampedgame-blood-beard-plant",
+        "revampedgame-blood-pool-terrain",
+        "revampedgame-bodp-tokens-insert",
+        "revampedgame-bone-eater",
+        "revampedgame-bone-smith",
+        "revampedgame-broken-lantern-oven",
+        "revampedgame-bug-patch-terrain",
+        "revampedgame-cancer-pigeon",
+        "revampedgame-catarium-split-parts",
+        "revampedgame-catarium",
+        "revampedgame-copperfish-den-terrain",
+        "revampedgame-corpse-lily-terrain",
+        "revampedgame-corpse",
+        "revampedgame-crafting-table",
+        "revampedgame-crimson-croc-base",
+        "revampedgame-darkness-coin",
+        "revampedgame-dead-dragon-king",
+        "revampedgame-dead-gorm",
+        "revampedgame-dead-phoenix",
+        "revampedgame-debris-terrain",
+        "revampedgame-divine-fragment",
+        "revampedgame-dragon-armory",
+        "revampedgame-eggsack-nest",
+        "revampedgame-ethereal-dreamer",
+        "revampedgame-exhausted-lantern-hoard",
+        "revampedgame-eye-jelly-minion",
+        "revampedgame-faceless-statue",
+        "revampedgame-fallen-lantern-terrain",
+        "revampedgame-false-prophet",
+        "revampedgame-forbidden-fruit",
+        "revampedgame-forest-coin",
+        "revampedgame-forest-gate",
+        "revampedgame-gabels-tree-terrain-v2",
+        "revampedgame-gamblers-chest-atnas-star",
+        "revampedgame-gamblers-chest-blood-pool-terrain",
+        "revampedgame-gamblers-chest-box-of-delicious-promise",
+        "revampedgame-gamblers-chest-crest",
+        "revampedgame-gamblers-chest-encounter-board",
+        "revampedgame-gamblers-chest-fingers-terrain",
+        "revampedgame-gamblers-chest-gabels-tree-terrain",
+        "revampedgame-gamblers-chest-headless-statue-terrain",
+        "revampedgame-gamblers-chest-hidden-face-terrain",
+        "revampedgame-gamblers-chest-lantern-halberd-terrain",
+        "revampedgame-gamblers-chest-lantern-terrain",
+        "revampedgame-gamblers-chest-rock-formation-terrain",
+        "revampedgame-gamblers-chest-smog-incense-terrain",
+        "revampedgame-gamblers-chest-tokens-pack-1",
+        "revampedgame-gce-storage-box",
+        "revampedgame-gce-vaultless-maze",
+        "revampedgame-generic-plateau-terrain",
+        "revampedgame-giant-stone-face-terrain",
+        "revampedgame-glowing-waypoint-terrain",
+        "revampedgame-gorm-crest",
+        "revampedgame-gormery",
+        "revampedgame-gragelope",
+        "revampedgame-hidden-face-terrain",
+        "revampedgame-host-of-hands",
+        "revampedgame-hovel-v1",
+        "revampedgame-hovel-v2",
+        "revampedgame-hunt-board",
+        "revampedgame-incensed-pinaceae-fruit",
+        "revampedgame-kd-15th-anniversary",
+        "revampedgame-kdm-community-bonsai-tree",
+        "revampedgame-kdm-record-player",
+        "revampedgame-kdm-skull",
+        "revampedgame-kingdom-death-bookend",
+        "revampedgame-kings-crown",
+        "revampedgame-lantern-hoard",
+        "revampedgame-lantern-oven",
+        "revampedgame-leather-worker-v1",
+        "revampedgame-leather-worker-v2",
+        "revampedgame-lonely-tree-crest",
+        "revampedgame-mammoth-leaf-terrain",
+        "revampedgame-mask-1",
+        "revampedgame-mask-2",
+        "revampedgame-mask-3",
+        "revampedgame-mask-4",
+        "revampedgame-mask-5",
+        "revampedgame-mask-6",
+        "revampedgame-mask-maker",
+        "revampedgame-merchant",
+        "revampedgame-monster-board-option-1",
+        "revampedgame-monster-board-option2",
+        "revampedgame-monster-controller-adult-female",
+        "revampedgame-monster-controller-adult-male",
+        "revampedgame-monster-controller-child",
+        "revampedgame-monster-controller-elderly",
+        "revampedgame-mush-lithops-plant",
+        "revampedgame-oily-pinkies-plant",
+        "revampedgame-organ-grinder-v2",
+        "revampedgame-organ-grinder-v3",
+        "revampedgame-overwhelming-darkness",
+        "revampedgame-perfect-lantern-terrain",
+        "revampedgame-perfect-slayer",
+        "revampedgame-piton",
+        "revampedgame-player-board-option-1",
+        "revampedgame-player-board-option-2",
+        "revampedgame-plumery-split-parts",
+        "revampedgame-plumery-v1",
+        "revampedgame-plumery-v2",
+        "revampedgame-portcullis",
+        "revampedgame-preserved-dogpole-terrain",
+        "revampedgame-priority-target",
+        "revampedgame-rosine-expansion-alpha-v0-2-20-12-2022",
+        "revampedgame-royal-causeway-terrain",
+        "revampedgame-sacred-pool",
+        "revampedgame-scared-pool-decor",
+        "revampedgame-screaming-god-crest",
+        "revampedgame-screaming-god-labyrinth",
+        "revampedgame-sculpture",
+        "revampedgame-shrine",
+        "revampedgame-signs-of-battle",
+        "revampedgame-singing-mantis-shrimp",
+        "revampedgame-sinkhole",
+        "revampedgame-skinnery-v1",
+        "revampedgame-skinnery-v2",
+        "revampedgame-skull-coin",
+        "revampedgame-skull-dice-tower",
+        "revampedgame-skyreef-sanctuary",
+        "revampedgame-slenderman-crest",
+        "revampedgame-smog-incense-terrain",
+        "revampedgame-stone-box",
+        "revampedgame-stone-circle-ruin",
+        "revampedgame-stone-circle-v1",
+        "revampedgame-stone-column-terrain",
+        "revampedgame-stone-faces-rolling-pin",
+        "revampedgame-stone-fingers-terrain",
+        "revampedgame-stone-heap",
+        "revampedgame-storage-box",
+        "revampedgame-survivor-corpse-terrain",
+        "revampedgame-tall-grass-terrain",
+        "revampedgame-the-butcher-1x1",
+        "revampedgame-the-butcher-2x2",
+        "revampedgame-the-gambler-chest-is-now-printing",
+        "revampedgame-the-hands-crest",
+        "revampedgame-the-stampede",
+        "revampedgame-the-traveler",
+        "revampedgame-tile-forceps",
+        "revampedgame-timeworn-statue-terrain",
+        "revampedgame-toppled-pillar-terrain",
+        "revampedgame-weapon-crafter",
+        "revampedgame-white-lion-persistent-injury"
+      ],
+      "shopReachable": null
+    },
+    "craft-of-death-full-catalog": {
+      "name": "Craft of Death Full Catalog",
+      "gameplay": false,
+      "tags": [
+        "bundle",
+        "homebrew",
+        "craft-of-death",
+        "3d-print-files",
+        "accessory",
+        "base",
+        "core",
+        "counter",
+        "dice",
+        "member-only",
+        "monster-bullfrogdog",
+        "monster-butcher",
+        "monster-hand",
+        "monster-phoenix",
+        "monster-screaming-antelope",
+        "monster-white-lion",
+        "monster",
+        "terrain"
+      ],
+      "includes": [
+        "craft-of-death-acanthus-plants",
+        "craft-of-death-attribute-counters",
+        "craft-of-death-frogophant",
+        "craft-of-death-hiding-bushes",
+        "craft-of-death-knight-of-hands-base",
+        "craft-of-death-lion-monster",
+        "craft-of-death-phoenix-base-materialize",
+        "craft-of-death-phoenix-nightmare-tree",
+        "craft-of-death-rock-base-lion-monster",
+        "craft-of-death-running-deer-base",
+        "craft-of-death-scenic-terrain-lion-monster",
+        "craft-of-death-shield-location-dice",
+        "craft-of-death-the-slaughterer-base"
+      ],
+      "shopReachable": null
+    },
+    "craft-of-death-phoenix-base-bundle": {
+      "name": "Phoenix Base Bundle",
+      "gameplay": false,
+      "tags": ["homebrew", "craft-of-death", "3d-print-files", "base", "terrain", "bundle", "monster-phoenix", "core"],
+      "url": "https://ko-fi.com/s/cb9ee97746",
+      "price": 1200,
+      "currency": "EUR",
+      "includes": ["craft-of-death-phoenix-nightmare-tree", "craft-of-death-phoenix-base-materialize"],
+      "shopReachable": false
+    },
+    "revampedgame-gamblers-chest-bundle": {
+      "name": "RevampedGame Gambler's Chest Catalog",
+      "currency": "USD",
+      "gameplay": false,
+      "tags": [
+        "bundle",
+        "homebrew",
+        "revampedgame",
+        "gamblers-chest",
+        "3d-print-files",
+        "accessory",
+        "base",
+        "crest",
+        "member-only",
+        "model",
+        "monster-atnas",
+        "monster-bone-eaters",
+        "monster-crimson-crocodile",
+        "monster-smog-singers",
+        "terrain"
+      ],
+      "includes": [
+        "revampedgame-beheaded-corpse-terrain",
+        "revampedgame-blood-pool-terrain",
+        "revampedgame-crimson-croc-base",
+        "revampedgame-fallen-lantern-terrain",
+        "revampedgame-gabels-tree-terrain-v2",
+        "revampedgame-gamblers-chest-atnas-star",
+        "revampedgame-gamblers-chest-blood-pool-terrain",
+        "revampedgame-gamblers-chest-box-of-delicious-promise",
+        "revampedgame-gamblers-chest-crest",
+        "revampedgame-gamblers-chest-encounter-board",
+        "revampedgame-gamblers-chest-fingers-terrain",
+        "revampedgame-gamblers-chest-gabels-tree-terrain",
+        "revampedgame-gamblers-chest-headless-statue-terrain",
+        "revampedgame-gamblers-chest-hidden-face-terrain",
+        "revampedgame-gamblers-chest-lantern-halberd-terrain",
+        "revampedgame-gamblers-chest-lantern-terrain",
+        "revampedgame-gamblers-chest-rock-formation-terrain",
+        "revampedgame-gamblers-chest-smog-incense-terrain",
+        "revampedgame-gamblers-chest-tokens-pack-1",
+        "revampedgame-gce-storage-box",
+        "revampedgame-gce-vaultless-maze",
+        "revampedgame-glowing-waypoint-terrain",
+        "revampedgame-hidden-face-terrain",
+        "revampedgame-royal-causeway-terrain",
+        "revampedgame-smog-incense-terrain",
+        "revampedgame-stone-fingers-terrain",
+        "revampedgame-the-gambler-chest-is-now-printing"
+      ],
+      "shopReachable": null
+    },
+    "revampedgame-crests-bundle": {
+      "name": "RevampedGame Crests",
+      "currency": "USD",
+      "gameplay": false,
+      "tags": [
+        "bundle",
+        "homebrew",
+        "revampedgame",
+        "3d-print-files",
+        "core",
+        "crest",
+        "gamblers-chest",
+        "model",
+        "monster-black-knight",
+        "monster-gorm",
+        "monster-hand",
+        "monster-lonely-tree",
+        "monster-screaming-god",
+        "monster-slenderman"
+      ],
+      "includes": [
+        "revampedgame-black-knight-crest",
+        "revampedgame-gamblers-chest-crest",
+        "revampedgame-gorm-crest",
+        "revampedgame-lonely-tree-crest",
+        "revampedgame-screaming-god-crest",
+        "revampedgame-slenderman-crest",
+        "revampedgame-the-hands-crest"
+      ],
+      "shopReachable": null
+    },
+    "revampedgame-settlement-locations-bundle": {
+      "name": "RevampedGame Settlement Locations",
+      "currency": "USD",
+      "gameplay": false,
+      "tags": [
+        "bundle",
+        "homebrew",
+        "revampedgame",
+        "3d-print-files",
+        "settlement-location",
+        "core",
+        "model",
+        "monster-dragon-king",
+        "monster-gorm",
+        "monster-phoenix",
+        "monster-screaming-antelope",
+        "monster-sunstalker",
+        "monster-white-lion"
+      ],
+      "includes": [
+        "revampedgame-barber-surgeon-v1",
+        "revampedgame-barber-surgeon-v2-split-parts",
+        "revampedgame-blacksmith-v1",
+        "revampedgame-blacksmith-v2",
+        "revampedgame-bone-smith",
+        "revampedgame-catarium-split-parts",
+        "revampedgame-catarium",
+        "revampedgame-dragon-armory",
+        "revampedgame-exhausted-lantern-hoard",
+        "revampedgame-gormery",
+        "revampedgame-lantern-hoard",
+        "revampedgame-leather-worker-v1",
+        "revampedgame-leather-worker-v2",
+        "revampedgame-mask-maker",
+        "revampedgame-organ-grinder-v2",
+        "revampedgame-organ-grinder-v3",
+        "revampedgame-plumery-split-parts",
+        "revampedgame-plumery-v1",
+        "revampedgame-plumery-v2",
+        "revampedgame-sacred-pool",
+        "revampedgame-scared-pool-decor",
+        "revampedgame-skinnery-v1",
+        "revampedgame-skinnery-v2",
+        "revampedgame-skyreef-sanctuary",
+        "revampedgame-stone-circle-ruin",
+        "revampedgame-stone-circle-v1",
+        "revampedgame-weapon-crafter"
+      ],
+      "shopReachable": null
     }
   },
   "homebrew": {
     "craft-of-death-lion-monster": {
       "name": "Lion Monster",
-      "alt": "Craft of Death digital model for 3D printing.",
       "kind": "model",
       "gameplay": false,
-      "tags": ["homebrew", "craft-of-death", "3d-print-files", "monster", "monster-white-lion"],
+      "tags": ["homebrew", "craft-of-death", "3d-print-files", "monster", "monster-white-lion", "core"],
       "url": "https://ko-fi.com/s/0bd973fcfa",
       "price": 900,
       "currency": "EUR",
-      "priceMinimum": true
+      "priceMinimum": true,
+      "desc": "Craft of Death digital model for 3D printing."
     },
     "craft-of-death-attribute-counters": {
       "name": "Attribute Counters",
-      "alt": "Craft of Death digital counters for 3D printing, with 8 and 16-value discs.",
       "kind": "accessory",
       "gameplay": false,
       "tags": ["homebrew", "craft-of-death", "3d-print-files", "accessory", "counter"],
       "url": "https://ko-fi.com/s/efbd334f4f",
       "price": 400,
       "currency": "EUR",
-      "priceMinimum": true
+      "priceMinimum": true,
+      "desc": "Craft of Death digital counters for 3D printing, with 8 and 16-value discs."
     },
     "craft-of-death-phoenix-nightmare-tree": {
       "name": "Phoenix Nightmare Tree",
-      "alt": "Craft of Death digital scenic base for 3D printing. Phoenix miniature not included.",
       "kind": "terrain",
       "gameplay": false,
-      "tags": ["homebrew", "craft-of-death", "3d-print-files", "terrain", "monster-phoenix"],
+      "tags": ["homebrew", "craft-of-death", "3d-print-files", "terrain", "monster-phoenix", "core"],
       "url": "https://ko-fi.com/s/23394aac95",
       "price": 900,
-      "currency": "EUR"
+      "currency": "EUR",
+      "desc": "Craft of Death digital scenic base for 3D printing. Phoenix miniature not included."
     },
     "craft-of-death-phoenix-base-materialize": {
       "name": "Phoenix Base - Materialize",
-      "alt": "Craft of Death digital scenic base for 3D printing. Phoenix miniature not included.",
       "kind": "base",
       "gameplay": false,
-      "tags": ["homebrew", "craft-of-death", "3d-print-files", "base", "monster-phoenix"],
+      "tags": ["homebrew", "craft-of-death", "3d-print-files", "base", "monster-phoenix", "core"],
       "url": "https://ko-fi.com/s/51e4b8a167",
       "price": 600,
-      "currency": "EUR"
+      "currency": "EUR",
+      "desc": "Craft of Death digital scenic base for 3D printing. Phoenix miniature not included."
     },
     "craft-of-death-frogophant": {
       "name": "Frogophant",
-      "alt": "Craft of Death digital model for 3D printing, supplied in 13 parts.",
       "kind": "model",
       "gameplay": false,
       "tags": ["homebrew", "craft-of-death", "3d-print-files", "monster-bullfrogdog"],
@@ -692,95 +926,1577 @@
       "url": "https://ko-fi.com/s/64351bf5db",
       "price": 900,
       "currency": "EUR",
-      "priceMinimum": true
+      "priceMinimum": true,
+      "desc": "Craft of Death digital model for 3D printing, supplied in 13 parts."
     },
     "craft-of-death-scenic-terrain-lion-monster": {
       "name": "Scenic Terrain - Lion Monster",
-      "alt": "Craft of Death digital terrain set containing four models. Available to members.",
       "kind": "terrain",
       "gameplay": false,
-      "tags": ["homebrew", "craft-of-death", "3d-print-files", "terrain", "monster-white-lion", "member-only"],
+      "tags": ["homebrew", "craft-of-death", "3d-print-files", "terrain", "core", "monster-white-lion", "member-only"],
       "url": "https://ko-fi.com/s/4ad38b4baa",
       "price": 0,
       "currency": "EUR",
-      "priceMinimum": true
+      "priceMinimum": true,
+      "desc": "Craft of Death digital terrain set containing four models. Available to members."
     },
     "craft-of-death-hiding-bushes": {
       "name": "Hiding Bushes",
-      "alt": "Craft of Death digital terrain set containing five models for 3D printing.",
       "kind": "terrain",
       "gameplay": false,
-      "tags": ["homebrew", "craft-of-death", "3d-print-files", "terrain"],
+      "tags": ["homebrew", "craft-of-death", "3d-print-files", "terrain", "core"],
       "url": "https://ko-fi.com/s/09aec6f2f4",
       "price": 500,
       "currency": "EUR",
-      "priceMinimum": true
+      "priceMinimum": true,
+      "desc": "Craft of Death digital terrain set containing five models for 3D printing."
     },
     "craft-of-death-acanthus-plants": {
       "name": "Acanthus Plants",
-      "alt": "Craft of Death digital terrain set containing three models for 3D printing.",
       "kind": "terrain",
       "gameplay": false,
-      "tags": ["homebrew", "craft-of-death", "3d-print-files", "terrain"],
+      "tags": ["homebrew", "craft-of-death", "3d-print-files", "terrain", "core"],
       "url": "https://ko-fi.com/s/744d038dff",
       "price": 500,
       "currency": "EUR",
-      "priceMinimum": true
+      "priceMinimum": true,
+      "desc": "Craft of Death digital terrain set containing three models for 3D printing."
     },
     "craft-of-death-running-deer-base": {
       "name": "Running Deer Base",
-      "alt": "Craft of Death digital base for 3D printing, supplied in two variations.",
       "kind": "base",
       "gameplay": false,
-      "tags": ["homebrew", "craft-of-death", "3d-print-files", "base", "monster-screaming-antelope"],
+      "tags": ["homebrew", "craft-of-death", "3d-print-files", "base", "monster-screaming-antelope", "core"],
       "url": "https://ko-fi.com/s/a1a7b30fdc",
       "price": 800,
       "currency": "EUR",
-      "priceMinimum": true
+      "priceMinimum": true,
+      "desc": "Craft of Death digital base for 3D printing, supplied in two variations."
     },
     "craft-of-death-knight-of-hands-base": {
       "name": "Knight of Hands Base",
-      "alt": "Craft of Death digital base for 3D printing.",
       "kind": "base",
       "gameplay": false,
-      "tags": ["homebrew", "craft-of-death", "3d-print-files", "base", "monster-hand"],
+      "tags": ["homebrew", "craft-of-death", "3d-print-files", "base", "monster-hand", "core"],
       "url": "https://ko-fi.com/s/db104cca41",
       "price": 800,
       "currency": "EUR",
-      "priceMinimum": true
+      "priceMinimum": true,
+      "desc": "Craft of Death digital base for 3D printing."
     },
     "craft-of-death-the-slaughterer-base": {
       "name": "The Slaughterer Base",
-      "alt": "Craft of Death digital base for 3D printing.",
       "kind": "base",
       "gameplay": false,
-      "tags": ["homebrew", "craft-of-death", "3d-print-files", "base", "monster-butcher"],
+      "tags": ["homebrew", "craft-of-death", "3d-print-files", "base", "monster-butcher", "core"],
       "url": "https://ko-fi.com/s/85e10683ef",
       "price": 500,
       "currency": "EUR",
-      "priceMinimum": true
+      "priceMinimum": true,
+      "desc": "Craft of Death digital base for 3D printing."
     },
     "craft-of-death-rock-base-lion-monster": {
       "name": "Rock Base - Lion Monster",
-      "alt": "Craft of Death digital rock base containing three models. Available to members.",
       "kind": "base",
       "gameplay": false,
-      "tags": ["homebrew", "craft-of-death", "3d-print-files", "base", "monster-white-lion", "member-only"],
+      "tags": ["homebrew", "craft-of-death", "3d-print-files", "base", "monster-white-lion", "core", "member-only"],
       "url": "https://ko-fi.com/s/d3a4efca06",
       "price": 0,
       "currency": "EUR",
-      "priceMinimum": true
+      "priceMinimum": true,
+      "desc": "Craft of Death digital rock base containing three models. Available to members."
     },
     "craft-of-death-shield-location-dice": {
       "name": "Shield Location Dice",
-      "alt": "Craft of Death digital dice set containing ten models for 3D printing.",
       "kind": "accessory",
       "gameplay": false,
       "tags": ["homebrew", "craft-of-death", "3d-print-files", "accessory", "dice"],
       "url": "https://ko-fi.com/s/c9d732bf63",
       "price": 0,
       "currency": "EUR",
-      "priceMinimum": true
+      "priceMinimum": true,
+      "desc": "Craft of Death digital dice set containing ten models for 3D printing."
+    },
+    "revampedgame-stone-faces-rolling-pin": {
+      "name": "Stone Faces Rolling Pin",
+      "kind": "accessory",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "accessory", "member-only", "generic"],
+      "url": "https://ko-fi.com/s/d95cd2cb42",
+      "priceMinimum": true,
+      "desc": "3D accessory files only. Requires 3D printing. Available to members."
+    },
+    "revampedgame-forbidden-fruit": {
+      "name": "Forbidden Fruit",
+      "kind": "model",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model", "monster-lonely-tree"],
+      "url": "https://ko-fi.com/s/ea21f1a2ae",
+      "priceMinimum": true,
+      "desc": "3D model files only. Requires 3D printing."
+    },
+    "revampedgame-perfect-lantern-terrain": {
+      "name": "Perfect Lantern Terrain",
+      "kind": "terrain",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "terrain", "15th-anniversary-survivors"],
+      "url": "https://ko-fi.com/s/8c486cdde2",
+      "desc": "3D terrain files only. Requires 3D printing.",
+      "requires": ["15th-anniversary-survivors"]
+    },
+    "revampedgame-stone-heap": {
+      "name": "Stone Heap",
+      "kind": "terrain",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "terrain", "member-only", "generic"],
+      "url": "https://ko-fi.com/s/a0cc9c0682",
+      "priceMinimum": true,
+      "desc": "3D terrain files only. Requires 3D printing. Available to members."
+    },
+    "revampedgame-slenderman-crest": {
+      "name": "Slenderman Crest",
+      "kind": "model",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model", "crest", "monster-slenderman"],
+      "url": "https://ko-fi.com/s/b8f29a788d",
+      "desc": "3D model files only. Requires 3D printing."
+    },
+    "raitenjuro-perfect-lantern": {
+      "name": "Perfect Lantern",
+      "kind": "terrain",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "raitenjuro", "3d-print-files", "terrain", "15th-anniversary-survivors"],
+      "url": "https://ko-fi.com/s/2ffb1e5b94",
+      "desc": "Perfect Lantern model by Raitenjuro, shared by RevampedGame. Files only; requires 3D printing.",
+      "requires": ["15th-anniversary-survivors"]
+    },
+    "revampedgame-incensed-pinaceae-fruit": {
+      "name": "Incensed Pinaceae Fruit",
+      "kind": "terrain",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "terrain", "gatherism"],
+      "url": "https://ko-fi.com/s/e2e36a533b",
+      "desc": "3D terrain files only. Requires 3D printing.",
+      "requires": ["philosophy-of-death-gatherism"]
+    },
+    "revampedgame-the-stampede": {
+      "name": "The Stampede",
+      "kind": "terrain",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "terrain", "monster-screaming-god"],
+      "url": "https://ko-fi.com/s/5add3e8472",
+      "desc": "3D terrain files only. Requires 3D printing.",
+      "requires": ["expansion-screaming-god"]
+    },
+    "revampedgame-host-of-hands": {
+      "name": "Host of Hands",
+      "kind": "terrain",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "terrain", "monster-parasite-queen"],
+      "url": "https://ko-fi.com/s/b96c0065d4",
+      "desc": "3D terrain files only. Requires 3D printing.",
+      "requires": ["expansion-screaming-god"]
+    },
+    "revampedgame-lonely-tree-crest": {
+      "name": "Lonely Tree Crest",
+      "kind": "model",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model", "crest", "monster-lonely-tree"],
+      "url": "https://ko-fi.com/s/399e8a6694",
+      "desc": "3D model files only. Requires 3D printing."
+    },
+    "revampedgame-divine-fragment": {
+      "name": "Divine Fragment",
+      "kind": "terrain",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "terrain", "monster-screaming-god"],
+      "url": "https://ko-fi.com/s/36bde17f1f",
+      "desc": "3D terrain files only. Requires 3D printing.",
+      "requires": ["expansion-screaming-god"]
+    },
+    "revampedgame-the-hands-crest": {
+      "name": "The Hand's Crest",
+      "kind": "model",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model", "crest", "monster-hand", "core"],
+      "url": "https://ko-fi.com/s/70bb8f291a",
+      "desc": "3D model files only. Requires 3D printing."
+    },
+    "revampedgame-screaming-god-crest": {
+      "name": "Screaming God Crest",
+      "kind": "model",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model", "crest", "monster-screaming-god"],
+      "url": "https://ko-fi.com/s/eb8f09d0d1",
+      "desc": "3D model files only. Requires 3D printing."
+    },
+    "revampedgame-screaming-god-labyrinth": {
+      "name": "Screaming God Labyrinth",
+      "kind": "terrain",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "terrain", "monster-screaming-god"],
+      "url": "https://ko-fi.com/s/3852b8a8cf",
+      "desc": "3D terrain files only. Requires 3D printing.",
+      "requires": ["expansion-screaming-god"]
+    },
+    "revampedgame-piton": {
+      "name": "Piton",
+      "kind": "terrain",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "terrain", "monster-pariah"],
+      "url": "https://ko-fi.com/s/9d6011d625",
+      "desc": "3D terrain files only. Requires 3D printing.",
+      "requires": ["expansion-pariah"]
+    },
+    "revampedgame-oily-pinkies-plant": {
+      "name": "Oily Pinkies Plant",
+      "kind": "terrain",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "terrain", "gatherism"],
+      "url": "https://ko-fi.com/s/e3c7c9ad25",
+      "desc": "3D terrain files only. Requires 3D printing.",
+      "requires": ["philosophy-of-death-gatherism"]
+    },
+    "revampedgame-black-knight-tile-holder-storage": {
+      "name": "Black Knight Tile Holder Storage",
+      "kind": "accessory",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "accessory", "monster-black-knight"],
+      "url": "https://ko-fi.com/s/02f078f125",
+      "desc": "KDM storage box modified by Battl3born to hold Black Knight tiles. Files only; requires 3D printing.",
+      "requires": ["expansion-black-knight"]
+    },
+    "revampedgame-mush-lithops-plant": {
+      "name": "Mush Lithops Plant",
+      "kind": "terrain",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "terrain", "gatherism"],
+      "url": "https://ko-fi.com/s/0dbc31e763",
+      "desc": "3D terrain files only. Requires 3D printing.",
+      "requires": ["philosophy-of-death-gatherism"]
+    },
+    "revampedgame-blood-beard-plant": {
+      "name": "Blood Beard Plant",
+      "kind": "terrain",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "terrain", "gatherism"],
+      "url": "https://ko-fi.com/s/b7a08a5f6c",
+      "desc": "3D terrain files only. Requires 3D printing.",
+      "requires": ["philosophy-of-death-gatherism"]
+    },
+    "revampedgame-black-knight-board": {
+      "name": "Black Knight Board",
+      "kind": "accessory",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "accessory", "monster-black-knight"],
+      "url": "https://ko-fi.com/s/0a5157e862",
+      "desc": "3D accessory files only. Requires 3D printing.",
+      "requires": ["expansion-black-knight"]
+    },
+    "revampedgame-bk-bell": {
+      "name": "BK Bell",
+      "kind": "terrain",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "terrain", "monster-black-knight"],
+      "url": "https://ko-fi.com/s/d690dccc4b",
+      "desc": "3D terrain files only. Requires 3D printing.",
+      "requires": ["expansion-black-knight"]
+    },
+    "revampedgame-kd-15th-anniversary": {
+      "name": "KD 15th Anniversary",
+      "kind": "model",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model"],
+      "url": "https://ko-fi.com/s/881aa2c80d",
+      "desc": "3D model files only. Requires 3D printing."
+    },
+    "revampedgame-survivor-corpse-terrain": {
+      "name": "Survivor Corpse Terrain",
+      "kind": "terrain",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "terrain", "core"],
+      "url": "https://ko-fi.com/s/410c436d22",
+      "desc": "3D terrain files only. Requires 3D printing."
+    },
+    "revampedgame-stone-column-terrain": {
+      "name": "Stone Column Terrain",
+      "kind": "terrain",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "terrain", "member-only", "core"],
+      "url": "https://ko-fi.com/s/f5bdd399f0",
+      "desc": "3D terrain files only. Requires 3D printing. Available to members."
+    },
+    "revampedgame-smog-incense-terrain": {
+      "name": "Smog Incense Terrain",
+      "kind": "terrain",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "terrain", "gamblers-chest", "monster-smog-singers"],
+      "url": "https://ko-fi.com/s/3122347b9f",
+      "desc": "3D terrain files only. Requires 3D printing.",
+      "requires": ["gamblers-chest"]
+    },
+    "revampedgame-blood-pool-terrain": {
+      "name": "Blood Pool Terrain",
+      "kind": "terrain",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "terrain", "gamblers-chest"],
+      "url": "https://ko-fi.com/s/265cc675f0",
+      "desc": "3D terrain files only. Requires 3D printing.",
+      "requires": ["gamblers-chest"]
+    },
+    "revampedgame-toppled-pillar-terrain": {
+      "name": "Toppled Pillar Terrain",
+      "kind": "terrain",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "terrain", "core"],
+      "url": "https://ko-fi.com/s/7ac0986d49",
+      "desc": "3D terrain files only. Requires 3D printing."
+    },
+    "revampedgame-gabels-tree-terrain-v2": {
+      "name": "Gabel's Tree Terrain V2",
+      "kind": "terrain",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "terrain", "gamblers-chest"],
+      "url": "https://ko-fi.com/s/f199d1a4f7",
+      "desc": "3D terrain files only. Requires 3D printing.",
+      "requires": ["gamblers-chest"]
+    },
+    "revampedgame-royal-causeway-terrain": {
+      "name": "Royal Causeway Terrain",
+      "kind": "terrain",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "terrain", "gamblers-chest"],
+      "url": "https://ko-fi.com/s/561fc81962",
+      "desc": "3D terrain files only. Requires 3D printing.",
+      "requires": ["gamblers-chest"]
+    },
+    "revampedgame-stone-fingers-terrain": {
+      "name": "Stone Fingers Terrain",
+      "kind": "terrain",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "terrain", "monster-bone-eaters", "gamblers-chest"],
+      "url": "https://ko-fi.com/s/2b9bb385ad",
+      "desc": "3D terrain files only. Requires 3D printing.",
+      "requires": ["gamblers-chest"]
+    },
+    "revampedgame-corpse-lily-terrain": {
+      "name": "Corpse Lily Terrain",
+      "kind": "terrain",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "terrain", "white-box"],
+      "url": "https://ko-fi.com/s/59fe4302b1",
+      "desc": "3D terrain files only. Requires 3D printing.",
+      "requires": ["white-sunlion-armor-ezra"]
+    },
+    "revampedgame-debris-terrain": {
+      "name": "Debris Terrain",
+      "kind": "terrain",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "terrain", "core"],
+      "url": "https://ko-fi.com/s/4f70e4dcd3",
+      "desc": "3D terrain files only. Requires 3D printing."
+    },
+    "revampedgame-bug-patch-terrain": {
+      "name": "Bug Patch Terrain",
+      "kind": "terrain",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "terrain", "core"],
+      "url": "https://ko-fi.com/s/0b459e1884",
+      "desc": "3D terrain files only. Requires 3D printing."
+    },
+    "revampedgame-timeworn-statue-terrain": {
+      "name": "Timeworn Statue Terrain",
+      "kind": "terrain",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "terrain", "monster-killennium-butcher", "monster-butcher"],
+      "url": "https://ko-fi.com/s/460d97369a",
+      "desc": "3D terrain files only. Requires 3D printing.",
+      "requires": ["vignette-of-death-killennium-butcher"]
+    },
+    "revampedgame-giant-stone-face-terrain": {
+      "name": "Giant Stone Face Terrain",
+      "kind": "terrain",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "terrain", "core"],
+      "url": "https://ko-fi.com/s/9f8a2f2365",
+      "desc": "3D terrain files only. Requires 3D printing."
+    },
+    "revampedgame-glowing-waypoint-terrain": {
+      "name": "Glowing Waypoint Terrain",
+      "kind": "terrain",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "terrain", "gamblers-chest"],
+      "url": "https://ko-fi.com/s/931a0d0ebc",
+      "desc": "3D terrain files only. Requires 3D printing.",
+      "requires": ["gamblers-chest"]
+    },
+    "revampedgame-beheaded-corpse-terrain": {
+      "name": "Beheaded Corpse Terrain",
+      "kind": "terrain",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "terrain", "gamblers-chest"],
+      "url": "https://ko-fi.com/s/544e92359d",
+      "desc": "3D terrain files only. Requires 3D printing.",
+      "requires": ["gamblers-chest"]
+    },
+    "revampedgame-hidden-face-terrain": {
+      "name": "Hidden Face Terrain",
+      "kind": "terrain",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "terrain", "gamblers-chest"],
+      "url": "https://ko-fi.com/s/2fe69d9cc3",
+      "desc": "3D terrain files only. Requires 3D printing.",
+      "requires": ["gamblers-chest"]
+    },
+    "revampedgame-mammoth-leaf-terrain": {
+      "name": "Mammoth Leaf Terrain",
+      "kind": "terrain",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "terrain", "monster-frogdog"],
+      "url": "https://ko-fi.com/s/e3218e870c",
+      "desc": "3D terrain files only. Requires 3D printing.",
+      "requires": ["expansion-frogdog"]
+    },
+    "revampedgame-fallen-lantern-terrain": {
+      "name": "Fallen Lantern Terrain",
+      "kind": "terrain",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "terrain", "gamblers-chest"],
+      "url": "https://ko-fi.com/s/25f6c2f6d7",
+      "desc": "3D terrain files only. Requires 3D printing.",
+      "requires": ["gamblers-chest"]
+    },
+    "revampedgame-copperfish-den-terrain": {
+      "name": "Copperfish Den Terrain",
+      "kind": "terrain",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "terrain", "monster-frogdog"],
+      "url": "https://ko-fi.com/s/fb24710e32",
+      "desc": "3D terrain files only. Requires 3D printing.",
+      "requires": ["expansion-frogdog"]
+    },
+    "revampedgame-preserved-dogpole-terrain": {
+      "name": "Preserved Dogpole Terrain",
+      "kind": "terrain",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "terrain", "monster-frogdog"],
+      "url": "https://ko-fi.com/s/36f4724dfb",
+      "desc": "3D terrain files only. Requires 3D printing.",
+      "requires": ["expansion-frogdog"]
+    },
+    "revampedgame-tile-forceps": {
+      "name": "Tile Forceps",
+      "kind": "accessory",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "accessory", "member-only"],
+      "url": "https://ko-fi.com/s/bdb42e3d8d",
+      "desc": "3D model files only. Requires 3D printing. Available to members."
+    },
+    "revampedgame-tall-grass-terrain": {
+      "name": "Tall Grass Terrain",
+      "kind": "terrain",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "terrain", "member-only", "core"],
+      "url": "https://ko-fi.com/s/9b187aaac5",
+      "desc": "3D terrain files only. Requires 3D printing. Available to members."
+    },
+    "revampedgame-kdm-community-bonsai-tree": {
+      "name": "KDM Community Bonsai Tree",
+      "kind": "model",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model"],
+      "url": "https://ko-fi.com/s/9a42e7a68c",
+      "priceMinimum": true,
+      "desc": "3D model files only. Requires 3D printing."
+    },
+    "revampedgame-black-knight-elastomer-statue-terrain": {
+      "name": "(Black Knight) Elastomer Statue Terrain",
+      "kind": "terrain",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "terrain", "monster-black-knight"],
+      "url": "https://ko-fi.com/s/5bb7402d55",
+      "desc": "3D terrain files only. Requires 3D printing.",
+      "requires": ["expansion-black-knight"]
+    },
+    "revampedgame-black-knight-crest": {
+      "name": "Black Knight Crest",
+      "kind": "model",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model", "crest", "monster-black-knight"],
+      "url": "https://ko-fi.com/s/0eb2785773",
+      "desc": "3D model files only. Requires 3D printing."
+    },
+    "revampedgame-berserk-rosine": {
+      "name": "(Berserk) Rosine",
+      "kind": "model",
+      "gameplay": false,
+      "price": 1000,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model", "berserk", "rosine"],
+      "url": "https://ko-fi.com/s/97dfbba8cf",
+      "priceMinimum": true,
+      "desc": "Refined Rosine model for the KDM x Berserk expansion. Files only; requires 3D printing."
+    },
+    "revampedgame-stone-box": {
+      "name": "Stone Box",
+      "kind": "accessory",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "accessory"],
+      "url": "https://ko-fi.com/s/603fad33b0",
+      "desc": "3D accessory files only. Requires 3D printing."
+    },
+    "revampedgame-gce-vaultless-maze": {
+      "name": "(GCE) Vaultless Maze",
+      "kind": "model",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "terrain", "gamblers-chest"],
+      "url": "https://ko-fi.com/s/7f520dddbd",
+      "desc": "3D terrain files only. Requires 3D printing."
+    },
+    "revampedgame-hunt-board": {
+      "name": "Hunt Board",
+      "kind": "accessory",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "accessory"],
+      "url": "https://ko-fi.com/s/eef15a7918",
+      "desc": "3D accessory files only. Requires 3D printing."
+    },
+    "revampedgame-bodp-tokens-insert": {
+      "name": "BoDP Tokens Insert",
+      "kind": "accessory",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "accessory"],
+      "url": "https://ko-fi.com/s/9e8bb61eee",
+      "desc": "3D accessory files only. Requires 3D printing."
+    },
+    "revampedgame-gamblers-chest-box-of-delicious-promise": {
+      "name": "(Gambler's Chest) Box of Delicious Promise",
+      "kind": "accessory",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "accessory", "gamblers-chest"],
+      "url": "https://ko-fi.com/s/63ec48a234",
+      "desc": "3D accessory files only. Requires 3D printing."
+    },
+    "revampedgame-crimson-croc-base": {
+      "name": "Crimson Croc Base",
+      "kind": "base",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "base", "member-only", "gamblers-chest", "monster-crimson-crocodile"],
+      "url": "https://ko-fi.com/s/5ac90ce94c",
+      "desc": "3D base files only. Requires 3D printing. Available to members.",
+      "requires": ["gamblers-chest"]
+    },
+    "revampedgame-gamblers-chest-tokens-pack-1": {
+      "name": "(Gambler's Chest) Tokens Pack #1",
+      "kind": "accessory",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "accessory", "gamblers-chest"],
+      "url": "https://ko-fi.com/s/c42e3e6f88",
+      "desc": "3D accessory files only. Requires 3D printing.",
+      "requires": ["gamblers-chest"]
+    },
+    "revampedgame-sacred-pool": {
+      "name": "Sacred Pool",
+      "kind": "model",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model", "settlement-location", "monster-sunstalker"],
+      "url": "https://ko-fi.com/s/17d64ee4c0",
+      "desc": "3D model files only. Requires 3D printing."
+    },
+    "revampedgame-gamblers-chest-atnas-star": {
+      "name": "(Gambler's Chest) Atnas Star",
+      "kind": "model",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model", "gamblers-chest", "monster-atnas"],
+      "url": "https://ko-fi.com/s/52b318a015",
+      "desc": "3D model files only. Requires 3D printing."
+    },
+    "revampedgame-gamblers-chest-smog-incense-terrain": {
+      "name": "(Gambler's Chest) Smog Incense Terrain",
+      "kind": "terrain",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "terrain", "gamblers-chest", "monster-smog-singers"],
+      "url": "https://ko-fi.com/s/c667446ad3",
+      "desc": "3D terrain files only. Requires 3D printing.",
+      "requires": ["gamblers-chest"]
+    },
+    "revampedgame-gamblers-chest-gabels-tree-terrain": {
+      "name": "(Gambler's Chest) Gabel's Tree Terrain",
+      "kind": "terrain",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "terrain", "gamblers-chest"],
+      "url": "https://ko-fi.com/s/fb5fd084c5",
+      "desc": "3D terrain files only. Requires 3D printing.",
+      "requires": ["gamblers-chest"]
+    },
+    "revampedgame-gamblers-chest-blood-pool-terrain": {
+      "name": "(Gambler's Chest) Blood Pool Terrain",
+      "kind": "terrain",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "terrain", "gamblers-chest", "monster-crimson-crocodile"],
+      "url": "https://ko-fi.com/s/f55e0b3daf",
+      "desc": "3D terrain files only. Requires 3D printing.",
+      "requires": ["gamblers-chest"]
+    },
+    "revampedgame-gamblers-chest-lantern-terrain": {
+      "name": "(Gambler's Chest) Lantern Terrain",
+      "kind": "terrain",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "terrain", "gamblers-chest"],
+      "url": "https://ko-fi.com/s/ee0f732873",
+      "desc": "3D terrain files only. Requires 3D printing.",
+      "requires": ["gamblers-chest"]
+    },
+    "revampedgame-gamblers-chest-lantern-halberd-terrain": {
+      "name": "(Gambler's Chest) Lantern Halberd Terrain",
+      "kind": "terrain",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "terrain", "gamblers-chest"],
+      "url": "https://ko-fi.com/s/de32d0dcc1",
+      "desc": "3D terrain files only. Requires 3D printing.",
+      "requires": ["gamblers-chest"]
+    },
+    "revampedgame-gamblers-chest-fingers-terrain": {
+      "name": "(Gambler's Chest) Fingers Terrain",
+      "kind": "terrain",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "terrain", "gamblers-chest", "monster-bone-eaters"],
+      "url": "https://ko-fi.com/s/1a68251852",
+      "desc": "3D terrain files only. Requires 3D printing.",
+      "requires": ["gamblers-chest"]
+    },
+    "revampedgame-gamblers-chest-rock-formation-terrain": {
+      "name": "(Gambler's Chest) Rock Formation Terrain",
+      "kind": "terrain",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "terrain", "gamblers-chest"],
+      "url": "https://ko-fi.com/s/6dc72d079d",
+      "desc": "3D terrain files only. Requires 3D printing.",
+      "requires": ["gamblers-chest"]
+    },
+    "revampedgame-gce-storage-box": {
+      "name": "GCE Storage Box",
+      "kind": "accessory",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "accessory", "gamblers-chest"],
+      "url": "https://ko-fi.com/s/0e2d2d49d7",
+      "desc": "3D accessory files only. Requires 3D printing."
+    },
+    "revampedgame-gamblers-chest-encounter-board": {
+      "name": "(Gambler's Chest) Encounter Board",
+      "kind": "accessory",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "accessory", "gamblers-chest"],
+      "url": "https://ko-fi.com/s/2e3086e1dc",
+      "desc": "3D accessory files only. Requires 3D printing.",
+      "requires": ["gamblers-chest"]
+    },
+    "revampedgame-gamblers-chest-headless-statue-terrain": {
+      "name": "(Gambler's Chest) Headless Statue Terrain",
+      "kind": "terrain",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "terrain", "gamblers-chest"],
+      "url": "https://ko-fi.com/s/aa21d1f82f",
+      "desc": "3D terrain files only. Requires 3D printing.",
+      "requires": ["gamblers-chest"]
+    },
+    "revampedgame-gamblers-chest-hidden-face-terrain": {
+      "name": "(Gambler's Chest) Hidden Face Terrain",
+      "kind": "terrain",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "terrain", "gamblers-chest"],
+      "url": "https://ko-fi.com/s/5ebf554c08",
+      "desc": "3D terrain files only. Requires 3D printing.",
+      "requires": ["gamblers-chest"]
+    },
+    "revampedgame-gamblers-chest-crest": {
+      "name": "Gambler's Chest Crest",
+      "kind": "model",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model", "crest", "gamblers-chest"],
+      "url": "https://ko-fi.com/s/7104180d20",
+      "desc": "3D model files only. Requires 3D printing."
+    },
+    "revampedgame-kdm-record-player": {
+      "name": "KDM Record Player",
+      "kind": "model",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model"],
+      "url": "https://ko-fi.com/s/7cbde4e478",
+      "desc": "3D model files only. Requires 3D printing."
+    },
+    "revampedgame-skull-dice-tower": {
+      "name": "Skull Dice Tower",
+      "kind": "accessory",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "accessory", "dice"],
+      "url": "https://ko-fi.com/s/99f6e2ca48",
+      "desc": "3D accessory files only. Requires 3D printing."
+    },
+    "revampedgame-kingdom-death-bookend": {
+      "name": "Kingdom Death Bookend",
+      "kind": "accessory",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "accessory"],
+      "url": "https://ko-fi.com/s/9db6108662",
+      "desc": "3D accessory files only. Requires 3D printing."
+    },
+    "revampedgame-the-gambler-chest-is-now-printing": {
+      "name": "The Gambler Chest is Now Printing!",
+      "kind": "model",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model", "gamblers-chest"],
+      "url": "https://ko-fi.com/s/3a56546732",
+      "desc": "3D model files only. Requires 3D printing."
+    },
+    "revampedgame-scared-pool-decor": {
+      "name": "Scared Pool Decor",
+      "kind": "model",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model", "settlement-location", "monster-sunstalker"],
+      "url": "https://ko-fi.com/s/dd757eb96e",
+      "desc": "3D model files only. Requires 3D printing."
+    },
+    "revampedgame-rosine-expansion-alpha-v0-2-20-12-2022": {
+      "name": "Rosine Expansion (Alpha v0.2_20.12.2022)",
+      "kind": "expansion",
+      "gameplay": true,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "print-and-play", "expansion", "berserk", "rosine"],
+      "url": "https://ko-fi.com/s/6860d7efac",
+      "desc": "KDM x Berserk fan expansion, alpha 0.2."
+    },
+    "revampedgame-gorm-crest": {
+      "name": "Gorm Crest",
+      "kind": "model",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model", "crest", "monster-gorm"],
+      "url": "https://ko-fi.com/s/fab54dc4f9",
+      "desc": "3D model files only. Requires 3D printing."
+    },
+    "revampedgame-skyreef-sanctuary": {
+      "name": "Skyreef Sanctuary",
+      "kind": "model",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model", "settlement-location", "monster-sunstalker"],
+      "url": "https://ko-fi.com/s/b54c5ef066",
+      "desc": "3D model files only. Requires 3D printing.",
+      "requires": ["expansion-sunstalker"]
+    },
+    "revampedgame-gormery": {
+      "name": "Gormery",
+      "kind": "model",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model", "settlement-location", "monster-gorm"],
+      "url": "https://ko-fi.com/s/6254edd6a3",
+      "desc": "3D model files only. Requires 3D printing."
+    },
+    "revampedgame-gragelope": {
+      "name": "Gragelope",
+      "kind": "model",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model", "hunt-event", "member-only"],
+      "url": "https://ko-fi.com/s/7108397f9d",
+      "priceMinimum": true,
+      "desc": "3D model files only. Requires 3D printing. Available to members."
+    },
+    "revampedgame-false-prophet": {
+      "name": "False Prophet",
+      "kind": "model",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model"],
+      "url": "https://ko-fi.com/s/2fe5548f13",
+      "desc": "3D model files only. Requires 3D printing."
+    },
+    "revampedgame-perfect-slayer": {
+      "name": "Perfect Slayer",
+      "kind": "model",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model"],
+      "url": "https://ko-fi.com/s/c571e6ec38",
+      "desc": "3D model files only. Requires 3D printing."
+    },
+    "revampedgame-barber-surgeon-v2-split-parts": {
+      "name": "Barber Surgeon V2 (Split Parts)",
+      "kind": "model",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model", "settlement-location", "core"],
+      "url": "https://ko-fi.com/s/3e3028b0aa",
+      "desc": "3D model files only. Requires 3D printing."
+    },
+    "revampedgame-barber-surgeon-v1": {
+      "name": "Barber Surgeon V1",
+      "kind": "model",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model", "settlement-location", "core"],
+      "url": "https://ko-fi.com/s/11c30ede5f",
+      "desc": "3D model files only. Requires 3D printing."
+    },
+    "revampedgame-blacksmith-v2": {
+      "name": "Blacksmith V2",
+      "kind": "model",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model", "settlement-location", "core"],
+      "url": "https://ko-fi.com/s/58dc5cd331",
+      "desc": "3D model files only. Requires 3D printing."
+    },
+    "revampedgame-blacksmith-v1": {
+      "name": "Blacksmith V1",
+      "kind": "model",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model", "settlement-location", "core"],
+      "url": "https://ko-fi.com/s/3541bf3061",
+      "desc": "3D model files only. Requires 3D printing."
+    },
+    "revampedgame-bone-eater": {
+      "name": "Bone Eater",
+      "kind": "model",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model", "monster-bone-eaters"],
+      "url": "https://ko-fi.com/s/7cfaae126b",
+      "desc": "3D model files only. Requires 3D printing."
+    },
+    "revampedgame-bone-smith": {
+      "name": "Bone Smith",
+      "kind": "model",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model", "settlement-location", "core"],
+      "url": "https://ko-fi.com/s/cb9157acd6",
+      "desc": "3D model files only. Requires 3D printing."
+    },
+    "revampedgame-broken-lantern-oven": {
+      "name": "Broken Lantern Oven",
+      "kind": "model",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model", "hunt-event"],
+      "url": "https://ko-fi.com/s/f080ec9918",
+      "desc": "3D model files only. Requires 3D printing."
+    },
+    "revampedgame-catarium-split-parts": {
+      "name": "Catarium (Split Parts)",
+      "kind": "model",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model", "settlement-location", "monster-white-lion", "core"],
+      "url": "https://ko-fi.com/s/88d5eff694",
+      "desc": "3D model files only. Requires 3D printing."
+    },
+    "revampedgame-catarium": {
+      "name": "Catarium",
+      "kind": "model",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model", "settlement-location", "monster-white-lion", "core"],
+      "url": "https://ko-fi.com/s/9427d9325a",
+      "desc": "3D model files only. Requires 3D printing."
+    },
+    "revampedgame-dead-dragon-king": {
+      "name": "Dead Dragon King",
+      "kind": "model",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model", "monster-dragon-king"],
+      "url": "https://ko-fi.com/s/d6ea3b22de",
+      "desc": "3D model files only. Requires 3D printing."
+    },
+    "revampedgame-darkness-coin": {
+      "name": "Darkness Coin",
+      "kind": "accessory",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "accessory"],
+      "url": "https://ko-fi.com/s/6cf76bf14c",
+      "desc": "3D accessory files only. Requires 3D printing."
+    },
+    "revampedgame-dragon-armory": {
+      "name": "Dragon Armory",
+      "kind": "model",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model", "settlement-location", "monster-dragon-king"],
+      "url": "https://ko-fi.com/s/10016e2cd4",
+      "desc": "3D model files only. Requires 3D printing.",
+      "requires": ["expansion-dragon-king"]
+    },
+    "revampedgame-ethereal-dreamer": {
+      "name": "Ethereal Dreamer",
+      "kind": "model",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model", "ccg"],
+      "url": "https://ko-fi.com/s/cf78144561",
+      "priceMinimum": true,
+      "desc": "3D model files only. Requires 3D printing."
+    },
+    "revampedgame-eggsack-nest": {
+      "name": "Eggsack & Nest",
+      "kind": "terrain",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "terrain", "monster-spidicules"],
+      "url": "https://ko-fi.com/s/1c71568a0e",
+      "desc": "3D terrain files only. Requires 3D printing.",
+      "requires": ["expansion-spidicules"]
+    },
+    "revampedgame-monster-controller-elderly": {
+      "name": "Monster Controller (Elderly)",
+      "kind": "accessory",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "accessory", "member-only"],
+      "url": "https://ko-fi.com/s/45e77464d7",
+      "priceMinimum": true,
+      "desc": "3D accessory files only. Requires 3D printing. Available to members."
+    },
+    "revampedgame-exhausted-lantern-hoard": {
+      "name": "Exhausted Lantern Hoard",
+      "kind": "model",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model", "settlement-location", "core"],
+      "url": "https://ko-fi.com/s/21f333f9f9",
+      "desc": "3D model files only. Requires 3D printing."
+    },
+    "revampedgame-eye-jelly-minion": {
+      "name": "Eye Jelly & Minion",
+      "kind": "model",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model", "ccg"],
+      "url": "https://ko-fi.com/s/f731eb2d02",
+      "priceMinimum": true,
+      "desc": "3D model files only. Requires 3D printing."
+    },
+    "revampedgame-faceless-statue": {
+      "name": "Faceless Statue",
+      "kind": "model",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model", "hunt-event", "member-only"],
+      "url": "https://ko-fi.com/s/c49f4e3519",
+      "priceMinimum": true,
+      "desc": "3D model files only. Requires 3D printing. Available to members."
+    },
+    "revampedgame-forest-coin": {
+      "name": "Forest Coin",
+      "kind": "accessory",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "accessory", "monster-flower-knight"],
+      "url": "https://ko-fi.com/s/a15a146014",
+      "desc": "3D accessory files only. Requires 3D printing."
+    },
+    "revampedgame-dead-gorm": {
+      "name": "Dead Gorm",
+      "kind": "model",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model", "monster-gorm"],
+      "url": "https://ko-fi.com/s/de9fb89417",
+      "desc": "3D model files only. Requires 3D printing."
+    },
+    "revampedgame-forest-gate": {
+      "name": "Forest Gate",
+      "kind": "model",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model", "hunt-event", "monster-flower-knight"],
+      "url": "https://ko-fi.com/s/c9767888dd",
+      "desc": "3D model files only. Requires 3D printing."
+    },
+    "revampedgame-hovel-v2": {
+      "name": "Hovel V2",
+      "kind": "model",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model", "innovation", "core"],
+      "url": "https://ko-fi.com/s/f146f6ef3e",
+      "desc": "3D model files only. Requires 3D printing."
+    },
+    "revampedgame-hovel-v1": {
+      "name": "Hovel V1",
+      "kind": "model",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model", "innovation", "core"],
+      "url": "https://ko-fi.com/s/0263bf915e",
+      "desc": "3D model files only. Requires 3D printing."
+    },
+    "revampedgame-monster-board-option2": {
+      "name": "Monster Board (Option2)",
+      "kind": "accessory",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "accessory", "member-only"],
+      "url": "https://ko-fi.com/s/39a685e859",
+      "priceMinimum": true,
+      "desc": "3D accessory files only. Requires 3D printing. Available to members."
+    },
+    "revampedgame-monster-board-option-1": {
+      "name": "Monster Board (Option 1)",
+      "kind": "accessory",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "accessory", "member-only"],
+      "url": "https://ko-fi.com/s/9abfa0cc1a",
+      "priceMinimum": true,
+      "desc": "3D accessory files only. Requires 3D printing. Available to members."
+    },
+    "revampedgame-player-board-option-2": {
+      "name": "Player Board (Option 2)",
+      "kind": "accessory",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "accessory", "member-only"],
+      "url": "https://ko-fi.com/s/df4fb7111f",
+      "priceMinimum": true,
+      "desc": "3D accessory files only. Requires 3D printing. Available to members."
+    },
+    "revampedgame-player-board-option-1": {
+      "name": "Player Board (Option 1)",
+      "kind": "accessory",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "accessory", "member-only"],
+      "url": "https://ko-fi.com/s/58b5171c18",
+      "priceMinimum": true,
+      "desc": "3D accessory files only. Requires 3D printing. Available to members."
+    },
+    "revampedgame-lantern-hoard": {
+      "name": "Lantern Hoard",
+      "kind": "model",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model", "settlement-location", "core"],
+      "url": "https://ko-fi.com/s/6c2c7123be",
+      "desc": "3D model files only. Requires 3D printing."
+    },
+    "revampedgame-lantern-oven": {
+      "name": "Lantern Oven",
+      "kind": "model",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model", "innovation", "core"],
+      "url": "https://ko-fi.com/s/cfaafa1bc4",
+      "desc": "3D model files only. Requires 3D printing."
+    },
+    "revampedgame-leather-worker-v2": {
+      "name": "Leather Worker V2",
+      "kind": "model",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model", "settlement-location", "core"],
+      "url": "https://ko-fi.com/s/0f22ebfe88",
+      "desc": "3D model files only. Requires 3D printing."
+    },
+    "revampedgame-leather-worker-v1": {
+      "name": "Leather Worker V1",
+      "kind": "model",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model", "settlement-location", "core"],
+      "url": "https://ko-fi.com/s/8510b1c2a0",
+      "desc": "3D model files only. Requires 3D printing."
+    },
+    "revampedgame-mask-6": {
+      "name": "Mask #6",
+      "kind": "model",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model"],
+      "url": "https://ko-fi.com/s/c173591a9a",
+      "desc": "3D model files only. Requires 3D printing."
+    },
+    "revampedgame-mask-5": {
+      "name": "Mask #5",
+      "kind": "model",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model"],
+      "url": "https://ko-fi.com/s/1f7b4b9794",
+      "desc": "3D model files only. Requires 3D printing."
+    },
+    "revampedgame-mask-4": {
+      "name": "Mask #4",
+      "kind": "model",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model"],
+      "url": "https://ko-fi.com/s/c539ec7bc8",
+      "desc": "3D model files only. Requires 3D printing."
+    },
+    "revampedgame-mask-3": {
+      "name": "Mask #3",
+      "kind": "model",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model"],
+      "url": "https://ko-fi.com/s/76b8edd773",
+      "desc": "3D model files only. Requires 3D printing."
+    },
+    "revampedgame-mask-2": {
+      "name": "Mask #2",
+      "kind": "model",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model"],
+      "url": "https://ko-fi.com/s/f614cbb6ba",
+      "desc": "3D model files only. Requires 3D printing."
+    },
+    "revampedgame-mask-1": {
+      "name": "Mask #1",
+      "kind": "model",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model"],
+      "url": "https://ko-fi.com/s/511e98cdcc",
+      "desc": "3D model files only. Requires 3D printing."
+    },
+    "revampedgame-mask-maker": {
+      "name": "Mask Maker",
+      "kind": "model",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model", "settlement-location", "core"],
+      "url": "https://ko-fi.com/s/2dd7952ec0",
+      "desc": "3D model files only. Requires 3D printing."
+    },
+    "revampedgame-merchant": {
+      "name": "Merchant",
+      "kind": "model",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model", "ccg"],
+      "url": "https://ko-fi.com/s/2647fd66f6",
+      "desc": "3D model files only. Requires 3D printing."
+    },
+    "revampedgame-monster-controller-child": {
+      "name": "Monster Controller (Child)",
+      "kind": "accessory",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "accessory", "member-only"],
+      "url": "https://ko-fi.com/s/4efeb744a9",
+      "priceMinimum": true,
+      "desc": "3D accessory files only. Requires 3D printing. Available to members."
+    },
+    "revampedgame-monster-controller-adult-female": {
+      "name": "Monster Controller (Adult Female)",
+      "kind": "accessory",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "accessory", "member-only"],
+      "url": "https://ko-fi.com/s/a4c528201f",
+      "priceMinimum": true,
+      "desc": "3D accessory files only. Requires 3D printing. Available to members."
+    },
+    "revampedgame-monster-controller-adult-male": {
+      "name": "Monster Controller (Adult Male)",
+      "kind": "accessory",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "accessory"],
+      "url": "https://ko-fi.com/s/a9f6c0b802",
+      "desc": "3D accessory files only. Requires 3D printing."
+    },
+    "revampedgame-organ-grinder-v3": {
+      "name": "Organ Grinder V3",
+      "kind": "model",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model", "settlement-location", "core"],
+      "url": "https://ko-fi.com/s/cfbc3ae662",
+      "desc": "3D model files only. Requires 3D printing."
+    },
+    "revampedgame-organ-grinder-v2": {
+      "name": "Organ Grinder V2",
+      "kind": "model",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model", "settlement-location", "core"],
+      "url": "https://ko-fi.com/s/f5af0cbf56",
+      "desc": "3D model files only. Requires 3D printing."
+    },
+    "revampedgame-overwhelming-darkness": {
+      "name": "Overwhelming Darkness",
+      "kind": "model",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model", "hunt-event", "core"],
+      "url": "https://ko-fi.com/s/f4e8af7e7a",
+      "desc": "3D model files only. Requires 3D printing."
+    },
+    "revampedgame-dead-phoenix": {
+      "name": "Dead Phoenix",
+      "kind": "model",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model", "core", "monster-phoenix"],
+      "url": "https://ko-fi.com/s/6107c56b03",
+      "desc": "3D model files only. Requires 3D printing."
+    },
+    "revampedgame-plumery-split-parts": {
+      "name": "Plumery (Split parts)",
+      "kind": "model",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model", "settlement-location", "monster-phoenix", "core"],
+      "url": "https://ko-fi.com/s/90dfc10f75",
+      "desc": "3D model files only. Requires 3D printing."
+    },
+    "revampedgame-plumery-v2": {
+      "name": "Plumery V2",
+      "kind": "model",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model", "settlement-location", "monster-phoenix", "core"],
+      "url": "https://ko-fi.com/s/269a705295",
+      "desc": "3D model files only. Requires 3D printing."
+    },
+    "revampedgame-plumery-v1": {
+      "name": "Plumery V1",
+      "kind": "model",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model", "settlement-location", "monster-phoenix", "core"],
+      "url": "https://ko-fi.com/s/5f6094413f",
+      "desc": "3D model files only. Requires 3D printing."
+    },
+    "revampedgame-priority-target": {
+      "name": "Priority Target",
+      "kind": "accessory",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "accessory", "member-only"],
+      "url": "https://ko-fi.com/s/ee0c774fe4",
+      "priceMinimum": true,
+      "desc": "3D accessory files only. Requires 3D printing. Available to members."
+    },
+    "revampedgame-sculpture": {
+      "name": "Sculpture",
+      "kind": "model",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model", "innovation", "core"],
+      "url": "https://ko-fi.com/s/95db259e6d",
+      "desc": "3D model files only. Requires 3D printing."
+    },
+    "revampedgame-shrine": {
+      "name": "Shrine",
+      "kind": "model",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model", "innovation", "core"],
+      "url": "https://ko-fi.com/s/7affef696f",
+      "desc": "3D model files only. Requires 3D printing."
+    },
+    "revampedgame-signs-of-battle": {
+      "name": "Signs of Battle",
+      "kind": "model",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model", "hunt-event", "member-only", "core"],
+      "url": "https://ko-fi.com/s/82b9debdc8",
+      "desc": "3D model files only. Requires 3D printing. Available to members."
+    },
+    "revampedgame-singing-mantis-shrimp": {
+      "name": "Singing Mantis Shrimp",
+      "kind": "model",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model", "ccg"],
+      "url": "https://ko-fi.com/s/ad14b89c3e",
+      "priceMinimum": true,
+      "desc": "3D model files only. Requires 3D printing."
+    },
+    "revampedgame-sinkhole": {
+      "name": "Sinkhole",
+      "kind": "terrain",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "terrain", "monster-lion-god"],
+      "url": "https://ko-fi.com/s/4053b4b7f8",
+      "desc": "3D terrain files only. Requires 3D printing.",
+      "requires": ["expansion-lion-god"]
+    },
+    "revampedgame-skinnery-v2": {
+      "name": "Skinnery V2",
+      "kind": "model",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model", "settlement-location", "core"],
+      "url": "https://ko-fi.com/s/79f22725fc",
+      "desc": "3D model files only. Requires 3D printing."
+    },
+    "revampedgame-skinnery-v1": {
+      "name": "Skinnery V1",
+      "kind": "model",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model", "settlement-location", "core"],
+      "url": "https://ko-fi.com/s/4c6585c818",
+      "desc": "3D model files only. Requires 3D printing."
+    },
+    "revampedgame-kdm-skull": {
+      "name": "KDM Skull",
+      "kind": "model",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model"],
+      "url": "https://ko-fi.com/s/59ec5bcc4c",
+      "desc": "3D model files only. Requires 3D printing."
+    },
+    "revampedgame-skull-coin": {
+      "name": "Skull Coin",
+      "kind": "accessory",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "accessory"],
+      "url": "https://ko-fi.com/s/8b4edbdaca",
+      "desc": "3D accessory files only. Requires 3D printing."
+    },
+    "revampedgame-stone-circle-ruin": {
+      "name": "Stone Circle Ruin",
+      "kind": "model",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model", "settlement-location", "monster-screaming-antelope", "core"],
+      "url": "https://ko-fi.com/s/a8f8ccf662",
+      "desc": "3D model files only. Requires 3D printing."
+    },
+    "revampedgame-stone-circle-v1": {
+      "name": "Stone Circle V1",
+      "kind": "model",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model", "settlement-location", "monster-screaming-antelope", "core"],
+      "url": "https://ko-fi.com/s/e37d6ebd9b",
+      "desc": "3D model files only. Requires 3D printing."
+    },
+    "revampedgame-storage-box": {
+      "name": "Storage Box",
+      "kind": "accessory",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "accessory"],
+      "url": "https://ko-fi.com/s/364f07b911",
+      "desc": "3D accessory files only. Requires 3D printing."
+    },
+    "revampedgame-the-traveler": {
+      "name": "The Traveler",
+      "kind": "model",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model", "ccg"],
+      "url": "https://ko-fi.com/s/fc2e6ac56e",
+      "priceMinimum": true,
+      "desc": "3D model files only. Requires 3D printing."
+    },
+    "revampedgame-weapon-crafter": {
+      "name": "Weapon Crafter",
+      "kind": "model",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model", "settlement-location", "core"],
+      "url": "https://ko-fi.com/s/d44803487c",
+      "desc": "3D model files only. Requires 3D printing."
+    },
+    "revampedgame-white-lion-persistent-injury": {
+      "name": "White Lion Persistent Injury",
+      "kind": "model",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model", "monster-white-lion", "core"],
+      "url": "https://ko-fi.com/s/e4469a803a",
+      "desc": "3D model files only. Requires 3D printing."
+    },
+    "revampedgame-kings-crown": {
+      "name": "King's Crown",
+      "kind": "model",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model"],
+      "url": "https://ko-fi.com/s/4a51f79ff0",
+      "desc": "3D model files only. Requires 3D printing."
+    },
+    "revampedgame-crafting-table": {
+      "name": "Crafting Table",
+      "kind": "accessory",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "accessory"],
+      "url": "https://ko-fi.com/s/453f74aa00",
+      "desc": "3D accessory files only. Requires 3D printing."
+    },
+    "revampedgame-corpse": {
+      "name": "Corpse",
+      "kind": "model",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model", "hunt-event", "member-only"],
+      "url": "https://ko-fi.com/s/0fb4eba665",
+      "desc": "3D model files only. Requires 3D printing. Available to members."
+    },
+    "revampedgame-cancer-pigeon": {
+      "name": "Cancer Pigeon",
+      "kind": "model",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model", "hunt-event", "member-only"],
+      "url": "https://ko-fi.com/s/d33ad6a8f4",
+      "priceMinimum": true,
+      "desc": "3D model files only. Requires 3D printing. Available to members."
+    },
+    "revampedgame-baby-monster-controller": {
+      "name": "Baby Monster Controller",
+      "kind": "accessory",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "accessory", "member-only"],
+      "url": "https://ko-fi.com/s/3403c3f0d3",
+      "priceMinimum": true,
+      "desc": "3D accessory files only. Requires 3D printing. Available to members."
+    },
+    "revampedgame-ammonia-v2": {
+      "name": "Ammonia V2",
+      "kind": "model",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model", "innovation", "core"],
+      "url": "https://ko-fi.com/s/32ac3b01a5",
+      "desc": "3D model files only. Requires 3D printing."
+    },
+    "revampedgame-ammonia-v1": {
+      "name": "Ammonia V1",
+      "kind": "model",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model", "innovation", "core"],
+      "url": "https://ko-fi.com/s/ca8cd255f4",
+      "desc": "3D model files only. Requires 3D printing."
+    },
+    "revampedgame-portcullis": {
+      "name": "Portcullis",
+      "kind": "model",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model", "hunt-event"],
+      "url": "https://ko-fi.com/s/4b9bc63476",
+      "desc": "3D model files only. Requires 3D printing."
+    },
+    "revampedgame-the-butcher-2x2": {
+      "name": "The Butcher (2x2)",
+      "kind": "model",
+      "gameplay": false,
+      "price": 500,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model", "townsfolk-tussle"],
+      "url": "https://ko-fi.com/s/4e7536026d",
+      "priceMinimum": true,
+      "desc": "3D model files only. Requires 3D printing."
+    },
+    "revampedgame-the-butcher-1x1": {
+      "name": "The Butcher (1X1)",
+      "kind": "model",
+      "gameplay": false,
+      "price": 500,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "model", "townsfolk-tussle"],
+      "url": "https://ko-fi.com/s/f8c91a1e74",
+      "priceMinimum": true,
+      "desc": "3D model files only. Requires 3D printing."
+    },
+    "revampedgame-generic-plateau-terrain": {
+      "name": "(Generic) Plateau Terrain",
+      "desc": "3D terrain files only. Requires 3D printing. Available to members.",
+      "kind": "terrain",
+      "gameplay": false,
+      "price": 0,
+      "tags": ["homebrew", "revampedgame", "3d-print-files", "terrain", "member-only", "generic"],
+      "url": "https://ko-fi.com/s/ab180ab581"
     }
   }
 }
