@@ -8,15 +8,19 @@
     showKind?: boolean;
     showGameplay?: boolean;
     resultCount: number;
+    canSelect?: boolean;
     onenter: Noop;
   };
 
-  let { tagOptions, showKind = true, showGameplay = true, resultCount, onenter }: Props = $props();
+  let { tagOptions, showKind = true, showGameplay = true, resultCount, canSelect = false, onenter }: Props = $props();
+  const hintId = $props.id();
 
   const filters = getFilterState();
 
   let open = $state(false);
+  let searchFocused = $state(false);
   let searchInput: HTMLInputElement;
+  const showHint = $derived(searchFocused && canSelect);
 
   const activeCount = $derived(
     filters.value.tags.length +
@@ -40,6 +44,7 @@
   function onkeydown(event: KeyboardEvent) {
     if (event.target === searchInput && event.key === "Enter") {
       event.preventDefault();
+      if (event.repeat || event.isComposing) return;
       onenter();
       return;
     }
@@ -67,11 +72,14 @@
         type="search"
         value={filters.value.query}
         oninput={(e) => set("query", e.currentTarget.value)}
+        onfocus={() => (searchFocused = true)}
+        onblur={() => (searchFocused = false)}
         placeholder="Search"
         aria-label="Search items"
+        aria-describedby={hintId}
       />
       {#if !filters.value.query}
-        <kbd aria-hidden="true">/</kbd>
+        <kbd class="search-shortcut" aria-hidden="true">/</kbd>
       {/if}
     </div>
     <button type="button" onclick={() => (open = !open)} aria-expanded={open} class="filter-toggle" data-active={open || activeCount > 0}>
@@ -160,6 +168,8 @@
       </div>
     </div>
   {/if}
+
+  <p class={["enter-hint", showHint && "visible"]} id={hintId}><kbd>Enter</kbd> toggles ownership of the first item</p>
 </div>
 
 <style>
@@ -181,12 +191,12 @@
   }
 
   .search-icon {
-    position: absolute;
-    inset-block-start: 50%;
-    inset-inline-start: 0.75rem;
     display: inline-block;
+    position: absolute;
     inline-size: 1rem;
     block-size: 1rem;
+    inset-block-start: 50%;
+    inset-inline-start: 0.75rem;
     translate: 0 -50%;
     color: var(--muted-foreground);
     pointer-events: none;
@@ -195,9 +205,9 @@
   input {
     inline-size: 100%;
     block-size: 2.5rem;
+    padding-inline: 2rem 0.5rem;
     border: var(--border-size) solid var(--card);
     border-end-start-radius: var(--radius-card);
-    padding-inline: 2rem 0.5rem;
     background: var(--card);
 
     &::placeholder {
@@ -211,26 +221,44 @@
   }
 
   kbd {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border: 1px solid var(--muted-foreground);
+    border-radius: 0.25rem;
+    font-size: var(--text-sm);
+    line-height: var(--line-height-none);
+    font-family: var(--font-sans);
+  }
+
+  .enter-hint {
+    visibility: hidden;
+    padding-inline: 0.75rem;
+    color: var(--muted-foreground);
+    font-size: var(--text-sm);
+    line-height: 2;
+
+    &.visible {
+      visibility: visible;
+    }
+  }
+
+  .search-shortcut {
     position: absolute;
     inset-block-start: 50%;
     inset-inline-end: 0.5rem;
-    border: 1px solid var(--muted-foreground);
-    border-radius: 0.25rem;
-    padding: 0.25rem 0.5rem;
     translate: 0 -50%;
+    border-radius: 0.25rem;
     color: var(--muted-foreground);
-    font-size: 0.75rem;
-    line-height: var(--line-height-none);
     pointer-events: none;
   }
 
   .filter-toggle {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
     block-size: 2.5rem;
-    border-end-end-radius: var(--radius-card);
     padding-inline: 0.75rem;
+    gap: 0.5rem;
+    border-end-end-radius: var(--radius-card);
     background: var(--card);
     color: var(--muted-foreground);
     transition:
@@ -257,10 +285,10 @@
   .panel {
     display: flex;
     flex-direction: column;
+    padding: 0.75rem;
     gap: 0.75rem;
     border: 1px solid var(--border);
     border-radius: var(--radius-card);
-    padding: 0.75rem;
     background: var(--card);
   }
 
@@ -305,14 +333,14 @@
   .tag-list {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.25rem;
-    overflow-y: auto;
     max-block-size: 10rem;
+    overflow-y: auto;
+    gap: 0.25rem;
   }
 
   .tag {
-    border-radius: var(--radius-control);
     padding: 0.25rem 0.5rem;
+    border-radius: var(--radius-control);
     background: color-mix(var(--panel) 70%, transparent);
     color: color-mix(var(--foreground) 70%, transparent);
     transition:
@@ -331,7 +359,7 @@
   }
 
   .footer {
-    border-block-start: 1px solid color-mix(var(--border) 60%, transparent);
     padding-block-start: 0.5rem;
+    border-block-start: 1px solid color-mix(var(--border) 60%, transparent);
   }
 </style>
