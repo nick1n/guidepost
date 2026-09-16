@@ -111,7 +111,6 @@
 <style>
   dialog {
     --accent: var(--secondary);
-    --accent-foreground: var(--contrast);
 
     inline-size: min(26rem, calc(100% - 2rem));
     margin: auto;

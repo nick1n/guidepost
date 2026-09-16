@@ -1,10 +1,10 @@
-import { bundles, content, dice, effectivePrice, homebrew } from "./kdm-data";
+import { bundles, collectionItems, content, dice, effectivePrice, homebrew } from "./kdm-data";
 import type { Bundle, ContentItem, DiceSet, Filters, CollectionState, Currency } from "#lib/types/index.ts";
 
 type CatalogItem = ContentItem | DiceSet | Bundle;
 type FilterableItem = Pick<CatalogItem, "id" | "name" | "tags"> & Partial<Pick<ContentItem, "alt" | "gameplay" | "kind">>;
 
-export const bundleTags = Array.from(new Set(bundles.flatMap((bundle) => bundle.tags))).sort();
+export const bundleTags = [...new Set(bundles.flatMap((bundle) => bundle.tags))].sort();
 
 export function getCollectionStats(state: CollectionState) {
   let ownedCount = 0;
@@ -12,7 +12,7 @@ export function getCollectionStats(state: CollectionState) {
   let wishlistCount = 0;
   const wishlistValue: Partial<Record<Currency, number>> = {};
 
-  for (const item of [...content, ...dice, ...homebrew]) {
+  for (const item of collectionItems) {
     const entry = state[item.id];
     const price = "versions" in item || "editions" in item ? effectivePrice(item, entry?.versions, entry?.editions) : (item.price ?? 0);
     const currency = item.currency ?? "USD";
@@ -25,14 +25,14 @@ export function getCollectionStats(state: CollectionState) {
     }
   }
 
-  return { ownedCount, totalCount: content.length + dice.length + homebrew.length, ownedValue, wishlistCount, wishlistValue };
+  return { ownedCount, totalCount: collectionItems.length, ownedValue, wishlistCount, wishlistValue };
 }
 
 export function getVisibleCatalog(filters: Filters, state: CollectionState) {
   const query = filters.query.trim().toLowerCase();
   const matches = (item: FilterableItem) => {
     if (query && !`${item.name} ${item.alt ?? ""} ${item.tags.join(" ")}`.toLowerCase().includes(query)) return false;
-    if (filters.tags.length && !filters.tags.every((tag) => item.tags.includes(tag))) return false;
+    if (!filters.tags.every((tag) => item.tags.includes(tag))) return false;
     if (filters.kind !== "any" && item.kind !== filters.kind) return false;
     if (filters.gameplay === "gameplay" && item.gameplay === false) return false;
     if (filters.gameplay === "models" && item.gameplay === true) return false;
@@ -45,10 +45,10 @@ export function getVisibleCatalog(filters: Filters, state: CollectionState) {
   };
 
   return {
-    visibleContent: sort(content.filter(matches), filters.sort),
-    visibleDice: sort(dice.filter(matches), filters.sort),
-    visibleBundles: sort(bundles.filter(matches), filters.sort),
-    visibleHomebrew: sort(homebrew.filter(matches), filters.sort),
+    content: sort(content.filter(matches), filters.sort),
+    dice: sort(dice.filter(matches), filters.sort),
+    bundles: sort(bundles.filter(matches), filters.sort),
+    homebrew: sort(homebrew.filter(matches), filters.sort),
   };
 }
 

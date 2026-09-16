@@ -38,6 +38,9 @@ jobs:
       - name: Check
         run: pnpm check
 
+      - name: Test
+        run: pnpm test:run
+
       - name: Build
         env:
           BASE_PATH: ${{ steps.pages.outputs.base_path }}

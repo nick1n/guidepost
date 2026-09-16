@@ -43,8 +43,8 @@
   button {
     border-radius: var(--radius-control);
     padding: 0.5rem 0.75rem;
-    background: color-mix(var(--panel) 70%, transparent);
-    color: color-mix(var(--foreground) 70%, transparent);
+    background: var(--panel);
+    color: var(--foreground);
     transition:
       color var(--duration-fast) var(--ease-standard),
       background-color var(--duration-fast) var(--ease-standard);

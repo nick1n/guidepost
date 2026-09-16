@@ -1,6 +1,4 @@
-<script lang="ts">
-  import { resolve } from "$app/paths";
-
+<script module lang="ts">
   const credits = [
     {
       id: "kingdom-death",
@@ -51,7 +49,7 @@
       id: "icons",
       title: "Art & icons",
       list: [
-        { name: "Guidepost logo by my mom 😊" },
+        { name: "Guidepost logo by my mom 😊", href: false },
         { name: "Adam Poots Games", href: "https://kingdomdeath.com/" },
         { name: "Game-icons.net", href: "https://game-icons.net/" },
         { name: "Material Design icons by Google", href: "https://github.com/google/material-design-icons" },
@@ -68,7 +66,11 @@
         { name: "Claude", href: "https://claude.com/" },
       ],
     },
-  ];
+  ] as const;
+</script>
+
+<script lang="ts">
+  import { resolve } from "$app/paths";
 </script>
 
 <svelte:head>

@@ -3,12 +3,10 @@ import { Effect, Layer } from "effect";
 import { BrowserStorage, StorageError } from "../src/lib/state/browser-storage.ts";
 import { GuestStore, StoreError } from "../src/lib/state/stores.ts";
 
-function storage(initial?: string, failure?: StorageError["operation"]) {
-  let value = initial ?? null;
+function storage(initial: string | null = null, failure?: StorageError["operation"]) {
+  let value = initial;
   const access = <A,>(operation: StorageError["operation"], run: () => A) =>
-    Effect.suspend(() =>
-      failure === operation ? Effect.fail(new StorageError({ operation, cause: "Simulated browser failure" })) : Effect.sync(run),
-    );
+    failure === operation ? Effect.fail(new StorageError({ operation, cause: "Simulated browser failure" })) : Effect.sync(run);
   const layer = Layer.succeed(BrowserStorage, {
     get: () => access("get", () => value),
     set: (_key, next) =>
@@ -61,7 +59,7 @@ for (const value of ["not JSON", '{"core":{"owned":"yes"}}']) {
 for (const operation of ["get", "set", "remove"] as const) {
   it.effect(`maps browser ${operation} failures to typed persistence errors`, () =>
     Effect.gen(function* () {
-      const f = storage(undefined, operation);
+      const f = storage(null, operation);
       const store = yield* GuestStore.make("test").pipe(Effect.provide(f.layer));
       const action = operation === "get" ? store.load() : operation === "set" ? store.save({}) : store.clear();
       const error = yield* Effect.flip(action);

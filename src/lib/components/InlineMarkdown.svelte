@@ -1,3 +1,7 @@
+<script module lang="ts">
+  const pattern = /\*\*[^*\r\n]+\*\*|\*[^*\r\n]+\*/g;
+</script>
+
 <script lang="ts">
   type Segment = {
     kind: "text" | "strong" | "em";
@@ -7,8 +11,6 @@
   type Props = {
     text: string;
   };
-
-  const pattern = /\*\*[^*\r\n]+\*\*|\*[^*\r\n]+\*/g;
 
   let { text }: Props = $props();
   const segments = $derived(parseInline(text));

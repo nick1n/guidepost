@@ -1,16 +1,60 @@
+<script module lang="ts">
+  import type { GameplayFilter, KindFilter, SortKey, StatusFilter } from "#lib/types/index.ts";
+
+  const sortOptions = Object.values({
+    name: { value: "name", label: "Name" },
+    "price-desc": { value: "price-desc", label: "Price high" },
+    "price-asc": { value: "price-asc", label: "Price low" },
+  } as const satisfies {
+    [K in SortKey]: { value: K; label: string };
+  });
+
+  const statusOptions = Object.values({
+    any: { value: "any", label: "All" },
+    owned: { value: "owned", label: "Owned" },
+    unowned: { value: "unowned", label: "Missing" },
+    wishlisted: { value: "wishlisted", label: "Wishlist" },
+  } as const satisfies {
+    [K in StatusFilter]: { value: K; label: string };
+  });
+
+  const gameplayOptions = Object.values({
+    any: { value: "any", label: "All" },
+    gameplay: { value: "gameplay", label: "Gameplay" },
+    models: { value: "models", label: "Models only" },
+  } as const satisfies {
+    [K in GameplayFilter]: { value: K; label: string };
+  });
+
+  const kindOptions = Object.values({
+    any: { value: "any", label: "All" },
+    accessory: { value: "accessory", label: "Accessories" },
+    base: { value: "base", label: "Bases" },
+    beta: { value: "beta", label: "Beta" },
+    core: { value: "core", label: "Core" },
+    expansion: { value: "expansion", label: "Expansions" },
+    model: { value: "model", label: "Models" },
+    promo: { value: "promo", label: "Promo" },
+    set: { value: "set", label: "Sets" },
+    terrain: { value: "terrain", label: "Terrain" },
+    "white-box": { value: "white-box", label: "White Boxes" },
+  } as const satisfies {
+    [K in KindFilter]: { value: K; label: string };
+  });
+</script>
+
 <script lang="ts">
   import { getFilterState } from "#lib/state/filters.svelte.ts";
   import Segmented from "./Segmented.svelte";
 
   type Props = {
     tagOptions: string[];
-    showKind?: boolean;
     showGameplay?: boolean;
     resultCount: number;
     onenter: Noop;
   };
 
-  let { tagOptions, showKind = true, showGameplay = true, resultCount, onenter }: Props = $props();
+  let { tagOptions, showGameplay = true, resultCount, onenter }: Props = $props();
 
   const filters = getFilterState();
 
@@ -76,55 +120,12 @@
 
   {#if open}
     <div class="panel">
-      <Segmented
-        label="Sort by"
-        value={filters.value.sort}
-        onchange={(v) => filters.set("sort", v)}
-        options={[
-          { value: "name", label: "Name" },
-          { value: "price-desc", label: "Price high" },
-          { value: "price-asc", label: "Price low" },
-        ]}
-      />
-      <Segmented
-        label="Status"
-        value={filters.value.status}
-        onchange={(v) => filters.set("status", v)}
-        options={[
-          { value: "any", label: "All" },
-          { value: "owned", label: "Owned" },
-          { value: "unowned", label: "Missing" },
-          { value: "wishlisted", label: "Wishlist" },
-        ]}
-      />
+      <Segmented label="Sort by" value={filters.value.sort} onchange={(v) => filters.set("sort", v)} options={sortOptions} />
+      <Segmented label="Status" value={filters.value.status} onchange={(v) => filters.set("status", v)} options={statusOptions} />
       {#if showGameplay}
-        <Segmented
-          label="Content"
-          value={filters.value.gameplay}
-          onchange={(v) => filters.set("gameplay", v)}
-          options={[
-            { value: "any", label: "All" },
-            { value: "gameplay", label: "Gameplay" },
-            { value: "models", label: "Models only" },
-          ]}
-        />
+        <Segmented label="Content" value={filters.value.gameplay} onchange={(v) => filters.set("gameplay", v)} options={gameplayOptions} />
       {/if}
-      {#if showKind}
-        <Segmented
-          label="Release"
-          value={filters.value.kind}
-          onchange={(v) => filters.set("kind", v)}
-          options={[
-            { value: "any", label: "All" },
-            { value: "core", label: "Core" },
-            { value: "expansion", label: "Expansions" },
-            { value: "white-box", label: "White Boxes" },
-            { value: "set", label: "Sets" },
-            { value: "beta", label: "Beta" },
-            { value: "promo", label: "Promo" },
-          ]}
-        />
-      {/if}
+      <Segmented label="Release" value={filters.value.kind} onchange={(v) => filters.set("kind", v)} options={kindOptions} />
 
       <div class="tags">
         <div class="tags-header">

@@ -15,24 +15,26 @@ export interface StorageApi {
   remove(key: string): Effect.Effect<void, StorageError>;
 }
 
+const storageError = (operation: StorageError["operation"]) => (cause: unknown) => new StorageError({ operation, cause });
+
 export class BrowserStorage extends Context.Service<BrowserStorage, StorageApi>()("guidepost/BrowserStorage") {
   static readonly layer = Layer.succeed(BrowserStorage, {
     get: Effect.fn("BrowserStorage.get")((key: string) =>
       Effect.try({
         try: () => localStorage.getItem(key),
-        catch: (cause) => new StorageError({ operation: "get", cause }),
+        catch: storageError("get"),
       }),
     ),
     set: Effect.fn("BrowserStorage.set")((key: string, value: string) =>
       Effect.try({
         try: () => localStorage.setItem(key, value),
-        catch: (cause) => new StorageError({ operation: "set", cause }),
+        catch: storageError("set"),
       }),
     ),
     remove: Effect.fn("BrowserStorage.remove")((key: string) =>
       Effect.try({
         try: () => localStorage.removeItem(key),
-        catch: (cause) => new StorageError({ operation: "remove", cause }),
+        catch: storageError("remove"),
       }),
     ),
   });

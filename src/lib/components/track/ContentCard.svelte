@@ -42,7 +42,7 @@
       <button type="button" class="ownership" aria-pressed={owned} onclick={toggleOwned}>
         <OwnedCheckbox checked={owned} />
         <span class="summary">
-          <span class="name">{item.name}<span class="visually-hidden">{" owned"}</span></span>
+          <span class="name">{item.name}<span class="visually-hidden"> owned</span></span>
           {#if item.alt}<span class="subtitle">{item.alt}</span>{/if}
         </span>
       </button>
@@ -50,7 +50,7 @@
     {#if !owned}
       <WishlistButton
         active={!!entry.wishlisted}
-        onchange={() => collectionActions.run(collection.toggleWishlisted(item.id))}
+        onclick={() => collectionActions.run(collection.toggleWishlisted(item.id))}
         label={item.name}
       />
     {/if}
@@ -89,7 +89,7 @@
       />
     {/if}
 
-    {#if item.requires && item.requires.length > 0}
+    {#if item.requires?.length}
       <div class="requirement" data-satisfied={requiresOwned}>
         <span class="requirement-mark">
           {#if requiresOwned}

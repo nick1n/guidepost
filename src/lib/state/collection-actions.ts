@@ -17,7 +17,7 @@ export const reportAction = Effect.fn("CollectionActions.report")(function* <A>(
   options: ActionOptions = {},
 ) {
   const notifications = yield* Notifications;
-  const success = options.success ?? "Collection saved.";
+  const { success = "Collection saved." } = options;
   return yield* effect.pipe(
     Effect.tap(() => (success === false ? Effect.void : notifications.success(success))),
     Effect.catch((error) => notifications.error(error.message, error.cause)),

@@ -1,14 +1,14 @@
 <script lang="ts">
   type Props = {
     active: boolean;
-    onchange: Noop;
+    onclick: Noop;
     label: string;
   };
 
-  let { active, onchange, label }: Props = $props();
+  let { active, onclick, label }: Props = $props();
 </script>
 
-<button type="button" aria-pressed={active} onclick={onchange}>
+<button type="button" aria-pressed={active} {onclick}>
   <span class={["icon", active ? "i-material-symbols:favorite" : "i-material-symbols:favorite-outline"]} aria-hidden="true"></span>
   <span class="visually-hidden">
     {active ? `Wishlisted: ${label}` : `Add ${label} to wishlist`}

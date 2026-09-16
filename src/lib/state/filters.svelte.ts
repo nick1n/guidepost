@@ -3,7 +3,7 @@ import { defaultFilters } from "#lib/kdm-data.ts";
 import type { Filters, KindFilter, StatusFilter } from "#lib/types/index.ts";
 
 function createDefaultFilters(): Filters {
-  return { ...defaultFilters, tags: [...defaultFilters.tags] };
+  return { ...defaultFilters };
 }
 
 export class FilterState {

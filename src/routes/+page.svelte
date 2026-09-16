@@ -1,13 +1,5 @@
-<script lang="ts">
-  import { asset, resolve } from "$app/paths";
-  import { Effect } from "effect";
-  import type { PointerEventHandler } from "svelte/elements";
-  import ConfirmDialog from "#lib/components/ConfirmDialog.svelte";
-  import VersionPicker from "#lib/components/track/VersionPicker.svelte";
+<script module lang="ts">
   import { content } from "#lib/kdm-data.ts";
-  import { navigate } from "#lib/navigation.ts";
-  import { collection } from "#lib/state/collection.svelte.ts";
-  import { collectionActions } from "#lib/state/collection-actions.ts";
 
   type Accents = "primary" | "muted" | "red";
 
@@ -147,7 +139,18 @@
         },
       ],
     },
-  ];
+  ] as const;
+</script>
+
+<script lang="ts">
+  import { asset, resolve } from "$app/paths";
+  import { Effect } from "effect";
+  import type { PointerEventHandler } from "svelte/elements";
+  import ConfirmDialog from "#lib/components/ConfirmDialog.svelte";
+  import VersionPicker from "#lib/components/track/VersionPicker.svelte";
+  import { navigate } from "#lib/navigation.ts";
+  import { collection } from "#lib/state/collection.svelte.ts";
+  import { collectionActions } from "#lib/state/collection-actions.ts";
 
   let landing: HTMLElement;
   let ownershipDialog: { show: () => void };

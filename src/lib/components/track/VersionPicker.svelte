@@ -5,16 +5,15 @@
     versions: Edition[];
     value?: string[];
     onselect: (v: string) => void;
-    label?: string;
     groupLabel?: string;
     focusActive?: boolean;
   };
 
-  let { versions, value = [], onselect, label = "Version", groupLabel = "Versions owned", focusActive = false }: Props = $props();
+  let { versions, value = [], onselect, groupLabel = "Versions owned", focusActive = false }: Props = $props();
 </script>
 
 <div role="group" aria-label={groupLabel}>
-  <span>{label}</span>
+  <span>Version</span>
   {#each versions as version (version.v)}
     {@const active = value.includes(version.v)}
     <button

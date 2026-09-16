@@ -25,8 +25,7 @@
   const total = $derived(bundle.includes.length);
 
   function toggleOwned() {
-    const nextOwned = !collection.state[bundle.id]?.owned;
-    collectionActions.run(collection.setBundleOwned(bundle.id, bundle.includes, nextOwned));
+    collectionActions.run(collection.setBundleOwned(bundle.id, bundle.includes, !owned));
   }
 </script>
 
@@ -36,7 +35,7 @@
       <button type="button" class="ownership" aria-pressed={owned} onclick={toggleOwned}>
         <OwnedCheckbox checked={owned} />
         <span class="summary">
-          <span class="name">{bundle.name}<span class="visually-hidden">{" owned"}</span></span>
+          <span class="name">{bundle.name}<span class="visually-hidden"> owned</span></span>
           <span class="subtitle">{ownedCount}/{total} items owned</span>
         </span>
       </button>
@@ -44,7 +43,7 @@
     {#if !owned}
       <WishlistButton
         active={!!entry.wishlisted}
-        onchange={() => collectionActions.run(collection.toggleWishlisted(bundle.id))}
+        onclick={() => collectionActions.run(collection.toggleWishlisted(bundle.id))}
         label={bundle.name}
       />
     {/if}

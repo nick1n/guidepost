@@ -27,13 +27,13 @@
     <h3>
       <button type="button" class="ownership" aria-pressed={owned} onclick={toggleOwned}>
         <OwnedCheckbox checked={owned} />
-        <span>{item.name}<span class="visually-hidden">{" owned"}</span></span>
+        <span>{item.name}<span class="visually-hidden"> owned</span></span>
       </button>
     </h3>
     {#if !owned}
       <WishlistButton
         active={!!entry.wishlisted}
-        onchange={() => collectionActions.run(collection.toggleWishlisted(item.id))}
+        onclick={() => collectionActions.run(collection.toggleWishlisted(item.id))}
         label={item.name}
       />
     {/if}
@@ -44,8 +44,8 @@
       <span class="price">{formatPrice(item.price)}</span>
       <span class="divider" aria-hidden={true}></span>
       <div class="colors" aria-label={`Colors: ${item.colors.join(", ")}`}>
-        {#each item.colors as c, i (c + i)}
-          <span class="die" style:background-color={c} style:color={item.colors[+!i]}>
+        {#each item.colors as color, i (color + i)}
+          <span class="die" style:background-color={color} style:color={item.colors[i === 0 ? 1 : 0]}>
             {item.text[i]}
           </span>
         {/each}

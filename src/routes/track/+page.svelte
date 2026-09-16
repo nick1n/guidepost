@@ -1,23 +1,33 @@
+<script module lang="ts">
+  import { bundleTags } from "#lib/catalog-view.ts";
+  import { allContentTags, allDiceTags, allHomebrewTags } from "#lib/kdm-data.ts";
+
+  const TABS = [
+    { id: "content", label: "Content" },
+    { id: "dice", label: "Dice" },
+    { id: "bundles", label: "Bundles" },
+    { id: "homebrew", label: "Homebrew" },
+  ] as const;
+  type Tab = (typeof TABS)[number]["id"];
+  const tagsByTab = {
+    content: allContentTags,
+    dice: allDiceTags,
+    bundles: bundleTags,
+    homebrew: allHomebrewTags,
+  };
+</script>
+
 <script lang="ts">
-  import { bundleTags, getCollectionStats, getVisibleCatalog } from "#lib/catalog-view.ts";
+  import { getCollectionStats, getVisibleCatalog } from "#lib/catalog-view.ts";
   import BundleCard from "#lib/components/track/BundleCard.svelte";
   import CollectionStats from "#lib/components/track/CollectionStats.svelte";
   import ContentCard from "#lib/components/track/ContentCard.svelte";
   import DiceCard from "#lib/components/track/DiceCard.svelte";
   import FilterBar from "#lib/components/track/FilterBar.svelte";
-  import { allContentTags, allDiceTags, allHomebrewTags, ownershipDefaults, priceById } from "#lib/kdm-data.ts";
+  import { ownershipDefaults, priceById } from "#lib/kdm-data.ts";
   import { collection } from "#lib/state/collection.svelte.ts";
   import { collectionActions } from "#lib/state/collection-actions.ts";
   import { createFilterState } from "#lib/state/filters.svelte.ts";
-
-  type Tab = "content" | "dice" | "bundles" | "homebrew";
-
-  const TABS: { id: Tab; label: string }[] = [
-    { id: "content", label: "Content" },
-    { id: "dice", label: "Dice" },
-    { id: "bundles", label: "Bundles" },
-    { id: "homebrew", label: "Homebrew" },
-  ];
 
   let tab = $state<Tab>("content");
   const filters = createFilterState();
@@ -25,10 +35,10 @@
   const stats = $derived(getCollectionStats(collection.state));
   const visible = $derived(getVisibleCatalog(filters.value, collection.state));
   const tabCounts = $derived({
-    content: visible.visibleContent.length,
-    dice: visible.visibleDice.length,
-    bundles: visible.visibleBundles.length,
-    homebrew: visible.visibleHomebrew.length,
+    content: visible.content.length,
+    dice: visible.dice.length,
+    bundles: visible.bundles.length,
+    homebrew: visible.homebrew.length,
   });
   const resultCount = $derived(tabCounts[tab]);
 
@@ -36,7 +46,7 @@
     if (resultCount !== 1) return;
 
     if (tab === "content" || tab === "homebrew") {
-      const item = tab === "content" ? visible.visibleContent[0] : visible.visibleHomebrew[0];
+      const item = tab === "content" ? visible.content[0] : visible.homebrew[0];
       if (!collection.get(item.id).owned) {
         collectionActions.run(collection.toggleOwned(item.id, ownershipDefaults(item)));
       }
@@ -44,12 +54,12 @@
     }
 
     if (tab === "dice") {
-      const item = visible.visibleDice[0];
+      const item = visible.dice[0];
       if (!collection.get(item.id).owned) collectionActions.run(collection.toggleOwned(item.id));
       return;
     }
 
-    const bundle = visible.visibleBundles[0];
+    const bundle = visible.bundles[0];
     if (!collection.get(bundle.id).owned) collectionActions.run(collection.setManyOwned([bundle.id, ...bundle.includes], true));
   }
 
@@ -80,12 +90,7 @@
     {/each}
   </nav>
 
-  <FilterBar
-    tagOptions={tab === "content" ? allContentTags : tab === "dice" ? allDiceTags : tab === "bundles" ? bundleTags : allHomebrewTags}
-    showGameplay={tab !== "dice"}
-    {resultCount}
-    {onenter}
-  />
+  <FilterBar tagOptions={tagsByTab[tab]} showGameplay={tab !== "dice"} {resultCount} {onenter} />
 
   {#if collection.loadStatus === "error"}
     <div class="load-error">
@@ -99,19 +104,19 @@
   {:else}
     <ul>
       {#if tab === "content"}
-        {#each visible.visibleContent as item (item.id)}
+        {#each visible.content as item (item.id)}
           <ContentCard {item} />
         {/each}
       {:else if tab === "dice"}
-        {#each visible.visibleDice as item (item.id)}
+        {#each visible.dice as item (item.id)}
           <DiceCard {item} />
         {/each}
       {:else if tab === "bundles"}
-        {#each visible.visibleBundles as bundle (bundle.id)}
+        {#each visible.bundles as bundle (bundle.id)}
           <BundleCard {bundle} partsValue={bundle.includes.reduce((sum, id) => sum + (priceById[id] ?? 0), 0)} />
         {/each}
       {:else}
-        {#each visible.visibleHomebrew as item (item.id)}
+        {#each visible.homebrew as item (item.id)}
           <ContentCard {item} />
         {/each}
       {/if}

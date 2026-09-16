@@ -70,7 +70,7 @@ export class ContentState {
   state = $state.raw<CollectionState>({});
   loadStatus = $state<LoadStatus>("pending");
   loadError = $state.raw<CollectionError | undefined>();
-  userId = $state<string | undefined>();
+  private userId?: string;
   private store?: CollectionStore;
   private writer?: OptimisticStore;
   private generation = 0;
