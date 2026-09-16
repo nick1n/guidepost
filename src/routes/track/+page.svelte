@@ -18,8 +18,6 @@
 </script>
 
 <script lang="ts">
-  import { onMount } from "svelte";
-  import { resolve } from "$app/paths";
   import { getCollectionStats, getVisibleCatalog } from "#lib/catalog-view.ts";
   import BundleCard from "#lib/components/track/BundleCard.svelte";
   import CollectionStats from "#lib/components/track/CollectionStats.svelte";
@@ -44,7 +42,7 @@
     homebrew: visible.homebrew.length,
   });
   const resultCount = $derived(tabCounts[tab]);
-  const canSelect = $derived(collection.hydrated && resultCount > 0);
+  const canSelect = $derived(collection.loadStatus === "ready" && resultCount > 0);
 
   function onkeydown(event: KeyboardEvent) {
     if (event.defaultPrevented || event.isComposing || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
@@ -110,7 +108,7 @@
     {/each}
   </nav>
 
-  <FilterBar tagOptions={tagsByTab[tab]} showGameplay={tab !== "dice"} {resultCount} {onenter} />
+  <FilterBar tagOptions={tagsByTab[tab]} showGameplay={tab !== "dice"} {resultCount} {canSelect} {onenter} />
 
   {#if collection.loadStatus === "error"}
     <div class="load-error">

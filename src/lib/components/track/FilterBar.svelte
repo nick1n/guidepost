@@ -55,7 +55,7 @@
     onenter: Noop;
   };
 
-  let { tagOptions, showKind = true, showGameplay = true, resultCount, canSelect = false, onenter }: Props = $props();
+  let { tagOptions, showGameplay = true, resultCount, canSelect = false, onenter }: Props = $props();
   const hintId = $props.id();
 
   const filters = getFilterState();

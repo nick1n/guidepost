@@ -10,6 +10,7 @@
 
 <style>
   .checkbox {
+    z-index: 1;
     flex-shrink: 0;
     inline-size: var(--size-card-header);
     block-size: var(--size-card-header);
