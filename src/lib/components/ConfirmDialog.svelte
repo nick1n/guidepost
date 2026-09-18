@@ -5,8 +5,8 @@
   type Props = {
     title: string;
     description: string;
-    onconfirm: () => void;
-    oncancel?: () => void;
+    onconfirm: Noop;
+    oncancel?: Noop;
     children?: Snippet;
     confirmLabel?: string;
     confirmDisabled?: boolean;
@@ -147,7 +147,7 @@
 
   .content {
     display: grid;
-    padding: clamp(1rem, 4vw, 1.5rem);
+    padding: round(clamp(1rem, 4vw, 1.5rem), 1px);
     gap: 1rem;
   }
 
