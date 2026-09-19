@@ -27,6 +27,7 @@
   --accent-purple: #a811e1;
   --contrast: #000;
   --contrast-foreground: #fff;
+  --color-gear: radial-gradient(circle, #fffc, #dddc);
 
   --font-sans: "Inter", system-ui, sans-serif;
   --font-display: "Archivo", "Inter", sans-serif;
@@ -37,6 +38,7 @@
   --text-card-title: 1.5rem;
   --text-hero: round(clamp(4.5rem, 10vw, 9rem), 1px);
   --text-lg: 1.25rem;
+  --text-md: 0.875rem;
   --text-sm: 0.75rem;
   --text-xs: 0.625rem;
   --font-editorial: Georgia, serif;
@@ -110,7 +112,7 @@ button {
 }
 
 .hidden {
-  display: none;
+  display: none !important;
 }
 
 b,

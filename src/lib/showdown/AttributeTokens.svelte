@@ -4,6 +4,7 @@
   let { owner, names, labels, counts = $bindable() }: { owner: string; names: string[]; labels: string[]; counts: TokenCount[] } = $props();
 
   const id = $props.id();
+  let monsterTokens = $derived(names.length > 6);
   let editing = $state<number | null>(null);
   let selected = $derived(editing === null ? null : counts[editing]);
   let triggers: HTMLButtonElement[] = [];
@@ -21,9 +22,13 @@
   }
 </script>
 
-<div class={["token-grid", names.length > 6 && "monster-tokens"]}>
+<div class={["token-grid", monsterTokens && "monster-tokens"]}>
   {#each names as name, index (name)}
-    <div class="token">
+    <div
+      class="token"
+      style:grid-column={monsterTokens ? `${index < 4 ? index * 2 + 1 : (index - 4) * 2 + 2} / span 2` : undefined}
+      style:grid-row={monsterTokens ? (index < 4 ? 2 : 1) : undefined}
+    >
       <span class="label">{labels[index]}</span>
       <button
         class={["net", editing === index && "selected"]}
@@ -55,9 +60,10 @@
       </button>
     </div>
     <div class="counts">
-      <label>
+      <label for={`${id}-positive`}>
         Positive (+1)
         <input
+          id={`${id}-positive`}
           type="number"
           min="0"
           step="1"
@@ -65,9 +71,10 @@
           bind:value={() => selected?.positive, (value) => setCount("positive", value)}
         />
       </label>
-      <label>
+      <label for={`${id}-negative`}>
         Negative (-1)
         <input
+          id={`${id}-negative`}
           type="number"
           min="0"
           step="1"
@@ -83,16 +90,13 @@
   .token-grid {
     display: grid;
     grid-template-columns: repeat(6, minmax(0, 1fr));
-    gap: 0.125rem;
     &.monster-tokens {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      row-gap: 0.5rem;
+      grid-template-columns: repeat(8, minmax(0, 1fr));
     }
   }
   .token {
     display: grid;
     justify-items: center;
-    gap: 0.125rem;
   }
   .label {
     color: var(--muted-foreground);

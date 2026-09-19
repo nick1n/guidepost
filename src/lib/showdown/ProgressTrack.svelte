@@ -3,9 +3,11 @@
     name,
     max,
     marks,
+    milestones = [],
     variant,
     value = $bindable(0),
-  }: { name: string; max: number; marks: number[]; variant: number; value?: number } = $props();
+  }: { name: string; max: number; marks: number[]; milestones?: string[]; variant: number; value?: number } = $props();
+  let next = $derived(marks.findIndex((mark) => value < mark));
   const id = $props.id();
   function setValue(next: number) {
     value = Math.max(0, Math.min(max, Math.round(next || 0)));
@@ -60,10 +62,19 @@
       <progress class="visually-hidden" {value} {max} aria-labelledby={`${id}-name`} aria-describedby={`${id}-milestones`}></progress>
     {/if}
   </div>
-  <span class="visually-hidden" id={`${id}-milestones`}>Milestones at {marks.join(", ")}.</span>
+  <p id={`${id}-milestones`} class="next" aria-live="polite">
+    {next < 0 ? `${milestones.at(-1) ?? "Final milestone"} reached` : `Next: ${milestones[next] ?? "Milestone"} at ${marks[next]}`}
+  </p>
 </div>
 
 <style>
+  .next {
+    margin-block-start: -0.5rem;
+    padding: 0 0.5rem 0.625rem;
+    color: var(--muted-foreground);
+    font-size: var(--text-xs);
+    pointer-events: none;
+  }
   .track-heading {
     display: flex;
     align-items: center;

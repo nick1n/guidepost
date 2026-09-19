@@ -11,10 +11,10 @@
   let active = $state(0);
   let round = $state(1);
   let monsterTurn = $state(true);
-  let sheets = $state(survivors.map(() => makeSheet()));
+  let sheets = $state(survivors.map((_, index) => makeSheet(index)));
   let menuOpen = $state(false);
   let snap = $state<Snap>("free");
-  let monsterStats = $state({ life: 10, movement: 6, toughness: 6, damage: 0, speed: 0 });
+  let monsterStats = $state({ life: 8, movement: 6, toughness: 6, damage: 0, speed: 0 });
   let monsterTokens = $state(makeTokens(7));
 
   type Snap = "left" | "center" | "right" | "free";
@@ -30,6 +30,11 @@
   }
   let rail: HTMLDivElement;
   const roster = [{ name: "White Lion", color: "var(--color-monster)", ink: "var(--contrast)" }, ...survivors];
+
+  function survivorName(index: number) {
+    const sheet = sheets[index - 1];
+    return sheet.nameless ? `Nameless ${index}` : sheet.name.trim() || `Nameless ${index}`;
+  }
 
   // Overlay scrollbars need a small inset; classic scrollbars supply their own balanced gutters.
   function dashboardSpacing(element: HTMLElement) {
@@ -77,6 +82,19 @@
     );
     alignDashboard(index);
   }
+  let lastTap: { index: number; time: number } | null = null;
+  function selectSurvivor(event: MouseEvent, index: number) {
+    jump(index);
+    // Click events cover mouse, touch and keyboard activation without duplicate touch/dblclick toggles.
+    const now = performance.now();
+    if (index > 0 && (event.detail === 2 || (lastTap?.index === index && now - lastTap.time <= 350))) {
+      sheets[index - 1].acted = !sheets[index - 1].acted;
+      lastTap = null;
+    } else {
+      lastTap = { index, time: now };
+    }
+  }
+
   function onscroll() {
     const panels = Array.from(rail.children) as HTMLElement[];
     if (rail.clientWidth >= panels[0].clientWidth * 2) return;
@@ -101,6 +119,18 @@
   }
   function onkeydown(event: KeyboardEvent) {
     if (event.key === "Escape") menuOpen = false;
+    if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+    const target = event.target;
+    if (
+      target instanceof HTMLInputElement ||
+      target instanceof HTMLTextAreaElement ||
+      target instanceof HTMLSelectElement ||
+      (target instanceof HTMLElement && target.isContentEditable)
+    )
+      return;
+    event.preventDefault();
+    const direction = event.key === "ArrowLeft" ? -1 : 1;
+    jump((active + direction + roster.length) % roster.length);
   }
 </script>
 
@@ -119,7 +149,7 @@
         style:--identity={person.color}
         style:--identity-ink={person.ink}
         role="region"
-        aria-label={`${person.name} dashboard`}
+        aria-label={`${index === 0 ? person.name : survivorName(index)} dashboard`}
         tabindex="0"
         {@attach dashboardSpacing}
       >
@@ -132,6 +162,7 @@
     {/each}
   </div>
   <footer class="toolbar">
+    <p id="roster-shortcut" class="visually-hidden">Double click or double tap a survivor to toggle Acted. Keyboard: activate twice.</p>
     <nav class="roster" aria-label="Jump to dashboard">
       {#each roster as person, index (person.name)}
         <button
@@ -139,18 +170,16 @@
           style:--identity={person.color}
           style:--identity-ink={person.ink}
           aria-current={active === index ? "true" : undefined}
+          aria-describedby={index > 0 ? "roster-shortcut" : undefined}
           aria-label={index === 0
             ? `White Lion, ${monsterTurn ? "current turn" : "waiting"}, movement ${(monsterStats.movement || 0) + tokenNet(monsterTokens[0])}, toughness ${(monsterStats.toughness || 0) + tokenNet(monsterTokens[1])}, round ${round}`
-            : `${person.name}, ${statusText(sheets[index - 1])}, ${tokenTotal(sheets[index - 1])} tokens, ${availableActions(sheets[index - 1])} survival actions available`}
-          onclick={() => jump(index)}
+            : `${survivorName(index)}, ${statusText(sheets[index - 1])}, ${tokenTotal(sheets[index - 1])} tokens, ${availableActions(sheets[index - 1])} survival actions available`}
+          onclick={(event) => selectSurvivor(event, index)}
         >
-          <strong>{index === 0 ? "White Lion" : person.name}</strong>
+          <strong>{index === 0 ? "White Lion" : survivorName(index)}</strong>
           {#if index === 0}
-            <span class="monster-state">{monsterTurn ? "Turn" : "Waiting"}</span>
-            <span class="monster-metrics">
-              <span>Mov <b>{(monsterStats.movement || 0) + tokenNet(monsterTokens[0])}</b></span>
-              <span>Tgh <b>{(monsterStats.toughness || 0) + tokenNet(monsterTokens[1])}</b></span>
-            </span>
+            <span>Mov <b>{(monsterStats.movement || 0) + tokenNet(monsterTokens[0])}</b></span>
+            <span>Tgh <b>{(monsterStats.toughness || 0) + tokenNet(monsterTokens[1])}</b></span>
           {:else}
             <QuickStatus sheet={sheets[index - 1]} />
           {/if}
@@ -182,7 +211,7 @@
     </button>
     {#if menuOpen}
       <div class="menu" id="showdown-menu">
-        <strong>{roster[active].name}</strong>
+        <strong>{active === 0 ? roster[active].name : survivorName(active)}</strong>
         {#if active > 0}<p class="menu-status">{statusText(sheets[active - 1])}</p>
           <div class="menu-counts">
             <span>{tokenTotal(sheets[active - 1])} Tokens</span><span
@@ -301,7 +330,7 @@
     position: relative;
     grid-template-columns: minmax(0, 1fr) 2.75rem 2.75rem;
     padding: 0.375rem 0.375rem max(0.375rem, env(safe-area-inset-bottom));
-    gap: 0.25rem;
+    gap: 0.125rem;
     border-block-start: 1px solid var(--color-divider);
     background: var(--panel);
   }
@@ -309,7 +338,6 @@
     display: grid;
     grid-template-columns: repeat(5, minmax(0, 1fr));
     grid-column: 1 / -1;
-    gap: 0.25rem;
   }
   .roster-button {
     display: flex;
@@ -320,38 +348,31 @@
     block-size: 3.5rem;
     padding: 0 0 0.25rem;
     overflow: hidden;
-    border: 2px solid var(--color-divider);
+    border: 2px solid transparent;
     border-radius: var(--radius-control);
     background: color-mix(var(--identity) 10%, var(--background));
+    font-size: var(--text-xs);
+    line-height: 0.875rem;
+    white-space: nowrap;
+    touch-action: manipulation;
 
     &.selected {
       border-color: var(--foreground);
     }
-  }
-  .roster-button strong {
-    align-self: stretch;
-    padding-block: 0.125rem;
-    background: var(--identity);
-    color: var(--identity-ink);
-    font-weight: var(--font-bold);
-    font-size: var(--text-xs);
-    line-height: 0.875rem;
-  }
-  .monster-state {
-    color: var(--muted-foreground);
-    font-size: var(--text-xs);
-    line-height: 0.875rem;
-  }
-  .monster-metrics {
-    display: flex;
-    justify-content: center;
-    gap: 0.25rem;
-    font-size: 0.625rem;
-    line-height: 0.875rem;
-    white-space: nowrap;
-  }
-  .monster-metrics b {
-    color: var(--color-monster);
+    & strong {
+      align-self: stretch;
+      padding: 0.125rem;
+      overflow: hidden;
+      background: var(--identity);
+      color: var(--identity-ink);
+      font-weight: var(--font-bold);
+      font-size: var(--text-xs);
+      line-height: 0.875rem;
+      text-overflow: ellipsis;
+    }
+    & b {
+      color: var(--color-monster);
+    }
   }
   .advance {
     display: flex;

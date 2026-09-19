@@ -4,7 +4,7 @@
   import Gear from "./Gear.svelte";
   import EntryList from "./EntryList.svelte";
   import ProgressTrack from "./ProgressTrack.svelte";
-  import { attributes, abbreviations, availableActions, statusText, type Sheet } from "./data";
+  import { attributes, abbreviations, availableActions, statusItems, permissions, sampleDecks, type Sheet } from "./data";
 
   let {
     person,
@@ -18,17 +18,69 @@
     sheet: Sheet;
   } = $props();
 
+  const id = $props.id();
+  let showMore = $state(false);
+  let compactGear = $state(false);
+  const listNames = [
+    "Fighting Arts",
+    "Disorders",
+    "Abilities",
+    "Impairments",
+    "Severe Injuries",
+    "Resources",
+    "Per Lifetimes",
+    "Cursed Gear",
+    "Showdown History",
+  ];
+  let entries = $state<Record<string, { id: number; text: string }[]>>(Object.fromEntries(listNames.map((name) => [name, []])));
+  function toggleGearSize() {
+    compactGear = !compactGear;
+    selectedGear = null;
+    draggedGear = null;
+  }
+
   let armorValues = $state([0, 0, 0, 0, 1, 0]);
   let injuries = $state<Record<string, boolean>>({});
   let notes = $state("");
-  let gear = $state<(string | null)[]>(["Fist & Tooth", "Founding Stone", "Cloth", ...Array<null>(10).fill(null)]);
+  let gear = $state<(string | null)[]>(["Fist & Tooth", "Cloth", "Founding Stone", ...Array<null>(10).fill(null)]);
   let selectedGear = $state<number | null>(null);
   let draggedGear = $state<number | null>(null);
+  let armorSet = $state("No Armor");
+  let bonuses = $state([0, 0, 0, 0, 0, 0]);
+  let departure = $state([0, 0]);
+  let arrival = $state([0, 0]);
+  let parents = $state(["", ""]);
+  let affinities = $state([0, 0, 0]);
+  let fightingArtLimit = $state(3);
+  let disorderLimit = $state(3);
+  let proficiency = $state("");
   let development = $state([0, 0, 0, 0]);
+  let displayName = $derived(sheet.nameless ? `Nameless ${number}` : sheet.name.trim() || `Nameless ${number}`);
 
-  let selectedAction = $state("");
-  function selectAction(action: string) {
-    selectedAction = selectedAction === action ? "" : action;
+  let extras = $derived([
+    { name: "Tokens", populated: sheet.tokens.some((token) => token.positive || token.negative) || !!sheet.bleeding || sheet.priority },
+    { name: "Trinkets", populated: gear.slice(10).some(Boolean) },
+    ...listNames.map((name) => ({ name, populated: entries[name].length > 0 })),
+    {
+      name: "Armor & Bonuses",
+      populated: armorSet !== "No Armor" || bonuses.some(Boolean) || departure.some(Boolean) || arrival.some(Boolean),
+    },
+    { name: "Development", populated: development.some(Boolean) || !!proficiency },
+    { name: "Notes", populated: !!notes.trim() },
+    {
+      name: "Miscellaneous",
+      populated: false,
+    },
+  ]);
+  let orderedExtras = $derived([
+    ...extras.filter((section) => section.populated),
+    { name: "divider", populated: true },
+    ...extras.filter((section) => !section.populated),
+  ]);
+
+  function removeProficiency() {
+    proficiency = "";
+    development[3] = 0;
   }
 
   function toggleStatus(status: string) {
@@ -37,25 +89,12 @@
 
   const armor = ["Insanity", "Head", "Arms", "Body", "Waist", "Legs"] as const;
   const tracks = [
-    { name: "Hunt XP", max: 16, marks: [2, 6, 10, 15, 16] },
-    { name: "Courage", max: 9, marks: [3, 9] },
-    { name: "Understanding", max: 9, marks: [3, 9] },
-    { name: "Weapon Proficiency", max: 8, marks: [3, 8] },
+    { name: "Hunt XP", max: 16, marks: [2, 6, 10, 15, 16], milestones: ["Age I", "Age II", "Age III", "Age IV", "Retired"] },
+    { name: "Courage", max: 9, marks: [3, 9], milestones: ["Bold", "See the Truth"] },
+    { name: "Understanding", max: 9, marks: [3, 9], milestones: ["Insight", "White Secret"] },
+    { name: "Weapon Proficiency", max: 8, marks: [3, 8], milestones: ["Specialist", "Master"] },
   ];
 </script>
-
-{#snippet identity()}
-  <header class="identity">
-    <div class="identity-copy">
-      <p class="eyebrow">Survivor {String(number).padStart(2, "0")} <span>{person.gender}</span></p>
-      <h2>{person.name}</h2>
-    </div>
-    <div class="survival">
-      <label for={`survival-${number}`}>Survival</label>
-      <input id={`survival-${number}`} type="number" min="0" max="99" step="1" bind:value={sheet.survival} />
-    </div>
-  </header>
-{/snippet}
 
 {#snippet statistics()}
   <div class="combat">
@@ -75,7 +114,8 @@
     <div class="armor">
       {#each armor as location, index (location)}
         <div class="armor-cell">
-          <span>{location === "Insanity" ? "Insanity" : location}</span><input
+          <span>{location === "Insanity" ? "Insanity" : location}</span>
+          <input
             class="armor-value"
             aria-label={`${person.name} ${location}`}
             type="number"
@@ -86,13 +126,14 @@
           <div class="injuries">
             {#if index === 1}<span class="injury-gap" aria-hidden="true"></span>{/if}
             {#each index === 0 ? ["Light"] : index === 1 ? ["Heavy"] : ["Light", "Heavy"] as injury (injury)}
-              <label class="injury-target">
+              <label class="injury-target" for={`${id}-${location}-${injury}`}>
                 <input
+                  id={`${id}-${location}-${injury}`}
                   type="checkbox"
                   bind:checked={injuries[location + injury]}
                   aria-label={`${person.name} ${location} ${injury} injury`}
                 />
-                <span aria-hidden="true">{injury === "Light" ? "L" : "H"}</span>
+                <span class={injury === "Light" ? "l" : "h"} aria-hidden="true">{injury === "Light" ? "L" : "H"}</span>
               </label>
             {/each}
             {#if index === 0}<span class="injury-gap" aria-hidden="true"></span>{/if}
@@ -110,7 +151,7 @@
       Threat
     </button>
     <button class={["condition", sheet.acted && "active"]} aria-pressed={sheet.acted} onclick={() => (sheet.acted = !sheet.acted)}>
-      <span aria-hidden="true">{sheet.acted ? "✓" : "○"}</span> Acted
+      {sheet.acted ? "Acted" : "Act"}
     </button>
     {#each ["Monster Controller", "Blind Spot", "Knocked Down"] as status (status)}
       <button
@@ -135,7 +176,7 @@
 {#snippet tokenControls()}
   <AttributeTokens owner={person.name} names={attributes} labels={abbreviations} bind:counts={sheet.tokens} />
   <div class="extra-tokens">
-    <label>Bleeding <input type="number" min="0" max="5" bind:value={sheet.bleeding} /></label>
+    <label for={`${id}-bleeding`}>Bleeding <input id={`${id}-bleeding`} type="number" min="0" max="5" bind:value={sheet.bleeding} /></label>
     <button
       class={["condition", sheet.priority && "active"]}
       aria-pressed={sheet.priority}
@@ -148,112 +189,409 @@
 
 {#snippet actions()}
   <div class="action-list">
-    <button
-      class={["action", selectedAction === "Move" && "chosen"]}
-      aria-pressed={selectedAction === "Move"}
-      onclick={() => selectAction("Move")}
-    >
+    <button class={"action"}>
       <span>Move</span><small>{sheet.attributes[0] ?? 0} spaces</small>
       <span class="action-arrow i-material-symbols:arrow-forward" aria-hidden="true"></span>
     </button>
-    <button
-      class={["action", selectedAction === "Attack" && "chosen"]}
-      aria-pressed={selectedAction === "Attack"}
-      onclick={() => selectAction("Attack")}
-    >
+    <button class={"action"}>
       <span>Attack</span><small>1 action</small><span class="action-arrow i-material-symbols:arrow-forward" aria-hidden="true"></span>
     </button>
   </div>
 {/snippet}
 
 {#snippet survivalActions()}
+  {#if !sheet.permissions.survival}<p class="restriction">Cannot use survival actions</p>{/if}
   <div class="survival-actions">
     {#each ["Dodge", "Dash", "Surge", "Encourage", "Endure"] as action, index (action)}
-      <button
-        class={["survival-action", selectedAction === action && "chosen"]}
-        disabled={index !== 0 || !availableActions(sheet)}
-        aria-pressed={selectedAction === action}
-        onclick={() => selectAction(action)}
-      >
+      <button class={"survival-action"} disabled={index !== 0 || !availableActions(sheet)}>
         <span>{action}</span><small>{index === 0 ? (availableActions(sheet) ? "1 survival" : "Unavailable") : "Locked"}</small>
       </button>
     {/each}
   </div>
 {/snippet}
 
+{#snippet extraSection(name: string)}
+  {#if name === "Tokens"}
+    <Section
+      title="Tokens"
+      meta={[
+        `${sheet.tokens.reduce((sum, token) => sum + token.positive + token.negative, 0)} Attribute Tokens`,
+        `Bleeding: ${sheet.bleeding ?? 0}`,
+      ]}
+    >
+      {@render tokenControls()}
+    </Section>
+  {:else if name === "Trinkets"}
+    <Section title="Trinkets and Baubles" meta={`${gear.slice(10).filter(Boolean).length || "No"} Gear`}>
+      <Gear bind:slots={gear} bind:selected={selectedGear} bind:dragged={draggedGear} start={10} count={3} slotLabel="Trinket Slot" />
+    </Section>
+  {:else if name === "Miscellaneous"}
+    <Section title="Miscellaneous" meta={["Identity", "Lineage", "Affinities", "Permissions"]}>
+      <div class="fields">
+        <label class="field" for={`${id}-name`}>Name</label>
+        <input id={`${id}-name`} type="text" bind:value={sheet.name} name="survivor" maxlength="160" disabled={sheet.nameless} />
+        <button
+          class={["condition", sheet.nameless && "active"]}
+          aria-pressed={sheet.nameless}
+          onclick={() => (sheet.nameless = !sheet.nameless)}
+        >
+          Nameless
+        </button>
+        <label class="field" for={`${id}-gender`}>
+          Gender
+          <select id={`${id}-gender`} bind:value={sheet.gender}>
+            {#each ["Male", "Female", "Non-binary"] as gender (gender)}<option>{gender}</option>{/each}
+          </select>
+        </label>
+        <label class="field" for={`${id}-nickname`}>Nickname/Surname</label>
+        <input id={`${id}-nickname`} type="text" bind:value={sheet.nickname} maxlength="160" />
+        {#each ["Parent 1", "Parent 2"] as parent, index (parent)}
+          <label class="field" for={`${id}-parent-${index}`}>{parent}</label>
+          <input id={`${id}-parent-${index}`} type="text" bind:value={parents[index]} maxlength="160" />
+        {/each}
+      </div>
+      <h3>Affinities</h3>
+      <div class="numbers">
+        {#each ["Red", "Green", "Blue"] as color, index (color)}
+          <div class="stat">
+            <label for={`${id}-affinity-${index}`} class="stat-label">{color}</label>
+            <input
+              id={`${id}-affinity-${index}`}
+              class="attribute-value"
+              type="number"
+              min="-10"
+              max="10"
+              step="1"
+              bind:value={affinities[index]}
+            />
+          </div>
+        {/each}
+      </div>
+      <h3>Limits</h3>
+      <div class="numbers">
+        <div class="stat">
+          <label for={`${id}-survival-limit`} class="stat-label">Survival</label>
+          <input id={`${id}-survival-limit`} class="attribute-value" type="number" min="0" step="1" bind:value={sheet.survivalLimit} />
+        </div>
+        <div class="stat">
+          <label for={`${id}-fa-limit`} class="stat-label">Fighting Arts</label>
+          <input id={`${id}-fa-limit`} class="attribute-value" type="number" min="0" step="1" bind:value={fightingArtLimit} />
+        </div>
+        <div class="stat">
+          <label for={`${id}-disorder-limit`} class="stat-label">Disorders</label>
+          <input id={`${id}-disorder-limit`} class="attribute-value" type="number" min="0" step="1" bind:value={disorderLimit} />
+        </div>
+      </div>
+      <h3>Permissions</h3>
+      <div class="conditions">
+        {#each permissions as permission (permission.key)}
+          <button
+            class={["condition", sheet.permissions[permission.key] && "active"]}
+            aria-pressed={sheet.permissions[permission.key]}
+            onclick={() => (sheet.permissions[permission.key] = !sheet.permissions[permission.key])}
+          >
+            {sheet.permissions[permission.key] ? "Can" : "Cannot"}
+            {permission.label.toLowerCase()}
+          </button>
+        {/each}
+      </div>
+    </Section>
+  {:else if name === "Armor & Bonuses"}
+    <Section title="Armor & Bonuses" meta={`${armorSet} Set`}>
+      <label class="field" for={`${id}-armor-set`}>
+        Armor Set
+        <select id={`${id}-armor-set`} bind:value={armorSet}>
+          {#each ["No Armor", "Clothed & Satiated", "Rawhide", "White Lion", "Screaming Antelope", "Leather", "Lantern", "Phoenix"] as set (set)}
+            <option>{set}</option>
+          {/each}
+        </select>
+      </label>
+      <h3>Attribute Bonuses</h3>
+      <div class="stats">
+        {#each attributes as attribute, index (attribute)}
+          <div class="stat">
+            <span class="stat-label" aria-label={attribute}>{abbreviations[index]}</span>
+            <input
+              class="attribute-value"
+              type="number"
+              aria-label={`${person.name} ${attribute} gear bonus`}
+              bind:value={bonuses[index]}
+            />
+          </div>
+        {/each}
+      </div>
+      <h3>Depart Bonuses</h3>
+      <div class="extra-tokens">
+        {#each ["Survival", "Insanity"] as bonus, index (bonus)}
+          <label for={`${id}-departure-${index}`}
+            >{bonus}<input
+              id={`${id}-departure-${index}`}
+              type="number"
+              aria-label={`${person.name} depart ${bonus} bonus`}
+              bind:value={departure[index]}
+            /></label
+          >
+        {/each}
+      </div>
+      <h3>Arrival Bonuses</h3>
+      <div class="extra-tokens">
+        {#each ["Survival", "Insanity"] as bonus, index (bonus)}
+          <label for={`${id}-arrival-${index}`}
+            >{bonus}<input
+              id={`${id}-arrival-${index}`}
+              type="number"
+              aria-label={`${person.name} arrival ${bonus} bonus`}
+              bind:value={arrival[index]}
+            /></label
+          >
+        {/each}
+      </div>
+    </Section>
+  {:else if name === "Development"}
+    <Section
+      title="Development"
+      meta={[`XP ${development[0]}`, `Courage ${development[1]}`, `Understand ${development[2]}`, `Prof ${development[3]}`]}
+    >
+      {#each tracks as track, index (track.name)}
+        {#if index !== 3}
+          <ProgressTrack {...track} {variant} bind:value={development[index]} />
+        {:else if proficiency}
+          <div class="proficiency">
+            <strong>{proficiency}</strong>
+            <button class="condition" onclick={removeProficiency}>Remove proficiency</button>
+          </div>
+          {#if !sheet.permissions.proficiency}<p class="restriction">Cannot use weapon proficiency</p>{/if}
+          <ProgressTrack {...track} {variant} bind:value={development[index]} />
+        {:else}
+          <label class="field" for={`${id}-proficiency`}>
+            Weapon Proficiency
+            <select id={`${id}-proficiency`} bind:value={proficiency}>
+              <option value="">Select a weapon proficiency</option>
+              {#each ["Fist & Tooth", "Sword", "Shield", "Axe", "Bow", "Club", "Dagger", "Grand Weapon", "Katar", "Spear", "Whip"] as weapon (weapon)}
+                <option>{weapon}</option>
+              {/each}
+            </select>
+          </label>
+        {/if}
+      {/each}
+    </Section>
+  {:else if name === "Notes"}
+    <Section title="Notes" meta={notes.trim() ? "Notes Added" : "No Notes"}>
+      <textarea bind:value={notes} aria-label={`Notes for ${person.name}`} placeholder="Notes…" rows="3"></textarea>
+    </Section>
+  {:else}
+    <EntryList
+      title={name}
+      bind:entries={entries[name]}
+      deck={sampleDecks[name] ?? []}
+      restricted={name === "Fighting Arts" ? !sheet.permissions.fightingArts : name === "Abilities" ? !sheet.permissions.abilities : false}
+    />
+  {/if}
+{/snippet}
+
 <div class="survivor">
-  {#if sheet.statuses.includes("Blind Spot")}<div class="blind-banner">
+  {#if sheet.statuses.includes("Blind Spot")}
+    <div class="blind-banner">
       <span class="blind-icon i-material-symbols:visibility" aria-hidden="true"></span>Blind Spot Active
-    </div>{/if}
-  {@render identity()}
+    </div>
+  {/if}
+
+  <header class="identity">
+    <div class="identity-copy">
+      <p class="eyebrow">Survivor {number} <span>{sheet.gender}</span></p>
+      <h2>{displayName}</h2>
+      <p class="nickname">{sheet.nickname || "\u00A0"}</p>
+    </div>
+    <div class="survival">
+      <label for={`survival-${number}`}>Survival</label>
+      <input id={`survival-${number}`} type="number" min="0" max={sheet.survivalLimit ?? 1} step="1" bind:value={sheet.survival} />
+      <small>Limit {sheet.survivalLimit ?? 1}</small>
+    </div>
+  </header>
+
   {#if variant === 3}
     <Section
       title="Combat"
-      meta={`Movement: ${sheet.attributes[0] ?? 0} / Insanity: ${armorValues[0] ?? 0} / Bleeding: ${sheet.bleeding ?? 0}`}
+      meta={[`Movement: ${sheet.attributes[0] ?? 0}`, `Insanity: ${armorValues[0] ?? 0}`, `Bleeding: ${sheet.bleeding ?? 0}`]}
     >
       {@render statistics()}
-      <h3>Armor & Injuries</h3>
+      <h3>Insanity & Armor</h3>
       {@render protection()}
-      <h3>Tokens</h3>
-      {@render tokenControls()}
     </Section>
-    <Section title="Actions" meta={selectedAction || "None Selected"}>
+    <Section
+      title="Actions"
+      restricted={variant === 3 && !sheet.permissions.survival ? "Cannot use survival actions" : ""}
+      onaction={() => (sheet.acted = !sheet.acted)}
+      actionLabel="Act"
+    >
       {@render actions()}
       <h3>Survival Actions <small>{sheet.survival ?? 0} survival</small></h3>
       {@render survivalActions()}
-      {#if selectedAction}
-        <p class="selection" role="status">Selected: {selectedAction}</p>
-      {/if}
     </Section>
-    <Section title="Status" meta={statusText(sheet)}>{@render conditions()}</Section>
+    <Section title="Status" meta={statusItems(sheet)}>{@render conditions()}</Section>
   {:else}
     {#if variant === 2}
-      <Section title="Vital Signs" meta={`Movement: ${sheet.attributes[0] ?? 0} / Insanity: ${armorValues[0] ?? 0}`}>
+      <Section title="Vital Signs" meta={[`Mov ${sheet.attributes[0] ?? 0}`, `Ins ${armorValues[0] ?? 0}`]}>
         {@render statistics()}
         {@render protection()}
       </Section>
     {:else}
-      <Section title="Attributes" meta={`Movement: ${sheet.attributes[0] ?? 0}`}>{@render statistics()}</Section>
-      <Section title="Armor & Injuries" meta={`Insanity: ${armorValues[0] ?? 0}`}>{@render protection()}</Section>
+      <Section title="Attributes" meta={`Mov ${sheet.attributes[0] ?? 0}`}>{@render statistics()}</Section>
+      <Section title="Insanity & Armor" meta={`Ins ${armorValues[0] ?? 0}`}>{@render protection()}</Section>
     {/if}
-    <Section title="Tokens" meta={`Bleeding: ${sheet.bleeding ?? 0}`}>{@render tokenControls()}</Section>
-    <Section title="Status" meta={statusText(sheet)}>{@render conditions()}</Section>
-    <Section title="Actions" meta={selectedAction || "None Selected"}>
+    <Section title="Status" meta={statusItems(sheet)}>{@render conditions()}</Section>
+    <Section title="Actions" onaction={() => (sheet.acted = !sheet.acted)} actionLabel="Act">
       {@render actions()}
-      {#if selectedAction === "Move" || selectedAction === "Attack"}
-        <p class="selection" role="status">
-          Selected: {selectedAction}
-        </p>
-      {/if}
     </Section>
-    <Section title="Survival Actions" meta="Dodge">
+    <Section
+      title="Survival Actions"
+      meta="Dodge"
+      restricted={!sheet.permissions.survival ? "Cannot use" : ""}
+      onaction={() => sheet.survival--}
+      actionLabel="Dodge"
+    >
       {@render survivalActions()}
-      {#if selectedAction && selectedAction !== "Move" && selectedAction !== "Attack"}
-        <p class="selection" role="status">
-          Selected: {selectedAction}
-        </p>
-      {/if}
     </Section>
   {/if}
-  <Section title="Gear Grid" meta={`${gear.slice(1, 9).filter(Boolean).length} Gear: 1 Melee Weapon, 1 Armor`}>
-    <Gear bind:slots={gear} bind:selected={selectedGear} bind:dragged={draggedGear} />
+
+  <Section title="Gear Grid" meta={[`${gear.slice(0, compactGear ? 4 : 9).filter(Boolean).length} Gear`]}>
+    <Gear bind:slots={gear} bind:selected={selectedGear} bind:dragged={draggedGear} count={compactGear ? 4 : 9} />
+    <button class={["condition", compactGear && "active"]} aria-pressed={compactGear} onclick={toggleGearSize}>
+      Use {compactGear ? "3 x 3" : "2 x 2"} grid
+    </button>
+    {#if compactGear && gear.slice(5, 10).some(Boolean)}
+      <p class="selection">
+        {gear.slice(5, 10).filter(Boolean).length} gear stored in extra slots. Switch to 3 x 3 to access them.
+      </p>
+    {/if}
   </Section>
-  <Section title="Trinkets and Baubles" meta={`${gear.slice(10).filter(Boolean).length || "No"} Gear`}>
-    <Gear bind:slots={gear} bind:selected={selectedGear} bind:dragged={draggedGear} start={10} count={3} slotLabel="Trinket Slot" />
-  </Section>
-  {#each ["Fighting Arts", "Disorders", "Abilities", "Impairments"] as section (section)}<EntryList title={section} />
+
+  {#each orderedExtras as section (section.name)}
+    {#if section.name === "divider"}
+      <button
+        class="more"
+        aria-expanded={showMore}
+        aria-controls={extras
+          .filter((section) => !section.populated)
+          .map((section) => `${id}-${section.name.replaceAll(" ", "-")}`)
+          .join(" ") || undefined}
+        onclick={() => (showMore = !showMore)}
+      >
+        <span class="more-label">
+          {showMore ? "Show less" : "Show more"}
+          <span class="more-icon i-material-symbols:expand-more" aria-hidden="true" style:rotate={showMore ? "180deg" : "0deg"}></span>
+        </span>
+      </button>
+    {:else}
+      <div id={`${id}-${section.name.replaceAll(" ", "-")}`} hidden={!section.populated && !showMore}>
+        {@render extraSection(section.name)}
+      </div>
+    {/if}
   {/each}
-  <Section title="Development" meta={`Hunt XP: ${development[0]} | Courage: ${development[1]} | Understanding: ${development[2]}`}>
-    {#each tracks as track, index (track.name)}
-      <ProgressTrack {...track} {variant} bind:value={development[index]} />
-    {/each}
-  </Section>
-  <Section title="Notes" meta={notes.trim() ? "Notes Added" : "No Notes"}>
-    <textarea bind:value={notes} aria-label={`Notes for ${person.name}`} placeholder="Notes…" rows="3"></textarea>
-  </Section>
 </div>
 
 <style>
+  .more {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    inline-size: 100%;
+    min-block-size: 2.75rem;
+    color: color-mix(var(--identity) 55%, var(--foreground));
+    font-size: var(--text-sm);
+
+    &::before,
+    &::after {
+      content: "";
+      flex: 1;
+      border-block-start: 1px solid color-mix(var(--identity) 45%, transparent);
+    }
+
+    &:hover .more-label {
+      color: var(--foreground);
+    }
+  }
+  .more-label {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.375rem 0.625rem;
+  }
+  :global(.obsidian) .more-label {
+    border-inline: 2px solid var(--identity);
+    font-weight: var(--font-bold);
+    text-transform: uppercase;
+  }
+  :global(.folio) .more {
+    font-family: var(--font-editorial);
+    font-size: 1rem;
+
+    &::before,
+    &::after {
+      border-block-start: 3px double color-mix(var(--identity) 45%, transparent);
+    }
+  }
+  :global(.folio) .more-label {
+    padding-inline: 0;
+  }
+  :global(.signal) .more {
+    &::before,
+    &::after {
+      border-block-start: 3px dotted color-mix(var(--identity) 65%, transparent);
+    }
+
+    &:hover .more-label {
+      background: var(--foreground);
+      color: var(--background);
+    }
+  }
+  :global(.signal) .more-label {
+    border-radius: 2rem;
+    background: var(--identity);
+    color: var(--identity-ink);
+    font-weight: var(--font-bold);
+  }
+  .more-icon {
+    inline-size: 1.25rem;
+    block-size: 1.25rem;
+  }
+
+  .nickname {
+    font-size: var(--text-sm);
+    overflow-wrap: anywhere;
+    margin-block-start: 0.25rem;
+  }
+  .survival small {
+    font-size: var(--text-xs);
+    white-space: nowrap;
+  }
+  .restriction {
+    color: var(--accent-red);
+    font-size: var(--text-sm);
+    padding-block: 0.375rem;
+  }
+  .proficiency {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.375rem;
+    font-size: var(--text-sm);
+  }
+  .fields,
+  .field {
+    display: grid;
+    gap: 0.375rem;
+  }
+  .field {
+    color: var(--muted-foreground);
+    font-size: var(--text-xs);
+  }
+  .numbers {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.375rem;
+  }
   .identity {
     display: flex;
     align-items: center;
@@ -314,7 +652,6 @@
     padding-inline-start: 0.75rem;
   }
   :global(.folio) .survival label {
-    font-style: italic;
     font-family: var(--font-editorial);
   }
   :global(.folio) .survival input {
@@ -368,7 +705,6 @@
     display: grid;
     align-content: start;
     justify-items: center;
-    gap: 0.125rem;
     color: var(--muted-foreground);
     font-size: var(--text-xs);
   }
@@ -378,7 +714,6 @@
   }
   .injuries {
     display: grid;
-    gap: 0.125rem;
   }
   .injury-gap {
     block-size: 2.75rem;
@@ -409,6 +744,10 @@
     border: 1px solid var(--muted-foreground);
     border-radius: 0.25rem;
     pointer-events: none;
+
+    &.h {
+      border-width: 2px;
+    }
   }
   .legend {
     margin-block-start: 0.375rem;
@@ -478,10 +817,6 @@
     background: color-mix(var(--identity) 22%, var(--panel));
     font-size: var(--text-sm);
     text-align: start;
-    &.chosen {
-      background: var(--identity);
-      color: var(--identity-ink);
-    }
   }
   .action small {
     grid-row: 2;
@@ -516,10 +851,6 @@
     border-radius: var(--radius-control);
     background: var(--panel);
     font-size: var(--text-sm);
-    &.chosen {
-      background: var(--identity);
-      color: var(--identity-ink);
-    }
     &:disabled {
       color: var(--muted-foreground);
       cursor: default;
@@ -528,19 +859,24 @@
   .survival-action small {
     font-size: var(--text-xs);
   }
+  input[type="text"],
+  select,
   textarea {
+    min-inline-size: 0;
     inline-size: 100%;
     min-block-size: 2.75rem;
     padding: 0.5rem;
     border: 1px solid var(--color-divider);
     border-radius: var(--radius-control);
     background: var(--panel);
+    color: var(--foreground);
     font-size: var(--text-sm);
-    resize: vertical;
     user-select: text;
   }
+  textarea {
+    resize: vertical;
+  }
   :global(.folio) h2 {
-    font-style: italic;
     font-weight: var(--font-normal);
     font-size: 2.25rem;
     font-family: var(--font-editorial);
@@ -587,24 +923,18 @@
   :global(.folio) .extra-tokens input {
     border-radius: 50%;
   }
-  :global(.obsidian) .armor-value,
   :global(.folio) .armor-value {
     border-radius: 0.25rem 0.25rem 50% 50% / 0.25rem 0.25rem 35% 35%;
   }
+  :global(.obsidian) .armor-value {
+    border-radius: 1rem 1rem 50% 50% / 0.5rem 0.5rem 70% 70%;
+  }
   :global(.signal) .action {
     background: color-mix(var(--identity) 16%, var(--background));
-    &.chosen {
-      background: var(--identity);
-      color: var(--identity-ink);
-    }
   }
   :global(.signal) .survival-action {
     border: 0;
     background: color-mix(var(--identity) 16%, var(--background));
-    &.chosen {
-      background: var(--identity);
-      color: var(--identity-ink);
-    }
   }
   .blind-banner {
     display: flex;
@@ -623,8 +953,5 @@
   .blind-icon {
     inline-size: 1.25rem;
     block-size: 1.25rem;
-  }
-  .chosen small {
-    color: inherit;
   }
 </style>

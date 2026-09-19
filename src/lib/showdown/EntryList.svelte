@@ -1,9 +1,38 @@
 <script lang="ts">
   import Section from "./Section.svelte";
 
-  let { title }: { title: string } = $props();
+  let {
+    title,
+    restricted = false,
+    deck = [],
+    entries = $bindable([]),
+  }: {
+    title: string;
+    restricted?: boolean;
+    deck?: string[];
+    entries?: { id: number; text: string }[];
+  } = $props();
+  let open = $state(false);
+  const id = $props.id();
+  let editing = $state<number | null>(null);
+  let drawMessage = $state("");
+  function draw() {
+    open = true;
+    const remaining = deck.filter((text) => !entries.some((entry) => entry.text === text));
+    if (!remaining.length) {
+      drawMessage = "All sample cards are already added.";
+      return;
+    }
+    const text = remaining[Math.floor(Math.random() * remaining.length)];
+    entries.push({ id: nextId++, text });
+    drawMessage = `Drew ${text} from the sample deck.`;
+  }
+  function edit(id: number, text: string) {
+    editing = id;
+    draft = text;
+    adding = true;
+  }
 
-  let entries = $state<{ id: number; text: string }[]>([]);
   let adding = $state(false);
   let draft = $state("");
   let nextId = 0;
@@ -12,7 +41,9 @@
     event.preventDefault();
     const text = draft.trim();
     if (!text) return;
-    entries.push({ id: nextId++, text });
+    if (editing === null) entries.push({ id: nextId++, text });
+    else entries = entries.map((entry) => (entry.id === editing ? { ...entry, text } : entry));
+    editing = null;
     draft = "";
     adding = false;
   }
@@ -23,20 +54,33 @@
 
   function cancel() {
     adding = false;
+    editing = null;
     draft = "";
   }
 </script>
 
 <Section
   {title}
+  bind:open
+  onaction={deck.length ? draw : undefined}
+  actionLabel="Draw"
+  actionName={`Draw random card from ${title}`}
+  restricted={restricted ? "Cannot use" : ""}
   meta={entries.length ? `${entries.length} ${entries.length === 1 ? "Entry" : "Entries"}` : "None"}
-  onadd={() => (adding = true)}
+  onadd={() => {
+    cancel();
+    adding = true;
+  }}
 >
+  {#if restricted}<p class="restriction">Cannot use {title.toLowerCase()}.</p>{/if}
+  {#if deck.length}
+    <p role="status">{drawMessage}</p>
+  {/if}
   {#if entries.length}
     <ul>
       {#each entries as entry (entry.id)}
         <li>
-          <span>{entry.text}</span>
+          <button class="entry" aria-label={`Edit ${entry.text}`} onclick={() => edit(entry.id, entry.text)}>{entry.text}</button>
           <button class="remove" aria-label={`Remove ${entry.text} from ${title}`} onclick={() => remove(entry.id)}>
             <span class="remove-icon i-material-symbols:close" aria-hidden="true"></span>
           </button>
@@ -46,9 +90,10 @@
   {/if}
   {#if adding}
     <form {onsubmit}>
-      <label>
-        New Entry
+      <label for={`${id}-entry`}>
+        {editing === null ? "New Entry" : "Edit Entry"}
         <input
+          id={`${id}-entry`}
           aria-label={`New ${title} entry`}
           bind:value={draft}
           required
@@ -58,7 +103,7 @@
         />
       </label>
       <div class="form-actions">
-        <button class="save" type="submit" disabled={!draft.trim()}>Add Entry</button>
+        <button class="save" type="submit" disabled={!draft.trim()}>{editing === null ? "Add Entry" : "Save Entry"}</button>
         <button type="button" onclick={cancel}>Cancel</button>
       </div>
     </form>
@@ -68,6 +113,13 @@
 </Section>
 
 <style>
+  .restriction {
+    padding-block: 0.375rem;
+    color: var(--accent-red);
+  }
+  :global(.signal) .restriction {
+    display: none;
+  }
   ul {
     list-style: none;
   }
@@ -78,7 +130,10 @@
     gap: 0.5rem;
     font-size: var(--text-sm);
   }
-  li > span {
+  .entry {
+    flex: 1;
+    min-inline-size: 0;
+    text-align: start;
     overflow-wrap: anywhere;
   }
   button {

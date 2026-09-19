@@ -5,6 +5,7 @@
   let {
     title,
     meta = "",
+    restricted = "",
     open = $bindable(false),
     onadd,
     onaction,
@@ -14,7 +15,8 @@
     children,
   }: {
     title: string;
-    meta?: string;
+    meta?: string | string[];
+    restricted?: string;
     open?: boolean;
     onadd?: Noop;
     onaction?: Noop;
@@ -24,36 +26,78 @@
     children: Snippet;
   } = $props();
 
+  let metaItems = $derived((Array.isArray(meta) ? meta : [meta]).filter(Boolean));
+
   function add() {
     open = true;
     onadd?.();
   }
 </script>
 
-<div class={["section", (onadd || onaction) && "with-add"]}>
+<div class={["section", (onadd || onaction) && "with-add", onadd && onaction && "with-pair"]}>
   <details bind:open>
     <summary>
-      <span><InlineMarkdown text={title} /></span>
-      {#if !open && meta}
-        <small>{meta}</small>
+      <span class="heading">
+        {#if restricted}
+          <span class="restriction-mark">
+            <span class="restriction-icon i-material-symbols:block" aria-hidden="true"></span>
+            <span class="visually-hidden">{restricted}</span>
+          </span>
+        {/if}
+        <InlineMarkdown text={title} />
+      </span>
+      {#if restricted || (!open && metaItems.length)}
+        <small>
+          {#if restricted}<span class="restriction">{restricted}</span>{/if}
+          {#if !open}{#each metaItems as item, index (`${index}-${item}`)}<span>{item}</span>{/each}{/if}
+        </small>
       {/if}
       <span class="chevron i-material-symbols:expand-more" aria-hidden="true"></span>
     </summary>
     <div class="content">{@render children()}</div>
   </details>
-  {#if onadd}
-    <button class="add" onclick={add} aria-label={`Add to ${title}`}>
-      <span class="add-icon i-material-symbols:add" aria-hidden="true"></span>Add
-    </button>
-  {/if}
-  {#if onaction}
-    <button class="add" onclick={onaction} aria-label={actionName ?? `${actionLabel} ${title}`} aria-pressed={pressed}>
-      {actionLabel}
-    </button>
+  {#if onadd || onaction}
+    <div class="section-actions">
+      {#if onaction}
+        <button class="add" onclick={onaction} aria-label={actionName ?? `${actionLabel} ${title}`} aria-pressed={pressed}>
+          {actionLabel}
+        </button>
+      {/if}
+      {#if onadd}
+        <button class={["add", onaction && "icon-action"]} onclick={add} aria-label={`Add to ${title}`}>
+          <span class="add-icon i-material-symbols:add" aria-hidden="true"></span>
+          {#if !onaction}Add{/if}
+        </button>
+      {/if}
+    </div>
   {/if}
 </div>
 
 <style>
+  .heading {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+  }
+  .restriction {
+    color: var(--accent-red);
+    font-weight: var(--font-bold);
+  }
+  .restriction-mark {
+    display: none;
+  }
+  .restriction-icon {
+    display: block;
+    inline-size: 1rem;
+    block-size: 1rem;
+  }
+  :global(.signal) .restriction-mark {
+    display: block;
+    flex-shrink: 0;
+  }
+  :global(.signal) .restriction {
+    display: none;
+  }
   .section {
     position: relative;
     border-block-end: 2px solid color-mix(var(--identity) 45%, transparent);
@@ -67,12 +111,14 @@
     color: color-mix(var(--identity) 55%, var(--foreground));
     list-style: none;
     cursor: pointer;
-
     &::-webkit-details-marker {
       display: none;
     }
   }
   small {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.875rem;
     grid-row: 2;
     grid-column: 1;
     color: var(--muted-foreground);
@@ -84,7 +130,6 @@
     display: inline-block;
     grid-row: 1;
     grid-column: 2;
-    flex-shrink: 0;
     inline-size: 1.25rem;
     block-size: 1.25rem;
     color: var(--muted-foreground);
@@ -101,25 +146,29 @@
     font-weight: var(--font-normal);
     font-size: 1rem;
   }
-  .with-add {
-    & summary {
-      anchor-name: --section-header;
-      margin-inline-end: 4rem;
-    }
+  .with-add summary {
+    anchor-name: --section-header;
+    margin-inline-end: 4rem;
+  }
+  .with-pair summary {
+    margin-inline-end: 5.75rem;
+  }
+  .section-actions {
+    display: flex;
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-end: 0.125rem;
   }
   .add {
     display: flex;
-    position: absolute;
+    position: relative;
     align-items: center;
     justify-content: center;
     inline-size: 3.75rem;
     min-block-size: 2.75rem;
-    inset-block-start: 0;
-    inset-inline-end: 0.125rem;
     gap: 0.25rem;
     color: var(--foreground);
     font-size: var(--text-sm);
-
     &::before {
       position: absolute;
       min-block-size: 2.75rem;
@@ -129,12 +178,28 @@
       content: "";
     }
   }
+  .with-pair .add {
+    inline-size: 3rem;
+  }
+  .with-pair .icon-action {
+    inline-size: 2.75rem;
+    margin-inline-end: -0.25rem;
+    &::after {
+      content: "";
+      position: absolute;
+      inset-inline-start: 0;
+      inset-block: 30%;
+      border-inline-start: 1px solid var(--color-divider);
+    }
+  }
   @supports (block-size: anchor-size(height)) {
-    .add {
+    .section-actions {
       position-anchor: --section-header;
-      min-block-size: 0;
       inset-block-start: anchor(top);
       block-size: anchor-size(height);
+    }
+    .add {
+      min-block-size: 0;
     }
   }
   .add-icon {
@@ -151,9 +216,12 @@
   :global(.folio) summary {
     padding-inline: 0.625rem;
   }
+  :global(.folio) .restriction {
+    color: var(--foreground);
+  }
   :global(.signal) .section {
     margin-block: 0.25rem;
-    padding: 0 0.25rem 0.25rem 0.25rem;
+    padding: 0 0.25rem 0.25rem;
     border: 0;
     border-radius: 1.25rem 0.5rem 1.25rem 0.5rem;
     background: color-mix(var(--identity) 12%, var(--background));
@@ -171,22 +239,14 @@
   :global(.signal) small {
     color: inherit;
   }
-  :global(.signal) .add {
-    color: var(--foreground);
-
-    &[aria-pressed="true"] {
-      border-radius: var(--radius-control);
-      background: var(--foreground);
-      color: var(--background);
-    }
+  :global(.signal) .add[aria-pressed="true"] {
+    border-radius: var(--radius-control);
+    background: var(--foreground);
+    color: var(--background);
   }
   :global(.signal) .content {
-    padding-block-end: 0.25rem;
+    padding-block: 0.25rem;
   }
-  :global(.signal) .with-add .content {
-    margin-block-start: 0.25rem;
-  }
-
   @media (prefers-reduced-motion: reduce) {
     .chevron {
       transition: none;

@@ -3,7 +3,7 @@
     slots = $bindable(),
     selected = $bindable(null),
     dragged = $bindable(null),
-    start = 0,
+    start = 1,
     count = 9,
     slotLabel = "Slot",
   }: {
@@ -14,6 +14,7 @@
     count?: number;
     slotLabel?: string;
   } = $props();
+  let columns = $derived(count === 4 ? 2 : 3);
   function move(target: number, source = selected) {
     if (source === null) {
       if (slots[target]) selected = target;
@@ -37,9 +38,9 @@
   }
 </script>
 
-<div class={["grid", count === 3 ? "short" : "armed"]}>
-  {#if count === 9}
-    <div class="unarmed" aria-label="Fist & Tooth, permanent default weapon">
+<div class={["grid", count === 3 ? "short" : "armed"]} style:--columns={columns}>
+  {#if count !== 3}
+    <div class="unarmed" style:grid-row={columns} aria-label="Fist & Tooth, permanent default weapon">
       <strong class="weapon-name">Fist &amp; Tooth</strong>
     </div>
   {/if}
@@ -50,8 +51,8 @@
   {#each slots.slice(start, start + count) as item, index (start + index)}
     <button
       class={["slot", selected === start + index && "selected"]}
-      style:grid-column={count === 9 ? (index % 3) + 2 : undefined}
-      style:grid-row={count === 9 ? Math.floor(index / 3) + 1 : undefined}
+      style:grid-column={count !== 3 ? (index % columns) + 2 : undefined}
+      style:grid-row={count !== 3 ? Math.floor(index / columns) + 1 : undefined}
       draggable={!!item}
       onclick={() => move(start + index)}
       ondragstart={(event) => drag(event, start + index)}
@@ -62,7 +63,8 @@
       aria-pressed={selected === start + index}
     >
       {#if item}
-        <strong>{item}</strong><small>{item === "Cloth" ? "1 waist armor" : item === "Fist & Tooth" ? "2 | 8 | 0" : "2 | 7 | 1"}</small>
+        <strong>{item}</strong>
+        <small>{item === "Cloth" ? "1 waist armor" : item === "Fist & Tooth" ? "2 | 8 | 0" : "2 | 7 | 1"}</small>
       {/if}
     </button>
   {/each}
@@ -72,17 +74,16 @@
   .grid {
     display: grid;
     position: relative;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: repeat(var(--columns), minmax(0, 1fr));
     gap: 2px;
     &.armed {
-      grid-template-columns: 1rem 1fr 1fr 1fr;
+      grid-template-columns: 1rem repeat(var(--columns), minmax(0, 1fr));
       margin-inline-start: -1rem;
     }
   }
   .unarmed {
     display: grid;
     position: relative;
-    grid-row: 3;
     grid-column: 1;
     place-items: center;
     align-self: center;
@@ -192,29 +193,24 @@
     flex-direction: column;
     align-items: center;
     align-self: center;
-    justify-content: center;
+    justify-content: space-between;
     aspect-ratio: 1;
     min-inline-size: 0;
     min-block-size: 2.75rem;
-    padding: 0.25rem;
+    padding: 0.5rem;
     gap: 0.25rem;
     border: 0;
     border-radius: var(--radius-control);
     background: color-mix(var(--identity) 8%, transparent);
+    color: var(--background);
+    font-size: var(--text-xs);
     line-height: 1.15;
     &.selected {
       outline: 2px solid var(--accent);
     }
     &[draggable="true"] {
-      background: color-mix(var(--identity) 35%, var(--panel));
+      background: var(--color-gear);
       cursor: grab;
     }
-  }
-  strong {
-    font-size: var(--text-xs);
-  }
-  small {
-    color: var(--muted-foreground);
-    font-size: var(--text-xs);
   }
 </style>
