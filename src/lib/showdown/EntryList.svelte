@@ -137,8 +137,8 @@
     overflow-wrap: anywhere;
   }
   button {
-    min-inline-size: 2.75rem;
-    min-block-size: 2.75rem;
+    min-inline-size: var(--size-control);
+    min-block-size: var(--size-control);
     padding-inline: 0.5rem;
     border-radius: var(--radius-control);
     font-size: var(--text-sm);
@@ -164,7 +164,7 @@
   }
   input {
     min-inline-size: 0;
-    min-block-size: 2.75rem;
+    min-block-size: var(--size-control);
     padding-inline: 0.5rem;
     border: 1px solid var(--color-divider);
     border-radius: var(--radius-control);

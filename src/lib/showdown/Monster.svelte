@@ -345,7 +345,7 @@
     display: flex;
     align-items: center;
     inline-size: 100%;
-    min-block-size: 2.75rem;
+    min-block-size: var(--size-control);
     gap: 0.625rem;
     color: color-mix(var(--identity) 55%, var(--foreground));
     font-size: var(--text-sm);
@@ -524,7 +524,7 @@
     gap: 0.375rem;
   }
   .toggle {
-    min-block-size: 2.75rem;
+    min-block-size: var(--size-control);
     border: 1px solid var(--color-divider);
     border-radius: var(--radius-control);
     color: var(--muted-foreground);
@@ -587,7 +587,7 @@
     align-items: center;
     justify-content: space-between;
     inline-size: 100%;
-    min-block-size: 2.75rem;
+    min-block-size: var(--size-control);
     padding: 0.5rem;
     gap: 0.375rem;
     border-radius: var(--radius-control);
@@ -639,7 +639,7 @@
   }
   .resource-quantity {
     inline-size: 3rem;
-    min-block-size: 2.75rem;
+    min-block-size: var(--size-control);
     text-align: center;
   }
   .resource-stepper {
@@ -649,8 +649,8 @@
   .resource-stepper button {
     display: grid;
     place-items: center;
-    inline-size: 2rem;
-    block-size: 2.75rem;
+    inline-size: var(--size-control);
+    block-size: var(--size-control);
     border: 1px solid var(--color-divider);
     background: var(--panel);
     color: var(--foreground);
@@ -763,8 +763,8 @@
   }
   input {
     appearance: textfield;
-    inline-size: 2.75rem;
-    block-size: 2.75rem;
+    inline-size: var(--size-control);
+    block-size: var(--size-control);
     border: 1px solid color-mix(var(--identity) 60%, var(--panel));
     border-radius: var(--radius-control);
     background: color-mix(var(--identity) 18%, var(--panel));

@@ -196,7 +196,7 @@
     justify-content: space-between;
     aspect-ratio: 1;
     min-inline-size: 0;
-    min-block-size: 2.75rem;
+    min-block-size: var(--size-control);
     padding: 0.5rem;
     gap: 0.25rem;
     border: 0;

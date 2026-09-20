@@ -43,6 +43,20 @@ export function makeSheet(index = -1) {
     statuses: [] as string[],
     tokens: makeTokens(6),
     bleeding: 0,
+    armorValues: [0, 0, 0, 0, 1, 0],
+    injuries: {} as Record<string, boolean>,
+    notes: "",
+    gear: ["Fist & Tooth", "Cloth", "Founding Stone", ...Array<null>(10).fill(null)] as (string | null)[],
+    armorSet: "No Armor",
+    bonuses: [0, 0, 0, 0, 0, 0],
+    departure: [0, 0],
+    arrival: [0, 0],
+    parents: ["", ""],
+    affinities: [0, 0, 0],
+    fightingArtLimit: 3,
+    disorderLimit: 3,
+    proficiency: "",
+    development: [0, 0, 0, 0],
   };
 }
 export type Sheet = ReturnType<typeof makeSheet>;

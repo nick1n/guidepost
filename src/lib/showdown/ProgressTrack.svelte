@@ -93,7 +93,7 @@
   }
   .slider {
     position: relative;
-    block-size: 2.75rem;
+    block-size: var(--size-control);
   }
   .rail {
     position: absolute;
@@ -127,28 +127,28 @@
     appearance: none;
     position: relative;
     inline-size: 100%;
-    block-size: 2.75rem;
+    block-size: var(--size-control);
     margin: 0;
     background: transparent;
     cursor: pointer;
   }
   input::-webkit-slider-runnable-track {
-    block-size: 2.75rem;
+    block-size: var(--size-control);
     background: transparent;
   }
   input::-moz-range-track {
-    block-size: 2.75rem;
+    block-size: var(--size-control);
     background: transparent;
   }
   input::-webkit-slider-thumb {
     appearance: none;
-    inline-size: 2.75rem;
-    block-size: 2.75rem;
+    inline-size: var(--size-control);
+    block-size: var(--size-control);
     background: radial-gradient(circle, var(--foreground) 0 0.375rem, var(--background) 0.375rem 0.5rem, transparent 0.5rem);
   }
   input::-moz-range-thumb {
-    inline-size: 2.75rem;
-    block-size: 2.75rem;
+    inline-size: var(--size-control);
+    block-size: var(--size-control);
     border: 0;
     background: radial-gradient(circle, var(--foreground) 0 0.375rem, var(--background) 0.375rem 0.5rem, transparent 0.5rem);
   }
@@ -180,8 +180,8 @@
   button {
     display: grid;
     place-items: center;
-    inline-size: 2.75rem;
-    block-size: 2.75rem;
+    inline-size: var(--size-control);
+    block-size: var(--size-control);
     border-radius: var(--radius-control);
     background: color-mix(var(--identity) 15%, var(--panel));
     &:disabled {

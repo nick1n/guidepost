@@ -40,34 +40,21 @@
     draggedGear = null;
   }
 
-  let armorValues = $state([0, 0, 0, 0, 1, 0]);
-  let injuries = $state<Record<string, boolean>>({});
-  let notes = $state("");
-  let gear = $state<(string | null)[]>(["Fist & Tooth", "Cloth", "Founding Stone", ...Array<null>(10).fill(null)]);
   let selectedGear = $state<number | null>(null);
   let draggedGear = $state<number | null>(null);
-  let armorSet = $state("No Armor");
-  let bonuses = $state([0, 0, 0, 0, 0, 0]);
-  let departure = $state([0, 0]);
-  let arrival = $state([0, 0]);
-  let parents = $state(["", ""]);
-  let affinities = $state([0, 0, 0]);
-  let fightingArtLimit = $state(3);
-  let disorderLimit = $state(3);
-  let proficiency = $state("");
-  let development = $state([0, 0, 0, 0]);
   let displayName = $derived(sheet.nameless ? `Nameless ${number}` : sheet.name.trim() || `Nameless ${number}`);
 
   let extras = $derived([
     { name: "Tokens", populated: sheet.tokens.some((token) => token.positive || token.negative) || !!sheet.bleeding || sheet.priority },
-    { name: "Trinkets", populated: gear.slice(10).some(Boolean) },
+    { name: "Trinkets", populated: sheet.gear.slice(10).some(Boolean) },
     ...listNames.map((name) => ({ name, populated: entries[name].length > 0 })),
     {
       name: "Armor & Bonuses",
-      populated: armorSet !== "No Armor" || bonuses.some(Boolean) || departure.some(Boolean) || arrival.some(Boolean),
+      populated:
+        sheet.armorSet !== "No Armor" || sheet.bonuses.some(Boolean) || sheet.departure.some(Boolean) || sheet.arrival.some(Boolean),
     },
-    { name: "Development", populated: development.some(Boolean) || !!proficiency },
-    { name: "Notes", populated: !!notes.trim() },
+    { name: "Development", populated: sheet.development.some(Boolean) || !!sheet.proficiency },
+    { name: "Notes", populated: !!sheet.notes.trim() },
     {
       name: "Miscellaneous",
       populated: false,
@@ -80,8 +67,8 @@
   ]);
 
   function removeProficiency() {
-    proficiency = "";
-    development[3] = 0;
+    sheet.proficiency = "";
+    sheet.development[3] = 0;
   }
 
   function toggleStatus(status: string) {
@@ -130,7 +117,7 @@
               type="number"
               min="0"
               max="99"
-              bind:value={armorValues[index]}
+              bind:value={sheet.armorValues[index]}
             />
           </span>
           <div class="injuries">
@@ -140,7 +127,7 @@
                 <input
                   id={`${id}-${location.name}-${injury}`}
                   type="checkbox"
-                  bind:checked={injuries[location.name + injury]}
+                  bind:checked={sheet.injuries[location.name + injury]}
                   aria-label={`${person.name} ${location.name} ${injury} injury`}
                 />
                 <span class={injury === "Light" ? "l" : "h"} aria-hidden="true">{injury === "Light" ? "L" : "H"}</span>
@@ -232,8 +219,8 @@
       {@render tokenControls()}
     </Section>
   {:else if name === "Trinkets"}
-    <Section title="Trinkets and Baubles" meta={`${gear.slice(10).filter(Boolean).length || "No"} Gear`}>
-      <Gear bind:slots={gear} bind:selected={selectedGear} bind:dragged={draggedGear} start={10} count={3} slotLabel="Trinket Slot" />
+    <Section title="Trinkets and Baubles" meta={`${sheet.gear.slice(10).filter(Boolean).length || "No"} Gear`}>
+      <Gear bind:slots={sheet.gear} bind:selected={selectedGear} bind:dragged={draggedGear} start={10} count={3} slotLabel="Trinket Slot" />
     </Section>
   {:else if name === "Miscellaneous"}
     <Section title="Miscellaneous" meta={["Identity", "Lineage", "Affinities", "Permissions"]}>
@@ -257,7 +244,7 @@
         <input id={`${id}-nickname`} type="text" bind:value={sheet.nickname} maxlength="160" />
         {#each ["Parent 1", "Parent 2"] as parent, index (parent)}
           <label class="field" for={`${id}-parent-${index}`}>{parent}</label>
-          <input id={`${id}-parent-${index}`} type="text" bind:value={parents[index]} maxlength="160" />
+          <input id={`${id}-parent-${index}`} type="text" bind:value={sheet.parents[index]} maxlength="160" />
         {/each}
       </div>
       <h3>Affinities</h3>
@@ -272,7 +259,7 @@
               min="-10"
               max="10"
               step="1"
-              bind:value={affinities[index]}
+              bind:value={sheet.affinities[index]}
             />
           </div>
         {/each}
@@ -285,11 +272,11 @@
         </div>
         <div class="stat">
           <label for={`${id}-fa-limit`} class="stat-label">Fighting Arts</label>
-          <input id={`${id}-fa-limit`} class="attribute-value" type="number" min="0" step="1" bind:value={fightingArtLimit} />
+          <input id={`${id}-fa-limit`} class="attribute-value" type="number" min="0" step="1" bind:value={sheet.fightingArtLimit} />
         </div>
         <div class="stat">
           <label for={`${id}-disorder-limit`} class="stat-label">Disorders</label>
-          <input id={`${id}-disorder-limit`} class="attribute-value" type="number" min="0" step="1" bind:value={disorderLimit} />
+          <input id={`${id}-disorder-limit`} class="attribute-value" type="number" min="0" step="1" bind:value={sheet.disorderLimit} />
         </div>
       </div>
       <h3>Permissions</h3>
@@ -307,10 +294,10 @@
       </div>
     </Section>
   {:else if name === "Armor & Bonuses"}
-    <Section title="Armor & Bonuses" meta={`${armorSet} Set`}>
+    <Section title="Armor & Bonuses" meta={`${sheet.armorSet} Set`}>
       <label class="field" for={`${id}-armor-set`}>
         Armor Set
-        <select id={`${id}-armor-set`} bind:value={armorSet}>
+        <select id={`${id}-armor-set`} bind:value={sheet.armorSet}>
           {#each ["No Armor", "Clothed & Satiated", "Rawhide", "White Lion", "Screaming Antelope", "Leather", "Lantern", "Phoenix"] as set (set)}
             <option>{set}</option>
           {/each}
@@ -325,7 +312,7 @@
               class="attribute-value"
               type="number"
               aria-label={`${person.name} ${attribute} gear bonus`}
-              bind:value={bonuses[index]}
+              bind:value={sheet.bonuses[index]}
             />
           </div>
         {/each}
@@ -338,7 +325,7 @@
               id={`${id}-departure-${index}`}
               type="number"
               aria-label={`${person.name} depart ${bonus} bonus`}
-              bind:value={departure[index]}
+              bind:value={sheet.departure[index]}
             /></label
           >
         {/each}
@@ -351,7 +338,7 @@
               id={`${id}-arrival-${index}`}
               type="number"
               aria-label={`${person.name} arrival ${bonus} bonus`}
-              bind:value={arrival[index]}
+              bind:value={sheet.arrival[index]}
             /></label
           >
         {/each}
@@ -360,22 +347,27 @@
   {:else if name === "Development"}
     <Section
       title="Development"
-      meta={[`XP ${development[0]}`, `Courage ${development[1]}`, `Understand ${development[2]}`, `Prof ${development[3]}`]}
+      meta={[
+        `XP ${sheet.development[0]}`,
+        `Courage ${sheet.development[1]}`,
+        `Understand ${sheet.development[2]}`,
+        `Prof ${sheet.development[3]}`,
+      ]}
     >
       {#each tracks as track, index (track.name)}
         {#if index !== 3}
-          <ProgressTrack {...track} {variant} bind:value={development[index]} />
-        {:else if proficiency}
+          <ProgressTrack {...track} {variant} bind:value={sheet.development[index]} />
+        {:else if sheet.proficiency}
           <div class="proficiency">
-            <strong>{proficiency}</strong>
+            <strong>{sheet.proficiency}</strong>
             <button class="condition" onclick={removeProficiency}>Remove proficiency</button>
           </div>
           {#if !sheet.permissions.proficiency}<p class="restriction">Cannot use weapon proficiency</p>{/if}
-          <ProgressTrack {...track} {variant} bind:value={development[index]} />
+          <ProgressTrack {...track} {variant} bind:value={sheet.development[index]} />
         {:else}
           <label class="field" for={`${id}-proficiency`}>
             Weapon Proficiency
-            <select id={`${id}-proficiency`} bind:value={proficiency}>
+            <select id={`${id}-proficiency`} bind:value={sheet.proficiency}>
               <option value="">Select a weapon proficiency</option>
               {#each ["Fist & Tooth", "Sword", "Shield", "Axe", "Bow", "Club", "Dagger", "Grand Weapon", "Katar", "Spear", "Whip"] as weapon (weapon)}
                 <option>{weapon}</option>
@@ -386,8 +378,8 @@
       {/each}
     </Section>
   {:else if name === "Notes"}
-    <Section title="Notes" meta={notes.trim() ? "Notes Added" : "No Notes"}>
-      <textarea bind:value={notes} aria-label={`Notes for ${person.name}`} placeholder="Notes…" rows="3"></textarea>
+    <Section title="Notes" meta={sheet.notes.trim() ? "Notes Added" : "No Notes"}>
+      <textarea bind:value={sheet.notes} aria-label={`Notes for ${person.name}`} placeholder="Notes…" rows="3"></textarea>
     </Section>
   {:else}
     <EntryList
@@ -422,7 +414,7 @@
   {#if variant === 3}
     <Section
       title="Combat"
-      meta={[`Movement: ${sheet.attributes[0] ?? 0}`, `Insanity: ${armorValues[0] ?? 0}`, `Bleeding: ${sheet.bleeding ?? 0}`]}
+      meta={[`Movement: ${sheet.attributes[0] ?? 0}`, `Insanity: ${sheet.armorValues[0] ?? 0}`, `Bleeding: ${sheet.bleeding ?? 0}`]}
     >
       {@render statistics()}
       <h3>Insanity & Armor</h3>
@@ -441,13 +433,13 @@
     <Section title="Status" meta={statusItems(sheet)}>{@render conditions()}</Section>
   {:else}
     {#if variant === 2}
-      <Section title="Vital Signs" meta={[`Mov ${sheet.attributes[0] ?? 0}`, `Ins ${armorValues[0] ?? 0}`]}>
+      <Section title="Vital Signs" meta={[`Mov ${sheet.attributes[0] ?? 0}`, `Ins ${sheet.armorValues[0] ?? 0}`]}>
         {@render statistics()}
         {@render protection()}
       </Section>
     {:else}
       <Section title="Attributes" meta={`Mov ${sheet.attributes[0] ?? 0}`}>{@render statistics()}</Section>
-      <Section title="Insanity & Armor" meta={`Ins ${armorValues[0] ?? 0}`}>{@render protection()}</Section>
+      <Section title="Insanity & Armor" meta={`Ins ${sheet.armorValues[0] ?? 0}`}>{@render protection()}</Section>
     {/if}
     <Section title="Status" meta={statusItems(sheet)}>{@render conditions()}</Section>
     <Section title="Actions" onaction={() => (sheet.acted = !sheet.acted)} actionLabel="Act">
@@ -464,14 +456,14 @@
     </Section>
   {/if}
 
-  <Section title="Gear Grid" meta={[`${gear.slice(0, compactGear ? 4 : 9).filter(Boolean).length} Gear`]}>
-    <Gear bind:slots={gear} bind:selected={selectedGear} bind:dragged={draggedGear} count={compactGear ? 4 : 9} />
+  <Section title="Gear Grid" meta={[`${sheet.gear.slice(0, compactGear ? 4 : 9).filter(Boolean).length} Gear`]}>
+    <Gear bind:slots={sheet.gear} bind:selected={selectedGear} bind:dragged={draggedGear} count={compactGear ? 4 : 9} />
     <button class={["condition", compactGear && "active"]} aria-pressed={compactGear} onclick={toggleGearSize}>
       Use {compactGear ? "3 x 3" : "2 x 2"} grid
     </button>
-    {#if compactGear && gear.slice(5, 10).some(Boolean)}
+    {#if compactGear && sheet.gear.slice(5, 10).some(Boolean)}
       <p class="selection">
-        {gear.slice(5, 10).filter(Boolean).length} gear stored in extra slots. Switch to 3 x 3 to access them.
+        {sheet.gear.slice(5, 10).filter(Boolean).length} gear stored in extra slots. Switch to 3 x 3 to access them.
       </p>
     {/if}
   </Section>
@@ -510,7 +502,7 @@
     align-items: center;
     gap: 0.625rem;
     inline-size: 100%;
-    min-block-size: 2.75rem;
+    min-block-size: var(--size-control);
     color: color-mix(var(--identity) 55%, var(--foreground));
     font-size: var(--text-sm);
 
@@ -643,8 +635,8 @@
   }
   input[type="number"] {
     appearance: textfield;
-    inline-size: 2.75rem;
-    block-size: 2.75rem;
+    inline-size: var(--size-control);
+    block-size: var(--size-control);
     border: 1px solid color-mix(var(--identity) 60%, var(--panel));
     border-radius: var(--radius-control);
     background: color-mix(var(--identity) 18%, var(--panel));
@@ -759,8 +751,8 @@
   input[type="checkbox"] {
     appearance: none;
     grid-area: 1 / 1;
-    inline-size: 2.75rem;
-    block-size: 2.75rem;
+    inline-size: var(--size-control);
+    block-size: var(--size-control);
     border: 0;
     cursor: pointer;
     &:checked + span {
@@ -808,8 +800,8 @@
     gap: 0.25rem;
   }
   .condition {
-    min-inline-size: 2.75rem;
-    min-block-size: 2.75rem;
+    min-inline-size: var(--size-control);
+    min-block-size: var(--size-control);
     padding: 0.25rem 0.5rem;
     border: 1px solid var(--color-divider);
     border-radius: var(--radius-control);
@@ -878,7 +870,7 @@
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
-    min-block-size: 2.75rem;
+    min-block-size: var(--size-control);
     padding: 0.375rem;
     gap: 0.25rem;
     border: 1px solid var(--color-divider);
@@ -898,7 +890,7 @@
   textarea {
     min-inline-size: 0;
     inline-size: 100%;
-    min-block-size: 2.75rem;
+    min-block-size: var(--size-control);
     padding: 0.5rem;
     border: 1px solid var(--color-divider);
     border-radius: var(--radius-control);

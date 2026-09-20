@@ -598,7 +598,7 @@
   .glow {
     z-index: var(--layer-backdrop);
     position: fixed;
-    block-size: calc(100lvh + 4rem);
+    block-size: calc(100vh + 4rem);
     inset-block-end: -2rem;
     inset-inline: -2rem;
     overflow: hidden;
