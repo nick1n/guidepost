@@ -23,13 +23,13 @@
   --border: #1e1e1e;
   --color-divider: color-mix(var(--foreground) 15%, transparent);
 
-  --accent: #11b2e1;
+  --accent: var(--accent-blue);
   --accent-foreground: #fdfffe;
 
   --destructive: #86551e;
   --secondary: #d97706;
 
-  --beta: #11b2e1;
+  --beta: var(--accent-blue);
 
   --accent-blue: #11b2e1;
   --accent-green: #4ae111;
@@ -37,16 +37,21 @@
   --accent-purple: #a811e1;
   --contrast: #000;
   --contrast-foreground: #fff;
+  --color-gear: radial-gradient(circle, #fffc, #dddc);
 
   --font-sans: "Inter", system-ui, sans-serif;
   --font-display: "Archivo", "Inter", sans-serif;
 
+  --font-normal: 500;
   --font-bold: 700;
   --font-semibold: 700;
   --text-card-title: 1.5rem;
   --text-hero: round(clamp(4.5rem, 10vw, 9rem), 1px);
   --text-lg: 1.25rem;
+  --text-md: 0.875rem;
   --text-sm: 0.75rem;
+  --text-xs: 0.625rem;
+  --font-editorial: Georgia, serif;
   --text-xl: 1.5rem;
 
   --border-size: 2px;
@@ -114,4 +119,23 @@ button {
   display: inline-block;
   inline-size: var(--size-external);
   block-size: var(--size-external);
+}
+
+.hidden {
+  display: none !important;
+}
+
+b,
+strong {
+  font-weight: var(--font-bold);
+}
+
+.content {
+  p {
+    font-size: .75rem;
+
+    +p {
+      margin-block-start: .25rem;
+    }
+  }
 }

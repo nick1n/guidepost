@@ -153,7 +153,7 @@
   import { collectionActions } from "#lib/state/collection-actions.ts";
 
   let landing: HTMLElement;
-  let ownershipDialog: { show: () => void };
+  let ownershipDialog: { show: Noop };
   let quickStartTrigger: HTMLAnchorElement | undefined;
   let selectedCoreVersion = $state(latestCoreVersion);
   let lightingFrame: number | undefined;

@@ -32,7 +32,7 @@ This warning is safe to ignore with the current integration. SvelteKit detects t
 uses `transform` and `renderChunk` to include global styles instead. See the
 [UnoCSS implementation](https://github.com/unocss/unocss/blob/main/packages-integrations/svelte-scoped/src/_vite/globalStylesPlugin.ts).
 
-The production build has been verified to link the global stylesheet and include all safelisted icons. Keep the integration as-is;
+The production build has been verified to link the global stylesheet and include all safe listed icons. Keep the integration as-is;
 after UnoCSS/SvelteKit upgrades or integration changes, rebuild and recheck those outputs and confirm no `%unocss-svelte-scoped.global%`
 placeholders remain in generated HTML. Other warnings need their own investigation.
 

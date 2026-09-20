@@ -10,6 +10,7 @@
   };
 
   let { editions, value = [], copyNumbers, onselect, onSetCopyNumber }: Props = $props();
+  const id = $props.id();
   let drafts = $state<Record<string, string>>({});
 
   function oninput(event: Event, edition: string) {
@@ -37,9 +38,10 @@
 
 {#each editions as edition (edition.v)}
   {#if value.includes(edition.v) && edition.limit}
-    <label>
+    <label for={`${id}-${edition.v}`}>
       <span class="edition-name">{edition.v} #</span>
       <input
+        id={`${id}-${edition.v}`}
         type="number"
         inputmode="numeric"
         min={1}
