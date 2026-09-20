@@ -1,5 +1,6 @@
 <script lang="ts">
   import AttributeTokens from "./AttributeTokens.svelte";
+  import KdIcon from "#lib/components/KdIcon.svelte";
   import Section from "./Section.svelte";
   import Gear from "./Gear.svelte";
   import EntryList from "./EntryList.svelte";
@@ -87,7 +88,14 @@
     sheet.statuses = sheet.statuses.includes(status) ? sheet.statuses.filter((value) => value !== status) : [...sheet.statuses, status];
   }
 
-  const armor = ["Insanity", "Head", "Arms", "Body", "Waist", "Legs"] as const;
+  const armor = [
+    { name: "Insanity", icon: undefined },
+    { name: "Head", icon: "location-head" },
+    { name: "Arms", icon: "location-arms" },
+    { name: "Body", icon: "location-body" },
+    { name: "Waist", icon: "location-waist" },
+    { name: "Legs", icon: "location-legs" },
+  ] as const;
   const tracks = [
     { name: "Hunt XP", max: 16, marks: [2, 6, 10, 15, 16], milestones: ["Age I", "Age II", "Age III", "Age IV", "Retired"] },
     { name: "Courage", max: 9, marks: [3, 9], milestones: ["Bold", "See the Truth"] },
@@ -112,26 +120,28 @@
 {#snippet protection()}
   <div class="combat">
     <div class="armor">
-      {#each armor as location, index (location)}
+      {#each armor as location, index (location.name)}
         <div class="armor-cell">
-          <span>{location === "Insanity" ? "Insanity" : location}</span>
-          <input
-            class="armor-value"
-            aria-label={`${person.name} ${location}`}
-            type="number"
-            min="0"
-            max="99"
-            bind:value={armorValues[index]}
-          />
+          <span class="armor-input">
+            {#if location.icon}<KdIcon class="armor-icon" i={location.icon} />{/if}
+            <input
+              class="armor-value"
+              aria-label={`${person.name} ${location.name}`}
+              type="number"
+              min="0"
+              max="99"
+              bind:value={armorValues[index]}
+            />
+          </span>
           <div class="injuries">
             {#if index === 1}<span class="injury-gap" aria-hidden="true"></span>{/if}
             {#each index === 0 ? ["Light"] : index === 1 ? ["Heavy"] : ["Light", "Heavy"] as injury (injury)}
-              <label class="injury-target" for={`${id}-${location}-${injury}`}>
+              <label class="injury-target" for={`${id}-${location.name}-${injury}`}>
                 <input
-                  id={`${id}-${location}-${injury}`}
+                  id={`${id}-${location.name}-${injury}`}
                   type="checkbox"
-                  bind:checked={injuries[location + injury]}
-                  aria-label={`${person.name} ${location} ${injury} injury`}
+                  bind:checked={injuries[location.name + injury]}
+                  aria-label={`${person.name} ${location.name} ${injury} injury`}
                 />
                 <span class={injury === "Light" ? "l" : "h"} aria-hidden="true">{injury === "Light" ? "L" : "H"}</span>
               </label>
@@ -483,7 +493,7 @@
           {:else}
             {showMore ? "Show less" : "Show more"}
           {/if}
-          <span class="more-icon i-material-symbols:expand-more" aria-hidden="true" style:rotate={showMore ? "180deg" : "0deg"}></span>
+          <KdIcon class={["more-icon", showMore && "expanded"]} i="flow-arrow" />
         </span>
       </button>
     {:else}
@@ -521,10 +531,15 @@
     gap: 0.375rem;
     padding: 0.375rem 0.625rem;
   }
+  .more-label :global(.more-icon) {
+    display: inline-block;
+  }
+  .more-label :global(.more-icon.expanded) {
+    rotate: 180deg;
+  }
   :global(.obsidian) .more-label {
     border-inline: 2px solid var(--identity);
     font-weight: var(--font-bold);
-    text-transform: uppercase;
   }
   :global(.folio) .more {
     font-family: var(--font-editorial);
@@ -555,11 +570,6 @@
     color: var(--identity-ink);
     font-weight: var(--font-bold);
   }
-  .more-icon {
-    inline-size: 1.25rem;
-    block-size: 1.25rem;
-  }
-
   .nickname {
     font-size: var(--text-sm);
     overflow-wrap: anywhere;
@@ -713,8 +723,28 @@
     font-size: var(--text-xs);
   }
   .armor-value {
+    position: relative;
     color: var(--foreground);
     font-size: 1.125rem;
+  }
+  .armor-input {
+    display: grid;
+    place-items: center;
+    border: 1px solid color-mix(var(--identity) 60%, var(--panel));
+    border-radius: var(--radius-control);
+    background: color-mix(var(--identity) 18%, var(--panel));
+  }
+  .armor-input :global(.armor-icon) {
+    grid-area: 1 / 1;
+    color: color-mix(var(--identity) 42%, var(--foreground));
+    font-size: 2rem;
+    opacity: 0.15;
+    pointer-events: none;
+  }
+  .armor-input .armor-value {
+    grid-area: 1 / 1;
+    border: 0;
+    background: transparent;
   }
   .injuries {
     display: grid;
@@ -927,10 +957,10 @@
   :global(.folio) .extra-tokens input {
     border-radius: 50%;
   }
-  :global(.folio) .armor-value {
+  :global(.folio) .armor-input {
     border-radius: 0.25rem 0.25rem 50% 50% / 0.25rem 0.25rem 35% 35%;
   }
-  :global(.obsidian) .armor-value {
+  :global(.obsidian) .armor-input {
     border-radius: 1rem 1rem 50% 50% / 0.5rem 0.5rem 70% 70%;
   }
   :global(.signal) .action {

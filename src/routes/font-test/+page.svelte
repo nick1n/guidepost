@@ -14,7 +14,7 @@
     armor: "armor",
     deck: "deck",
   };
-  const otherIcons = new Set<KdIconName>(["lantern-small", "milestone-filled"]);
+  const otherIcons = new Set<KdIconName>(["lantern-small", "milestone-filled", "persistent-injury"]);
   const groupedIcons = new Map<string, KdIconName[]>();
 
   for (const icon of Object.keys(KD_ICONS).sort((a, b) => a.localeCompare(b)) as KdIconName[]) {

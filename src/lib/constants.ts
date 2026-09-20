@@ -3,6 +3,7 @@ export const DURATION_FAST = 180;
 
 export const KD_ICONS = {
   activation: "q",
+  armor: "M",
   "armor-0": "*",
   "armor-1": "!",
   "armor-2": '"',
@@ -14,7 +15,6 @@ export const KD_ICONS = {
   "armor-8": "(",
   "armor-9": ")",
   "armor-x": "d",
-  armor: "M",
   "card-a": "h",
   "card-b": "i",
   "card-l": "k",
@@ -47,7 +47,6 @@ export const KD_ICONS = {
   "hit-legs": "}",
   "hit-waist": "~",
   hourglass: "\u00c4",
-  injury: "p",
   "lantern-small": "f",
   lantern: "e",
   "location-arms": "-",
@@ -79,6 +78,7 @@ export const KD_ICONS = {
   "monster-watcher": "\u00a8",
   "monster-white-lion": "\u00a9",
   movement: "m",
+  "persistent-injury": "p",
   puzzle: "Z",
   reflex: "r",
   require: "u",

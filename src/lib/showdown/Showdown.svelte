@@ -82,16 +82,11 @@
     );
     alignDashboard(index);
   }
-  let lastTap: { index: number; time: number } | null = null;
-  function selectSurvivor(event: MouseEvent, index: number) {
+  function selectSurvivor(index: number) {
+    const wasSelected = active === index;
     jump(index);
-    // Click events cover mouse, touch and keyboard activation without duplicate touch/dblclick toggles.
-    const now = performance.now();
-    if (index > 0 && (event.detail === 2 || (lastTap?.index === index && now - lastTap.time <= 350))) {
+    if (index > 0 && wasSelected) {
       sheets[index - 1].acted = !sheets[index - 1].acted;
-      lastTap = null;
-    } else {
-      lastTap = { index, time: now };
     }
   }
 
@@ -162,7 +157,7 @@
     {/each}
   </div>
   <footer class="toolbar">
-    <p id="roster-shortcut" class="visually-hidden">Double click or double tap a survivor to toggle Acted. Keyboard: activate twice.</p>
+    <p id="roster-shortcut" class="visually-hidden">Tap an already selected survivor to toggle Acted.</p>
     <nav class="roster" aria-label="Jump to dashboard">
       {#each roster as person, index (person.name)}
         <button
@@ -174,7 +169,7 @@
           aria-label={index === 0
             ? `White Lion, ${monsterTurn ? "current turn" : "waiting"}, movement ${(monsterStats.movement || 0) + tokenNet(monsterTokens[0])}, toughness ${(monsterStats.toughness || 0) + tokenNet(monsterTokens[1])}, round ${round}`
             : `${survivorName(index)}, ${statusText(sheets[index - 1])}, ${tokenTotal(sheets[index - 1])} tokens, ${availableActions(sheets[index - 1])} survival actions available`}
-          onclick={(event) => selectSurvivor(event, index)}
+          onclick={() => selectSurvivor(index)}
         >
           <strong>{index === 0 ? "White Lion" : survivorName(index)}</strong>
           {#if index === 0}
@@ -186,20 +181,19 @@
         </button>
       {/each}
     </nav>
-    <button
-      class="advance"
-      onclick={advance}
-      aria-label={monsterTurn ? "Monster's Turn. Begin Survivors' Turn" : "Survivors' Turn. Begin Next Round"}
-    >
-      <span aria-live="polite">{monsterTurn ? "Monster's Turn" : "Survivors' Turn"}</span>
+
+    <button class="advance" onclick={advance}>
+      <span class="turn-label" aria-live="polite">{`Round ${round}: ` + (monsterTurn ? "Monster's Turn" : "Survivors' Turn")}</span>
       <span class="next-label">
         {monsterTurn ? "Survivors Next" : "Next Round"}
         <span class="arrow i-material-symbols:arrow-forward" aria-hidden="true"></span>
       </span>
     </button>
+
     <button class="undo" aria-label="Undo">
       <span class="menu-icon i-material-symbols:undo" aria-hidden="true"></span>
     </button>
+
     <button
       class="menu-button"
       aria-label="Showdown Menu"
@@ -387,6 +381,9 @@
     color: var(--contrast);
     font-size: var(--text-xs);
   }
+  .turn-label {
+    font-size: var(--text-sm);
+  }
   .next-label {
     display: flex;
     align-items: center;
@@ -511,7 +508,7 @@
     font-size: var(--text-xs);
   }
   .folio .workspace {
-    --size-panel: max(var(--size-column), calc((100% - 1.375rem) / 5));
+    --size-panel: max(var(--size-column), calc((100% - 1.5rem) / 5));
 
     padding-block: 0.375rem;
     gap: 0.375rem;

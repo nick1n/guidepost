@@ -1,5 +1,6 @@
 <script lang="ts">
   import AttributeTokens from "./AttributeTokens.svelte";
+  import KdIcon from "#lib/components/KdIcon.svelte";
   import Section from "./Section.svelte";
   import { survivors, type TokenCount } from "./data";
 
@@ -183,9 +184,7 @@
     <li>no target: <strong>sniff</strong></li>
   </ol>
   <div class="more" aria-hidden="true">
-    <span class="more-label">
-      <span class="more-icon i-material-symbols:expand-more"></span>
-    </span>
+    <KdIcon class="basic-action-icon" i="flow-arrow" />
   </div>
   <h3><strong>Move & Attack</strong> Target</h3>
   <div class="attack-profile">
@@ -255,7 +254,7 @@
         {:else}
           {showMore ? "Show less" : "Show more"}
         {/if}
-        <span class="more-icon i-material-symbols:expand-more" aria-hidden="true" style:rotate={showMore ? "180deg" : "0deg"}></span>
+        <KdIcon class={["more-icon", showMore && "expanded"]} i="flow-arrow" />
       </span>
     </button>
   {:else}
@@ -368,10 +367,24 @@
     padding: 0.375rem 0.625rem;
     gap: 0.375rem;
   }
+  .more-label :global(.more-icon) {
+    display: inline-block;
+  }
+  .more-label :global(.more-icon.expanded) {
+    rotate: 180deg;
+  }
+  .more :global(.basic-action-icon) {
+    display: flex;
+    align-items: center;
+    padding: 0.375rem 0.625rem;
+  }
   :global(.obsidian) .more-label {
     border-inline: 2px solid var(--identity);
     font-weight: var(--font-bold);
-    text-transform: uppercase;
+  }
+  :global(.obsidian) .more :global(.basic-action-icon) {
+    border-inline: 2px solid var(--identity);
+    font-weight: var(--font-bold);
   }
   :global(.folio) .more {
     font-size: 1rem;
@@ -383,6 +396,9 @@
     }
   }
   :global(.folio) .more-label {
+    padding-inline: 0;
+  }
+  :global(.folio) .more :global(.basic-action-icon) {
     padding-inline: 0;
   }
   :global(.signal) .more {
@@ -402,11 +418,12 @@
     color: var(--identity-ink);
     font-weight: var(--font-bold);
   }
-  .more-icon {
-    inline-size: 1.25rem;
-    block-size: 1.25rem;
+  :global(.signal) .more :global(.basic-action-icon) {
+    border-radius: 2rem;
+    background: var(--identity);
+    color: var(--identity-ink);
+    font-weight: var(--font-bold);
   }
-
   header {
     padding: 0.75rem 0.625rem;
     border-radius: var(--radius-card);

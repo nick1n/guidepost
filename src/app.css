@@ -1,13 +1,3 @@
-@font-face {
-  font-family: "KD Icons";
-  src:
-    url("/fonts/kd-icons-v1.woff2") format("woff2"),
-    url("/fonts/kd-icons-v1.woff") format("woff");
-  font-style: normal;
-  font-weight: 400;
-  font-display: block;
-}
-
 :root,
 .dark {
   color-scheme: dark;
