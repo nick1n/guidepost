@@ -132,10 +132,10 @@ strong {
 
 .content {
   p {
-    font-size: .75rem;
+    font-size: 0.75rem;
 
-    +p {
-      margin-block-start: .25rem;
+    + p {
+      margin-block-start: 0.25rem;
     }
   }
 }

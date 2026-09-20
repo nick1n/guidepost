@@ -46,10 +46,10 @@
         {/if}
         <InlineMarkdown text={title} />
       </span>
-      {#if restricted || (!open && metaItems.length)}
-        <small>
+      {#if restricted || metaItems.length}
+        <small class={[restricted && "restricted"]}>
           {#if restricted}<span class="restriction">{restricted}</span>{/if}
-          {#if !open}{#each metaItems as item, index (`${index}-${item}`)}<span>{item}</span>{/each}{/if}
+          {#each metaItems as item, index (`${index}-${item}`)}<span class="meta">{item}</span>{/each}
         </small>
       {/if}
       <span class="chevron i-material-symbols:expand-more" aria-hidden="true"></span>
@@ -135,7 +135,13 @@
     color: var(--muted-foreground);
     transition: rotate var(--duration-fast);
   }
-  summary:has(small) .chevron {
+  /* Native details toggles before bind:open updates, so layout must follow the attribute. */
+  details[open] small:not(.restricted),
+  details[open] .meta {
+    display: none;
+  }
+  details:not([open]) summary:has(small) .chevron,
+  summary:has(.restricted) .chevron {
     grid-row: 1 / 3;
   }
   details:not([open]) .chevron {
