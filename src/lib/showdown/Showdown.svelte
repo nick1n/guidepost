@@ -13,11 +13,18 @@
   let monsterTurn = $state(true);
   let sheets = $state(survivors.map((_, index) => makeSheet(index)));
   let menuOpen = $state(false);
+  let density = $state<Density>("default");
   let snap = $state<Snap>("free");
   let monsterStats = $state({ life: 8, movement: 6, toughness: 6, damage: 0, speed: 0 });
   let monsterTokens = $state(makeTokens(7));
 
+  type Density = "compact" | "default" | "comfortable";
   type Snap = "left" | "center" | "right" | "free";
+  const densityOptions: { value: Density; label: string }[] = [
+    { value: "compact", label: "Compact" },
+    { value: "default", label: "Default" },
+    { value: "comfortable", label: "Comfortable" },
+  ];
   const snapOptions: { value: Snap; label: string }[] = [
     { value: "left", label: "Left" },
     { value: "center", label: "Center" },
@@ -42,7 +49,8 @@
       const style = getComputedStyle(element);
       const gutter =
         element.offsetWidth - element.clientWidth - parseFloat(style.borderInlineStartWidth) - parseFloat(style.borderInlineEndWidth);
-      element.style.setProperty("--panel-inset", gutter > 1 ? "0px" : ".5rem");
+      const inset = gutter > 1 ? "0" : ".5rem";
+      if (element.style.getPropertyValue("--panel-inset") !== inset) element.style.setProperty("--panel-inset", inset);
     }
     const observer = new ResizeObserver(measure);
     observer.observe(element);
@@ -137,7 +145,7 @@
 <svelte:window {onkeydown} />
 <svelte:head><title>{design.name} Showdown | Guidepost</title></svelte:head>
 
-<main class={["showdown", design.className]} data-snap={snap}>
+<main class={["showdown", design.className]} data-density={density} data-snap={snap}>
   <h1 class="visually-hidden">{design.name} Showdown</h1>
   <div class="workspace" bind:this={rail} {onscroll} {@attach dragScroll}>
     {#each roster as person, index (person.name)}
@@ -219,61 +227,84 @@
             >
           </div>
         {/if}
-        <fieldset class="snap-setting">
-          <legend>Dashboard snap</legend>
-          <div class="snap-options">
+        <fieldset class="setting">
+          <legend class="setting-label">Dashboard snap</legend>
+          <div class="options snap-options">
             {#each snapOptions as option (option.value)}
-              <button class="snap-option" aria-pressed={snap === option.value} onclick={() => selectSnap(option.value)}>
+              <button class="menu-option" aria-pressed={snap === option.value} onclick={() => selectSnap(option.value)}>
                 {option.label}
               </button>
             {/each}
           </div>
         </fieldset>
-        <strong>Quick View Key</strong>
-        <dl>
-          <div>
-            <dt>M / T</dt>
-            <dd>Monster movement and toughness</dd>
+        <fieldset class="setting">
+          <legend class="setting-label">Interface density</legend>
+          <div class="options">
+            {#each densityOptions as option (option.value)}
+              <button
+                class="menu-option density-option"
+                style:--size-preview={`var(--size-control-${option.value})`}
+                aria-pressed={density === option.value}
+                onclick={() => (density = option.value)}
+              >
+                {option.label}
+              </button>
+            {/each}
           </div>
-          <div>
-            <dt>Ready</dt>
-            <dd>Alive and ready to act</dd>
-          </div>
-          <div>
-            <dt><span class="key-icon i-material-symbols:my-location" aria-hidden="true"></span>Threat</dt>
-            <dd>Marked as a threat</dd>
-          </div>
-          <div>
-            <dt><span class="key-icon i-material-symbols:check" aria-hidden="true"></span>Acted</dt>
-            <dd>Has acted this round</dd>
-          </div>
-          <div>
-            <dt><span class="key-icon i-material-symbols:airline-seat-flat" aria-hidden="true"></span>Down</dt>
-            <dd>Knocked down</dd>
-          </div>
-          <div>
-            <dt><span class="key-icon i-material-symbols:flag" aria-hidden="true"></span>Priority</dt>
-            <dd>Priority target</dd>
-          </div>
-          <div>
-            <dt><span class="key-icon i-material-symbols:visibility" aria-hidden="true"></span>Blind Spot</dt>
-            <dd>In the monster’s blind spot</dd>
-          </div>
-          <div>
-            <dt><span class="key-icon i-material-symbols:filter-none" aria-hidden="true"></span>Tokens</dt>
-            <dd>Total tokens, including bleeding</dd>
-          </div>
-          <div>
-            <dt><span class="key-icon i-material-symbols:bolt" aria-hidden="true"></span>Actions</dt>
-            <dd>Available survival actions</dd>
-          </div>
-        </dl>
-        <nav aria-label="Showdown Designs">
-          {#each designs as item (item.name)}
-            <a href={resolve(item.href)} aria-current={item.name === design.name ? "page" : undefined}>{item.name}</a>
-          {/each}
-        </nav>
-        <a href={resolve("/")}>Back to Guidepost</a>
+        </fieldset>
+        <div class="hidden">
+          <strong>Quick View Key</strong>
+          <dl>
+            <div>
+              <dt>M / T</dt>
+              <dd>Monster movement and toughness</dd>
+            </div>
+            <div>
+              <dt>Ready</dt>
+              <dd>Alive and ready to act</dd>
+            </div>
+            <div>
+              <dt><span class="key-icon i-material-symbols:my-location" aria-hidden="true"></span>Threat</dt>
+              <dd>Marked as a threat</dd>
+            </div>
+            <div>
+              <dt><span class="key-icon i-material-symbols:check" aria-hidden="true"></span>Acted</dt>
+              <dd>Has acted this round</dd>
+            </div>
+            <div>
+              <dt><span class="key-icon i-material-symbols:airline-seat-flat" aria-hidden="true"></span>Down</dt>
+              <dd>Knocked down</dd>
+            </div>
+            <div>
+              <dt><span class="key-icon i-material-symbols:flag" aria-hidden="true"></span>Priority</dt>
+              <dd>Priority target</dd>
+            </div>
+            <div>
+              <dt><span class="key-icon i-material-symbols:visibility" aria-hidden="true"></span>Blind Spot</dt>
+              <dd>In the monster’s blind spot</dd>
+            </div>
+            <div>
+              <dt><span class="key-icon i-material-symbols:filter-none" aria-hidden="true"></span>Tokens</dt>
+              <dd>Total tokens, including bleeding</dd>
+            </div>
+            <div>
+              <dt><span class="key-icon i-material-symbols:bolt" aria-hidden="true"></span>Actions</dt>
+              <dd>Available survival actions</dd>
+            </div>
+          </dl>
+        </div>
+        <fieldset class="setting">
+          <legend class="setting-label">Theme</legend>
+          <nav class="options" aria-label="Showdown themes">
+            {#each designs as item (item.name)}
+              <a class="menu-option" href={resolve(item.href)} aria-current={item.name === design.name ? "page" : undefined}>{item.name}</a>
+            {/each}
+          </nav>
+        </fieldset>
+        <a class="menu-option back-option" href={resolve("/")}>
+          <span class="back-icon i-material-symbols:arrow-back" aria-hidden="true"></span>
+          Back to Guidepost
+        </a>
         <p>Design preview. Rules and setup are illustrative.</p>
       </div>
     {/if}
@@ -284,6 +315,10 @@
   .showdown {
     --color-monster: #bda17b;
     --feedback-brightness: 1.12;
+    --size-control-compact: 40px;
+    --size-control-default: 44px;
+    --size-control-comfortable: 48px;
+    --size-control: var(--size-control-default);
     --size-column: 20rem;
 
     display: grid;
@@ -291,6 +326,16 @@
     block-size: calc(100dvh - var(--border-size));
     background: var(--background);
     font-variant-numeric: lining-nums tabular-nums;
+  }
+  .showdown[data-density="compact"] {
+    --size-control: var(--size-control-compact);
+  }
+  .showdown[data-density="comfortable"] {
+    --size-control: var(--size-control-comfortable);
+  }
+  .showdown :global(:where(a[href], button, input:not([type="hidden"]), select, textarea, summary, [role="button"], [role="link"])) {
+    min-inline-size: var(--size-control);
+    min-block-size: var(--size-control);
   }
   .workspace {
     --size-panel: max(var(--size-column), 20%);
@@ -328,7 +373,7 @@
   .toolbar {
     display: grid;
     position: relative;
-    grid-template-columns: minmax(0, 1fr) 2.75rem 2.75rem;
+    grid-template-columns: minmax(0, 1fr) repeat(2, var(--size-control));
     padding: 0.375rem 0.375rem max(0.375rem, env(safe-area-inset-bottom));
     gap: 0.125rem;
     border-block-start: 1px solid var(--color-divider);
@@ -344,7 +389,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
-    min-inline-size: 2.75rem;
+    min-inline-size: var(--size-control);
     block-size: 3.5rem;
     padding: 0 0 0.25rem;
     overflow: hidden;
@@ -379,7 +424,7 @@
     flex-wrap: wrap;
     align-items: center;
     justify-content: center;
-    min-block-size: 2.75rem;
+    min-block-size: var(--size-control);
     padding: 0.25rem 0.375rem;
     gap: 0.125rem 0.625rem;
     border-radius: var(--radius-control);
@@ -401,8 +446,8 @@
   .menu-button {
     display: grid;
     place-items: center;
-    inline-size: 2.75rem;
-    min-block-size: 2.75rem;
+    inline-size: var(--size-control);
+    min-block-size: var(--size-control);
     border-radius: var(--radius-control);
     background: var(--card);
   }
@@ -438,34 +483,48 @@
   .menu strong {
     font-size: var(--text-sm);
   }
-  .snap-setting {
+  .setting {
     margin-block: 0.75rem;
     padding: 0;
     border: 0;
   }
-  .snap-setting legend {
+  .setting-label {
     margin-block-end: 0.375rem;
     font-weight: var(--font-bold);
     font-size: var(--text-sm);
   }
-  .snap-options {
+  .options {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: center;
     gap: 0.25rem;
   }
-  .snap-option {
-    min-block-size: 2.75rem;
+  .snap-options {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .menu-option {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-inline-size: var(--size-control);
+    min-block-size: var(--size-control);
     padding-inline: 0.25rem;
     border: 1px solid var(--color-divider);
     border-radius: var(--radius-control);
     background: var(--card);
     font-size: var(--text-xs);
+    text-align: center;
 
-    &[aria-pressed="true"] {
+    &[aria-pressed="true"],
+    &[aria-current="page"] {
       border-color: var(--accent);
       background: color-mix(var(--accent) 24%, var(--card));
       color: var(--foreground);
     }
+  }
+  .density-option {
+    block-size: var(--size-preview);
+    min-block-size: var(--size-preview) !important;
   }
   dl {
     display: grid;
@@ -491,21 +550,14 @@
     inline-size: 1rem;
     block-size: 1rem;
   }
-  .menu nav {
-    display: flex;
-    gap: 0.5rem;
-    border-block: 1px solid var(--color-divider);
+  .back-option {
+    justify-content: flex-start;
+    gap: 0.375rem;
   }
-  .menu a {
-    display: flex;
-    align-items: center;
-    min-inline-size: 2.75rem;
-    min-block-size: 2.75rem;
-    font-size: var(--text-sm);
-    &[aria-current="page"] {
-      text-decoration: underline;
-      text-underline-offset: 0.25rem;
-    }
+  .back-icon {
+    flex: none;
+    inline-size: 1rem;
+    block-size: 1rem;
   }
   .menu p {
     font-size: var(--text-xs);

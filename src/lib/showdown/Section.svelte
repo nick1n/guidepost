@@ -171,13 +171,13 @@
     align-items: center;
     justify-content: center;
     inline-size: 3.75rem;
-    min-block-size: 2.75rem;
+    min-block-size: var(--size-control);
     gap: 0.25rem;
     color: var(--foreground);
     font-size: var(--text-sm);
     &::before {
       position: absolute;
-      min-block-size: 2.75rem;
+      min-block-size: var(--size-control);
       inset-block-start: 50%;
       inset-inline: 0;
       translate: 0 -50%;
@@ -188,7 +188,7 @@
     inline-size: 3rem;
   }
   .with-pair .icon-action {
-    inline-size: 2.75rem;
+    inline-size: var(--size-control);
     margin-inline-end: -0.25rem;
     &::after {
       content: "";

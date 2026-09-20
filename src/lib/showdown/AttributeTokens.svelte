@@ -149,8 +149,8 @@
   .close {
     display: grid;
     place-items: center;
-    inline-size: 2.75rem;
-    block-size: 2.75rem;
+    inline-size: var(--size-control);
+    block-size: var(--size-control);
   }
   .close-icon {
     inline-size: 1rem;
@@ -170,8 +170,8 @@
   }
   input {
     appearance: textfield;
-    inline-size: 2.75rem;
-    block-size: 2.75rem;
+    inline-size: var(--size-control);
+    block-size: var(--size-control);
     border: 1px solid var(--color-divider);
     border-radius: var(--radius-control);
     background: var(--background);
