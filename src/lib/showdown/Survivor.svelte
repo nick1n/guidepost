@@ -478,7 +478,11 @@
         onclick={() => (showMore = !showMore)}
       >
         <span class="more-label">
-          {showMore ? "Show less" : "Show more"}
+          {#if variant === 1}
+            {showMore ? "Less" : "More"}
+          {:else}
+            {showMore ? "Show less" : "Show more"}
+          {/if}
           <span class="more-icon i-material-symbols:expand-more" aria-hidden="true" style:rotate={showMore ? "180deg" : "0deg"}></span>
         </span>
       </button>

@@ -46,7 +46,7 @@
     knockedDown = !knockedDown;
   }
 
-  const tokens = ["Movement", "Toughness", "Speed", "Accuracy", "Damage", "Luck", "Evasion"];
+  const tokens = ["Speed", "Accuracy", "Damage", "Luck", "Movement", "Toughness", "Evasion"];
   const statNames = [
     { name: "Movement", key: "movement" },
     { name: "Toughness", key: "toughness" },
@@ -71,15 +71,43 @@
   // ];
 
   const actions = [
-    "Mood - Enraged",
-    "Persistent Injury - Beast's Temple",
-    "Persistent Injury - Broken Foot",
-    "Persistent Injury - Lost Ding Dong",
-    "Persistent Injury - Lost Hand",
-    "Persistent Injury - No Jaw",
-    "Persistent Injury - Organ Trail",
-    "Persistent Injury - Ruptured Tendon",
+    { name: "Intimidate - ★ brain damage", mood: false },
+    { name: "Mood - Alert", mood: true },
+    { name: "Mood - Bloodthirsty", mood: true },
+    { name: "Mood - Enraged", mood: true },
+    { name: "Mood - Ground Fighting", mood: true },
+    // "Persistent Injury - Beast's Temple",
+    // "Persistent Injury - Broken Foot",
+    // "Persistent Injury - Lost Ding Dong",
+    // "Persistent Injury - Lost Hand",
+    // "Persistent Injury - No Jaw",
+    // "Persistent Injury - Organ Trail",
+    // "Persistent Injury - Ruptured Tendon",
   ] as const;
+  const bloodthirsty = "Mood - Bloodthirsty";
+  const enraged = "Mood - Enraged";
+  const damageTokenIndex = tokens.indexOf("Damage");
+  let moodCounts = $state<Record<string, number>>({});
+  let activeMoods = $derived(
+    actions
+      .filter((action) => action.mood && moodCounts[action.name])
+      .map((action) => {
+        const name = action.name.replace("Mood - ", "");
+        return action.name === bloodthirsty ? `${name} ${moodCounts[action.name]}` : name;
+      }),
+  );
+
+  function toggleMood(name: string) {
+    const current = moodCounts[name] ?? 0;
+    const next = name === bloodthirsty ? (current === 3 ? 0 : current + 1) : current ? 0 : 1;
+
+    if (name === enraged && Boolean(current) !== Boolean(next)) {
+      const damageTokens = values[damageTokenIndex];
+      damageTokens.positive = Math.max(0, damageTokens.positive + (next ? 1 : -1));
+    }
+
+    moodCounts[name] = next;
+  }
 
   function tilesAtDistance(distance: number) {
     return Array.from({ length: board.columns * board.rows }, (_, index) => ({
@@ -154,7 +182,11 @@
     <li>closest survivor, in field of view</li>
     <li>no target: <strong>sniff</strong></li>
   </ol>
-  <p>-v-</p>
+  <div class="more" aria-hidden="true">
+    <span class="more-label">
+      <span class="more-icon i-material-symbols:expand-more"></span>
+    </span>
+  </div>
   <h3><strong>Move & Attack</strong> Target</h3>
   <div class="attack-profile">
     {#each [{ name: "Speed", value: "2" }, { name: "Accuracy", value: "2+" }, { name: "Damage", value: "1" }] as stat (stat.name)}
@@ -174,11 +206,36 @@
   <p>When a level 3+ White Lion performs <strong>Sniff</strong>, it gains +1 accuracy token.</p>
 </Section>
 
-<Section title="Common Actions">
+<Section title="Common Actions" meta={activeMoods}>
   <div class="actions">
-    {#each actions as action (action)}
-      <button class="action">
-        {action}<span class="action-arrow i-material-symbols:arrow-forward" aria-hidden="true"></span>
+    {#each actions as action (action.name)}
+      <button
+        class={["action", !action.mood && "wide", action.mood && moodCounts[action.name] && "active"]}
+        aria-label={action.name === bloodthirsty
+          ? `${action.name}, ${moodCounts[action.name] ? `${moodCounts[action.name]} of 3` : "off"}. Activate to ${moodCounts[action.name] === 3 ? "turn off" : `increase to ${(moodCounts[action.name] ?? 0) + 1}`}`
+          : undefined}
+        aria-pressed={action.mood && action.name !== bloodthirsty ? Boolean(moodCounts[action.name]) : undefined}
+        onclick={action.mood ? () => toggleMood(action.name) : undefined}
+      >
+        <span>{action.name}</span>
+        {#if action.mood}
+          <span class="action-state">
+            {#if action.name === bloodthirsty}
+              {#if moodCounts[action.name]}
+                <span class="action-count" aria-hidden="true">{moodCounts[action.name]}</span>
+              {:else}
+                <span class="action-control i-material-symbols:add-circle-outline" aria-hidden="true"></span>
+              {/if}
+            {:else}
+              <span
+                class={["action-control", moodCounts[action.name] ? "i-material-symbols:toggle-on" : "i-material-symbols:toggle-off"]}
+                aria-hidden="true"
+              ></span>
+            {/if}
+          </span>
+        {:else}
+          <span class="action-arrow i-material-symbols:arrow-forward" aria-hidden="true"></span>
+        {/if}
       </button>
     {/each}
   </div>
@@ -193,7 +250,11 @@
       onclick={() => (showMore = !showMore)}
     >
       <span class="more-label">
-        {showMore ? "Show less" : "Show more"}
+        {#if variant === 1}
+          {showMore ? "Less" : "More"}
+        {:else}
+          {showMore ? "Show less" : "Show more"}
+        {/if}
         <span class="more-icon i-material-symbols:expand-more" aria-hidden="true" style:rotate={showMore ? "180deg" : "0deg"}></span>
       </span>
     </button>
@@ -253,18 +314,18 @@
         <Section title="Showdown Setup" meta="No Terrain">
           <svg
             class="board"
-            viewBox="0 0 220 160"
+            viewBox="-1 -1 222 162"
             role="img"
             aria-label={`Illustrative 22 by 16 showdown board. Blue tiles are exactly ${setupDistance} spaces from the White Lion.`}
           >
             <rect width="220" height="160" fill="var(--card)" opacity=".25" />
-            <image href="/showdown.webp" width="220" height="160" preserveAspectRatio="none" opacity=".2" />
+            <image href="/img/showdown-board.webp" width="220" height="160" preserveAspectRatio="none" opacity=".2" />
             <g class="setup-tiles">
               {#each setupTiles as tile (`${tile.column}-${tile.row}`)}
                 <rect x={tile.column * board.tile} y={tile.row * board.tile} width={board.tile} height={board.tile} />
               {/each}
             </g>
-            <g class="grid-lines" shape-rendering="crispEdges" opacity=".25">
+            <g class="grid-lines" shape-rendering="crispEdges" opacity=".8">
               {#each Array.from({ length: 23 }, (_, i) => i * 10) as x (x)}<line x1={x} x2={x} y1="0" y2="160" />{/each}
               {#each Array.from({ length: 17 }, (_, i) => i * 10) as y (y)}<line x1="0" x2="220" y1={y} y2={y} />{/each}
             </g>
@@ -297,7 +358,7 @@
       content: "";
     }
 
-    &:hover .more-label {
+    &:where(button):hover .more-label {
       color: var(--foreground);
     }
   }
@@ -330,7 +391,7 @@
       border-block-start: 3px dotted color-mix(var(--identity) 65%, transparent);
     }
 
-    &:hover .more-label {
+    &:where(button):hover .more-label {
       background: var(--foreground);
       color: var(--background);
     }
@@ -461,7 +522,6 @@
     display: block;
     aspect-ratio: 22 / 16;
     inline-size: 100%;
-    overflow: visible;
   }
   .grid-lines {
     stroke: var(--background);
@@ -502,6 +562,7 @@
   }
   .actions {
     display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 0.25rem;
   }
   .action {
@@ -516,10 +577,39 @@
     background: color-mix(var(--identity) 20%, var(--panel));
     font-size: var(--text-sm);
     text-align: start;
+
+    &.active {
+      background: color-mix(var(--identity) 38%, var(--panel));
+    }
+
+    &.wide {
+      grid-column: 1 / -1;
+    }
   }
   .action-arrow {
     inline-size: 1rem;
     block-size: 1rem;
+  }
+  .action-count {
+    display: grid;
+    place-items: center;
+    inline-size: 1.5rem;
+    block-size: 1.5rem;
+    border-radius: 50%;
+    background: var(--identity);
+    color: var(--identity-ink);
+    font-weight: var(--font-bold);
+    font-size: var(--text-xs);
+  }
+  .action-state {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: 0.25rem;
+  }
+  .action-control {
+    inline-size: 1.5rem;
+    block-size: 1.5rem;
   }
   .resource-actions {
     display: grid;

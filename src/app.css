@@ -119,3 +119,13 @@ b,
 strong {
   font-weight: var(--font-bold);
 }
+
+.content {
+  p {
+    font-size: .75rem;
+
+    +p {
+      margin-block-start: .25rem;
+    }
+  }
+}
