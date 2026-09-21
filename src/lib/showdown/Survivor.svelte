@@ -540,17 +540,17 @@
   .more {
     display: flex;
     align-items: center;
-    gap: 0.625rem;
     inline-size: 100%;
     min-block-size: var(--size-control);
+    gap: 0.625rem;
     color: color-mix(var(--identity) 55%, var(--foreground));
     font-size: var(--text-sm);
 
     &::before,
     &::after {
-      content: "";
       flex: 1;
       border-block-start: 1px solid color-mix(var(--identity) 45%, transparent);
+      content: "";
     }
 
     &:hover .more-label {
@@ -560,11 +560,9 @@
   .more-label {
     display: flex;
     align-items: center;
-    gap: 0.375rem;
     padding: 0.375rem 0.625rem;
-  }
-  .more-label :global(.more-icon) {
-    display: inline-block;
+    gap: 0.375rem;
+    font-size: 1rem;
   }
   .more-label :global(.more-icon.expanded) {
     rotate: 180deg;
@@ -574,8 +572,8 @@
     font-weight: var(--font-bold);
   }
   :global(.folio) .more {
-    font-family: var(--font-editorial);
     font-size: 1rem;
+    font-family: var(--font-editorial);
 
     &::before,
     &::after {
@@ -603,18 +601,18 @@
     font-weight: var(--font-bold);
   }
   .nickname {
+    margin-block-start: 0.25rem;
     font-size: var(--text-sm);
     overflow-wrap: anywhere;
-    margin-block-start: 0.25rem;
   }
   .survival small {
     font-size: var(--text-xs);
     white-space: nowrap;
   }
   .restriction {
+    padding-block: 0.375rem;
     color: var(--accent-red);
     font-size: var(--text-sm);
-    padding-block: 0.375rem;
   }
   .proficiency {
     display: flex;
@@ -667,9 +665,9 @@
     display: block;
     inline-size: 100%;
     min-block-size: 0;
+    padding: 0;
     border: 0;
     border-radius: 0;
-    padding: 0;
     background: transparent;
     color: inherit;
     font: inherit;
@@ -742,9 +740,6 @@
     display: grid;
     grid-template-columns: repeat(6, minmax(0, 1fr));
     gap: 0.125rem;
-  }
-  .stat {
-    padding-block: 0.25rem;
     text-align: center;
   }
   .stat-label {
@@ -779,6 +774,8 @@
   .armor-input {
     display: grid;
     place-items: center;
+    inline-size: var(--size-control);
+    block-size: var(--size-control);
     border: 1px solid color-mix(var(--identity) 60%, var(--panel));
     border-radius: var(--radius-control);
     background: color-mix(var(--identity) 18%, var(--panel));
@@ -792,7 +789,11 @@
   }
   .armor-input .armor-value {
     grid-area: 1 / 1;
+    inline-size: 100%;
+    min-inline-size: 0;
+    block-size: 100%;
     border: 0;
+    border-radius: inherit;
     background: transparent;
   }
   .injuries {
@@ -945,8 +946,8 @@
   input[type="text"],
   select,
   textarea {
-    min-inline-size: 0;
     inline-size: 100%;
+    min-inline-size: 0;
     min-block-size: var(--size-control);
     padding: 0.5rem;
     border: 1px solid var(--color-divider);
@@ -985,7 +986,7 @@
     color: var(--identity-ink);
   }
   :global(.signal) .attribute-value {
-    border-color: color-mix(var(--identity-ink) 35%, transparent);
+    border: 0;
     background: var(--identity);
     color: inherit;
     font-size: 1.625rem;

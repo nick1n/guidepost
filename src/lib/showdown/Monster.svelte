@@ -129,9 +129,9 @@
       <label for={`${id}-life`}>Life</label>
       <input id={`${id}-life`} class="life-value" type="number" aria-label="Monster Life" bind:value={stats.life} />
       <div class="ai-cards" aria-label="Monster's AI cards">
-        <span class="ai-card"><span class="ai-badge">B</span><span>5</span></span>
-        <span class="ai-card"><span class="ai-badge">A</span><span>3</span></span>
-        <span class="ai-card"><span class="ai-badge">L</span><span>-</span></span>
+        <span class="ai-card"><KdIcon class="ai-card-icon" i="card-b" /><span>5</span></span>
+        <span class="ai-card"><KdIcon class="ai-card-icon" i="card-a" /><span>3</span></span>
+        <span class="ai-card"><KdIcon class="ai-card-icon" i="card-l" /><span>&minus;</span></span>
       </div>
     </div>
     <div class="attributes">
@@ -156,7 +156,7 @@
 
 <Section
   title={variant === 2 ? "Attributes" : "Monster Attributes"}
-  meta={[`Life ${stats.life}`, `Spd ${stats.speed || "-"}`, `Dmg ${stats.damage || "-"}`]}
+  meta={[`Life ${stats.life}`, `Spd ${stats.speed || "\u2212"}`, `Dmg ${stats.damage || "\u2212"}`]}
   onaction={() => stats.life--}
   actionLabel="Wound"
 >
@@ -367,9 +367,7 @@
     align-items: center;
     padding: 0.375rem 0.625rem;
     gap: 0.375rem;
-  }
-  .more-label :global(.more-icon) {
-    display: inline-block;
+    font-size: 1rem;
   }
   .more-label :global(.more-icon.expanded) {
     rotate: 180deg;
@@ -463,7 +461,6 @@
     flex: 1;
     flex-direction: column;
     justify-content: center;
-    gap: 0.375rem;
   }
   .life > label {
     color: var(--muted-foreground);
@@ -476,27 +473,21 @@
   }
   .ai-cards,
   .ai-card {
+    color: var(--muted-foreground);
     display: flex;
     align-items: center;
   }
   .ai-cards {
     flex-wrap: wrap;
-    gap: 0.5rem;
+    padding-block-start: 0.25rem;
+    gap: 0.25rem;
     font-size: var(--text-sm);
   }
   .ai-card {
     gap: 0.25rem;
   }
-  .ai-badge {
-    display: grid;
-    place-items: center;
-    inline-size: 1.25rem;
-    block-size: 1.25rem;
-    border-radius: 50%;
-    background: #000;
-    color: #fff;
-    font-weight: var(--font-weight-bold);
-    font-size: var(--text-xs);
+  .ai-card :global(.ai-card-icon) {
+    font-size: 1rem;
   }
   .attributes {
     display: grid;
@@ -509,7 +500,6 @@
     display: flex;
     flex-direction: column;
     padding-inline-start: 0.625rem;
-    gap: 0.125rem;
     border-inline-start: 1px solid var(--color-divider);
   }
   .attribute-value {
