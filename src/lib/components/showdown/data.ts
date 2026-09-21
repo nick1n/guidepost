@@ -79,7 +79,7 @@ export function statusItems(sheet: Sheet) {
   return [
     sheet.dead ? "Dead" : isReady(sheet) ? "Ready" : "Not Ready",
     sheet.threat && "Threat",
-    sheet.acted && "Acted",
+    // sheet.acted && "Acted",
     sheet.statuses.includes("Knocked Down") && "Knocked Down",
     sheet.statuses.includes("Blind Spot") && "Blind Spot",
     sheet.priority && "Priority Target",

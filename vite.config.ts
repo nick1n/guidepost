@@ -2,7 +2,7 @@ import adapter from "@sveltejs/adapter-static";
 import UnoCSS from "@unocss/svelte-scoped/vite";
 import { vitePreprocess } from "@sveltejs/vite-plugin-svelte";
 import { sveltekit } from "@sveltejs/kit/vite";
-import { defineConfig } from "vitest/config";
+import { defineConfig } from "vite";
 import { schemaTypes } from "./scripts/schema-types.ts";
 
 const base = (process.env.BASE_PATH ?? "") as "" | `/${string}`;

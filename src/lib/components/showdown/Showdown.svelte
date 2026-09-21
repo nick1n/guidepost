@@ -11,6 +11,7 @@
   let active = $state(0);
   let round = $state(1);
   let monsterTurn = $state(true);
+  let awakening = $state(0);
   let sheets = $state(survivors.map((_, index) => makeSheet(index)));
   let menuOpen = $state(false);
   let density = $state<Density>("default");
@@ -118,7 +119,9 @@
     }
     round += 1;
     monsterTurn = true;
+    awakening += 1;
     for (const sheet of sheets) sheet.acted = false;
+    jump(0);
   }
   function onkeydown(event: KeyboardEvent) {
     if (event.key === "Escape") menuOpen = false;
@@ -157,7 +160,7 @@
         {@attach dashboardSpacing}
       >
         {#if index === 0}
-          <Monster {variant} {round} {monsterTurn} bind:values={monsterTokens} bind:stats={monsterStats} onturn={toggleTurn} />
+          <Monster {variant} {round} {monsterTurn} {awakening} bind:values={monsterTokens} bind:stats={monsterStats} onturn={toggleTurn} />
         {:else}
           <Survivor person={survivors[index - 1]} number={index} {variant} survivorTurn={!monsterTurn} bind:sheet={sheets[index - 1]} />
         {/if}
@@ -214,7 +217,8 @@
     {#if menuOpen}
       <div class="menu" id="showdown-menu">
         <strong>{active === 0 ? roster[active].name : survivorName(active)}</strong>
-        {#if active > 0}<p class="menu-status">{statusText(sheets[active - 1])}</p>
+        {#if active > 0}
+          <p class="menu-status">{statusText(sheets[active - 1])}</p>
           <div class="menu-counts">
             <span>{tokenTotal(sheets[active - 1])} Tokens</span><span
               >{availableActions(sheets[active - 1])} Survival Actions Available</span

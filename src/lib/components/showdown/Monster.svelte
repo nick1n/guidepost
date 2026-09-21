@@ -3,6 +3,7 @@
   import InlineMarkdown from "#lib/components/InlineMarkdown.svelte";
   import KdIcon from "#lib/components/KdIcon.svelte";
   import Section from "./Section.svelte";
+  import ShowdownEmblem from "./ShowdownEmblem.svelte";
   import { survivors, type TokenCount } from "./data";
 
   type Stats = { life: number; movement: number; toughness: number; damage: number; speed: number };
@@ -11,6 +12,7 @@
     variant,
     round,
     monsterTurn,
+    awakening,
     onturn,
     values = $bindable(),
     stats = $bindable(),
@@ -18,6 +20,7 @@
     variant: number;
     round: number;
     monsterTurn: boolean;
+    awakening: number;
     onturn: Noop;
     values: TokenCount[];
     stats: Stats;
@@ -148,12 +151,12 @@
 <header>
   <div class="encounter">
     <p class="level">Prologue Level 1</p>
-    <div class="round" aria-live="polite">
+    <div class={["round", !monsterTurn && "survivor-turn"]} aria-live="polite">
       <div>{monsterTurn ? "Monster's Turn" : "Survivors' Turn"}</div>
       <div>Round {round}</div>
     </div>
   </div>
-  <div class="crest" aria-hidden="true"><span class="lion i-game-icons:lion"></span></div>
+  <ShowdownEmblem {variant} {awakening} />
   <h2>White Lion</h2>
 </header>
 
@@ -166,7 +169,7 @@
   {@render statistics()}
 </Section>
 
-<Section title="State" meta={[knockedDown ? "Knocked Down" : ""]}>
+<Section title="Status" meta={[knockedDown ? "Knocked Down" : ""]}>
   <div class="state">
     <button class={["toggle", monsterTurn && "active"]} aria-pressed={monsterTurn} onclick={onturn}>
       <span aria-hidden="true">{monsterTurn ? "●" : "○"}</span> Monster's Turn
@@ -442,6 +445,10 @@
     color: var(--identity);
     font-size: var(--text-sm);
     text-align: right;
+
+    &.survivor-turn {
+      color: var(--accent-blue);
+    }
   }
   .level {
     color: var(--muted-foreground);
@@ -720,41 +727,6 @@
   :global(.signal) .attack-profile {
     border: 0;
     background: var(--background);
-  }
-  .crest {
-    display: grid;
-    place-items: center;
-    inline-size: 7rem;
-    block-size: 7rem;
-    margin: -0.75rem auto 0.5rem;
-    rotate: -6deg;
-    border: 1px solid var(--identity);
-    border-radius: 50% 50% 40% 40%;
-    outline: 1px solid color-mix(var(--identity) 30%, transparent);
-    outline-offset: 0.375rem;
-  }
-  .lion {
-    inline-size: 5.75rem;
-    block-size: 5.75rem;
-    rotate: 6deg;
-    color: var(--identity);
-  }
-  :global(.folio) .crest {
-    rotate: 0deg;
-    border-radius: 50% 50% 0 0;
-  }
-  :global(.folio) .lion {
-    rotate: 0deg;
-  }
-  :global(.signal) .crest {
-    rotate: 8deg;
-    border-radius: 35%;
-    background: var(--identity);
-    box-shadow: 0.375rem 0.375rem 0 var(--contrast);
-  }
-  :global(.signal) .lion {
-    rotate: -8deg;
-    color: var(--contrast);
   }
   input {
     appearance: textfield;

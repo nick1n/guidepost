@@ -118,7 +118,14 @@
       {#each attributes as attribute, index (attribute)}
         <div class="stat">
           <span class="stat-label" aria-label={attribute}>{abbreviations[index]}</span>
-          <input class="attribute-value" type="number" aria-label={`${person.name} ${attribute}`} bind:value={sheet.attributes[index]} />
+          <input
+            aria-label={`${person.name} ${attribute}`}
+            bind:value={sheet.attributes[index]}
+            class="attribute-value"
+            max="99"
+            min="-9"
+            type="number"
+          />
         </div>
       {/each}
     </div>
@@ -454,15 +461,17 @@
   </header>
 
   {#if variant === 3}
-    <Section
-      title="Combat"
-      meta={[`Movement: ${sheet.attributes[0] ?? 0}`, `Insanity: ${sheet.armorValues[0] ?? 0}`, `Bleeding: ${sheet.bleeding ?? 0}`]}
-    >
+    <Section title="Survivor Attributes" meta={[`Mov ${sheet.attributes[0] ?? 0}`, `Ins ${sheet.armorValues[0] ?? 0}`]}>
       {@render statistics()}
       <h3>Insanity & Armor</h3>
       {@render protection()}
     </Section>
-    <Section title="Actions" restricted={variant === 3 && !sheet.permissions.survival ? "Cannot use survival actions" : ""}>
+    <Section
+      title="Actions"
+      restricted={variant === 3 && !sheet.permissions.survival ? "Cannot use survival actions" : ""}
+      onaction={() => sheet.survival--}
+      actionLabel="Dodge"
+    >
       {@render actions()}
       <h3>Survival Actions <small>{sheet.survival ?? 0} survival</small></h3>
       {@render survivalActions()}
@@ -658,7 +667,6 @@
   }
   .identity-copy {
     flex: 1;
-    min-inline-size: 0;
   }
   .eyebrow {
     display: flex;
