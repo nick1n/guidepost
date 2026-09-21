@@ -147,8 +147,11 @@
 
 <header>
   <div class="encounter">
-    <p class="level">Prologue / Level 1</p>
-    <span class="round" aria-live="polite">Round {round}</span>
+    <p class="level">Prologue Level 1</p>
+    <div class="round" aria-live="polite">
+      <div>{monsterTurn ? "Monster's Turn" : "Survivors' Turn"}</div>
+      <div>Round {round}</div>
+    </div>
   </div>
   <div class="crest" aria-hidden="true"><span class="lion i-game-icons:lion"></span></div>
   <h2>White Lion</h2>
@@ -163,7 +166,7 @@
   {@render statistics()}
 </Section>
 
-<Section title="State" meta={[monsterTurn ? "Monster's Turn" : "Survivors' Turn", knockedDown ? "Knocked Down" : ""]}>
+<Section title="State" meta={[knockedDown ? "Knocked Down" : ""]}>
   <div class="state">
     <button class={["toggle", monsterTurn && "active"]} aria-pressed={monsterTurn} onclick={onturn}>
       <span aria-hidden="true">{monsterTurn ? "●" : "○"}</span> Monster's Turn
@@ -431,17 +434,18 @@
   }
   .encounter {
     display: flex;
-    align-items: center;
+    align-items: start;
     justify-content: space-between;
     gap: 0.5rem;
   }
   .round {
     color: var(--identity);
     font-size: var(--text-sm);
+    text-align: right;
   }
   .level {
     color: var(--muted-foreground);
-    font-size: var(--text-xs);
+    font-size: var(--text-sm);
   }
   h2 {
     margin-block: 0.5rem 0.375rem;
@@ -473,9 +477,9 @@
   }
   .ai-cards,
   .ai-card {
-    color: var(--muted-foreground);
     display: flex;
     align-items: center;
+    color: var(--muted-foreground);
   }
   .ai-cards {
     flex-wrap: wrap;
@@ -722,7 +726,7 @@
     place-items: center;
     inline-size: 7rem;
     block-size: 7rem;
-    margin: 0.75rem auto 0.5rem;
+    margin: -0.75rem auto 0.5rem;
     rotate: -6deg;
     border: 1px solid var(--identity);
     border-radius: 50% 50% 40% 40%;

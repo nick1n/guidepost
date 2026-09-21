@@ -11,11 +11,13 @@
     person,
     number,
     variant,
+    survivorTurn,
     sheet = $bindable(),
   }: {
     person: { name: string; color: string; gender: string };
     number: number;
     variant: number;
+    survivorTurn: boolean;
     sheet: Sheet;
   } = $props();
 
@@ -460,17 +462,19 @@
       <h3>Insanity & Armor</h3>
       {@render protection()}
     </Section>
-    <Section
-      title="Actions"
-      restricted={variant === 3 && !sheet.permissions.survival ? "Cannot use survival actions" : ""}
-      onaction={() => (sheet.acted = !sheet.acted)}
-      actionLabel={sheet.acted ? "Acted" : "Act"}
-    >
+    <Section title="Actions" restricted={variant === 3 && !sheet.permissions.survival ? "Cannot use survival actions" : ""}>
       {@render actions()}
       <h3>Survival Actions <small>{sheet.survival ?? 0} survival</small></h3>
       {@render survivalActions()}
     </Section>
-    <Section title="Status" meta={statusItems(sheet)}>{@render conditions()}</Section>
+    <Section
+      title="Status"
+      meta={statusItems(sheet)}
+      onaction={survivorTurn ? () => (sheet.acted = !sheet.acted) : undefined}
+      actionLabel={sheet.acted ? "Acted" : "Act"}
+    >
+      {@render conditions()}
+    </Section>
   {:else}
     {#if variant === 2}
       <Section title="Vital Signs" meta={[`Mov ${sheet.attributes[0] ?? 0}`, `Ins ${sheet.armorValues[0] ?? 0}`]}>
@@ -481,8 +485,15 @@
       <Section title="Attributes" meta={`Mov ${sheet.attributes[0] ?? 0}`}>{@render statistics()}</Section>
       <Section title="Insanity & Armor" meta={`Ins ${sheet.armorValues[0] ?? 0}`}>{@render protection()}</Section>
     {/if}
-    <Section title="Status" meta={statusItems(sheet)}>{@render conditions()}</Section>
-    <Section title="Actions" onaction={() => (sheet.acted = !sheet.acted)} actionLabel={sheet.acted ? "Acted" : "Act"}>
+    <Section
+      title="Status"
+      meta={statusItems(sheet)}
+      onaction={survivorTurn ? () => (sheet.acted = !sheet.acted) : undefined}
+      actionLabel={sheet.acted ? "Acted" : "Act"}
+    >
+      {@render conditions()}
+    </Section>
+    <Section title="Actions">
       {@render actions()}
     </Section>
     <Section

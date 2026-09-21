@@ -159,7 +159,7 @@
         {#if index === 0}
           <Monster {variant} {round} {monsterTurn} bind:values={monsterTokens} bind:stats={monsterStats} onturn={toggleTurn} />
         {:else}
-          <Survivor person={survivors[index - 1]} number={index} {variant} bind:sheet={sheets[index - 1]} />
+          <Survivor person={survivors[index - 1]} number={index} {variant} survivorTurn={!monsterTurn} bind:sheet={sheets[index - 1]} />
         {/if}
       </div>
     {/each}
