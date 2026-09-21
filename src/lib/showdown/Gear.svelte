@@ -1,4 +1,6 @@
 <script lang="ts">
+  import KdIcon from "#lib/components/KdIcon.svelte";
+
   let {
     slots = $bindable(),
     selected = $bindable(null),
@@ -63,8 +65,27 @@
       aria-pressed={selected === start + index}
     >
       {#if item}
-        <strong>{item}</strong>
-        <small>{item === "Cloth" ? "1 waist armor" : item === "Fist & Tooth" ? "2 | 8 | 0" : "2 | 7 | 1"}</small>
+        {#if item === "Cloth"}
+          <span class="armor-markers" aria-hidden="true">
+            <KdIcon i="armor-1" />
+            <KdIcon i="location-waist" />
+          </span>
+          <span class="gear-art i-game-icons:cape" aria-hidden="true"></span>
+        {/if}
+        {#if item === "Founding Stone"}
+          <span class="gear-art i-game-icons:rock" aria-hidden="true"></span>
+          <strong class="gear-stats" aria-hidden="true">
+            <span class="gear-stat">2</span>
+            <span class="gear-stat divided">7</span>
+            <span class="gear-stat divided">1</span>
+          </strong>
+        {/if}
+        <strong class="gear-name">{item}</strong>
+        {#if item !== "Founding Stone"}
+          <small class="gear-values">{item === "Cloth" ? "1 waist armor" : item === "Fist & Tooth" ? "2 | 8 | 0" : ""}</small>
+        {:else}
+          <small class="gear-action"><KdIcon i="activation" /> Activate</small>
+        {/if}
       {/if}
     </button>
   {/each}
@@ -212,5 +233,64 @@
       background: var(--color-gear);
       cursor: grab;
     }
+  }
+  .armor-markers {
+    display: flex;
+    z-index: 1;
+    position: absolute;
+    flex-direction: column;
+    inset-block-start: 0.5rem;
+    inset-inline-start: 0.25rem;
+    color: #000;
+    font-size: 1.5rem;
+    pointer-events: none;
+  }
+  .gear-art {
+    z-index: 0;
+    position: absolute;
+    inline-size: 50%;
+    block-size: 50%;
+    inset: 50%;
+    translate: -50% -50%;
+    color: var(--muted-foreground);
+    opacity: 0.65;
+    pointer-events: none;
+  }
+  .gear-stats {
+    display: grid;
+    z-index: 2;
+    position: absolute;
+    inset-block-start: 0.25rem;
+    inset-inline-start: 0.25rem;
+    padding: 0.25rem;
+    border-radius: 99px;
+    background: color-mix(var(--foreground) 85%, transparent);
+    color: #000;
+    font-size: 1rem;
+    line-height: 1;
+    text-align: center;
+  }
+  .gear-stat {
+    display: block;
+  }
+  .gear-stat.divided {
+    border-block-start: 1px solid color-mix(var(--background) 65%, transparent);
+  }
+  .gear-action {
+    display: flex;
+    gap: 0.125rem;
+    color: #000;
+    font-weight: var(--font-bold);
+    font-size: 1rem;
+
+    :global(span) {
+      translate: 0 0.1em;
+    }
+  }
+  .gear-name,
+  .gear-values,
+  .gear-action {
+    z-index: 1;
+    position: relative;
   }
 </style>

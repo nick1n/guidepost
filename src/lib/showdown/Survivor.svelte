@@ -42,7 +42,6 @@
 
   let selectedGear = $state<number | null>(null);
   let draggedGear = $state<number | null>(null);
-  let displayName = $derived(sheet.nameless ? `Nameless ${number}` : sheet.name.trim() || `Nameless ${number}`);
 
   let extras = $derived([
     { name: "Tokens", populated: sheet.tokens.some((token) => token.positive || token.negative) || !!sheet.bleeding || sheet.priority },
@@ -73,6 +72,26 @@
 
   function toggleStatus(status: string) {
     sheet.statuses = sheet.statuses.includes(status) ? sheet.statuses.filter((value) => value !== status) : [...sheet.statuses, status];
+  }
+
+  function oninputName(event: Event) {
+    const input = event.currentTarget;
+    if (!(input instanceof HTMLInputElement)) return;
+    sheet.name = input.value;
+    if (sheet.name.trim()) sheet.nameless = false;
+  }
+
+  function onblurName(event: FocusEvent) {
+    const input = event.currentTarget;
+    if (!(input instanceof HTMLInputElement)) return;
+    const namelessName = `Nameless ${number}`;
+    sheet.name = input.value.trim() || namelessName;
+    sheet.nameless = sheet.name === namelessName;
+  }
+
+  function toggleNameless() {
+    sheet.nameless = !sheet.nameless;
+    if (sheet.nameless) sheet.name = `Nameless ${number}`;
   }
 
   const armor = [
@@ -187,11 +206,12 @@
 {#snippet actions()}
   <div class="action-list">
     <button class={"action"}>
-      <span>Move</span><small>{sheet.attributes[0] ?? 0} spaces</small>
+      <span><KdIcon i="movement" /> Move</span><small>{sheet.attributes[0] ?? 0} spaces</small>
       <span class="action-arrow i-material-symbols:arrow-forward" aria-hidden="true"></span>
     </button>
     <button class={"action"}>
-      <span>Attack</span><small>1 action</small><span class="action-arrow i-material-symbols:arrow-forward" aria-hidden="true"></span>
+      <span><KdIcon i="activation" /> Attack</span><small>1 action</small>
+      <span class="action-arrow i-material-symbols:arrow-forward" aria-hidden="true"></span>
     </button>
   </div>
 {/snippet}
@@ -226,11 +246,20 @@
     <Section title="Miscellaneous" meta={["Identity", "Lineage", "Affinities", "Permissions"]}>
       <div class="fields">
         <label class="field" for={`${id}-name`}>Name</label>
-        <input id={`${id}-name`} type="text" bind:value={sheet.name} name="survivor" maxlength="160" disabled={sheet.nameless} />
+        <input
+          id={`${id}-name`}
+          type="text"
+          bind:value={sheet.name}
+          name="survivor"
+          maxlength="160"
+          oninput={oninputName}
+          onblur={onblurName}
+        />
         <button
           class={["condition", sheet.nameless && "active"]}
           aria-pressed={sheet.nameless}
-          onclick={() => (sheet.nameless = !sheet.nameless)}
+          onpointerdown={(event) => event.preventDefault()}
+          onclick={toggleNameless}
         >
           Nameless
         </button>
@@ -401,7 +430,18 @@
   <header class="identity">
     <div class="identity-copy">
       <p class="eyebrow">Survivor {number} <span>{sheet.gender}</span></p>
-      <h2>{displayName}</h2>
+      <h2>
+        <span class="visually-hidden">{sheet.name}</span>
+        <input
+          class="name-input"
+          type="text"
+          aria-label={`Survivor ${number} name`}
+          bind:value={sheet.name}
+          maxlength="15"
+          oninput={oninputName}
+          onblur={onblurName}
+        />
+      </h2>
       <p class="nickname">{sheet.nickname || "\u00A0"}</p>
     </div>
     <div class="survival">
@@ -424,7 +464,7 @@
       title="Actions"
       restricted={variant === 3 && !sheet.permissions.survival ? "Cannot use survival actions" : ""}
       onaction={() => (sheet.acted = !sheet.acted)}
-      actionLabel="Act"
+      actionLabel={sheet.acted ? "Acted" : "Act"}
     >
       {@render actions()}
       <h3>Survival Actions <small>{sheet.survival ?? 0} survival</small></h3>
@@ -442,7 +482,7 @@
       <Section title="Insanity & Armor" meta={`Ins ${sheet.armorValues[0] ?? 0}`}>{@render protection()}</Section>
     {/if}
     <Section title="Status" meta={statusItems(sheet)}>{@render conditions()}</Section>
-    <Section title="Actions" onaction={() => (sheet.acted = !sheet.acted)} actionLabel="Act">
+    <Section title="Actions" onaction={() => (sheet.acted = !sheet.acted)} actionLabel={sheet.acted ? "Acted" : "Act"}>
       {@render actions()}
     </Section>
     <Section
@@ -622,6 +662,23 @@
     line-height: 1.2;
     font-family: var(--font-display);
     letter-spacing: var(--letter-spacing-tight);
+  }
+  .identity .name-input {
+    display: block;
+    inline-size: 100%;
+    min-block-size: 0;
+    border: 0;
+    border-radius: 0;
+    padding: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    letter-spacing: inherit;
+
+    &::placeholder {
+      color: color-mix(currentColor 65%, transparent);
+      opacity: 1;
+    }
   }
   .survival {
     display: grid;
@@ -968,7 +1025,7 @@
     position: sticky;
     align-items: center;
     justify-content: center;
-    inset-block-start: 2.125rem;
+    inset-block-start: 0;
     padding: 0.625rem;
     gap: 0.5rem;
     background: var(--accent-green);

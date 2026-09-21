@@ -23,6 +23,9 @@
         url("/fonts/kd-icons-v1.woff") format("woff");
       font-family: "KD Icons";
       font-display: block;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: geometricPrecision;
     }
     .kd-icon {
       font-style: normal;
@@ -30,6 +33,9 @@
       line-height: var(--line-height-none);
       font-family: "KD Icons";
       text-transform: unset;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: geometricPrecision;
     }
   }
 </style>

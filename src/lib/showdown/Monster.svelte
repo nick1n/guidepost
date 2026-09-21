@@ -1,5 +1,6 @@
 <script lang="ts">
   import AttributeTokens from "./AttributeTokens.svelte";
+  import InlineMarkdown from "#lib/components/InlineMarkdown.svelte";
   import KdIcon from "#lib/components/KdIcon.svelte";
   import Section from "./Section.svelte";
   import { survivors, type TokenCount } from "./data";
@@ -72,7 +73,7 @@
   // ];
 
   const actions = [
-    { name: "Intimidate - ★ brain damage", mood: false },
+    { name: "Intimidate - [star] brain damage", mood: false },
     { name: "Mood - Alert", mood: true },
     { name: "Mood - Bloodthirsty", mood: true },
     { name: "Mood - Enraged", mood: true },
@@ -216,7 +217,7 @@
         aria-pressed={action.mood && action.name !== bloodthirsty ? Boolean(moodCounts[action.name]) : undefined}
         onclick={action.mood ? () => toggleMood(action.name) : undefined}
       >
-        <span>{action.name}</span>
+        <span><InlineMarkdown text={action.name} /></span>
         {#if action.mood}
           <span class="action-state">
             {#if action.name === bloodthirsty}

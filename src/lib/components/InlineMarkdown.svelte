@@ -1,12 +1,18 @@
 <script module lang="ts">
-  const pattern = /\*\*[^*\r\n]+\*\*|\*[^*\r\n]+\*/g;
+  import { KD_ICONS, type KdIconName } from "#lib/constants.ts";
+
+  const pattern = /\*\*[^*\r\n]+\*\*|\*[^*\r\n]+\*|\[[a-z0-9-]+\]/g;
 </script>
 
 <script lang="ts">
-  type Segment = {
-    kind: "text" | "strong" | "em";
-    value: string;
-  };
+  import KdIcon from "./KdIcon.svelte";
+
+  type Segment =
+    | {
+        kind: "text" | "strong" | "em";
+        value: string;
+      }
+    | { kind: "icon"; value: KdIconName };
 
   type Props = {
     text: string;
@@ -28,10 +34,15 @@
         segments.push({ kind: "text", value: source.slice(textStart, start) });
       }
 
-      segments.push({
-        kind: delimiterSize === 2 ? "strong" : "em",
-        value: value.slice(delimiterSize, -delimiterSize),
-      });
+      if (value.startsWith("[")) {
+        const name = value.slice(1, -1);
+        segments.push(Object.hasOwn(KD_ICONS, name) ? { kind: "icon", value: name as KdIconName } : { kind: "text", value });
+      } else {
+        segments.push({
+          kind: delimiterSize === 2 ? "strong" : "em",
+          value: value.slice(delimiterSize, -delimiterSize),
+        });
+      }
 
       textStart = start + value.length;
     }
@@ -49,6 +60,8 @@
     <strong>{segment.value}</strong>
   {:else if segment.kind === "em"}
     <em>{segment.value}</em>
+  {:else if segment.kind === "icon"}
+    <KdIcon i={segment.value} />
   {:else}
     {segment.value}
   {/if}
