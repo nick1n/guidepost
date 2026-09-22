@@ -37,7 +37,7 @@
 <div class={["section", (onadd || onaction) && "with-add", onadd && onaction && "with-pair"]}>
   <details bind:open>
     <summary>
-      <span class="heading">
+      <span class={["heading", restricted && "restricted-heading"]}>
         {#if restricted}
           <span class="restriction-mark">
             <span class="restriction-icon i-material-symbols:block" aria-hidden="true"></span>
@@ -117,10 +117,11 @@
   }
   small {
     display: flex;
-    flex-wrap: wrap;
-    gap: 0.875rem;
+    column-gap: 0.875rem;
+    row-gap: 0;
     grid-row: 2;
     grid-column: 1;
+    flex-wrap: wrap;
     color: var(--muted-foreground);
     font-weight: var(--font-normal);
     font-size: var(--text-xs);
@@ -191,18 +192,18 @@
     inline-size: var(--size-control);
     margin-inline-end: -0.25rem;
     &::after {
-      content: "";
       position: absolute;
-      inset-inline-start: 0;
       inset-block: 30%;
+      inset-inline-start: 0;
       border-inline-start: 1px solid var(--color-divider);
+      content: "";
     }
   }
   @supports (block-size: anchor-size(height)) {
     .section-actions {
       position-anchor: --section-header;
-      inset-block-start: anchor(top);
       block-size: anchor-size(height);
+      inset-block-start: anchor(top);
     }
     .add {
       min-block-size: 0;
@@ -222,8 +223,11 @@
   :global(.folio) summary {
     padding-inline: 0.625rem;
   }
+  :global(.folio) .restricted-heading {
+    text-decoration: line-through;
+  }
   :global(.folio) .restriction {
-    color: var(--foreground);
+    display: none;
   }
   :global(.signal) .section {
     margin-block: 0.25rem;

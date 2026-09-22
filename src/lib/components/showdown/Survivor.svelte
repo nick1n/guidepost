@@ -5,7 +5,7 @@
   import Gear from "./Gear.svelte";
   import EntryList from "./EntryList.svelte";
   import ProgressTrack from "./ProgressTrack.svelte";
-  import { attributes, abbreviations, availableActions, statusItems, permissions, sampleDecks, type Sheet } from "./data";
+  import { attributes, abbreviations, availableActions, statusItems, permissions, sampleDecks, type ListEntry, type Sheet } from "./data";
 
   let {
     person,
@@ -35,7 +35,7 @@
     "Cursed Gear",
     "Showdown History",
   ];
-  let entries = $state<Record<string, { id: number; text: string }[]>>(Object.fromEntries(listNames.map((name) => [name, []])));
+  let entries = $state<Record<string, ListEntry[]>>(Object.fromEntries(listNames.map((name) => [name, []])));
   function toggleGearSize() {
     compactGear = !compactGear;
     selectedGear = null;
@@ -424,6 +424,7 @@
       title={name}
       bind:entries={entries[name]}
       deck={sampleDecks[name] ?? []}
+      swipeDelete={variant === 1}
       restricted={name === "Fighting Arts" ? !sheet.permissions.fightingArts : name === "Abilities" ? !sheet.permissions.abilities : false}
     />
   {/if}

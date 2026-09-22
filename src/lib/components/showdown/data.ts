@@ -107,9 +107,23 @@ export const permissions = [
   { key: "proficiency", label: "Use weapon proficiency" },
 ] as const;
 
+export type ListEntry = { id: number; text: string; description: string };
+
 // Small example decks for the prototype, not the complete game card catalog.
-export const sampleDecks: Record<string, string[]> = {
-  "Fighting Arts": ["Last Man Standing", "Rhythm Chaser", "Extra Sense"],
-  Disorders: ["Fear of the Dark", "Immortal", "Aichmophobia"],
-  Abilities: ["Analyze", "Courageous", "Tough"],
+export const sampleDecks: Record<string, Omit<ListEntry, "id">[]> = {
+  "Fighting Arts": [
+    { text: "Last Man Standing", description: "Become stronger and harder to hit when you are the only survivor still standing." },
+    { text: "Rhythm Chaser", description: "Build momentum as you move and carry that rhythm into your attacks." },
+    { text: "Extra Sense", description: "Trust your instincts to avoid danger that other survivors cannot anticipate." },
+  ],
+  Disorders: [
+    { text: "Fear of the Dark", description: "The darkness beyond the lantern's glow makes it difficult to leave the settlement." },
+    { text: "Immortal", description: "A conviction that death cannot claim you changes how you face every showdown." },
+    { text: "Aichmophobia", description: "Sharp points and bladed weapons provoke an overwhelming fear." },
+  ],
+  Abilities: [
+    { text: "Analyze", description: "Study the monster's behavior to anticipate what it will do next." },
+    { text: "Courageous", description: "Standing at the center of danger restores your resolve." },
+    { text: "Tough", description: "Your hardened body gives you a better chance of enduring severe injuries." },
+  ],
 };
