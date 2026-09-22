@@ -121,6 +121,12 @@
       border-color: var(--foreground);
       background: var(--identity);
     }
+
+    :global(.signal) & {
+      inline-size: 0.75rem;
+      block-size: 0.75rem;
+      transform: translate(-50%, -50%);
+    }
   }
   input {
     display: block;

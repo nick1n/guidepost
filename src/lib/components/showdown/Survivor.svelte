@@ -766,6 +766,7 @@
     display: block;
     color: var(--muted-foreground);
     font-size: var(--text-xs);
+    text-align: center;
   }
   .attribute-value {
     display: block;
