@@ -15,6 +15,8 @@
     deck: "deck",
   };
   const otherIcons = new Set<KdIconName>(["lantern-small", "milestone-filled", "persistent-injury"]);
+  const labelIcons = ["armor", "deck"] as const;
+  const deckLabels = ["AI", "C", "D", "FA", "K", "P", "R", "T"] as const;
   const groupedIcons = new Map<string, KdIconName[]>();
 
   for (const icon of Object.keys(KD_ICONS).sort((a, b) => a.localeCompare(b)) as KdIconName[]) {
@@ -37,6 +39,8 @@
   import KdIcon from "#lib/components/KdIcon.svelte";
 
   let query = $state("");
+  let iconLabel = $state("10");
+  let iconNum = $derived(/^\d{1,2}$/.test(iconLabel) ? Number(iconLabel) : undefined);
   let copiedIcon = $state<string | null>(null);
   let visibleGroups = $derived.by(() => {
     const normalizedQuery = query.trim().toLowerCase();
@@ -51,6 +55,15 @@
     await navigator.clipboard.writeText(icon);
     copiedIcon = icon;
     window.setTimeout(() => (copiedIcon = null), 2_000);
+  }
+
+  function oninput(event: Event) {
+    const input = event.currentTarget as HTMLInputElement;
+    iconLabel = input.value
+      .replace(/[^a-z0-9]/gi, "")
+      .slice(0, 2)
+      .toUpperCase();
+    input.value = iconLabel;
   }
 </script>
 
@@ -71,9 +84,42 @@
     </label>
   </header>
 
+  <section aria-labelledby="icon-labels">
+    <h2 id="icon-labels">Icon labels</h2>
+    <p>Add up to two letters or numbers on top of the armor and deck icons.</p>
+    <label class="label-input">
+      <span>Icon label</span>
+      <input value={iconLabel} {oninput} type="text" maxlength="2" inputmode="text" pattern={"[A-Za-z0-9]{0,2}"} />
+    </label>
+    <ul class="label-previews">
+      {#each labelIcons as icon, i (icon)}
+        <li>
+          <KdIcon
+            i={icon}
+            num={i === 0 ? iconNum : undefined}
+            text={i === 1 || iconNum === undefined ? iconLabel : undefined}
+            label={`${icon} ${iconLabel || "without a label"}`}
+            class="label-preview"
+          />
+          <code>{icon}</code>
+        </li>
+      {/each}
+    </ul>
+  </section>
+
   {#each visibleGroups as { id, label, icons } (id)}
     <section class={id} aria-labelledby={id}>
       <h2 {id}>{label}</h2>
+      {#if id === "deck"}
+        <ul class="deck-labels">
+          {#each deckLabels as text (text)}
+            <li>
+              <KdIcon i="deck" {text} label={`deck ${text}`} />
+              <code>deck {text}</code>
+            </li>
+          {/each}
+        </ul>
+      {/if}
       <ul>
         {#each icons as i (i)}
           <li>
@@ -132,6 +178,15 @@
     font-weight: var(--font-bold);
   }
 
+  .label-input {
+    display: grid;
+    max-inline-size: 8rem;
+    margin-block: 1rem;
+    gap: 0.25rem;
+    color: var(--muted-foreground);
+    font-weight: var(--font-bold);
+  }
+
   input {
     padding: 0.5rem;
     border: var(--border-size) solid var(--color-divider);
@@ -162,6 +217,19 @@
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
     gap: 0.5rem;
+  }
+
+  .label-previews {
+    grid-template-columns: repeat(2, minmax(8rem, 12rem));
+  }
+
+  .deck-labels {
+    margin-block-end: 0.5rem;
+  }
+
+  .label-previews :global(.label-preview) {
+    min-block-size: 5rem;
+    font-size: 5rem;
   }
 
   li {

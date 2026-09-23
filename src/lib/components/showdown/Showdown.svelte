@@ -352,11 +352,9 @@
     min-inline-size: 0;
     padding-inline: var(--panel-inset, 0.5rem);
     padding-block: 0.375rem;
-    overflow-y: auto;
-    overscroll-behavior-y: contain;
+    overflow: hidden scroll;
     border-inline-end: 1px solid var(--color-divider);
     background: color-mix(var(--identity) 9%, var(--background));
-    scroll-padding-block-start: 2.5rem;
     scrollbar-color: var(--identity) transparent;
     scrollbar-gutter: stable both-edges;
     scrollbar-width: thin;

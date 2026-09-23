@@ -20,7 +20,7 @@ export function dragScroll(workspace: HTMLElement) {
     suppressClick = false;
     if (event.pointerType !== "mouse" || event.button !== 0 || event.ctrlKey || event.metaKey || event.altKey || event.shiftKey) return;
     const target = event.target as Element;
-    if (target.closest(controls) && !target.closest(".more")) return;
+    if (target.closest(controls) && !target.closest(".more, .section-header .toggle")) return;
     const panel = target.closest<HTMLElement>(".dashboard") ?? nearestPanel(event.clientX);
     if (!panel || !workspace.contains(panel)) return;
     gesture = {

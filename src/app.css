@@ -31,6 +31,7 @@
 
   --font-sans: "Inter", system-ui, sans-serif;
   --font-display: "Archivo", "Inter", sans-serif;
+  --font-editorial: Georgia, serif;
 
   --font-normal: 500;
   --font-bold: 700;
@@ -41,7 +42,6 @@
   --text-md: 0.875rem;
   --text-sm: 0.75rem;
   --text-xs: 0.625rem;
-  --font-editorial: Georgia, serif;
   --text-xl: 1.5rem;
 
   --border-size: 2px;

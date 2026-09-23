@@ -1,5 +1,7 @@
 <script lang="ts">
   import InlineMarkdown from "#lib/components/InlineMarkdown.svelte";
+  import KdIcon from "#lib/components/KdIcon.svelte";
+  import type { KdIconName } from "#lib/constants.ts";
   import type { Snippet } from "svelte";
 
   let {
@@ -11,6 +13,8 @@
     onaction,
     actionLabel = "Select",
     actionName,
+    actionIcon,
+    actionIconText,
     pressed,
     children,
   }: {
@@ -22,11 +26,14 @@
     onaction?: Noop;
     actionLabel?: string;
     actionName?: string;
+    actionIcon?: KdIconName;
+    actionIconText?: string;
     pressed?: boolean;
     children: Snippet;
   } = $props();
 
   let metaItems = $derived((Array.isArray(meta) ? meta : [meta]).filter(Boolean));
+  const contentId = $props.id();
 
   function add() {
     open = true;
@@ -34,9 +41,9 @@
   }
 </script>
 
-<div class={["section", (onadd || onaction) && "with-add", onadd && onaction && "with-pair"]}>
-  <details bind:open>
-    <summary>
+<div class={["section", onadd && onaction && "with-pair"]}>
+  <div class="section-header">
+    <button class="toggle" type="button" aria-expanded={open} aria-controls={contentId} onclick={() => (open = !open)}>
       <span class={["heading", restricted && "restricted-heading"]}>
         {#if restricted}
           <span class="restriction-mark">
@@ -53,24 +60,37 @@
         </small>
       {/if}
       <span class="chevron i-material-symbols:expand-more" aria-hidden="true"></span>
-    </summary>
-    <div class="content">{@render children()}</div>
-  </details>
-  {#if onadd || onaction}
-    <div class="section-actions">
-      {#if onaction}
-        <button class="add" onclick={onaction} aria-label={actionName ?? `${actionLabel} ${title}`} aria-pressed={pressed}>
-          {actionLabel}
-        </button>
-      {/if}
-      {#if onadd}
-        <button class={["add", onaction && "icon-action"]} onclick={add} aria-label={`Add to ${title}`}>
-          <span class="add-icon i-material-symbols:add" aria-hidden="true"></span>
-          {#if !onaction}Add{/if}
-        </button>
-      {/if}
-    </div>
-  {/if}
+    </button>
+    {#if onadd || onaction}
+      <div class="section-actions">
+        {#if onaction}
+          <button
+            class={["add", actionIcon && "action-button-icon"]}
+            type="button"
+            onclick={onaction}
+            title={actionName ?? `${actionLabel} ${title}`}
+            aria-label={actionIcon ? (actionName ?? `${actionLabel} ${title}`) : undefined}
+            aria-pressed={pressed}
+          >
+            {#if actionIcon}<KdIcon class="action-icon" i={actionIcon} text={actionIconText} />{:else}{actionLabel}{/if}
+          </button>
+        {/if}
+        {#if onadd}
+          <button
+            class={["add", onaction && "icon-action"]}
+            type="button"
+            onclick={add}
+            title={`Add to ${title}`}
+            aria-label={onaction ? `Add to ${title}` : undefined}
+          >
+            <span class="add-icon i-material-symbols:add" aria-hidden="true"></span>
+            {#if !onaction}Add{/if}
+          </button>
+        {/if}
+      </div>
+    {/if}
+  </div>
+  <div class="content" id={contentId} hidden={!open}>{@render children()}</div>
 </div>
 
 <style>
@@ -99,21 +119,21 @@
     display: none;
   }
   .section {
-    position: relative;
     border-block-end: 2px solid color-mix(var(--identity) 45%, transparent);
   }
-  summary {
+  .section-header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  .toggle {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
     align-items: center;
+    min-inline-size: 0;
     padding: 0.25rem 0.375rem;
     gap: 0.375rem;
     color: color-mix(var(--identity) 55%, var(--foreground));
-    list-style: none;
-    cursor: pointer;
-    &::-webkit-details-marker {
-      display: none;
-    }
+    text-align: start;
   }
   small {
     display: flex;
@@ -136,16 +156,15 @@
     color: var(--muted-foreground);
     transition: rotate var(--duration-fast);
   }
-  /* Native details toggles before bind:open updates, so layout must follow the attribute. */
-  details[open] small:not(.restricted),
-  details[open] .meta {
+  .toggle[aria-expanded="true"] small:not(.restricted),
+  .toggle[aria-expanded="true"] .meta {
     display: none;
   }
-  details:not([open]) summary:has(small) .chevron,
-  summary:has(.restricted) .chevron {
+  .toggle[aria-expanded="false"]:has(small) .chevron,
+  .toggle:has(.restricted) .chevron {
     grid-row: 1 / 3;
   }
-  details:not([open]) .chevron {
+  .toggle[aria-expanded="false"] .chevron {
     rotate: -90deg;
   }
   .content {
@@ -153,22 +172,11 @@
     font-weight: var(--font-normal);
     font-size: 1rem;
   }
-  .with-add summary {
-    anchor-name: --section-header;
-    margin-inline-end: 4rem;
-  }
-  .with-pair summary {
-    margin-inline-end: 5.75rem;
-  }
   .section-actions {
     display: flex;
-    position: absolute;
-    inset-block-start: 0;
-    inset-inline-end: 0.125rem;
   }
   .add {
     display: flex;
-    position: relative;
     align-items: center;
     justify-content: center;
     inline-size: 3.75rem;
@@ -176,21 +184,13 @@
     gap: 0.25rem;
     color: var(--foreground);
     font-size: var(--text-sm);
-    &::before {
-      position: absolute;
-      min-block-size: var(--size-control);
-      inset-block-start: 50%;
-      inset-inline: 0;
-      translate: 0 -50%;
-      content: "";
-    }
   }
-  .with-pair .add {
-    inline-size: 3rem;
+  .with-pair .add,
+  .action-button-icon {
+    inline-size: var(--size-control);
   }
   .with-pair .icon-action {
-    inline-size: var(--size-control);
-    margin-inline-end: -0.25rem;
+    position: relative;
     &::after {
       position: absolute;
       inset-block: 30%;
@@ -199,19 +199,16 @@
       content: "";
     }
   }
-  @supports (block-size: anchor-size(height)) {
-    .section-actions {
-      position-anchor: --section-header;
-      block-size: anchor-size(height);
-      inset-block-start: anchor(top);
-    }
-    .add {
-      min-block-size: 0;
-    }
-  }
   .add-icon {
     inline-size: 1rem;
     block-size: 1rem;
+  }
+  .with-pair .add-icon {
+    inline-size: 1.5rem;
+    block-size: 1.5rem;
+  }
+  .add :global(.action-icon) {
+    font-size: 1.125rem;
   }
   :global(.folio) .section {
     margin-block: 0.25rem;
@@ -220,7 +217,7 @@
     border-radius: var(--radius-control);
     background: color-mix(var(--identity) 10%, var(--panel));
   }
-  :global(.folio) summary {
+  :global(.folio) .toggle {
     padding-inline: 0.625rem;
   }
   :global(.folio) .restricted-heading {
@@ -236,18 +233,20 @@
     border-radius: 1.25rem 0.5rem 1.25rem 0.5rem;
     background: color-mix(var(--identity) 12%, var(--background));
   }
-  :global(.signal) summary {
+  :global(.signal) .toggle {
     padding-inline: 0.625rem;
     border-radius: 1rem 0.25rem 1rem 0.25rem;
     background: var(--identity);
     color: var(--identity-ink);
   }
-  :global(.signal) .with-add summary {
-    margin-block-end: 0;
-  }
   :global(.signal) .chevron,
   :global(.signal) small {
     color: inherit;
+  }
+  :global(.signal) .action-button-icon {
+    --kd-icon-text: var(--identity-ink);
+
+    color: var(--identity);
   }
   :global(.signal) .add[aria-pressed="true"] {
     border-radius: var(--radius-control);

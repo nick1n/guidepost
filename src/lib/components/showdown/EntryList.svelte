@@ -23,6 +23,12 @@
   let swipeLearned = $state(false);
   let dragOffset = $state(0);
   let drawMessage = $state("");
+  const drawActions: Record<string, { name: string; iconText: string }> = {
+    "Fighting Arts": { name: "Draw fighting art card", iconText: "FA" },
+    Disorders: { name: "Draw disorder card", iconText: "D" },
+    Abilities: { name: "Draw character card", iconText: "C" },
+  };
+  let drawAction = $derived(drawActions[title]);
   let gesture: {
     id: number;
     pointerId: number;
@@ -163,7 +169,9 @@
   bind:open
   onaction={deck.length ? draw : undefined}
   actionLabel="Draw"
-  actionName={`Draw random card from ${title}`}
+  actionName={drawAction?.name ?? `Draw ${title.toLowerCase()} card`}
+  actionIcon="deck"
+  actionIconText={drawAction?.iconText}
   restricted={restricted ? "Cannot use" : ""}
   meta={entries.length ? entries.map((entry) => entry.text) : "None"}
   onadd={() => {

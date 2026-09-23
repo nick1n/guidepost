@@ -178,13 +178,7 @@
   </div>
 </Section>
 
-<Section
-  title="Basic Action"
-  meta={["Spd 2", "Acc 2+", "Dmg 1"]}
-  onaction={() => true}
-  actionLabel="Perform"
-  actionName="Select Basic Action"
->
+<Section title="Basic Action" meta={["Spd 2", "Acc 2+", "Dmg 1"]} onaction={() => true} actionLabel="Perform">
   <h3><strong>Pick</strong> Target</h3>
   <ol class="targets">
     <li>closest survivor, in field of view</li>
@@ -204,7 +198,7 @@
   <p class="trigger hidden"><strong>Special Trigger</strong> On a hit, resolve the attack's additional effects.</p>
 </Section>
 
-<Section title="Instinct: **Sniff**" onaction={() => true} actionLabel="Perform" actionName="Select Sniff">
+<Section title="Instinct: **Sniff**" onaction={() => true} actionLabel="Perform">
   <p>
     The White Lion sniffs the air and ends its turn. Until the end of the next round, all survivors are now threats, despite any effects
     that say otherwise.
@@ -271,7 +265,15 @@
           <AttributeTokens owner="Monster" names={tokens} labels={["Spd", "Acc", "Dmg", "Lck", "Mov", "Tgh", "Eva"]} bind:counts={values} />
         </Section>
       {:else if section === "Resource Deck"}
-        <Section title="Resource Deck" meta={`${resourceCount || "None"} Drawn`} onaction={() => true} actionLabel="Draw">
+        <Section
+          title="Resource Deck"
+          meta={`${resourceCount || "None"} Drawn`}
+          onaction={() => true}
+          actionLabel="Draw"
+          actionName="Draw resource card"
+          actionIcon="deck"
+          actionIconText="R"
+        >
           <div class="resource-actions">
             {#each resources as resource (resource.name)}
               <button
@@ -714,6 +716,11 @@
   }
   :global(.signal) header {
     border-radius: var(--radius-control);
+    background-image:
+      linear-gradient(color-mix(var(--background) 55%, transparent), color-mix(var(--background) 80%, transparent)),
+      url("/img/showdown-board.webp");
+    background-position: center;
+    background-size: cover;
   }
   :global(.signal) h2 {
     font-size: 2.25rem;

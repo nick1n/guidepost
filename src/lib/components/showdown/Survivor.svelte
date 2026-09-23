@@ -138,7 +138,11 @@
       {#each armor as location, index (location.name)}
         <div class="armor-cell">
           <span class="armor-input">
-            {#if location.icon}<KdIcon class="armor-icon" i={location.icon} />{/if}
+            {#if location.icon}
+              <KdIcon class="armor-icon" i={location.icon} />
+            {:else}
+              <span class="brain-icon i-game-icons:brain" aria-hidden="true"></span>
+            {/if}
             <input
               class="armor-value"
               aria-label={`${person.name} ${location.name}`}
@@ -772,7 +776,7 @@
     display: block;
     margin-inline: auto;
     color: color-mix(var(--identity) 55%, var(--foreground));
-    font-size: 1.375rem;
+    font-size: 1.625rem;
     line-height: 1.3;
     font-variant-numeric: lining-nums tabular-nums;
   }
@@ -790,7 +794,7 @@
   .armor-value {
     position: relative;
     color: var(--foreground);
-    font-size: 1.125rem;
+    font-size: 1.625rem;
   }
   .armor-input {
     display: grid;
@@ -801,12 +805,18 @@
     border-radius: var(--radius-control);
     background: color-mix(var(--identity) 18%, var(--panel));
   }
-  .armor-input :global(.armor-icon) {
+  .armor-input :global(.armor-icon),
+  .armor-input .brain-icon {
     grid-area: 1 / 1;
     color: color-mix(var(--identity) 42%, var(--foreground));
     font-size: 2rem;
     opacity: 0.15;
     pointer-events: none;
+  }
+  .brain-icon {
+    inline-size: 2.25rem;
+    block-size: 2.25rem;
+    translate: 0 -0.125rem;
   }
   .armor-input .armor-value {
     grid-area: 1 / 1;
@@ -1010,7 +1020,6 @@
     border: 0;
     background: var(--identity);
     color: inherit;
-    font-size: 1.625rem;
     font-family: var(--font-sans);
   }
   :global(.signal) .stat-label {
