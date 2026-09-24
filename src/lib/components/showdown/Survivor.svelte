@@ -1,28 +1,53 @@
 <script lang="ts">
   import AttributeTokens from "./AttributeTokens.svelte";
+  import ActionRow from "./ActionRow.svelte";
+  import AttackProfile from "./AttackProfile.svelte";
   import KdIcon from "#lib/components/KdIcon.svelte";
   import Section from "./Section.svelte";
   import Gear from "./Gear.svelte";
   import EntryList from "./EntryList.svelte";
   import ProgressTrack from "./ProgressTrack.svelte";
-  import { attributes, abbreviations, availableActions, statusItems, permissions, sampleDecks, type ListEntry, type Sheet } from "./data";
+  import {
+    attributes,
+    abbreviations,
+    attackStats,
+    availableActions,
+    canSpendCost,
+    isReady,
+    spendCost,
+    statusItems,
+    toggleActed,
+    permissions,
+    sampleActions,
+    sampleDecks,
+    type Cost,
+    type ListEntry,
+    type Sheet,
+  } from "./data";
 
   let {
     person,
     number,
     variant,
     survivorTurn,
+    monsterDefense,
     sheet = $bindable(),
   }: {
     person: { name: string; color: string; gender: string };
     number: number;
     variant: number;
     survivorTurn: boolean;
+    monsterDefense: { toughness: number; luck: number; evasion: number };
     sheet: Sheet;
   } = $props();
 
   const id = $props.id();
+  const foundingStoneRule =
+    "Spend [activation] to sling the stone from anywhere on the board! **Archive** this card for 1 automatic hit that only inflicts a critical wound.";
+  const foundingStoneRuleText = foundingStoneRule.replace("[activation]", "an activation").replaceAll("**", "");
+  const attackCost = ["activation"] as const;
   let showMore = $state(false);
+  let expandedAction = $state<string | null>(null);
   let compactGear = $state(false);
   const listNames = [
     "Fighting Arts",
@@ -44,6 +69,48 @@
 
   let selectedGear = $state<number | null>(null);
   let draggedGear = $state<number | null>(null);
+  let foundingStoneSlot = $derived(sheet.gear.findIndex((item, index) => index > 0 && index < 10 && item === "Founding Stone"));
+  let hasFoundingStone = $derived(foundingStoneSlot !== -1);
+  let foundingStoneAttack = $derived(attackStats(sheet, "Founding Stone", monsterDefense));
+  let fistAndToothAttack = $derived(attackStats(sheet, "Fist & Tooth", monsterDefense));
+
+  function formatTarget(value: number) {
+    return value === 10 ? "10" : `${value}+`;
+  }
+
+  function formatCrit(value: number | null) {
+    return value === null ? "\u2212" : formatTarget(value);
+  }
+
+  function profileStats(attack: ReturnType<typeof attackStats>) {
+    return [
+      { label: "Speed", value: attack.speed },
+      { label: "Acc", value: formatTarget(attack.acc), divider: true },
+      { label: "Perf Hit", value: formatCrit(attack.phit) },
+      { label: "Wound", value: formatTarget(attack.wound), divider: true },
+      { label: "Crit", value: formatCrit(attack.crit) },
+    ];
+  }
+
+  function canUse(cost: readonly Cost[]) {
+    return survivorTurn && isReady(sheet) && canSpendCost(sheet, cost);
+  }
+
+  function spendAction(cost: readonly Cost[]) {
+    return canUse(cost) && spendCost(sheet, cost);
+  }
+
+  function act() {
+    toggleActed(sheet);
+  }
+
+  function activateFoundingStone() {
+    const slot = foundingStoneSlot;
+    if (slot === -1 || !spendAction(attackCost)) return;
+    sheet.gear[slot] = null;
+    if (selectedGear === slot) selectedGear = null;
+    expandedAction = null;
+  }
 
   let extras = $derived([
     { name: "Tokens", populated: sheet.tokens.some((token) => token.positive || token.negative) || !!sheet.bleeding || sheet.priority },
@@ -94,6 +161,20 @@
   function toggleNameless() {
     sheet.nameless = !sheet.nameless;
     if (sheet.nameless) sheet.name = `Nameless ${number}`;
+  }
+
+  function oninputBleeding(event: Event) {
+    const input = event.currentTarget;
+    if (!(input instanceof HTMLInputElement) || !Number.isFinite(input.valueAsNumber)) return;
+    sheet.bleeding = input.valueAsNumber;
+    if (sheet.bleeding >= sheet.life) sheet.dead = true;
+  }
+
+  function oninputLife(event: Event) {
+    const input = event.currentTarget;
+    if (!(input instanceof HTMLInputElement) || !Number.isFinite(input.valueAsNumber)) return;
+    sheet.life = input.valueAsNumber;
+    if (sheet.bleeding >= sheet.life) sheet.dead = true;
   }
 
   const armor = [
@@ -179,7 +260,7 @@
     <button class={["condition", sheet.threat && "active"]} aria-pressed={sheet.threat} onclick={() => (sheet.threat = !sheet.threat)}>
       Threat
     </button>
-    <button class={["condition", sheet.acted && "active"]} aria-pressed={sheet.acted} onclick={() => (sheet.acted = !sheet.acted)}>
+    <button class={["condition", sheet.acted && "active"]} aria-pressed={sheet.acted} onclick={act}>
       {sheet.acted ? "Acted" : "Act"}
     </button>
     {#each ["Monster Controller", "Blind Spot", "Knocked Down"] as status (status)}
@@ -205,7 +286,9 @@
 {#snippet tokenControls()}
   <AttributeTokens owner={person.name} names={attributes} labels={abbreviations} bind:counts={sheet.tokens} />
   <div class="extra-tokens">
-    <label for={`${id}-bleeding`}>Bleeding <input id={`${id}-bleeding`} type="number" min="0" max="5" bind:value={sheet.bleeding} /></label>
+    <label for={`${id}-bleeding`}>
+      Bleeding <input id={`${id}-bleeding`} type="number" min="0" max={sheet.life} value={sheet.bleeding} oninput={oninputBleeding} />
+    </label>
     <button
       class={["condition", sheet.priority && "active"]}
       aria-pressed={sheet.priority}
@@ -217,23 +300,64 @@
 {/snippet}
 
 {#snippet actions()}
-  <div class="action-list">
-    <button class={"action"}>
-      <span><KdIcon i="movement" /> Move</span><small>{sheet.attributes[0] ?? 0} spaces</small>
-      <span class="action-arrow i-material-symbols:arrow-forward" aria-hidden="true"></span>
-    </button>
-    <button class={"action"}>
-      <span><KdIcon i="activation" /> Attack</span><small>1 action</small>
-      <span class="action-arrow i-material-symbols:arrow-forward" aria-hidden="true"></span>
-    </button>
+  <div class="attack-list">
+    {#if hasFoundingStone}
+      <AttackProfile
+        title="Founding Stone"
+        stats={profileStats(foundingStoneAttack)}
+        attack={foundingStoneAttack}
+        {variant}
+        cost={attackCost}
+        disabled={!canUse(attackCost)}
+        onspend={() => spendAction(attackCost)}
+      />
+    {/if}
+    <AttackProfile
+      title="Fist & Tooth"
+      stats={profileStats(fistAndToothAttack)}
+      attack={fistAndToothAttack}
+      {variant}
+      cost={attackCost}
+      disabled={!canUse(attackCost)}
+      onspend={() => spendAction(attackCost)}
+    />
   </div>
+  {#if hasFoundingStone || number === 1}
+    <ul class="action-list">
+      {#if hasFoundingStone}
+        <ActionRow
+          title="Founding Stone"
+          cost={attackCost}
+          description={foundingStoneRule}
+          accessibleDescription={foundingStoneRuleText}
+          open={expandedAction === "founding-stone"}
+          disabled={!canUse(attackCost)}
+          onexpand={() => (expandedAction = expandedAction === "founding-stone" ? null : "founding-stone")}
+          onspend={activateFoundingStone}
+        />
+      {/if}
+      {#if number === 1}
+        {#each sampleActions as action (action.title)}
+          <ActionRow
+            title={action.title}
+            cost={action.cost}
+            description={action.description}
+            open={expandedAction === action.title}
+            disabled={!canUse(action.cost)}
+            onexpand={() => (expandedAction = expandedAction === action.title ? null : action.title)}
+            onspend={() => spendAction(action.cost)}
+          />
+        {/each}
+      {/if}
+    </ul>
+  {/if}
 {/snippet}
 
 {#snippet survivalActions()}
   {#if !sheet.permissions.survival}<p class="restriction">Cannot use survival actions</p>{/if}
   <div class="survival-actions">
     {#each ["Dodge", "Dash", "Surge", "Encourage", "Endure"] as action, index (action)}
-      <button class={"survival-action"} disabled={index !== 0 || !availableActions(sheet)}>
+      <button class="survival-action" disabled={index !== 0 || !availableActions(sheet)}>
         <span>{action}</span><small>{index === 0 ? (availableActions(sheet) ? "1 survival" : "Unavailable") : "Locked"}</small>
       </button>
     {/each}
@@ -256,7 +380,7 @@
       <Gear bind:slots={sheet.gear} bind:selected={selectedGear} bind:dragged={draggedGear} start={10} count={3} slotLabel="Trinket Slot" />
     </Section>
   {:else if name === "Miscellaneous"}
-    <Section title="Miscellaneous" meta={["Identity", "Lineage", "Affinities", "Permissions"]}>
+    <Section title="Miscellaneous" meta={["Identity", "Lineage", "Affinities", "Restrictions"]}>
       <div class="fields">
         <label class="field" for={`${id}-name`}>Name</label>
         <input
@@ -292,11 +416,11 @@
       <h3>Affinities</h3>
       <div class="numbers">
         {#each ["Red", "Green", "Blue"] as color, index (color)}
-          <div class="stat">
-            <label for={`${id}-affinity-${index}`} class="stat-label">{color}</label>
+          <div class={["stat", `affinity-${color.toLowerCase()}`]}>
+            <label for={`${id}-affinity-${index}`} class="stat-label affinity-label">{color}</label>
             <input
               id={`${id}-affinity-${index}`}
-              class="attribute-value"
+              class="attribute-value affinity-value"
               type="number"
               min="-10"
               max="10"
@@ -321,7 +445,18 @@
           <input id={`${id}-disorder-limit`} class="attribute-value" type="number" min="0" step="1" bind:value={sheet.disorderLimit} />
         </div>
       </div>
-      <h3>Permissions</h3>
+      <h3>Other</h3>
+      <div class="numbers">
+        <div class="stat">
+          <label for={`${id}-life`} class="stat-label">Life</label>
+          <input id={`${id}-life`} class="attribute-value" type="number" min="1" step="1" value={sheet.life} oninput={oninputLife} />
+        </div>
+        <div class="stat">
+          <label for={`${id}-perfect-hit-range`} class="stat-label">Perfect Hit Range</label>
+          <input id={`${id}-perfect-hit-range`} class="attribute-value" type="number" min="0" step="1" bind:value={sheet.perfectHitRange} />
+        </div>
+      </div>
+      <h3>Restrictions</h3>
       <div class="conditions">
         {#each permissions as permission (permission.key)}
           <button
@@ -441,7 +576,17 @@
     </div>
   {/if}
 
-  <header class="identity">
+  <header
+    class="identity"
+    data-threat={sheet.threat ? "" : undefined}
+    data-acted={sheet.acted ? "" : undefined}
+    data-controller={sheet.statuses.includes("Monster Controller") ? "" : undefined}
+    data-blind={sheet.statuses.includes("Blind Spot") ? "" : undefined}
+    data-knocked={sheet.statuses.includes("Knocked Down") ? "" : undefined}
+    data-dead={sheet.dead ? "" : undefined}
+    data-retired={sheet.statuses.includes("Retired") ? "" : undefined}
+    data-priority={sheet.priority ? "" : undefined}
+  >
     <div class="identity-copy">
       <p class="eyebrow">Survivor {number} <span>{sheet.gender}</span></p>
       <h2>
@@ -481,12 +626,7 @@
       <h3>Survival Actions <small>{sheet.survival ?? 0} survival</small></h3>
       {@render survivalActions()}
     </Section>
-    <Section
-      title="Status"
-      meta={statusItems(sheet)}
-      onaction={survivorTurn ? () => (sheet.acted = !sheet.acted) : undefined}
-      actionLabel={sheet.acted ? "Acted" : "Act"}
-    >
+    <Section title="Status" meta={statusItems(sheet)} onaction={survivorTurn ? act : undefined} actionLabel={sheet.acted ? "Acted" : "Act"}>
       {@render conditions()}
     </Section>
   {:else}
@@ -499,12 +639,7 @@
       <Section title="Attributes" meta={`Mov ${sheet.attributes[0] ?? 0}`}>{@render statistics()}</Section>
       <Section title="Insanity & Armor" meta={`Ins ${sheet.armorValues[0] ?? 0}`}>{@render protection()}</Section>
     {/if}
-    <Section
-      title="Status"
-      meta={statusItems(sheet)}
-      onaction={survivorTurn ? () => (sheet.acted = !sheet.acted) : undefined}
-      actionLabel={sheet.acted ? "Acted" : "Act"}
-    >
+    <Section title="Status" meta={statusItems(sheet)} onaction={survivorTurn ? act : undefined} actionLabel={sheet.acted ? "Acted" : "Act"}>
       {@render conditions()}
     </Section>
     <Section title="Actions">
@@ -751,13 +886,13 @@
     padding: 0.25rem;
     border-radius: 1rem 0.25rem 1rem 0.25rem;
     border-inline-start: 0;
-    background: color-mix(var(--identity-ink) 10%, transparent);
+    background: color-mix(in srgb, var(--background) 48%, transparent);
   }
   :global(.signal) .survival input {
     border: 0;
     border-radius: 0.75rem 0.25rem 0.75rem 0.25rem;
-    background: var(--identity-ink);
-    color: var(--identity);
+    background: var(--foreground);
+    color: var(--background);
   }
   .stats,
   .armor {
@@ -779,6 +914,23 @@
     font-size: 1.625rem;
     line-height: 1.3;
     font-variant-numeric: lining-nums tabular-nums;
+  }
+  .affinity-red {
+    --affinity-color: var(--accent-red);
+  }
+  .affinity-green {
+    --affinity-color: var(--accent-green);
+  }
+  .affinity-blue {
+    --affinity-color: var(--accent-blue);
+  }
+  .affinity-label,
+  .affinity-value {
+    color: var(--affinity-color);
+  }
+  .affinity-value {
+    border-color: color-mix(var(--affinity-color) 60%, var(--panel));
+    background: color-mix(var(--affinity-color) 18%, var(--panel));
   }
   .armor {
     row-gap: 0.625rem;
@@ -916,33 +1068,14 @@
     font-weight: var(--font-normal);
     font-size: var(--text-xs);
   }
+  .attack-list {
+    display: grid;
+    gap: 0.125rem;
+  }
   .action-list {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.25rem;
-  }
-  .action {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    align-items: center;
-    min-block-size: 3.5rem;
-    padding: 0.5rem;
+    margin-block-start: 0.125rem;
     gap: 0.125rem;
-    border-radius: var(--radius-control);
-    background: color-mix(var(--identity) 22%, var(--panel));
-    font-size: var(--text-sm);
-    text-align: start;
-  }
-  .action small {
-    grid-row: 2;
-    color: var(--muted-foreground);
-    font-size: var(--text-xs);
-  }
-  .action-arrow {
-    grid-row: 1 / 3;
-    grid-column: 2;
-    inline-size: 1rem;
-    block-size: 1rem;
   }
   .selection {
     margin-block-start: 0.375rem;
@@ -1001,9 +1134,168 @@
     font-family: var(--font-sans);
   }
   :global(.signal) .identity {
+    --signal-threat: none;
+    --signal-acted: none;
+    --signal-controller: none;
+    --signal-blind: none;
+    --signal-knocked: none;
+    --signal-dead: none;
+    --signal-retired: none;
+    --signal-priority: none;
+    --signal-orbit-x: 0%;
+    --signal-orbit-y: 0%;
+    --signal-orbit-scale-x: 1;
+    --signal-orbit-scale-y: 1;
+    --signal-orbit-rotate: 0deg;
+    --signal-orbit-color: #ffffff26;
+
+    position: relative;
+    overflow: hidden;
     padding-block: 0.875rem;
     border-radius: 1.5rem 0.375rem 2.5rem 0.375rem;
-    background-image: radial-gradient(circle at 90% 110%, #ffffff26 0 3rem, transparent 3rem);
+    background-color: color-mix(in srgb, var(--identity) 52%, var(--background));
+    background-image:
+      var(--signal-dead), var(--signal-retired), var(--signal-knocked), var(--signal-blind), var(--signal-controller),
+      var(--signal-priority), var(--signal-acted), var(--signal-threat);
+    color: var(--foreground);
+
+    &::before {
+      position: absolute;
+      z-index: 0;
+      inset: -45%;
+      background: radial-gradient(ellipse 17% 23% at 75% 75%, var(--signal-orbit-color) 0 74%, transparent 75%);
+      content: "";
+      pointer-events: none;
+      transform: translate(var(--signal-orbit-x), var(--signal-orbit-y)) rotate(var(--signal-orbit-rotate))
+        scale(var(--signal-orbit-scale-x), var(--signal-orbit-scale-y));
+    }
+
+    &[data-threat] {
+      --signal-threat:
+        radial-gradient(ellipse 65% 145% at 107% -10%, color-mix(in srgb, var(--accent-red) 55%, transparent), transparent 72%),
+        linear-gradient(105deg, transparent 80%, color-mix(in srgb, var(--accent-red) 30%, transparent) 81% 84%, transparent 85%);
+      --signal-orbit-y: -40%;
+      --signal-orbit-color: color-mix(in srgb, var(--accent-red) 42%, transparent);
+    }
+
+    &[data-acted] {
+      --signal-acted:
+        radial-gradient(ellipse 85% 110% at 70% 50%, #0000008c, transparent 80%),
+        repeating-linear-gradient(135deg, #00000030 0 0.35rem, transparent 0.35rem 0.9rem);
+      --signal-orbit-x: -30%;
+      --signal-orbit-y: 28%;
+      --signal-orbit-scale-x: 0.85;
+      --signal-orbit-scale-y: 0.45;
+      --signal-orbit-color: #ffffff30;
+    }
+
+    &[data-priority] {
+      --signal-priority: radial-gradient(
+        circle at 91% 48%,
+        transparent 0 1.25rem,
+        color-mix(in srgb, var(--accent-blue) 78%, transparent) 1.3rem 1.43rem,
+        transparent 1.48rem 2.4rem,
+        color-mix(in srgb, var(--accent-blue) 52%, transparent) 2.45rem 2.55rem,
+        transparent 2.6rem
+      );
+      --signal-orbit-x: -8%;
+      --signal-orbit-y: -22%;
+      --signal-orbit-scale-x: 0.8;
+      --signal-orbit-scale-y: 0.8;
+      --signal-orbit-color: color-mix(in srgb, var(--accent-blue) 52%, transparent);
+    }
+
+    &[data-controller] {
+      --signal-controller: repeating-radial-gradient(
+        circle at 82% 112%,
+        transparent 0 1rem,
+        color-mix(in srgb, var(--accent-purple) 48%, transparent) 1.05rem 1.14rem,
+        transparent 1.2rem 2.05rem
+      );
+      --signal-orbit-x: -10%;
+      --signal-orbit-y: 4%;
+      --signal-orbit-scale-x: 1.35;
+      --signal-orbit-scale-y: 1.35;
+      --signal-orbit-rotate: 20deg;
+      --signal-orbit-color: color-mix(in srgb, var(--accent-purple) 48%, transparent);
+    }
+
+    &[data-blind] {
+      --signal-blind: radial-gradient(
+        ellipse 78% 115% at 0% 45%,
+        #000000ad 0 18%,
+        color-mix(in srgb, var(--accent-green) 46%, transparent) 38%,
+        transparent 72%
+      );
+      --signal-orbit-x: -55%;
+      --signal-orbit-y: -12%;
+      --signal-orbit-scale-x: 1.7;
+      --signal-orbit-scale-y: 1.7;
+      --signal-orbit-rotate: -45deg;
+      --signal-orbit-color: color-mix(in srgb, var(--accent-green) 42%, transparent);
+    }
+
+    &[data-knocked] {
+      --signal-knocked:
+        linear-gradient(
+          155deg,
+          transparent 0 40%,
+          color-mix(in srgb, var(--accent-red) 55%, transparent) 41% 44%,
+          #0000008c 45% 76%,
+          transparent 77%
+        ),
+        radial-gradient(ellipse 80% 45% at 22% 110%, color-mix(in srgb, var(--accent-red) 45%, transparent), transparent 80%);
+      --signal-orbit-x: -40%;
+      --signal-orbit-y: 26%;
+      --signal-orbit-scale-x: 1.9;
+      --signal-orbit-scale-y: 0.48;
+      --signal-orbit-rotate: -18deg;
+      border-radius: 0.375rem 1.5rem 0.375rem 2.5rem;
+    }
+
+    &[data-retired] {
+      --signal-retired:
+        radial-gradient(ellipse 85% 75% at 12% 120%, color-mix(in srgb, var(--secondary) 58%, transparent), transparent 78%),
+        linear-gradient(0deg, #00000080, transparent 75%);
+      --signal-orbit-x: -45%;
+      --signal-orbit-y: 20%;
+      --signal-orbit-scale-x: 2;
+      --signal-orbit-scale-y: 0.6;
+      --signal-orbit-color: color-mix(in srgb, var(--secondary) 48%, transparent);
+      border-radius: 2.5rem 2.5rem 0.375rem 0.375rem;
+    }
+
+    &[data-dead] {
+      --signal-dead: radial-gradient(
+        ellipse 70% 115% at 48% 50%,
+        #000000d9 0 36%,
+        color-mix(in srgb, var(--accent-red) 45%, transparent) 65%,
+        transparent 80%
+      );
+      --signal-orbit-x: -20%;
+      --signal-orbit-y: -15%;
+      --signal-orbit-scale-x: 1.25;
+      --signal-orbit-scale-y: 1.25;
+      --signal-orbit-color: color-mix(in srgb, var(--accent-red) 55%, transparent);
+      border-radius: 0.375rem;
+      background-color: var(--background);
+    }
+  }
+  :global(.signal) .identity-copy,
+  :global(.signal) .survival {
+    position: relative;
+    z-index: 1;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    :global(.signal) .identity {
+      transition:
+        background-color 350ms ease,
+        border-radius 350ms ease;
+
+      &::before {
+        transition: transform 500ms ease;
+      }
+    }
   }
   :global(.signal) h2 {
     font-weight: var(--font-normal);
@@ -1025,6 +1317,18 @@
   :global(.signal) .stat-label {
     color: inherit;
   }
+  :global(.signal) .stat:is(.affinity-red, .affinity-green, .affinity-blue) {
+    background: var(--affinity-color);
+    color: var(--contrast);
+  }
+  :global(.signal) .affinity-label,
+  :global(.signal) .affinity-value {
+    color: inherit;
+  }
+  :global(.signal) .affinity-value {
+    border: 0;
+    background: var(--affinity-color);
+  }
   :global(.signal) .condition {
     border: 0;
     background: color-mix(var(--identity) 16%, var(--background));
@@ -1042,9 +1346,6 @@
   }
   :global(.obsidian) .armor-input {
     border-radius: 1rem 1rem 50% 50% / 0.5rem 0.5rem 70% 70%;
-  }
-  :global(.signal) .action {
-    background: color-mix(var(--identity) 16%, var(--background));
   }
   :global(.signal) .survival-action {
     border: 0;

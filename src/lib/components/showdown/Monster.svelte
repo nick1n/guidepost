@@ -1,5 +1,6 @@
 <script lang="ts">
   import AttributeTokens from "./AttributeTokens.svelte";
+  import AttackProfile from "./AttackProfile.svelte";
   import InlineMarkdown from "#lib/components/InlineMarkdown.svelte";
   import KdIcon from "#lib/components/KdIcon.svelte";
   import Section from "./Section.svelte";
@@ -162,7 +163,7 @@
 
 <Section
   title={variant === 2 ? "Attributes" : "Monster Attributes"}
-  meta={[`Life ${stats.life}`, `Spd ${stats.speed || "\u2212"}`, `Dmg ${stats.damage || "\u2212"}`]}
+  meta={[`Life ${stats.life}`, `Spd ${stats.speed ? `${stats.speed > 0 ? "+" : ""}${stats.speed}` : "\u2212"}`, `Dmg ${stats.damage ? `${stats.damage > 0 ? "+" : ""}${stats.damage}` : "\u2212"}`]}
   onaction={() => stats.life--}
   actionLabel="Wound"
 >
@@ -187,14 +188,14 @@
   <div class="more" aria-hidden="true">
     <KdIcon class="basic-action-icon" i="flow-arrow" />
   </div>
-  <h3><strong>Move & Attack</strong> Target</h3>
-  <div class="attack-profile">
-    {#each [{ name: "Speed", value: "2" }, { name: "Accuracy", value: "2+" }, { name: "Damage", value: "1" }] as stat (stat.name)}
-      <div>
-        <span>{stat.name}</span><strong>{stat.value}</strong>
-      </div>
-    {/each}
-  </div>
+  <AttackProfile
+    title="Move & Attack Target"
+    stats={[
+      { label: "Speed", value: 2 },
+      { label: "Accuracy", value: "2+" },
+      { label: "Damage", value: 1 },
+    ]}
+  />
   <p class="trigger hidden"><strong>Special Trigger</strong> On a hit, resolve the attack's additional effects.</p>
 </Section>
 
@@ -673,27 +674,6 @@
     font-size: var(--text-md);
     line-height: 2;
   }
-  .attack-profile {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    padding: 0.5rem;
-    border: 1px solid var(--color-divider);
-    border-radius: var(--radius-control);
-    background: var(--panel);
-  }
-  .attack-profile div {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.375rem;
-  }
-  .attack-profile span {
-    color: var(--muted-foreground);
-    font-size: var(--text-xs);
-  }
-  .attack-profile strong {
-    font-size: 1.625rem;
-  }
   .trigger {
     margin-block-start: 0.75rem;
     color: var(--muted-foreground);
@@ -716,11 +696,6 @@
   }
   :global(.signal) header {
     border-radius: var(--radius-control);
-    background-image:
-      linear-gradient(color-mix(var(--background) 55%, transparent), color-mix(var(--background) 80%, transparent)),
-      url("/img/showdown-board.webp");
-    background-position: center;
-    background-size: cover;
   }
   :global(.signal) h2 {
     font-size: 2.25rem;
@@ -729,10 +704,6 @@
     font-family: var(--font-sans);
   }
   :global(.signal) .action {
-    background: var(--background);
-  }
-  :global(.signal) .attack-profile {
-    border: 0;
     background: var(--background);
   }
   input {

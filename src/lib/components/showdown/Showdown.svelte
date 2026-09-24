@@ -4,7 +4,7 @@
   import Monster from "./Monster.svelte";
   import Survivor from "./Survivor.svelte";
   import QuickStatus from "./QuickStatus.svelte";
-  import { designs, survivors, makeSheet, statusText, tokenTotal, availableActions, makeTokens, tokenNet } from "./data";
+  import { designs, survivors, makeSheet, statusText, tokenTotal, availableActions, makeTokens, tokenNet, toggleActed } from "./data";
 
   let { variant = 1 }: { variant?: number } = $props();
   let design = $derived(designs[variant - 1]);
@@ -33,8 +33,17 @@
     { value: "free", label: "Free" },
   ];
 
+  function beginSurvivorTurn() {
+    for (const sheet of sheets) {
+      sheet.remaining.movement = 1;
+      sheet.remaining.activation = 1;
+    }
+    monsterTurn = false;
+  }
+
   function toggleTurn() {
-    monsterTurn = !monsterTurn;
+    if (monsterTurn) beginSurvivorTurn();
+    else monsterTurn = true;
   }
   let rail: HTMLDivElement;
   const roster = [{ name: "White Lion", color: "var(--color-monster)", ink: "var(--contrast)" }, ...survivors];
@@ -95,7 +104,7 @@
     const wasSelected = active === index;
     jump(index);
     if (index > 0 && wasSelected) {
-      sheets[index - 1].acted = !sheets[index - 1].acted;
+      toggleActed(sheets[index - 1]);
     }
   }
 
@@ -114,13 +123,16 @@
   }
   function advance() {
     if (monsterTurn) {
-      monsterTurn = false;
+      beginSurvivorTurn();
       return;
     }
     round += 1;
     monsterTurn = true;
     awakening += 1;
-    for (const sheet of sheets) sheet.acted = false;
+    for (const sheet of sheets) {
+      sheet.acted = false;
+      sheet.remainingBeforeAct = null;
+    }
     jump(0);
   }
   function onkeydown(event: KeyboardEvent) {
@@ -137,6 +149,11 @@
     event.preventDefault();
     const direction = event.key === "ArrowLeft" ? -1 : 1;
     jump((active + direction + roster.length) % roster.length);
+  }
+
+  function resourceText(index: number) {
+    const { movement, activation } = sheets[index - 1].remaining;
+    return `${movement} movement and ${activation} activation remaining`;
   }
 </script>
 
@@ -162,7 +179,18 @@
         {#if index === 0}
           <Monster {variant} {round} {monsterTurn} {awakening} bind:values={monsterTokens} bind:stats={monsterStats} onturn={toggleTurn} />
         {:else}
-          <Survivor person={survivors[index - 1]} number={index} {variant} survivorTurn={!monsterTurn} bind:sheet={sheets[index - 1]} />
+          <Survivor
+            person={survivors[index - 1]}
+            number={index}
+            {variant}
+            survivorTurn={!monsterTurn}
+            monsterDefense={{
+              toughness: (monsterStats.toughness ?? 0) + tokenNet(monsterTokens[5]),
+              luck: tokenNet(monsterTokens[3]),
+              evasion: tokenNet(monsterTokens[6]),
+            }}
+            bind:sheet={sheets[index - 1]}
+          />
         {/if}
       </div>
     {/each}
@@ -179,7 +207,7 @@
           aria-describedby={index > 0 ? "roster-shortcut" : undefined}
           aria-label={index === 0
             ? `White Lion, ${monsterTurn ? "current turn" : "waiting"}, movement ${(monsterStats.movement || 0) + tokenNet(monsterTokens[0])}, toughness ${(monsterStats.toughness || 0) + tokenNet(monsterTokens[1])}, round ${round}`
-            : `${survivorName(index)}, ${statusText(sheets[index - 1])}, ${tokenTotal(sheets[index - 1])} tokens, ${availableActions(sheets[index - 1])} survival actions available`}
+            : `${survivorName(index)}, ${statusText(sheets[index - 1])}, ${tokenTotal(sheets[index - 1])} tokens, ${availableActions(sheets[index - 1])} survival actions available${monsterTurn ? "" : `, ${resourceText(index)}`}`}
           onclick={() => selectSurvivor(index)}
         >
           <strong>{index === 0 ? "White Lion" : survivorName(index)}</strong>
@@ -187,7 +215,7 @@
             <span>Mov <b>{(monsterStats.movement || 0) + tokenNet(monsterTokens[0])}</b></span>
             <span>Tgh <b>{(monsterStats.toughness || 0) + tokenNet(monsterTokens[1])}</b></span>
           {:else}
-            <QuickStatus sheet={sheets[index - 1]} />
+            <QuickStatus sheet={sheets[index - 1]} showResources={!monsterTurn} />
           {/if}
         </button>
       {/each}

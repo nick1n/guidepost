@@ -16,6 +16,15 @@ export function tokenNet(count: TokenCount) {
   return count.positive - count.negative;
 }
 
+export type AttackWeapon = "Founding Stone" | "Fist & Tooth";
+
+const weaponStats: Record<AttackWeapon, { speed: number; accuracy: number; strength: number; luck: number }> = {
+  "Founding Stone": { speed: 2, accuracy: 7, strength: 1, luck: 0 },
+  "Fist & Tooth": { speed: 2, accuracy: 8, strength: 0, luck: 1 },
+};
+
+const clampTarget = (value: number) => Math.max(2, Math.min(10, value));
+
 export function makeSheet(index = -1) {
   return {
     name: survivors[index]?.name ?? "",
@@ -23,6 +32,8 @@ export function makeSheet(index = -1) {
     gender: survivors[index]?.gender ?? "Non-binary",
     survival: 1,
     survivalLimit: 1,
+    life: 5,
+    perfectHitRange: 1,
     nickname: index == 0 ? "Foolish Coward of Darkness" : "",
     permissions: {
       survival: index !== 2,
@@ -37,6 +48,8 @@ export function makeSheet(index = -1) {
     },
     attributes: [5, 0, 0, 0, 0, 0],
     acted: false,
+    remaining: { movement: 1, activation: 1 },
+    remainingBeforeAct: null as { movement: number; activation: number } | null,
     dead: false,
     threat: true,
     priority: false,
@@ -60,6 +73,40 @@ export function makeSheet(index = -1) {
   };
 }
 export type Sheet = ReturnType<typeof makeSheet>;
+
+export function toggleActed(sheet: Sheet) {
+  if (!sheet.acted) {
+    sheet.remainingBeforeAct = { ...sheet.remaining };
+    sheet.remaining.movement = 0;
+    sheet.remaining.activation = 0;
+    sheet.acted = true;
+    return;
+  }
+
+  sheet.acted = false;
+  if (sheet.remainingBeforeAct) {
+    sheet.remaining.movement = sheet.remainingBeforeAct.movement;
+    sheet.remaining.activation = sheet.remainingBeforeAct.activation;
+    sheet.remainingBeforeAct = null;
+  }
+}
+
+export function attackStats(sheet: Sheet, weapon: AttackWeapon, monster: { toughness: number; luck: number; evasion: number }) {
+  const base = weaponStats[weapon];
+  const modifier = (index: number) => (sheet.attributes[index] ?? 0) + (sheet.bonuses[index] ?? 0) + tokenNet(sheet.tokens[index]);
+  const crit = 10 + monster.luck - base.luck - modifier(4);
+  const phit = sheet.perfectHitRange <= 0 ? null : Math.max(1, 11 - Math.trunc(sheet.perfectHitRange));
+  const accuracy = clampTarget(base.accuracy + monster.evasion - modifier(2) - Number(sheet.statuses.includes("Blind Spot")));
+
+  return {
+    speed: Math.max(1, Math.trunc(base.speed + modifier(1))),
+    phit,
+    acc: phit === null ? accuracy : Math.min(accuracy, phit),
+    wound: clampTarget(monster.toughness - base.strength - modifier(3)),
+    crit: crit > 10 ? null : clampTarget(crit),
+  };
+}
+
 export function isReady(sheet: Sheet) {
   return !sheet.dead && !sheet.acted && !sheet.statuses.includes("Knocked Down") && !sheet.statuses.includes("Retired");
 }
@@ -108,6 +155,42 @@ export const permissions = [
 ] as const;
 
 export type ListEntry = { id: number; text: string; description: string };
+export type Cost = "movement" | "activation";
+
+export function describeCost(cost: readonly Cost[]) {
+  return cost.length ? cost.map((item) => `1 ${item}`).join(" and ") : "free";
+}
+
+export function canSpendCost(sheet: Sheet, cost: readonly Cost[]) {
+  const needed = { movement: 0, activation: 0 };
+  for (const item of cost) needed[item]++;
+  return sheet.remaining.movement >= needed.movement && sheet.remaining.activation >= needed.activation;
+}
+
+export function spendCost(sheet: Sheet, cost: readonly Cost[]) {
+  if (!canSpendCost(sheet, cost)) return false;
+  for (const item of cost) sheet.remaining[item]--;
+  return true;
+}
+
+// Illustrative copy to test a crowded action list; these are not game rules.
+export const sampleActions = [
+  {
+    title: "Hold Ground",
+    cost: ["movement", "activation"] as const,
+    description: "Plant your feet as the monster closes in. Stay ready to protect the survivor beside you when the next attack begins.",
+  },
+  {
+    title: "Call the Opening",
+    cost: [] as const,
+    description: "Draw an ally's attention to a gap in the monster's guard. Give them a moment to choose when to step in.",
+  },
+  {
+    title: "Read the Beast",
+    cost: ["movement", "activation"] as const,
+    description: "Study the monster's posture before committing to an attack. Its next movement may reveal a safer path around it.",
+  },
+];
 
 // Small example decks for the prototype, not the complete game card catalog.
 export const sampleDecks: Record<string, Omit<ListEntry, "id">[]> = {

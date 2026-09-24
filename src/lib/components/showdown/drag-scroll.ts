@@ -2,7 +2,7 @@
 export function dragScroll(workspace: HTMLElement) {
   let gesture: { panel: HTMLElement; id: number; x: number; y: number; left: number; top: number; moving: boolean } | undefined;
   let suppressClick = false;
-  const controls = "button, input, textarea, select, a, label, [contenteditable], [draggable=true]";
+  const controls = "button, input, textarea, select, a, [contenteditable], [draggable=true]";
 
   function nearestPanel(x: number) {
     const panels = Array.from(workspace.querySelectorAll<HTMLElement>(":scope > .dashboard"));
