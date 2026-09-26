@@ -55,6 +55,8 @@ Prefer inferred TypeScript types when the compiler can determine them clearly. A
 
 Prefer concise type names, ideally one or two words. Use a longer type name when shortening it would make its purpose unclear. Function and method names may be longer when the extra words clearly describe their behavior; do not shorten them solely to match the type-name guideline.
 
+Before creating a file that only exports constants, check `src/lib/constants.ts` and other existing constants modules. Add shared app constants there when the file already serves their consumers, and keep a constant local when only one component uses it. Create a new module when the constants form a distinct feature with enough related data or behavior to justify its own file. Update existing imports and remove an obsolete constants-only file when consolidating.
+
 ## Svelte conventions
 
 Use Svelte 5 runes and callback props.

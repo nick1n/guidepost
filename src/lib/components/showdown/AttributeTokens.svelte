@@ -25,9 +25,9 @@
 <div class={["token-grid", monsterTokens && "monster-tokens"]}>
   {#each names as name, index (name)}
     <div
-      class="token"
+      class={["token", `field-${name.toLowerCase()}`]}
       style:grid-column={monsterTokens ? `${index < 4 ? index * 2 + 1 : (index - 4) * 2 + 2} / span 2` : undefined}
-      style:grid-row={monsterTokens ? (index < 4 ? 2 : 1) : undefined}
+      style:grid-row={monsterTokens ? (index < 4 ? 1 : 2) : undefined}
     >
       <span class="label">{labels[index]}</span>
       <button
@@ -52,7 +52,7 @@
 {#if selected && editing !== null}
   <!-- Escape closes this editor without changing the surrounding dashboard. -->
   <!-- svelte-ignore a11y_no_static_element_interactions -->
-  <div class="editor" id={`${id}-editor`} {onkeydown}>
+  <div class={["editor", `field-${names[editing].toLowerCase()}`]} id={`${id}-editor`} {onkeydown}>
     <div class="editor-heading">
       <strong>{names[editing]}</strong><span>{selected.positive + selected.negative} Tokens</span>
       <button class="close" onclick={close} aria-label={`Close ${names[editing]} token editor`}>
@@ -105,13 +105,15 @@
   .net {
     inline-size: 2.75rem;
     block-size: 2.75rem;
-    border: 1px solid color-mix(var(--identity) 65%, var(--panel));
+    border: var(--border-width) solid var(--field-border);
     border-radius: 50%;
-    background: color-mix(var(--identity) 20%, var(--panel));
-    font-size: 1rem;
+    background: var(--field-bg);
+    color: var(--field-fg);
+    font-weight: var(--font-bold);
+    font-size: var(--text-num-input);
     &.selected {
-      background: var(--identity);
-      color: var(--identity-ink);
+      outline: 2px solid var(--field-border);
+      outline-offset: 2px;
     }
   }
   .balance {
@@ -172,9 +174,11 @@
     appearance: textfield;
     inline-size: var(--size-control);
     block-size: var(--size-control);
-    border: 1px solid var(--color-divider);
+    border: var(--border-width) solid var(--field-border);
     border-radius: var(--radius-control);
-    background: var(--background);
+    background: var(--field-bg);
+    color: var(--field-fg);
+    font-weight: var(--font-bold);
     text-align: center;
     &::-webkit-inner-spin-button {
       appearance: none;

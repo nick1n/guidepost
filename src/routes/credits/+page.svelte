@@ -11,6 +11,8 @@
         { name: "Quackalope", href: "https://www.youtube.com/@Quackalope" },
         { name: "BoardGameGeek", href: "https://boardgamegeek.com/" },
         { name: "CCG Team", href: "https://www.patreon.com/ccgteam" },
+        { name: "RevampedGame", href: "https://ko-fi.com/revampedgame" },
+        { name: "Craft of Death", href: "https://ko-fi.com/craftofdeath" },
         { name: "Scribe for KD:M @taboobat", href: "https://gitlab.com/taboobat/kdm-app" },
       ],
     },
@@ -52,8 +54,9 @@
         { name: "Guidepost logo by my mom 😊", href: false },
         { name: "Adam Poots Games", href: "https://kingdomdeath.com/" },
         { name: "Game-icons.net", href: "https://game-icons.net/" },
-        { name: "Material Design icons by Google", href: "https://github.com/google/material-design-icons" },
-        { name: "Material Design Icons from the Community", href: "https://github.com/Templarian/MaterialDesign" },
+        { name: "Material Design icons", href: "https://github.com/google/material-design-icons" },
+        { name: "Lucide icons", href: "https://lucide.dev/" },
+        { name: "Google Fonts", href: "https://fonts.google.com/" },
       ],
     },
     {
@@ -165,7 +168,7 @@
   section {
     display: grid;
     padding-block: 1rem;
-    border-block-start: var(--border-size) solid var(--color-divider);
+    border-block-start: var(--border-width) solid var(--color-divider);
 
     &:first-of-type {
       border: 0;
@@ -191,7 +194,7 @@
   }
 
   footer {
-    margin-block-start: 1rem;
+    margin-block: 1rem;
     color: var(--muted-foreground);
     text-align: center;
   }

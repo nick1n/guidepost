@@ -28,10 +28,12 @@
 
   const oddsId = $props.id();
   const percent = new Intl.NumberFormat("en", { style: "percent", maximumFractionDigits: 1, minimumFractionDigits: 1 });
+  const gaugeNumber = new Intl.NumberFormat("en", { maximumFractionDigits: 1, minimumFractionDigits: 1 });
   const diePercent = new Intl.NumberFormat("en", { style: "percent" });
   const average = new Intl.NumberFormat("en", { maximumFractionDigits: 2, minimumFractionDigits: 2 });
   let open = $state(false);
   let odds = $derived(attack ? attackOdds(attack) : null);
+  let marked = $derived(variant === 3 && (title === "Founding Stone" || title === "Fist & Tooth"));
 
   function onclick() {
     open = !open;
@@ -51,11 +53,11 @@
         <dt class="outcome-label"><span class="key none" aria-hidden="true"></span>0 {title.toLowerCase()}</dt>
         <dd class="outcome-value">{percent.format(results.none)}</dd>
       </div>
-      <div class="outcome">
+      <div class="outcome center">
         <dt class="outcome-label"><span class="key one" aria-hidden="true"></span>1 {singular}</dt>
         <dd class="outcome-value">{percent.format(results.one)}</dd>
       </div>
-      <div class="outcome">
+      <div class="outcome end">
         <dt class="outcome-label"><span class="key many" aria-hidden="true"></span>2+ {title.toLowerCase()}</dt>
         <dd class="outcome-value">{percent.format(results.many)}</dd>
       </div>
@@ -65,9 +67,13 @@
 
 {#snippet compactResult(title: string, kind: "hit" | "wound" | "crit", chance: number, expected: number, results: RollSpread)}
   <figure class={["obsidian-result", kind]}>
-    <figcaption class="obsidian-caption"><span>Any {title.toLowerCase()}</span><b>Avg {average.format(expected)}</b></figcaption>
+    <figcaption class="obsidian-caption"><span>{title}</span><b>Avg {average.format(expected)}</b></figcaption>
     <div class="mini-gauge" style:--chance={`${chance * 100}%`}>
-      <span class="mini-core"><b class="mini-value">{percent.format(chance)}</b></span>
+      <span class="mini-core">
+        <span class="percent-icon i-material-symbols:percent" aria-hidden="true"></span>
+        <b class="mini-value" aria-hidden="true">{gaugeNumber.format(chance * 100)}</b>
+        <span class="visually-hidden">{percent.format(chance)}</span>
+      </span>
     </div>
     <div class="segments compact" aria-hidden="true">
       <span class="segment none" style:width={`${results.none * 100}%`}></span>
@@ -76,22 +82,45 @@
     </div>
     <div class="obsidian-values">
       <span>0 <b class="outcome-percent">{percent.format(results.none)}</b></span>
-      <span>1 <b class="outcome-percent">{percent.format(results.one)}</b></span>
-      <span>2+ <b class="outcome-percent">{percent.format(results.many)}</b></span>
+      <span class="middle-value">1 <b class="outcome-percent">{percent.format(results.one)}</b></span>
+      <span class="last-value">2+ <b class="outcome-percent">{percent.format(results.many)}</b></span>
     </div>
   </figure>
 {/snippet}
 
+{#snippet weaponKeywords(keywords: readonly string[])}
+  <div class="keyword-line">
+    <span class="keyword-label">Keywords</span>
+    <ul class="keywords">
+      {#each keywords as keyword (keyword)}
+        <li class="keyword">{keyword}</li>
+      {/each}
+    </ul>
+  </div>
+{/snippet}
+
 <div class="profile">
   {#if attack}
-    <button class="read" type="button" aria-expanded={open} aria-controls={oddsId} {onclick}>
-      <span class="heading">
-        <strong>{title}</strong>
+    <button class={["read", marked && "marked"]} type="button" aria-expanded={open} aria-controls={oddsId} {onclick}>
+      {#if marked && title === "Founding Stone"}
+        <span class="weapon-mark i-game-icons:rock" aria-hidden="true"></span>
+      {:else if marked && title === "Fist & Tooth"}
+        <span class="weapon-mark i-game-icons:fist" aria-hidden="true"></span>
+      {/if}
+      <span class={["heading", marked && "mark-foreground"]}>
+        <strong class={variant === 2 ? "with-icon" : undefined}>
+          {#if variant === 2 && title === "Founding Stone"}
+            <span class="title-icon i-game-icons:rock" aria-hidden="true"></span>
+          {:else if variant === 2 && title === "Fist & Tooth"}
+            <span class="title-icon i-game-icons:fist" aria-hidden="true"></span>
+          {/if}
+          <span>{title}</span>
+        </strong>
         <span class="chevron i-material-symbols:expand-more" aria-hidden="true"></span>
       </span>
-      <span class="stats">
+      <span class={["stats", marked && "mark-foreground"]}>
         {#each stats as stat (stat.label)}
-          <span class={["stat", stat.divider && "divided"]}>
+          <span class={["stat", stat.divider && "divided"]} data-stat={stat.label}>
             <span class="stat-label">{stat.label}</span>
             <span class="stat-value">{stat.value}</span>
           </span>
@@ -134,6 +163,7 @@
           </p>
           {@render distribution("Hits", "hit", odds.hits)}
           {@render distribution("Wounds", "wound", odds.wounds)}
+          {@render weaponKeywords(attack.keywords)}
         </div>
       {:else if variant === 3}
         <div class="signal-board">
@@ -170,6 +200,7 @@
             Hit {attack.acc === 10 ? "10" : `${attack.acc}+`} ({percent.format(odds.hitPerDie)} per die). Wound
             {attack.wound === 10 ? "10" : `${attack.wound}+`} ({percent.format(odds.woundGivenHit)} per hit).
           </p>
+          {@render weaponKeywords(attack.keywords)}
         </div>
       {:else}
         <dl class="obsidian-targets">
@@ -182,13 +213,14 @@
             <dd class="target-value">{diePercent.format(odds.woundGivenHit)} / hit</dd>
           </div>
           <div class="target">
-            <dt class="target-label">Wound {attack.crit === 10 ? "10" : `${attack.crit}+`}</dt>
+            <dt class="target-label">Crit {attack.crit === 10 ? "10" : `${attack.crit}+`}</dt>
             <dd class="target-value">{diePercent.format(odds.critGivenHit)} / crit</dd>
           </div>
         </dl>
         {@render compactResult("Hits", "hit", odds.anyHit, odds.expectedHits, odds.hits)}
         {@render compactResult("Wounds", "wound", odds.anyWound, odds.expectedWounds, odds.wounds)}
         {@render compactResult("Crits", "crit", odds.anyCrit, odds.expectedCrits, odds.crits)}
+        {@render weaponKeywords(attack.keywords)}
       {/if}
       <p class="note">
         {variant === 1
@@ -222,6 +254,11 @@
     min-inline-size: 0;
     text-align: start;
 
+    &.marked {
+      position: relative;
+      overflow: hidden;
+    }
+
     &:hover {
       background: color-mix(var(--identity) 10%, transparent);
     }
@@ -229,6 +266,21 @@
     &:focus-visible {
       outline-offset: -2px;
     }
+  }
+  .weapon-mark {
+    display: inline-block;
+    position: absolute;
+    inline-size: 5.5rem;
+    block-size: 5.5rem;
+    inset-block-start: -1rem;
+    inset-inline-end: 1.25rem;
+    color: var(--identity);
+    opacity: 0.1;
+    pointer-events: none;
+  }
+  .mark-foreground {
+    position: relative;
+    z-index: 1;
   }
   .chevron {
     flex-shrink: 0;
@@ -253,6 +305,18 @@
     font-weight: var(--font-bold);
     font-size: var(--text-sm);
     line-height: var(--line-height-snug);
+  }
+  .with-icon {
+    display: inline-flex;
+    align-items: center;
+  }
+  .title-icon {
+    display: inline-block;
+    flex-shrink: 0;
+    inline-size: 1.125rem;
+    block-size: 1.125rem;
+    translate: -0.25rem 0;
+    color: color-mix(var(--identity) 65%, var(--foreground));
   }
   .spend {
     display: grid;
@@ -303,6 +367,26 @@
     justify-items: center;
     min-inline-size: 0;
 
+    &[data-stat="Spd"] {
+      --stat-color: color-mix(in oklch, var(--speed-background) 85%, white);
+    }
+
+    &[data-stat="Acc"] {
+      --stat-color: color-mix(in oklch, var(--accuracy-background) 85%, white);
+    }
+
+    &[data-stat="Perf"] {
+      --stat-color: color-mix(in oklch, var(--accuracy-background) 85%, white);
+    }
+
+    &[data-stat="Wnd"] {
+      --stat-color: color-mix(in oklch, var(--strength-background) 85%, white);
+    }
+
+    &[data-stat="Crit"] {
+      --stat-color: color-mix(in oklch, var(--luck-background) 85%, white);
+    }
+
     &.divided {
       padding-inline-start: 0.125rem;
       border-radius: 99px;
@@ -312,11 +396,13 @@
     }
   }
   .stat-label {
-    color: var(--muted-foreground);
+    color: var(--stat-color, var(--muted-foreground));
     font-size: var(--text-xs);
+    line-height: var(--line-height-none);
     white-space: nowrap;
   }
   .stat-value {
+    color: var(--foreground);
     font-weight: var(--font-bold);
     line-height: var(--line-height-none);
   }
@@ -331,6 +417,29 @@
     &[hidden] {
       display: none;
     }
+  }
+  .keyword-line {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: baseline;
+    padding-block-start: 0.375rem;
+    gap: 0.375rem;
+    border-block-start: 1px solid var(--color-divider);
+  }
+  .keyword-label {
+    color: var(--muted-foreground);
+    font-size: var(--text-xs);
+  }
+  .keywords {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 0.5rem;
+  }
+  .keyword {
+    color: var(--foreground);
+    font-size: var(--text-xs);
+    line-height: var(--line-height-snug);
+    white-space: nowrap;
   }
   .roll,
   .note {
@@ -406,9 +515,18 @@
     border-radius: 50%;
     background: var(--panel);
   }
+  .percent-icon {
+    display: inline-block;
+    grid-area: 1 / 1;
+    inline-size: 2.25rem;
+    block-size: 2.25rem;
+    color: var(--result-color);
+    opacity: 0.18;
+  }
   .mini-value {
+    grid-area: 1 / 1;
     color: var(--foreground);
-    font-size: var(--text-xs);
+    font-size: var(--text-sm);
   }
   .obsidian-values {
     display: grid;
@@ -418,6 +536,12 @@
     gap: 0.125rem;
     color: var(--muted-foreground);
     font-size: var(--text-xs);
+  }
+  .middle-value {
+    text-align: center;
+  }
+  .last-value {
+    text-align: end;
   }
   .outcome-percent {
     color: var(--foreground);
@@ -484,6 +608,14 @@
   .outcome {
     display: grid;
     align-content: start;
+
+    &.center {
+      justify-items: center;
+    }
+
+    &.end {
+      justify-items: end;
+    }
   }
   .outcome-label {
     display: flex;
@@ -596,6 +728,13 @@
   :global(.obsidian) .profile {
     background: color-mix(var(--identity) 4%, var(--panel));
   }
+  :global(.obsidian) .keyword-label {
+    color: color-mix(var(--identity) 45%, var(--foreground));
+  }
+  :global(.obsidian) .keyword {
+    padding-inline-start: 0.25rem;
+    border-inline-start: 2px solid color-mix(var(--identity) 55%, var(--foreground));
+  }
   :global(.folio) .profile {
     border-radius: 0.25rem;
   }
@@ -604,9 +743,35 @@
     font-size: var(--text-md);
     font-family: var(--font-editorial);
   }
+  :global(.folio) .keyword-line {
+    padding-block-start: 0.25rem;
+    border-block-start: 3px double color-mix(var(--identity) 35%, transparent);
+  }
+  :global(.folio) .keyword-label,
+  :global(.folio) .keyword {
+    font-size: var(--text-sm);
+    font-family: var(--font-editorial);
+  }
+  :global(.folio) .keyword {
+    color: color-mix(var(--identity) 45%, var(--foreground));
+  }
   :global(.signal) .profile {
     border-radius: 1rem 0.25rem 1rem 0.25rem;
     background: color-mix(var(--identity) 16%, var(--background));
+  }
+  :global(.signal) .keyword-line {
+    align-items: start;
+    padding: 0.375rem;
+    border: 1px solid color-mix(var(--identity) 45%, transparent);
+    border-radius: 0.75rem 0.125rem 0.75rem 0.125rem;
+    background: color-mix(var(--identity) 10%, var(--background));
+  }
+  :global(.signal) .keyword-label {
+    color: color-mix(var(--identity) 65%, var(--foreground));
+  }
+  :global(.signal) .keyword {
+    padding-block-end: 0.125rem;
+    border-block-end: 1px solid color-mix(var(--identity) 50%, transparent);
   }
   :global(.signal) .spend:not(:disabled) {
     --color-action-cost: var(--foreground);

@@ -4,6 +4,7 @@
   import Monster from "./Monster.svelte";
   import Survivor from "./Survivor.svelte";
   import QuickStatus from "./QuickStatus.svelte";
+  import { statusIcons } from "#lib/constants.ts";
   import { designs, survivors, makeSheet, statusText, tokenTotal, availableActions, makeTokens, tokenNet, toggleActed } from "./data";
 
   let { variant = 1 }: { variant?: number } = $props();
@@ -11,13 +12,19 @@
   let active = $state(0);
   let round = $state(1);
   let monsterTurn = $state(true);
+  let monsterKnockedDown = $state(false);
   let awakening = $state(0);
   let sheets = $state(survivors.map((_, index) => makeSheet(index)));
   let menuOpen = $state(false);
+  const initialMix = { foreground: 70, background: 50 } as const;
+  let foregroundMix = $state(initialMix.foreground);
+  let backgroundMix = $state(initialMix.background);
+  const colorId = $props.id();
   let density = $state<Density>("default");
   let snap = $state<Snap>("free");
   let monsterStats = $state({ life: 8, movement: 6, toughness: 6, damage: 0, speed: 0 });
   let monsterTokens = $state(makeTokens(7));
+  const monsterTokenIndex = { movement: 0, evasion: 4, toughness: 5, luck: 6 };
 
   type Density = "compact" | "default" | "comfortable";
   type Snap = "left" | "center" | "right" | "free";
@@ -37,6 +44,7 @@
     for (const sheet of sheets) {
       sheet.remaining.movement = 1;
       sheet.remaining.activation = 1;
+      sheet.dodgesRemaining = 1;
     }
     monsterTurn = false;
   }
@@ -160,7 +168,13 @@
 <svelte:window {onkeydown} />
 <svelte:head><title>{design.name} Showdown | Guidepost</title></svelte:head>
 
-<main class={["showdown", design.className]} data-density={density} data-snap={snap}>
+<main
+  class={["showdown", design.className]}
+  data-density={density}
+  data-snap={snap}
+  style:--mix-attr-fg={`${foregroundMix}%`}
+  style:--mix-attr-bg={`${backgroundMix}%`}
+>
   <h1 class="visually-hidden">{design.name} Showdown</h1>
   <div class="workspace" bind:this={rail} {onscroll} {@attach dragScroll}>
     {#each roster as person, index (person.name)}
@@ -177,7 +191,16 @@
         {@attach dashboardSpacing}
       >
         {#if index === 0}
-          <Monster {variant} {round} {monsterTurn} {awakening} bind:values={monsterTokens} bind:stats={monsterStats} onturn={toggleTurn} />
+          <Monster
+            {variant}
+            {round}
+            {monsterTurn}
+            {awakening}
+            bind:knockedDown={monsterKnockedDown}
+            bind:values={monsterTokens}
+            bind:stats={monsterStats}
+            onturn={toggleTurn}
+          />
         {:else}
           <Survivor
             person={survivors[index - 1]}
@@ -185,9 +208,9 @@
             {variant}
             survivorTurn={!monsterTurn}
             monsterDefense={{
-              toughness: (monsterStats.toughness ?? 0) + tokenNet(monsterTokens[5]),
-              luck: tokenNet(monsterTokens[3]),
-              evasion: tokenNet(monsterTokens[6]),
+              toughness: (monsterStats.toughness ?? 0) + tokenNet(monsterTokens[monsterTokenIndex.toughness]),
+              luck: tokenNet(monsterTokens[monsterTokenIndex.luck]),
+              evasion: tokenNet(monsterTokens[monsterTokenIndex.evasion]),
             }}
             bind:sheet={sheets[index - 1]}
           />
@@ -206,14 +229,20 @@
           aria-current={active === index ? "true" : undefined}
           aria-describedby={index > 0 ? "roster-shortcut" : undefined}
           aria-label={index === 0
-            ? `White Lion, ${monsterTurn ? "current turn" : "waiting"}, movement ${(monsterStats.movement || 0) + tokenNet(monsterTokens[0])}, toughness ${(monsterStats.toughness || 0) + tokenNet(monsterTokens[1])}, round ${round}`
+            ? `White Lion, ${monsterTurn ? "current turn" : "waiting"}${monsterKnockedDown ? ", knocked down" : ""}, movement ${(monsterStats.movement || 0) + tokenNet(monsterTokens[monsterTokenIndex.movement])}, toughness ${(monsterStats.toughness || 0) + tokenNet(monsterTokens[monsterTokenIndex.toughness])}, round ${round}`
             : `${survivorName(index)}, ${statusText(sheets[index - 1])}, ${tokenTotal(sheets[index - 1])} tokens, ${availableActions(sheets[index - 1])} survival actions available${monsterTurn ? "" : `, ${resourceText(index)}`}`}
           onclick={() => selectSurvivor(index)}
         >
           <strong>{index === 0 ? "White Lion" : survivorName(index)}</strong>
           {#if index === 0}
-            <span>Mov <b>{(monsterStats.movement || 0) + tokenNet(monsterTokens[0])}</b></span>
-            <span>Tgh <b>{(monsterStats.toughness || 0) + tokenNet(monsterTokens[1])}</b></span>
+            <span class="monster-flags" aria-hidden="true">
+              {#if monsterTurn}<span class={statusIcons.turn}></span>{/if}
+              {#if monsterKnockedDown}<span class={statusIcons.knockedDown}></span>{/if}
+            </span>
+            <span
+              >Mov <b>{(monsterStats.movement || 0) + tokenNet(monsterTokens[monsterTokenIndex.movement])}</b> Tgh
+              <b>{(monsterStats.toughness || 0) + tokenNet(monsterTokens[monsterTokenIndex.toughness])}</b></span
+            >
           {:else}
             <QuickStatus sheet={sheets[index - 1]} showResources={!monsterTurn} />
           {/if}
@@ -278,6 +307,17 @@
             {/each}
           </div>
         </fieldset>
+        <fieldset class="setting">
+          <legend class="setting-label">Attribute and token colors</legend>
+          <label class="color-setting hidden" for={`${colorId}-foreground`}>
+            Foreground lightening <output for={`${colorId}-foreground`}>{foregroundMix}%</output>
+            <input id={`${colorId}-foreground`} type="range" min="0" max="100" step="1" bind:value={foregroundMix} />
+          </label>
+          <label class="color-setting" for={`${colorId}-background`}>
+            Background darkening <output for={`${colorId}-background`}>{backgroundMix}%</output>
+            <input id={`${colorId}-background`} type="range" min="0" max="100" step="1" bind:value={backgroundMix} />
+          </label>
+        </fieldset>
         <div class="hidden">
           <strong>Quick View Key</strong>
           <dl>
@@ -302,12 +342,20 @@
               <dd>Knocked down</dd>
             </div>
             <div>
-              <dt><span class="key-icon i-material-symbols:flag" aria-hidden="true"></span>Priority</dt>
+              <dt><span class="key-icon i-material-symbols:target" aria-hidden="true"></span>Priority</dt>
               <dd>Priority target</dd>
             </div>
             <div>
               <dt><span class="key-icon i-material-symbols:visibility" aria-hidden="true"></span>Blind Spot</dt>
-              <dd>In the monster’s blind spot</dd>
+              <dd>In the monster's blind spot</dd>
+            </div>
+            <div>
+              <dt><span class={["key-icon", statusIcons.deaf]} aria-hidden="true"></span>Deaf</dt>
+              <dd>Survivor is deaf</dd>
+            </div>
+            <div>
+              <dt><span class={["key-icon", statusIcons.blind]} aria-hidden="true"></span>Blind</dt>
+              <dd>Survivor is blind</dd>
             </div>
             <div>
               <dt><span class="key-icon i-material-symbols:filter-none" aria-hidden="true"></span>Tokens</dt>
@@ -349,9 +397,13 @@
 
     display: grid;
     grid-template-rows: minmax(0, 1fr) auto;
-    block-size: calc(100dvh - var(--border-size));
+    block-size: calc(100dvh - var(--border-width));
     background: var(--background);
     font-variant-numeric: lining-nums tabular-nums;
+  }
+  .showdown :global(input[type="number"]) {
+    border: var(--border-width) solid var(--field-border);
+    font-size: var(--text-num-input);
   }
   .showdown[data-density="compact"] {
     --size-control: var(--size-control-compact);
@@ -371,12 +423,13 @@
     grid-auto-columns: var(--size-panel);
     grid-auto-flow: column;
     min-block-size: 0;
-    overflow-x: auto;
+    overflow: scroll hidden;
     scroll-snap-type: x mandatory;
     scrollbar-color: var(--card) var(--background);
     scrollbar-width: thin;
   }
   .dashboard {
+    position: relative;
     min-inline-size: 0;
     padding-inline: var(--panel-inset, 0.5rem);
     padding-block: 0.375rem;
@@ -414,7 +467,7 @@
     align-items: center;
     justify-content: space-between;
     min-inline-size: var(--size-control);
-    block-size: 3.5rem;
+    min-block-size: 3.5rem;
     padding: 0 0 0.25rem;
     overflow: hidden;
     border: 2px solid transparent;
@@ -441,6 +494,19 @@
     }
     & b {
       color: var(--color-monster);
+    }
+  }
+  .monster-flags {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-block-size: 0.875rem;
+    gap: 0.125rem;
+
+    & > span {
+      display: inline-block;
+      inline-size: 0.875rem;
+      block-size: 0.875rem;
     }
   }
   .advance {
@@ -519,6 +585,17 @@
     margin-block-end: 0.375rem;
     font-weight: var(--font-bold);
     font-size: var(--text-sm);
+  }
+  .color-setting {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    font-size: var(--text-sm);
+  }
+  input[type="range"] {
+    grid-column: 1 / -1;
+    inline-size: 100%;
+    accent-color: var(--accent);
   }
   .options {
     display: grid;

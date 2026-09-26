@@ -167,7 +167,8 @@
 <Section
   {title}
   bind:open
-  onaction={deck.length ? draw : undefined}
+  onaction={draw}
+  showAction={deck.length > 0}
   actionLabel="Draw"
   actionName={drawAction?.name ?? `Draw ${title.toLowerCase()} card`}
   actionIcon="deck"

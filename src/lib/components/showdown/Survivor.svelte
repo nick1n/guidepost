@@ -7,6 +7,7 @@
   import Gear from "./Gear.svelte";
   import EntryList from "./EntryList.svelte";
   import ProgressTrack from "./ProgressTrack.svelte";
+  import { statusIcons } from "#lib/constants.ts";
   import {
     attributes,
     abbreviations,
@@ -67,6 +68,8 @@
     draggedGear = null;
   }
 
+  let tokens = $derived(sheet.tokens.reduce((sum, token) => sum + token.positive + token.negative, 0));
+
   let selectedGear = $state<number | null>(null);
   let draggedGear = $state<number | null>(null);
   let foundingStoneSlot = $derived(sheet.gear.findIndex((item, index) => index > 0 && index < 10 && item === "Founding Stone"));
@@ -84,10 +87,10 @@
 
   function profileStats(attack: ReturnType<typeof attackStats>) {
     return [
-      { label: "Speed", value: attack.speed },
+      { label: "Spd", value: attack.speed },
       { label: "Acc", value: formatTarget(attack.acc), divider: true },
-      { label: "Perf Hit", value: formatCrit(attack.phit) },
-      { label: "Wound", value: formatTarget(attack.wound), divider: true },
+      { label: "Perf", value: formatCrit(attack.phit) },
+      { label: "Wnd", value: formatTarget(attack.wound), divider: true },
       { label: "Crit", value: formatCrit(attack.crit) },
     ];
   }
@@ -102,6 +105,12 @@
 
   function act() {
     toggleActed(sheet);
+  }
+
+  function dodge() {
+    if (!availableActions(sheet)) return;
+    sheet.survival--;
+    sheet.dodgesRemaining = 0;
   }
 
   function activateFoundingStone() {
@@ -202,7 +211,7 @@
           <input
             aria-label={`${person.name} ${attribute}`}
             bind:value={sheet.attributes[index]}
-            class="attribute-value"
+            class={["attribute-value", `field-${attribute.toLowerCase()}`]}
             max="99"
             min="-9"
             type="number"
@@ -255,31 +264,46 @@
   <p class="legend hidden">L: Light injury / H: Heavy injury</p>
 {/snippet}
 
+{#snippet priorityButton()}
+  <button class={["priority", sheet.priority && "active"]} aria-pressed={sheet.priority} onclick={() => (sheet.priority = !sheet.priority)}>
+    <span class={["condition-icon", statusIcons.priority]} aria-hidden="true"></span>
+    Priority Target
+  </button>
+{/snippet}
+
 {#snippet conditions()}
   <div class="conditions">
     <button class={["condition", sheet.threat && "active"]} aria-pressed={sheet.threat} onclick={() => (sheet.threat = !sheet.threat)}>
+      <span class={["condition-icon", statusIcons.threat]} aria-hidden="true"></span>
       Threat
     </button>
     <button class={["condition", sheet.acted && "active"]} aria-pressed={sheet.acted} onclick={act}>
+      <span class={["condition-icon", statusIcons.acted]} aria-hidden="true"></span>
       {sheet.acted ? "Acted" : "Act"}
     </button>
-    {#each ["Monster Controller", "Blind Spot", "Knocked Down"] as status (status)}
+    {#each [{ name: "Monster Controller", icon: statusIcons.controller }, { name: "Blind Spot", icon: statusIcons.blindSpot }, { name: "Knocked Down", icon: statusIcons.knockedDown }, { name: "Deaf", icon: statusIcons.deaf }, { name: "Blind", icon: statusIcons.blind }] as status (status.name)}
       <button
-        class={["condition", sheet.statuses.includes(status) && "active"]}
-        aria-pressed={sheet.statuses.includes(status)}
-        onclick={() => toggleStatus(status)}
+        class={["condition", sheet.statuses.includes(status.name) && "active"]}
+        aria-pressed={sheet.statuses.includes(status.name)}
+        onclick={() => toggleStatus(status.name)}
       >
-        {status}
+        <span class={["condition-icon", status.icon]} aria-hidden="true"></span>
+        {status.name}
       </button>
     {/each}
-    <button class={["condition", sheet.dead && "active"]} aria-pressed={sheet.dead} onclick={() => (sheet.dead = !sheet.dead)}>Dead</button>
     <button
       class={["condition", sheet.statuses.includes("Retired") && "active"]}
       aria-pressed={sheet.statuses.includes("Retired")}
       onclick={() => toggleStatus("Retired")}
     >
+      <span class={["condition-icon", statusIcons.retired]} aria-hidden="true"></span>
       Retired
     </button>
+    <button class={["condition", sheet.dead && "active"]} aria-pressed={sheet.dead} onclick={() => (sheet.dead = !sheet.dead)}>
+      <span class={["condition-icon", statusIcons.dead]} aria-hidden="true"></span>
+      Dead
+    </button>
+    {@render priorityButton()}
   </div>
 {/snippet}
 
@@ -287,15 +311,18 @@
   <AttributeTokens owner={person.name} names={attributes} labels={abbreviations} bind:counts={sheet.tokens} />
   <div class="extra-tokens">
     <label for={`${id}-bleeding`}>
-      Bleeding <input id={`${id}-bleeding`} type="number" min="0" max={sheet.life} value={sheet.bleeding} oninput={oninputBleeding} />
+      Bleeding
+      <input
+        class="bleeding"
+        id={`${id}-bleeding`}
+        type="number"
+        min="0"
+        max={sheet.life}
+        value={sheet.bleeding}
+        oninput={oninputBleeding}
+      />
     </label>
-    <button
-      class={["condition", sheet.priority && "active"]}
-      aria-pressed={sheet.priority}
-      onclick={() => (sheet.priority = !sheet.priority)}
-    >
-      Priority Target
-    </button>
+    {@render priorityButton()}
   </div>
 {/snippet}
 
@@ -357,8 +384,28 @@
   {#if !sheet.permissions.survival}<p class="restriction">Cannot use survival actions</p>{/if}
   <div class="survival-actions">
     {#each ["Dodge", "Dash", "Surge", "Encourage", "Endure"] as action, index (action)}
-      <button class="survival-action" disabled={index !== 0 || !availableActions(sheet)}>
-        <span>{action}</span><small>{index === 0 ? (availableActions(sheet) ? "1 survival" : "Unavailable") : "Locked"}</small>
+      <button class="survival-action" disabled={index !== 0 || !availableActions(sheet)} onclick={index === 0 ? dodge : undefined}>
+        <div>
+          {#if action === "Dodge"}
+            <span class="i-material-symbols:sprint" aria-hidden="true"></span>
+          {:else if action === "Dash"}
+            <KdIcon i="movement" label="movement" />
+          {:else if action === "Surge"}
+            <KdIcon i="activation" label="activation" />
+          {:else if action === "Encourage"}
+            <span class="i-material-symbols:record-voice-over" aria-hidden="true"></span>
+          {:else if action === "Endure"}
+            <span class="i-material-symbols:shield" aria-hidden="true"></span>
+          {/if}
+        </div>
+        <div>
+          {action}
+        </div>
+        {#if index === 0}
+          <output class="dodge-count" aria-label="Dodges remaining">{availableActions(sheet)}</output>
+        {:else}
+          <KdIcon i="require" />
+        {/if}
       </button>
     {/each}
   </div>
@@ -366,13 +413,7 @@
 
 {#snippet extraSection(name: string)}
   {#if name === "Tokens"}
-    <Section
-      title="Tokens"
-      meta={[
-        `${sheet.tokens.reduce((sum, token) => sum + token.positive + token.negative, 0)} Attribute Tokens`,
-        `Bleeding: ${sheet.bleeding ?? 0}`,
-      ]}
-    >
+    <Section title="Tokens" meta={[`${tokens} Attribute Token${tokens === 1 ? "" : "s"}`, `${sheet.bleeding ?? 0} Bleeding`]}>
       {@render tokenControls()}
     </Section>
   {:else if name === "Trinkets"}
@@ -486,7 +527,7 @@
           <div class="stat">
             <span class="stat-label" aria-label={attribute}>{abbreviations[index]}</span>
             <input
-              class="attribute-value"
+              class={["attribute-value", `field-${attribute.toLowerCase()}`]}
               type="number"
               aria-label={`${person.name} ${attribute} gear bonus`}
               bind:value={sheet.bonuses[index]}
@@ -494,31 +535,39 @@
           </div>
         {/each}
       </div>
-      <h3>Depart Bonuses</h3>
-      <div class="extra-tokens">
-        {#each ["Survival", "Insanity"] as bonus, index (bonus)}
-          <label for={`${id}-departure-${index}`}
-            >{bonus}<input
-              id={`${id}-departure-${index}`}
-              type="number"
-              aria-label={`${person.name} depart ${bonus} bonus`}
-              bind:value={sheet.departure[index]}
-            /></label
-          >
-        {/each}
-      </div>
-      <h3>Arrival Bonuses</h3>
-      <div class="extra-tokens">
-        {#each ["Survival", "Insanity"] as bonus, index (bonus)}
-          <label for={`${id}-arrival-${index}`}
-            >{bonus}<input
-              id={`${id}-arrival-${index}`}
-              type="number"
-              aria-label={`${person.name} arrival ${bonus} bonus`}
-              bind:value={sheet.arrival[index]}
-            /></label
-          >
-        {/each}
+      <div class="bonuses">
+        <div class="bonus-group">
+          <h3 class="bonus-title">Depart Bonuses</h3>
+          <div class="bonus-fields">
+            {#each ["Survival", "Insanity"] as bonus, index (bonus)}
+              <label for={`${id}-departure-${index}`}>
+                {bonus}
+                <input
+                  id={`${id}-departure-${index}`}
+                  type="number"
+                  aria-label={`${person.name} depart ${bonus} bonus`}
+                  bind:value={sheet.departure[index]}
+                />
+              </label>
+            {/each}
+          </div>
+        </div>
+        <div class="bonus-group arrival">
+          <h3 class="bonus-title">Arrival Bonuses</h3>
+          <div class="bonus-fields">
+            {#each ["Survival", "Insanity"] as bonus, index (bonus)}
+              <label for={`${id}-arrival-${index}`}>
+                {bonus}
+                <input
+                  id={`${id}-arrival-${index}`}
+                  type="number"
+                  aria-label={`${person.name} arrival ${bonus} bonus`}
+                  bind:value={sheet.arrival[index]}
+                />
+              </label>
+            {/each}
+          </div>
+        </div>
       </div>
     </Section>
   {:else if name === "Development"}
@@ -619,14 +668,15 @@
     <Section
       title="Actions"
       restricted={variant === 3 && !sheet.permissions.survival ? "Cannot use survival actions" : ""}
-      onaction={() => sheet.survival--}
+      onaction={dodge}
+      showAction={Boolean(availableActions(sheet))}
       actionLabel="Dodge"
     >
       {@render actions()}
       <h3>Survival Actions <small>{sheet.survival ?? 0} survival</small></h3>
       {@render survivalActions()}
     </Section>
-    <Section title="Status" meta={statusItems(sheet)} onaction={survivorTurn ? act : undefined} actionLabel={sheet.acted ? "Acted" : "Act"}>
+    <Section title="Status" meta={statusItems(sheet)} onaction={act} showAction={survivorTurn} actionLabel={sheet.acted ? "Acted" : "Act"}>
       {@render conditions()}
     </Section>
   {:else}
@@ -639,7 +689,7 @@
       <Section title="Attributes" meta={`Mov ${sheet.attributes[0] ?? 0}`}>{@render statistics()}</Section>
       <Section title="Insanity & Armor" meta={`Ins ${sheet.armorValues[0] ?? 0}`}>{@render protection()}</Section>
     {/if}
-    <Section title="Status" meta={statusItems(sheet)} onaction={survivorTurn ? act : undefined} actionLabel={sheet.acted ? "Acted" : "Act"}>
+    <Section title="Status" meta={statusItems(sheet)} onaction={act} showAction={survivorTurn} actionLabel={sheet.acted ? "Acted" : "Act"}>
       {@render conditions()}
     </Section>
     <Section title="Actions">
@@ -649,14 +699,15 @@
       title="Survival Actions"
       meta="Dodge"
       restricted={!sheet.permissions.survival ? "Cannot use" : ""}
-      onaction={() => sheet.survival--}
+      onaction={dodge}
+      showAction={Boolean(availableActions(sheet))}
       actionLabel="Dodge"
     >
       {@render survivalActions()}
     </Section>
   {/if}
 
-  <Section title="Gear Grid" meta={[`${sheet.gear.slice(0, compactGear ? 4 : 9).filter(Boolean).length} Gear`]}>
+  <Section title="Gear Grid" meta={[`${sheet.gear.slice(1, compactGear ? 4 : 9).filter(Boolean).length} Gear`]}>
     <Gear bind:slots={sheet.gear} bind:selected={selectedGear} bind:dragged={draggedGear} count={compactGear ? 4 : 9} />
     <button class={["condition", compactGear && "active"]} aria-pressed={compactGear} onclick={toggleGearSize}>
       Use {compactGear ? "3 x 3" : "2 x 2"} grid
@@ -851,9 +902,9 @@
     appearance: textfield;
     inline-size: var(--size-control);
     block-size: var(--size-control);
-    border: 1px solid color-mix(var(--identity) 60%, var(--panel));
+    border: var(--border-width) solid var(--field-border, color-mix(var(--identity) 60%, var(--panel)));
     border-radius: var(--radius-control);
-    background: color-mix(var(--identity) 18%, var(--panel));
+    background: var(--field-bg, color-mix(var(--identity) 18%, var(--panel)));
     text-align: center;
     &::-webkit-inner-spin-button {
       appearance: none;
@@ -865,7 +916,6 @@
     background: color-mix(var(--identity-ink) 12%, transparent);
     color: var(--identity-ink);
     font-weight: var(--font-bold);
-    font-size: 1.625rem;
     font-variant-numeric: lining-nums tabular-nums;
   }
   :global(.folio) .survival {
@@ -874,7 +924,7 @@
   :global(.folio) .survival label {
     font-family: var(--font-editorial);
   }
-  :global(.folio) .survival input {
+  :global(.folio) .survival input[type="number"] {
     border: 0;
     border-radius: 0;
     border-block-end: 2px solid currentColor;
@@ -888,7 +938,7 @@
     border-inline-start: 0;
     background: color-mix(in srgb, var(--background) 48%, transparent);
   }
-  :global(.signal) .survival input {
+  :global(.signal) .survival input[type="number"] {
     border: 0;
     border-radius: 0.75rem 0.25rem 0.75rem 0.25rem;
     background: var(--foreground);
@@ -910,8 +960,8 @@
   .attribute-value {
     display: block;
     margin-inline: auto;
-    color: color-mix(var(--identity) 55%, var(--foreground));
-    font-size: 1.625rem;
+    color: var(--field-fg, color-mix(var(--identity) 55%, var(--foreground)));
+    font-weight: var(--font-bold);
     line-height: 1.3;
     font-variant-numeric: lining-nums tabular-nums;
   }
@@ -946,14 +996,13 @@
   .armor-value {
     position: relative;
     color: var(--foreground);
-    font-size: 1.625rem;
   }
   .armor-input {
+    --field-border: color-mix(var(--identity) 60%, var(--panel));
     display: grid;
     place-items: center;
     inline-size: var(--size-control);
     block-size: var(--size-control);
-    border: 1px solid color-mix(var(--identity) 60%, var(--panel));
     border-radius: var(--radius-control);
     background: color-mix(var(--identity) 18%, var(--panel));
   }
@@ -962,13 +1011,14 @@
     grid-area: 1 / 1;
     color: color-mix(var(--identity) 42%, var(--foreground));
     font-size: 2rem;
-    opacity: 0.15;
+    opacity: 0.2;
     pointer-events: none;
   }
   .brain-icon {
     inline-size: 2.25rem;
     block-size: 2.25rem;
     translate: 0 -0.125rem;
+    scale: -1 1;
   }
   .armor-input .armor-value {
     grid-area: 1 / 1;
@@ -983,7 +1033,7 @@
     display: grid;
   }
   .injury-gap {
-    block-size: 2.75rem;
+    block-size: var(--size-control);
   }
   .injury-target {
     display: grid;
@@ -1029,11 +1079,31 @@
     margin-block-start: 0.375rem;
     gap: 0.375rem;
   }
-  .extra-tokens label {
+  .extra-tokens label,
+  .bonus-fields label {
+    display: grid;
+    justify-items: center;
+    color: var(--muted-foreground);
+    font-size: var(--text-xs);
+  }
+  .bonuses {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem;
+  }
+  .bonus-group {
+    justify-self: start;
+    &.arrival {
+      justify-self: end;
+      text-align: right;
+    }
+  }
+  .bonus-title {
+    display: block;
+  }
+  .bonus-fields {
     display: flex;
-    align-items: center;
-    gap: 0.375rem;
-    font-size: var(--text-sm);
+    gap: 0.5rem;
   }
   .conditions {
     display: grid;
@@ -1041,18 +1111,29 @@
     gap: 0.25rem;
   }
   .condition {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     min-inline-size: var(--size-control);
     min-block-size: var(--size-control);
     padding: 0.25rem 0.5rem;
-    border: 1px solid var(--color-divider);
+    gap: 0.375rem;
+    border: var(--border-width) solid var(--color-divider);
     border-radius: var(--radius-control);
     color: var(--muted-foreground);
-    font-size: var(--text-sm);
+    font-size: var(--text-md);
+    line-height: 1.125;
     &.active {
       border-color: transparent;
       background: var(--identity);
       color: var(--identity-ink);
     }
+  }
+  .condition-icon {
+    display: inline-block;
+    flex-shrink: 0;
+    inline-size: 1rem;
+    block-size: 1rem;
   }
   h3 {
     display: flex;
@@ -1082,6 +1163,7 @@
     color: var(--muted-foreground);
     font-size: var(--text-xs);
   }
+
   .survival-actions {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1089,24 +1171,38 @@
   }
   .survival-action {
     display: flex;
-    flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
     min-block-size: var(--size-control);
-    padding: 0.375rem;
+    padding: 0.5rem;
     gap: 0.25rem;
-    border: 1px solid var(--color-divider);
+    border: var(--border-width) solid var(--color-divider);
     border-radius: var(--radius-control);
     background: var(--panel);
-    font-size: var(--text-sm);
+    font-size: var(--text-md);
     &:disabled {
       color: var(--muted-foreground);
       cursor: default;
     }
+    :global(span) {
+      display: inline-block;
+      inline-size: 1.5rem;
+      block-size: 1.5rem;
+      font-size: 1.5rem;
+      vertical-align: middle;
+    }
   }
-  .survival-action small {
-    font-size: var(--text-xs);
+  .dodge-count {
+    display: grid;
+    place-items: center;
+    inline-size: 1.5rem;
+    block-size: 1.5rem;
+    border-radius: 50%;
+    background: var(--identity);
+    color: var(--identity-ink);
+    font-weight: var(--font-bold);
   }
+
   input[type="text"],
   select,
   textarea {
@@ -1130,7 +1226,6 @@
     font-family: var(--font-editorial);
   }
   :global(.folio) .attribute-value {
-    font-weight: var(--font-normal);
     font-family: var(--font-sans);
   }
   :global(.signal) .identity {
@@ -1150,24 +1245,24 @@
     --signal-orbit-color: #ffffff26;
 
     position: relative;
-    overflow: hidden;
     padding-block: 0.875rem;
+    overflow: hidden;
     border-radius: 1.5rem 0.375rem 2.5rem 0.375rem;
-    background-color: color-mix(in srgb, var(--identity) 52%, var(--background));
     background-image:
       var(--signal-dead), var(--signal-retired), var(--signal-knocked), var(--signal-blind), var(--signal-controller),
       var(--signal-priority), var(--signal-acted), var(--signal-threat);
+    background-color: color-mix(in srgb, var(--identity) 52%, var(--background));
     color: var(--foreground);
 
     &::before {
-      position: absolute;
       z-index: 0;
+      position: absolute;
       inset: -45%;
+      transform: translate(var(--signal-orbit-x), var(--signal-orbit-y)) rotate(var(--signal-orbit-rotate))
+        scale(var(--signal-orbit-scale-x), var(--signal-orbit-scale-y));
       background: radial-gradient(ellipse 17% 23% at 75% 75%, var(--signal-orbit-color) 0 74%, transparent 75%);
       content: "";
       pointer-events: none;
-      transform: translate(var(--signal-orbit-x), var(--signal-orbit-y)) rotate(var(--signal-orbit-rotate))
-        scale(var(--signal-orbit-scale-x), var(--signal-orbit-scale-y));
     }
 
     &[data-threat] {
@@ -1283,8 +1378,8 @@
   }
   :global(.signal) .identity-copy,
   :global(.signal) .survival {
-    position: relative;
     z-index: 1;
+    position: relative;
   }
   @media (prefers-reduced-motion: no-preference) {
     :global(.signal) .identity {
@@ -1309,9 +1404,8 @@
     color: var(--identity-ink);
   }
   :global(.signal) .attribute-value {
-    border: 0;
-    background: var(--identity);
-    color: inherit;
+    background: var(--field-bg, var(--identity));
+    color: var(--field-fg, inherit);
     font-family: var(--font-sans);
   }
   :global(.signal) .stat-label {
@@ -1368,5 +1462,27 @@
   .blind-icon {
     inline-size: 1.25rem;
     block-size: 1.25rem;
+  }
+  .bleeding {
+    --field-border: var(--bleeding-border);
+    --field-bg: var(--color-bleeding-bg);
+    color: var(--foreground);
+    font-weight: var(--font-bold);
+  }
+  .priority {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.375rem 0.5rem;
+    gap: 0.375rem;
+    border: var(--border-width) solid var(--priority-border);
+    border-radius: 9999px;
+    background: var(--color-priority-bg);
+    color: var(--foreground);
+    font-size: var(--text-md);
+    opacity: 0.5;
+    &.active {
+      opacity: 1;
+    }
   }
 </style>

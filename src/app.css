@@ -43,8 +43,9 @@
   --text-sm: 0.75rem;
   --text-xs: 0.625rem;
   --text-xl: 1.5rem;
+  --text-num-input: 1.625rem;
 
-  --border-size: 2px;
+  --border-width: 2px;
   --duration-fast: 180ms;
   --ease-standard: ease;
   --letter-spacing-tight: -0.03em;
@@ -55,6 +56,82 @@
   --radius-control: 0.5rem;
   --size-card-header: 1.875rem;
   --size-external: 1rem;
+
+  /* token colors */
+  --bleeding-background: #cdb8a4;
+  --bleeding-border: #b87365;
+  --priority-background: #6fa9d5;
+  --priority-border: #e3deb2;
+  --endeavor-background: #1f1f1f;
+  --endeavor-foreground: #fefefe;
+
+  /* attribute colors */
+  --accuracy-background: #f1ee33;
+  --accuracy-border: #928570;
+  --accuracy-foreground: #ddd9cc;
+  --damage-background: #8dc7c7;
+  --damage-border: #d65667;
+  --damage-foreground: #776b73;
+  --evasion-background: #8fa2a8;
+  --evasion-border: #9fb8b2;
+  --evasion-foreground: #e9e8c2;
+  --life-background: var(--card-back-black);
+  --life-foreground: #5ecefc;
+  --life-border: #666;
+  --luck-background: #908585;
+  --luck-border: #c7bd9e;
+  --luck-foreground: #cdbf95;
+  --movement-background: #9a5092;
+  --movement-border: #a59b83;
+  --movement-foreground: #f9f3d2;
+  --s-pressure-background: #d4c676;
+  --s-pressure-border: #9d7967;
+  --s-pressure-foreground: #b8a785;
+  --speed-background: #9cc085;
+  --speed-border: #caba83;
+  --speed-foreground: #c2beaa;
+  --strength-background: #d95e4f;
+  --strength-border: #e9e3a6;
+  --strength-foreground: #b7b3aa;
+  --torment-background: #a67b68;
+  --torment-border: #c7c681;
+  --torment-foreground: #c9c4af;
+  --toughness-background: #e4d7a7;
+  --toughness-border: #7db66c;
+  --toughness-foreground: #665567;
+
+  /* Bold attribute colors: darken backgrounds and lighten foregrounds. */
+  --mix-attr-bg: 50%;
+  --mix-attr-fg: 70%;
+
+  /* Card Colors */
+  --mon-resource-background: #D5A421;
+  --mon-resource-border: #F9F7F2;
+  --mon-resource-foreground: #fff;
+
+  --strange-resource-back-yellow: #FEF4B4;
+  --strange-resource-back-dark-yellow: #D7C562;
+  --strange-resource-foreground: #BDAD51;
+  --strange-resource-border: #BDAD51;
+
+  --sfa-background: #601714;
+  --sfa-border: #D76758;
+  --sfa-foreground: #D14941;
+
+  --hit-location-background: #5E615D;
+  --hit-location-border: #040404;
+  --hit-location-foreground: #fff;
+
+  --hunt-event-background: #AD9481;
+  --hunt-event-foreground: #fff;
+  --hunt-event-border: #F6F5F4;
+
+  --card-back-background: #100F0D;
+  --card-back-border: #686766;
+
+  --disorder-foreground: #715FC9;
+  --fa-foreground: #FF411B;
+  --innovation-foreground: #5ECEFC;
 
   /* Currently unused vars */
   --beta-foreground: #fdfffe;
@@ -70,6 +147,81 @@
   --secondary-foreground: #fdfffe;
 }
 
+/* Recalculate mixes where the dashboard overrides their percentages. */
+:root,
+.dark,
+.showdown {
+  --color-bleeding-bg: color-mix(in oklch, var(--bleeding-background), black var(--mix-attr-bg));
+  --color-priority-bg: color-mix(in oklch, var(--priority-background), black var(--mix-attr-bg));
+}
+
+/* Field colors are inherited by inputs and token controls. */
+.field-accuracy {
+  --field-border: var(--accuracy-border);
+  --field-bg: color-mix(in oklch, var(--accuracy-background), black var(--mix-attr-bg));
+  --field-fg: var(--foreground);
+}
+
+.field-damage {
+  --field-border: var(--damage-border);
+  --field-bg: color-mix(in oklch, var(--damage-background), black var(--mix-attr-bg));
+  --field-fg: var(--foreground);
+}
+
+.field-evasion {
+  --field-border: var(--evasion-border);
+  --field-bg: color-mix(in oklch, var(--evasion-background), black var(--mix-attr-bg));
+  --field-fg: var(--foreground);
+}
+
+.field-life {
+  --field-border: var(--life-border);
+  --field-bg: var(--life-background);
+  --field-fg: var(--life-foreground);
+}
+
+.field-luck {
+  --field-border: var(--luck-border);
+  --field-bg: color-mix(in oklch, var(--luck-background), black var(--mix-attr-bg));
+  --field-fg: var(--foreground);
+}
+
+.field-movement {
+  --field-border: var(--movement-border);
+  --field-bg: color-mix(in oklch, var(--movement-background), black var(--mix-attr-bg));
+  --field-fg: var(--foreground);
+}
+
+.field-s-pressure {
+  --field-border: var(--s-pressure-border);
+  --field-bg: color-mix(in oklch, var(--s-pressure-background), black var(--mix-attr-bg));
+  --field-fg: var(--foreground);
+}
+
+.field-speed {
+  --field-border: var(--speed-border);
+  --field-bg: color-mix(in oklch, var(--speed-background), black var(--mix-attr-bg));
+  --field-fg: var(--foreground);
+}
+
+.field-strength {
+  --field-border: var(--strength-border);
+  --field-bg: color-mix(in oklch, var(--strength-background), black var(--mix-attr-bg));
+  --field-fg: var(--foreground);
+}
+
+.field-torment {
+  --field-border: var(--torment-border);
+  --field-bg: color-mix(in oklch, var(--torment-background), black var(--mix-attr-bg));
+  --field-fg: var(--foreground);
+}
+
+.field-toughness {
+  --field-border: var(--toughness-border);
+  --field-bg: color-mix(in oklch, var(--toughness-background), black var(--mix-attr-bg));
+  --field-fg: var(--foreground);
+}
+
 * {
   border-color: var(--border);
   user-select: none;
@@ -81,7 +233,7 @@ html:has(.scrollbar-stable) {
 
 body {
   min-block-size: 100dvh;
-  border-top: var(--border-size) solid transparent;
+  border-top: var(--border-width) solid transparent;
   color: var(--foreground);
   font-family: var(--font-sans);
   text-wrap-style: pretty;
@@ -92,8 +244,8 @@ button {
 }
 
 :where(a, button, input, select, textarea, [role="button"]):focus-visible {
-  outline: var(--border-size) solid var(--accent);
-  outline-offset: var(--border-size);
+  outline: var(--border-width) solid var(--accent);
+  outline-offset: var(--border-width);
 }
 
 .visually-hidden {
@@ -120,11 +272,16 @@ strong {
   font-weight: var(--font-bold);
 }
 
+textarea {
+  min-block-size: 3lh;
+  field-sizing: content;
+}
+
 .content {
   p {
     font-size: 0.75rem;
 
-    + p {
+    +p {
       margin-block-start: 0.25rem;
     }
   }

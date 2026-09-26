@@ -4,7 +4,7 @@
   "private": true,
   "license": "AGPL-3.0-only",
   "type": "module",
-  "packageManager": "pnpm@12.4.1",
+  "packageManager": "pnpm@12.6.0",
   "scripts": {
     "test": "vitest",
     "test:run": "vitest run",
@@ -20,8 +20,8 @@
   "devDependencies": {
     "@effect/vitest": "4.0.0-rc.115",
     "@iconify-json/game-icons": "^1.2.4",
+    "@iconify-json/lucide": "^1.2.136",
     "@iconify-json/material-symbols": "^1.2.90",
-    "@iconify-json/mdi": "^1.2.3",
     "@sveltejs/adapter-static": "4.0.0-next.4",
     "@sveltejs/kit": "next",
     "@sveltejs/vite-plugin-svelte": "^7.3.0",

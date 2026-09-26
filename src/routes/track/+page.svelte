@@ -229,7 +229,7 @@
   .retry {
     padding-block: 0.5rem;
     padding-inline: 0.75rem;
-    border: var(--border-size) solid var(--accent);
+    border: var(--border-width) solid var(--accent);
     color: var(--foreground);
 
     &:hover {

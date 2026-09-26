@@ -127,7 +127,7 @@
         {
           title: "Repo",
           note: "Please report any issues",
-          icon: "i-mdi:github",
+          icon: "i-lucide:github",
           href: "https://github.com/nick1n/guidepost",
         },
         {
@@ -457,7 +457,7 @@
     --color-tool-accent: var(--accent);
 
     padding-block: var(--gap-tool);
-    border-block-end: var(--border-size) solid var(--color-divider);
+    border-block-end: var(--border-width) solid var(--color-divider);
     line-height: var(--line-height-none);
     transition: color var(--duration-fast) var(--ease-standard);
 
@@ -509,8 +509,8 @@
 
       &::after {
         position: absolute;
-        block-size: var(--border-size);
-        inset-block-end: calc(-1 * var(--border-size));
+        block-size: var(--border-width);
+        inset-block-end: calc(-1 * var(--border-width));
         inset-inline: 0;
         transform: scaleX(0);
         transform-origin: right;
@@ -566,8 +566,8 @@
 
     &::after {
       position: absolute;
-      block-size: var(--border-size);
-      inset-block-end: calc(-1 * var(--border-size));
+      block-size: var(--border-width);
+      inset-block-end: calc(-1 * var(--border-width));
       inset-inline: 0;
       transform: scaleX(var(--scale-destination));
       transform-origin: right;
@@ -590,7 +590,7 @@
     }
 
     &:focus-visible {
-      outline: var(--border-size) solid var(--color-tool-accent);
+      outline: var(--border-width) solid var(--color-tool-accent);
       outline-offset: 2px;
     }
   }

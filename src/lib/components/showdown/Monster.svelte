@@ -5,6 +5,7 @@
   import KdIcon from "#lib/components/KdIcon.svelte";
   import Section from "./Section.svelte";
   import ShowdownEmblem from "./ShowdownEmblem.svelte";
+  import { statusIcons } from "#lib/constants.ts";
   import { survivors, type TokenCount } from "./data";
 
   type Stats = { life: number; movement: number; toughness: number; damage: number; speed: number };
@@ -13,6 +14,7 @@
     variant,
     round,
     monsterTurn,
+    knockedDown = $bindable(),
     awakening,
     onturn,
     values = $bindable(),
@@ -21,6 +23,7 @@
     variant: number;
     round: number;
     monsterTurn: boolean;
+    knockedDown: boolean;
     awakening: number;
     onturn: Noop;
     values: TokenCount[];
@@ -47,12 +50,11 @@
     ...(!tokenCount ? ["Tokens"] : []),
     ...(!resourceCount ? ["Resource Deck"] : []),
   ]);
-  let knockedDown = $state(false);
   function toggleKnockedDown() {
     knockedDown = !knockedDown;
   }
 
-  const tokens = ["Speed", "Accuracy", "Damage", "Luck", "Movement", "Toughness", "Evasion"];
+  const tokens = ["Movement", "Speed", "Accuracy", "Damage", "Evasion", "Toughness", "Luck"];
   const statNames = [
     { name: "Movement", key: "movement" },
     { name: "Toughness", key: "toughness" },
@@ -131,7 +133,7 @@
   <div class="vitals">
     <div class="life">
       <label for={`${id}-life`}>Life</label>
-      <input id={`${id}-life`} class="life-value" type="number" aria-label="Monster Life" bind:value={stats.life} />
+      <input id={`${id}-life`} class="life-value field-life" type="number" aria-label="Monster Life" bind:value={stats.life} />
       <div class="ai-cards" aria-label="Monster's AI cards">
         <span class="ai-card"><KdIcon class="ai-card-icon" i="card-b" /><span>5</span></span>
         <span class="ai-card"><KdIcon class="ai-card-icon" i="card-a" /><span>3</span></span>
@@ -141,7 +143,12 @@
     <div class="attributes">
       {#each statNames as stat (stat.name)}
         <div>
-          <input class="attribute-value" type="number" aria-label={`Monster ${stat.name}`} bind:value={stats[stat.key]} />
+          <input
+            class={["attribute-value", `field-${stat.key}`]}
+            type="number"
+            aria-label={`Monster ${stat.name}`}
+            bind:value={stats[stat.key]}
+          />
           <span>{stat.name}</span>
         </div>
       {/each}
@@ -163,19 +170,27 @@
 
 <Section
   title={variant === 2 ? "Attributes" : "Monster Attributes"}
-  meta={[`Life ${stats.life}`, `Spd ${stats.speed ? `${stats.speed > 0 ? "+" : ""}${stats.speed}` : "\u2212"}`, `Dmg ${stats.damage ? `${stats.damage > 0 ? "+" : ""}${stats.damage}` : "\u2212"}`]}
+  meta={[
+    `Life ${stats.life}`,
+    `Mov ${stats.movement}`,
+    `Tgh ${stats.toughness}`,
+    `Spd ${stats.speed ? `${stats.speed > 0 ? "+" : ""}${stats.speed}` : "\u2212"}`,
+    `Dmg ${stats.damage ? `${stats.damage > 0 ? "+" : ""}${stats.damage}` : "\u2212"}`,
+  ]}
   onaction={() => stats.life--}
   actionLabel="Wound"
 >
   {@render statistics()}
 </Section>
 
-<Section title="Status" meta={[knockedDown ? "Knocked Down" : ""]}>
+<Section title="Status" meta={[knockedDown ? "Knocked Down" : ""]} onaction={onturn} showAction={monsterTurn} actionLabel="End Turn">
   <div class="state">
     <button class={["toggle", monsterTurn && "active"]} aria-pressed={monsterTurn} onclick={onturn}>
-      <span aria-hidden="true">{monsterTurn ? "●" : "○"}</span> Monster's Turn
+      <span class={["status-icon", statusIcons.turn]} aria-hidden="true"></span> Monster's Turn
     </button>
-    <button class={["toggle", knockedDown && "active"]} aria-pressed={knockedDown} onclick={toggleKnockedDown}>Knocked Down</button>
+    <button class={["toggle", knockedDown && "active"]} aria-pressed={knockedDown} onclick={toggleKnockedDown}>
+      <span class={["status-icon", statusIcons.knockedDown]} aria-hidden="true"></span> Knocked Down
+    </button>
   </div>
 </Section>
 
@@ -263,7 +278,12 @@
     <div id={`${id}-${section}`} hidden={!showMore && !(section === "Tokens" && tokenCount)}>
       {#if section === "Tokens"}
         <Section title="Attribute Tokens" meta={`${tokenCount} Tokens`}>
-          <AttributeTokens owner="Monster" names={tokens} labels={["Spd", "Acc", "Dmg", "Lck", "Mov", "Tgh", "Eva"]} bind:counts={values} />
+          <AttributeTokens
+            owner="Monster"
+            names={tokens}
+            labels={["Mov", "Spd", "Acc", "Dmg", "Eva", "Tgh", "Luck"]}
+            bind:counts={values}
+          />
         </Section>
       {:else if section === "Resource Deck"}
         <Section
@@ -464,6 +484,18 @@
     font-family: var(--font-display);
     letter-spacing: var(--letter-spacing-tight);
   }
+  input {
+    appearance: textfield;
+    inline-size: var(--size-control);
+    block-size: var(--size-control);
+    border: var(--border-width) solid color-mix(var(--identity) 60%, var(--panel));
+    border-radius: var(--radius-control);
+    background: color-mix(var(--identity) 18%, var(--panel));
+    text-align: center;
+    &::-webkit-inner-spin-button {
+      appearance: none;
+    }
+  }
   .vitals {
     display: flex;
     max-inline-size: 16.25rem;
@@ -481,7 +513,11 @@
     font-size: var(--text-xs);
   }
   .life-value {
-    font-size: 3.125rem;
+    --text-num-input: 3.125rem;
+    inline-size: 4.5rem;
+    block-size: 4.5rem;
+    background: var(--field-bg);
+    color: var(--field-fg);
     line-height: 1;
     font-family: var(--font-sans);
   }
@@ -517,7 +553,9 @@
     border-inline-start: 1px solid var(--color-divider);
   }
   .attribute-value {
-    font-size: 1.25rem;
+    background: var(--field-bg);
+    color: var(--field-fg);
+    font-weight: var(--font-bold);
   }
   .attributes span {
     color: var(--muted-foreground);
@@ -529,16 +567,26 @@
     gap: 0.375rem;
   }
   .toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.375rem;
     min-block-size: var(--size-control);
-    border: 1px solid var(--color-divider);
+    border: var(--border-width) solid var(--color-divider);
     border-radius: var(--radius-control);
     color: var(--muted-foreground);
-    font-size: var(--text-sm);
+    font-size: var(--text-md);
     &.active {
       border-color: var(--color-divider);
       background: color-mix(var(--identity) 14%, var(--panel));
       color: var(--foreground);
     }
+  }
+  .status-icon {
+    display: inline-block;
+    flex-shrink: 0;
+    inline-size: 1rem;
+    block-size: 1rem;
   }
   .board {
     display: block;
@@ -700,26 +748,7 @@
   :global(.signal) h2 {
     font-size: 2.25rem;
   }
-  :global(.signal) .life-value {
-    font-family: var(--font-sans);
-  }
   :global(.signal) .action {
     background: var(--background);
-  }
-  input {
-    appearance: textfield;
-    inline-size: var(--size-control);
-    block-size: var(--size-control);
-    border: 1px solid color-mix(var(--identity) 60%, var(--panel));
-    border-radius: var(--radius-control);
-    background: color-mix(var(--identity) 18%, var(--panel));
-    text-align: center;
-    &::-webkit-inner-spin-button {
-      appearance: none;
-    }
-  }
-  .life-value {
-    inline-size: 4.5rem;
-    block-size: 4.5rem;
   }
 </style>

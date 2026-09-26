@@ -11,6 +11,7 @@
     open = $bindable(false),
     onadd,
     onaction,
+    showAction = true,
     actionLabel = "Select",
     actionName,
     actionIcon,
@@ -24,6 +25,7 @@
     open?: boolean;
     onadd?: Noop;
     onaction?: Noop;
+    showAction?: boolean;
     actionLabel?: string;
     actionName?: string;
     actionIcon?: KdIconName;
@@ -33,6 +35,7 @@
   } = $props();
 
   let metaItems = $derived((Array.isArray(meta) ? meta : [meta]).filter(Boolean));
+  let hasAction = $derived(Boolean(onaction && showAction));
   const contentId = $props.id();
 
   function add() {
@@ -41,7 +44,7 @@
   }
 </script>
 
-<div class={["section", onadd && onaction && "with-pair"]}>
+<div class={["section", onadd && hasAction && "with-pair"]}>
   <div class="section-header">
     <button class="toggle" type="button" aria-expanded={open} aria-controls={contentId} onclick={() => (open = !open)}>
       <span class={["heading", restricted && "restricted-heading"]}>
@@ -61,9 +64,9 @@
       {/if}
       <span class="chevron i-material-symbols:expand-more" aria-hidden="true"></span>
     </button>
-    {#if onadd || onaction}
+    {#if onadd || hasAction}
       <div class="section-actions">
-        {#if onaction}
+        {#if hasAction}
           <button
             class={["add", actionIcon && "action-button-icon"]}
             type="button"
@@ -77,11 +80,11 @@
         {/if}
         {#if onadd}
           <button
-            class={["add", onaction && "icon-action"]}
+            class={["add", hasAction && "icon-action"]}
             type="button"
             onclick={add}
             title={`Add to ${title}`}
-            aria-label={onaction ? `Add to ${title}` : undefined}
+            aria-label={hasAction ? `Add to ${title}` : undefined}
           >
             <span class="add-icon i-material-symbols:add" aria-hidden="true"></span>
             {#if !onaction}Add{/if}
@@ -131,13 +134,13 @@
     align-items: center;
     min-inline-size: 0;
     padding: 0.25rem 0.375rem;
-    gap: 0.375rem;
+    /* gap: 0.375rem; */
     color: color-mix(var(--identity) 55%, var(--foreground));
     text-align: start;
   }
   small {
     display: flex;
-    column-gap: 0.875rem;
+    column-gap: 0.75rem;
     row-gap: 0;
     grid-row: 2;
     grid-column: 1;
@@ -212,7 +215,6 @@
   }
   :global(.folio) .section {
     margin-block: 0.25rem;
-    padding-inline: 0.25rem;
     border: 0;
     border-radius: var(--radius-control);
     background: color-mix(var(--identity) 10%, var(--panel));

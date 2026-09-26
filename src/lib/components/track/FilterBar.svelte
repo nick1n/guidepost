@@ -198,7 +198,7 @@
     inline-size: 100%;
     block-size: 2.5rem;
     padding-inline: 2rem 0.5rem;
-    border: var(--border-size) solid var(--card);
+    border: var(--border-width) solid var(--card);
     border-end-start-radius: var(--radius-card);
     background: var(--card);
 

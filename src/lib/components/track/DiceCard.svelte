@@ -60,7 +60,7 @@
 <style>
   .card {
     overflow: hidden;
-    border: var(--border-size) solid transparent;
+    border: var(--border-width) solid transparent;
     border-radius: var(--radius-card);
     background: var(--card);
     background-clip: padding-box;
@@ -89,7 +89,7 @@
       --color-checkbox: var(--card);
     }
     &:focus-visible {
-      outline-offset: calc(-1 * var(--border-size));
+      outline-offset: calc(-1 * var(--border-width));
     }
   }
 

@@ -18,9 +18,11 @@ export function tokenNet(count: TokenCount) {
 
 export type AttackWeapon = "Founding Stone" | "Fist & Tooth";
 
-const weaponStats: Record<AttackWeapon, { speed: number; accuracy: number; strength: number; luck: number }> = {
-  "Founding Stone": { speed: 2, accuracy: 7, strength: 1, luck: 0 },
-  "Fist & Tooth": { speed: 2, accuracy: 8, strength: 0, luck: 1 },
+type WeaponStats = { speed: number; accuracy: number; strength: number; luck: number; keywords: readonly string[] };
+
+const weaponStats: Record<AttackWeapon, WeaponStats> = {
+  "Founding Stone": { speed: 2, accuracy: 7, strength: 1, luck: 0, keywords: ["weapon", "melee", "stone"] },
+  "Fist & Tooth": { speed: 2, accuracy: 8, strength: 0, luck: 1, keywords: ["weapon", "melee", "fist & tooth"] },
 };
 
 const clampTarget = (value: number) => Math.max(2, Math.min(10, value));
@@ -31,6 +33,7 @@ export function makeSheet(index = -1) {
     nameless: false,
     gender: survivors[index]?.gender ?? "Non-binary",
     survival: 1,
+    dodgesRemaining: 1,
     survivalLimit: 1,
     life: 5,
     perfectHitRange: 1,
@@ -99,6 +102,7 @@ export function attackStats(sheet: Sheet, weapon: AttackWeapon, monster: { tough
   const accuracy = clampTarget(base.accuracy + monster.evasion - modifier(2) - Number(sheet.statuses.includes("Blind Spot")));
 
   return {
+    keywords: base.keywords,
     speed: Math.max(1, Math.trunc(base.speed + modifier(1))),
     phit,
     acc: phit === null ? accuracy : Math.min(accuracy, phit),
@@ -108,7 +112,7 @@ export function attackStats(sheet: Sheet, weapon: AttackWeapon, monster: { tough
 }
 
 export function isReady(sheet: Sheet) {
-  return !sheet.dead && !sheet.acted && !sheet.statuses.includes("Knocked Down") && !sheet.statuses.includes("Retired");
+  return !sheet.dead && !sheet.acted && !sheet.statuses.includes("Knocked Down");
 }
 export function availableActions(sheet: Sheet) {
   return sheet.permissions.survival &&
@@ -116,7 +120,7 @@ export function availableActions(sheet: Sheet) {
     !sheet.statuses.includes("Knocked Down") &&
     !sheet.statuses.includes("Retired") &&
     (sheet.survival ?? 0) > 0
-    ? 1
+    ? sheet.dodgesRemaining
     : 0;
 }
 export function tokenTotal(sheet: Sheet) {
@@ -126,9 +130,12 @@ export function statusItems(sheet: Sheet) {
   return [
     sheet.dead ? "Dead" : isReady(sheet) ? "Ready" : "Not Ready",
     sheet.threat && "Threat",
-    // sheet.acted && "Acted",
+    sheet.acted && "Acted",
+    sheet.statuses.includes("Monster Controller") && "Monster Controller",
     sheet.statuses.includes("Knocked Down") && "Knocked Down",
     sheet.statuses.includes("Blind Spot") && "Blind Spot",
+    sheet.statuses.includes("Deaf") && "Deaf",
+    sheet.statuses.includes("Blind") && "Blind",
     sheet.priority && "Priority Target",
     sheet.statuses.includes("Retired") && "Retired",
   ].filter((item): item is string => typeof item === "string");

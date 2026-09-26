@@ -122,3 +122,18 @@ export const KD_ICONS = {
 } as const;
 
 export type KdIconName = keyof typeof KD_ICONS;
+
+export const statusIcons = {
+  turn: "i-material-symbols:refresh",
+  ready: "i-material-symbols:play-circle",
+  acted: "i-material-symbols:check",
+  threat: "i-material-symbols:my-location",
+  controller: "i-material-symbols:sports-esports",
+  blindSpot: "i-material-symbols:visibility",
+  deaf: "i-material-symbols:hearing",
+  blind: "i-material-symbols:visibility-off",
+  knockedDown: "i-material-symbols:download-2",
+  dead: "i-material-symbols:skull",
+  retired: "i-material-symbols:person-off-outline",
+  priority: "i-material-symbols:target",
+} as const;

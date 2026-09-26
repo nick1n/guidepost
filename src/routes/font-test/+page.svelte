@@ -189,7 +189,7 @@
 
   input {
     padding: 0.5rem;
-    border: var(--border-size) solid var(--color-divider);
+    border: var(--border-width) solid var(--color-divider);
     border-radius: var(--radius-control);
     background: var(--panel);
     color: var(--foreground);
@@ -236,7 +236,7 @@
     display: grid;
     grid-template-columns: 1fr auto;
     padding: 0.75rem;
-    border: var(--border-size) solid var(--color-divider);
+    border: var(--border-width) solid var(--color-divider);
     border-radius: var(--radius-control);
     background: var(--panel);
   }

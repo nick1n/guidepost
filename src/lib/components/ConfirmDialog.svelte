@@ -115,7 +115,7 @@
     inline-size: min(26rem, calc(100% - 2rem));
     margin: auto;
     padding: 0;
-    border: var(--border-size) solid var(--accent);
+    border: var(--border-width) solid var(--accent);
     background: var(--popover);
     box-shadow: 0 1.5rem 4rem #0009;
     color: var(--popover-foreground);
@@ -195,7 +195,7 @@
   .action {
     min-block-size: 2.5rem;
     padding-inline: 0.875rem;
-    border: var(--border-size) solid var(--muted-foreground);
+    border: var(--border-width) solid var(--muted-foreground);
     border-radius: var(--radius-control);
     font-weight: var(--font-semibold);
     transition:

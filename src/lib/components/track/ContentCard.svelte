@@ -11,6 +11,7 @@
   import { collectionActions } from "#lib/state/collection-actions.ts";
   import { getFilterState } from "#lib/state/filters.svelte.ts";
   import type { ContentItem } from "#lib/types/index.ts";
+  import KdIcon from "../KdIcon.svelte";
 
   type Props = {
     item: ContentItem;
@@ -93,10 +94,9 @@
       <div class="requirement" data-satisfied={requiresOwned}>
         <span class="requirement-mark">
           {#if requiresOwned}
-            <span class="requirement-icon i-material-symbols:check" style:--icon-color="var(--accent)" aria-hidden="true"></span>
+            <span class="requirement-icon i-material-symbols:check" aria-hidden="true"></span>
           {:else}
-            <span class="requirement-icon i-material-symbols:lock" style:--icon-color="var(--contrast-foreground)" aria-hidden="true"
-            ></span>
+            <KdIcon i="require" />
           {/if}
         </span>
         <span class="requirement-name">{item.requires.map((r) => nameById[r]?.replace(/ expansion/gi, "") ?? r).join(", ")}</span>
@@ -109,11 +109,11 @@
 <style>
   .card {
     position: relative;
-    isolation: isolate;
     overflow: hidden;
-    border: var(--border-size) solid transparent;
+    border: var(--border-width) solid transparent;
     background: var(--card);
     background-clip: padding-box;
+    isolation: isolate;
     transition: border-color var(--duration-fast) var(--ease-standard);
 
     &[data-owned="true"] {
@@ -127,10 +127,10 @@
 
   .beta-ribbon {
     position: absolute;
-    inset-block-start: 1rem;
-    inset-inline-start: -2.5rem;
     inline-size: 8rem;
     block-size: 1rem;
+    inset-block-start: 1rem;
+    inset-inline-start: -2.5rem;
     rotate: 135deg;
     background: var(--beta);
     pointer-events: none;
@@ -142,19 +142,19 @@
   }
 
   .ownership {
-    flex: 1;
-    min-inline-size: 0;
     display: flex;
+    flex: 1;
     align-items: flex-start;
-    gap: 0.75rem;
+    min-inline-size: 0;
     padding: 0.75rem;
+    gap: 0.75rem;
     text-align: start;
 
     &:hover {
       --color-checkbox: var(--card);
     }
     &:focus-visible {
-      outline-offset: calc(-1 * var(--border-size));
+      outline-offset: calc(-1 * var(--border-width));
     }
   }
 
@@ -192,8 +192,8 @@
   .body {
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
     padding: 0.75rem;
+    gap: 0.75rem;
   }
 
   .details {
@@ -217,10 +217,10 @@
   .requirement {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
     margin-inline: -0.75rem;
     margin-block-end: -0.75rem;
     padding: 0.25rem 0.75rem;
+    gap: 0.5rem;
     background: var(--destructive);
     color: var(--foreground);
     line-height: 1.625;
@@ -244,9 +244,9 @@
 
   .requirement-icon {
     display: inline-block;
-    inline-size: 1rem;
-    block-size: 1rem;
-    color: var(--icon-color);
+    inline-size: 1.25rem;
+    block-size: 1.25rem;
+    color: var(--accent);
   }
 
   .requirement-name {

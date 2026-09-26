@@ -14,9 +14,9 @@
     flex-shrink: 0;
     inline-size: var(--size-card-header);
     block-size: var(--size-card-header);
-    border: var(--border-size) solid var(--foreground);
+    border: var(--border-width) solid var(--foreground);
     background: var(--color-checkbox, var(--contrast));
-    box-shadow: inset 0 0 0 var(--border-size) var(--contrast);
+    box-shadow: inset 0 0 0 var(--border-width) var(--contrast);
     transition: background-color var(--duration-fast) var(--ease-standard);
 
     &[data-checked="true"] {
