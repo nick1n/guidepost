@@ -334,9 +334,6 @@
     font-size: 1rem;
     user-select: text;
   }
-  textarea {
-    resize: vertical;
-  }
   .form-actions {
     display: flex;
     gap: 0.25rem;

@@ -1,16 +1,16 @@
 <script lang="ts">
   import KdIcon from "#lib/components/KdIcon.svelte";
-  import { isReady, type Sheet } from "./data";
+  import { availableActions, isReady, type Sheet } from "./data";
   import { statusIcons } from "#lib/constants.ts";
   let { sheet, showResources = false }: { sheet: Sheet; showResources?: boolean } = $props();
 </script>
 
-<span class={["life-state", sheet.dead && "dead", isReady(sheet) && "ready"]}>
-  {#if sheet.dead || isReady(sheet)}
-    <span class={["state-icon", sheet.dead ? statusIcons.dead : statusIcons.ready]} aria-hidden="true"></span>
+<span class={["life-state", sheet.statuses.includes("Dead") && "dead", isReady(sheet) && "ready"]}>
+  {#if sheet.statuses.includes("Dead") || isReady(sheet)}
+    <span class={["state-icon", sheet.statuses.includes("Dead") ? statusIcons.dead : statusIcons.ready]} aria-hidden="true"></span>
   {/if}
   <span class="state-label">
-    {sheet.dead ? "Dead" : isReady(sheet) ? "Ready" : "Not Ready"}
+    {sheet.statuses.includes("Dead") ? "Dead" : isReady(sheet) ? "Ready" : sheet.statuses.includes("Acted") ? "Acted" : "Not Ready"}
   </span>
   {#if showResources}
     <span class="resources" aria-hidden="true">
@@ -24,8 +24,9 @@
   {/if}
 </span>
 <span class="flags" aria-hidden="true">
-  {#if sheet.acted}<span class={["status-icon", statusIcons.acted]}></span>{/if}
-  {#if sheet.threat}<span class={["status-icon", statusIcons.threat]}></span>{/if}
+  {#if availableActions(sheet)}<span class={["dodge-ready", statusIcons.dodge]}></span>{/if}
+  {#if sheet.statuses.includes("Acted")}<span class={["status-icon", statusIcons.acted]}></span>{/if}
+  {#if sheet.statuses.includes("Threat")}<span class={["status-icon", statusIcons.threat]}></span>{/if}
   {#if sheet.statuses.includes("Monster Controller")}<span class={["status-icon", statusIcons.controller]}></span>{/if}
   {#if sheet.statuses.includes("Blind Spot")}<span class={["status-icon", statusIcons.blindSpot]}></span>{/if}
   {#if sheet.statuses.includes("Deaf")}<span class={["status-icon", statusIcons.deaf]}></span>{/if}
@@ -79,12 +80,16 @@
     min-block-size: 0.875rem;
     gap: 1px;
   }
+  .dodge-ready,
   .status-icon,
   .priority {
     display: inline-block;
     inline-size: 0.875rem;
     block-size: 0.875rem;
     color: var(--foreground);
+  }
+  .dodge-ready {
+    color: var(--accent-green);
   }
   .priority {
     color: var(--accent);

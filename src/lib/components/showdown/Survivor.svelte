@@ -18,7 +18,8 @@
     spendCost,
     statusItems,
     toggleActed,
-    permissions,
+    useDodge,
+    restrictions,
     sampleActions,
     sampleDecks,
     type Cost,
@@ -108,9 +109,7 @@
   }
 
   function dodge() {
-    if (!availableActions(sheet)) return;
-    sheet.survival--;
-    sheet.dodgesRemaining = 0;
+    useDodge(sheet);
   }
 
   function activateFoundingStone() {
@@ -176,14 +175,14 @@
     const input = event.currentTarget;
     if (!(input instanceof HTMLInputElement) || !Number.isFinite(input.valueAsNumber)) return;
     sheet.bleeding = input.valueAsNumber;
-    if (sheet.bleeding >= sheet.life) sheet.dead = true;
+    if (sheet.bleeding >= sheet.life && !sheet.statuses.includes("Dead")) sheet.statuses = [...sheet.statuses, "Dead"];
   }
 
   function oninputLife(event: Event) {
     const input = event.currentTarget;
     if (!(input instanceof HTMLInputElement) || !Number.isFinite(input.valueAsNumber)) return;
     sheet.life = input.valueAsNumber;
-    if (sheet.bleeding >= sheet.life) sheet.dead = true;
+    if (sheet.bleeding >= sheet.life && !sheet.statuses.includes("Dead")) sheet.statuses = [...sheet.statuses, "Dead"];
   }
 
   const armor = [
@@ -200,6 +199,13 @@
     { name: "Understanding", max: 9, marks: [3, 9], milestones: ["Insight", "White Secret"] },
     { name: "Weapon Proficiency", max: 8, marks: [3, 8], milestones: ["Specialist", "Master"] },
   ];
+  const statuses = [
+    { name: "Monster Controller", icon: statusIcons.controller },
+    { name: "Blind Spot", icon: statusIcons.blindSpot },
+    { name: "Knocked Down", icon: statusIcons.knockedDown },
+    { name: "Blind", icon: statusIcons.blind },
+    { name: "Deaf", icon: statusIcons.deaf },
+  ] as const;
 </script>
 
 {#snippet statistics()}
@@ -273,15 +279,24 @@
 
 {#snippet conditions()}
   <div class="conditions">
-    <button class={["condition", sheet.threat && "active"]} aria-pressed={sheet.threat} onclick={() => (sheet.threat = !sheet.threat)}>
+    <button
+      class={["condition", sheet.statuses.includes("Threat") && "active"]}
+      aria-pressed={sheet.statuses.includes("Threat")}
+      onclick={() => toggleStatus("Threat")}
+    >
       <span class={["condition-icon", statusIcons.threat]} aria-hidden="true"></span>
       Threat
     </button>
-    <button class={["condition", sheet.acted && "active"]} aria-pressed={sheet.acted} onclick={act}>
-      <span class={["condition-icon", statusIcons.acted]} aria-hidden="true"></span>
-      {sheet.acted ? "Acted" : "Act"}
+    <button
+      class={["condition", sheet.statuses.includes("Acted") && "active"]}
+      aria-pressed={sheet.statuses.includes("Acted")}
+      onclick={act}
+    >
+      <span class={["condition-icon", sheet.statuses.includes("Acted") ? statusIcons.acted : statusIcons.ready]} aria-hidden="true"></span>
+      {sheet.statuses.includes("Acted") ? "Acted" : "Act"}
     </button>
-    {#each [{ name: "Monster Controller", icon: statusIcons.controller }, { name: "Blind Spot", icon: statusIcons.blindSpot }, { name: "Knocked Down", icon: statusIcons.knockedDown }, { name: "Deaf", icon: statusIcons.deaf }, { name: "Blind", icon: statusIcons.blind }] as status (status.name)}
+    {@render priorityButton()}
+    {#each statuses as status (status.name)}
       <button
         class={["condition", sheet.statuses.includes(status.name) && "active"]}
         aria-pressed={sheet.statuses.includes(status.name)}
@@ -299,11 +314,14 @@
       <span class={["condition-icon", statusIcons.retired]} aria-hidden="true"></span>
       Retired
     </button>
-    <button class={["condition", sheet.dead && "active"]} aria-pressed={sheet.dead} onclick={() => (sheet.dead = !sheet.dead)}>
+    <button
+      class={["condition", sheet.statuses.includes("Dead") && "active"]}
+      aria-pressed={sheet.statuses.includes("Dead")}
+      onclick={() => toggleStatus("Dead")}
+    >
       <span class={["condition-icon", statusIcons.dead]} aria-hidden="true"></span>
       Dead
     </button>
-    {@render priorityButton()}
   </div>
 {/snippet}
 
@@ -381,13 +399,13 @@
 {/snippet}
 
 {#snippet survivalActions()}
-  {#if !sheet.permissions.survival}<p class="restriction">Cannot use survival actions</p>{/if}
+  {#if !sheet.restrict.survival}<p class="restriction">Cannot use survival actions</p>{/if}
   <div class="survival-actions">
     {#each ["Dodge", "Dash", "Surge", "Encourage", "Endure"] as action, index (action)}
       <button class="survival-action" disabled={index !== 0 || !availableActions(sheet)} onclick={index === 0 ? dodge : undefined}>
         <div>
           {#if action === "Dodge"}
-            <span class="i-material-symbols:sprint" aria-hidden="true"></span>
+            <span class={statusIcons.dodge} aria-hidden="true"></span>
           {:else if action === "Dash"}
             <KdIcon i="movement" label="movement" />
           {:else if action === "Surge"}
@@ -499,14 +517,14 @@
       </div>
       <h3>Restrictions</h3>
       <div class="conditions">
-        {#each permissions as permission (permission.key)}
+        {#each restrictions as r (r.key)}
           <button
-            class={["condition", sheet.permissions[permission.key] && "active"]}
-            aria-pressed={sheet.permissions[permission.key]}
-            onclick={() => (sheet.permissions[permission.key] = !sheet.permissions[permission.key])}
+            class={["condition", sheet.restrict[r.key] && "active"]}
+            aria-pressed={sheet.restrict[r.key]}
+            onclick={() => (sheet.restrict[r.key] = !sheet.restrict[r.key])}
           >
-            {sheet.permissions[permission.key] ? "Can" : "Cannot"}
-            {permission.label.toLowerCase()}
+            {sheet.restrict[r.key] ? "Can" : "Cannot"}
+            {r.label.toLowerCase()}
           </button>
         {/each}
       </div>
@@ -588,7 +606,7 @@
             <strong>{sheet.proficiency}</strong>
             <button class="condition" onclick={removeProficiency}>Remove proficiency</button>
           </div>
-          {#if !sheet.permissions.proficiency}<p class="restriction">Cannot use weapon proficiency</p>{/if}
+          {#if !sheet.restrict.proficiency}<p class="restriction">Cannot use weapon proficiency</p>{/if}
           <ProgressTrack {...track} {variant} bind:value={sheet.development[index]} />
         {:else}
           <label class="field" for={`${id}-proficiency`}>
@@ -613,7 +631,7 @@
       bind:entries={entries[name]}
       deck={sampleDecks[name] ?? []}
       swipeDelete={variant === 1}
-      restricted={name === "Fighting Arts" ? !sheet.permissions.fightingArts : name === "Abilities" ? !sheet.permissions.abilities : false}
+      restricted={name === "Fighting Arts" ? !sheet.restrict.fightingArts : name === "Abilities" ? !sheet.restrict.abilities : false}
     />
   {/if}
 {/snippet}
@@ -627,12 +645,12 @@
 
   <header
     class="identity"
-    data-threat={sheet.threat ? "" : undefined}
-    data-acted={sheet.acted ? "" : undefined}
+    data-threat={sheet.statuses.includes("Threat") ? "" : undefined}
+    data-acted={sheet.statuses.includes("Acted") ? "" : undefined}
     data-controller={sheet.statuses.includes("Monster Controller") ? "" : undefined}
     data-blind={sheet.statuses.includes("Blind Spot") ? "" : undefined}
     data-knocked={sheet.statuses.includes("Knocked Down") ? "" : undefined}
-    data-dead={sheet.dead ? "" : undefined}
+    data-dead={sheet.statuses.includes("Dead") ? "" : undefined}
     data-retired={sheet.statuses.includes("Retired") ? "" : undefined}
     data-priority={sheet.priority ? "" : undefined}
   >
@@ -667,7 +685,7 @@
     </Section>
     <Section
       title="Actions"
-      restricted={variant === 3 && !sheet.permissions.survival ? "Cannot use survival actions" : ""}
+      restricted={variant === 3 && !sheet.restrict.survival ? "Cannot use survival actions" : ""}
       onaction={dodge}
       showAction={Boolean(availableActions(sheet))}
       actionLabel="Dodge"
@@ -676,7 +694,13 @@
       <h3>Survival Actions <small>{sheet.survival ?? 0} survival</small></h3>
       {@render survivalActions()}
     </Section>
-    <Section title="Status" meta={statusItems(sheet)} onaction={act} showAction={survivorTurn} actionLabel={sheet.acted ? "Acted" : "Act"}>
+    <Section
+      title="Status"
+      meta={statusItems(sheet)}
+      onaction={act}
+      showAction={survivorTurn}
+      actionLabel={sheet.statuses.includes("Acted") ? "Acted" : "Act"}
+    >
       {@render conditions()}
     </Section>
   {:else}
@@ -689,7 +713,13 @@
       <Section title="Attributes" meta={`Mov ${sheet.attributes[0] ?? 0}`}>{@render statistics()}</Section>
       <Section title="Insanity & Armor" meta={`Ins ${sheet.armorValues[0] ?? 0}`}>{@render protection()}</Section>
     {/if}
-    <Section title="Status" meta={statusItems(sheet)} onaction={act} showAction={survivorTurn} actionLabel={sheet.acted ? "Acted" : "Act"}>
+    <Section
+      title="Status"
+      meta={statusItems(sheet)}
+      onaction={act}
+      showAction={survivorTurn}
+      actionLabel={sheet.statuses.includes("Acted") ? "Acted" : "Act"}
+    >
       {@render conditions()}
     </Section>
     <Section title="Actions">
@@ -698,7 +728,7 @@
     <Section
       title="Survival Actions"
       meta="Dodge"
-      restricted={!sheet.permissions.survival ? "Cannot use" : ""}
+      restricted={!sheet.restrict.survival ? "Cannot use" : ""}
       onaction={dodge}
       showAction={Boolean(availableActions(sheet))}
       actionLabel="Dodge"
@@ -1087,16 +1117,9 @@
     font-size: var(--text-xs);
   }
   .bonuses {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.5rem;
-  }
-  .bonus-group {
-    justify-self: start;
-    &.arrival {
-      justify-self: end;
-      text-align: right;
-    }
+    display: flex;
+    justify-content: space-around;
+    text-align: center;
   }
   .bonus-title {
     display: block;
@@ -1193,14 +1216,14 @@
     }
   }
   .dodge-count {
-    display: grid;
-    place-items: center;
     inline-size: 1.5rem;
     block-size: 1.5rem;
     border-radius: 50%;
     background: var(--identity);
     color: var(--identity-ink);
     font-weight: var(--font-bold);
+    font-size: 1rem;
+    line-height: 1.5;
   }
 
   input[type="text"],
@@ -1210,15 +1233,12 @@
     min-inline-size: 0;
     min-block-size: var(--size-control);
     padding: 0.5rem;
-    border: 1px solid var(--color-divider);
+    border: var(--border-width) solid var(--color-divider);
     border-radius: var(--radius-control);
     background: var(--panel);
     color: var(--foreground);
     font-size: var(--text-sm);
     user-select: text;
-  }
-  textarea {
-    resize: vertical;
   }
   :global(.folio) h2 {
     font-weight: var(--font-normal);

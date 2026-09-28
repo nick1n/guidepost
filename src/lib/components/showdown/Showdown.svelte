@@ -5,7 +5,18 @@
   import Survivor from "./Survivor.svelte";
   import QuickStatus from "./QuickStatus.svelte";
   import { statusIcons } from "#lib/constants.ts";
-  import { designs, survivors, makeSheet, statusText, tokenTotal, availableActions, makeTokens, tokenNet, toggleActed } from "./data";
+  import {
+    designs,
+    survivors,
+    makeSheet,
+    statusText,
+    tokenTotal,
+    availableActions,
+    makeTokens,
+    tokenNet,
+    toggleActed,
+    useDodge,
+  } from "./data";
 
   let { variant = 1 }: { variant?: number } = $props();
   let design = $derived(designs[variant - 1]);
@@ -111,9 +122,9 @@
   function selectSurvivor(index: number) {
     const wasSelected = active === index;
     jump(index);
-    if (index > 0 && wasSelected) {
-      toggleActed(sheets[index - 1]);
-    }
+    if (index === 0 || !wasSelected) return;
+    if (monsterTurn) useDodge(sheets[index - 1]);
+    else toggleActed(sheets[index - 1]);
   }
 
   function onscroll() {
@@ -138,7 +149,7 @@
     monsterTurn = true;
     awakening += 1;
     for (const sheet of sheets) {
-      sheet.acted = false;
+      sheet.statuses = sheet.statuses.filter((status) => status !== "Acted");
       sheet.remainingBeforeAct = null;
     }
     jump(0);
@@ -219,7 +230,6 @@
     {/each}
   </div>
   <footer class="toolbar">
-    <p id="roster-shortcut" class="visually-hidden">Tap an already selected survivor to toggle Acted.</p>
     <nav class="roster" aria-label="Jump to dashboard">
       {#each roster as person, index (person.name)}
         <button
@@ -227,10 +237,9 @@
           style:--identity={person.color}
           style:--identity-ink={person.ink}
           aria-current={active === index ? "true" : undefined}
-          aria-describedby={index > 0 ? "roster-shortcut" : undefined}
           aria-label={index === 0
             ? `White Lion, ${monsterTurn ? "current turn" : "waiting"}${monsterKnockedDown ? ", knocked down" : ""}, movement ${(monsterStats.movement || 0) + tokenNet(monsterTokens[monsterTokenIndex.movement])}, toughness ${(monsterStats.toughness || 0) + tokenNet(monsterTokens[monsterTokenIndex.toughness])}, round ${round}`
-            : `${survivorName(index)}, ${statusText(sheets[index - 1])}, ${tokenTotal(sheets[index - 1])} tokens, ${availableActions(sheets[index - 1])} survival actions available${monsterTurn ? "" : `, ${resourceText(index)}`}`}
+            : `${survivorName(index)}, ${statusText(sheets[index - 1])}, ${tokenTotal(sheets[index - 1])} tokens, ${availableActions(sheets[index - 1]) ? "Dodge available" : "Dodge unavailable"}${monsterTurn ? (availableActions(sheets[index - 1]) ? ", press again when selected to Dodge" : "") : `, ${resourceText(index)}, press again when selected to toggle Acted`}`}
           onclick={() => selectSurvivor(index)}
         >
           <strong>{index === 0 ? "White Lion" : survivorName(index)}</strong>

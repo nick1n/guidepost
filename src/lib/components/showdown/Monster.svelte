@@ -570,8 +570,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.375rem;
     min-block-size: var(--size-control);
+    gap: 0.375rem;
     border: var(--border-width) solid var(--color-divider);
     border-radius: var(--radius-control);
     color: var(--muted-foreground);
@@ -661,15 +661,15 @@
     block-size: 1rem;
   }
   .action-count {
-    display: grid;
-    place-items: center;
     inline-size: 1.5rem;
     block-size: 1.5rem;
     border-radius: 50%;
     background: var(--identity);
     color: var(--identity-ink);
     font-weight: var(--font-bold);
-    font-size: var(--text-xs);
+    font-size: 1rem;
+    line-height: 1.5;
+    text-align: center;
   }
   .action-state {
     display: flex;

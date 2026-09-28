@@ -375,14 +375,11 @@
       --stat-color: color-mix(in oklch, var(--accuracy-background) 85%, white);
     }
 
-    &[data-stat="Perf"] {
-      --stat-color: color-mix(in oklch, var(--accuracy-background) 85%, white);
-    }
-
     &[data-stat="Wnd"] {
       --stat-color: color-mix(in oklch, var(--strength-background) 85%, white);
     }
 
+    &[data-stat="Perf"],
     &[data-stat="Crit"] {
       --stat-color: color-mix(in oklch, var(--luck-background) 85%, white);
     }

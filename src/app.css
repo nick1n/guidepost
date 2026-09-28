@@ -4,6 +4,7 @@
 
   /* Active vars */
   --background: #151515;
+  --color-trail: #8a6038;
   --foreground: #fdfffe;
 
   --card: #2b2b2b;
@@ -21,10 +22,19 @@
 
   --beta: var(--accent-blue);
 
-  --accent-blue: #11b2e1;
-  --accent-green: #4ae111;
-  --accent-red: #e14011;
+  --old-red: #e14011;
+  --old-green: #4ae111;
+  --old-blue: #11b2e1;
+
+  --affinity-red: #BA0000;
+  --affinity-green: #279515;
+  --affinity-blue: #1067B4;
+
+  --accent-red: var(--old-red);
+  --accent-green: var(--old-green);
+  --accent-blue: var(--old-blue);
   --accent-purple: #a811e1;
+
   --contrast: #000;
   --contrast-foreground: #fff;
   --color-gear: radial-gradient(circle, #fffc, #dddc);
@@ -132,6 +142,22 @@
   --disorder-foreground: #715FC9;
   --fa-foreground: #FF411B;
   --innovation-foreground: #5ECEFC;
+
+  --seed-background: #B53F05;
+  --seed-border: #EADC9A;
+  --seed-foreground: #E6D0CC;
+
+  --seed-title: #060605;
+  --seed-blue: #379CDC;
+  --seed-grey: #94838B;
+  --seed-red: #9A094B;
+  --seed-black: #1E1E1E;
+  --seed-item: #353230;
+  --seed-yellow: #BD930C;
+
+  --gear-center: #EFE7E6;
+  --gear-outside: #DCD3D0;
+  --gear-box-background: #CBC9C4;
 
   /* Currently unused vars */
   --beta-foreground: #fdfffe;
@@ -273,8 +299,9 @@ strong {
 }
 
 textarea {
-  min-block-size: 3lh;
+  min-block-size: 3lh !important;
   field-sizing: content;
+  resize: vertical;
 }
 
 .content {

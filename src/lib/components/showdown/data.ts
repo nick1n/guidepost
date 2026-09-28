@@ -37,8 +37,8 @@ export function makeSheet(index = -1) {
     survivalLimit: 1,
     life: 5,
     perfectHitRange: 1,
-    nickname: index == 0 ? "Foolish Coward of Darkness" : "",
-    permissions: {
+    nickname: index == 1 ? "Foolish Coward of Darkness" : "",
+    restrict: {
       survival: index !== 2,
       fightingArts: index !== 0,
       abilities: index !== 1,
@@ -50,13 +50,10 @@ export function makeSheet(index = -1) {
       proficiency: true,
     },
     attributes: [5, 0, 0, 0, 0, 0],
-    acted: false,
     remaining: { movement: 1, activation: 1 },
     remainingBeforeAct: null as { movement: number; activation: number } | null,
-    dead: false,
-    threat: true,
     priority: false,
-    statuses: [] as string[],
+    statuses: ["Threat"] as string[],
     tokens: makeTokens(6),
     bleeding: 0,
     armorValues: [0, 0, 0, 0, 1, 0],
@@ -78,15 +75,15 @@ export function makeSheet(index = -1) {
 export type Sheet = ReturnType<typeof makeSheet>;
 
 export function toggleActed(sheet: Sheet) {
-  if (!sheet.acted) {
+  if (!sheet.statuses.includes("Acted")) {
     sheet.remainingBeforeAct = { ...sheet.remaining };
     sheet.remaining.movement = 0;
     sheet.remaining.activation = 0;
-    sheet.acted = true;
+    sheet.statuses = [...sheet.statuses, "Acted"];
     return;
   }
 
-  sheet.acted = false;
+  sheet.statuses = sheet.statuses.filter((status) => status !== "Acted");
   if (sheet.remainingBeforeAct) {
     sheet.remaining.movement = sheet.remainingBeforeAct.movement;
     sheet.remaining.activation = sheet.remainingBeforeAct.activation;
@@ -112,25 +109,24 @@ export function attackStats(sheet: Sheet, weapon: AttackWeapon, monster: { tough
 }
 
 export function isReady(sheet: Sheet) {
-  return !sheet.dead && !sheet.acted && !sheet.statuses.includes("Knocked Down");
+  return !sheet.statuses.includes("Dead") && !sheet.statuses.includes("Acted") && !sheet.statuses.includes("Knocked Down");
 }
 export function availableActions(sheet: Sheet) {
-  return sheet.permissions.survival &&
-    !sheet.dead &&
-    !sheet.statuses.includes("Knocked Down") &&
-    !sheet.statuses.includes("Retired") &&
-    (sheet.survival ?? 0) > 0
-    ? sheet.dodgesRemaining
-    : 0;
+  return sheet.restrict.survival && !sheet.statuses.includes("Dead") && (sheet.survival ?? 0) > 0 ? sheet.dodgesRemaining : 0;
+}
+export function useDodge(sheet: Sheet) {
+  if (!availableActions(sheet)) return;
+  sheet.survival--;
+  sheet.dodgesRemaining = 0;
 }
 export function tokenTotal(sheet: Sheet) {
   return sheet.tokens.reduce((sum, count) => sum + count.positive + count.negative, sheet.bleeding || 0);
 }
 export function statusItems(sheet: Sheet) {
   return [
-    sheet.dead ? "Dead" : isReady(sheet) ? "Ready" : "Not Ready",
-    sheet.threat && "Threat",
-    sheet.acted && "Acted",
+    sheet.statuses.includes("Dead") ? "Dead" : isReady(sheet) ? "Ready" : "Not Ready",
+    sheet.statuses.includes("Threat") && "Threat",
+    sheet.statuses.includes("Acted") && "Acted",
     sheet.statuses.includes("Monster Controller") && "Monster Controller",
     sheet.statuses.includes("Knocked Down") && "Knocked Down",
     sheet.statuses.includes("Blind Spot") && "Blind Spot",
@@ -149,7 +145,7 @@ export const designs = [
   { name: "Signal", subtitle: "The Combat Console", className: "signal", href: "/showdown3" },
 ] as const;
 
-export const permissions = [
+export const restrictions = [
   { key: "survival", label: "Use survival actions" },
   { key: "fightingArts", label: "Use fighting arts" },
   { key: "abilities", label: "Use abilities" },

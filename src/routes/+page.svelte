@@ -147,6 +147,7 @@
   import { Effect } from "effect";
   import type { PointerEventHandler } from "svelte/elements";
   import ConfirmDialog from "#lib/components/ConfirmDialog.svelte";
+  import TrailBackground from "#lib/components/TrailBackground.svelte";
   import VersionPicker from "#lib/components/track/VersionPicker.svelte";
   import { navigate } from "#lib/navigation.ts";
   import { collection } from "#lib/state/collection.svelte.ts";
@@ -316,6 +317,7 @@
   <div class="glow" aria-hidden="true">
     <span class="glow-source ambient"></span>
     <span class="glow-source pulse"></span>
+    <TrailBackground />
     <svg class="guidepost" viewBox="0 0 850 1100" focusable="false">
       <defs>
         <radialGradient id="lantern-glass" gradientUnits="userSpaceOnUse" cx="425" cy="504" r="78">
@@ -602,15 +604,13 @@
     inset-block-end: -2rem;
     inset-inline: -2rem;
     overflow: hidden;
-    translate: var(--shift-x) var(--shift-y);
     pointer-events: none;
-    will-change: translate;
   }
 
   :is(.guidepost, .glow-source) {
     position: absolute;
-    inset-block-end: var(--position-glow-y);
-    inset-inline-start: var(--position-glow-x);
+    inset-block-end: calc(var(--position-glow-y) - var(--shift-y));
+    inset-inline-start: calc(var(--position-glow-x) + var(--shift-x));
     translate: -50% 50%;
   }
 
@@ -792,7 +792,8 @@
     }
 
     .glow {
-      translate: none;
+      --shift-x: 0px;
+      --shift-y: 0px;
     }
 
     :is(.glow-source.ambient, .glow-source.pulse, .glow-source.flicker, .glow-source.candle, .lantern-glass, .lantern-core) {
