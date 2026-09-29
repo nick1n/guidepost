@@ -1,6 +1,6 @@
 import { resolve } from "node:path";
 import type { Plugin } from "vite";
-import { generateTypes, schemaPath } from "./generate-types.mjs";
+import { generateTypes, schemaPath } from "./generate-types.mts";
 
 export function schemaTypes(): Plugin {
   let cleanup = () => {};

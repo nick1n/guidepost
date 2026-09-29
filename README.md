@@ -2,6 +2,13 @@
 
 Guidepost is a personal hub for board game companion tools.
 
+## Architecture
+
+The [local-first KDM architecture](docs/kdm-architecture.md) describes collection tracking, user preferences, and shared campaigns with
+one owner, one settlement, and many survivors. It covers undoable showdown, settlement, and hunt gameplay, Dexie and Dexie Cloud,
+Effect services, offline synchronization, and memory-only tests. The design is proposed; the collection's current persistence is
+documented separately from the planned campaign services.
+
 ## Catalog types
 
 Run `pnpm check:shop-links` to check catalog URLs with HEAD requests and update `shopReachable` on each item in

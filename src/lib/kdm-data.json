@@ -35,7 +35,7 @@
       ],
       "shopReachable": true
     },
-    "gamblers-chest": {
+    "expansion-gamblers-chest": {
       "name": "Gambler's Chest Expansion",
       "kind": "expansion",
       "gameplay": true,

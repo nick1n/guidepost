@@ -219,6 +219,12 @@ Use `Schema.TaggedError` for concrete failures and unions of those classes at ac
 
 ## State and persistence
 
+For campaign, settlement, survivor, gameplay undo/redo, preferences, or Dexie synchronization work, read the
+[local-first KDM architecture](docs/kdm-architecture.md). It covers one owner and one settlement per campaign, many survivors per
+settlement, campaign memberships, and shared history across showdown, settlement, and hunt. It is a proposed design with explicit
+implementation gaps, not a description of existing campaign services. Preserve the current collection boundaries below unless a task
+explicitly changes them.
+
 `ContentState` owns collection commands. `CollectionStore` and `GuestStore` are defined in `src/lib/state/stores.ts`; collection-state data types are defined in `src/lib/types`.
 
 ```text
