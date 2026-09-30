@@ -1,7 +1,7 @@
 <script lang="ts">
   import InlineMarkdown from "#lib/components/InlineMarkdown.svelte";
   import KdIcon from "#lib/components/KdIcon.svelte";
-  import type { KdIconName } from "#lib/constants.ts";
+  import { sectionIcons, type KdIconName } from "#lib/constants.ts";
   import type { Snippet } from "svelte";
 
   let {
@@ -36,6 +36,7 @@
 
   let metaItems = $derived((Array.isArray(meta) ? meta : [meta]).filter(Boolean));
   let hasAction = $derived(Boolean(onaction && showAction));
+  let icon = $derived(sectionIcons[title]);
   const contentId = $props.id();
 
   function add() {
@@ -48,6 +49,7 @@
   <div class="section-header">
     <button class="toggle" type="button" aria-expanded={open} aria-controls={contentId} onclick={() => (open = !open)}>
       <span class={["heading", restricted && "restricted-heading"]}>
+        {#if icon}<span class={["section-icon", icon]} aria-hidden="true"></span>{/if}
         {#if restricted}
           <span class="restriction-mark">
             <span class="restriction-icon i-material-symbols:block" aria-hidden="true"></span>
@@ -102,6 +104,16 @@
     align-items: center;
     gap: 0.375rem;
   }
+  .section-icon {
+    display: none;
+  }
+  :global(.signal) .section-icon {
+    display: inline-block;
+    flex: none;
+    inline-size: 1rem;
+    block-size: 1rem;
+    color: var(--identity-ink);
+  }
   .restriction {
     color: var(--accent-red);
     font-weight: var(--font-bold);
@@ -140,7 +152,7 @@
   }
   small {
     display: flex;
-    column-gap: 0.75rem;
+    column-gap: 0.625rem;
     row-gap: 0;
     grid-row: 2;
     grid-column: 1;

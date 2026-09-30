@@ -30,6 +30,7 @@
   const initialMix = { foreground: 70, background: 50 } as const;
   let foregroundMix = $state(initialMix.foreground);
   let backgroundMix = $state(initialMix.background);
+  let brightenZachary = $state(true);
   const colorId = $props.id();
   let density = $state<Density>("default");
   let snap = $state<Snap>("free");
@@ -65,7 +66,14 @@
     else monsterTurn = true;
   }
   let rail: HTMLDivElement;
-  const roster = [{ name: "White Lion", color: "var(--color-monster)", ink: "var(--contrast)" }, ...survivors];
+  let roster = $derived([
+    { name: "White Lion", color: "var(--color-monster)", ink: "var(--contrast)" },
+    ...survivors.map((person) =>
+      person.name === "Zachary" && brightenZachary
+        ? { ...person, color: `color-mix(in oklch, ${person.color} 75%, var(--foreground))`, ink: "var(--contrast)" }
+        : person,
+    ),
+  ]);
 
   function survivorName(index: number) {
     const sheet = sheets[index - 1];
@@ -315,6 +323,12 @@
               </button>
             {/each}
           </div>
+        </fieldset>
+        <fieldset class="setting">
+          <legend class="setting-label">Survivor colors</legend>
+          <button class="menu-option" aria-pressed={brightenZachary} onclick={() => (brightenZachary = !brightenZachary)}>
+            Brighten Zachary
+          </button>
         </fieldset>
         <fieldset class="setting">
           <legend class="setting-label">Attribute and token colors</legend>

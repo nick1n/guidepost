@@ -1,9 +1,10 @@
 import { defineConfig, presetIcons } from "unocss";
-import { statusIcons } from "./src/lib/constants";
+import { sectionIcons, statusIcons } from "./src/lib/constants";
 
 export default defineConfig({
   safelist: [
     ...Object.values(statusIcons),
+    ...Object.values(sectionIcons),
     "i-material-symbols:play-circle-outline",
     "i-material-symbols:inventory-2-outline-sharp",
     "i-material-symbols:route-outline-sharp",

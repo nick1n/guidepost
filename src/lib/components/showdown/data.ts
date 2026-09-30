@@ -7,6 +7,8 @@ export const survivors = [
 
 export const attributes = ["Movement", "Speed", "Accuracy", "Strength", "Luck", "Evasion"];
 export const abbreviations = ["Mov", "Spd", "Acc", "Str", "Luck", "Eva"];
+export const survivorTypes = ["Normal", "Savior", "Scout", "Arc", "Arc Savior", "Wanderer"] as const;
+export type SurvivorType = (typeof survivorTypes)[number];
 
 export function makeTokens(count: number) {
   return Array.from({ length: count }, () => ({ positive: 0, negative: 0 }));
@@ -32,6 +34,7 @@ export function makeSheet(index = -1) {
     name: survivors[index]?.name ?? "",
     nameless: false,
     gender: survivors[index]?.gender ?? "Non-binary",
+    type: "Normal" as SurvivorType,
     survival: 1,
     dodgesRemaining: 1,
     survivalLimit: 1,

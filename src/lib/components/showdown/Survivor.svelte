@@ -22,6 +22,7 @@
     restrictions,
     sampleActions,
     sampleDecks,
+    survivorTypes,
     type Cost,
     type ListEntry,
     type Sheet,
@@ -441,16 +442,18 @@
   {:else if name === "Miscellaneous"}
     <Section title="Miscellaneous" meta={["Identity", "Lineage", "Affinities", "Restrictions"]}>
       <div class="fields">
-        <label class="field" for={`${id}-name`}>Name</label>
-        <input
-          id={`${id}-name`}
-          type="text"
-          bind:value={sheet.name}
-          name="survivor"
-          maxlength="160"
-          oninput={oninputName}
-          onblur={onblurName}
-        />
+        <label class="field" for={`${id}-name`}>
+          Name
+          <input
+            id={`${id}-name`}
+            type="text"
+            bind:value={sheet.name}
+            name="survivor"
+            maxlength="160"
+            oninput={oninputName}
+            onblur={onblurName}
+          />
+        </label>
         <button
           class={["condition", sheet.nameless && "active"]}
           aria-pressed={sheet.nameless}
@@ -465,11 +468,21 @@
             {#each ["Male", "Female", "Non-binary"] as gender (gender)}<option>{gender}</option>{/each}
           </select>
         </label>
-        <label class="field" for={`${id}-nickname`}>Nickname/Surname</label>
-        <input id={`${id}-nickname`} type="text" bind:value={sheet.nickname} maxlength="160" />
+        <label class="field" for={`${id}-type`}>
+          Type
+          <select id={`${id}-type`} bind:value={sheet.type}>
+            {#each survivorTypes as type (type)}<option>{type}</option>{/each}
+          </select>
+        </label>
+        <label class="field" for={`${id}-nickname`}>
+          Nickname/Surname
+          <input id={`${id}-nickname`} type="text" bind:value={sheet.nickname} maxlength="160" />
+        </label>
         {#each ["Parent 1", "Parent 2"] as parent, index (parent)}
-          <label class="field" for={`${id}-parent-${index}`}>{parent}</label>
-          <input id={`${id}-parent-${index}`} type="text" bind:value={sheet.parents[index]} maxlength="160" />
+          <label class="field" for={`${id}-parent-${index}`}>
+            {parent}
+            <input id={`${id}-parent-${index}`} type="text" bind:value={sheet.parents[index]} maxlength="160" />
+          </label>
         {/each}
       </div>
       <h3>Affinities</h3>
@@ -655,7 +668,10 @@
     data-priority={sheet.priority ? "" : undefined}
   >
     <div class="identity-copy">
-      <p class="eyebrow">Survivor {number} <span>{sheet.gender}</span></p>
+      <p class="eyebrow">
+        Survivor {number} <span>{sheet.gender}</span>
+        {#if sheet.type !== "Normal"}<span>{sheet.type}</span>{/if}
+      </p>
       <h2>
         <span class="visually-hidden">{sheet.name}</span>
         <input
@@ -866,9 +882,13 @@
   .fields,
   .field {
     display: grid;
+  }
+  .fields {
+    --gap-field: 0;
     gap: 0.375rem;
   }
   .field {
+    gap: var(--gap-field, 0.375rem);
     color: var(--muted-foreground);
     font-size: var(--text-xs);
   }
