@@ -135,6 +135,7 @@ export const statusIcons = {
   blind: "i-material-symbols:visibility-off",
   knockedDown: "i-material-symbols:download-2",
   dead: "i-material-symbols:skull",
+  ceaseToExist: "i-material-symbols:person-off",
   retired: "i-material-symbols:sleep",
   priority: "i-material-symbols:target",
 } as const;

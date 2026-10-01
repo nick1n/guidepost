@@ -33,6 +33,7 @@
   {#if sheet.statuses.includes("Blind")}<span class={["status-icon", statusIcons.blind]}></span>{/if}
   {#if sheet.statuses.includes("Knocked Down")}<span class={["status-icon", statusIcons.knockedDown]}></span>{/if}
   {#if sheet.statuses.includes("Retired")}<span class={["status-icon", statusIcons.retired]}></span>{/if}
+  {#if sheet.statuses.includes("Cease to Exist")}<span class={["status-icon", statusIcons.ceaseToExist]}></span>{/if}
   {#if sheet.priority}<span class={["priority", statusIcons.priority]}></span>{/if}
 </span>
 

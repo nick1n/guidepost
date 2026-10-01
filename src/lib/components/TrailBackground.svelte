@@ -27,21 +27,33 @@
       mountain,
       { x: 250 + random() * 900, y: 960 + random() * 60, width: 480, height: 130, phase: 4.2, levels: 3 },
       { x: 1350 + random() * 90, y: 340 + random() * 300, width: 100, height: 450, phase: 1.3, levels: 4 },
-    ].flatMap((hill) =>
-      Array.from({ length: hill.levels }, (_, level) => {
-        const scale = 1 - level * (hill.levels === 6 ? 0.16 : 0.18);
+      { x: 120 + random() * 35, y: 420 + random() * 180, width: 75, height: 95, phase: 3.4, levels: 4 },
+    ].flatMap((hill) => {
+      const gaps = Array.from({ length: hill.levels - 1 }, () => 0.4 + random() * 1.6);
+      const totalGap = gaps.reduce((sum, gap) => sum + gap, 0);
+      const depthRange = hill.levels === 6 ? 0.8 : (hill.levels - 1) * 0.18;
+      const phase = hill.phase + random() * Math.PI * 2;
+      const slopePhase = random() * Math.PI * 2;
+      const relief = 0.08 + random() * 0.08;
+      const detail = 0.03 + random() * 0.03;
+      let depth = 0;
+
+      return Array.from({ length: hill.levels }, (_, level) => {
+        if (level > 0) depth += (gaps[level - 1] / totalGap) * depthRange;
         const points = Array.from({ length: 32 }, (_, i) => {
           const angle = (i / 32) * Math.PI * 2;
-          // Shared terrain waves keep successive elevation contours nested, without crossing.
-          const radius = 1 + 0.12 * Math.sin(angle * 3 + hill.phase) + 0.06 * Math.cos(angle * 5 - hill.phase);
+          // Shared waves preserve nesting while gaps widen and tighten around each slope.
+          const radius = 1 + relief * Math.sin(angle * 3 + phase) + detail * Math.cos(angle * 5 - phase);
+          const slope = 0.9 + 0.18 * Math.sin(angle + slopePhase) + 0.04 * Math.cos(angle * 2 + phase);
+          const scale = 1 - depth * slope;
           return {
             x: hill.x + Math.cos(angle) * hill.width * radius * scale,
             y: hill.y + Math.sin(angle) * hill.height * radius * scale,
           };
         });
         return curve(points, true);
-      }),
-    );
+      });
+    });
 
     // An expanding loop leaves room between the approach and departure paths.
     const circuit = Array.from({ length: 25 }, (_, i) => {
@@ -76,6 +88,22 @@
   let trails = $state.raw<Trail[]>([]);
   let reducedMotion = $state(false);
   let nextId = $state(0);
+
+  function drawTrail(node: SVGGElement, { duration, marker }: { duration: number; marker: string }) {
+    const path = node.querySelector("mask path") as SVGPathElement;
+    const prefix = path.cloneNode() as SVGPathElement;
+    prefix.setAttribute("d", path.getAttribute("d")!.split(`${marker} C`)[0]);
+    const markerAt = prefix.getTotalLength() / path.getTotalLength();
+    const transition = draw(path, { duration });
+
+    // The mask inherits draw's dashes; the marker shares its clock without being clipped by the narrow mask.
+    return {
+      ...transition,
+      css(t: number, u: number) {
+        return `${transition.css!(t, u)} --opacity-marker: ${t >= markerAt ? 1 : 0};`;
+      },
+    };
+  }
 
   function createTrail(id: number): Trail {
     const vertical = Math.random() < 0.1;
@@ -142,17 +170,14 @@
   {/each}
   {#each trails as trail (trail.id)}
     {@const trailMask = `${maskId}-${trail.id}`}
-    <g out:fade={{ duration: reducedMotion ? 0 : 4000 }}>
+    <g in:drawTrail={{ duration: reducedMotion ? 0 : 22000, marker: trail.marker }} out:fade={{ duration: reducedMotion ? 0 : 4000 }}>
       <defs>
-        <!-- Reveal the route separately so drawing does not replace its dash pattern. -->
         <mask id={trailMask} maskUnits="userSpaceOnUse" x="-100" y="-100" width="1800" height="1200">
-          <path class="reveal" d={trail.d} stroke-width="100" in:draw={{ duration: reducedMotion ? 0 : 22000 }} />
+          <path class="reveal" d={trail.d} />
         </mask>
       </defs>
-      <g mask={`url(#${trailMask})`}>
-        <path d={trail.d} stroke-dasharray="5 12" />
-        <circle class="marker" transform={`translate(${trail.marker})`} r="3" />
-      </g>
+      <path d={trail.d} stroke-dasharray="5 12" stroke-dashoffset="0" mask={`url(#${trailMask})`} />
+      <circle class="marker" transform={`translate(${trail.marker})`} r="3" stroke-dasharray="none" />
     </g>
   {/each}
 </svg>
@@ -171,18 +196,13 @@
     stroke-linecap: round;
   }
 
-  path,
-  circle {
-    vector-effect: non-scaling-stroke;
-  }
-
   .marker {
+    opacity: var(--opacity-marker, 1);
     fill: var(--background);
     stroke-width: 1;
   }
 
   .reveal {
-    vector-effect: none;
     stroke: white;
   }
 </style>

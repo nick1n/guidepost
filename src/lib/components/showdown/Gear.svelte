@@ -1,5 +1,6 @@
 <script lang="ts">
   import KdIcon from "#lib/components/KdIcon.svelte";
+  import { canDropGear, dropGear, getGearDrag, trinketSpace } from "./gear-drag";
 
   let {
     slots = $bindable(),
@@ -7,6 +8,7 @@
     dragged = $bindable(null),
     start = 1,
     count = 9,
+    gridCount = 9,
     slotLabel = "Slot",
   }: {
     slots: (string | null)[];
@@ -14,52 +16,163 @@
     dragged?: number | null;
     start?: number;
     count?: number;
+    gridCount?: number;
     slotLabel?: string;
   } = $props();
-  let columns = $derived(count === 4 ? 2 : 3);
+  type GearAction = "transfer" | "storage" | "archive";
+  const gearDrag = getGearDrag();
+  let trinkets = $derived(start === 10);
+  let columns = $derived(!trinkets && count === 4 ? 2 : 3);
+  let hovering = $state<GearAction | null>(null);
+  let hoveredSlot = $state<number | null>(null);
+  let activeSlot = $derived(dragged ?? selected);
+  let activeItem = $derived(activeSlot !== null && activeSlot >= start && activeSlot < start + count ? slots[activeSlot] : null);
+  let destination = $derived(trinkets ? "Gear grid" : "Trinkets");
+  let destinationSlot = $derived(
+    trinkets ? slots.findIndex((item, index) => item === null && index >= 1 && index <= gridCount) : trinketSpace(slots),
+  );
+  let actions = $derived([
+    { kind: "transfer" as const, label: `${destination}${destinationSlot === -1 ? " full" : ""}`, icon: "i-material-symbols:swap-horiz" },
+    { kind: "storage" as const, label: "Storage", icon: "i-material-symbols:inventory-2-outline" },
+    { kind: "archive" as const, label: "Archive", icon: "i-material-symbols:delete-outline" },
+  ]);
+
+  function act(action: GearAction) {
+    if (activeSlot === null || !activeItem) return;
+    if (action === "transfer") {
+      if (destinationSlot === -1) return;
+      if (!dropGear({ slots, slot: activeSlot, item: activeItem }, slots, destinationSlot)) return;
+    } else {
+      // TODO: For "storage", move this gear into settlement storage instead of clearing the slot.
+      slots[activeSlot] = null;
+    }
+    selected = null;
+    dragged = null;
+    gearDrag.current = null;
+    gearDrag.selection = null;
+    hovering = null;
+    hoveredSlot = null;
+  }
+  function dragover(event: DragEvent, action: GearAction) {
+    if (dragged === null || !activeItem || (action === "transfer" && destinationSlot === -1)) return;
+    event.preventDefault();
+    if (event.dataTransfer) event.dataTransfer.dropEffect = "move";
+    hovering = action;
+  }
+  function ondragleave() {
+    hovering = null;
+  }
+  function actionDrop(event: DragEvent, action: GearAction) {
+    event.preventDefault();
+    if (dragged !== null) act(action);
+  }
   function move(target: number, source = selected) {
     if (source === null) {
-      if (slots[target]) selected = target;
+      const selection = gearDrag.selection;
+      if (selection?.isSelected() && selection.slots !== slots && slots[target] === null) {
+        if (dropGear(selection, slots, target)) {
+          selection.clear();
+          gearDrag.selection = null;
+        }
+        return;
+      }
+      const item = slots[target];
+      if (item) {
+        selection?.clear();
+        selected = target;
+        gearDrag.selection = {
+          slots,
+          slot: target,
+          item,
+          isSelected: () => selected === target,
+          clear: () => (selected = null),
+        };
+      }
       return;
     }
     [slots[source], slots[target]] = [slots[target], slots[source]];
     selected = null;
+    gearDrag.selection = null;
   }
   function drop(event: DragEvent, target: number) {
+    if (!dropGear(gearDrag.current, slots, target)) return;
     event.preventDefault();
-    if (dragged === null) return;
-    move(target, dragged);
+    event.stopPropagation();
+    selected = null;
     dragged = null;
+    gearDrag.current = null;
+    hoveredSlot = null;
+  }
+  function slotDragover(event: DragEvent, target: number) {
+    const accepted =
+      canDropGear(gearDrag.current, slots, target) || (trinkets && canDropGear(gearDrag.current, slots, trinketSpace(slots)));
+    if (!accepted) {
+      hoveredSlot = null;
+      if (event.dataTransfer) event.dataTransfer.dropEffect = "none";
+      return;
+    }
+    event.preventDefault();
+    hoveredSlot = target;
+    if (event.dataTransfer) event.dataTransfer.dropEffect = "move";
+  }
+  function leaveSlot(event: DragEvent) {
+    const target = event.currentTarget as HTMLElement;
+    if (event.relatedTarget instanceof Node && target.contains(event.relatedTarget)) return;
+    hoveredSlot = null;
+  }
+  function ondragover(event: DragEvent) {
+    if (!trinkets || !canDropGear(gearDrag.current, slots, trinketSpace(slots))) return;
+    event.preventDefault();
+    if (event.dataTransfer) event.dataTransfer.dropEffect = "move";
+  }
+  function ondrop(event: DragEvent) {
+    if (trinkets) drop(event, trinketSpace(slots));
   }
   function drag(event: DragEvent, index: number) {
+    const item = slots[index];
+    if (!item) return;
+    gearDrag.selection?.clear();
+    gearDrag.selection = null;
+    selected = null;
     dragged = index;
+    gearDrag.current = { slots, slot: index, item };
     event.dataTransfer?.setData("text/plain", String(index));
+    if (event.dataTransfer) event.dataTransfer.effectAllowed = "move";
   }
   function ondragend() {
     dragged = null;
+    gearDrag.current = null;
+    hovering = null;
+    hoveredSlot = null;
   }
 </script>
 
-<div class={["grid", count === 3 ? "short" : "armed"]} style:--columns={columns}>
-  {#if count !== 3}
+<svelte:window {ondragend} />
+
+<div
+  class={["grid", !trinkets && "armed"]}
+  style:--columns={columns}
+  role="group"
+  aria-label={trinkets ? "Trinket slots" : "Gear slots"}
+  {ondragover}
+  {ondrop}
+>
+  {#if !trinkets}
     <div class="unarmed" style:grid-row={columns} aria-label="Fist & Tooth, permanent default weapon">
       <strong class="weapon-name">Fist &amp; Tooth</strong>
     </div>
   {/if}
-  <p class="help">
-    <span class="help-icon i-material-symbols:drag-pan" aria-hidden="true"></span>
-    <span>{selected === null ? "Drag or tap to move gear" : "Tap a destination"}</span>
-  </p>
   {#each slots.slice(start, start + count) as item, index (start + index)}
     <button
       class={["slot", selected === start + index && "selected"]}
-      style:grid-column={count !== 3 ? (index % columns) + 2 : undefined}
-      style:grid-row={count !== 3 ? Math.floor(index / columns) + 1 : undefined}
+      data-drop-target={hoveredSlot === start + index ? true : undefined}
+      style:grid-column={!trinkets ? (index % columns) + 2 : undefined}
+      style:grid-row={!trinkets ? Math.floor(index / columns) + 1 : undefined}
       draggable={!!item}
       onclick={() => move(start + index)}
       ondragstart={(event) => drag(event, start + index)}
-      {ondragend}
-      ondragover={(event) => event.preventDefault()}
+      ondragover={(event) => slotDragover(event, start + index)}
+      ondragleave={leaveSlot}
       ondrop={(event) => drop(event, start + index)}
       aria-label={`${slotLabel} ${index + 1}: ${item ?? "empty"}${selected === start + index ? ", selected" : ""}`}
       aria-pressed={selected === start + index}
@@ -91,10 +204,32 @@
   {/each}
 </div>
 
+<div class="gear-actions">
+  {#if activeItem}
+    {#each actions as action (action.kind)}
+      <button
+        class={["target", hovering === action.kind && dragged !== null && "active"]}
+        data-action={action.kind}
+        type="button"
+        disabled={action.kind === "transfer" && destinationSlot === -1}
+        onclick={() => act(action.kind)}
+        ondragover={(event) => dragover(event, action.kind)}
+        {ondragleave}
+        ondrop={(event) => actionDrop(event, action.kind)}
+        aria-label={action.kind === "archive" ? `Archive ${activeItem}` : `Move ${activeItem} to ${action.label.toLowerCase()}`}
+      >
+        <span class={["target-icon", action.icon]} aria-hidden="true"></span>
+        <span class="target-label">{action.label}</span>
+      </button>
+    {/each}
+  {:else}
+    <p class="help">Drag or tap to move gear</p>
+  {/if}
+</div>
+
 <style>
   .grid {
     display: grid;
-    position: relative;
     grid-template-columns: repeat(var(--columns), minmax(0, 1fr));
     gap: 2px;
     &.armed {
@@ -136,80 +271,59 @@
   :global(.signal) .unarmed::before {
     display: none;
   }
-  .help {
+  .gear-actions {
     display: grid;
-    position: absolute;
-    grid-auto-flow: column;
-    place-items: center;
-    justify-content: center;
-    inset: 0;
-    padding-inline: 0.75rem;
-    gap: 0.5rem;
-    rotate: -4deg;
-    color: color-mix(var(--identity) 60%, var(--muted-foreground));
-    font-weight: var(--font-bold);
-    font-size: round(clamp(0.75rem, 4.2vw, 1rem), 1px);
-    line-height: 1.15;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    min-block-size: 3.5rem;
+    margin-block-start: 0.25rem;
+    gap: 0.25rem;
+  }
+  .help {
+    grid-column: 1 / -1;
+    align-self: center;
+    color: var(--muted-foreground);
+    font-size: var(--text-sm);
     text-align: center;
-    white-space: nowrap;
-    opacity: 0.25;
+  }
+  .target {
+    --color-target: var(--accent);
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0.25rem;
+    gap: 0.125rem;
+    border: var(--border-width) solid var(--color-divider);
+    border-radius: var(--radius-control);
+    background: transparent;
+    color: var(--muted-foreground);
+    font-size: var(--text-sm);
+
+    &[data-action="archive"] {
+      --color-target: var(--accent-red);
+    }
+    &:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+    &.active {
+      border-color: var(--color-target);
+      background: color-mix(var(--color-target) 20%, var(--panel));
+      color: var(--foreground);
+    }
+  }
+  /* Keep drag enter/leave events on the target rather than its label and icon. */
+  .target-label,
+  .target-icon {
     pointer-events: none;
   }
-  .help-icon {
-    align-self: center;
-    inline-size: 1.625rem;
-    block-size: 1.625rem;
-  }
-  .short .help {
-    padding-inline: 0.5rem;
-    gap: 0.375rem;
-    rotate: 0deg;
-    font-size: round(clamp(0.625rem, 3.4vw, 0.875rem), 1px);
-  }
-  .short .help-icon {
-    inline-size: 1rem;
-    block-size: 1rem;
-  }
-  :global(.folio) .help {
-    display: flex;
-    gap: 0.625rem;
-    rotate: 0;
-    color: var(--foreground);
-    font-weight: var(--font-normal);
-    font-size: round(clamp(0.75rem, 3.8vw, 1rem), 1px);
-    opacity: 0.22;
-  }
-  :global(.folio) .help-icon {
-    display: none;
-  }
-  :global(.signal) .help {
-    align-self: center;
-    block-size: fit-content;
-    inset: 1rem;
-    padding: 0.5rem 0.875rem;
-    rotate: 3deg;
-    border-radius: 1.25rem 0.25rem 1.25rem 0.25rem;
-    background: var(--identity);
-    color: var(--identity-ink);
-    font-size: round(clamp(0.75rem, 3.5vw, 0.875rem), 1px);
-    opacity: 0.2;
-  }
-  :global(.signal) .help-icon {
+  .target-icon {
     inline-size: 1.25rem;
     block-size: 1.25rem;
   }
-  :global(.signal) .short .help {
-    inset: 0.5rem;
-    rotate: 0deg;
-  }
-  .armed .help {
-    inset-inline-start: 1.375rem;
-    gap: 0.25rem;
-    font-size: round(clamp(0.625rem, 3vw, 0.875rem), 1px);
-  }
   .slot {
     display: flex;
-    z-index: 1;
     position: relative;
     flex-direction: column;
     align-items: center;
@@ -227,7 +341,10 @@
     font-size: var(--text-xs);
     line-height: 1.15;
     &.selected {
-      outline: 2px solid var(--accent);
+      outline: var(--border-width) solid var(--accent);
+    }
+    &[data-drop-target] {
+      box-shadow: inset 0 0 0 var(--border-width) var(--accent);
     }
     &[draggable="true"] {
       background: var(--color-gear);
@@ -292,5 +409,18 @@
   .gear-action {
     z-index: 1;
     position: relative;
+  }
+  @media (hover: hover) {
+    .target:enabled:hover:not(.active) {
+      border-color: color-mix(var(--color-target) 40%, var(--color-divider));
+      background: color-mix(var(--color-target) 8%, var(--panel));
+      color: var(--foreground);
+    }
+    .slot:hover:not([data-drop-target]) {
+      box-shadow: inset 0 0 0 var(--border-width) color-mix(var(--identity) 45%, var(--foreground));
+    }
+    .slot[draggable="false"]:hover {
+      background: color-mix(var(--identity) 14%, transparent);
+    }
   }
 </style>

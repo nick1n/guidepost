@@ -16,6 +16,9 @@ export default defineConfig({
     "i-lucide:github",
     "i-material-symbols:favorite-outline",
     "i-material-symbols:warning-outline",
+    "i-material-symbols:swap-horiz",
+    "i-material-symbols:inventory-2-outline",
+    "i-material-symbols:delete-outline",
   ],
   presets: [presetIcons()],
 });

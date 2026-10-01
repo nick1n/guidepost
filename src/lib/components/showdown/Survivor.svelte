@@ -34,6 +34,7 @@
     variant,
     survivorTurn,
     monsterDefense,
+    settlementSurvivors,
     sheet = $bindable(),
   }: {
     person: { name: string; color: string; gender: string };
@@ -41,10 +42,19 @@
     variant: number;
     survivorTurn: boolean;
     monsterDefense: { toughness: number; luck: number; evasion: number };
+    settlementSurvivors: Sheet[];
     sheet: Sheet;
   } = $props();
 
   const id = $props.id();
+  let parentOptions = $derived(
+    settlementSurvivors
+      .map((survivor, index) => ({
+        survivor,
+        name: survivor.nameless ? `Nameless ${index + 1}` : survivor.name.trim() || `Nameless ${index + 1}`,
+      }))
+      .filter(({ survivor }) => survivor !== sheet),
+  );
   const foundingStoneRule =
     "Spend [activation] to sling the stone from anywhere on the board! **Archive** this card for 1 automatic hit that only inflicts a critical wound.";
   const foundingStoneRuleText = foundingStoneRule.replace("[activation]", "an activation").replaceAll("**", "");
@@ -52,6 +62,16 @@
   let showMore = $state(false);
   let expandedAction = $state<string | null>(null);
   let compactGear = $state(false);
+  let gearCount = $derived(compactGear ? 4 : 9);
+  let trinketRows = $derived((sheet.gear.length - 10) / 3);
+  let lastTrinketRowOccupied = $derived(trinketRows > 1 && sheet.gear.slice(-3).some(Boolean));
+
+  function addTrinketRow() {
+    if (trinketRows < 3) sheet.gear.push(null, null, null);
+  }
+  function removeTrinketRow() {
+    if (trinketRows > 1 && !lastTrinketRowOccupied) sheet.gear.splice(-3);
+  }
   const listNames = [
     "Fighting Arts",
     "Disorders",
@@ -323,6 +343,14 @@
       <span class={["condition-icon", statusIcons.dead]} aria-hidden="true"></span>
       Dead
     </button>
+    <button
+      class={["condition", sheet.statuses.includes("Cease to Exist") && "active"]}
+      aria-pressed={sheet.statuses.includes("Cease to Exist")}
+      onclick={() => toggleStatus("Cease to Exist")}
+    >
+      <span class={["condition-icon", statusIcons.ceaseToExist]} aria-hidden="true"></span>
+      Cease to Exist
+    </button>
   </div>
 {/snippet}
 
@@ -437,7 +465,29 @@
     </Section>
   {:else if name === "Trinkets"}
     <Section title="Trinkets and Baubles" meta={`${sheet.gear.slice(10).filter(Boolean).length || "No"} Gear`}>
-      <Gear bind:slots={sheet.gear} bind:selected={selectedGear} bind:dragged={draggedGear} start={10} count={3} slotLabel="Trinket Slot" />
+      <Gear
+        bind:slots={sheet.gear}
+        bind:selected={selectedGear}
+        bind:dragged={draggedGear}
+        start={10}
+        count={trinketRows * 3}
+        gridCount={gearCount}
+        slotLabel="Trinket Slot"
+      />
+      <div class="rows">
+        <button
+          class="condition"
+          type="button"
+          onclick={removeTrinketRow}
+          disabled={trinketRows === 1 || lastTrinketRowOccupied}
+          aria-describedby={lastTrinketRowOccupied ? `${id}-trinket-rows` : undefined}>Remove row</button
+        >
+        <span class="row-count">{trinketRows} / 3 rows</span>
+        <button class="condition" type="button" onclick={addTrinketRow} disabled={trinketRows === 3}>Add row</button>
+      </div>
+      {#if lastTrinketRowOccupied}
+        <p class="selection" id={`${id}-trinket-rows`}>Move or remove gear from the last row before removing it.</p>
+      {/if}
     </Section>
   {:else if name === "Miscellaneous"}
     <Section title="Miscellaneous" meta={["Identity", "Lineage", "Affinities", "Restrictions"]}>
@@ -460,7 +510,7 @@
           onpointerdown={(event) => event.preventDefault()}
           onclick={toggleNameless}
         >
-          Nameless
+          Mark as nameless
         </button>
         <label class="field" for={`${id}-gender`}>
           Gender
@@ -481,7 +531,12 @@
         {#each ["Parent 1", "Parent 2"] as parent, index (parent)}
           <label class="field" for={`${id}-parent-${index}`}>
             {parent}
-            <input id={`${id}-parent-${index}`} type="text" bind:value={sheet.parents[index]} maxlength="160" />
+            <select id={`${id}-parent-${index}`} bind:value={sheet.parents[index]}>
+              <option value=""></option>
+              {#each parentOptions as option (option.survivor)}
+                <option value={option.name}>{option.name}</option>
+              {/each}
+            </select>
           </label>
         {/each}
       </div>
@@ -669,8 +724,8 @@
   >
     <div class="identity-copy">
       <p class="eyebrow">
-        Survivor {number} <span>{sheet.gender}</span>
-        {#if sheet.type !== "Normal"}<span>{sheet.type}</span>{/if}
+        {sheet.type}
+        {number} <span>{sheet.gender}</span>
       </p>
       <h2>
         <span class="visually-hidden">{sheet.name}</span>
@@ -753,8 +808,8 @@
     </Section>
   {/if}
 
-  <Section title="Gear Grid" meta={[`${sheet.gear.slice(1, compactGear ? 4 : 9).filter(Boolean).length} Gear`]}>
-    <Gear bind:slots={sheet.gear} bind:selected={selectedGear} bind:dragged={draggedGear} count={compactGear ? 4 : 9} />
+  <Section title="Gear Grid" meta={[`${sheet.gear.slice(1, gearCount + 1).filter(Boolean).length} Gear`]}>
+    <Gear bind:slots={sheet.gear} bind:selected={selectedGear} bind:dragged={draggedGear} count={gearCount} />
     <button class={["condition", compactGear && "active"]} aria-pressed={compactGear} onclick={toggleGearSize}>
       Use {compactGear ? "3 x 3" : "2 x 2"} grid
     </button>
@@ -1170,6 +1225,26 @@
       border-color: transparent;
       background: var(--identity);
       color: var(--identity-ink);
+    }
+    &:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+  }
+  .rows {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: center;
+    gap: 0.25rem;
+  }
+  .row-count {
+    color: var(--muted-foreground);
+    font-size: var(--text-sm);
+    text-align: center;
+  }
+  @media (hover: hover) {
+    .condition:enabled:hover {
+      box-shadow: inset 0 0 0 var(--border-width) color-mix(var(--identity) 45%, var(--foreground));
     }
   }
   .condition-icon {

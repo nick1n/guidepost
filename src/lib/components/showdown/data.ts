@@ -7,7 +7,7 @@ export const survivors = [
 
 export const attributes = ["Movement", "Speed", "Accuracy", "Strength", "Luck", "Evasion"];
 export const abbreviations = ["Mov", "Spd", "Acc", "Str", "Luck", "Eva"];
-export const survivorTypes = ["Normal", "Savior", "Scout", "Arc", "Arc Savior", "Wanderer"] as const;
+export const survivorTypes = ["Survivor", "Savior", "Scout", "Arc Survivor", "Arc Savior", "Wanderer"] as const;
 export type SurvivorType = (typeof survivorTypes)[number];
 
 export function makeTokens(count: number) {
@@ -34,7 +34,7 @@ export function makeSheet(index = -1) {
     name: survivors[index]?.name ?? "",
     nameless: false,
     gender: survivors[index]?.gender ?? "Non-binary",
-    type: "Normal" as SurvivorType,
+    type: "Survivor" as SurvivorType,
     survival: 1,
     dodgesRemaining: 1,
     survivalLimit: 1,
@@ -112,10 +112,20 @@ export function attackStats(sheet: Sheet, weapon: AttackWeapon, monster: { tough
 }
 
 export function isReady(sheet: Sheet) {
-  return !sheet.statuses.includes("Dead") && !sheet.statuses.includes("Acted") && !sheet.statuses.includes("Knocked Down");
+  return (
+    !sheet.statuses.includes("Dead") &&
+    !sheet.statuses.includes("Cease to Exist") &&
+    !sheet.statuses.includes("Acted") &&
+    !sheet.statuses.includes("Knocked Down")
+  );
 }
 export function availableActions(sheet: Sheet) {
-  return sheet.restrict.survival && !sheet.statuses.includes("Dead") && (sheet.survival ?? 0) > 0 ? sheet.dodgesRemaining : 0;
+  return sheet.restrict.survival &&
+    !sheet.statuses.includes("Dead") &&
+    !sheet.statuses.includes("Cease to Exist") &&
+    (sheet.survival ?? 0) > 0
+    ? sheet.dodgesRemaining
+    : 0;
 }
 export function useDodge(sheet: Sheet) {
   if (!availableActions(sheet)) return;
@@ -137,6 +147,7 @@ export function statusItems(sheet: Sheet) {
     sheet.statuses.includes("Blind") && "Blind",
     sheet.priority && "Priority Target",
     sheet.statuses.includes("Retired") && "Retired",
+    sheet.statuses.includes("Cease to Exist") && "Cease to Exist",
   ].filter((item): item is string => typeof item === "string");
 }
 export function statusText(sheet: Sheet) {

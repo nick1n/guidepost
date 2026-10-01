@@ -3,6 +3,7 @@
   import { dragScroll } from "./drag-scroll";
   import Monster from "./Monster.svelte";
   import Survivor from "./Survivor.svelte";
+  import { setGearDrag } from "./gear-drag";
   import QuickStatus from "./QuickStatus.svelte";
   import { statusIcons } from "#lib/constants.ts";
   import {
@@ -19,6 +20,7 @@
   } from "./data";
 
   let { variant = 1 }: { variant?: number } = $props();
+  setGearDrag({ current: null, selection: null });
   let design = $derived(designs[variant - 1]);
   let active = $state(0);
   let round = $state(1);
@@ -226,6 +228,7 @@
             number={index}
             {variant}
             survivorTurn={!monsterTurn}
+            settlementSurvivors={sheets}
             monsterDefense={{
               toughness: (monsterStats.toughness ?? 0) + tokenNet(monsterTokens[monsterTokenIndex.toughness]),
               luck: tokenNet(monsterTokens[monsterTokenIndex.luck]),
@@ -546,7 +549,7 @@
     font-size: var(--text-xs);
   }
   .turn-label {
-    font-size: var(--text-sm);
+    font-size: var(--text-md);
   }
   .next-label {
     display: flex;
