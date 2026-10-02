@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { attackOdds } from "../src/lib/components/showdown/attack-odds.ts";
-import { attackStats, makeSheet } from "../src/lib/components/showdown/data.ts";
+import { attackOdds } from "#lib/components/showdown/attack-odds.ts";
+import { attackStats, makeSheet } from "#lib/components/showdown/data.ts";
 
 describe("attack odds", () => {
   it("uses the survivor's perfect hit range for the attack target", () => {

@@ -56,6 +56,7 @@
   --text-num-input: 1.625rem;
 
   --border-width: 2px;
+  --gear-gap: 2px;
   --duration-fast: 180ms;
   --ease-standard: ease;
   --letter-spacing-tight: -0.03em;

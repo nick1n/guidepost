@@ -231,10 +231,10 @@
   .grid {
     display: grid;
     grid-template-columns: repeat(var(--columns), minmax(0, 1fr));
-    gap: 2px;
+    gap: var(--gear-gap);
     &.armed {
       grid-template-columns: 1rem repeat(var(--columns), minmax(0, 1fr));
-      margin-inline-start: -1rem;
+      margin-inline-start: calc(-1rem - var(--gear-gap));
     }
   }
   .unarmed {
@@ -275,8 +275,8 @@
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     min-block-size: 3.5rem;
-    margin-block-start: 0.25rem;
-    gap: 0.25rem;
+    margin-block-start: var(--gear-gap);
+    gap: var(--gear-gap);
   }
   .help {
     grid-column: 1 / -1;
@@ -296,7 +296,7 @@
     gap: 0.125rem;
     border: var(--border-width) solid var(--color-divider);
     border-radius: var(--radius-control);
-    background: transparent;
+    background: var(--color-divider);
     color: var(--muted-foreground);
     font-size: var(--text-sm);
 

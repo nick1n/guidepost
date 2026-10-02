@@ -5,7 +5,7 @@
   import KdIcon from "#lib/components/KdIcon.svelte";
   import Section from "./Section.svelte";
   import ShowdownEmblem from "./ShowdownEmblem.svelte";
-  import { statusIcons } from "#lib/constants.ts";
+  import StatusIcon from "./StatusIcon.svelte";
   import { survivors, type TokenCount } from "./data";
 
   type Stats = { life: number; movement: number; toughness: number; damage: number; speed: number };
@@ -186,10 +186,10 @@
 <Section title="Status" meta={[knockedDown ? "Knocked Down" : ""]} onaction={onturn} showAction={monsterTurn} actionLabel="End Turn">
   <div class="state">
     <button class={["toggle", monsterTurn && "active"]} aria-pressed={monsterTurn} onclick={onturn}>
-      <span class={["status-icon", statusIcons.turn]} aria-hidden="true"></span> Monster's Turn
+      <StatusIcon icon="turn" active={monsterTurn} context="legend" /> Monster's Turn
     </button>
     <button class={["toggle", knockedDown && "active"]} aria-pressed={knockedDown} onclick={toggleKnockedDown}>
-      <span class={["status-icon", statusIcons.knockedDown]} aria-hidden="true"></span> Knocked Down
+      <StatusIcon icon="status:knocked-down" active={knockedDown} context="legend" /> Knocked Down
     </button>
   </div>
 </Section>
@@ -581,12 +581,6 @@
       background: color-mix(var(--identity) 14%, var(--panel));
       color: var(--foreground);
     }
-  }
-  .status-icon {
-    display: inline-block;
-    flex-shrink: 0;
-    inline-size: 1rem;
-    block-size: 1rem;
   }
   .board {
     display: block;

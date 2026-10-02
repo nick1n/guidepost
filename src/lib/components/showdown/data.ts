@@ -1,3 +1,6 @@
+import { statusOrder, type SurvivorStatusIcons, type Icon } from "#lib/constants.ts";
+import { statusSummary } from "./statuses";
+
 export const survivors = [
   { name: "Erza", color: "#B4745A", ink: "var(--contrast)", gender: "Female" },
   { name: "Zachary", color: "#7C562B", ink: "var(--foreground)", gender: "Male" },
@@ -56,7 +59,7 @@ export function makeSheet(index = -1) {
     remaining: { movement: 1, activation: 1 },
     remainingBeforeAct: null as { movement: number; activation: number } | null,
     priority: false,
-    statuses: ["Threat"] as string[],
+    statuses: ["status:threat"] as SurvivorStatusIcons[],
     tokens: makeTokens(6),
     bleeding: 0,
     armorValues: [0, 0, 0, 0, 1, 0],
@@ -77,16 +80,33 @@ export function makeSheet(index = -1) {
 }
 export type Sheet = ReturnType<typeof makeSheet>;
 
+export function toggleStatus(sheet: Sheet, status: SurvivorStatusIcons) {
+  if (status === "status:act") {
+    toggleActed(sheet);
+    return;
+  }
+  if (sheet.statuses.includes(status)) {
+    sheet.statuses = sheet.statuses.filter((value) => value !== status);
+    return;
+  }
+  const excludedStatus = status === "status:dead" ? "status:cease-to-exist" : status === "status:cease-to-exist" ? "status:dead" : null;
+  sheet.statuses = [...sheet.statuses.filter((value) => value !== excludedStatus), status];
+}
+
+export function updateDeath(sheet: Sheet) {
+  if (sheet.bleeding >= sheet.life && isAlive(sheet)) toggleStatus(sheet, "status:dead");
+}
+
 export function toggleActed(sheet: Sheet) {
-  if (!sheet.statuses.includes("Acted")) {
+  if (!sheet.statuses.includes("status:act")) {
     sheet.remainingBeforeAct = { ...sheet.remaining };
     sheet.remaining.movement = 0;
     sheet.remaining.activation = 0;
-    sheet.statuses = [...sheet.statuses, "Acted"];
+    sheet.statuses = [...sheet.statuses, "status:act"];
     return;
   }
 
-  sheet.statuses = sheet.statuses.filter((status) => status !== "Acted");
+  sheet.statuses = sheet.statuses.filter((status) => status !== "status:act");
   if (sheet.remainingBeforeAct) {
     sheet.remaining.movement = sheet.remainingBeforeAct.movement;
     sheet.remaining.activation = sheet.remainingBeforeAct.activation;
@@ -99,7 +119,7 @@ export function attackStats(sheet: Sheet, weapon: AttackWeapon, monster: { tough
   const modifier = (index: number) => (sheet.attributes[index] ?? 0) + (sheet.bonuses[index] ?? 0) + tokenNet(sheet.tokens[index]);
   const crit = 10 + monster.luck - base.luck - modifier(4);
   const phit = sheet.perfectHitRange <= 0 ? null : Math.max(1, 11 - Math.trunc(sheet.perfectHitRange));
-  const accuracy = clampTarget(base.accuracy + monster.evasion - modifier(2) - Number(sheet.statuses.includes("Blind Spot")));
+  const accuracy = clampTarget(base.accuracy + monster.evasion - modifier(2) - Number(sheet.statuses.includes("status:blind-spot")));
 
   return {
     keywords: base.keywords,
@@ -112,20 +132,21 @@ export function attackStats(sheet: Sheet, weapon: AttackWeapon, monster: { tough
 }
 
 export function isReady(sheet: Sheet) {
-  return (
-    !sheet.statuses.includes("Dead") &&
-    !sheet.statuses.includes("Cease to Exist") &&
-    !sheet.statuses.includes("Acted") &&
-    !sheet.statuses.includes("Knocked Down")
-  );
+  return isAlive(sheet) && !sheet.statuses.includes("status:act") && !sheet.statuses.includes("status:knocked-down");
+}
+export function isAlive(sheet: Sheet) {
+  return !sheet.statuses.includes("status:dead") && !sheet.statuses.includes("status:cease-to-exist");
+}
+export type LifeState = { label: string; icon: Icon | null; tone: "ready" | "unavailable" | null };
+
+export function lifeState(sheet: Sheet): LifeState {
+  if (sheet.statuses.includes("status:cease-to-exist")) return { label: "Gone", icon: "status:cease-to-exist", tone: "unavailable" };
+  if (sheet.statuses.includes("status:dead")) return { label: statusSummary("status:dead"), icon: "status:dead", tone: "unavailable" };
+  if (isReady(sheet)) return { label: "Ready", icon: "ready", tone: "ready" };
+  return { label: sheet.statuses.includes("status:act") ? statusSummary("status:act") : "Not Ready", icon: null, tone: null };
 }
 export function availableActions(sheet: Sheet) {
-  return sheet.restrict.survival &&
-    !sheet.statuses.includes("Dead") &&
-    !sheet.statuses.includes("Cease to Exist") &&
-    (sheet.survival ?? 0) > 0
-    ? sheet.dodgesRemaining
-    : 0;
+  return sheet.restrict.survival && isAlive(sheet) && (sheet.survival ?? 0) > 0 ? sheet.dodgesRemaining : 0;
 }
 export function useDodge(sheet: Sheet) {
   if (!availableActions(sheet)) return;
@@ -136,19 +157,15 @@ export function tokenTotal(sheet: Sheet) {
   return sheet.tokens.reduce((sum, count) => sum + count.positive + count.negative, sheet.bleeding || 0);
 }
 export function statusItems(sheet: Sheet) {
+  const { label } = lifeState(sheet);
   return [
-    sheet.statuses.includes("Dead") ? "Dead" : isReady(sheet) ? "Ready" : "Not Ready",
-    sheet.statuses.includes("Threat") && "Threat",
-    sheet.statuses.includes("Acted") && "Acted",
-    sheet.statuses.includes("Monster Controller") && "Monster Controller",
-    sheet.statuses.includes("Knocked Down") && "Knocked Down",
-    sheet.statuses.includes("Blind Spot") && "Blind Spot",
-    sheet.statuses.includes("Deaf") && "Deaf",
-    sheet.statuses.includes("Blind") && "Blind",
-    sheet.priority && "Priority Target",
-    sheet.statuses.includes("Retired") && "Retired",
-    sheet.statuses.includes("Cease to Exist") && "Cease to Exist",
-  ].filter((item): item is string => typeof item === "string");
+    label,
+    ...statusOrder
+      .filter((status) => sheet.statuses.includes(status))
+      .map(statusSummary)
+      .filter((summary) => summary !== label),
+    ...(sheet.priority ? ["Priority Target"] : []),
+  ];
 }
 export function statusText(sheet: Sheet) {
   return statusItems(sheet).join(", ");

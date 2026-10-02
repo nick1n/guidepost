@@ -1,10 +1,10 @@
 import assert from "node:assert/strict";
 import { it } from "@effect/vitest";
 import { TestClock } from "effect/testing";
-import { StoreError } from "../src/lib/state/stores.ts";
+import { StoreError } from "#lib/state/stores.ts";
 import { Deferred, Effect, Exit, Fiber } from "effect";
-import { OptimisticStore } from "../src/lib/state/optimistic-store.ts";
-import type { CollectionState } from "../src/lib/types/index.ts";
+import { OptimisticStore } from "#lib/state/optimistic-store.ts";
+import type { CollectionState } from "#lib/types/index.ts";
 
 const fixture = Effect.fnUntraced(function* (initial: CollectionState = {}, failures: readonly number[] = []) {
   let disk = initial;

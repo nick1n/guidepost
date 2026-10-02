@@ -1,9 +1,9 @@
 import { it, expect } from "@effect/vitest";
 import { Cause, Deferred, Effect, Exit, Fiber, Layer } from "effect";
-import { NavigationError } from "../src/lib/navigation.ts";
-import { CollectionError } from "../src/lib/state/collection-errors.ts";
-import { reportAction } from "../src/lib/state/collection-actions.ts";
-import { Notifications } from "../src/lib/state/notifications.ts";
+import { NavigationError } from "#lib/navigation.ts";
+import { CollectionError } from "#lib/state/collection-errors.ts";
+import { reportAction } from "#lib/state/collection-actions.ts";
+import { Notifications } from "#lib/state/notifications.ts";
 
 function notifications() {
   const messages: { kind: "success" | "error"; message: string; cause?: unknown }[] = [];

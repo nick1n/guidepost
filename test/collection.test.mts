@@ -1,11 +1,11 @@
 import { it, expect } from "@effect/vitest";
 import { Cause, Deferred, Effect, Exit, Fiber, Layer } from "effect";
-import { reportAction } from "../src/lib/state/collection-actions.ts";
-import { Notifications } from "../src/lib/state/notifications.ts";
-import { ContentState } from "../src/lib/state/collection.svelte.ts";
-import { CollectionError } from "../src/lib/state/collection-errors.ts";
-import { StoreError, type CollectionStore } from "../src/lib/state/stores.ts";
-import type { CollectionState } from "../src/lib/types/index.ts";
+import { reportAction } from "#lib/state/collection-actions.ts";
+import { Notifications } from "#lib/state/notifications.ts";
+import { ContentState } from "#lib/state/collection.svelte.ts";
+import { CollectionError } from "#lib/state/collection-errors.ts";
+import { StoreError, type CollectionStore } from "#lib/state/stores.ts";
+import type { CollectionState } from "#lib/types/index.ts";
 
 function store(initial: CollectionState = {}) {
   let state = initial;

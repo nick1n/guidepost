@@ -1,17 +1,15 @@
 <script lang="ts">
   import KdIcon from "#lib/components/KdIcon.svelte";
-  import { availableActions, isReady, type Sheet } from "./data";
-  import { statusIcons } from "#lib/constants.ts";
+  import { availableActions, lifeState, type Sheet } from "./data";
+  import { statusFlags } from "#lib/constants.ts";
+  import StatusIcon from "./StatusIcon.svelte";
   let { sheet, showResources = false }: { sheet: Sheet; showResources?: boolean } = $props();
+  let life = $derived(lifeState(sheet));
 </script>
 
-<span class={["life-state", sheet.statuses.includes("Dead") && "dead", isReady(sheet) && "ready"]}>
-  {#if sheet.statuses.includes("Dead") || isReady(sheet)}
-    <span class={["state-icon", sheet.statuses.includes("Dead") ? statusIcons.dead : statusIcons.ready]} aria-hidden="true"></span>
-  {/if}
-  <span class="state-label">
-    {sheet.statuses.includes("Dead") ? "Dead" : isReady(sheet) ? "Ready" : sheet.statuses.includes("Acted") ? "Acted" : "Not Ready"}
-  </span>
+<span class={["life-state", life.tone]}>
+  {#if life.icon}<StatusIcon icon={life.icon} active context="life" />{/if}
+  <span class="state-label">{life.label}</span>
   {#if showResources}
     <span class="resources" aria-hidden="true">
       {#each Array.from({ length: sheet.remaining.movement }, (_, index) => index) as index (index)}
@@ -24,17 +22,13 @@
   {/if}
 </span>
 <span class="flags" aria-hidden="true">
-  {#if availableActions(sheet)}<span class={["dodge-ready", statusIcons.dodge]}></span>{/if}
-  {#if sheet.statuses.includes("Acted")}<span class={["status-icon", statusIcons.acted]}></span>{/if}
-  {#if sheet.statuses.includes("Threat")}<span class={["status-icon", statusIcons.threat]}></span>{/if}
-  {#if sheet.statuses.includes("Monster Controller")}<span class={["status-icon", statusIcons.controller]}></span>{/if}
-  {#if sheet.statuses.includes("Blind Spot")}<span class={["status-icon", statusIcons.blindSpot]}></span>{/if}
-  {#if sheet.statuses.includes("Deaf")}<span class={["status-icon", statusIcons.deaf]}></span>{/if}
-  {#if sheet.statuses.includes("Blind")}<span class={["status-icon", statusIcons.blind]}></span>{/if}
-  {#if sheet.statuses.includes("Knocked Down")}<span class={["status-icon", statusIcons.knockedDown]}></span>{/if}
-  {#if sheet.statuses.includes("Retired")}<span class={["status-icon", statusIcons.retired]}></span>{/if}
-  {#if sheet.statuses.includes("Cease to Exist")}<span class={["status-icon", statusIcons.ceaseToExist]}></span>{/if}
-  {#if sheet.priority}<span class={["priority", statusIcons.priority]}></span>{/if}
+  {#if availableActions(sheet)}<StatusIcon icon="dodge" active context="quick" />{/if}
+  {#each statusFlags as status (status)}
+    {#if sheet.statuses.includes(status)}
+      <StatusIcon icon={status} active context="quick" />
+    {/if}
+  {/each}
+  {#if sheet.priority}<StatusIcon icon="priority" active context="quick" />{/if}
 </span>
 
 <style>
@@ -45,23 +39,14 @@
     inline-size: 100%;
     min-inline-size: 0;
     gap: 0.125rem;
-    &.dead {
+    &.unavailable {
       color: var(--accent-red);
-    }
-    &.ready .state-icon {
-      color: var(--accent-green);
     }
   }
   .state-label {
     min-inline-size: 0;
     overflow: hidden;
     text-overflow: ellipsis;
-  }
-  .state-icon {
-    display: inline-block;
-    inline-size: 0.875rem;
-    block-size: 0.875rem;
-    flex-shrink: 0;
   }
   .resources {
     display: inline-flex;
@@ -78,21 +63,7 @@
     flex-wrap: wrap;
     align-items: center;
     justify-content: center;
-    min-block-size: 0.875rem;
+    min-block-size: 1rem;
     gap: 1px;
-  }
-  .dodge-ready,
-  .status-icon,
-  .priority {
-    display: inline-block;
-    inline-size: 0.875rem;
-    block-size: 0.875rem;
-    color: var(--foreground);
-  }
-  .dodge-ready {
-    color: var(--accent-green);
-  }
-  .priority {
-    color: var(--accent);
   }
 </style>

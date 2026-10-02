@@ -5,7 +5,7 @@
   import Survivor from "./Survivor.svelte";
   import { setGearDrag } from "./gear-drag";
   import QuickStatus from "./QuickStatus.svelte";
-  import { statusIcons } from "#lib/constants.ts";
+  import StatusIcon from "./StatusIcon.svelte";
   import {
     designs,
     survivors,
@@ -159,7 +159,7 @@
     monsterTurn = true;
     awakening += 1;
     for (const sheet of sheets) {
-      sheet.statuses = sheet.statuses.filter((status) => status !== "Acted");
+      sheet.statuses = sheet.statuses.filter((status) => status !== "status:act");
       sheet.remainingBeforeAct = null;
     }
     jump(0);
@@ -256,8 +256,8 @@
           <strong>{index === 0 ? "White Lion" : survivorName(index)}</strong>
           {#if index === 0}
             <span class="monster-flags" aria-hidden="true">
-              {#if monsterTurn}<span class={statusIcons.turn}></span>{/if}
-              {#if monsterKnockedDown}<span class={statusIcons.knockedDown}></span>{/if}
+              {#if monsterTurn}<StatusIcon icon="turn" active context="legend" />{/if}
+              {#if monsterKnockedDown}<StatusIcon icon="status:knocked-down" active context="legend" />{/if}
             </span>
             <span
               >Mov <b>{(monsterStats.movement || 0) + tokenNet(monsterTokens[monsterTokenIndex.movement])}</b> Tgh
@@ -356,31 +356,31 @@
               <dd>Alive and ready to act</dd>
             </div>
             <div>
-              <dt><span class="key-icon i-material-symbols:my-location" aria-hidden="true"></span>Threat</dt>
+              <dt><StatusIcon icon="status:threat" active context="legend" />Threat</dt>
               <dd>Marked as a threat</dd>
             </div>
             <div>
-              <dt><span class="key-icon i-material-symbols:check" aria-hidden="true"></span>Acted</dt>
+              <dt><StatusIcon icon="status:act" active context="legend" />Acted</dt>
               <dd>Has acted this round</dd>
             </div>
             <div>
-              <dt><span class="key-icon i-material-symbols:airline-seat-flat" aria-hidden="true"></span>Down</dt>
+              <dt><StatusIcon icon="status:knocked-down" active context="legend" />Down</dt>
               <dd>Knocked down</dd>
             </div>
             <div>
-              <dt><span class="key-icon i-material-symbols:target" aria-hidden="true"></span>Priority</dt>
+              <dt><StatusIcon icon="priority" active context="legend" />Priority</dt>
               <dd>Priority target</dd>
             </div>
             <div>
-              <dt><span class="key-icon i-material-symbols:visibility" aria-hidden="true"></span>Blind Spot</dt>
+              <dt><StatusIcon icon="status:blind-spot" active context="legend" />In Blind Spot</dt>
               <dd>In the monster's blind spot</dd>
             </div>
             <div>
-              <dt><span class={["key-icon", statusIcons.deaf]} aria-hidden="true"></span>Deaf</dt>
+              <dt><StatusIcon icon="status:deaf" active context="legend" />Deaf</dt>
               <dd>Survivor is deaf</dd>
             </div>
             <div>
-              <dt><span class={["key-icon", statusIcons.blind]} aria-hidden="true"></span>Blind</dt>
+              <dt><StatusIcon icon="status:blind" active context="legend" />Blind</dt>
               <dd>Survivor is blind</dd>
             </div>
             <div>
@@ -415,9 +415,9 @@
   .showdown {
     --color-monster: #bda17b;
     --feedback-brightness: 1.12;
-    --size-control-compact: 40px;
+    --size-control-compact: 32px;
     --size-control-default: 44px;
-    --size-control-comfortable: 48px;
+    --size-control-comfortable: 56px;
     --size-control: var(--size-control-default);
     --size-column: 20rem;
 
@@ -523,17 +523,12 @@
     }
   }
   .monster-flags {
+    --size-status-icon: 0.875rem;
     display: flex;
     align-items: center;
     justify-content: center;
     min-block-size: 0.875rem;
     gap: 0.125rem;
-
-    & > span {
-      display: inline-block;
-      inline-size: 0.875rem;
-      block-size: 0.875rem;
-    }
   }
   .advance {
     display: flex;

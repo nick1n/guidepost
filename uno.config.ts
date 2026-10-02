@@ -1,9 +1,18 @@
 import { defineConfig, presetIcons } from "unocss";
-import { sectionIcons, statusIcons } from "./src/lib/constants";
+import { sectionIcons, statusIcons, statuses } from "#lib/constants.ts";
+
+const statusIconSafelist = [
+  ...new Set(
+    Object.values(statuses)
+      .flatMap((info) => [info.icon, info.activeIcon, info.flagIcon])
+      .filter((icon) => icon !== undefined),
+  ),
+];
 
 export default defineConfig({
   safelist: [
     ...Object.values(statusIcons),
+    ...statusIconSafelist,
     ...Object.values(sectionIcons),
     "i-material-symbols:play-circle-outline",
     "i-material-symbols:inventory-2-outline-sharp",

@@ -7,7 +7,8 @@
   import Gear from "./Gear.svelte";
   import EntryList from "./EntryList.svelte";
   import ProgressTrack from "./ProgressTrack.svelte";
-  import { statusIcons } from "#lib/constants.ts";
+  import StatusIcon from "./StatusIcon.svelte";
+  import { statuses, statusOrder, statusIcons } from "#lib/constants.ts";
   import {
     attributes,
     abbreviations,
@@ -17,6 +18,8 @@
     isReady,
     spendCost,
     statusItems,
+    toggleStatus,
+    updateDeath,
     toggleActed,
     useDodge,
     restrictions,
@@ -168,10 +171,6 @@
     sheet.development[3] = 0;
   }
 
-  function toggleStatus(status: string) {
-    sheet.statuses = sheet.statuses.includes(status) ? sheet.statuses.filter((value) => value !== status) : [...sheet.statuses, status];
-  }
-
   function oninputName(event: Event) {
     const input = event.currentTarget;
     if (!(input instanceof HTMLInputElement)) return;
@@ -196,14 +195,14 @@
     const input = event.currentTarget;
     if (!(input instanceof HTMLInputElement) || !Number.isFinite(input.valueAsNumber)) return;
     sheet.bleeding = input.valueAsNumber;
-    if (sheet.bleeding >= sheet.life && !sheet.statuses.includes("Dead")) sheet.statuses = [...sheet.statuses, "Dead"];
+    updateDeath(sheet);
   }
 
   function oninputLife(event: Event) {
     const input = event.currentTarget;
     if (!(input instanceof HTMLInputElement) || !Number.isFinite(input.valueAsNumber)) return;
     sheet.life = input.valueAsNumber;
-    if (sheet.bleeding >= sheet.life && !sheet.statuses.includes("Dead")) sheet.statuses = [...sheet.statuses, "Dead"];
+    updateDeath(sheet);
   }
 
   const armor = [
@@ -220,13 +219,6 @@
     { name: "Understanding", max: 9, marks: [3, 9], milestones: ["Insight", "White Secret"] },
     { name: "Weapon Proficiency", max: 8, marks: [3, 8], milestones: ["Specialist", "Master"] },
   ];
-  const statuses = [
-    { name: "Monster Controller", icon: statusIcons.controller },
-    { name: "Blind Spot", icon: statusIcons.blindSpot },
-    { name: "Knocked Down", icon: statusIcons.knockedDown },
-    { name: "Blind", icon: statusIcons.blind },
-    { name: "Deaf", icon: statusIcons.deaf },
-  ] as const;
 </script>
 
 {#snippet statistics()}
@@ -293,64 +285,21 @@
 
 {#snippet priorityButton()}
   <button class={["priority", sheet.priority && "active"]} aria-pressed={sheet.priority} onclick={() => (sheet.priority = !sheet.priority)}>
-    <span class={["condition-icon", statusIcons.priority]} aria-hidden="true"></span>
+    <StatusIcon icon="priority" active={sheet.priority} />
     Priority Target
   </button>
 {/snippet}
 
 {#snippet conditions()}
   <div class="conditions">
-    <button
-      class={["condition", sheet.statuses.includes("Threat") && "active"]}
-      aria-pressed={sheet.statuses.includes("Threat")}
-      onclick={() => toggleStatus("Threat")}
-    >
-      <span class={["condition-icon", statusIcons.threat]} aria-hidden="true"></span>
-      Threat
-    </button>
-    <button
-      class={["condition", sheet.statuses.includes("Acted") && "active"]}
-      aria-pressed={sheet.statuses.includes("Acted")}
-      onclick={act}
-    >
-      <span class={["condition-icon", sheet.statuses.includes("Acted") ? statusIcons.acted : statusIcons.ready]} aria-hidden="true"></span>
-      {sheet.statuses.includes("Acted") ? "Acted" : "Act"}
-    </button>
-    {@render priorityButton()}
-    {#each statuses as status (status.name)}
-      <button
-        class={["condition", sheet.statuses.includes(status.name) && "active"]}
-        aria-pressed={sheet.statuses.includes(status.name)}
-        onclick={() => toggleStatus(status.name)}
-      >
-        <span class={["condition-icon", status.icon]} aria-hidden="true"></span>
-        {status.name}
+    {#each statusOrder as status (status)}
+      {@const active = sheet.statuses.includes(status)}
+      <button class={["condition", active && "active"]} aria-pressed={active} onclick={() => toggleStatus(sheet, status)}>
+        <StatusIcon icon={status} {active} />
+        {statuses[status].label}
       </button>
+      {#if status === "status:act"}{@render priorityButton()}{/if}
     {/each}
-    <button
-      class={["condition", sheet.statuses.includes("Retired") && "active"]}
-      aria-pressed={sheet.statuses.includes("Retired")}
-      onclick={() => toggleStatus("Retired")}
-    >
-      <span class={["condition-icon", statusIcons.retired]} aria-hidden="true"></span>
-      Retired
-    </button>
-    <button
-      class={["condition", sheet.statuses.includes("Dead") && "active"]}
-      aria-pressed={sheet.statuses.includes("Dead")}
-      onclick={() => toggleStatus("Dead")}
-    >
-      <span class={["condition-icon", statusIcons.dead]} aria-hidden="true"></span>
-      Dead
-    </button>
-    <button
-      class={["condition", sheet.statuses.includes("Cease to Exist") && "active"]}
-      aria-pressed={sheet.statuses.includes("Cease to Exist")}
-      onclick={() => toggleStatus("Cease to Exist")}
-    >
-      <span class={["condition-icon", statusIcons.ceaseToExist]} aria-hidden="true"></span>
-      Cease to Exist
-    </button>
   </div>
 {/snippet}
 
@@ -705,21 +654,15 @@
 {/snippet}
 
 <div class="survivor">
-  {#if sheet.statuses.includes("Blind Spot")}
-    <div class="blind-banner">
-      <span class="blind-icon i-material-symbols:visibility" aria-hidden="true"></span>Blind Spot Active
-    </div>
-  {/if}
-
   <header
     class="identity"
-    data-threat={sheet.statuses.includes("Threat") ? "" : undefined}
-    data-acted={sheet.statuses.includes("Acted") ? "" : undefined}
-    data-controller={sheet.statuses.includes("Monster Controller") ? "" : undefined}
-    data-blind={sheet.statuses.includes("Blind Spot") ? "" : undefined}
-    data-knocked={sheet.statuses.includes("Knocked Down") ? "" : undefined}
-    data-dead={sheet.statuses.includes("Dead") ? "" : undefined}
-    data-retired={sheet.statuses.includes("Retired") ? "" : undefined}
+    data-threat={sheet.statuses.includes("status:threat") ? "" : undefined}
+    data-acted={sheet.statuses.includes("status:act") ? "" : undefined}
+    data-controller={sheet.statuses.includes("status:monster-controller") ? "" : undefined}
+    data-blind={sheet.statuses.includes("status:blind-spot") ? "" : undefined}
+    data-knocked={sheet.statuses.includes("status:knocked-down") ? "" : undefined}
+    data-dead={sheet.statuses.includes("status:dead") ? "" : undefined}
+    data-retired={sheet.statuses.includes("status:retire") ? "" : undefined}
     data-priority={sheet.priority ? "" : undefined}
   >
     <div class="identity-copy">
@@ -765,13 +708,7 @@
       <h3>Survival Actions <small>{sheet.survival ?? 0} survival</small></h3>
       {@render survivalActions()}
     </Section>
-    <Section
-      title="Status"
-      meta={statusItems(sheet)}
-      onaction={act}
-      showAction={survivorTurn}
-      actionLabel={sheet.statuses.includes("Acted") ? "Acted" : "Act"}
-    >
+    <Section title="Status" meta={statusItems(sheet)} onaction={act} showAction={survivorTurn} actionLabel="Act">
       {@render conditions()}
     </Section>
   {:else}
@@ -784,13 +721,7 @@
       <Section title="Attributes" meta={`Mov ${sheet.attributes[0] ?? 0}`}>{@render statistics()}</Section>
       <Section title="Insanity & Armor" meta={`Ins ${sheet.armorValues[0] ?? 0}`}>{@render protection()}</Section>
     {/if}
-    <Section
-      title="Status"
-      meta={statusItems(sheet)}
-      onaction={act}
-      showAction={survivorTurn}
-      actionLabel={sheet.statuses.includes("Acted") ? "Acted" : "Act"}
-    >
+    <Section title="Status" meta={statusItems(sheet)} onaction={act} showAction={survivorTurn} actionLabel="Act">
       {@render conditions()}
     </Section>
     <Section title="Actions">
@@ -1206,7 +1137,7 @@
   .conditions {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.25rem;
+    gap: 0.125rem;
   }
   .condition {
     display: flex;
@@ -1214,8 +1145,8 @@
     justify-content: center;
     min-inline-size: var(--size-control);
     min-block-size: var(--size-control);
-    padding: 0.25rem 0.5rem;
-    gap: 0.375rem;
+    padding: 0.25rem;
+    gap: 0.25rem;
     border: var(--border-width) solid var(--color-divider);
     border-radius: var(--radius-control);
     color: var(--muted-foreground);
@@ -1246,12 +1177,6 @@
     .condition:enabled:hover {
       box-shadow: inset 0 0 0 var(--border-width) color-mix(var(--identity) 45%, var(--foreground));
     }
-  }
-  .condition-icon {
-    display: inline-block;
-    flex-shrink: 0;
-    inline-size: 1rem;
-    block-size: 1rem;
   }
   h3 {
     display: flex;
@@ -1560,24 +1485,6 @@
     border: 0;
     background: color-mix(var(--identity) 16%, var(--background));
   }
-  .blind-banner {
-    display: flex;
-    z-index: 1;
-    position: sticky;
-    align-items: center;
-    justify-content: center;
-    inset-block-start: 0;
-    padding: 0.625rem;
-    gap: 0.5rem;
-    background: var(--accent-green);
-    color: var(--contrast);
-    font-weight: var(--font-bold);
-    font-size: var(--text-sm);
-  }
-  .blind-icon {
-    inline-size: 1.25rem;
-    block-size: 1.25rem;
-  }
   .bleeding {
     --field-border: var(--bleeding-border);
     --field-bg: var(--color-bleeding-bg);
@@ -1589,7 +1496,7 @@
     align-items: center;
     justify-content: center;
     padding: 0.375rem 0.5rem;
-    gap: 0.375rem;
+    gap: 0.25rem;
     border: var(--border-width) solid var(--priority-border);
     border-radius: 9999px;
     background: var(--color-priority-bg);

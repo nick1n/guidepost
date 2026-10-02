@@ -1,7 +1,7 @@
 import { it, expect } from "@effect/vitest";
 import { Effect, Layer } from "effect";
-import { BrowserStorage, StorageError } from "../src/lib/state/browser-storage.ts";
-import { GuestStore, StoreError } from "../src/lib/state/stores.ts";
+import { BrowserStorage, StorageError } from "#lib/state/browser-storage.ts";
+import { GuestStore, StoreError } from "#lib/state/stores.ts";
 
 function storage(initial: string | null = null, failure?: StorageError["operation"]) {
   let value = initial;
