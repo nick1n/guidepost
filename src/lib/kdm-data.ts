@@ -62,3 +62,46 @@ export function ownershipDefaults(item: ContentItem) {
 export const allContentTags = [...new Set(content.flatMap((item) => item.tags))].sort();
 export const allDiceTags = [...new Set(dice.flatMap((item) => item.tags))].sort();
 export const allHomebrewTags = [...new Set(homebrew.flatMap((item) => item.tags))].sort();
+
+type Release = { v: string; materials?: string[]; gameplay?: boolean | null; size?: string; url?: string };
+type Facts = {
+  gameplay?: boolean | null;
+  size?: string;
+  kind?: string;
+  accessoryType?: string;
+  tags?: string[];
+  editions?: Release[];
+  url?: string;
+};
+const standardMaterials = new Set(["Plastic", "Resin", "Photoresin", "Deathgrey", "Metal", "PVC", "Deathpink"]);
+
+export function editionMaterials(edition: Release) {
+  return edition.v === "Sim" ? [] : (edition.materials ?? (standardMaterials.has(edition.v) ? [edition.v] : []));
+}
+
+export function editionGameplay(item: Facts, edition: Release) {
+  return (Object.hasOwn(edition, "gameplay") ? edition.gameplay : item.gameplay) === true;
+}
+
+export function editionUrl(item: Facts, edition: Release) {
+  return edition.url ?? item.url;
+}
+
+export function editionSize(item: Facts, edition: Release) {
+  return edition.v === "Sim" ? undefined : (edition.size ?? item.size);
+}
+
+export function catalogTags(item: Facts, category: string) {
+  const tags = new Set(item.tags ?? []);
+  if (item.kind) tags.add(item.kind);
+  if (category === "bundles") tags.add("bundle");
+  if (category === "homebrew") tags.add("homebrew");
+  if (item.accessoryType) tags.add(item.accessoryType);
+  for (const material of (item.editions ?? []).flatMap(editionMaterials)) {
+    tags.add(material.toLowerCase());
+    if (["Photoresin", "Deathgrey", "Deathpink", "White Resin"].includes(material)) tags.add("resin");
+  }
+  if (item.gameplay !== true && (["model", "set", "armor-kit", "naked"].includes(item.kind ?? "") || category === "bundles"))
+    tags.add("models-only");
+  return [...tags].sort();
+}

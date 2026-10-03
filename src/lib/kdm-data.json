@@ -1,5 +1,5 @@
 {
-  "$schema": "./schema.json",
+  "$schema": "./kdm-data.schema.json",
   "content": {
     "core": {
       "name": "Kingdom Death: Monster",

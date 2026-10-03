@@ -1,54 +1,84 @@
 # Guidepost
 
-Guidepost is a personal hub for board game companion tools.
+Guidepost is a personal hub for board game companion tools, built with SvelteKit 3, Svelte 5, and UnoCSS.
+Kingdom Death: Monster is its largest toolset, with a data-driven catalog and collection tracking stored locally in the browser.
 
-## Architecture
+## Getting started
 
-The [local-first KDM architecture](docs/kdm-architecture.md) describes collection tracking, user preferences, and shared campaigns with
-one owner, one settlement, and many survivors. It covers undoable showdown, settlement, and hunt gameplay, Dexie and Dexie Cloud,
-Effect services, offline synchronization, and memory-only tests. The design is proposed; the collection's current persistence is
-documented separately from the planned campaign services.
-
-## Catalog types
-
-Run `pnpm check:shop-links` to check catalog URLs with HEAD requests and update `shopReachable` on each item in
-`src/lib/kdm-data.json`. Relative URLs use `https://shop.kingdomdeath.com`. The script follows redirects, checks duplicate URLs once,
-and times out each request after 10 seconds. It never falls back to GET.
-
-Results are `true` for a final HTTP 2xx response, `false` for HTTP errors or failed requests, and `null` for items without URLs.
-The field is absent until checked. A failed check can reflect rate limiting, a temporary network failure, or a site rejecting HEAD;
-the result does not indicate whether a product is in stock. Each run overwrites previous results and logs response statuses or errors.
-
-`src/lib/schema.json` defines the catalog shape. `pnpm generate:types` uses `json-schema-to-typescript` to generate
-`src/lib/types/gen/kdm-data.d.ts`. Edit the schema, then regenerate the types; do not edit generated files by hand.
-
-`pnpm dev`, `pnpm build`, and `pnpm check` regenerate the types before starting. The dev server also regenerates them whenever the schema
-changes. Generation writes only when the output changes; invalid schemas report an error in the terminal and preserve the last valid types.
-The app's types in `src/lib/types/index.ts` extend the generated types with catalog IDs.
-
-## Known UnoCSS warning
-
-Development, checks, and builds may print:
-
-```text
-The following plugins may not work correctly because they use the `transformIndexHtml` hook which is not supported:
-  - unocss:svelte-scoped:global-styles
+```bash
+pnpm install
+pnpm dev
 ```
 
-This warning is safe to ignore with the current integration. SvelteKit detects the declared hook, but UnoCSS skips it for SvelteKit and
-uses `transform` and `renderChunk` to include global styles instead. See the
-[UnoCSS implementation](https://github.com/unocss/unocss/blob/main/packages-integrations/svelte-scoped/src/_vite/globalStylesPlugin.ts).
+Common development commands:
 
-The production build has been verified to link the global stylesheet and include all safe listed icons. Keep the integration as-is;
-after UnoCSS/SvelteKit upgrades or integration changes, rebuild and recheck those outputs and confirm no `%unocss-svelte-scoped.global%`
-placeholders remain in generated HTML. Other warnings need their own investigation.
+| Command             | Purpose                     |
+| ------------------- | --------------------------- |
+| `pnpm check`        | Check Svelte and TypeScript |
+| `pnpm test:run`     | Run tests once              |
+| `pnpm build`        | Build for production        |
+| `pnpm format`       | Format the project          |
+| `pnpm format:check` | Check formatting            |
+
+See [AGENTS.md](AGENTS.md) for project conventions and the [local-first KDM architecture](docs/kdm-architecture.md) for
+planned campaigns, gameplay history, and offline synchronization. The architecture distinguishes current collection persistence
+from proposed campaign services.
+
+## Catalog
+
+The live app reads [src/lib/kdm-data.json](src/lib/kdm-data.json). Its [schema](src/lib/kdm-data.schema.json) generates
+`src/lib/types/gen/kdm-data.d.ts`. Edit the schema, then run `pnpm generate:types`; do not edit generated types by hand.
+Development, builds, and checks regenerate types automatically. The dev server also watches schema changes.
+
+### Shop links
+
+Run `pnpm check:shop-links` to update each item's `shopReachable` field using HEAD requests:
+
+- `true`: final HTTP 2xx response.
+- `false`: HTTP error or failed request.
+- `null`: no URL. The field is absent until checked.
+
+Each run overwrites earlier results. Requests follow redirects, time out after 10 seconds, and never fall back to GET.
+Failures can reflect rate limits or HEAD rejection; reachability does not indicate stock availability.
+
+### Review catalog
+
+The [merged review catalog](exports/kdm-catalog/README.md) is maintained separately from the live app. To prepare and apply an update:
+
+```bash
+pnpm scrape:news
+pnpm catalog:update --sim
+# Review the staged changes before applying.
+pnpm catalog:update --apply-review temp/kdm-catalog/reports/kdm-update-review.json
+pnpm catalog:validate
+```
+
+Unknown or ambiguous products need reviewed mappings and tags. Applying a review rejects stale inputs and validates schemas and references.
+Shop responses are cached for 24 hours, with requests at least 35 seconds apart. Use `--offline` for cached responses or `--refresh` to fetch again.
+
+The [catalog guide](exports/kdm-catalog/README.md) covers tag editing, mappings, data rules, and migration requirements before app adoption.
+
+## Known warnings
+
+### UnoCSS
+
+Development, checks, and builds may warn that `unocss:svelte-scoped:global-styles` uses the unsupported `transformIndexHtml` hook.
+This is safe to ignore with the current integration: UnoCSS uses `transform` and `renderChunk` for SvelteKit instead.
+
+After UnoCSS/SvelteKit upgrades or integration changes, rebuild and verify the global stylesheet, safelisted icons, and absence of
+`%unocss-svelte-scoped.global%` placeholders in generated HTML.
+
+### CSS corner shape
+
+`pnpm check` may report `Unknown property: 'corner-shape'` in `AttackProfile.svelte`. The current CSS validator does not recognize
+the property. It is safe to keep: [`corner-shape: squircle`](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/corner-shape)
+adjusts the rounded corners in supporting browsers; other browsers ignore it and use the existing `border-radius`.
+
+Investigate other warnings separately.
 
 ## License
 
-Original Guidepost source code is licensed under the [GNU Affero General Public License v3.0 only](LICENSE).
+Original Guidepost source code is licensed under [AGPL-3.0-only](LICENSE). Third-party names, trademarks, game content, artwork,
+icons, and other materials retain their owners' rights and applicable licenses; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
-That license does not cover third-party names, trademarks, game content, artwork, icons, or other material identified in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). Those materials remain subject to their owners' rights and applicable licenses.
-
-The application links to its public source repository from the landing page.
-
-Guidepost is an unofficial fan project. It is not affiliated with, endorsed by, or sponsored by Adam Poots Games or any other publisher referenced by the project.
+Guidepost is an unofficial fan project, unaffiliated with Adam Poots Games or other referenced publishers, and is not endorsed or sponsored by them.

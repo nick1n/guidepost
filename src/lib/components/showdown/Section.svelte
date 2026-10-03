@@ -2,7 +2,9 @@
   import InlineMarkdown from "#lib/components/InlineMarkdown.svelte";
   import KdIcon from "#lib/components/KdIcon.svelte";
   import { sectionIcons, type KdIconName } from "#lib/constants.ts";
-  import type { Snippet } from "svelte";
+  import { onMount, type Snippet } from "svelte";
+  import HoldRipple from "#lib/components/gestures/HoldRipple.svelte";
+  import { getSectionControls } from "./sections";
 
   let {
     title,
@@ -38,63 +40,90 @@
   let hasAction = $derived(Boolean(onaction && showAction));
   let icon = $derived(sectionIcons[title]);
   const contentId = $props.id();
+  const sections = getSectionControls();
+  onMount(() =>
+    sections.register(
+      () => title,
+      () => open,
+      (value) => (open = value),
+    ),
+  );
 
   function add() {
     open = true;
     onadd?.();
   }
+
+  function toggleSection() {
+    open = !open;
+  }
+
+  function toggleRelated() {
+    const open = sections.toggleRelated?.(title);
+    return `Matching ${title} sections ${open ? "expanded" : "collapsed"}.`;
+  }
 </script>
 
 <div class={["section", onadd && hasAction && "with-pair"]}>
-  <div class="section-header">
-    <button class="toggle" type="button" aria-expanded={open} aria-controls={contentId} onclick={() => (open = !open)}>
-      <span class={["heading", restricted && "restricted-heading"]}>
-        {#if icon}<span class={["section-icon", icon]} aria-hidden="true"></span>{/if}
-        {#if restricted}
-          <span class="restriction-mark">
-            <span class="restriction-icon i-material-symbols:block" aria-hidden="true"></span>
-            <span class="visually-hidden">{restricted}</span>
+  <HoldRipple
+    ontap={toggleSection}
+    onhold={sections.toggleRelated ? toggleRelated : undefined}
+    holdHint={`Hold or press Shift+Enter to expand or collapse matching ${title} sections across dashboards.`}
+    coverParent
+  >
+    {#snippet children(events, paint)}
+      <div class="section-header">
+        <button class="toggle" type="button" aria-expanded={open} aria-controls={contentId} {...events}>
+          <span class={["heading", restricted && "restricted-heading"]}>
+            {#if icon}<span class={["section-icon", icon]} aria-hidden="true"></span>{/if}
+            {#if restricted}
+              <span class="restriction-mark">
+                <span class="restriction-icon i-material-symbols:block" aria-hidden="true"></span>
+                <span class="visually-hidden">{restricted}</span>
+              </span>
+            {/if}
+            <InlineMarkdown text={title} />
           </span>
+          {#if restricted || metaItems.length}
+            <small class={[restricted && "restricted"]}>
+              {#if restricted}<span class="restriction">{restricted}</span>{/if}
+              {#each metaItems as item, index (`${index}-${item}`)}<span class="meta">{item}</span>{/each}
+            </small>
+          {/if}
+          <span class="chevron i-material-symbols:expand-more" aria-hidden="true"></span>
+        </button>
+        {#if onadd || hasAction}
+          <div class="section-actions">
+            {#if hasAction}
+              <button
+                class={["add", actionIcon && "action-button-icon"]}
+                type="button"
+                onclick={onaction}
+                title={actionName ?? `${actionLabel} ${title}`}
+                aria-label={actionIcon ? (actionName ?? `${actionLabel} ${title}`) : undefined}
+                aria-pressed={pressed}
+              >
+                {#if actionIcon}<KdIcon class="action-icon" i={actionIcon} text={actionIconText} />{:else}{actionLabel}{/if}
+              </button>
+            {/if}
+            {#if onadd}
+              <button
+                class={["add", hasAction && "icon-action"]}
+                type="button"
+                onclick={add}
+                title={`Add to ${title}`}
+                aria-label={hasAction ? `Add to ${title}` : undefined}
+              >
+                <span class="add-icon i-material-symbols:add" aria-hidden="true"></span>
+                {#if !onaction}Add{/if}
+              </button>
+            {/if}
+          </div>
         {/if}
-        <InlineMarkdown text={title} />
-      </span>
-      {#if restricted || metaItems.length}
-        <small class={[restricted && "restricted"]}>
-          {#if restricted}<span class="restriction">{restricted}</span>{/if}
-          {#each metaItems as item, index (`${index}-${item}`)}<span class="meta">{item}</span>{/each}
-        </small>
-      {/if}
-      <span class="chevron i-material-symbols:expand-more" aria-hidden="true"></span>
-    </button>
-    {#if onadd || hasAction}
-      <div class="section-actions">
-        {#if hasAction}
-          <button
-            class={["add", actionIcon && "action-button-icon"]}
-            type="button"
-            onclick={onaction}
-            title={actionName ?? `${actionLabel} ${title}`}
-            aria-label={actionIcon ? (actionName ?? `${actionLabel} ${title}`) : undefined}
-            aria-pressed={pressed}
-          >
-            {#if actionIcon}<KdIcon class="action-icon" i={actionIcon} text={actionIconText} />{:else}{actionLabel}{/if}
-          </button>
-        {/if}
-        {#if onadd}
-          <button
-            class={["add", hasAction && "icon-action"]}
-            type="button"
-            onclick={add}
-            title={`Add to ${title}`}
-            aria-label={hasAction ? `Add to ${title}` : undefined}
-          >
-            <span class="add-icon i-material-symbols:add" aria-hidden="true"></span>
-            {#if !onaction}Add{/if}
-          </button>
-        {/if}
+        {@render paint()}
       </div>
-    {/if}
-  </div>
+    {/snippet}
+  </HoldRipple>
   <div class="content" id={contentId} hidden={!open}>{@render children()}</div>
 </div>
 
@@ -137,6 +166,8 @@
     border-block-end: 2px solid color-mix(var(--identity) 45%, transparent);
   }
   .section-header {
+    position: relative;
+    border-radius: inherit;
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
   }
@@ -146,7 +177,8 @@
     align-items: center;
     min-inline-size: 0;
     padding: 0.25rem 0.375rem;
-    /* gap: 0.375rem; */
+    user-select: none;
+    -webkit-touch-callout: none;
     color: color-mix(var(--identity) 55%, var(--foreground));
     text-align: start;
   }

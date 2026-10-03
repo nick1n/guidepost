@@ -1,15 +1,15 @@
 {
   "source": "https://kingdomdeath.com/news",
-  "startedAt": "2026-09-29T02:26:57.374Z",
+  "startedAt": "2026-10-01T01:06:35.148Z",
   "complete": true,
-  "discoveredPosts": 132,
+  "discoveredPosts": 133,
   "posts": [
     {
       "date": "2026-08-31",
       "title": "KDU#121 - August Post-Gen Con sale part 1",
       "postUrl": "https://kingdomdeath.com/news/mc-4159b508ca",
       "status": "read",
-      "linkCount": 11
+      "linkCount": 16
     },
     {
       "date": "2026-07-31",
@@ -23,21 +23,21 @@
       "title": "KDU#119 - June Sale",
       "postUrl": "https://kingdomdeath.com/news/mc-1e629ee9e0",
       "status": "read",
-      "linkCount": 7
+      "linkCount": 14
     },
     {
       "date": "2026-05-29",
       "title": "KDU#118 - May Sale",
       "postUrl": "https://kingdomdeath.com/news/mc-8d39846404",
       "status": "read",
-      "linkCount": 8
+      "linkCount": 14
     },
     {
       "date": "2026-04-30",
       "title": "KDU#117 - April Sale",
       "postUrl": "https://kingdomdeath.com/news/mc-6db625f168",
       "status": "read",
-      "linkCount": 10
+      "linkCount": 15
     },
     {
       "date": "2026-04-23",
@@ -58,7 +58,7 @@
       "title": "KDU#116 - March Sale",
       "postUrl": "https://kingdomdeath.com/news/mc-33e1dc56a3",
       "status": "read",
-      "linkCount": 9
+      "linkCount": 12
     },
     {
       "date": "2026-03-19",
@@ -72,21 +72,21 @@
       "title": "KDU#115 - February Sale",
       "postUrl": "https://kingdomdeath.com/news/mc-efe17b4f7c",
       "status": "read",
-      "linkCount": 10
+      "linkCount": 16
     },
     {
       "date": "2026-01-30",
       "title": "KDU#114 - New Moon Sale",
       "postUrl": "https://kingdomdeath.com/news/mc-6dbd3bb0aa",
       "status": "read",
-      "linkCount": 8
+      "linkCount": 16
     },
     {
       "date": "2025-12-25",
       "title": "KDU#113- Merry Deathmas!",
       "postUrl": "https://kingdomdeath.com/news/mc-70337e8ed3",
       "status": "read",
-      "linkCount": 5
+      "linkCount": 15
     },
     {
       "date": "2025-12-01",
@@ -107,7 +107,7 @@
       "title": "BLACK FRIDAY 2025",
       "postUrl": "https://kingdomdeath.com/news/mc-89c6635b71",
       "status": "read",
-      "linkCount": 7
+      "linkCount": 14
     },
     {
       "date": "2025-11-28",
@@ -128,14 +128,14 @@
       "title": "KDU#111- Halloween Again?!?!",
       "postUrl": "https://kingdomdeath.com/news/mc-4732bfaa3d",
       "status": "read",
-      "linkCount": 11
+      "linkCount": 26
     },
     {
       "date": "2025-09-30",
       "title": "KDU#110- Back to School September!",
       "postUrl": "https://kingdomdeath.com/news/mc-efe6722157",
       "status": "read",
-      "linkCount": 21
+      "linkCount": 25
     },
     {
       "date": "2025-09-25",
@@ -156,14 +156,14 @@
       "title": "KDU #109 - August 2025- Return from Gencon!",
       "postUrl": "https://kingdomdeath.com/news/mc-f54efd621f",
       "status": "read",
-      "linkCount": 15
+      "linkCount": 18
     },
     {
       "date": "2025-07-29",
       "title": "KDU#108 -July sale is regional!",
       "postUrl": "https://kingdomdeath.com/news/mc-38e1aabf18",
       "status": "read",
-      "linkCount": 0
+      "linkCount": 2
     },
     {
       "date": "2025-07-22",
@@ -184,35 +184,35 @@
       "title": "KDU #107 - June 2025",
       "postUrl": "https://kingdomdeath.com/news/mc-0620fe74a1",
       "status": "read",
-      "linkCount": 6
+      "linkCount": 11
     },
     {
       "date": "2025-05-30",
       "title": "KDU #106 - May 2025",
       "postUrl": "https://kingdomdeath.com/news/mc-a9d27eedc7",
       "status": "read",
-      "linkCount": 9
+      "linkCount": 13
     },
     {
       "date": "2025-05-01",
       "title": "KDU #105 - April 2025",
       "postUrl": "https://kingdomdeath.com/news/mc-c4395458a8",
       "status": "read",
-      "linkCount": 8
+      "linkCount": 16
     },
     {
       "date": "2025-03-31",
       "title": "KDU #104 - March 2025",
       "postUrl": "https://kingdomdeath.com/news/mc-b63c5e0bfe",
       "status": "read",
-      "linkCount": 5
+      "linkCount": 10
     },
     {
       "date": "2025-03-03",
       "title": "KDU #103 - February 2025",
       "postUrl": "https://kingdomdeath.com/news/mc-e8badbb129",
       "status": "read",
-      "linkCount": 8
+      "linkCount": 12
     },
     {
       "date": "2025-03-03",
@@ -233,14 +233,14 @@
       "title": "KDU#102 - New Lantern Year January 2025",
       "postUrl": "https://kingdomdeath.com/news/mc-fa567e6a76",
       "status": "read",
-      "linkCount": 7
+      "linkCount": 12
     },
     {
       "date": "2024-12-25",
       "title": "KDU#101 - Deathmas Cheer",
       "postUrl": "https://kingdomdeath.com/news/mc-83970b9b56",
       "status": "read",
-      "linkCount": 8
+      "linkCount": 14
     },
     {
       "date": "2024-12-18",
@@ -268,7 +268,7 @@
       "title": "Kingdom Death Black Friday Discounts of Death",
       "postUrl": "https://kingdomdeath.com/news/mc-e2b316151d",
       "status": "read",
-      "linkCount": 0
+      "linkCount": 1
     },
     {
       "date": "2024-11-29",
@@ -282,7 +282,7 @@
       "title": "BLACK FRIDAY SALE AND NEWS",
       "postUrl": "https://kingdomdeath.com/news/mc-1424666d1a",
       "status": "read",
-      "linkCount": 11
+      "linkCount": 29
     },
     {
       "date": "2024-11-29",
@@ -296,42 +296,42 @@
       "title": "KDU#99 - Black Cats and Golden Bats",
       "postUrl": "https://kingdomdeath.com/news/mc-059aa211d2",
       "status": "read",
-      "linkCount": 13
+      "linkCount": 25
     },
     {
       "date": "2024-09-30",
       "title": "KDU#98 - Back to School Sale",
       "postUrl": "https://kingdomdeath.com/news/mc-51b46b06ac",
       "status": "read",
-      "linkCount": 10
+      "linkCount": 13
     },
     {
       "date": "2024-08-29",
       "title": "KDU#97 - Post-Gencon Excitement",
       "postUrl": "https://kingdomdeath.com/news/mc-980dbb0cda",
       "status": "read",
-      "linkCount": 23
+      "linkCount": 25
     },
     {
       "date": "2024-07-26",
       "title": "KDU#96 -July sale is regional!",
       "postUrl": "https://kingdomdeath.com/news/mc-2f16a9481e",
       "status": "read",
-      "linkCount": 4
+      "linkCount": 9
     },
     {
       "date": "2024-07-03",
       "title": "KDU#95 - June Sale",
       "postUrl": "https://kingdomdeath.com/news/mc-19f64c8184",
       "status": "read",
-      "linkCount": 4
+      "linkCount": 11
     },
     {
       "date": "2024-05-31",
       "title": "KDU#94 - May Sale",
       "postUrl": "https://kingdomdeath.com/news/mc-412c26c031",
       "status": "read",
-      "linkCount": 6
+      "linkCount": 13
     },
     {
       "date": "2024-05-23",
@@ -366,7 +366,7 @@
       "title": "KDU#93 - April Arrivals",
       "postUrl": "https://kingdomdeath.com/news/mc-ca2d5759c5",
       "status": "read",
-      "linkCount": 8
+      "linkCount": 17
     },
     {
       "date": "2024-04-09",
@@ -387,14 +387,14 @@
       "title": "KDU#92 - Black Spring",
       "postUrl": "https://kingdomdeath.com/news/mc-77577f1d45",
       "status": "read",
-      "linkCount": 8
+      "linkCount": 14
     },
     {
       "date": "2024-02-29",
       "title": "KDU#91 - Killennium Love",
       "postUrl": "https://kingdomdeath.com/news/mc-89ec9e0fce",
       "status": "read",
-      "linkCount": 5
+      "linkCount": 11
     },
     {
       "date": "2024-02-15",
@@ -415,14 +415,14 @@
       "title": "KDU#90 - 2024 arrives with a bang!",
       "postUrl": "https://kingdomdeath.com/news/mc-4cf984e737",
       "status": "read",
-      "linkCount": 8
+      "linkCount": 14
     },
     {
       "date": "2023-12-25",
       "title": "KDU#89 - Deathmas Sale",
       "postUrl": "https://kingdomdeath.com/news/mc-bf25e52437",
       "status": "read",
-      "linkCount": 10
+      "linkCount": 16
     },
     {
       "date": "2023-11-27",
@@ -436,7 +436,7 @@
       "title": "BLACK FRIDAY SALE ENDS IN 5 HOURS!",
       "postUrl": "https://kingdomdeath.com/news/mc-5ee64c7432",
       "status": "read",
-      "linkCount": 1
+      "linkCount": 4
     },
     {
       "date": "2023-11-24",
@@ -450,7 +450,7 @@
       "title": "BLACK FRIDAY SALE AND NEWS",
       "postUrl": "https://kingdomdeath.com/news/mc-7c2e410c36",
       "status": "read",
-      "linkCount": 11
+      "linkCount": 33
     },
     {
       "date": "2023-11-23",
@@ -464,14 +464,14 @@
       "title": "KDU#87- Halloween Sale",
       "postUrl": "https://kingdomdeath.com/news/mc-00f73fa096",
       "status": "read",
-      "linkCount": 9
+      "linkCount": 20
     },
     {
       "date": "2023-10-02",
       "title": "KDU#86- Black Knight Preorders Available Now!",
       "postUrl": "https://kingdomdeath.com/news/mc-cbf4a7be95",
       "status": "read",
-      "linkCount": 5
+      "linkCount": 10
     },
     {
       "date": "2023-09-05",
@@ -485,7 +485,7 @@
       "title": "Kingdom Death News! Gencon Web Sale!",
       "postUrl": "https://kingdomdeath.com/news/mc-aa282d04c9",
       "status": "read",
-      "linkCount": 14
+      "linkCount": 17
     },
     {
       "date": "2023-08-01",
@@ -513,49 +513,49 @@
       "title": "Gambler's Chest is Shipping Soon!",
       "postUrl": "https://kingdomdeath.com/news/mc-4f1d03304e",
       "status": "read",
-      "linkCount": 0
+      "linkCount": 8
     },
     {
       "date": "2023-07-11",
       "title": "Kingdom Death News! Scorching Summer",
       "postUrl": "https://kingdomdeath.com/news/mc-3f91de75f0",
       "status": "read",
-      "linkCount": 7
+      "linkCount": 9
     },
     {
       "date": "2023-06-12",
       "title": "Possessed Twilight Knight Shipping Confirmation Form",
       "postUrl": "https://kingdomdeath.com/news/mc-9ff556542a",
       "status": "read",
-      "linkCount": 0
+      "linkCount": 1
     },
     {
       "date": "2023-06-12",
       "title": "Kingdom Death News! Murderer's Madness",
       "postUrl": "https://kingdomdeath.com/news/mc-d0879a647d",
       "status": "read",
-      "linkCount": 7
+      "linkCount": 9
     },
     {
       "date": "2023-05-02",
       "title": "Midspring Bonanza!",
       "postUrl": "https://kingdomdeath.com/news/mc-c4b9f74ee2",
       "status": "read",
-      "linkCount": 4
+      "linkCount": 8
     },
     {
       "date": "2023-03-31",
       "title": "March 2023",
       "postUrl": "https://kingdomdeath.com/news/mc-717dfc9ee1",
       "status": "read",
-      "linkCount": 6
+      "linkCount": 8
     },
     {
       "date": "2023-02-28",
       "title": "Happy Valentine's Day!",
       "postUrl": "https://kingdomdeath.com/news/mc-4411225263",
       "status": "read",
-      "linkCount": 4
+      "linkCount": 7
     },
     {
       "date": "2023-02-24",
@@ -569,28 +569,28 @@
       "title": "Happy Lunar New Year!",
       "postUrl": "https://kingdomdeath.com/news/mc-adf9d4c8b3",
       "status": "read",
-      "linkCount": 4
+      "linkCount": 7
     },
     {
       "date": "2022-12-25",
       "title": "Holiday Sale!",
       "postUrl": "https://kingdomdeath.com/news/mc-647fd53eee",
       "status": "read",
-      "linkCount": 17
+      "linkCount": 24
     },
     {
       "date": "2022-11-28",
       "title": "Kingdom Death - The Keysmith Grows Weary",
       "postUrl": "https://kingdomdeath.com/news/mc-20294fbb3c",
       "status": "read",
-      "linkCount": 2
+      "linkCount": 3
     },
     {
       "date": "2022-11-25",
       "title": "BLACK FRIDAY - November 2022",
       "postUrl": "https://kingdomdeath.com/news/mc-17408bca12",
       "status": "read",
-      "linkCount": 13
+      "linkCount": 25
     },
     {
       "date": "2022-11-21",
@@ -611,14 +611,14 @@
       "title": "October 2022",
       "postUrl": "https://kingdomdeath.com/news/mc-a49495442c",
       "status": "read",
-      "linkCount": 4
+      "linkCount": 12
     },
     {
       "date": "2022-10-01",
       "title": "September 2022",
       "postUrl": "https://kingdomdeath.com/news/mc-871d221aed",
       "status": "read",
-      "linkCount": 5
+      "linkCount": 11
     },
     {
       "date": "2022-09-30",
@@ -632,14 +632,14 @@
       "title": "Expansion Reprint",
       "postUrl": "https://kingdomdeath.com/news/mc-f335b6fdbe",
       "status": "read",
-      "linkCount": 1
+      "linkCount": 3
     },
     {
       "date": "2022-08-09",
       "title": "August 2022",
       "postUrl": "https://kingdomdeath.com/news/mc-347511f23c",
       "status": "read",
-      "linkCount": 4
+      "linkCount": 9
     },
     {
       "date": "2022-07-14",
@@ -653,49 +653,49 @@
       "title": "Summer Painting Contest!",
       "postUrl": "https://kingdomdeath.com/news/mc-d4fb5ba33d",
       "status": "read",
-      "linkCount": 3
+      "linkCount": 7
     },
     {
       "date": "2022-06-01",
       "title": "We Apologize",
       "postUrl": "https://kingdomdeath.com/news/mc-7129bd94b6",
       "status": "read",
-      "linkCount": 0
+      "linkCount": 10
     },
     {
       "date": "2022-06-01",
       "title": "Spring has Sprung!",
       "postUrl": "https://kingdomdeath.com/news/mc-1dce867050",
       "status": "read",
-      "linkCount": 2
+      "linkCount": 10
     },
     {
       "date": "2022-04-22",
       "title": "Spring has Sprung!",
       "postUrl": "https://kingdomdeath.com/news/mc-59de81ca38",
       "status": "read",
-      "linkCount": 4
+      "linkCount": 15
     },
     {
       "date": "2022-03-01",
       "title": "We missed Valentines Day!",
       "postUrl": "https://kingdomdeath.com/news/mc-0359734515",
       "status": "read",
-      "linkCount": 7
+      "linkCount": 14
     },
     {
       "date": "2021-12-24",
       "title": "Holiday Sale!",
       "postUrl": "https://kingdomdeath.com/news/mc-e9984beb55",
       "status": "read",
-      "linkCount": 3
+      "linkCount": 11
     },
     {
       "date": "2021-11-26",
       "title": "Black Friday 2021",
       "postUrl": "https://kingdomdeath.com/news/mc-9840663200",
       "status": "read",
-      "linkCount": 9
+      "linkCount": 12
     },
     {
       "date": "2021-11-12",
@@ -716,7 +716,7 @@
       "title": "Summer Sale!",
       "postUrl": "https://kingdomdeath.com/news/mc-df8de11c8b",
       "status": "read",
-      "linkCount": 10
+      "linkCount": 15
     },
     {
       "date": "2021-05-26",
@@ -737,7 +737,7 @@
       "title": "Spring Sale!",
       "postUrl": "https://kingdomdeath.com/news/mc-cb6c765691",
       "status": "read",
-      "linkCount": 5
+      "linkCount": 12
     },
     {
       "date": "2021-03-30",
@@ -751,7 +751,7 @@
       "title": "Valentine's Day Sale!",
       "postUrl": "https://kingdomdeath.com/news/mc-b507d09a7b",
       "status": "read",
-      "linkCount": 4
+      "linkCount": 10
     },
     {
       "date": "2021-01-11",
@@ -772,49 +772,49 @@
       "title": "Holiday Sale!",
       "postUrl": "https://kingdomdeath.com/news/mc-597765e3ed",
       "status": "read",
-      "linkCount": 2
+      "linkCount": 14
     },
     {
       "date": "2020-11-27",
       "title": "Black Friday 2020",
       "postUrl": "https://kingdomdeath.com/news/mc-0245db30a3",
       "status": "read",
-      "linkCount": 5
+      "linkCount": 12
     },
     {
       "date": "2020-10-30",
       "title": "Halloween Sale",
       "postUrl": "https://kingdomdeath.com/news/mc-52ed21bea6",
       "status": "read",
-      "linkCount": 5
+      "linkCount": 12
     },
     {
       "date": "2020-09-29",
       "title": "September Sale",
       "postUrl": "https://kingdomdeath.com/news/mc-b3f8099b77",
       "status": "read",
-      "linkCount": 5
+      "linkCount": 8
     },
     {
       "date": "2020-08-28",
       "title": "August Sale",
       "postUrl": "https://kingdomdeath.com/news/mc-7440e303ee",
       "status": "read",
-      "linkCount": 3
+      "linkCount": 6
     },
     {
       "date": "2020-07-17",
       "title": "Catch the Wave of Summer Resin!",
       "postUrl": "https://kingdomdeath.com/news/mc-b2e0cf22fc",
       "status": "read",
-      "linkCount": 5
+      "linkCount": 8
     },
     {
       "date": "2020-06-24",
       "title": "Summer Breeze and a Miniature Sale",
       "postUrl": "https://kingdomdeath.com/news/mc-0910d0756c",
       "status": "read",
-      "linkCount": 2
+      "linkCount": 5
     },
     {
       "date": "2020-05-01",
@@ -828,28 +828,28 @@
       "title": "Love and Resin- Store Online and Working!",
       "postUrl": "https://kingdomdeath.com/news/mc-7338beeb66",
       "status": "read",
-      "linkCount": 0
+      "linkCount": 8
     },
     {
       "date": "2020-02-14",
       "title": "Love and Resin",
       "postUrl": "https://kingdomdeath.com/news/mc-43c591f1d4",
       "status": "read",
-      "linkCount": 3
+      "linkCount": 8
     },
     {
       "date": "2020-01-22",
       "title": "First News of the Decade",
       "postUrl": "https://kingdomdeath.com/news/mc-216bb0ce7e",
       "status": "read",
-      "linkCount": 3
+      "linkCount": 8
     },
     {
       "date": "2019-12-27",
       "title": "Holiday Sale and welcoming 2020!",
       "postUrl": "https://kingdomdeath.com/news/mc-d26fe59580",
       "status": "read",
-      "linkCount": 2
+      "linkCount": 8
     },
     {
       "date": "2019-11-29",
@@ -863,63 +863,63 @@
       "title": "Halloween Sale!",
       "postUrl": "https://kingdomdeath.com/news/mc-b6c48f5383",
       "status": "read",
-      "linkCount": 8
+      "linkCount": 9
     },
     {
       "date": "2019-10-09",
       "title": "10th Anniversary Sale",
       "postUrl": "https://kingdomdeath.com/news/mc-358105a3ef",
       "status": "read",
-      "linkCount": 6
+      "linkCount": 8
     },
     {
       "date": "2019-08-16",
       "title": "Post Gen Con Sale",
       "postUrl": "https://kingdomdeath.com/news/mc-060f320715",
       "status": "read",
-      "linkCount": 8
+      "linkCount": 10
     },
     {
       "date": "2019-07-02",
       "title": "Summer Sale and the Road to Gen Con",
       "postUrl": "https://kingdomdeath.com/news/mc-9f32a6a9ca",
       "status": "read",
-      "linkCount": 8
+      "linkCount": 9
     },
     {
       "date": "2019-05-15",
       "title": "Welcome to Death High",
       "postUrl": "https://kingdomdeath.com/news/mc-a84323d1c3",
       "status": "read",
-      "linkCount": 10
+      "linkCount": 13
     },
     {
       "date": "2019-04-22",
       "title": "Hop Through!",
       "postUrl": "https://kingdomdeath.com/news/mc-8cd05f3b03",
       "status": "read",
-      "linkCount": 7
+      "linkCount": 8
     },
     {
       "date": "2019-03-27",
       "title": "Spring Awakenings",
       "postUrl": "https://kingdomdeath.com/news/mc-59d0200b7d",
       "status": "read",
-      "linkCount": 8
+      "linkCount": 9
     },
     {
       "date": "2019-02-14",
       "title": "Valentine's Takes the Cake",
       "postUrl": "https://kingdomdeath.com/news/mc-e7ac776158",
       "status": "read",
-      "linkCount": 7
+      "linkCount": 8
     },
     {
       "date": "2019-01-30",
       "title": "Lumbering into 2019",
       "postUrl": "https://kingdomdeath.com/news/mc-996beda7a5",
       "status": "read",
-      "linkCount": 7
+      "linkCount": 8
     },
     {
       "date": "2018-12-25",
@@ -927,6 +927,13 @@
       "postUrl": "https://kingdomdeath.com/news/mc-9a15bbdcae",
       "status": "read",
       "linkCount": 6
+    },
+    {
+      "date": "2026-09-30",
+      "title": "KDU#122 - September Death High x Post-Gen Con sale part 2",
+      "postUrl": "https://kingdomdeath.com/news/mc-bc751dceaa",
+      "status": "read",
+      "linkCount": 19
     }
   ],
   "links": [
@@ -971,6 +978,13 @@
       "postUrl": "https://kingdomdeath.com/news/mc-9a15bbdcae",
       "itemName": "Thief",
       "shopUrl": "https://shop.kingdomdeath.com/products/thief"
+    },
+    {
+      "date": "2019-01-30",
+      "title": "Lumbering into 2019",
+      "postUrl": "https://kingdomdeath.com/news/mc-996beda7a5",
+      "itemName": "Winter Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/winter-death-dice"
     },
     {
       "date": "2019-01-30",
@@ -1071,6 +1085,13 @@
       "shopUrl": "https://shop.kingdomdeath.com/products/gladiator"
     },
     {
+      "date": "2019-02-14",
+      "title": "Valentine's Takes the Cake",
+      "postUrl": "https://kingdomdeath.com/news/mc-e7ac776158",
+      "itemName": "Monster 1.5 Core Game",
+      "shopUrl": "https://shop.kingdomdeath.com/products/kingdom-death-monster-1-5"
+    },
+    {
       "date": "2019-03-27",
       "title": "Spring Awakenings",
       "postUrl": "https://kingdomdeath.com/news/mc-59d0200b7d",
@@ -1127,6 +1148,13 @@
       "shopUrl": "https://shop.kingdomdeath.com/products/echoes-of-death"
     },
     {
+      "date": "2019-03-27",
+      "title": "Spring Awakenings",
+      "postUrl": "https://kingdomdeath.com/news/mc-59d0200b7d",
+      "itemName": "Monster 1.5 Core Game",
+      "shopUrl": "https://shop.kingdomdeath.com/products/kingdom-death-monster-1-5"
+    },
+    {
       "date": "2019-04-22",
       "title": "Hop Through!",
       "postUrl": "https://kingdomdeath.com/news/mc-8cd05f3b03",
@@ -1174,6 +1202,13 @@
       "postUrl": "https://kingdomdeath.com/news/mc-8cd05f3b03",
       "itemName": "White Knight",
       "shopUrl": "https://shop.kingdomdeath.com/products/white-knight"
+    },
+    {
+      "date": "2019-04-22",
+      "title": "Hop Through!",
+      "postUrl": "https://kingdomdeath.com/news/mc-8cd05f3b03",
+      "itemName": "Monster 1.5 Core Game",
+      "shopUrl": "https://shop.kingdomdeath.com/products/kingdom-death-monster-1-5"
     },
     {
       "date": "2019-05-15",
@@ -1228,6 +1263,13 @@
       "date": "2019-05-15",
       "title": "Welcome to Death High",
       "postUrl": "https://kingdomdeath.com/news/mc-a84323d1c3",
+      "itemName": "Death High - Miko",
+      "shopUrl": "https://shop.kingdomdeath.com/products/death-high-miko"
+    },
+    {
+      "date": "2019-05-15",
+      "title": "Welcome to Death High",
+      "postUrl": "https://kingdomdeath.com/news/mc-a84323d1c3",
       "itemName": "Death High - Preacher (female)",
       "shopUrl": "https://shop.kingdomdeath.com/products/death-high-preacher"
     },
@@ -1242,8 +1284,22 @@
       "date": "2019-05-15",
       "title": "Welcome to Death High",
       "postUrl": "https://kingdomdeath.com/news/mc-a84323d1c3",
+      "itemName": "Death High - Twilight Knight (female)",
+      "shopUrl": "https://shop.kingdomdeath.com/products/death-high-twilight-knight-female"
+    },
+    {
+      "date": "2019-05-15",
+      "title": "Welcome to Death High",
+      "postUrl": "https://kingdomdeath.com/news/mc-a84323d1c3",
       "itemName": "Death High - White Speaker",
       "shopUrl": "https://shop.kingdomdeath.com/products/death-high-white-speaker"
+    },
+    {
+      "date": "2019-05-15",
+      "title": "Welcome to Death High",
+      "postUrl": "https://kingdomdeath.com/news/mc-a84323d1c3",
+      "itemName": "Monster 1.5 Core Game",
+      "shopUrl": "https://shop.kingdomdeath.com/products/kingdom-death-monster-1-5"
     },
     {
       "date": "2019-07-02",
@@ -1302,6 +1358,13 @@
       "shopUrl": "https://shop.kingdomdeath.com/products/sunstalker-infant"
     },
     {
+      "date": "2019-07-02",
+      "title": "Summer Sale and the Road to Gen Con",
+      "postUrl": "https://kingdomdeath.com/news/mc-9f32a6a9ca",
+      "itemName": "Monster 1.5 Core Game",
+      "shopUrl": "https://shop.kingdomdeath.com/products/kingdom-death-monster-1-5"
+    },
+    {
       "date": "2019-08-16",
       "title": "Post Gen Con Sale",
       "postUrl": "https://kingdomdeath.com/news/mc-060f320715",
@@ -1358,6 +1421,20 @@
       "shopUrl": "https://shop.kingdomdeath.com/products/dung-beetle-knight-t-shirt"
     },
     {
+      "date": "2019-08-16",
+      "title": "Post Gen Con Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-060f320715",
+      "itemName": "Summer Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/summer-death-dice"
+    },
+    {
+      "date": "2019-08-16",
+      "title": "Post Gen Con Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-060f320715",
+      "itemName": "Monster 1.5 Core Game",
+      "shopUrl": "https://shop.kingdomdeath.com/products/kingdom-death-monster-1-5"
+    },
+    {
       "date": "2019-10-09",
       "title": "10th Anniversary Sale",
       "postUrl": "https://kingdomdeath.com/news/mc-358105a3ef",
@@ -1389,6 +1466,13 @@
       "date": "2019-10-09",
       "title": "10th Anniversary Sale",
       "postUrl": "https://kingdomdeath.com/news/mc-358105a3ef",
+      "itemName": "Investment Sniper",
+      "shopUrl": "https://shop.kingdomdeath.com/products/investment-sniper"
+    },
+    {
+      "date": "2019-10-09",
+      "title": "10th Anniversary Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-358105a3ef",
       "itemName": "Last Bard",
       "shopUrl": "https://shop.kingdomdeath.com/products/last-bard"
     },
@@ -1398,6 +1482,13 @@
       "postUrl": "https://kingdomdeath.com/news/mc-358105a3ef",
       "itemName": "Fall Death Dice",
       "shopUrl": "https://shop.kingdomdeath.com/products/fall-death-dice"
+    },
+    {
+      "date": "2019-10-09",
+      "title": "10th Anniversary Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-358105a3ef",
+      "itemName": "Monster 1.5 Core Game",
+      "shopUrl": "https://shop.kingdomdeath.com/products/kingdom-death-monster-1-5"
     },
     {
       "date": "2019-10-31",
@@ -1454,6 +1545,13 @@
       "postUrl": "https://kingdomdeath.com/news/mc-b6c48f5383",
       "itemName": "Halloween Pinup Twilight Knight",
       "shopUrl": "https://shop.kingdomdeath.com/products/plastic-halloween-pinup-twilight-knight"
+    },
+    {
+      "date": "2019-10-31",
+      "title": "Halloween Sale!",
+      "postUrl": "https://kingdomdeath.com/news/mc-b6c48f5383",
+      "itemName": "Monster 1.5 Core Game",
+      "shopUrl": "https://shop.kingdomdeath.com/products/kingdom-death-monster-1-5"
     },
     {
       "date": "2019-11-29",
@@ -1522,6 +1620,34 @@
       "date": "2019-12-27",
       "title": "Holiday Sale and welcoming 2020!",
       "postUrl": "https://kingdomdeath.com/news/mc-d26fe59580",
+      "itemName": "Holiday Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/holiday-death-dice"
+    },
+    {
+      "date": "2019-12-27",
+      "title": "Holiday Sale and welcoming 2020!",
+      "postUrl": "https://kingdomdeath.com/news/mc-d26fe59580",
+      "itemName": "Holiday White Speaker Nico",
+      "shopUrl": "https://shop.kingdomdeath.com/products/holiday-white-speaker-nico"
+    },
+    {
+      "date": "2019-12-27",
+      "title": "Holiday Sale and welcoming 2020!",
+      "postUrl": "https://kingdomdeath.com/news/mc-d26fe59580",
+      "itemName": "Xmas Special Pinup Twilight Knight",
+      "shopUrl": "https://shop.kingdomdeath.com/products/xmas-special-pinup-twilight-knight"
+    },
+    {
+      "date": "2019-12-27",
+      "title": "Holiday Sale and welcoming 2020!",
+      "postUrl": "https://kingdomdeath.com/news/mc-d26fe59580",
+      "itemName": "Santa Satan",
+      "shopUrl": "https://shop.kingdomdeath.com/products/santa-satan"
+    },
+    {
+      "date": "2019-12-27",
+      "title": "Holiday Sale and welcoming 2020!",
+      "postUrl": "https://kingdomdeath.com/news/mc-d26fe59580",
       "itemName": "Boxer",
       "shopUrl": "https://shop.kingdomdeath.com/products/boxer"
     },
@@ -1531,6 +1657,20 @@
       "postUrl": "https://kingdomdeath.com/news/mc-d26fe59580",
       "itemName": "Primal Huntress Bust",
       "shopUrl": "https://shop.kingdomdeath.com/products/primal-huntress-bust"
+    },
+    {
+      "date": "2019-12-27",
+      "title": "Holiday Sale and welcoming 2020!",
+      "postUrl": "https://kingdomdeath.com/news/mc-d26fe59580",
+      "itemName": "Winter Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/winter-death-dice"
+    },
+    {
+      "date": "2019-12-27",
+      "title": "Holiday Sale and welcoming 2020!",
+      "postUrl": "https://kingdomdeath.com/news/mc-d26fe59580",
+      "itemName": "Monster 1.5 Core Game",
+      "shopUrl": "https://shop.kingdomdeath.com/products/kingdom-death-monster-1-5"
     },
     {
       "date": "2020-01-22",
@@ -1550,8 +1690,43 @@
       "date": "2020-01-22",
       "title": "First News of the Decade",
       "postUrl": "https://kingdomdeath.com/news/mc-216bb0ce7e",
+      "itemName": "Energy Potion Maker",
+      "shopUrl": "https://shop.kingdomdeath.com/products/energy-potion-maker"
+    },
+    {
+      "date": "2020-01-22",
+      "title": "First News of the Decade",
+      "postUrl": "https://kingdomdeath.com/news/mc-216bb0ce7e",
+      "itemName": "Lantern Guard",
+      "shopUrl": "https://shop.kingdomdeath.com/products/lantern-guard"
+    },
+    {
+      "date": "2020-01-22",
+      "title": "First News of the Decade",
+      "postUrl": "https://kingdomdeath.com/news/mc-216bb0ce7e",
+      "itemName": "Swashbuckler",
+      "shopUrl": "https://shop.kingdomdeath.com/products/swashbuckler"
+    },
+    {
+      "date": "2020-01-22",
+      "title": "First News of the Decade",
+      "postUrl": "https://kingdomdeath.com/news/mc-216bb0ce7e",
       "itemName": "Verdant Lord Shirt",
       "shopUrl": "https://shop.kingdomdeath.com/products/verdant-lord-crest-shirt"
+    },
+    {
+      "date": "2020-01-22",
+      "title": "First News of the Decade",
+      "postUrl": "https://kingdomdeath.com/news/mc-216bb0ce7e",
+      "itemName": "Winter Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/winter-death-dice"
+    },
+    {
+      "date": "2020-01-22",
+      "title": "First News of the Decade",
+      "postUrl": "https://kingdomdeath.com/news/mc-216bb0ce7e",
+      "itemName": "Monster 1.5 Core Game",
+      "shopUrl": "https://shop.kingdomdeath.com/products/kingdom-death-monster-1-5"
     },
     {
       "date": "2020-02-14",
@@ -1573,6 +1748,97 @@
       "postUrl": "https://kingdomdeath.com/news/mc-43c591f1d4",
       "itemName": "Pinup Screaming God Armor",
       "shopUrl": "https://shop.kingdomdeath.com/products/pinup-screaming-god-armor"
+    },
+    {
+      "date": "2020-02-14",
+      "title": "Love and Resin",
+      "postUrl": "https://kingdomdeath.com/news/mc-43c591f1d4",
+      "itemName": "Valentine's Day Pinup Twilight Knight",
+      "shopUrl": "https://shop.kingdomdeath.com/products/valentines-day-pinup-twilight-knight"
+    },
+    {
+      "date": "2020-02-14",
+      "title": "Love and Resin",
+      "postUrl": "https://kingdomdeath.com/news/mc-43c591f1d4",
+      "itemName": "Estate Hero",
+      "shopUrl": "https://shop.kingdomdeath.com/products/estate-hero"
+    },
+    {
+      "date": "2020-02-14",
+      "title": "Love and Resin",
+      "postUrl": "https://kingdomdeath.com/news/mc-43c591f1d4",
+      "itemName": "Valentine's Day Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/valentines-day-death-dice"
+    },
+    {
+      "date": "2020-02-14",
+      "title": "Love and Resin",
+      "postUrl": "https://kingdomdeath.com/news/mc-43c591f1d4",
+      "itemName": "Winter Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/winter-death-dice"
+    },
+    {
+      "date": "2020-02-14",
+      "title": "Love and Resin",
+      "postUrl": "https://kingdomdeath.com/news/mc-43c591f1d4",
+      "itemName": "Monster 1.5 Core Game",
+      "shopUrl": "https://shop.kingdomdeath.com/products/kingdom-death-monster-1-5"
+    },
+    {
+      "date": "2020-02-14",
+      "title": "Love and Resin- Store Online and Working!",
+      "postUrl": "https://kingdomdeath.com/news/mc-7338beeb66",
+      "itemName": "Elf",
+      "shopUrl": "https://shop.kingdomdeath.com/products/elf"
+    },
+    {
+      "date": "2020-02-14",
+      "title": "Love and Resin- Store Online and Working!",
+      "postUrl": "https://kingdomdeath.com/news/mc-7338beeb66",
+      "itemName": "Death High Murderer",
+      "shopUrl": "https://shop.kingdomdeath.com/products/death-high-murderer"
+    },
+    {
+      "date": "2020-02-14",
+      "title": "Love and Resin- Store Online and Working!",
+      "postUrl": "https://kingdomdeath.com/news/mc-7338beeb66",
+      "itemName": "Pinup Screaming God Armor",
+      "shopUrl": "https://shop.kingdomdeath.com/products/pinup-screaming-god-armor"
+    },
+    {
+      "date": "2020-02-14",
+      "title": "Love and Resin- Store Online and Working!",
+      "postUrl": "https://kingdomdeath.com/news/mc-7338beeb66",
+      "itemName": "Valentine's Day Pinup Twilight Knight",
+      "shopUrl": "https://shop.kingdomdeath.com/products/valentines-day-pinup-twilight-knight"
+    },
+    {
+      "date": "2020-02-14",
+      "title": "Love and Resin- Store Online and Working!",
+      "postUrl": "https://kingdomdeath.com/news/mc-7338beeb66",
+      "itemName": "Estate Hero",
+      "shopUrl": "https://shop.kingdomdeath.com/products/estate-hero"
+    },
+    {
+      "date": "2020-02-14",
+      "title": "Love and Resin- Store Online and Working!",
+      "postUrl": "https://kingdomdeath.com/news/mc-7338beeb66",
+      "itemName": "Valentine's Day Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/valentines-day-death-dice"
+    },
+    {
+      "date": "2020-02-14",
+      "title": "Love and Resin- Store Online and Working!",
+      "postUrl": "https://kingdomdeath.com/news/mc-7338beeb66",
+      "itemName": "Winter Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/winter-death-dice"
+    },
+    {
+      "date": "2020-02-14",
+      "title": "Love and Resin- Store Online and Working!",
+      "postUrl": "https://kingdomdeath.com/news/mc-7338beeb66",
+      "itemName": "Monster 1.5 Core Game",
+      "shopUrl": "https://shop.kingdomdeath.com/products/kingdom-death-monster-1-5"
     },
     {
       "date": "2020-05-01",
@@ -1599,8 +1865,29 @@
       "date": "2020-06-24",
       "title": "Summer Breeze and a Miniature Sale",
       "postUrl": "https://kingdomdeath.com/news/mc-0910d0756c",
+      "itemName": "Shadow Thief",
+      "shopUrl": "https://shop.kingdomdeath.com/products/shadow-thief"
+    },
+    {
+      "date": "2020-06-24",
+      "title": "Summer Breeze and a Miniature Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-0910d0756c",
       "itemName": "Pinup Visionary",
       "shopUrl": "https://shop.kingdomdeath.com/products/pinup-visionary"
+    },
+    {
+      "date": "2020-06-24",
+      "title": "Summer Breeze and a Miniature Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-0910d0756c",
+      "itemName": "Summer Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/summer-death-dice"
+    },
+    {
+      "date": "2020-06-24",
+      "title": "Summer Breeze and a Miniature Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-0910d0756c",
+      "itemName": "Monster 1.5 Core Game",
+      "shopUrl": "https://shop.kingdomdeath.com/products/kingdom-death-monster-1-5"
     },
     {
       "date": "2020-07-17",
@@ -1638,6 +1925,27 @@
       "shopUrl": "https://shop.kingdomdeath.com/products/distracted"
     },
     {
+      "date": "2020-07-17",
+      "title": "Catch the Wave of Summer Resin!",
+      "postUrl": "https://kingdomdeath.com/news/mc-b2e0cf22fc",
+      "itemName": "Libra",
+      "shopUrl": "https://shop.kingdomdeath.com/products/libra"
+    },
+    {
+      "date": "2020-07-17",
+      "title": "Catch the Wave of Summer Resin!",
+      "postUrl": "https://kingdomdeath.com/news/mc-b2e0cf22fc",
+      "itemName": "Summer Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/summer-death-dice"
+    },
+    {
+      "date": "2020-07-17",
+      "title": "Catch the Wave of Summer Resin!",
+      "postUrl": "https://kingdomdeath.com/news/mc-b2e0cf22fc",
+      "itemName": "Monster 1.5 Core Game",
+      "shopUrl": "https://shop.kingdomdeath.com/products/kingdom-death-monster-1-5"
+    },
+    {
       "date": "2020-08-28",
       "title": "August Sale",
       "postUrl": "https://kingdomdeath.com/news/mc-7440e303ee",
@@ -1659,6 +1967,27 @@
       "shopUrl": "https://shop.kingdomdeath.com/products/pariah-t-shirt"
     },
     {
+      "date": "2020-08-28",
+      "title": "August Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-7440e303ee",
+      "itemName": "Necromancer Boss",
+      "shopUrl": "https://shop.kingdomdeath.com/products/necromancer-boss"
+    },
+    {
+      "date": "2020-08-28",
+      "title": "August Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-7440e303ee",
+      "itemName": "Gladiator",
+      "shopUrl": "https://shop.kingdomdeath.com/products/gladiator"
+    },
+    {
+      "date": "2020-08-28",
+      "title": "August Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-7440e303ee",
+      "itemName": "Summer Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/summer-death-dice"
+    },
+    {
       "date": "2020-09-29",
       "title": "September Sale",
       "postUrl": "https://kingdomdeath.com/news/mc-b3f8099b77",
@@ -1678,6 +2007,27 @@
       "postUrl": "https://kingdomdeath.com/news/mc-b3f8099b77",
       "itemName": "Death High - Allister",
       "shopUrl": "https://shop.kingdomdeath.com/products/death-high-allister"
+    },
+    {
+      "date": "2020-09-29",
+      "title": "September Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-b3f8099b77",
+      "itemName": "Strider Princess",
+      "shopUrl": "https://shop.kingdomdeath.com/products/strider-princess"
+    },
+    {
+      "date": "2020-09-29",
+      "title": "September Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-b3f8099b77",
+      "itemName": "Bullet Dancer",
+      "shopUrl": "https://shop.kingdomdeath.com/products/bullet-dancer"
+    },
+    {
+      "date": "2020-09-29",
+      "title": "September Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-b3f8099b77",
+      "itemName": "Ringtail Vixen",
+      "shopUrl": "https://shop.kingdomdeath.com/products/ringtail-vixen-wb"
     },
     {
       "date": "2020-09-29",
@@ -1725,8 +2075,57 @@
       "date": "2020-10-30",
       "title": "Halloween Sale",
       "postUrl": "https://kingdomdeath.com/news/mc-52ed21bea6",
+      "itemName": "Devil Satan",
+      "shopUrl": "https://shop.kingdomdeath.com/products/devil-satan"
+    },
+    {
+      "date": "2020-10-30",
+      "title": "Halloween Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-52ed21bea6",
+      "itemName": "Halloween Survivors",
+      "shopUrl": "https://shop.kingdomdeath.com/products/halloween-survivors"
+    },
+    {
+      "date": "2020-10-30",
+      "title": "Halloween Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-52ed21bea6",
+      "itemName": "Halloween Pinup Twilight Knight",
+      "shopUrl": "https://shop.kingdomdeath.com/products/plastic-halloween-pinup-twilight-knight"
+    },
+    {
+      "date": "2020-10-30",
+      "title": "Halloween Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-52ed21bea6",
       "itemName": "Halloween White Speaker",
       "shopUrl": "https://shop.kingdomdeath.com/products/halloween-white-speaker-1"
+    },
+    {
+      "date": "2020-10-30",
+      "title": "Halloween Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-52ed21bea6",
+      "itemName": "Halloween Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/halloween-death-dice"
+    },
+    {
+      "date": "2020-10-30",
+      "title": "Halloween Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-52ed21bea6",
+      "itemName": "Oktoberfest Aya",
+      "shopUrl": "https://shop.kingdomdeath.com/products/oktoberfest-aya"
+    },
+    {
+      "date": "2020-10-30",
+      "title": "Halloween Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-52ed21bea6",
+      "itemName": "Fall Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/fall-death-dice"
+    },
+    {
+      "date": "2020-10-30",
+      "title": "Halloween Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-52ed21bea6",
+      "itemName": "Monster 1.5 Core Game",
+      "shopUrl": "https://shop.kingdomdeath.com/products/kingdom-death-monster-1-5"
     },
     {
       "date": "2020-11-27",
@@ -1764,6 +2163,55 @@
       "shopUrl": "https://shop.kingdomdeath.com/products/echoes-of-death-two"
     },
     {
+      "date": "2020-11-27",
+      "title": "Black Friday 2020",
+      "postUrl": "https://kingdomdeath.com/news/mc-0245db30a3",
+      "itemName": "10th Anniversary Survivors",
+      "shopUrl": "https://shop.kingdomdeath.com/products/10th-anniversary-survivors"
+    },
+    {
+      "date": "2020-11-27",
+      "title": "Black Friday 2020",
+      "postUrl": "https://kingdomdeath.com/news/mc-0245db30a3",
+      "itemName": "Vignette of Death: White Gigalion",
+      "shopUrl": "https://shop.kingdomdeath.com/products/vignette-of-death-white-gigalion"
+    },
+    {
+      "date": "2020-11-27",
+      "title": "Black Friday 2020",
+      "postUrl": "https://kingdomdeath.com/news/mc-0245db30a3",
+      "itemName": "Ringtail Vixen",
+      "shopUrl": "https://shop.kingdomdeath.com/products/ringtail-vixen-wb"
+    },
+    {
+      "date": "2020-11-27",
+      "title": "Black Friday 2020",
+      "postUrl": "https://kingdomdeath.com/news/mc-0245db30a3",
+      "itemName": "Sword Hunter",
+      "shopUrl": "https://shop.kingdomdeath.com/products/white-speaker-sword-hunter-wb"
+    },
+    {
+      "date": "2020-11-27",
+      "title": "Black Friday 2020",
+      "postUrl": "https://kingdomdeath.com/news/mc-0245db30a3",
+      "itemName": "Naked Forbidden Bundle",
+      "shopUrl": "https://shop.kingdomdeath.com/products/naked-forbidden-bundle"
+    },
+    {
+      "date": "2020-11-27",
+      "title": "Black Friday 2020",
+      "postUrl": "https://kingdomdeath.com/news/mc-0245db30a3",
+      "itemName": "Naked Nightmare Ram",
+      "shopUrl": "https://shop.kingdomdeath.com/products/naked-nightmare-ram"
+    },
+    {
+      "date": "2020-11-27",
+      "title": "Black Friday 2020",
+      "postUrl": "https://kingdomdeath.com/news/mc-0245db30a3",
+      "itemName": "Black Friday Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/black-friday-death-dice"
+    },
+    {
       "date": "2020-12-22",
       "title": "Holiday Sale!",
       "postUrl": "https://kingdomdeath.com/news/mc-597765e3ed",
@@ -1774,8 +2222,92 @@
       "date": "2020-12-22",
       "title": "Holiday Sale!",
       "postUrl": "https://kingdomdeath.com/news/mc-597765e3ed",
+      "itemName": "Santa Satan",
+      "shopUrl": "https://shop.kingdomdeath.com/products/santa-satan"
+    },
+    {
+      "date": "2020-12-22",
+      "title": "Holiday Sale!",
+      "postUrl": "https://kingdomdeath.com/news/mc-597765e3ed",
+      "itemName": "Xmas Special Pinup Twilight Knight",
+      "shopUrl": "https://shop.kingdomdeath.com/products/xmas-special-pinup-twilight-knight"
+    },
+    {
+      "date": "2020-12-22",
+      "title": "Holiday Sale!",
+      "postUrl": "https://kingdomdeath.com/news/mc-597765e3ed",
+      "itemName": "Holiday White Speaker Nico",
+      "shopUrl": "https://shop.kingdomdeath.com/products/holiday-white-speaker-nico"
+    },
+    {
+      "date": "2020-12-22",
+      "title": "Holiday Sale!",
+      "postUrl": "https://kingdomdeath.com/news/mc-597765e3ed",
+      "itemName": "Holiday Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/holiday-death-dice"
+    },
+    {
+      "date": "2020-12-22",
+      "title": "Holiday Sale!",
+      "postUrl": "https://kingdomdeath.com/news/mc-597765e3ed",
+      "itemName": "Kingdom Death: Monster 1.6",
+      "shopUrl": "https://shop.kingdomdeath.com/products/kingdom-death-monster-1-6"
+    },
+    {
+      "date": "2020-12-22",
+      "title": "Holiday Sale!",
+      "postUrl": "https://kingdomdeath.com/news/mc-597765e3ed",
+      "itemName": "Legendary Card Pack",
+      "shopUrl": "https://shop.kingdomdeath.com/products/legendary-card-pack-1-6-upgrade"
+    },
+    {
+      "date": "2020-12-22",
+      "title": "Holiday Sale!",
+      "postUrl": "https://kingdomdeath.com/news/mc-597765e3ed",
+      "itemName": "Death High - Allister",
+      "shopUrl": "https://shop.kingdomdeath.com/products/death-high-allister"
+    },
+    {
+      "date": "2020-12-22",
+      "title": "Holiday Sale!",
+      "postUrl": "https://kingdomdeath.com/news/mc-597765e3ed",
+      "itemName": "Death High - Dragon Sacrifice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/death-high-dragon-sacrifice"
+    },
+    {
+      "date": "2020-12-22",
+      "title": "Holiday Sale!",
+      "postUrl": "https://kingdomdeath.com/news/mc-597765e3ed",
+      "itemName": "Death High - Aya",
+      "shopUrl": "https://shop.kingdomdeath.com/products/death-high-aya"
+    },
+    {
+      "date": "2020-12-22",
+      "title": "Holiday Sale!",
+      "postUrl": "https://kingdomdeath.com/news/mc-597765e3ed",
       "itemName": "Death High - Novice",
       "shopUrl": "https://shop.kingdomdeath.com/products/death-high-novice"
+    },
+    {
+      "date": "2020-12-22",
+      "title": "Holiday Sale!",
+      "postUrl": "https://kingdomdeath.com/news/mc-597765e3ed",
+      "itemName": "Death High - Ringtail Vixen",
+      "shopUrl": "https://shop.kingdomdeath.com/products/death-high-ringtail-vixen"
+    },
+    {
+      "date": "2020-12-22",
+      "title": "Holiday Sale!",
+      "postUrl": "https://kingdomdeath.com/news/mc-597765e3ed",
+      "itemName": "Death High - White Speaker",
+      "shopUrl": "https://shop.kingdomdeath.com/products/death-high-white-speaker"
+    },
+    {
+      "date": "2020-12-22",
+      "title": "Holiday Sale!",
+      "postUrl": "https://kingdomdeath.com/news/mc-597765e3ed",
+      "itemName": "Winter Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/winter-death-dice"
     },
     {
       "date": "2021-02-15",
@@ -1806,6 +2338,48 @@
       "shopUrl": "https://shop.kingdomdeath.com/products/till-death-do-us-part"
     },
     {
+      "date": "2021-02-15",
+      "title": "Valentine's Day Sale!",
+      "postUrl": "https://kingdomdeath.com/news/mc-b507d09a7b",
+      "itemName": "Valentine's Day Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/valentines-day-death-dice"
+    },
+    {
+      "date": "2021-02-15",
+      "title": "Valentine's Day Sale!",
+      "postUrl": "https://kingdomdeath.com/news/mc-b507d09a7b",
+      "itemName": "Kingdom Death: Monster 1.6",
+      "shopUrl": "https://shop.kingdomdeath.com/products/kingdom-death-monster-1-6"
+    },
+    {
+      "date": "2021-02-15",
+      "title": "Valentine's Day Sale!",
+      "postUrl": "https://kingdomdeath.com/news/mc-b507d09a7b",
+      "itemName": "Legendary Card Pack",
+      "shopUrl": "https://shop.kingdomdeath.com/products/legendary-card-pack-1-6-upgrade"
+    },
+    {
+      "date": "2021-02-15",
+      "title": "Valentine's Day Sale!",
+      "postUrl": "https://kingdomdeath.com/news/mc-b507d09a7b",
+      "itemName": "Aries",
+      "shopUrl": "https://shop.kingdomdeath.com/products/aries"
+    },
+    {
+      "date": "2021-02-15",
+      "title": "Valentine's Day Sale!",
+      "postUrl": "https://kingdomdeath.com/news/mc-b507d09a7b",
+      "itemName": "Hospitalar",
+      "shopUrl": "https://shop.kingdomdeath.com/products/hospitalar"
+    },
+    {
+      "date": "2021-02-15",
+      "title": "Valentine's Day Sale!",
+      "postUrl": "https://kingdomdeath.com/news/mc-b507d09a7b",
+      "itemName": "Winter Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/winter-death-dice"
+    },
+    {
       "date": "2021-04-05",
       "title": "Spring Sale!",
       "postUrl": "https://kingdomdeath.com/news/mc-cb6c765691",
@@ -1830,8 +2404,57 @@
       "date": "2021-04-05",
       "title": "Spring Sale!",
       "postUrl": "https://kingdomdeath.com/news/mc-cb6c765691",
+      "itemName": "Kingdom Death: Monster 1.6",
+      "shopUrl": "https://shop.kingdomdeath.com/products/kingdom-death-monster-1-6"
+    },
+    {
+      "date": "2021-04-05",
+      "title": "Spring Sale!",
+      "postUrl": "https://kingdomdeath.com/news/mc-cb6c765691",
+      "itemName": "Legendary Card Pack",
+      "shopUrl": "https://shop.kingdomdeath.com/products/legendary-card-pack-1-6-upgrade"
+    },
+    {
+      "date": "2021-04-05",
+      "title": "Spring Sale!",
+      "postUrl": "https://kingdomdeath.com/news/mc-cb6c765691",
+      "itemName": "Flower Witch",
+      "shopUrl": "https://shop.kingdomdeath.com/products/flower-witch"
+    },
+    {
+      "date": "2021-04-05",
+      "title": "Spring Sale!",
+      "postUrl": "https://kingdomdeath.com/news/mc-cb6c765691",
+      "itemName": "White Speaker Boss",
+      "shopUrl": "https://shop.kingdomdeath.com/products/white-speaker-boss"
+    },
+    {
+      "date": "2021-04-05",
+      "title": "Spring Sale!",
+      "postUrl": "https://kingdomdeath.com/news/mc-cb6c765691",
       "itemName": "Verdant Lord T-Shirt",
       "shopUrl": "https://shop.kingdomdeath.com/products/verdant-lord-crest-shirt"
+    },
+    {
+      "date": "2021-04-05",
+      "title": "Spring Sale!",
+      "postUrl": "https://kingdomdeath.com/news/mc-cb6c765691",
+      "itemName": "Titan Bee T-Shirt",
+      "shopUrl": "https://shop.kingdomdeath.com/products/titan-bee-t-shirt"
+    },
+    {
+      "date": "2021-04-05",
+      "title": "Spring Sale!",
+      "postUrl": "https://kingdomdeath.com/news/mc-cb6c765691",
+      "itemName": "Spring Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/spring-death-die"
+    },
+    {
+      "date": "2021-04-05",
+      "title": "Spring Sale!",
+      "postUrl": "https://kingdomdeath.com/news/mc-cb6c765691",
+      "itemName": "Easter Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/easter-death-dice"
     },
     {
       "date": "2021-04-05",
@@ -1911,6 +2534,41 @@
       "shopUrl": "https://shop.kingdomdeath.com/products/lagomorph-survivors"
     },
     {
+      "date": "2021-07-19",
+      "title": "Summer Sale!",
+      "postUrl": "https://kingdomdeath.com/news/mc-df8de11c8b",
+      "itemName": "Kingdom Death: Monster 1.6",
+      "shopUrl": "https://shop.kingdomdeath.com/products/kingdom-death-monster-1-6"
+    },
+    {
+      "date": "2021-07-19",
+      "title": "Summer Sale!",
+      "postUrl": "https://kingdomdeath.com/news/mc-df8de11c8b",
+      "itemName": "Legendary Card Pack",
+      "shopUrl": "https://shop.kingdomdeath.com/products/legendary-card-pack-1-6-upgrade"
+    },
+    {
+      "date": "2021-07-19",
+      "title": "Summer Sale!",
+      "postUrl": "https://kingdomdeath.com/news/mc-df8de11c8b",
+      "itemName": "Elf",
+      "shopUrl": "https://shop.kingdomdeath.com/products/elf"
+    },
+    {
+      "date": "2021-07-19",
+      "title": "Summer Sale!",
+      "postUrl": "https://kingdomdeath.com/news/mc-df8de11c8b",
+      "itemName": "Cyclops Knight",
+      "shopUrl": "https://shop.kingdomdeath.com/products/cyclops-knight"
+    },
+    {
+      "date": "2021-07-19",
+      "title": "Summer Sale!",
+      "postUrl": "https://kingdomdeath.com/news/mc-df8de11c8b",
+      "itemName": "Summer Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/summer-death-dice"
+    },
+    {
       "date": "2021-11-26",
       "title": "Black Friday 2021",
       "postUrl": "https://kingdomdeath.com/news/mc-9840663200",
@@ -1923,6 +2581,13 @@
       "postUrl": "https://kingdomdeath.com/news/mc-9840663200",
       "itemName": "White Sunlion Armor",
       "shopUrl": "https://shop.kingdomdeath.com/products/white-sun-lion"
+    },
+    {
+      "date": "2021-11-26",
+      "title": "Black Friday 2021",
+      "postUrl": "https://kingdomdeath.com/news/mc-9840663200",
+      "itemName": "Kingdom Death: Monster 1.6",
+      "shopUrl": "https://shop.kingdomdeath.com/products/kingdom-death-monster-1-6"
     },
     {
       "date": "2021-11-26",
@@ -1974,6 +2639,20 @@
       "shopUrl": "https://shop.kingdomdeath.com/products/black-friday-ninja-variant-2021"
     },
     {
+      "date": "2021-11-26",
+      "title": "Black Friday 2021",
+      "postUrl": "https://kingdomdeath.com/news/mc-9840663200",
+      "itemName": "Naked Forbidden Bundle",
+      "shopUrl": "https://shop.kingdomdeath.com/products/naked-forbidden-bundle"
+    },
+    {
+      "date": "2021-11-26",
+      "title": "Black Friday 2021",
+      "postUrl": "https://kingdomdeath.com/news/mc-9840663200",
+      "itemName": "Black Friday Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/black-friday-death-dice"
+    },
+    {
       "date": "2021-12-24",
       "title": "Holiday Sale!",
       "postUrl": "https://kingdomdeath.com/news/mc-e9984beb55",
@@ -1995,11 +2674,81 @@
       "shopUrl": "https://shop.kingdomdeath.com/products/smog-drummer"
     },
     {
+      "date": "2021-12-24",
+      "title": "Holiday Sale!",
+      "postUrl": "https://kingdomdeath.com/news/mc-e9984beb55",
+      "itemName": "Winter Solstice Lucy",
+      "shopUrl": "https://shop.kingdomdeath.com/products/winter-solstice-lucy"
+    },
+    {
+      "date": "2021-12-24",
+      "title": "Holiday Sale!",
+      "postUrl": "https://kingdomdeath.com/news/mc-e9984beb55",
+      "itemName": "Santa Satan",
+      "shopUrl": "https://shop.kingdomdeath.com/products/santa-satan"
+    },
+    {
+      "date": "2021-12-24",
+      "title": "Holiday Sale!",
+      "postUrl": "https://kingdomdeath.com/news/mc-e9984beb55",
+      "itemName": "Xmas Special Pinup Twilight Knight",
+      "shopUrl": "https://shop.kingdomdeath.com/products/xmas-special-pinup-twilight-knight"
+    },
+    {
+      "date": "2021-12-24",
+      "title": "Holiday Sale!",
+      "postUrl": "https://kingdomdeath.com/news/mc-e9984beb55",
+      "itemName": "Holiday White Speaker Nico",
+      "shopUrl": "https://shop.kingdomdeath.com/products/holiday-white-speaker-nico"
+    },
+    {
+      "date": "2021-12-24",
+      "title": "Holiday Sale!",
+      "postUrl": "https://kingdomdeath.com/news/mc-e9984beb55",
+      "itemName": "Holiday Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/holiday-death-dice"
+    },
+    {
+      "date": "2021-12-24",
+      "title": "Holiday Sale!",
+      "postUrl": "https://kingdomdeath.com/news/mc-e9984beb55",
+      "itemName": "Kingdom Death: Monster 1.6",
+      "shopUrl": "https://shop.kingdomdeath.com/products/kingdom-death-monster-1-6"
+    },
+    {
+      "date": "2021-12-24",
+      "title": "Holiday Sale!",
+      "postUrl": "https://kingdomdeath.com/news/mc-e9984beb55",
+      "itemName": "Legendary Card Pack",
+      "shopUrl": "https://shop.kingdomdeath.com/products/legendary-card-pack-1-6-upgrade"
+    },
+    {
+      "date": "2021-12-24",
+      "title": "Holiday Sale!",
+      "postUrl": "https://kingdomdeath.com/news/mc-e9984beb55",
+      "itemName": "Winter Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/winter-death-dice"
+    },
+    {
+      "date": "2022-03-01",
+      "title": "We missed Valentines Day!",
+      "postUrl": "https://kingdomdeath.com/news/mc-0359734515",
+      "itemName": "Kingdom Death: Monster 1.6",
+      "shopUrl": "https://shop.kingdomdeath.com/products/kingdom-death-monster-1-5"
+    },
+    {
       "date": "2022-03-01",
       "title": "We missed Valentines Day!",
       "postUrl": "https://kingdomdeath.com/news/mc-0359734515",
       "itemName": "Grimmory",
       "shopUrl": "https://shop.kingdomdeath.com/products/grimmory"
+    },
+    {
+      "date": "2022-03-01",
+      "title": "We missed Valentines Day!",
+      "postUrl": "https://kingdomdeath.com/news/mc-0359734515",
+      "itemName": "Energy Potion Maker",
+      "shopUrl": "https://shop.kingdomdeath.com/products/energy-potion-maker"
     },
     {
       "date": "2022-03-01",
@@ -2012,15 +2761,29 @@
       "date": "2022-03-01",
       "title": "We missed Valentines Day!",
       "postUrl": "https://kingdomdeath.com/news/mc-0359734515",
+      "itemName": "10th Anniversary Survivors",
+      "shopUrl": "https://shop.kingdomdeath.com/products/10th-anniversary-survivors"
+    },
+    {
+      "date": "2022-03-01",
+      "title": "We missed Valentines Day!",
+      "postUrl": "https://kingdomdeath.com/news/mc-0359734515",
       "itemName": "Ringtail Vixen",
-      "shopUrl": "https://shop.kingdomdeath.com/products/pinups-of-death-series-1https://shop.kingdomdeath.com/products/ringtail-vixen-wb"
+      "shopUrl": "https://shop.kingdomdeath.com/products/ringtail-vixen-wb"
     },
     {
       "date": "2022-03-01",
       "title": "We missed Valentines Day!",
       "postUrl": "https://kingdomdeath.com/news/mc-0359734515",
       "itemName": "Standard Card Sleeves",
-      "shopUrl": "https://shop.kingdomdeath.com/products/xmas-special-pinup-twilight-knighthttps://shop.kingdomdeath.com/products/standard-card-sleeves"
+      "shopUrl": "https://shop.kingdomdeath.com/products/standard-card-sleeves"
+    },
+    {
+      "date": "2022-03-01",
+      "title": "We missed Valentines Day!",
+      "postUrl": "https://kingdomdeath.com/news/mc-0359734515",
+      "itemName": "White Speaker Sword Hunter",
+      "shopUrl": "https://shop.kingdomdeath.com/products/white-speaker-sword-hunter-wb"
     },
     {
       "date": "2022-03-01",
@@ -2033,6 +2796,13 @@
       "date": "2022-03-01",
       "title": "We missed Valentines Day!",
       "postUrl": "https://kingdomdeath.com/news/mc-0359734515",
+      "itemName": "Echoes of Death 2",
+      "shopUrl": "https://shop.kingdomdeath.com/products/echoes-of-death-two"
+    },
+    {
+      "date": "2022-03-01",
+      "title": "We missed Valentines Day!",
+      "postUrl": "https://kingdomdeath.com/news/mc-0359734515",
       "itemName": "Echoes of Death 3",
       "shopUrl": "https://shop.kingdomdeath.com/products/echoes-of-death-4"
     },
@@ -2040,8 +2810,29 @@
       "date": "2022-03-01",
       "title": "We missed Valentines Day!",
       "postUrl": "https://kingdomdeath.com/news/mc-0359734515",
+      "itemName": "Legendary Card Pack",
+      "shopUrl": "https://shop.kingdomdeath.com/products/legendary-card-pack-1-6-upgrade"
+    },
+    {
+      "date": "2022-03-01",
+      "title": "We missed Valentines Day!",
+      "postUrl": "https://kingdomdeath.com/news/mc-0359734515",
       "itemName": "Gorm Expansion",
       "shopUrl": "https://shop.kingdomdeath.com/products/gorm-expansion-monster"
+    },
+    {
+      "date": "2022-03-01",
+      "title": "We missed Valentines Day!",
+      "postUrl": "https://kingdomdeath.com/news/mc-0359734515",
+      "itemName": "Valentine's Day Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/valentines-day-death-dice"
+    },
+    {
+      "date": "2022-04-22",
+      "title": "Spring has Sprung!",
+      "postUrl": "https://kingdomdeath.com/news/mc-59de81ca38",
+      "itemName": "Kingdom Death: Monster 1.6",
+      "shopUrl": "https://shop.kingdomdeath.com/products/kingdom-death-monster-1-5"
     },
     {
       "date": "2022-04-22",
@@ -2072,6 +2863,76 @@
       "shopUrl": "https://shop.kingdomdeath.com/products/red-witches-t-shirt"
     },
     {
+      "date": "2022-04-22",
+      "title": "Spring has Sprung!",
+      "postUrl": "https://kingdomdeath.com/news/mc-59de81ca38",
+      "itemName": "Court Barrister",
+      "shopUrl": "https://shop.kingdomdeath.com/products/court-barrister"
+    },
+    {
+      "date": "2022-04-22",
+      "title": "Spring has Sprung!",
+      "postUrl": "https://kingdomdeath.com/news/mc-59de81ca38",
+      "itemName": "Estate Hero",
+      "shopUrl": "https://shop.kingdomdeath.com/products/estate-hero"
+    },
+    {
+      "date": "2022-04-22",
+      "title": "Spring has Sprung!",
+      "postUrl": "https://kingdomdeath.com/news/mc-59de81ca38",
+      "itemName": "Legendary Card Pack",
+      "shopUrl": "https://shop.kingdomdeath.com/products/legendary-card-pack-1-6-upgrade"
+    },
+    {
+      "date": "2022-04-22",
+      "title": "Spring has Sprung!",
+      "postUrl": "https://kingdomdeath.com/news/mc-59de81ca38",
+      "itemName": "Echoes of Death 2",
+      "shopUrl": "https://shop.kingdomdeath.com/products/echoes-of-death-two"
+    },
+    {
+      "date": "2022-04-22",
+      "title": "Spring has Sprung!",
+      "postUrl": "https://kingdomdeath.com/news/mc-59de81ca38",
+      "itemName": "Echoes of Death 3",
+      "shopUrl": "https://shop.kingdomdeath.com/products/echoes-of-death-4"
+    },
+    {
+      "date": "2022-04-22",
+      "title": "Spring has Sprung!",
+      "postUrl": "https://kingdomdeath.com/news/mc-59de81ca38",
+      "itemName": "Easter Aya",
+      "shopUrl": "https://shop.kingdomdeath.com/products/easter-aya"
+    },
+    {
+      "date": "2022-04-22",
+      "title": "Spring has Sprung!",
+      "postUrl": "https://kingdomdeath.com/news/mc-59de81ca38",
+      "itemName": "Easter Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/easter-death-dice"
+    },
+    {
+      "date": "2022-04-22",
+      "title": "Spring has Sprung!",
+      "postUrl": "https://kingdomdeath.com/news/mc-59de81ca38",
+      "itemName": "Spring Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/spring-death-die"
+    },
+    {
+      "date": "2022-04-22",
+      "title": "Spring has Sprung!",
+      "postUrl": "https://kingdomdeath.com/news/mc-59de81ca38",
+      "itemName": "Pinup Easter Twilight Knight",
+      "shopUrl": "https://shop.kingdomdeath.com/products/pinup-easter-twilight-knight"
+    },
+    {
+      "date": "2022-04-22",
+      "title": "Spring has Sprung!",
+      "postUrl": "https://kingdomdeath.com/news/mc-59de81ca38",
+      "itemName": "Valentine's Day Pinup Twilight Knight",
+      "shopUrl": "https://shop.kingdomdeath.com/products/valentines-day-pinup-twilight-knight"
+    },
+    {
       "date": "2022-06-01",
       "title": "Spring has Sprung!",
       "postUrl": "https://kingdomdeath.com/news/mc-1dce867050",
@@ -2084,6 +2945,132 @@
       "postUrl": "https://kingdomdeath.com/news/mc-1dce867050",
       "itemName": "Astri The Promised - Painters Scale",
       "shopUrl": "https://shop.kingdomdeath.com/products/astri-the-promised-painters-scale"
+    },
+    {
+      "date": "2022-06-01",
+      "title": "Spring has Sprung!",
+      "postUrl": "https://kingdomdeath.com/news/mc-1dce867050",
+      "itemName": "Temple Explorer",
+      "shopUrl": "https://shop.kingdomdeath.com/products/temple-explorer"
+    },
+    {
+      "date": "2022-06-01",
+      "title": "Spring has Sprung!",
+      "postUrl": "https://kingdomdeath.com/news/mc-1dce867050",
+      "itemName": "Elf - Variant",
+      "shopUrl": "https://shop.kingdomdeath.com/products/elf-variant"
+    },
+    {
+      "date": "2022-06-01",
+      "title": "Spring has Sprung!",
+      "postUrl": "https://kingdomdeath.com/news/mc-1dce867050",
+      "itemName": "Summer Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/summer-death-dice"
+    },
+    {
+      "date": "2022-06-01",
+      "title": "Spring has Sprung!",
+      "postUrl": "https://kingdomdeath.com/news/mc-1dce867050",
+      "itemName": "Spring Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/spring-death-die"
+    },
+    {
+      "date": "2022-06-01",
+      "title": "Spring has Sprung!",
+      "postUrl": "https://kingdomdeath.com/news/mc-1dce867050",
+      "itemName": "Kingdom Death: Monster 1.6",
+      "shopUrl": "https://shop.kingdomdeath.com/products/kingdom-death-monster-1-5"
+    },
+    {
+      "date": "2022-06-01",
+      "title": "Spring has Sprung!",
+      "postUrl": "https://kingdomdeath.com/news/mc-1dce867050",
+      "itemName": "Legendary Card Pack",
+      "shopUrl": "https://shop.kingdomdeath.com/products/legendary-card-pack-1-6-upgrade"
+    },
+    {
+      "date": "2022-06-01",
+      "title": "Spring has Sprung!",
+      "postUrl": "https://kingdomdeath.com/news/mc-1dce867050",
+      "itemName": "Echoes of Death 2",
+      "shopUrl": "https://shop.kingdomdeath.com/products/echoes-of-death-two"
+    },
+    {
+      "date": "2022-06-01",
+      "title": "Spring has Sprung!",
+      "postUrl": "https://kingdomdeath.com/news/mc-1dce867050",
+      "itemName": "Echoes of Death 3",
+      "shopUrl": "https://shop.kingdomdeath.com/products/echoes-of-death-4"
+    },
+    {
+      "date": "2022-06-01",
+      "title": "We Apologize",
+      "postUrl": "https://kingdomdeath.com/news/mc-7129bd94b6",
+      "itemName": "Astri The Promised - Painters Scale",
+      "shopUrl": "https://shop.kingdomdeath.com/products/astri-the-promised-painters-scale"
+    },
+    {
+      "date": "2022-06-01",
+      "title": "We Apologize",
+      "postUrl": "https://kingdomdeath.com/news/mc-7129bd94b6",
+      "itemName": "Kingdom Death: Monster 1.6",
+      "shopUrl": "https://shop.kingdomdeath.com/products/kingdom-death-monster-1-5"
+    },
+    {
+      "date": "2022-06-01",
+      "title": "We Apologize",
+      "postUrl": "https://kingdomdeath.com/news/mc-7129bd94b6",
+      "itemName": "Temple Explorer",
+      "shopUrl": "https://shop.kingdomdeath.com/products/temple-explorer"
+    },
+    {
+      "date": "2022-06-01",
+      "title": "We Apologize",
+      "postUrl": "https://kingdomdeath.com/news/mc-7129bd94b6",
+      "itemName": "Badar",
+      "shopUrl": "https://shop.kingdomdeath.com/products/badar"
+    },
+    {
+      "date": "2022-06-01",
+      "title": "We Apologize",
+      "postUrl": "https://kingdomdeath.com/news/mc-7129bd94b6",
+      "itemName": "Elf - Variant",
+      "shopUrl": "https://shop.kingdomdeath.com/products/elf-variant"
+    },
+    {
+      "date": "2022-06-01",
+      "title": "We Apologize",
+      "postUrl": "https://kingdomdeath.com/news/mc-7129bd94b6",
+      "itemName": "Legendary Card Pack",
+      "shopUrl": "https://shop.kingdomdeath.com/products/legendary-card-pack-1-6-upgrade"
+    },
+    {
+      "date": "2022-06-01",
+      "title": "We Apologize",
+      "postUrl": "https://kingdomdeath.com/news/mc-7129bd94b6",
+      "itemName": "Echoes of Death 2",
+      "shopUrl": "https://shop.kingdomdeath.com/products/echoes-of-death-two"
+    },
+    {
+      "date": "2022-06-01",
+      "title": "We Apologize",
+      "postUrl": "https://kingdomdeath.com/news/mc-7129bd94b6",
+      "itemName": "Echoes of Death 3",
+      "shopUrl": "https://shop.kingdomdeath.com/products/echoes-of-death-4"
+    },
+    {
+      "date": "2022-06-01",
+      "title": "We Apologize",
+      "postUrl": "https://kingdomdeath.com/news/mc-7129bd94b6",
+      "itemName": "Summer Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/summer-death-dice"
+    },
+    {
+      "date": "2022-06-01",
+      "title": "We Apologize",
+      "postUrl": "https://kingdomdeath.com/news/mc-7129bd94b6",
+      "itemName": "Spring Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/spring-death-die"
     },
     {
       "date": "2022-07-01",
@@ -2105,6 +3092,34 @@
       "postUrl": "https://kingdomdeath.com/news/mc-d4fb5ba33d",
       "itemName": "Crimson Crocodile T-Shirt",
       "shopUrl": "https://shop.kingdomdeath.com/products/crimson-croc-t-shirt"
+    },
+    {
+      "date": "2022-07-01",
+      "title": "Summer Painting Contest!",
+      "postUrl": "https://kingdomdeath.com/news/mc-d4fb5ba33d",
+      "itemName": "Summer Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/summer-death-dice"
+    },
+    {
+      "date": "2022-07-01",
+      "title": "Summer Painting Contest!",
+      "postUrl": "https://kingdomdeath.com/news/mc-d4fb5ba33d",
+      "itemName": "Kingdom Death: Monster 1.6",
+      "shopUrl": "https://shop.kingdomdeath.com/products/kingdom-death-monster-1-5"
+    },
+    {
+      "date": "2022-07-01",
+      "title": "Summer Painting Contest!",
+      "postUrl": "https://kingdomdeath.com/news/mc-d4fb5ba33d",
+      "itemName": "pinup lioness bust",
+      "shopUrl": "https://shop.kingdomdeath.com/collections/in-stock/products/pinup-lioness-bust"
+    },
+    {
+      "date": "2022-07-01",
+      "title": "Summer Painting Contest!",
+      "postUrl": "https://kingdomdeath.com/news/mc-d4fb5ba33d",
+      "itemName": "Legendary Card Pack",
+      "shopUrl": "https://shop.kingdomdeath.com/products/legendary-card-pack-1-6-upgrade"
     },
     {
       "date": "2022-08-09",
@@ -2131,8 +3146,57 @@
       "date": "2022-08-09",
       "title": "August 2022",
       "postUrl": "https://kingdomdeath.com/news/mc-347511f23c",
+      "itemName": "Fallen Hero",
+      "shopUrl": "https://shop.kingdomdeath.com/products/fallen-hero"
+    },
+    {
+      "date": "2022-08-09",
+      "title": "August 2022",
+      "postUrl": "https://kingdomdeath.com/news/mc-347511f23c",
       "itemName": "The Last Bard",
       "shopUrl": "https://shop.kingdomdeath.com/products/last-bard"
+    },
+    {
+      "date": "2022-08-09",
+      "title": "August 2022",
+      "postUrl": "https://kingdomdeath.com/news/mc-347511f23c",
+      "itemName": "Death High Savior",
+      "shopUrl": "https://shop.kingdomdeath.com/products/death-high-savior"
+    },
+    {
+      "date": "2022-08-09",
+      "title": "August 2022",
+      "postUrl": "https://kingdomdeath.com/news/mc-347511f23c",
+      "itemName": "Kingdom Death: Monster 1.6",
+      "shopUrl": "https://shop.kingdomdeath.com/products/kingdom-death-monster-1-5"
+    },
+    {
+      "date": "2022-08-09",
+      "title": "August 2022",
+      "postUrl": "https://kingdomdeath.com/news/mc-347511f23c",
+      "itemName": "Legendary Card Pack",
+      "shopUrl": "https://shop.kingdomdeath.com/products/legendary-card-pack-1-6-upgrade"
+    },
+    {
+      "date": "2022-08-09",
+      "title": "August 2022",
+      "postUrl": "https://kingdomdeath.com/news/mc-347511f23c",
+      "itemName": "Summer Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/summer-death-dice"
+    },
+    {
+      "date": "2022-08-31",
+      "title": "Expansion Reprint",
+      "postUrl": "https://kingdomdeath.com/news/mc-f335b6fdbe",
+      "itemName": "Kingdom Death: Monster 1.6",
+      "shopUrl": "https://shop.kingdomdeath.com/products/kingdom-death-monster-1-5"
+    },
+    {
+      "date": "2022-08-31",
+      "title": "Expansion Reprint",
+      "postUrl": "https://kingdomdeath.com/news/mc-f335b6fdbe",
+      "itemName": "Legendary Card Pack",
+      "shopUrl": "https://shop.kingdomdeath.com/products/legendary-card-pack-1-6-upgrade"
     },
     {
       "date": "2022-08-31",
@@ -2177,6 +3241,48 @@
       "shopUrl": "https://shop.kingdomdeath.com/products/performing-artists-t-shirt"
     },
     {
+      "date": "2022-10-01",
+      "title": "September 2022",
+      "postUrl": "https://kingdomdeath.com/news/mc-871d221aed",
+      "itemName": "Libra",
+      "shopUrl": "https://shop.kingdomdeath.com/products/libra"
+    },
+    {
+      "date": "2022-10-01",
+      "title": "September 2022",
+      "postUrl": "https://kingdomdeath.com/news/mc-871d221aed",
+      "itemName": "Lune",
+      "shopUrl": "https://shop.kingdomdeath.com/products/lune"
+    },
+    {
+      "date": "2022-10-01",
+      "title": "September 2022",
+      "postUrl": "https://kingdomdeath.com/news/mc-871d221aed",
+      "itemName": "Summer Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/summer-death-dice"
+    },
+    {
+      "date": "2022-10-01",
+      "title": "September 2022",
+      "postUrl": "https://kingdomdeath.com/news/mc-871d221aed",
+      "itemName": "Fall Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/fall-death-dice"
+    },
+    {
+      "date": "2022-10-01",
+      "title": "September 2022",
+      "postUrl": "https://kingdomdeath.com/news/mc-871d221aed",
+      "itemName": "Kingdom Death: Monster 1.6",
+      "shopUrl": "https://shop.kingdomdeath.com/products/kingdom-death-monster-1-5"
+    },
+    {
+      "date": "2022-10-01",
+      "title": "September 2022",
+      "postUrl": "https://kingdomdeath.com/news/mc-871d221aed",
+      "itemName": "Legendary Card Pack",
+      "shopUrl": "https://shop.kingdomdeath.com/products/legendary-card-pack-1-6-upgrade"
+    },
+    {
       "date": "2022-10-31",
       "title": "October 2022",
       "postUrl": "https://kingdomdeath.com/news/mc-a49495442c",
@@ -2203,6 +3309,62 @@
       "postUrl": "https://kingdomdeath.com/news/mc-a49495442c",
       "itemName": "Halloween Dice",
       "shopUrl": "https://shop.kingdomdeath.com/products/halloween-death-dice"
+    },
+    {
+      "date": "2022-10-31",
+      "title": "October 2022",
+      "postUrl": "https://kingdomdeath.com/news/mc-a49495442c",
+      "itemName": "Halloween Pinup Twilight Knight",
+      "shopUrl": "https://shop.kingdomdeath.com/products/plastic-halloween-pinup-twilight-knight"
+    },
+    {
+      "date": "2022-10-31",
+      "title": "October 2022",
+      "postUrl": "https://kingdomdeath.com/news/mc-a49495442c",
+      "itemName": "Halloween White Speaker",
+      "shopUrl": "https://shop.kingdomdeath.com/products/halloween-white-speaker-1"
+    },
+    {
+      "date": "2022-10-31",
+      "title": "October 2022",
+      "postUrl": "https://kingdomdeath.com/news/mc-a49495442c",
+      "itemName": "Halloween Ringtail Vixen",
+      "shopUrl": "https://shop.kingdomdeath.com/products/halloween-ringtail-vixen"
+    },
+    {
+      "date": "2022-10-31",
+      "title": "October 2022",
+      "postUrl": "https://kingdomdeath.com/news/mc-a49495442c",
+      "itemName": "Halloween Survivors",
+      "shopUrl": "https://shop.kingdomdeath.com/products/halloween-survivors"
+    },
+    {
+      "date": "2022-10-31",
+      "title": "October 2022",
+      "postUrl": "https://kingdomdeath.com/news/mc-a49495442c",
+      "itemName": "Halloween Survivors Series II",
+      "shopUrl": "https://shop.kingdomdeath.com/products/halloween-survivors-series-ii"
+    },
+    {
+      "date": "2022-10-31",
+      "title": "October 2022",
+      "postUrl": "https://kingdomdeath.com/news/mc-a49495442c",
+      "itemName": "Oktoberfest Aya",
+      "shopUrl": "https://shop.kingdomdeath.com/products/oktoberfest-aya"
+    },
+    {
+      "date": "2022-10-31",
+      "title": "October 2022",
+      "postUrl": "https://kingdomdeath.com/news/mc-a49495442c",
+      "itemName": "Kingdom Death: Monster 1.6",
+      "shopUrl": "https://shop.kingdomdeath.com/products/kingdom-death-monster-1-5"
+    },
+    {
+      "date": "2022-10-31",
+      "title": "October 2022",
+      "postUrl": "https://kingdomdeath.com/news/mc-a49495442c",
+      "itemName": "Legendary Card Pack",
+      "shopUrl": "https://shop.kingdomdeath.com/products/legendary-card-pack-1-6-upgrade"
     },
     {
       "date": "2022-11-25",
@@ -2264,6 +3426,34 @@
       "date": "2022-11-25",
       "title": "BLACK FRIDAY - November 2022",
       "postUrl": "https://kingdomdeath.com/news/mc-17408bca12",
+      "itemName": "Naked Questing Maids",
+      "shopUrl": "https://shop.kingdomdeath.com/products/questing-maids"
+    },
+    {
+      "date": "2022-11-25",
+      "title": "BLACK FRIDAY - November 2022",
+      "postUrl": "https://kingdomdeath.com/news/mc-17408bca12",
+      "itemName": "Naked Forbidden Bundle",
+      "shopUrl": "https://shop.kingdomdeath.com/products/naked-forbidden-bundle"
+    },
+    {
+      "date": "2022-11-25",
+      "title": "BLACK FRIDAY - November 2022",
+      "postUrl": "https://kingdomdeath.com/news/mc-17408bca12",
+      "itemName": "Kingdom Death: Monster 1.6",
+      "shopUrl": "https://shop.kingdomdeath.com/products/kingdom-death-monster-1-5"
+    },
+    {
+      "date": "2022-11-25",
+      "title": "BLACK FRIDAY - November 2022",
+      "postUrl": "https://kingdomdeath.com/news/mc-17408bca12",
+      "itemName": "Legendary Card Pack",
+      "shopUrl": "https://shop.kingdomdeath.com/products/legendary-card-pack-1-6-upgrade"
+    },
+    {
+      "date": "2022-11-25",
+      "title": "BLACK FRIDAY - November 2022",
+      "postUrl": "https://kingdomdeath.com/news/mc-17408bca12",
       "itemName": "Classic Death Dice",
       "shopUrl": "https://shop.kingdomdeath.com/products/classic-death-die"
     },
@@ -2271,8 +3461,36 @@
       "date": "2022-11-25",
       "title": "BLACK FRIDAY - November 2022",
       "postUrl": "https://kingdomdeath.com/news/mc-17408bca12",
-      "itemName": "Death High Allister",
+      "itemName": "Death High Alister",
       "shopUrl": "https://shop.kingdomdeath.com/products/death-high-allister"
+    },
+    {
+      "date": "2022-11-25",
+      "title": "BLACK FRIDAY - November 2022",
+      "postUrl": "https://kingdomdeath.com/news/mc-17408bca12",
+      "itemName": "Death High Erza",
+      "shopUrl": "https://shop.kingdomdeath.com/products/death-high-erza"
+    },
+    {
+      "date": "2022-11-25",
+      "title": "BLACK FRIDAY - November 2022",
+      "postUrl": "https://kingdomdeath.com/news/mc-17408bca12",
+      "itemName": "Dragon Slayer",
+      "shopUrl": "https://shop.kingdomdeath.com/products/dragon-slayer"
+    },
+    {
+      "date": "2022-11-25",
+      "title": "BLACK FRIDAY - November 2022",
+      "postUrl": "https://kingdomdeath.com/news/mc-17408bca12",
+      "itemName": "Fall Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/fall-death-dice"
+    },
+    {
+      "date": "2022-11-25",
+      "title": "BLACK FRIDAY - November 2022",
+      "postUrl": "https://kingdomdeath.com/news/mc-17408bca12",
+      "itemName": "Fallen Hero",
+      "shopUrl": "https://shop.kingdomdeath.com/products/fallen-hero"
     },
     {
       "date": "2022-11-25",
@@ -2285,6 +3503,27 @@
       "date": "2022-11-25",
       "title": "BLACK FRIDAY - November 2022",
       "postUrl": "https://kingdomdeath.com/news/mc-17408bca12",
+      "itemName": "Libra",
+      "shopUrl": "https://shop.kingdomdeath.com/products/libra"
+    },
+    {
+      "date": "2022-11-25",
+      "title": "BLACK FRIDAY - November 2022",
+      "postUrl": "https://kingdomdeath.com/news/mc-17408bca12",
+      "itemName": "Naked Nightmare Ram",
+      "shopUrl": "https://shop.kingdomdeath.com/products/naked-nightmare-ram"
+    },
+    {
+      "date": "2022-11-25",
+      "title": "BLACK FRIDAY - November 2022",
+      "postUrl": "https://kingdomdeath.com/news/mc-17408bca12",
+      "itemName": "Novice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/novice-1"
+    },
+    {
+      "date": "2022-11-25",
+      "title": "BLACK FRIDAY - November 2022",
+      "postUrl": "https://kingdomdeath.com/news/mc-17408bca12",
       "itemName": "Performing Artist T-Shirt",
       "shopUrl": "https://shop.kingdomdeath.com/products/performing-artists-t-shirt"
     },
@@ -2292,8 +3531,22 @@
       "date": "2022-11-25",
       "title": "BLACK FRIDAY - November 2022",
       "postUrl": "https://kingdomdeath.com/news/mc-17408bca12",
+      "itemName": "Satan",
+      "shopUrl": "https://shop.kingdomdeath.com/products/satan-1"
+    },
+    {
+      "date": "2022-11-25",
+      "title": "BLACK FRIDAY - November 2022",
+      "postUrl": "https://kingdomdeath.com/news/mc-17408bca12",
       "itemName": "Sci-Fi Erza",
       "shopUrl": "https://shop.kingdomdeath.com/products/sci-fi-erza-1"
+    },
+    {
+      "date": "2022-11-28",
+      "title": "Kingdom Death - The Keysmith Grows Weary",
+      "postUrl": "https://kingdomdeath.com/news/mc-20294fbb3c",
+      "itemName": "kingdom death simulator",
+      "shopUrl": "https://shop.kingdomdeath.com/products/kingdom-death-simulator"
     },
     {
       "date": "2022-11-28",
@@ -2334,6 +3587,20 @@
       "date": "2022-12-25",
       "title": "Holiday Sale!",
       "postUrl": "https://kingdomdeath.com/news/mc-647fd53eee",
+      "itemName": "Winter Solstice Lucy",
+      "shopUrl": "https://shop.kingdomdeath.com/products/winter-solstice-lucy"
+    },
+    {
+      "date": "2022-12-25",
+      "title": "Holiday Sale!",
+      "postUrl": "https://kingdomdeath.com/news/mc-647fd53eee",
+      "itemName": "Santa Satan",
+      "shopUrl": "https://shop.kingdomdeath.com/products/santa-satan"
+    },
+    {
+      "date": "2022-12-25",
+      "title": "Holiday Sale!",
+      "postUrl": "https://kingdomdeath.com/news/mc-647fd53eee",
       "itemName": "Wendy the Frozen Star, Savior of Lifelight",
       "shopUrl": "https://shop.kingdomdeath.com/products/wendy-the-frozen-star"
     },
@@ -2341,8 +3608,36 @@
       "date": "2022-12-25",
       "title": "Holiday Sale!",
       "postUrl": "https://kingdomdeath.com/news/mc-647fd53eee",
+      "itemName": "Xmas Special Pinup Twilight Knight",
+      "shopUrl": "https://shop.kingdomdeath.com/products/xmas-special-pinup-twilight-knight"
+    },
+    {
+      "date": "2022-12-25",
+      "title": "Holiday Sale!",
+      "postUrl": "https://kingdomdeath.com/news/mc-647fd53eee",
+      "itemName": "Winter Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/winter-death-dice"
+    },
+    {
+      "date": "2022-12-25",
+      "title": "Holiday Sale!",
+      "postUrl": "https://kingdomdeath.com/news/mc-647fd53eee",
+      "itemName": "Holiday Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/holiday-death-dice"
+    },
+    {
+      "date": "2022-12-25",
+      "title": "Holiday Sale!",
+      "postUrl": "https://kingdomdeath.com/news/mc-647fd53eee",
       "itemName": "Expansions of Death Bundle",
       "shopUrl": "https://shop.kingdomdeath.com/products/expansion-of-death-vol-1-6"
+    },
+    {
+      "date": "2022-12-25",
+      "title": "Holiday Sale!",
+      "postUrl": "https://kingdomdeath.com/news/mc-647fd53eee",
+      "itemName": "Kingdom Death: Monster 1.6",
+      "shopUrl": "https://shop.kingdomdeath.com/products/kingdom-death-monster-1-5"
     },
     {
       "date": "2022-12-25",
@@ -2429,6 +3724,20 @@
       "shopUrl": "https://shop.kingdomdeath.com/products/sunstalker-expansion"
     },
     {
+      "date": "2022-12-25",
+      "title": "Holiday Sale!",
+      "postUrl": "https://kingdomdeath.com/news/mc-647fd53eee",
+      "itemName": "Vignette of Death: White Gigalion",
+      "shopUrl": "https://shop.kingdomdeath.com/products/vignette-of-death-white-gigalion"
+    },
+    {
+      "date": "2023-02-01",
+      "title": "Happy Lunar New Year!",
+      "postUrl": "https://kingdomdeath.com/news/mc-adf9d4c8b3",
+      "itemName": "Winter Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/winter-death-dice"
+    },
+    {
       "date": "2023-02-01",
       "title": "Happy Lunar New Year!",
       "postUrl": "https://kingdomdeath.com/news/mc-adf9d4c8b3",
@@ -2453,8 +3762,29 @@
       "date": "2023-02-01",
       "title": "Happy Lunar New Year!",
       "postUrl": "https://kingdomdeath.com/news/mc-adf9d4c8b3",
+      "itemName": "Holy Mage",
+      "shopUrl": "https://shop.kingdomdeath.com/products/holy-mage"
+    },
+    {
+      "date": "2023-02-01",
+      "title": "Happy Lunar New Year!",
+      "postUrl": "https://kingdomdeath.com/news/mc-adf9d4c8b3",
+      "itemName": "Temple Explorer",
+      "shopUrl": "https://shop.kingdomdeath.com/products/temple-explorer"
+    },
+    {
+      "date": "2023-02-01",
+      "title": "Happy Lunar New Year!",
+      "postUrl": "https://kingdomdeath.com/news/mc-adf9d4c8b3",
       "itemName": "Monster 1.6 Core Game",
       "shopUrl": "https://shop.kingdomdeath.com/products/kingdom-death-monster-1-5"
+    },
+    {
+      "date": "2023-02-28",
+      "title": "Happy Valentine's Day!",
+      "postUrl": "https://kingdomdeath.com/news/mc-4411225263",
+      "itemName": "Valentine's Day Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/valentines-day-death-dice"
     },
     {
       "date": "2023-02-28",
@@ -2483,6 +3813,27 @@
       "postUrl": "https://kingdomdeath.com/news/mc-4411225263",
       "itemName": "Death High Intimacy",
       "shopUrl": "https://shop.kingdomdeath.com/products/death-high-intimacy-couple"
+    },
+    {
+      "date": "2023-02-28",
+      "title": "Happy Valentine's Day!",
+      "postUrl": "https://kingdomdeath.com/news/mc-4411225263",
+      "itemName": "Valentine's Day Pinup Twilight Knight",
+      "shopUrl": "https://shop.kingdomdeath.com/products/valentines-day-pinup-twilight-knight"
+    },
+    {
+      "date": "2023-02-28",
+      "title": "Happy Valentine's Day!",
+      "postUrl": "https://kingdomdeath.com/news/mc-4411225263",
+      "itemName": "Monster 1.6 Core Game",
+      "shopUrl": "https://shop.kingdomdeath.com/products/kingdom-death-monster-1-5"
+    },
+    {
+      "date": "2023-03-31",
+      "title": "March 2023",
+      "postUrl": "https://kingdomdeath.com/news/mc-717dfc9ee1",
+      "itemName": "Spring Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/spring-death-die"
     },
     {
       "date": "2023-03-31",
@@ -2527,6 +3878,20 @@
       "shopUrl": "https://shop.kingdomdeath.com/products/elf-variant"
     },
     {
+      "date": "2023-03-31",
+      "title": "March 2023",
+      "postUrl": "https://kingdomdeath.com/news/mc-717dfc9ee1",
+      "itemName": "Monster 1.6 Core Game",
+      "shopUrl": "https://shop.kingdomdeath.com/products/kingdom-death-monster-1-5"
+    },
+    {
+      "date": "2023-05-02",
+      "title": "Midspring Bonanza!",
+      "postUrl": "https://kingdomdeath.com/news/mc-c4b9f74ee2",
+      "itemName": "Easter Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/easter-death-dice"
+    },
+    {
       "date": "2023-05-02",
       "title": "Midspring Bonanza!",
       "postUrl": "https://kingdomdeath.com/news/mc-c4b9f74ee2",
@@ -2553,6 +3918,41 @@
       "postUrl": "https://kingdomdeath.com/news/mc-c4b9f74ee2",
       "itemName": "Gnostin Stonesmasher",
       "shopUrl": "https://shop.kingdomdeath.com/products/gnostin-stonesmasher"
+    },
+    {
+      "date": "2023-05-02",
+      "title": "Midspring Bonanza!",
+      "postUrl": "https://kingdomdeath.com/news/mc-c4b9f74ee2",
+      "itemName": "Easter Aya",
+      "shopUrl": "https://shop.kingdomdeath.com/products/easter-aya"
+    },
+    {
+      "date": "2023-05-02",
+      "title": "Midspring Bonanza!",
+      "postUrl": "https://kingdomdeath.com/news/mc-c4b9f74ee2",
+      "itemName": "Pinup Easter Twilight Knight",
+      "shopUrl": "https://shop.kingdomdeath.com/products/pinup-easter-twilight-knight"
+    },
+    {
+      "date": "2023-05-02",
+      "title": "Midspring Bonanza!",
+      "postUrl": "https://kingdomdeath.com/news/mc-c4b9f74ee2",
+      "itemName": "Monster 1.6 Core Game",
+      "shopUrl": "https://shop.kingdomdeath.com/products/kingdom-death-monster-1-5"
+    },
+    {
+      "date": "2023-06-12",
+      "title": "Possessed Twilight Knight Shipping Confirmation Form",
+      "postUrl": "https://kingdomdeath.com/news/mc-9ff556542a",
+      "itemName": "kingdom death monster 1 5",
+      "shopUrl": "https://shop.kingdomdeath.com/collections/in-stock/products/kingdom-death-monster-1-5"
+    },
+    {
+      "date": "2023-06-12",
+      "title": "Kingdom Death News! Murderer's Madness",
+      "postUrl": "https://kingdomdeath.com/news/mc-d0879a647d",
+      "itemName": "Summer Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/summer-death-dice"
     },
     {
       "date": "2023-06-12",
@@ -2604,6 +4004,20 @@
       "shopUrl": "https://shop.kingdomdeath.com/products/bone-eater-t-shirt"
     },
     {
+      "date": "2023-06-12",
+      "title": "Kingdom Death News! Murderer's Madness",
+      "postUrl": "https://kingdomdeath.com/news/mc-d0879a647d",
+      "itemName": "Monster 1.6 Core Game",
+      "shopUrl": "https://shop.kingdomdeath.com/products/kingdom-death-monster-1-5"
+    },
+    {
+      "date": "2023-07-11",
+      "title": "Kingdom Death News! Scorching Summer",
+      "postUrl": "https://kingdomdeath.com/news/mc-3f91de75f0",
+      "itemName": "Summer Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/summer-death-dice"
+    },
+    {
       "date": "2023-07-11",
       "title": "Kingdom Death News! Scorching Summer",
       "postUrl": "https://kingdomdeath.com/news/mc-3f91de75f0",
@@ -2653,6 +4067,69 @@
       "shopUrl": "https://shop.kingdomdeath.com/products/summer-goth"
     },
     {
+      "date": "2023-07-11",
+      "title": "Kingdom Death News! Scorching Summer",
+      "postUrl": "https://kingdomdeath.com/news/mc-3f91de75f0",
+      "itemName": "Monster 1.6 Core Game",
+      "shopUrl": "https://shop.kingdomdeath.com/products/kingdom-death-monster-1-5"
+    },
+    {
+      "date": "2023-07-13",
+      "title": "Gambler's Chest is Shipping Soon!",
+      "postUrl": "https://kingdomdeath.com/news/mc-4f1d03304e",
+      "itemName": "Summer Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/summer-death-dice"
+    },
+    {
+      "date": "2023-07-13",
+      "title": "Gambler's Chest is Shipping Soon!",
+      "postUrl": "https://kingdomdeath.com/news/mc-4f1d03304e",
+      "itemName": "Gunborg",
+      "shopUrl": "https://shop.kingdomdeath.com/products/gunborg"
+    },
+    {
+      "date": "2023-07-13",
+      "title": "Gambler's Chest is Shipping Soon!",
+      "postUrl": "https://kingdomdeath.com/news/mc-4f1d03304e",
+      "itemName": "Gunborg (Painters Scale)",
+      "shopUrl": "https://shop.kingdomdeath.com/products/gunborg-painters-scale"
+    },
+    {
+      "date": "2023-07-13",
+      "title": "Gambler's Chest is Shipping Soon!",
+      "postUrl": "https://kingdomdeath.com/news/mc-4f1d03304e",
+      "itemName": "Summer Lucy",
+      "shopUrl": "https://shop.kingdomdeath.com/products/summer-lucy"
+    },
+    {
+      "date": "2023-07-13",
+      "title": "Gambler's Chest is Shipping Soon!",
+      "postUrl": "https://kingdomdeath.com/news/mc-4f1d03304e",
+      "itemName": "Summer Lucy (Painters Scale)",
+      "shopUrl": "https://shop.kingdomdeath.com/products/summer-lucy-painters-scale"
+    },
+    {
+      "date": "2023-07-13",
+      "title": "Gambler's Chest is Shipping Soon!",
+      "postUrl": "https://kingdomdeath.com/news/mc-4f1d03304e",
+      "itemName": "Forsaker - Archival Remaster",
+      "shopUrl": "https://shop.kingdomdeath.com/products/forsaker-resculpt"
+    },
+    {
+      "date": "2023-07-13",
+      "title": "Gambler's Chest is Shipping Soon!",
+      "postUrl": "https://kingdomdeath.com/news/mc-4f1d03304e",
+      "itemName": "Mystery Birthday Gift",
+      "shopUrl": "https://shop.kingdomdeath.com/products/birthday-gift"
+    },
+    {
+      "date": "2023-07-13",
+      "title": "Gambler's Chest is Shipping Soon!",
+      "postUrl": "https://kingdomdeath.com/news/mc-4f1d03304e",
+      "itemName": "Summer Goth",
+      "shopUrl": "https://shop.kingdomdeath.com/products/summer-goth"
+    },
+    {
       "date": "2023-08-28",
       "title": "Kingdom Death News! Gencon Web Sale!",
       "postUrl": "https://kingdomdeath.com/news/mc-aa282d04c9",
@@ -2665,6 +4142,13 @@
       "postUrl": "https://kingdomdeath.com/news/mc-aa282d04c9",
       "itemName": "Card Sleeves V2 Bundles",
       "shopUrl": "https://shop.kingdomdeath.com/products/gamblers-chest-card-sleeve-bundle"
+    },
+    {
+      "date": "2023-08-28",
+      "title": "Kingdom Death News! Gencon Web Sale!",
+      "postUrl": "https://kingdomdeath.com/news/mc-aa282d04c9",
+      "itemName": "Summer Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/summer-death-dice"
     },
     {
       "date": "2023-08-28",
@@ -2733,6 +4217,13 @@
       "date": "2023-08-28",
       "title": "Kingdom Death News! Gencon Web Sale!",
       "postUrl": "https://kingdomdeath.com/news/mc-aa282d04c9",
+      "itemName": "Echoes of Death 2",
+      "shopUrl": "https://shop.kingdomdeath.com/products/echoes-of-death-two"
+    },
+    {
+      "date": "2023-08-28",
+      "title": "Kingdom Death News! Gencon Web Sale!",
+      "postUrl": "https://kingdomdeath.com/news/mc-aa282d04c9",
       "itemName": "Echoes of Death 3",
       "shopUrl": "https://shop.kingdomdeath.com/products/echoes-of-death-three"
     },
@@ -2749,6 +4240,27 @@
       "postUrl": "https://kingdomdeath.com/news/mc-aa282d04c9",
       "itemName": "Illusionist Key",
       "shopUrl": "https://shop.kingdomdeath.com/products/kingdom-death-illusionist-key"
+    },
+    {
+      "date": "2023-08-28",
+      "title": "Kingdom Death News! Gencon Web Sale!",
+      "postUrl": "https://kingdomdeath.com/news/mc-aa282d04c9",
+      "itemName": "Monster 1.6 Core Game",
+      "shopUrl": "https://shop.kingdomdeath.com/products/kingdom-death-monster-1-5"
+    },
+    {
+      "date": "2023-10-02",
+      "title": "KDU#86- Black Knight Preorders Available Now!",
+      "postUrl": "https://kingdomdeath.com/news/mc-cbf4a7be95",
+      "itemName": "webstore",
+      "shopUrl": "https://shop.kingdomdeath.com/products/gamblers-chest-expansion"
+    },
+    {
+      "date": "2023-10-02",
+      "title": "KDU#86- Black Knight Preorders Available Now!",
+      "postUrl": "https://kingdomdeath.com/news/mc-cbf4a7be95",
+      "itemName": "Fall Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/fall-death-dice"
     },
     {
       "date": "2023-10-02",
@@ -2777,6 +4289,34 @@
       "postUrl": "https://kingdomdeath.com/news/mc-cbf4a7be95",
       "itemName": "Dark of Star",
       "shopUrl": "https://shop.kingdomdeath.com/products/dark-of-star"
+    },
+    {
+      "date": "2023-10-02",
+      "title": "KDU#86- Black Knight Preorders Available Now!",
+      "postUrl": "https://kingdomdeath.com/news/mc-cbf4a7be95",
+      "itemName": "Echoes of Death 4",
+      "shopUrl": "https://shop.kingdomdeath.com/products/echoes-of-death-four"
+    },
+    {
+      "date": "2023-10-02",
+      "title": "KDU#86- Black Knight Preorders Available Now!",
+      "postUrl": "https://kingdomdeath.com/news/mc-cbf4a7be95",
+      "itemName": "Illusionist Key",
+      "shopUrl": "https://shop.kingdomdeath.com/products/kingdom-death-illusionist-key"
+    },
+    {
+      "date": "2023-10-02",
+      "title": "KDU#86- Black Knight Preorders Available Now!",
+      "postUrl": "https://kingdomdeath.com/news/mc-cbf4a7be95",
+      "itemName": "Monster 1.6 Core Game",
+      "shopUrl": "https://shop.kingdomdeath.com/products/kingdom-death-monster-1-5"
+    },
+    {
+      "date": "2023-10-02",
+      "title": "KDU#86- Black Knight Preorders Available Now!",
+      "postUrl": "https://kingdomdeath.com/news/mc-cbf4a7be95",
+      "itemName": "Card Sleeves V2 Bundles",
+      "shopUrl": "https://shop.kingdomdeath.com/products/gamblers-chest-card-sleeve-bundle"
     },
     {
       "date": "2023-10-31",
@@ -2831,6 +4371,48 @@
       "date": "2023-10-31",
       "title": "KDU#87- Halloween Sale",
       "postUrl": "https://kingdomdeath.com/news/mc-00f73fa096",
+      "itemName": "Halloween Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/halloween-death-dice"
+    },
+    {
+      "date": "2023-10-31",
+      "title": "KDU#87- Halloween Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-00f73fa096",
+      "itemName": "Devil Satan",
+      "shopUrl": "https://shop.kingdomdeath.com/products/devil-satan"
+    },
+    {
+      "date": "2023-10-31",
+      "title": "KDU#87- Halloween Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-00f73fa096",
+      "itemName": "Erza of Dedheim",
+      "shopUrl": "https://shop.kingdomdeath.com/products/erza-of-dedheim"
+    },
+    {
+      "date": "2023-10-31",
+      "title": "KDU#87- Halloween Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-00f73fa096",
+      "itemName": "Halloween Pinup Twilight Knight",
+      "shopUrl": "https://shop.kingdomdeath.com/products/plastic-halloween-pinup-twilight-knight"
+    },
+    {
+      "date": "2023-10-31",
+      "title": "KDU#87- Halloween Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-00f73fa096",
+      "itemName": "Halloween Ringtail Vixen",
+      "shopUrl": "https://shop.kingdomdeath.com/products/halloween-ringtail-vixen"
+    },
+    {
+      "date": "2023-10-31",
+      "title": "KDU#87- Halloween Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-00f73fa096",
+      "itemName": "Halloween Survivors",
+      "shopUrl": "https://shop.kingdomdeath.com/products/halloween-survivors"
+    },
+    {
+      "date": "2023-10-31",
+      "title": "KDU#87- Halloween Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-00f73fa096",
       "itemName": "Halloween Survivors - Series II",
       "shopUrl": "https://shop.kingdomdeath.com/products/halloween-survivors-series-ii"
     },
@@ -2840,6 +4422,48 @@
       "postUrl": "https://kingdomdeath.com/news/mc-00f73fa096",
       "itemName": "Halloween Survivors - Flower Knight Costume",
       "shopUrl": "https://shop.kingdomdeath.com/products/halloween-survivor-flower-knight-costume"
+    },
+    {
+      "date": "2023-10-31",
+      "title": "KDU#87- Halloween Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-00f73fa096",
+      "itemName": "Halloween White Speaker",
+      "shopUrl": "https://shop.kingdomdeath.com/products/halloween-white-speaker-1"
+    },
+    {
+      "date": "2023-10-31",
+      "title": "KDU#87- Halloween Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-00f73fa096",
+      "itemName": "Oktoberfest Aya",
+      "shopUrl": "https://shop.kingdomdeath.com/products/oktoberfest-aya"
+    },
+    {
+      "date": "2023-10-31",
+      "title": "KDU#87- Halloween Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-00f73fa096",
+      "itemName": "Monster 1.6 Core Game",
+      "shopUrl": "https://shop.kingdomdeath.com/products/kingdom-death-monster-1-5"
+    },
+    {
+      "date": "2023-10-31",
+      "title": "KDU#87- Halloween Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-00f73fa096",
+      "itemName": "Card Sleeves V2 Bundles",
+      "shopUrl": "https://shop.kingdomdeath.com/products/gamblers-chest-card-sleeve-bundle"
+    },
+    {
+      "date": "2023-10-31",
+      "title": "KDU#87- Halloween Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-00f73fa096",
+      "itemName": "Gambler's Chest expansion",
+      "shopUrl": "https://shop.kingdomdeath.com/collections/in-stock/products/gamblers-chest-expansion"
+    },
+    {
+      "date": "2023-11-24",
+      "title": "BLACK FRIDAY SALE AND NEWS",
+      "postUrl": "https://kingdomdeath.com/news/mc-7c2e410c36",
+      "itemName": "gamblers chest expansion",
+      "shopUrl": "https://shop.kingdomdeath.com/collections/expansions/products/gamblers-chest-expansion"
     },
     {
       "date": "2023-11-24",
@@ -2894,8 +4518,71 @@
       "date": "2023-11-24",
       "title": "BLACK FRIDAY SALE AND NEWS",
       "postUrl": "https://kingdomdeath.com/news/mc-7c2e410c36",
+      "itemName": "kingdom death simulator",
+      "shopUrl": "https://shop.kingdomdeath.com/products/kingdom-death-simulator"
+    },
+    {
+      "date": "2023-11-24",
+      "title": "BLACK FRIDAY SALE AND NEWS",
+      "postUrl": "https://kingdomdeath.com/news/mc-7c2e410c36",
+      "itemName": "Black Friday Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/black-friday-death-dice"
+    },
+    {
+      "date": "2023-11-24",
+      "title": "BLACK FRIDAY SALE AND NEWS",
+      "postUrl": "https://kingdomdeath.com/news/mc-7c2e410c36",
       "itemName": "kds morg",
       "shopUrl": "https://shop.kingdomdeath.com/products/kds-morg"
+    },
+    {
+      "date": "2023-11-24",
+      "title": "BLACK FRIDAY SALE AND NEWS",
+      "postUrl": "https://kingdomdeath.com/news/mc-7c2e410c36",
+      "itemName": "Naked Cat-Eater Knight",
+      "shopUrl": "https://shop.kingdomdeath.com/products/cat-eater-knight"
+    },
+    {
+      "date": "2023-11-24",
+      "title": "BLACK FRIDAY SALE AND NEWS",
+      "postUrl": "https://kingdomdeath.com/news/mc-7c2e410c36",
+      "itemName": "Naked Questing Maids",
+      "shopUrl": "https://shop.kingdomdeath.com/products/questing-maids"
+    },
+    {
+      "date": "2023-11-24",
+      "title": "BLACK FRIDAY SALE AND NEWS",
+      "postUrl": "https://kingdomdeath.com/news/mc-7c2e410c36",
+      "itemName": "Naked Forbidden Bundle",
+      "shopUrl": "https://shop.kingdomdeath.com/products/naked-forbidden-bundle"
+    },
+    {
+      "date": "2023-11-24",
+      "title": "BLACK FRIDAY SALE AND NEWS",
+      "postUrl": "https://kingdomdeath.com/news/mc-7c2e410c36",
+      "itemName": "Naked Nightmare Ram",
+      "shopUrl": "https://shop.kingdomdeath.com/products/naked-nightmare-ram"
+    },
+    {
+      "date": "2023-11-24",
+      "title": "BLACK FRIDAY SALE AND NEWS",
+      "postUrl": "https://kingdomdeath.com/news/mc-7c2e410c36",
+      "itemName": "white sunlion armor erza",
+      "shopUrl": "https://shop.kingdomdeath.com/products/white-sunlion-armor-erza"
+    },
+    {
+      "date": "2023-11-24",
+      "title": "BLACK FRIDAY SALE AND NEWS",
+      "postUrl": "https://kingdomdeath.com/news/mc-7c2e410c36",
+      "itemName": "Gambler's Chest Expansion",
+      "shopUrl": "https://shop.kingdomdeath.com/products/gamblers-chest-expansion"
+    },
+    {
+      "date": "2023-11-24",
+      "title": "BLACK FRIDAY SALE AND NEWS",
+      "postUrl": "https://kingdomdeath.com/news/mc-7c2e410c36",
+      "itemName": "Kingdom Death: Monster 1.6",
+      "shopUrl": "https://shop.kingdomdeath.com/products/kingdom-death-monster-1-5"
     },
     {
       "date": "2023-11-24",
@@ -2915,8 +4602,113 @@
       "date": "2023-11-24",
       "title": "BLACK FRIDAY SALE AND NEWS",
       "postUrl": "https://kingdomdeath.com/news/mc-7c2e410c36",
+      "itemName": "KDS - Digital Expansions of Death Vol 1",
+      "shopUrl": "https://shop.kingdomdeath.com/collections/kingdom-death-simulator/products/kds-expansions-of-death-vol-1-6"
+    },
+    {
+      "date": "2023-11-24",
+      "title": "BLACK FRIDAY SALE AND NEWS",
+      "postUrl": "https://kingdomdeath.com/news/mc-7c2e410c36",
+      "itemName": "KDS - Dung Beetle Knight Expansion",
+      "shopUrl": "https://shop.kingdomdeath.com/collections/kingdom-death-simulator/products/kds-dbk-expansion"
+    },
+    {
+      "date": "2023-11-24",
+      "title": "BLACK FRIDAY SALE AND NEWS",
+      "postUrl": "https://kingdomdeath.com/news/mc-7c2e410c36",
+      "itemName": "KDS - Flower Knight Expansion",
+      "shopUrl": "https://shop.kingdomdeath.com/collections/kingdom-death-simulator/products/kds-flower-knight-expansion"
+    },
+    {
+      "date": "2023-11-24",
+      "title": "BLACK FRIDAY SALE AND NEWS",
+      "postUrl": "https://kingdomdeath.com/news/mc-7c2e410c36",
+      "itemName": "KDS - Gigalion Vignette",
+      "shopUrl": "https://shop.kingdomdeath.com/collections/kingdom-death-simulator/products/kds-gigalion-vignette"
+    },
+    {
+      "date": "2023-11-24",
+      "title": "BLACK FRIDAY SALE AND NEWS",
+      "postUrl": "https://kingdomdeath.com/news/mc-7c2e410c36",
+      "itemName": "KDS - Green Knight Armor Expansion",
+      "shopUrl": "https://shop.kingdomdeath.com/collections/kingdom-death-simulator/products/kds-green-knight-armor-expansion"
+    },
+    {
+      "date": "2023-11-24",
+      "title": "BLACK FRIDAY SALE AND NEWS",
+      "postUrl": "https://kingdomdeath.com/news/mc-7c2e410c36",
+      "itemName": "KDS - Lion God Expansion",
+      "shopUrl": "https://shop.kingdomdeath.com/collections/kingdom-death-simulator/products/kds-lion-god-expansion"
+    },
+    {
+      "date": "2023-11-24",
+      "title": "BLACK FRIDAY SALE AND NEWS",
+      "postUrl": "https://kingdomdeath.com/news/mc-7c2e410c36",
+      "itemName": "KDS - Lion Knight Expansion",
+      "shopUrl": "https://shop.kingdomdeath.com/collections/kingdom-death-simulator/products/kds-lion-knight-expansion"
+    },
+    {
+      "date": "2023-11-24",
+      "title": "BLACK FRIDAY SALE AND NEWS",
+      "postUrl": "https://kingdomdeath.com/news/mc-7c2e410c36",
+      "itemName": "KDS - Lonely Tree Expansion",
+      "shopUrl": "https://shop.kingdomdeath.com/collections/kingdom-death-simulator/products/kds-lonely-tree-expansion"
+    },
+    {
+      "date": "2023-11-24",
+      "title": "BLACK FRIDAY SALE AND NEWS",
+      "postUrl": "https://kingdomdeath.com/news/mc-7c2e410c36",
+      "itemName": "KDS - Manhunter Expansion",
+      "shopUrl": "https://shop.kingdomdeath.com/collections/kingdom-death-simulator/products/kds-manhunter-expansion"
+    },
+    {
+      "date": "2023-11-24",
+      "title": "BLACK FRIDAY SALE AND NEWS",
+      "postUrl": "https://kingdomdeath.com/news/mc-7c2e410c36",
+      "itemName": "KDS - Morg",
+      "shopUrl": "https://shop.kingdomdeath.com/collections/kingdom-death-simulator/products/kds-morg"
+    },
+    {
+      "date": "2023-11-24",
+      "title": "BLACK FRIDAY SALE AND NEWS",
+      "postUrl": "https://kingdomdeath.com/news/mc-7c2e410c36",
+      "itemName": "KDS - Slenderman Expansion",
+      "shopUrl": "https://shop.kingdomdeath.com/collections/kingdom-death-simulator/products/kds-slenderman-expansion"
+    },
+    {
+      "date": "2023-11-24",
+      "title": "BLACK FRIDAY SALE AND NEWS",
+      "postUrl": "https://kingdomdeath.com/news/mc-7c2e410c36",
+      "itemName": "KDS - Sunstalker Expansion",
+      "shopUrl": "https://shop.kingdomdeath.com/collections/kingdom-death-simulator/products/kds-sunstalker-expansion"
+    },
+    {
+      "date": "2023-11-24",
+      "title": "BLACK FRIDAY SALE AND NEWS",
+      "postUrl": "https://kingdomdeath.com/news/mc-7c2e410c36",
       "itemName": "Naked Future 2023",
       "shopUrl": "https://shop.kingdomdeath.com/products/naked-future-2023"
+    },
+    {
+      "date": "2023-11-27",
+      "title": "BLACK FRIDAY SALE ENDS IN 5 HOURS!",
+      "postUrl": "https://kingdomdeath.com/news/mc-5ee64c7432",
+      "itemName": "Ultimate Starting Survivor Sets",
+      "shopUrl": "https://shop.kingdomdeath.com/collections/in-stock/products/ultimate-starting-survivor-set"
+    },
+    {
+      "date": "2023-11-27",
+      "title": "BLACK FRIDAY SALE ENDS IN 5 HOURS!",
+      "postUrl": "https://kingdomdeath.com/news/mc-5ee64c7432",
+      "itemName": "KDS Master Key",
+      "shopUrl": "https://shop.kingdomdeath.com/collections/kingdom-death-simulator/products/kingdom-death-simulator-1"
+    },
+    {
+      "date": "2023-11-27",
+      "title": "BLACK FRIDAY SALE ENDS IN 5 HOURS!",
+      "postUrl": "https://kingdomdeath.com/news/mc-5ee64c7432",
+      "itemName": "waiting in the railyard",
+      "shopUrl": "https://shop.kingdomdeath.com/collections/in-stock/products/waiting-in-the-railyard"
     },
     {
       "date": "2023-11-27",
@@ -2964,6 +4756,27 @@
       "date": "2023-12-25",
       "title": "KDU#89 - Deathmas Sale",
       "postUrl": "https://kingdomdeath.com/news/mc-bf25e52437",
+      "itemName": "Holiday Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/holiday-death-dice"
+    },
+    {
+      "date": "2023-12-25",
+      "title": "KDU#89 - Deathmas Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-bf25e52437",
+      "itemName": "Winter Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/winter-death-dice"
+    },
+    {
+      "date": "2023-12-25",
+      "title": "KDU#89 - Deathmas Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-bf25e52437",
+      "itemName": "Santa Satan",
+      "shopUrl": "https://shop.kingdomdeath.com/products/santa-satan"
+    },
+    {
+      "date": "2023-12-25",
+      "title": "KDU#89 - Deathmas Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-bf25e52437",
       "itemName": "Elgnirk the Choas Elf",
       "shopUrl": "https://shop.kingdomdeath.com/products/erza-the-choas-elf"
     },
@@ -2985,6 +4798,20 @@
       "date": "2023-12-25",
       "title": "KDU#89 - Deathmas Sale",
       "postUrl": "https://kingdomdeath.com/news/mc-bf25e52437",
+      "itemName": "Ammo Slave",
+      "shopUrl": "https://shop.kingdomdeath.com/products/ammo-slave"
+    },
+    {
+      "date": "2023-12-25",
+      "title": "KDU#89 - Deathmas Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-bf25e52437",
+      "itemName": "Thrall",
+      "shopUrl": "https://shop.kingdomdeath.com/products/thrall"
+    },
+    {
+      "date": "2023-12-25",
+      "title": "KDU#89 - Deathmas Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-bf25e52437",
       "itemName": "Monster 1.6 Game",
       "shopUrl": "https://shop.kingdomdeath.com/products/kingdom-death-monster-1-5"
     },
@@ -2994,6 +4821,13 @@
       "postUrl": "https://kingdomdeath.com/news/mc-bf25e52437",
       "itemName": "Premium Card Sleeve Sets",
       "shopUrl": "https://shop.kingdomdeath.com/products/gamblers-chest-card-sleeve-bundle"
+    },
+    {
+      "date": "2023-12-25",
+      "title": "KDU#89 - Deathmas Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-bf25e52437",
+      "itemName": "Gambler's Chest expansion",
+      "shopUrl": "https://shop.kingdomdeath.com/collections/in-stock/products/gamblers-chest-expansion"
     },
     {
       "date": "2024-01-31",
@@ -3041,6 +4875,27 @@
       "date": "2024-01-31",
       "title": "KDU#90 - 2024 arrives with a bang!",
       "postUrl": "https://kingdomdeath.com/news/mc-4cf984e737",
+      "itemName": "Lunar Twilight Knight",
+      "shopUrl": "https://shop.kingdomdeath.com/products/lunar-twilight-knight"
+    },
+    {
+      "date": "2024-01-31",
+      "title": "KDU#90 - 2024 arrives with a bang!",
+      "postUrl": "https://kingdomdeath.com/news/mc-4cf984e737",
+      "itemName": "Holiday Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/holiday-death-dice"
+    },
+    {
+      "date": "2024-01-31",
+      "title": "KDU#90 - 2024 arrives with a bang!",
+      "postUrl": "https://kingdomdeath.com/news/mc-4cf984e737",
+      "itemName": "Winter Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/winter-death-dice"
+    },
+    {
+      "date": "2024-01-31",
+      "title": "KDU#90 - 2024 arrives with a bang!",
+      "postUrl": "https://kingdomdeath.com/news/mc-4cf984e737",
       "itemName": "Savior 40 Years",
       "shopUrl": "https://shop.kingdomdeath.com/products/savior-40-years"
     },
@@ -3050,6 +4905,27 @@
       "postUrl": "https://kingdomdeath.com/news/mc-4cf984e737",
       "itemName": "Sci-Fi Twilight Knight",
       "shopUrl": "https://shop.kingdomdeath.com/products/sci-fi-twilight-knight"
+    },
+    {
+      "date": "2024-01-31",
+      "title": "KDU#90 - 2024 arrives with a bang!",
+      "postUrl": "https://kingdomdeath.com/news/mc-4cf984e737",
+      "itemName": "Monster 1.6 Game",
+      "shopUrl": "https://shop.kingdomdeath.com/products/kingdom-death-monster-1-5"
+    },
+    {
+      "date": "2024-01-31",
+      "title": "KDU#90 - 2024 arrives with a bang!",
+      "postUrl": "https://kingdomdeath.com/news/mc-4cf984e737",
+      "itemName": "Gambler's Chest Expansion",
+      "shopUrl": "https://shop.kingdomdeath.com/products/gamblers-chest-expansion"
+    },
+    {
+      "date": "2024-01-31",
+      "title": "KDU#90 - 2024 arrives with a bang!",
+      "postUrl": "https://kingdomdeath.com/news/mc-4cf984e737",
+      "itemName": "Premium Card Sleeve Sets",
+      "shopUrl": "https://shop.kingdomdeath.com/products/gamblers-chest-card-sleeve-bundle"
     },
     {
       "date": "2024-02-29",
@@ -3083,8 +4959,50 @@
       "date": "2024-02-29",
       "title": "KDU#91 - Killennium Love",
       "postUrl": "https://kingdomdeath.com/news/mc-89ec9e0fce",
+      "itemName": "Valentine's Day Pinup Twilight Knight",
+      "shopUrl": "https://shop.kingdomdeath.com/products/valentines-day-pinup-twilight-knight"
+    },
+    {
+      "date": "2024-02-29",
+      "title": "KDU#91 - Killennium Love",
+      "postUrl": "https://kingdomdeath.com/news/mc-89ec9e0fce",
+      "itemName": "Valentine's Day Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/valentines-day-death-dice"
+    },
+    {
+      "date": "2024-02-29",
+      "title": "KDU#91 - Killennium Love",
+      "postUrl": "https://kingdomdeath.com/news/mc-89ec9e0fce",
+      "itemName": "10th Anniversary Survivors",
+      "shopUrl": "https://shop.kingdomdeath.com/products/10th-anniversary-survivors"
+    },
+    {
+      "date": "2024-02-29",
+      "title": "KDU#91 - Killennium Love",
+      "postUrl": "https://kingdomdeath.com/news/mc-89ec9e0fce",
       "itemName": "Blushing Owl",
       "shopUrl": "https://shop.kingdomdeath.com/products/blushing-owl-photoresin"
+    },
+    {
+      "date": "2024-02-29",
+      "title": "KDU#91 - Killennium Love",
+      "postUrl": "https://kingdomdeath.com/news/mc-89ec9e0fce",
+      "itemName": "Monster 1.6 Game",
+      "shopUrl": "https://shop.kingdomdeath.com/products/kingdom-death-monster-1-5"
+    },
+    {
+      "date": "2024-02-29",
+      "title": "KDU#91 - Killennium Love",
+      "postUrl": "https://kingdomdeath.com/news/mc-89ec9e0fce",
+      "itemName": "Gambler's Chest Expansion",
+      "shopUrl": "https://shop.kingdomdeath.com/products/gamblers-chest-expansion"
+    },
+    {
+      "date": "2024-02-29",
+      "title": "KDU#91 - Killennium Love",
+      "postUrl": "https://kingdomdeath.com/news/mc-89ec9e0fce",
+      "itemName": "Premium Card Sleeve Sets",
+      "shopUrl": "https://shop.kingdomdeath.com/products/gamblers-chest-card-sleeve-bundle"
     },
     {
       "date": "2024-04-02",
@@ -3139,8 +5057,50 @@
       "date": "2024-04-02",
       "title": "KDU#92 - Black Spring",
       "postUrl": "https://kingdomdeath.com/news/mc-77577f1d45",
+      "itemName": "Spring Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/spring-death-die"
+    },
+    {
+      "date": "2024-04-02",
+      "title": "KDU#92 - Black Spring",
+      "postUrl": "https://kingdomdeath.com/news/mc-77577f1d45",
       "itemName": "Astri",
       "shopUrl": "https://shop.kingdomdeath.com/products/astri-the-promised"
+    },
+    {
+      "date": "2024-04-02",
+      "title": "KDU#92 - Black Spring",
+      "postUrl": "https://kingdomdeath.com/news/mc-77577f1d45",
+      "itemName": "Gunborg",
+      "shopUrl": "https://shop.kingdomdeath.com/products/gunborg"
+    },
+    {
+      "date": "2024-04-02",
+      "title": "KDU#92 - Black Spring",
+      "postUrl": "https://kingdomdeath.com/news/mc-77577f1d45",
+      "itemName": "Sunstalker Dancer Bust",
+      "shopUrl": "https://shop.kingdomdeath.com/products/sunstalker-dancer-bust"
+    },
+    {
+      "date": "2024-04-02",
+      "title": "KDU#92 - Black Spring",
+      "postUrl": "https://kingdomdeath.com/news/mc-77577f1d45",
+      "itemName": "Monster 1.6 Game",
+      "shopUrl": "https://shop.kingdomdeath.com/products/kingdom-death-monster-1-5"
+    },
+    {
+      "date": "2024-04-02",
+      "title": "KDU#92 - Black Spring",
+      "postUrl": "https://kingdomdeath.com/news/mc-77577f1d45",
+      "itemName": "Gambler's Chest Expansion",
+      "shopUrl": "https://shop.kingdomdeath.com/products/gamblers-chest-expansion"
+    },
+    {
+      "date": "2024-04-02",
+      "title": "KDU#92 - Black Spring",
+      "postUrl": "https://kingdomdeath.com/news/mc-77577f1d45",
+      "itemName": "Premium Card Sleeve Sets",
+      "shopUrl": "https://shop.kingdomdeath.com/products/gamblers-chest-card-sleeve-bundle"
     },
     {
       "date": "2024-04-30",
@@ -3195,8 +5155,71 @@
       "date": "2024-04-30",
       "title": "KDU#93 - April Arrivals",
       "postUrl": "https://kingdomdeath.com/news/mc-ca2d5759c5",
+      "itemName": "Easter Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/easter-death-dice"
+    },
+    {
+      "date": "2024-04-30",
+      "title": "KDU#93 - April Arrivals",
+      "postUrl": "https://kingdomdeath.com/news/mc-ca2d5759c5",
+      "itemName": "Easter Aya",
+      "shopUrl": "https://shop.kingdomdeath.com/products/easter-aya"
+    },
+    {
+      "date": "2024-04-30",
+      "title": "KDU#93 - April Arrivals",
+      "postUrl": "https://kingdomdeath.com/news/mc-ca2d5759c5",
+      "itemName": "Lolowen",
+      "shopUrl": "https://shop.kingdomdeath.com/products/lolowen"
+    },
+    {
+      "date": "2024-04-30",
+      "title": "KDU#93 - April Arrivals",
+      "postUrl": "https://kingdomdeath.com/news/mc-ca2d5759c5",
+      "itemName": "Easter Pinup Twilight Knight",
+      "shopUrl": "https://shop.kingdomdeath.com/products/pinup-easter-twilight-knight"
+    },
+    {
+      "date": "2024-04-30",
+      "title": "KDU#93 - April Arrivals",
+      "postUrl": "https://kingdomdeath.com/news/mc-ca2d5759c5",
       "itemName": "Pascha Variant",
       "shopUrl": "https://shop.kingdomdeath.com/products/pascha-variant"
+    },
+    {
+      "date": "2024-04-30",
+      "title": "KDU#93 - April Arrivals",
+      "postUrl": "https://kingdomdeath.com/news/mc-ca2d5759c5",
+      "itemName": "Monster 1.6 Game",
+      "shopUrl": "https://shop.kingdomdeath.com/products/kingdom-death-monster-1-5"
+    },
+    {
+      "date": "2024-04-30",
+      "title": "KDU#93 - April Arrivals",
+      "postUrl": "https://kingdomdeath.com/news/mc-ca2d5759c5",
+      "itemName": "Gambler's Chest Expansion",
+      "shopUrl": "https://shop.kingdomdeath.com/products/gamblers-chest-expansion"
+    },
+    {
+      "date": "2024-04-30",
+      "title": "KDU#93 - April Arrivals",
+      "postUrl": "https://kingdomdeath.com/news/mc-ca2d5759c5",
+      "itemName": "Black Knight Expansion",
+      "shopUrl": "https://shop.kingdomdeath.com/products/black-knight-expansion"
+    },
+    {
+      "date": "2024-04-30",
+      "title": "KDU#93 - April Arrivals",
+      "postUrl": "https://kingdomdeath.com/news/mc-ca2d5759c5",
+      "itemName": "Premium Card Sleeve Sets",
+      "shopUrl": "https://shop.kingdomdeath.com/products/gamblers-chest-card-sleeve-bundle"
+    },
+    {
+      "date": "2024-04-30",
+      "title": "KDU#93 - April Arrivals",
+      "postUrl": "https://kingdomdeath.com/news/mc-ca2d5759c5",
+      "itemName": "kingdom death simulator 1",
+      "shopUrl": "https://shop.kingdomdeath.com/collections/kingdom-death-simulator/products/kingdom-death-simulator-1"
     },
     {
       "date": "2024-05-31",
@@ -3237,8 +5260,57 @@
       "date": "2024-05-31",
       "title": "KDU#94 - May Sale",
       "postUrl": "https://kingdomdeath.com/news/mc-412c26c031",
+      "itemName": "Easter Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/easter-death-dice"
+    },
+    {
+      "date": "2024-05-31",
+      "title": "KDU#94 - May Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-412c26c031",
+      "itemName": "Dragon Slayer",
+      "shopUrl": "https://shop.kingdomdeath.com/products/dragon-slayer"
+    },
+    {
+      "date": "2024-05-31",
+      "title": "KDU#94 - May Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-412c26c031",
+      "itemName": "Hospitalar",
+      "shopUrl": "https://shop.kingdomdeath.com/products/hospitalar"
+    },
+    {
+      "date": "2024-05-31",
+      "title": "KDU#94 - May Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-412c26c031",
       "itemName": "Scifi White Speaker Hard Plastic",
       "shopUrl": "https://shop.kingdomdeath.com/products/sci-fi-white-speaker-1"
+    },
+    {
+      "date": "2024-05-31",
+      "title": "KDU#94 - May Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-412c26c031",
+      "itemName": "Monster 1.6 Game",
+      "shopUrl": "https://shop.kingdomdeath.com/products/kingdom-death-monster-1-5"
+    },
+    {
+      "date": "2024-05-31",
+      "title": "KDU#94 - May Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-412c26c031",
+      "itemName": "Gambler's Chest Expansion",
+      "shopUrl": "https://shop.kingdomdeath.com/products/gamblers-chest-expansion"
+    },
+    {
+      "date": "2024-05-31",
+      "title": "KDU#94 - May Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-412c26c031",
+      "itemName": "Black Knight Expansion",
+      "shopUrl": "https://shop.kingdomdeath.com/products/black-knight-expansion"
+    },
+    {
+      "date": "2024-05-31",
+      "title": "KDU#94 - May Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-412c26c031",
+      "itemName": "Premium Card Sleeve Sets",
+      "shopUrl": "https://shop.kingdomdeath.com/products/gamblers-chest-card-sleeve-bundle"
     },
     {
       "date": "2024-07-03",
@@ -3269,6 +5341,55 @@
       "shopUrl": "https://shop.kingdomdeath.com/products/indomitable-survivor-greatest-gaxe-morg"
     },
     {
+      "date": "2024-07-03",
+      "title": "KDU#95 - June Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-19f64c8184",
+      "itemName": "Summer Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/summer-death-dice"
+    },
+    {
+      "date": "2024-07-03",
+      "title": "KDU#95 - June Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-19f64c8184",
+      "itemName": "Summer Goth",
+      "shopUrl": "https://shop.kingdomdeath.com/products/summer-goth"
+    },
+    {
+      "date": "2024-07-03",
+      "title": "KDU#95 - June Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-19f64c8184",
+      "itemName": "Strider Princess",
+      "shopUrl": "https://shop.kingdomdeath.com/products/strider-princess"
+    },
+    {
+      "date": "2024-07-03",
+      "title": "KDU#95 - June Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-19f64c8184",
+      "itemName": "Monster 1.6 Game",
+      "shopUrl": "https://shop.kingdomdeath.com/products/kingdom-death-monster-1-5"
+    },
+    {
+      "date": "2024-07-03",
+      "title": "KDU#95 - June Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-19f64c8184",
+      "itemName": "Gambler's Chest Expansion",
+      "shopUrl": "https://shop.kingdomdeath.com/products/gamblers-chest-expansion"
+    },
+    {
+      "date": "2024-07-03",
+      "title": "KDU#95 - June Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-19f64c8184",
+      "itemName": "Black Knight Expansion",
+      "shopUrl": "https://shop.kingdomdeath.com/products/black-knight-expansion"
+    },
+    {
+      "date": "2024-07-03",
+      "title": "KDU#95 - June Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-19f64c8184",
+      "itemName": "Premium Card Sleeve Sets",
+      "shopUrl": "https://shop.kingdomdeath.com/products/gamblers-chest-card-sleeve-bundle"
+    },
+    {
       "date": "2024-07-26",
       "title": "KDU#96 -July sale is regional!",
       "postUrl": "https://kingdomdeath.com/news/mc-2f16a9481e",
@@ -3293,8 +5414,43 @@
       "date": "2024-07-26",
       "title": "KDU#96 -July sale is regional!",
       "postUrl": "https://kingdomdeath.com/news/mc-2f16a9481e",
+      "itemName": "Premium Card Sleeve Sets",
+      "shopUrl": "https://shop.kingdomdeath.com/products/gamblers-chest-card-sleeve-bundle"
+    },
+    {
+      "date": "2024-07-26",
+      "title": "KDU#96 -July sale is regional!",
+      "postUrl": "https://kingdomdeath.com/news/mc-2f16a9481e",
+      "itemName": "Early Survivor - Zelda",
+      "shopUrl": "https://shop.kingdomdeath.com/products/early-survivor-zelda"
+    },
+    {
+      "date": "2024-07-26",
+      "title": "KDU#96 -July sale is regional!",
+      "postUrl": "https://kingdomdeath.com/news/mc-2f16a9481e",
       "itemName": "Elsbeth",
       "shopUrl": "https://shop.kingdomdeath.com/products/elsbeth"
+    },
+    {
+      "date": "2024-07-26",
+      "title": "KDU#96 -July sale is regional!",
+      "postUrl": "https://kingdomdeath.com/news/mc-2f16a9481e",
+      "itemName": "Black Knight Expansion",
+      "shopUrl": "https://shop.kingdomdeath.com/products/black-knight-expansion"
+    },
+    {
+      "date": "2024-07-26",
+      "title": "KDU#96 -July sale is regional!",
+      "postUrl": "https://kingdomdeath.com/news/mc-2f16a9481e",
+      "itemName": "Monster 1.6 Game",
+      "shopUrl": "https://shop.kingdomdeath.com/products/kingdom-death-monster-1-5"
+    },
+    {
+      "date": "2024-07-26",
+      "title": "KDU#96 -July sale is regional!",
+      "postUrl": "https://kingdomdeath.com/news/mc-2f16a9481e",
+      "itemName": "Gambler's Chest Expansion",
+      "shopUrl": "https://shop.kingdomdeath.com/products/gamblers-chest-expansion"
     },
     {
       "date": "2024-08-29",
@@ -3454,8 +5610,22 @@
       "date": "2024-08-29",
       "title": "KDU#97 - Post-Gencon Excitement",
       "postUrl": "https://kingdomdeath.com/news/mc-980dbb0cda",
+      "itemName": "Ultimate Showdown Board",
+      "shopUrl": "https://shop.kingdomdeath.com/products/ultimate-showdown-board"
+    },
+    {
+      "date": "2024-08-29",
+      "title": "KDU#97 - Post-Gencon Excitement",
+      "postUrl": "https://kingdomdeath.com/news/mc-980dbb0cda",
       "itemName": "Frogdog Expansion",
       "shopUrl": "https://shop.kingdomdeath.com/products/frogdog-expansion"
+    },
+    {
+      "date": "2024-08-29",
+      "title": "KDU#97 - Post-Gencon Excitement",
+      "postUrl": "https://kingdomdeath.com/news/mc-980dbb0cda",
+      "itemName": "Gambler's Chest Expansion",
+      "shopUrl": "https://shop.kingdomdeath.com/collections/expansions-1/products/gamblers-chest-expansion"
     },
     {
       "date": "2024-09-30",
@@ -3528,6 +5698,27 @@
       "shopUrl": "https://shop.kingdomdeath.com/products/indomitable-survivor-thumping-timpani-ledla"
     },
     {
+      "date": "2024-09-30",
+      "title": "KDU#98 - Back to School Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-51b46b06ac",
+      "itemName": "Bullet Dancer",
+      "shopUrl": "https://shop.kingdomdeath.com/products/bullet-dancer"
+    },
+    {
+      "date": "2024-09-30",
+      "title": "KDU#98 - Back to School Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-51b46b06ac",
+      "itemName": "Frogdog Expansion",
+      "shopUrl": "https://shop.kingdomdeath.com/products/frogdog-expansion"
+    },
+    {
+      "date": "2024-09-30",
+      "title": "KDU#98 - Back to School Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-51b46b06ac",
+      "itemName": "Gambler's Chest Expansion",
+      "shopUrl": "https://shop.kingdomdeath.com/collections/expansions-1/products/gamblers-chest-expansion"
+    },
+    {
       "date": "2024-10-31",
       "title": "KDU#99 - Black Cats and Golden Bats",
       "postUrl": "https://kingdomdeath.com/news/mc-059aa211d2",
@@ -3580,6 +5771,13 @@
       "date": "2024-10-31",
       "title": "KDU#99 - Black Cats and Golden Bats",
       "postUrl": "https://kingdomdeath.com/news/mc-059aa211d2",
+      "itemName": "Sylvania",
+      "shopUrl": "https://shop.kingdomdeath.com/products/sylvania"
+    },
+    {
+      "date": "2024-10-31",
+      "title": "KDU#99 - Black Cats and Golden Bats",
+      "postUrl": "https://kingdomdeath.com/news/mc-059aa211d2",
       "itemName": "Disciple of the Witch - One",
       "shopUrl": "https://shop.kingdomdeath.com/products/disciple-of-the-witch-one"
     },
@@ -3615,8 +5813,106 @@
       "date": "2024-10-31",
       "title": "KDU#99 - Black Cats and Golden Bats",
       "postUrl": "https://kingdomdeath.com/news/mc-059aa211d2",
+      "itemName": "Devil Satan",
+      "shopUrl": "https://shop.kingdomdeath.com/products/devil-satan"
+    },
+    {
+      "date": "2024-10-31",
+      "title": "KDU#99 - Black Cats and Golden Bats",
+      "postUrl": "https://kingdomdeath.com/news/mc-059aa211d2",
+      "itemName": "Erza of Dedheim",
+      "shopUrl": "https://shop.kingdomdeath.com/products/erza-of-dedheim"
+    },
+    {
+      "date": "2024-10-31",
+      "title": "KDU#99 - Black Cats and Golden Bats",
+      "postUrl": "https://kingdomdeath.com/news/mc-059aa211d2",
+      "itemName": "Halloween White Speaker",
+      "shopUrl": "https://shop.kingdomdeath.com/products/halloween-white-speaker-1"
+    },
+    {
+      "date": "2024-10-31",
+      "title": "KDU#99 - Black Cats and Golden Bats",
+      "postUrl": "https://kingdomdeath.com/news/mc-059aa211d2",
+      "itemName": "Halloween Pinup Twilight Knight",
+      "shopUrl": "https://shop.kingdomdeath.com/products/plastic-halloween-pinup-twilight-knight"
+    },
+    {
+      "date": "2024-10-31",
+      "title": "KDU#99 - Black Cats and Golden Bats",
+      "postUrl": "https://kingdomdeath.com/news/mc-059aa211d2",
+      "itemName": "Halloween Ringtail Vixen",
+      "shopUrl": "https://shop.kingdomdeath.com/products/halloween-ringtail-vixen"
+    },
+    {
+      "date": "2024-10-31",
+      "title": "KDU#99 - Black Cats and Golden Bats",
+      "postUrl": "https://kingdomdeath.com/news/mc-059aa211d2",
       "itemName": "Halloween Survivors I",
       "shopUrl": "https://shop.kingdomdeath.com/products/halloween-survivors"
+    },
+    {
+      "date": "2024-10-31",
+      "title": "KDU#99 - Black Cats and Golden Bats",
+      "postUrl": "https://kingdomdeath.com/news/mc-059aa211d2",
+      "itemName": "Halloween Survivors - Flower Knight Costume",
+      "shopUrl": "https://shop.kingdomdeath.com/products/halloween-survivor-flower-knight-costume"
+    },
+    {
+      "date": "2024-10-31",
+      "title": "KDU#99 - Black Cats and Golden Bats",
+      "postUrl": "https://kingdomdeath.com/news/mc-059aa211d2",
+      "itemName": "Halloween Survivors - King Costume",
+      "shopUrl": "https://shop.kingdomdeath.com/products/halloween-survivors-king-costume"
+    },
+    {
+      "date": "2024-10-31",
+      "title": "KDU#99 - Black Cats and Golden Bats",
+      "postUrl": "https://kingdomdeath.com/news/mc-059aa211d2",
+      "itemName": "Halloween Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/halloween-death-dice"
+    },
+    {
+      "date": "2024-10-31",
+      "title": "KDU#99 - Black Cats and Golden Bats",
+      "postUrl": "https://kingdomdeath.com/news/mc-059aa211d2",
+      "itemName": "Fall Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/fall-death-dice"
+    },
+    {
+      "date": "2024-10-31",
+      "title": "KDU#99 - Black Cats and Golden Bats",
+      "postUrl": "https://kingdomdeath.com/news/mc-059aa211d2",
+      "itemName": "Frogdog Expansion",
+      "shopUrl": "https://shop.kingdomdeath.com/products/frogdog-expansion"
+    },
+    {
+      "date": "2024-10-31",
+      "title": "KDU#99 - Black Cats and Golden Bats",
+      "postUrl": "https://kingdomdeath.com/news/mc-059aa211d2",
+      "itemName": "Gambler's Chest Expansion",
+      "shopUrl": "https://shop.kingdomdeath.com/collections/expansions-1/products/gamblers-chest-expansion"
+    },
+    {
+      "date": "2024-11-29",
+      "title": "BLACK FRIDAY SALE AND NEWS",
+      "postUrl": "https://kingdomdeath.com/news/mc-1424666d1a",
+      "itemName": "Black Knight",
+      "shopUrl": "https://shop.kingdomdeath.com/collections/expansion/products/black-knight-expansion"
+    },
+    {
+      "date": "2024-11-29",
+      "title": "BLACK FRIDAY SALE AND NEWS",
+      "postUrl": "https://kingdomdeath.com/news/mc-1424666d1a",
+      "itemName": "Frogdog",
+      "shopUrl": "https://shop.kingdomdeath.com/collections/expansion/products/frogdog-expansion"
+    },
+    {
+      "date": "2024-11-29",
+      "title": "BLACK FRIDAY SALE AND NEWS",
+      "postUrl": "https://kingdomdeath.com/news/mc-1424666d1a",
+      "itemName": "Killennium Butcher",
+      "shopUrl": "https://shop.kingdomdeath.com/collections/expansions/products/vignette-of-death-killennium-butcher"
     },
     {
       "date": "2024-11-29",
@@ -3643,6 +5939,34 @@
       "date": "2024-11-29",
       "title": "BLACK FRIDAY SALE AND NEWS",
       "postUrl": "https://kingdomdeath.com/news/mc-1424666d1a",
+      "itemName": "Black Out Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/black-out-dice"
+    },
+    {
+      "date": "2024-11-29",
+      "title": "BLACK FRIDAY SALE AND NEWS",
+      "postUrl": "https://kingdomdeath.com/news/mc-1424666d1a",
+      "itemName": "Black Friday Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/black-friday-death-dice"
+    },
+    {
+      "date": "2024-11-29",
+      "title": "BLACK FRIDAY SALE AND NEWS",
+      "postUrl": "https://kingdomdeath.com/news/mc-1424666d1a",
+      "itemName": "naked sparrow goblin oblivion mosquito armor",
+      "shopUrl": "https://shop.kingdomdeath.com/products/naked-sparrow-goblin-oblivion-mosquito-armor"
+    },
+    {
+      "date": "2024-11-29",
+      "title": "BLACK FRIDAY SALE AND NEWS",
+      "postUrl": "https://kingdomdeath.com/news/mc-1424666d1a",
+      "itemName": "Starting Survivor Set",
+      "shopUrl": "https://shop.kingdomdeath.com/products/core-game-bundle"
+    },
+    {
+      "date": "2024-11-29",
+      "title": "BLACK FRIDAY SALE AND NEWS",
+      "postUrl": "https://kingdomdeath.com/news/mc-1424666d1a",
       "itemName": "(Kingdom Death: Monster 1.6 + Gambler's Chest + Expansion Bundle",
       "shopUrl": "https://shop.kingdomdeath.com/products/ultimate-starting-survivor-set"
     },
@@ -3650,8 +5974,50 @@
       "date": "2024-11-29",
       "title": "BLACK FRIDAY SALE AND NEWS",
       "postUrl": "https://kingdomdeath.com/news/mc-1424666d1a",
+      "itemName": "cat eater knight",
+      "shopUrl": "https://shop.kingdomdeath.com/products/cat-eater-knight"
+    },
+    {
+      "date": "2024-11-29",
+      "title": "BLACK FRIDAY SALE AND NEWS",
+      "postUrl": "https://kingdomdeath.com/news/mc-1424666d1a",
       "itemName": "questing maids",
       "shopUrl": "https://shop.kingdomdeath.com/products/questing-maids"
+    },
+    {
+      "date": "2024-11-29",
+      "title": "BLACK FRIDAY SALE AND NEWS",
+      "postUrl": "https://kingdomdeath.com/news/mc-1424666d1a",
+      "itemName": "Naked Forbidden Bundle",
+      "shopUrl": "https://shop.kingdomdeath.com/products/naked-forbidden-bundle"
+    },
+    {
+      "date": "2024-11-29",
+      "title": "BLACK FRIDAY SALE AND NEWS",
+      "postUrl": "https://kingdomdeath.com/news/mc-1424666d1a",
+      "itemName": "Naked Nightmare Ram",
+      "shopUrl": "https://shop.kingdomdeath.com/products/naked-nightmare-ram"
+    },
+    {
+      "date": "2024-11-29",
+      "title": "BLACK FRIDAY SALE AND NEWS",
+      "postUrl": "https://kingdomdeath.com/news/mc-1424666d1a",
+      "itemName": "Kingdom Death: Monster 1.6",
+      "shopUrl": "https://shop.kingdomdeath.com/products/kingdom-death-monster-1-5"
+    },
+    {
+      "date": "2024-11-29",
+      "title": "BLACK FRIDAY SALE AND NEWS",
+      "postUrl": "https://kingdomdeath.com/news/mc-1424666d1a",
+      "itemName": "Gambler's Chest Expansion",
+      "shopUrl": "https://shop.kingdomdeath.com/products/gamblers-chest-expansion"
+    },
+    {
+      "date": "2024-11-29",
+      "title": "BLACK FRIDAY SALE AND NEWS",
+      "postUrl": "https://kingdomdeath.com/news/mc-1424666d1a",
+      "itemName": "expansions of death 1 6",
+      "shopUrl": "https://shop.kingdomdeath.com/products/expansions-of-death-1-6"
     },
     {
       "date": "2024-11-29",
@@ -3685,6 +6051,27 @@
       "date": "2024-11-29",
       "title": "BLACK FRIDAY SALE AND NEWS",
       "postUrl": "https://kingdomdeath.com/news/mc-1424666d1a",
+      "itemName": "Kingdom Death: Simulator",
+      "shopUrl": "https://shop.kingdomdeath.com/products/kingdom-death-simulator-1"
+    },
+    {
+      "date": "2024-11-29",
+      "title": "BLACK FRIDAY SALE AND NEWS",
+      "postUrl": "https://kingdomdeath.com/news/mc-1424666d1a",
+      "itemName": "KDS: Black Knight Expansion",
+      "shopUrl": "https://shop.kingdomdeath.com/collections/kingdom-death-simulator/products/black-knight-expansion"
+    },
+    {
+      "date": "2024-11-29",
+      "title": "BLACK FRIDAY SALE AND NEWS",
+      "postUrl": "https://kingdomdeath.com/news/mc-1424666d1a",
+      "itemName": "Naked Future 2023",
+      "shopUrl": "https://shop.kingdomdeath.com/products/naked-future-2023"
+    },
+    {
+      "date": "2024-11-29",
+      "title": "BLACK FRIDAY SALE AND NEWS",
+      "postUrl": "https://kingdomdeath.com/news/mc-1424666d1a",
       "itemName": "Naked Questing Maids",
       "shopUrl": "https://shop.kingdomdeath.com/products/naked-questing-maids"
     },
@@ -3694,6 +6081,27 @@
       "postUrl": "https://kingdomdeath.com/news/mc-1424666d1a",
       "itemName": "Naked Cat-Eater Knight",
       "shopUrl": "https://shop.kingdomdeath.com/products/naked-cat-eater-knight"
+    },
+    {
+      "date": "2024-11-29",
+      "title": "BLACK FRIDAY SALE AND NEWS",
+      "postUrl": "https://kingdomdeath.com/news/mc-1424666d1a",
+      "itemName": "Gambler's Chest expansion",
+      "shopUrl": "https://shop.kingdomdeath.com/collections/expansion/products/gamblers-chest-expansion"
+    },
+    {
+      "date": "2024-11-29",
+      "title": "BLACK FRIDAY SALE AND NEWS",
+      "postUrl": "https://kingdomdeath.com/news/mc-1424666d1a",
+      "itemName": "kingdom death simulator",
+      "shopUrl": "https://shop.kingdomdeath.com/products/kingdom-death-simulator"
+    },
+    {
+      "date": "2024-11-30",
+      "title": "Kingdom Death Black Friday Discounts of Death",
+      "postUrl": "https://kingdomdeath.com/news/mc-e2b316151d",
+      "itemName": "ultimate showdown board",
+      "shopUrl": "https://shop.kingdomdeath.com/collections/accessories/products/ultimate-showdown-board"
     },
     {
       "date": "2024-12-25",
@@ -3741,6 +6149,20 @@
       "date": "2024-12-25",
       "title": "KDU#101 - Deathmas Cheer",
       "postUrl": "https://kingdomdeath.com/news/mc-83970b9b56",
+      "itemName": "Winter Solstice Lucy",
+      "shopUrl": "https://shop.kingdomdeath.com/products/winter-solstice-lucy"
+    },
+    {
+      "date": "2024-12-25",
+      "title": "KDU#101 - Deathmas Cheer",
+      "postUrl": "https://kingdomdeath.com/news/mc-83970b9b56",
+      "itemName": "Santa Satan",
+      "shopUrl": "https://shop.kingdomdeath.com/products/santa-satan"
+    },
+    {
+      "date": "2024-12-25",
+      "title": "KDU#101 - Deathmas Cheer",
+      "postUrl": "https://kingdomdeath.com/news/mc-83970b9b56",
       "itemName": "Naked Xmas Pinup Twilight Knight",
       "shopUrl": "https://shop.kingdomdeath.com/products/naked-xmas-pinup-twilight-knight"
     },
@@ -3750,6 +6172,34 @@
       "postUrl": "https://kingdomdeath.com/news/mc-83970b9b56",
       "itemName": "Female Visionary",
       "shopUrl": "https://shop.kingdomdeath.com/products/visionary-female"
+    },
+    {
+      "date": "2024-12-25",
+      "title": "KDU#101 - Deathmas Cheer",
+      "postUrl": "https://kingdomdeath.com/news/mc-83970b9b56",
+      "itemName": "Holiday Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/holiday-death-dice"
+    },
+    {
+      "date": "2024-12-25",
+      "title": "KDU#101 - Deathmas Cheer",
+      "postUrl": "https://kingdomdeath.com/news/mc-83970b9b56",
+      "itemName": "Winter Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/winter-death-dice"
+    },
+    {
+      "date": "2024-12-25",
+      "title": "KDU#101 - Deathmas Cheer",
+      "postUrl": "https://kingdomdeath.com/news/mc-83970b9b56",
+      "itemName": "Frogdog Expansion",
+      "shopUrl": "https://shop.kingdomdeath.com/products/frogdog-expansion"
+    },
+    {
+      "date": "2024-12-25",
+      "title": "KDU#101 - Deathmas Cheer",
+      "postUrl": "https://kingdomdeath.com/news/mc-83970b9b56",
+      "itemName": "Gambler's Chest Expansion",
+      "shopUrl": "https://shop.kingdomdeath.com/collections/expansions-1/products/gamblers-chest-expansion"
     },
     {
       "date": "2025-01-31",
@@ -3790,6 +6240,13 @@
       "date": "2025-01-31",
       "title": "KDU#102 - New Lantern Year January 2025",
       "postUrl": "https://kingdomdeath.com/news/mc-fa567e6a76",
+      "itemName": "Rayanor",
+      "shopUrl": "https://shop.kingdomdeath.com/products/rayanor"
+    },
+    {
+      "date": "2025-01-31",
+      "title": "KDU#102 - New Lantern Year January 2025",
+      "postUrl": "https://kingdomdeath.com/news/mc-fa567e6a76",
       "itemName": "KDS: Frogdog Expansion",
       "shopUrl": "https://shop.kingdomdeath.com/products/kds-frogdog-expansion"
     },
@@ -3797,8 +6254,36 @@
       "date": "2025-01-31",
       "title": "KDU#102 - New Lantern Year January 2025",
       "postUrl": "https://kingdomdeath.com/news/mc-fa567e6a76",
+      "itemName": "Holiday Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/holiday-death-dice"
+    },
+    {
+      "date": "2025-01-31",
+      "title": "KDU#102 - New Lantern Year January 2025",
+      "postUrl": "https://kingdomdeath.com/news/mc-fa567e6a76",
+      "itemName": "Winter Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/winter-death-dice"
+    },
+    {
+      "date": "2025-01-31",
+      "title": "KDU#102 - New Lantern Year January 2025",
+      "postUrl": "https://kingdomdeath.com/news/mc-fa567e6a76",
       "itemName": "Lunar Twilight Knight - Fine Art Prints",
       "shopUrl": "https://shop.kingdomdeath.com/products/8-5-x-11-art-prints-2025"
+    },
+    {
+      "date": "2025-01-31",
+      "title": "KDU#102 - New Lantern Year January 2025",
+      "postUrl": "https://kingdomdeath.com/news/mc-fa567e6a76",
+      "itemName": "Frogdog Expansion",
+      "shopUrl": "https://shop.kingdomdeath.com/products/frogdog-expansion"
+    },
+    {
+      "date": "2025-01-31",
+      "title": "KDU#102 - New Lantern Year January 2025",
+      "postUrl": "https://kingdomdeath.com/news/mc-fa567e6a76",
+      "itemName": "Gambler's Chest Expansion",
+      "shopUrl": "https://shop.kingdomdeath.com/collections/expansions-1/products/gamblers-chest-expansion"
     },
     {
       "date": "2025-03-03",
@@ -3853,8 +6338,36 @@
       "date": "2025-03-03",
       "title": "KDU #103 - February 2025",
       "postUrl": "https://kingdomdeath.com/news/mc-e8badbb129",
+      "itemName": "Winter Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/winter-death-dice"
+    },
+    {
+      "date": "2025-03-03",
+      "title": "KDU #103 - February 2025",
+      "postUrl": "https://kingdomdeath.com/news/mc-e8badbb129",
       "itemName": "Valentine's Day - Fine Art Prints",
       "shopUrl": "https://shop.kingdomdeath.com/products/8-5-x-11-art-prints-2025"
+    },
+    {
+      "date": "2025-03-03",
+      "title": "KDU #103 - February 2025",
+      "postUrl": "https://kingdomdeath.com/news/mc-e8badbb129",
+      "itemName": "Frogdog Expansion",
+      "shopUrl": "https://shop.kingdomdeath.com/products/frogdog-expansion"
+    },
+    {
+      "date": "2025-03-03",
+      "title": "KDU #103 - February 2025",
+      "postUrl": "https://kingdomdeath.com/news/mc-e8badbb129",
+      "itemName": "Gambler's Chest Expansion",
+      "shopUrl": "https://shop.kingdomdeath.com/collections/expansions-1/products/gamblers-chest-expansion"
+    },
+    {
+      "date": "2025-03-03",
+      "title": "KDU #103 - February 2025",
+      "postUrl": "https://kingdomdeath.com/news/mc-e8badbb129",
+      "itemName": "Kingdom Death: Monster 1.6",
+      "shopUrl": "https://shop.kingdomdeath.com/collections/expansions/products/kingdom-death-monster-1-5"
     },
     {
       "date": "2025-03-31",
@@ -3890,6 +6403,41 @@
       "postUrl": "https://kingdomdeath.com/news/mc-b63c5e0bfe",
       "itemName": "Indomitable - Tachyon Nodachi Rubi",
       "shopUrl": "https://shop.kingdomdeath.com/products/indomitable-survivor-tachyon-nodachi-rubi"
+    },
+    {
+      "date": "2025-03-31",
+      "title": "KDU #104 - March 2025",
+      "postUrl": "https://kingdomdeath.com/news/mc-b63c5e0bfe",
+      "itemName": "Court Barrister",
+      "shopUrl": "https://shop.kingdomdeath.com/products/court-barrister"
+    },
+    {
+      "date": "2025-03-31",
+      "title": "KDU #104 - March 2025",
+      "postUrl": "https://kingdomdeath.com/news/mc-b63c5e0bfe",
+      "itemName": "Spring Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/spring-death-die"
+    },
+    {
+      "date": "2025-03-31",
+      "title": "KDU #104 - March 2025",
+      "postUrl": "https://kingdomdeath.com/news/mc-b63c5e0bfe",
+      "itemName": "Frogdog Expansion",
+      "shopUrl": "https://shop.kingdomdeath.com/products/frogdog-expansion"
+    },
+    {
+      "date": "2025-03-31",
+      "title": "KDU #104 - March 2025",
+      "postUrl": "https://kingdomdeath.com/news/mc-b63c5e0bfe",
+      "itemName": "Gambler's Chest Expansion",
+      "shopUrl": "https://shop.kingdomdeath.com/collections/expansions-1/products/gamblers-chest-expansion"
+    },
+    {
+      "date": "2025-03-31",
+      "title": "KDU #104 - March 2025",
+      "postUrl": "https://kingdomdeath.com/news/mc-b63c5e0bfe",
+      "itemName": "Kingdom Death: Monster 1.6 (out of stock)",
+      "shopUrl": "https://shop.kingdomdeath.com/collections/expansions/products/kingdom-death-monster-1-5"
     },
     {
       "date": "2025-05-01",
@@ -3944,8 +6492,64 @@
       "date": "2025-05-01",
       "title": "KDU #105 - April 2025",
       "postUrl": "https://kingdomdeath.com/news/mc-c4395458a8",
+      "itemName": "Court Investigator",
+      "shopUrl": "https://shop.kingdomdeath.com/products/court-investigator"
+    },
+    {
+      "date": "2025-05-01",
+      "title": "KDU #105 - April 2025",
+      "postUrl": "https://kingdomdeath.com/news/mc-c4395458a8",
+      "itemName": "Lantern Guard",
+      "shopUrl": "https://shop.kingdomdeath.com/products/lantern-guard"
+    },
+    {
+      "date": "2025-05-01",
+      "title": "KDU #105 - April 2025",
+      "postUrl": "https://kingdomdeath.com/news/mc-c4395458a8",
+      "itemName": "Easter Aya",
+      "shopUrl": "https://shop.kingdomdeath.com/products/easter-aya"
+    },
+    {
+      "date": "2025-05-01",
+      "title": "KDU #105 - April 2025",
+      "postUrl": "https://kingdomdeath.com/news/mc-c4395458a8",
+      "itemName": "Pascha Variant",
+      "shopUrl": "https://shop.kingdomdeath.com/products/pascha-variant"
+    },
+    {
+      "date": "2025-05-01",
+      "title": "KDU #105 - April 2025",
+      "postUrl": "https://kingdomdeath.com/news/mc-c4395458a8",
+      "itemName": "Easter Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/easter-death-dice"
+    },
+    {
+      "date": "2025-05-01",
+      "title": "KDU #105 - April 2025",
+      "postUrl": "https://kingdomdeath.com/news/mc-c4395458a8",
       "itemName": "Fine Art Prints",
       "shopUrl": "https://shop.kingdomdeath.com/products/8-5-x-11-art-prints-april-2025"
+    },
+    {
+      "date": "2025-05-01",
+      "title": "KDU #105 - April 2025",
+      "postUrl": "https://kingdomdeath.com/news/mc-c4395458a8",
+      "itemName": "Frogdog Expansion",
+      "shopUrl": "https://shop.kingdomdeath.com/products/frogdog-expansion"
+    },
+    {
+      "date": "2025-05-01",
+      "title": "KDU #105 - April 2025",
+      "postUrl": "https://kingdomdeath.com/news/mc-c4395458a8",
+      "itemName": "Gambler's Chest Expansion",
+      "shopUrl": "https://shop.kingdomdeath.com/collections/expansions-1/products/gamblers-chest-expansion"
+    },
+    {
+      "date": "2025-05-01",
+      "title": "KDU #105 - April 2025",
+      "postUrl": "https://kingdomdeath.com/news/mc-c4395458a8",
+      "itemName": "Kingdom Death: Monster 1.6 (out of stock)",
+      "shopUrl": "https://shop.kingdomdeath.com/collections/expansions/products/kingdom-death-monster-1-5"
     },
     {
       "date": "2025-05-30",
@@ -4000,6 +6604,13 @@
       "date": "2025-05-30",
       "title": "KDU #106 - May 2025",
       "postUrl": "https://kingdomdeath.com/news/mc-a9d27eedc7",
+      "itemName": "Spring Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/collections/accessories/products/spring-death-die"
+    },
+    {
+      "date": "2025-05-30",
+      "title": "KDU #106 - May 2025",
+      "postUrl": "https://kingdomdeath.com/news/mc-a9d27eedc7",
       "itemName": "Fine Art Prints",
       "shopUrl": "https://shop.kingdomdeath.com/products/8-5-x-11-art-prints-may-2025"
     },
@@ -4009,6 +6620,27 @@
       "postUrl": "https://kingdomdeath.com/news/mc-a9d27eedc7",
       "itemName": "Parasite Queen Shirt",
       "shopUrl": "https://shop.kingdomdeath.com/products/parasite-queen-t-shirt"
+    },
+    {
+      "date": "2025-05-30",
+      "title": "KDU #106 - May 2025",
+      "postUrl": "https://kingdomdeath.com/news/mc-a9d27eedc7",
+      "itemName": "Frogdog Expansion",
+      "shopUrl": "https://shop.kingdomdeath.com/products/frogdog-expansion"
+    },
+    {
+      "date": "2025-05-30",
+      "title": "KDU #106 - May 2025",
+      "postUrl": "https://kingdomdeath.com/news/mc-a9d27eedc7",
+      "itemName": "Gambler's Chest Expansion",
+      "shopUrl": "https://shop.kingdomdeath.com/collections/expansions-1/products/gamblers-chest-expansion"
+    },
+    {
+      "date": "2025-05-30",
+      "title": "KDU #106 - May 2025",
+      "postUrl": "https://kingdomdeath.com/news/mc-a9d27eedc7",
+      "itemName": "Kingdom Death: Monster 1.6 (out of stock)",
+      "shopUrl": "https://shop.kingdomdeath.com/collections/expansions/products/kingdom-death-monster-1-5"
     },
     {
       "date": "2025-06-30",
@@ -4049,8 +6681,43 @@
       "date": "2025-06-30",
       "title": "KDU #107 - June 2025",
       "postUrl": "https://kingdomdeath.com/news/mc-0620fe74a1",
+      "itemName": "Temple Explorer",
+      "shopUrl": "https://shop.kingdomdeath.com/products/temple-explorer"
+    },
+    {
+      "date": "2025-06-30",
+      "title": "KDU #107 - June 2025",
+      "postUrl": "https://kingdomdeath.com/news/mc-0620fe74a1",
+      "itemName": "Summer Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/collections/accessories/products/summer-death-dice"
+    },
+    {
+      "date": "2025-06-30",
+      "title": "KDU #107 - June 2025",
+      "postUrl": "https://kingdomdeath.com/news/mc-0620fe74a1",
       "itemName": "Fine Art Prints",
       "shopUrl": "https://shop.kingdomdeath.com/products/8-5-x-11-art-prints-june-2025"
+    },
+    {
+      "date": "2025-06-30",
+      "title": "KDU #107 - June 2025",
+      "postUrl": "https://kingdomdeath.com/news/mc-0620fe74a1",
+      "itemName": "Frogdog Expansion",
+      "shopUrl": "https://shop.kingdomdeath.com/products/frogdog-expansion"
+    },
+    {
+      "date": "2025-06-30",
+      "title": "KDU #107 - June 2025",
+      "postUrl": "https://kingdomdeath.com/news/mc-0620fe74a1",
+      "itemName": "Gambler's Chest Expansion",
+      "shopUrl": "https://shop.kingdomdeath.com/collections/expansions-1/products/gamblers-chest-expansion"
+    },
+    {
+      "date": "2025-06-30",
+      "title": "KDU #107 - June 2025",
+      "postUrl": "https://kingdomdeath.com/news/mc-0620fe74a1",
+      "itemName": "Kingdom Death: Monster 1.6 (out of stock)",
+      "shopUrl": "https://shop.kingdomdeath.com/collections/expansions/products/kingdom-death-monster-1-5"
     },
     {
       "date": "2025-07-22",
@@ -4121,6 +6788,20 @@
       "postUrl": "https://kingdomdeath.com/news/mc-30cbd54fbe",
       "itemName": "ADVERSARIES AND ALLIES BUNDLE",
       "shopUrl": "https://shop.kingdomdeath.com/products/preorder-2025-adversaries-and-allies-bundle"
+    },
+    {
+      "date": "2025-07-29",
+      "title": "KDU#108 -July sale is regional!",
+      "postUrl": "https://kingdomdeath.com/news/mc-38e1aabf18",
+      "itemName": "Vignettes of Death - Killennium Butcher",
+      "shopUrl": "https://shop.kingdomdeath.com/products/vignette-of-death-killennium-butcher"
+    },
+    {
+      "date": "2025-07-29",
+      "title": "KDU#108 -July sale is regional!",
+      "postUrl": "https://kingdomdeath.com/news/mc-38e1aabf18",
+      "itemName": "Premium Card Sleeve Sets",
+      "shopUrl": "https://shop.kingdomdeath.com/products/gamblers-chest-card-sleeve-bundle"
     },
     {
       "date": "2025-08-29",
@@ -4228,6 +6909,27 @@
       "shopUrl": "https://shop.kingdomdeath.com/products/ivory-dragon-t-shirt-gc-copy"
     },
     {
+      "date": "2025-08-29",
+      "title": "KDU #109 - August 2025- Return from Gencon!",
+      "postUrl": "https://kingdomdeath.com/news/mc-f54efd621f",
+      "itemName": "Frogdog Expansion",
+      "shopUrl": "https://shop.kingdomdeath.com/products/frogdog-expansion"
+    },
+    {
+      "date": "2025-08-29",
+      "title": "KDU #109 - August 2025- Return from Gencon!",
+      "postUrl": "https://kingdomdeath.com/news/mc-f54efd621f",
+      "itemName": "Gambler's Chest Expansion",
+      "shopUrl": "https://shop.kingdomdeath.com/collections/expansions-1/products/gamblers-chest-expansion"
+    },
+    {
+      "date": "2025-08-29",
+      "title": "KDU #109 - August 2025- Return from Gencon!",
+      "postUrl": "https://kingdomdeath.com/news/mc-f54efd621f",
+      "itemName": "Kingdom Death: Monster 1.6",
+      "shopUrl": "https://shop.kingdomdeath.com/collections/expansions/products/kingdom-death-monster-1-5"
+    },
+    {
       "date": "2025-09-30",
       "title": "KDU#110- Back to School September!",
       "postUrl": "https://kingdomdeath.com/news/mc-efe6722157",
@@ -4239,7 +6941,7 @@
       "title": "KDU#110- Back to School September!",
       "postUrl": "https://kingdomdeath.com/news/mc-efe6722157",
       "itemName": "Painters Scale Punctual Bride Investment Sniper",
-      "shopUrl": "https://shop.kingdomdeath.com/products/ investment-sniper-punctual-bride-painters-scale"
+      "shopUrl": "https://shop.kingdomdeath.com/products/investment-sniper-punctual-bride-painters-scale"
     },
     {
       "date": "2025-09-30",
@@ -4336,8 +7038,29 @@
       "date": "2025-09-30",
       "title": "KDU#110- Back to School September!",
       "postUrl": "https://kingdomdeath.com/news/mc-efe6722157",
+      "itemName": "Death High - Principal White Lion",
+      "shopUrl": "https://shop.kingdomdeath.com/products/death-high-white-lion-1"
+    },
+    {
+      "date": "2025-09-30",
+      "title": "KDU#110- Back to School September!",
+      "postUrl": "https://kingdomdeath.com/news/mc-efe6722157",
       "itemName": "Death High - Twilight Knight Allison",
       "shopUrl": "https://shop.kingdomdeath.com/products/death-high-twilight-knight-2024"
+    },
+    {
+      "date": "2025-09-30",
+      "title": "KDU#110- Back to School September!",
+      "postUrl": "https://kingdomdeath.com/news/mc-efe6722157",
+      "itemName": "Death High - Enforcer",
+      "shopUrl": "https://shop.kingdomdeath.com/products/death-high-enforcer"
+    },
+    {
+      "date": "2025-09-30",
+      "title": "KDU#110- Back to School September!",
+      "postUrl": "https://kingdomdeath.com/news/mc-efe6722157",
+      "itemName": "Death High - Lucy",
+      "shopUrl": "https://shop.kingdomdeath.com/products/death-high-lucy"
     },
     {
       "date": "2025-09-30",
@@ -4351,7 +7074,14 @@
       "title": "KDU#110- Back to School September!",
       "postUrl": "https://kingdomdeath.com/news/mc-efe6722157",
       "itemName": "September Art Prints",
-      "shopUrl": "https://shop.kingdomdeath.com/products/ 8-5-x-11-art-prints-september-2025"
+      "shopUrl": "https://shop.kingdomdeath.com/products/8-5-x-11-art-prints-september-2025"
+    },
+    {
+      "date": "2025-09-30",
+      "title": "KDU#110- Back to School September!",
+      "postUrl": "https://kingdomdeath.com/news/mc-efe6722157",
+      "itemName": "Fall Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/fall-death-dice"
     },
     {
       "date": "2025-09-30",
@@ -4413,6 +7143,83 @@
       "date": "2025-10-31",
       "title": "KDU#111- Halloween Again?!?!",
       "postUrl": "https://kingdomdeath.com/news/mc-4732bfaa3d",
+      "itemName": "Brave + Hollow",
+      "shopUrl": "https://shop.kingdomdeath.com/products/brave-hollow"
+    },
+    {
+      "date": "2025-10-31",
+      "title": "KDU#111- Halloween Again?!?!",
+      "postUrl": "https://kingdomdeath.com/news/mc-4732bfaa3d",
+      "itemName": "Erza of Dedheim",
+      "shopUrl": "https://shop.kingdomdeath.com/products/erza-of-dedheim"
+    },
+    {
+      "date": "2025-10-31",
+      "title": "KDU#111- Halloween Again?!?!",
+      "postUrl": "https://kingdomdeath.com/news/mc-4732bfaa3d",
+      "itemName": "Halloween Survivors - King Costume",
+      "shopUrl": "https://shop.kingdomdeath.com/products/halloween-survivors-king-costume"
+    },
+    {
+      "date": "2025-10-31",
+      "title": "KDU#111- Halloween Again?!?!",
+      "postUrl": "https://kingdomdeath.com/news/mc-4732bfaa3d",
+      "itemName": "Halloween Survivors - Flower Knight Costume",
+      "shopUrl": "https://shop.kingdomdeath.com/products/halloween-survivor-flower-knight-costume"
+    },
+    {
+      "date": "2025-10-31",
+      "title": "KDU#111- Halloween Again?!?!",
+      "postUrl": "https://kingdomdeath.com/news/mc-4732bfaa3d",
+      "itemName": "Halloween Survivors",
+      "shopUrl": "https://shop.kingdomdeath.com/products/halloween-survivors"
+    },
+    {
+      "date": "2025-10-31",
+      "title": "KDU#111- Halloween Again?!?!",
+      "postUrl": "https://kingdomdeath.com/news/mc-4732bfaa3d",
+      "itemName": "Halloween Survivors - Series II",
+      "shopUrl": "https://shop.kingdomdeath.com/products/halloween-survivors-series-ii"
+    },
+    {
+      "date": "2025-10-31",
+      "title": "KDU#111- Halloween Again?!?!",
+      "postUrl": "https://kingdomdeath.com/news/mc-4732bfaa3d",
+      "itemName": "Halloween Ringtail Vixen",
+      "shopUrl": "https://shop.kingdomdeath.com/products/halloween-ringtail-vixen"
+    },
+    {
+      "date": "2025-10-31",
+      "title": "KDU#111- Halloween Again?!?!",
+      "postUrl": "https://kingdomdeath.com/news/mc-4732bfaa3d",
+      "itemName": "Halloween White Speaker",
+      "shopUrl": "https://shop.kingdomdeath.com/products/halloween-white-speaker-1"
+    },
+    {
+      "date": "2025-10-31",
+      "title": "KDU#111- Halloween Again?!?!",
+      "postUrl": "https://kingdomdeath.com/news/mc-4732bfaa3d",
+      "itemName": "Halloween Pinup Twilight Knight",
+      "shopUrl": "https://shop.kingdomdeath.com/products/plastic-halloween-pinup-twilight-knight"
+    },
+    {
+      "date": "2025-10-31",
+      "title": "KDU#111- Halloween Again?!?!",
+      "postUrl": "https://kingdomdeath.com/news/mc-4732bfaa3d",
+      "itemName": "Devil Satan",
+      "shopUrl": "https://shop.kingdomdeath.com/products/devil-satan"
+    },
+    {
+      "date": "2025-10-31",
+      "title": "KDU#111- Halloween Again?!?!",
+      "postUrl": "https://kingdomdeath.com/news/mc-4732bfaa3d",
+      "itemName": "Oktoberfest Aya",
+      "shopUrl": "https://shop.kingdomdeath.com/products/oktoberfest-aya"
+    },
+    {
+      "date": "2025-10-31",
+      "title": "KDU#111- Halloween Again?!?!",
+      "postUrl": "https://kingdomdeath.com/news/mc-4732bfaa3d",
       "itemName": "Necromancer",
       "shopUrl": "https://shop.kingdomdeath.com/products/necromancer"
     },
@@ -4442,7 +7249,21 @@
       "title": "KDU#111- Halloween Again?!?!",
       "postUrl": "https://kingdomdeath.com/news/mc-4732bfaa3d",
       "itemName": "October Art Prints",
-      "shopUrl": "https://shop.kingdomdeath.com/products/ 8-5-x-11-art-prints-halloween-2025"
+      "shopUrl": "https://shop.kingdomdeath.com/products/8-5-x-11-art-prints-halloween-2025"
+    },
+    {
+      "date": "2025-10-31",
+      "title": "KDU#111- Halloween Again?!?!",
+      "postUrl": "https://kingdomdeath.com/news/mc-4732bfaa3d",
+      "itemName": "Halloween Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/halloween-death-dice"
+    },
+    {
+      "date": "2025-10-31",
+      "title": "KDU#111- Halloween Again?!?!",
+      "postUrl": "https://kingdomdeath.com/news/mc-4732bfaa3d",
+      "itemName": "Fall Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/fall-death-dice"
     },
     {
       "date": "2025-10-31",
@@ -4452,11 +7273,46 @@
       "shopUrl": "https://shop.kingdomdeath.com/products/kingdom-death-monster-1-5"
     },
     {
+      "date": "2025-10-31",
+      "title": "KDU#111- Halloween Again?!?!",
+      "postUrl": "https://kingdomdeath.com/news/mc-4732bfaa3d",
+      "itemName": "Red Witches Expansion",
+      "shopUrl": "https://shop.kingdomdeath.com/products/red-witches-expansion"
+    },
+    {
+      "date": "2025-10-31",
+      "title": "KDU#111- Halloween Again?!?!",
+      "postUrl": "https://kingdomdeath.com/news/mc-4732bfaa3d",
+      "itemName": "Pariah Expansion",
+      "shopUrl": "https://shop.kingdomdeath.com/products/pariah-expansion"
+    },
+    {
       "date": "2025-11-28",
       "title": "BLACK FRIDAY 2025",
       "postUrl": "https://kingdomdeath.com/news/mc-89c6635b71",
       "itemName": "KDS Gambler's Chest Expansion",
       "shopUrl": "https://shop.kingdomdeath.com/products/kds-gamblers-chest"
+    },
+    {
+      "date": "2025-11-28",
+      "title": "BLACK FRIDAY 2025",
+      "postUrl": "https://kingdomdeath.com/news/mc-89c6635b71",
+      "itemName": "Kingdom Death: Monster 1.6",
+      "shopUrl": "https://shop.kingdomdeath.com/products/kingdom-death-monster-1-5"
+    },
+    {
+      "date": "2025-11-28",
+      "title": "BLACK FRIDAY 2025",
+      "postUrl": "https://kingdomdeath.com/news/mc-89c6635b71",
+      "itemName": "Gambler's Chest Expansion",
+      "shopUrl": "https://shop.kingdomdeath.com/products/gamblers-chest-expansion"
+    },
+    {
+      "date": "2025-11-28",
+      "title": "BLACK FRIDAY 2025",
+      "postUrl": "https://kingdomdeath.com/news/mc-89c6635b71",
+      "itemName": "Starting Survivor Set (Kingdom Death: Monster 1.6 + Gambler's Chest)",
+      "shopUrl": "https://shop.kingdomdeath.com/products/starting-survivor-set"
     },
     {
       "date": "2025-11-28",
@@ -4497,8 +7353,36 @@
       "date": "2025-11-28",
       "title": "BLACK FRIDAY 2025",
       "postUrl": "https://kingdomdeath.com/news/mc-89c6635b71",
+      "itemName": "Kingdom Death: Simulator",
+      "shopUrl": "https://shop.kingdomdeath.com/products/kingdom-death-simulator-1"
+    },
+    {
+      "date": "2025-11-28",
+      "title": "BLACK FRIDAY 2025",
+      "postUrl": "https://kingdomdeath.com/news/mc-89c6635b71",
+      "itemName": "Black Friday Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/black-friday-death-dice"
+    },
+    {
+      "date": "2025-11-28",
+      "title": "BLACK FRIDAY 2025",
+      "postUrl": "https://kingdomdeath.com/news/mc-89c6635b71",
+      "itemName": "Black Out Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/black-out-dice"
+    },
+    {
+      "date": "2025-11-28",
+      "title": "BLACK FRIDAY 2025",
+      "postUrl": "https://kingdomdeath.com/news/mc-89c6635b71",
       "itemName": "Mystery Shirt",
       "shopUrl": "https://shop.kingdomdeath.com/products/mystery-t-shirt"
+    },
+    {
+      "date": "2025-11-28",
+      "title": "BLACK FRIDAY 2025",
+      "postUrl": "https://kingdomdeath.com/news/mc-89c6635b71",
+      "itemName": "kingdom death simulator",
+      "shopUrl": "https://shop.kingdomdeath.com/products/kingdom-death-simulator"
     },
     {
       "date": "2025-12-25",
@@ -4532,8 +7416,78 @@
       "date": "2025-12-25",
       "title": "KDU#113- Merry Deathmas!",
       "postUrl": "https://kingdomdeath.com/news/mc-70337e8ed3",
+      "itemName": "Naked Xmas Pinup Twilight Knight",
+      "shopUrl": "https://shop.kingdomdeath.com/products/naked-xmas-pinup-twilight-knight"
+    },
+    {
+      "date": "2025-12-25",
+      "title": "KDU#113- Merry Deathmas!",
+      "postUrl": "https://kingdomdeath.com/news/mc-70337e8ed3",
+      "itemName": "Deathmas Cockroach Queen",
+      "shopUrl": "https://shop.kingdomdeath.com/products/deathmas-cockroach-queen-1"
+    },
+    {
+      "date": "2025-12-25",
+      "title": "KDU#113- Merry Deathmas!",
+      "postUrl": "https://kingdomdeath.com/news/mc-70337e8ed3",
+      "itemName": "Elgnirk, the Choas Elf",
+      "shopUrl": "https://shop.kingdomdeath.com/products/elgnirk-the-chaos-elf"
+    },
+    {
+      "date": "2025-12-25",
+      "title": "KDU#113- Merry Deathmas!",
+      "postUrl": "https://kingdomdeath.com/news/mc-70337e8ed3",
+      "itemName": "Winter Solstice Lucy",
+      "shopUrl": "https://shop.kingdomdeath.com/products/winter-solstice-lucy"
+    },
+    {
+      "date": "2025-12-25",
+      "title": "KDU#113- Merry Deathmas!",
+      "postUrl": "https://kingdomdeath.com/news/mc-70337e8ed3",
+      "itemName": "Santa Satan",
+      "shopUrl": "https://shop.kingdomdeath.com/products/santa-satan"
+    },
+    {
+      "date": "2025-12-25",
+      "title": "KDU#113- Merry Deathmas!",
+      "postUrl": "https://kingdomdeath.com/news/mc-70337e8ed3",
+      "itemName": "Winter Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/winter-death-dice"
+    },
+    {
+      "date": "2025-12-25",
+      "title": "KDU#113- Merry Deathmas!",
+      "postUrl": "https://kingdomdeath.com/news/mc-70337e8ed3",
+      "itemName": "Holiday Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/holiday-death-dice"
+    },
+    {
+      "date": "2025-12-25",
+      "title": "KDU#113- Merry Deathmas!",
+      "postUrl": "https://kingdomdeath.com/news/mc-70337e8ed3",
       "itemName": "Deathmas Art Prints",
-      "shopUrl": "https://shop.kingdomdeath.com/products/ 8-5-x-11-deathmas-art-prints-copy"
+      "shopUrl": "https://shop.kingdomdeath.com/products/8-5-x-11-deathmas-art-prints-copy"
+    },
+    {
+      "date": "2025-12-25",
+      "title": "KDU#113- Merry Deathmas!",
+      "postUrl": "https://kingdomdeath.com/news/mc-70337e8ed3",
+      "itemName": "Kingdom Death: Monster",
+      "shopUrl": "https://shop.kingdomdeath.com/products/kingdom-death-monster-1-5"
+    },
+    {
+      "date": "2025-12-25",
+      "title": "KDU#113- Merry Deathmas!",
+      "postUrl": "https://kingdomdeath.com/news/mc-70337e8ed3",
+      "itemName": "Red Witches Expansion",
+      "shopUrl": "https://shop.kingdomdeath.com/products/red-witches-expansion"
+    },
+    {
+      "date": "2025-12-25",
+      "title": "KDU#113- Merry Deathmas!",
+      "postUrl": "https://kingdomdeath.com/news/mc-70337e8ed3",
+      "itemName": "Pariah Expansion",
+      "shopUrl": "https://shop.kingdomdeath.com/products/pariah-expansion"
     },
     {
       "date": "2026-01-30",
@@ -4574,6 +7528,20 @@
       "date": "2026-01-30",
       "title": "KDU#114 - New Moon Sale",
       "postUrl": "https://kingdomdeath.com/news/mc-6dbd3bb0aa",
+      "itemName": "Frozen Survivor - Camellia",
+      "shopUrl": "https://shop.kingdomdeath.com/products/frozen-survivor-camellia"
+    },
+    {
+      "date": "2026-01-30",
+      "title": "KDU#114 - New Moon Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-6dbd3bb0aa",
+      "itemName": "Frozen Survivor - Galanthus",
+      "shopUrl": "https://shop.kingdomdeath.com/products/frozen-survivor-galanthus"
+    },
+    {
+      "date": "2026-01-30",
+      "title": "KDU#114 - New Moon Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-6dbd3bb0aa",
       "itemName": "Hellebore - A Frozen Survivor",
       "shopUrl": "https://shop.kingdomdeath.com/products/hellebore-a-frozen-survivor"
     },
@@ -4581,8 +7549,29 @@
       "date": "2026-01-30",
       "title": "KDU#114 - New Moon Sale",
       "postUrl": "https://kingdomdeath.com/news/mc-6dbd3bb0aa",
+      "itemName": "Lunar Aya",
+      "shopUrl": "https://shop.kingdomdeath.com/products/lunar-aya"
+    },
+    {
+      "date": "2026-01-30",
+      "title": "KDU#114 - New Moon Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-6dbd3bb0aa",
+      "itemName": "Lunar Twilight Knight",
+      "shopUrl": "https://shop.kingdomdeath.com/products/lunar-twilight-knight"
+    },
+    {
+      "date": "2026-01-30",
+      "title": "KDU#114 - New Moon Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-6dbd3bb0aa",
+      "itemName": "Winter Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/winter-death-dice"
+    },
+    {
+      "date": "2026-01-30",
+      "title": "KDU#114 - New Moon Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-6dbd3bb0aa",
       "itemName": "Lunar Festival Art Prints",
-      "shopUrl": "https://shop.kingdomdeath.com/products/ 8-5-x-11-january-2026-art-prints"
+      "shopUrl": "https://shop.kingdomdeath.com/products/8-5-x-11-january-2026-art-prints"
     },
     {
       "date": "2026-01-30",
@@ -4590,6 +7579,27 @@
       "postUrl": "https://kingdomdeath.com/news/mc-6dbd3bb0aa",
       "itemName": "KDS Lunar Aya",
       "shopUrl": "https://shop.kingdomdeath.com/products/kds-lunar-aya"
+    },
+    {
+      "date": "2026-01-30",
+      "title": "KDU#114 - New Moon Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-6dbd3bb0aa",
+      "itemName": "Kingdom Death: Monster",
+      "shopUrl": "https://shop.kingdomdeath.com/products/kingdom-death-monster-1-5"
+    },
+    {
+      "date": "2026-01-30",
+      "title": "KDU#114 - New Moon Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-6dbd3bb0aa",
+      "itemName": "Red Witches Expansion",
+      "shopUrl": "https://shop.kingdomdeath.com/products/red-witches-expansion"
+    },
+    {
+      "date": "2026-01-30",
+      "title": "KDU#114 - New Moon Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-6dbd3bb0aa",
+      "itemName": "Pariah Expansion",
+      "shopUrl": "https://shop.kingdomdeath.com/products/pariah-expansion"
     },
     {
       "date": "2026-02-27",
@@ -4603,7 +7613,7 @@
       "title": "KDU#115 - February Sale",
       "postUrl": "https://kingdomdeath.com/news/mc-efe17b4f7c",
       "itemName": "Griswaldan",
-      "shopUrl": "https://shop.kingdomdeath.com/products/https://shop.kingdomdeath.com/products/griswaldan"
+      "shopUrl": "https://shop.kingdomdeath.com/products/griswaldan"
     },
     {
       "date": "2026-02-27",
@@ -4630,8 +7640,29 @@
       "date": "2026-02-27",
       "title": "KDU#115 - February Sale",
       "postUrl": "https://kingdomdeath.com/news/mc-efe17b4f7c",
+      "itemName": "Valentine's Day Pinup Twilight Knight",
+      "shopUrl": "https://shop.kingdomdeath.com/products/valentines-day-pinup-twilight-knight"
+    },
+    {
+      "date": "2026-02-27",
+      "title": "KDU#115 - February Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-efe17b4f7c",
+      "itemName": "Death Crown Inheritor Aya",
+      "shopUrl": "https://shop.kingdomdeath.com/products/valentines-day-aya"
+    },
+    {
+      "date": "2026-02-27",
+      "title": "KDU#115 - February Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-efe17b4f7c",
       "itemName": "Till Death Do Us Part (Remaster)",
       "shopUrl": "https://shop.kingdomdeath.com/products/till-death-do-us-part-2-0"
+    },
+    {
+      "date": "2026-02-27",
+      "title": "KDU#115 - February Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-efe17b4f7c",
+      "itemName": "Valentine's Day Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/valentines-day-death-dice"
     },
     {
       "date": "2026-02-27",
@@ -4660,6 +7691,27 @@
       "postUrl": "https://kingdomdeath.com/news/mc-efe17b4f7c",
       "itemName": "KDS Wanderer Goth",
       "shopUrl": "https://shop.kingdomdeath.com/products/kds-wanderer-goth"
+    },
+    {
+      "date": "2026-02-27",
+      "title": "KDU#115 - February Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-efe17b4f7c",
+      "itemName": "Kingdom Death: Monster (Preorder)",
+      "shopUrl": "https://shop.kingdomdeath.com/collections/north-america/products/preorder-kingdom-death-monster-1-6-reprint"
+    },
+    {
+      "date": "2026-02-27",
+      "title": "KDU#115 - February Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-efe17b4f7c",
+      "itemName": "Red Witches Expansion",
+      "shopUrl": "https://shop.kingdomdeath.com/products/red-witches-expansion"
+    },
+    {
+      "date": "2026-02-27",
+      "title": "KDU#115 - February Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-efe17b4f7c",
+      "itemName": "Pariah Expansion",
+      "shopUrl": "https://shop.kingdomdeath.com/products/pariah-expansion"
     },
     {
       "date": "2026-04-01",
@@ -4707,6 +7759,13 @@
       "date": "2026-04-01",
       "title": "KDU#116 - March Sale",
       "postUrl": "https://kingdomdeath.com/news/mc-33e1dc56a3",
+      "itemName": "Spring Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/spring-death-die"
+    },
+    {
+      "date": "2026-04-01",
+      "title": "KDU#116 - March Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-33e1dc56a3",
       "itemName": "March Art Prints",
       "shopUrl": "https://shop.kingdomdeath.com/products/8-5-x-11-march-2026-art-prints"
     },
@@ -4723,6 +7782,20 @@
       "postUrl": "https://kingdomdeath.com/news/mc-33e1dc56a3",
       "itemName": "Kingdom Death: Monster BACK IN STOCK",
       "shopUrl": "https://shop.kingdomdeath.com/products/kingdom-death-monster-1-5"
+    },
+    {
+      "date": "2026-04-01",
+      "title": "KDU#116 - March Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-33e1dc56a3",
+      "itemName": "Red Witches Expansion",
+      "shopUrl": "https://shop.kingdomdeath.com/products/red-witches-expansion"
+    },
+    {
+      "date": "2026-04-01",
+      "title": "KDU#116 - March Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-33e1dc56a3",
+      "itemName": "Pariah Expansion",
+      "shopUrl": "https://shop.kingdomdeath.com/products/pariah-expansion"
     },
     {
       "date": "2026-04-30",
@@ -4777,6 +7850,20 @@
       "date": "2026-04-30",
       "title": "KDU#117 - April Sale",
       "postUrl": "https://kingdomdeath.com/news/mc-6db625f168",
+      "itemName": "Easter Aya",
+      "shopUrl": "https://shop.kingdomdeath.com/products/easter-aya"
+    },
+    {
+      "date": "2026-04-30",
+      "title": "KDU#117 - April Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-6db625f168",
+      "itemName": "Easter Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/easter-death-dice"
+    },
+    {
+      "date": "2026-04-30",
+      "title": "KDU#117 - April Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-6db625f168",
       "itemName": "April Art Prints",
       "shopUrl": "https://shop.kingdomdeath.com/products/8-5-x-11-april-2026-art-prints"
     },
@@ -4791,8 +7878,29 @@
       "date": "2026-04-30",
       "title": "KDU#117 - April Sale",
       "postUrl": "https://kingdomdeath.com/news/mc-6db625f168",
+      "itemName": "Kingdom Death: Monster BACK IN STOCK",
+      "shopUrl": "https://shop.kingdomdeath.com/products/kingdom-death-monster-1-5"
+    },
+    {
+      "date": "2026-04-30",
+      "title": "KDU#117 - April Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-6db625f168",
       "itemName": "Wanderer - Preacher AT REGIONAL WAREHOUSES",
       "shopUrl": "https://shop.kingdomdeath.com/products/wanderer-preacher"
+    },
+    {
+      "date": "2026-04-30",
+      "title": "KDU#117 - April Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-6db625f168",
+      "itemName": "Red Witches Expansion",
+      "shopUrl": "https://shop.kingdomdeath.com/products/red-witches-expansion"
+    },
+    {
+      "date": "2026-04-30",
+      "title": "KDU#117 - April Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-6db625f168",
+      "itemName": "Pariah Expansion",
+      "shopUrl": "https://shop.kingdomdeath.com/products/pariah-expansion"
     },
     {
       "date": "2026-05-29",
@@ -4833,8 +7941,22 @@
       "date": "2026-05-29",
       "title": "KDU#118 - May Sale",
       "postUrl": "https://kingdomdeath.com/news/mc-8d39846404",
+      "itemName": "Reapokratis",
+      "shopUrl": "https://shop.kingdomdeath.com/products/reapokratis"
+    },
+    {
+      "date": "2026-05-29",
+      "title": "KDU#118 - May Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-8d39846404",
       "itemName": "Chef - Male",
       "shopUrl": "https://shop.kingdomdeath.com/products/chef-male"
+    },
+    {
+      "date": "2026-05-29",
+      "title": "KDU#118 - May Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-8d39846404",
+      "itemName": "Lantern 10 T-Shirt",
+      "shopUrl": "https://shop.kingdomdeath.com/products/lantern-10-t-shirt"
     },
     {
       "date": "2026-05-29",
@@ -4849,6 +7971,34 @@
       "postUrl": "https://kingdomdeath.com/news/mc-8d39846404",
       "itemName": "KDS Wanderer - Hyperlight Drifter",
       "shopUrl": "https://shop.kingdomdeath.com/products/kds-death-drifter"
+    },
+    {
+      "date": "2026-05-29",
+      "title": "KDU#118 - May Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-8d39846404",
+      "itemName": "Kingdom Death: Monster BACK IN STOCK",
+      "shopUrl": "https://shop.kingdomdeath.com/products/kingdom-death-monster-1-5"
+    },
+    {
+      "date": "2026-05-29",
+      "title": "KDU#118 - May Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-8d39846404",
+      "itemName": "Wanderer - Preacher AT REGIONAL WAREHOUSES",
+      "shopUrl": "https://shop.kingdomdeath.com/products/wanderer-preacher"
+    },
+    {
+      "date": "2026-05-29",
+      "title": "KDU#118 - May Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-8d39846404",
+      "itemName": "Red Witches Expansion",
+      "shopUrl": "https://shop.kingdomdeath.com/products/red-witches-expansion"
+    },
+    {
+      "date": "2026-05-29",
+      "title": "KDU#118 - May Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-8d39846404",
+      "itemName": "Pariah Expansion",
+      "shopUrl": "https://shop.kingdomdeath.com/products/pariah-expansion"
     },
     {
       "date": "2026-06-30",
@@ -4889,6 +8039,20 @@
       "date": "2026-06-30",
       "title": "KDU#119 - June Sale",
       "postUrl": "https://kingdomdeath.com/news/mc-1e629ee9e0",
+      "itemName": "Dragon Slayer",
+      "shopUrl": "https://shop.kingdomdeath.com/products/dragon-slayer"
+    },
+    {
+      "date": "2026-06-30",
+      "title": "KDU#119 - June Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-1e629ee9e0",
+      "itemName": "Summer Goth",
+      "shopUrl": "https://shop.kingdomdeath.com/products/summer-goth"
+    },
+    {
+      "date": "2026-06-30",
+      "title": "KDU#119 - June Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-1e629ee9e0",
       "itemName": "8.5 x 11 June 2026 Art Prints",
       "shopUrl": "https://shop.kingdomdeath.com/products/8-5-x-11-june-2026-art-prints"
     },
@@ -4896,8 +8060,43 @@
       "date": "2026-06-30",
       "title": "KDU#119 - June Sale",
       "postUrl": "https://kingdomdeath.com/news/mc-1e629ee9e0",
+      "itemName": "Summer Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/summer-death-dice"
+    },
+    {
+      "date": "2026-06-30",
+      "title": "KDU#119 - June Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-1e629ee9e0",
       "itemName": "KDS Vignette of Death: Screaming Nukealope",
       "shopUrl": "https://shop.kingdomdeath.com/products/kds-nukealope"
+    },
+    {
+      "date": "2026-06-30",
+      "title": "KDU#119 - June Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-1e629ee9e0",
+      "itemName": "Kingdom Death: Monster BACK IN STOCK",
+      "shopUrl": "https://shop.kingdomdeath.com/products/kingdom-death-monster-1-5"
+    },
+    {
+      "date": "2026-06-30",
+      "title": "KDU#119 - June Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-1e629ee9e0",
+      "itemName": "Wanderer - Preacher AT REGIONAL WAREHOUSES",
+      "shopUrl": "https://shop.kingdomdeath.com/products/wanderer-preacher"
+    },
+    {
+      "date": "2026-06-30",
+      "title": "KDU#119 - June Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-1e629ee9e0",
+      "itemName": "Red Witches Expansion",
+      "shopUrl": "https://shop.kingdomdeath.com/products/red-witches-expansion"
+    },
+    {
+      "date": "2026-06-30",
+      "title": "KDU#119 - June Sale",
+      "postUrl": "https://kingdomdeath.com/news/mc-1e629ee9e0",
+      "itemName": "Pariah Expansion",
+      "shopUrl": "https://shop.kingdomdeath.com/products/pariah-expansion"
     },
     {
       "date": "2026-07-31",
@@ -4987,6 +8186,13 @@
       "date": "2026-08-31",
       "title": "KDU#121 - August Post-Gen Con sale part 1",
       "postUrl": "https://kingdomdeath.com/news/mc-4159b508ca",
+      "itemName": "Summer Goth",
+      "shopUrl": "https://shop.kingdomdeath.com/products/summer-goth"
+    },
+    {
+      "date": "2026-08-31",
+      "title": "KDU#121 - August Post-Gen Con sale part 1",
+      "postUrl": "https://kingdomdeath.com/news/mc-4159b508ca",
       "itemName": "8.5 x 11 August 2026 Art Prints",
       "shopUrl": "https://shop.kingdomdeath.com/products/8-5-x-11-august-2026-art-prints"
     },
@@ -4994,16 +8200,180 @@
       "date": "2026-08-31",
       "title": "KDU#121 - August Post-Gen Con sale part 1",
       "postUrl": "https://kingdomdeath.com/news/mc-4159b508ca",
+      "itemName": "Summer Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/summer-death-dice"
+    },
+    {
+      "date": "2026-08-31",
+      "title": "KDU#121 - August Post-Gen Con sale part 1",
+      "postUrl": "https://kingdomdeath.com/news/mc-4159b508ca",
       "itemName": "KDS Philosophies of Death: Gatherism",
       "shopUrl": "https://shop.kingdomdeath.com/products/kds-gatherism"
+    },
+    {
+      "date": "2026-08-31",
+      "title": "KDU#121 - August Post-Gen Con sale part 1",
+      "postUrl": "https://kingdomdeath.com/news/mc-4159b508ca",
+      "itemName": "Kingdom Death: Monster BACK IN STOCK",
+      "shopUrl": "https://shop.kingdomdeath.com/products/kingdom-death-monster-1-5"
+    },
+    {
+      "date": "2026-08-31",
+      "title": "KDU#121 - August Post-Gen Con sale part 1",
+      "postUrl": "https://kingdomdeath.com/news/mc-4159b508ca",
+      "itemName": "Red Witches Expansion",
+      "shopUrl": "https://shop.kingdomdeath.com/products/red-witches-expansion"
+    },
+    {
+      "date": "2026-08-31",
+      "title": "KDU#121 - August Post-Gen Con sale part 1",
+      "postUrl": "https://kingdomdeath.com/news/mc-4159b508ca",
+      "itemName": "Pariah Expansion",
+      "shopUrl": "https://shop.kingdomdeath.com/products/pariah-expansion"
+    },
+    {
+      "date": "2026-09-30",
+      "title": "KDU#122 - September Death High x Post-Gen Con sale part 2",
+      "postUrl": "https://kingdomdeath.com/news/mc-bc751dceaa",
+      "itemName": "Grand Manner Portrait Simon - Painters Scale",
+      "shopUrl": "https://shop.kingdomdeath.com/products/grand-manner-portrait-simon-painters-scale"
+    },
+    {
+      "date": "2026-09-30",
+      "title": "KDU#122 - September Death High x Post-Gen Con sale part 2",
+      "postUrl": "https://kingdomdeath.com/news/mc-bc751dceaa",
+      "itemName": "Life Model Simone - Painters Scale",
+      "shopUrl": "https://shop.kingdomdeath.com/products/life-model-simone-painters-scale"
+    },
+    {
+      "date": "2026-09-30",
+      "title": "KDU#122 - September Death High x Post-Gen Con sale part 2",
+      "postUrl": "https://kingdomdeath.com/news/mc-bc751dceaa",
+      "itemName": "Death High Portraitist Snow - Painters Scale",
+      "shopUrl": "https://shop.kingdomdeath.com/products/death-high-portraitist-snow-painters-scale"
+    },
+    {
+      "date": "2026-09-30",
+      "title": "KDU#122 - September Death High x Post-Gen Con sale part 2",
+      "postUrl": "https://kingdomdeath.com/news/mc-bc751dceaa",
+      "itemName": "Death High - Simon Jr",
+      "shopUrl": "https://shop.kingdomdeath.com/products/death-high-simon-jr"
+    },
+    {
+      "date": "2026-09-30",
+      "title": "KDU#122 - September Death High x Post-Gen Con sale part 2",
+      "postUrl": "https://kingdomdeath.com/news/mc-bc751dceaa",
+      "itemName": "Seed Pattern Survivor - Astri the Promised",
+      "shopUrl": "https://shop.kingdomdeath.com/products/seed-pattern-survivor-astri-the-promised"
+    },
+    {
+      "date": "2026-09-30",
+      "title": "KDU#122 - September Death High x Post-Gen Con sale part 2",
+      "postUrl": "https://kingdomdeath.com/news/mc-bc751dceaa",
+      "itemName": "Survivors of Death III",
+      "shopUrl": "https://shop.kingdomdeath.com/products/survivors-of-death-iii"
+    },
+    {
+      "date": "2026-09-30",
+      "title": "KDU#122 - September Death High x Post-Gen Con sale part 2",
+      "postUrl": "https://kingdomdeath.com/news/mc-bc751dceaa",
+      "itemName": "Legendary Character - Hollow",
+      "shopUrl": "https://shop.kingdomdeath.com/products/hollow"
+    },
+    {
+      "date": "2026-09-30",
+      "title": "KDU#122 - September Death High x Post-Gen Con sale part 2",
+      "postUrl": "https://kingdomdeath.com/news/mc-bc751dceaa",
+      "itemName": "Slenderman Expansion 1.7",
+      "shopUrl": "https://shop.kingdomdeath.com/products/slenderman-expansion-1-7"
+    },
+    {
+      "date": "2026-09-30",
+      "title": "KDU#122 - September Death High x Post-Gen Con sale part 2",
+      "postUrl": "https://kingdomdeath.com/news/mc-bc751dceaa",
+      "itemName": "Dung Beetle Knight Expansion 1.7",
+      "shopUrl": "https://shop.kingdomdeath.com/products/dung-beetle-knight-expansion-1-7"
+    },
+    {
+      "date": "2026-09-30",
+      "title": "KDU#122 - September Death High x Post-Gen Con sale part 2",
+      "postUrl": "https://kingdomdeath.com/news/mc-bc751dceaa",
+      "itemName": "Death High - Esther",
+      "shopUrl": "https://shop.kingdomdeath.com/products/death-high-esther"
+    },
+    {
+      "date": "2026-09-30",
+      "title": "KDU#122 - September Death High x Post-Gen Con sale part 2",
+      "postUrl": "https://kingdomdeath.com/news/mc-bc751dceaa",
+      "itemName": "Death High - Dung Beetle Knight",
+      "shopUrl": "https://shop.kingdomdeath.com/products/death-high-dung-beetle-knight"
+    },
+    {
+      "date": "2026-09-30",
+      "title": "KDU#122 - September Death High x Post-Gen Con sale part 2",
+      "postUrl": "https://kingdomdeath.com/news/mc-bc751dceaa",
+      "itemName": "Death High - White Lion",
+      "shopUrl": "https://shop.kingdomdeath.com/products/death-high-white-lion-1"
+    },
+    {
+      "date": "2026-09-30",
+      "title": "KDU#122 - September Death High x Post-Gen Con sale part 2",
+      "postUrl": "https://kingdomdeath.com/news/mc-bc751dceaa",
+      "itemName": "Death High - Murderer",
+      "shopUrl": "https://shop.kingdomdeath.com/products/death-high-murderer"
+    },
+    {
+      "date": "2026-09-30",
+      "title": "KDU#122 - September Death High x Post-Gen Con sale part 2",
+      "postUrl": "https://kingdomdeath.com/news/mc-bc751dceaa",
+      "itemName": "8.5 x 11 September 2026 Art Prints",
+      "shopUrl": "https://shop.kingdomdeath.com/products/8-5-x-11-september-2026-art-prints"
+    },
+    {
+      "date": "2026-09-30",
+      "title": "KDU#122 - September Death High x Post-Gen Con sale part 2",
+      "postUrl": "https://kingdomdeath.com/news/mc-bc751dceaa",
+      "itemName": "Fall Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/fall-death-dice"
+    },
+    {
+      "date": "2026-09-30",
+      "title": "KDU#122 - September Death High x Post-Gen Con sale part 2",
+      "postUrl": "https://kingdomdeath.com/news/mc-bc751dceaa",
+      "itemName": "KDS Rene",
+      "shopUrl": "https://shop.kingdomdeath.com/products/kds-rene"
+    },
+    {
+      "date": "2026-09-30",
+      "title": "KDU#122 - September Death High x Post-Gen Con sale part 2",
+      "postUrl": "https://kingdomdeath.com/news/mc-bc751dceaa",
+      "itemName": "Kingdom Death: Monster BACK IN STOCK",
+      "shopUrl": "https://shop.kingdomdeath.com/products/kingdom-death-monster-1-5"
+    },
+    {
+      "date": "2026-09-30",
+      "title": "KDU#122 - September Death High x Post-Gen Con sale part 2",
+      "postUrl": "https://kingdomdeath.com/news/mc-bc751dceaa",
+      "itemName": "Red Witches Expansion",
+      "shopUrl": "https://shop.kingdomdeath.com/products/red-witches-expansion"
+    },
+    {
+      "date": "2026-09-30",
+      "title": "KDU#122 - September Death High x Post-Gen Con sale part 2",
+      "postUrl": "https://kingdomdeath.com/news/mc-bc751dceaa",
+      "itemName": "Pariah Expansion",
+      "shopUrl": "https://shop.kingdomdeath.com/products/pariah-expansion"
     }
   ],
   "errors": [],
-  "requestsThisRun": 1,
+  "requestsThisRun": 2,
   "skippedPostsThisRun": 132,
-  "processedPostsThisRun": 0,
-  "removedLinksThisRun": 413,
+  "processedPostsThisRun": 1,
+  "removedLinksThisRun": 4,
+  "linkHistoryVersion": 3,
+  "historyRecovery": { "postsRecovered": 133, "postsMissingCache": 0 },
   "discoveredPostUrls": [
+    "https://kingdomdeath.com/news/mc-bc751dceaa",
     "https://kingdomdeath.com/news/mc-4159b508ca",
     "https://kingdomdeath.com/news/mc-62acd5af71",
     "https://kingdomdeath.com/news/mc-1e629ee9e0",
@@ -5137,5 +8507,5 @@
     "https://kingdomdeath.com/news/mc-996beda7a5",
     "https://kingdomdeath.com/news/mc-9a15bbdcae"
   ],
-  "finishedAt": "2026-09-29T02:26:59.574Z"
+  "finishedAt": "2026-10-01T01:06:39.522Z"
 }

@@ -1,4 +1,4 @@
-/* Generated from src/lib/schema.json. Do not edit. Run pnpm generate:types to regenerate. */
+/* Generated from src/lib/kdm-data.schema.json. Do not edit. Run pnpm generate:types to regenerate. */
 
 /**
  * Latest HEAD check: true for HTTP 2xx after redirects, false for HTTP or request errors, null when no URL exists. Omitted until checked.

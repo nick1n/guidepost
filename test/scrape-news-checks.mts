@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
 import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -10,6 +11,7 @@ import {
   keepUrl,
   loadReport,
   newReport,
+  recoverCachedHistory,
   normalizeReport,
   pageData,
   saveReport,
@@ -35,7 +37,7 @@ test("release names, entities and image duplicates survive the TS conversion", (
   );
 });
 
-test("only direct shop product URLs are retained, with collections still excluded", () => {
+test("product links are retained while collection indexes and other pages are excluded", () => {
   for (const path of [
     "",
     "pages/seed-patterns",
@@ -43,8 +45,6 @@ test("only direct shop product URLs are retained, with collections still exclude
     "products-preview/aya",
     "?next=https://shop.kingdomdeath.com/products/aya",
     "collections/in-stock",
-    "collections/in-stock/products/aya",
-    "products/aya?ref=collections",
     "Collections/all",
   ]) {
     const url = `https://shop.kingdomdeath.com/${path}`;
@@ -54,6 +54,20 @@ test("only direct shop product URLs are retained, with collections still exclude
   assert.equal(keepUrl("https://shop.kingdomdeath.com.evil.example/products/aya"), false);
   assert.equal(keepUrl(shop + "aya"), true);
   assert.equal(keepUrl(shop + "aya?variant=123#details"), true);
+  assert.equal(keepUrl("https://shop.kingdomdeath.com/collections/in-stock/products/aya"), true);
+  assert.equal(keepUrl(shop + "aya?ref=collections"), true);
+});
+
+test("newsletter path typos are repaired without treating query redirects as product links", () => {
+  const links = extractLinks(
+    `<a href="${shop}wrong${shop}ringtail-vixen-wb">Ringtail Vixen</a><a href="${shop} griswaldan">Griswaldan</a><a href="${shop}/products/griswaldan">Griswaldan again</a>`,
+    post,
+  );
+  assert.deepEqual(
+    links.map((link) => link.shopUrl),
+    [shop + "ringtail-vixen-wb", shop + "griswaldan"],
+  );
+  assert.equal(keepUrl(`https://shop.kingdomdeath.com/?next=${shop}aya`), false);
 });
 
 test("existing Python export migrates, filters rows and retains zero-link checkpoints", async (t) => {
@@ -81,7 +95,7 @@ test("existing Python export migrates, filters rows and retains zero-link checkp
   assert.doesNotMatch(await readFile(join(output, "news-shop-links.csv"), "utf8"), /collections|seed-patterns/);
 });
 
-test("duplicates keep the earliest timestamp, while different names or URLs remain", () => {
+test("repeat announcements survive while duplicate links within a post are removed", () => {
   const report = newReport();
   const earlier = { ...post, postUrl: `${news}/earlier`, date: "2026-08-31T00:30:00+02:00" };
   report.posts = [
@@ -93,19 +107,20 @@ test("duplicates keep the earliest timestamp, while different names or URLs rema
     { ...earlier, itemName: "Aya", shopUrl: shop + "aya" },
     { ...post, itemName: "Questing Aya", shopUrl: shop + "aya" },
     { ...post, itemName: "Aya", shopUrl: shop + "aya-variant" },
+    { ...post, itemName: "Aya", shopUrl: shop + "aya" },
   ];
   normalizeReport(report);
-  assert.equal(report.links.length, 3);
+  assert.equal(report.links.length, 4);
   assert.equal(report.links.find((link) => link.itemName === "Aya" && link.shopUrl === shop + "aya")!.postUrl, earlier.postUrl);
   assert.ok(report.links.every((link) => link.date === "2026-08-31"));
-  assert.equal(report.posts[0]!.linkCount, 2);
+  assert.equal(report.posts[0]!.linkCount, 3);
   assert.equal(report.posts[1]!.linkCount, 1);
   const before = JSON.stringify(report);
   normalizeReport(report);
   assert.equal(JSON.stringify(report), before);
 });
 
-test("a newly discovered earlier post replaces an exported pair without fetching the old post", async () => {
+test("a newly discovered earlier post adds history without removing the old occurrence", async () => {
   const report = newReport();
   report.posts = [{ ...post, date: "2026-08-31", status: "read" }];
   report.links = [{ ...post, date: "2026-08-31", itemName: "Aya", shopUrl: shop + "aya" }];
@@ -120,9 +135,9 @@ test("a newly discovered earlier post replaces an exported pair without fetching
     async () => {},
   );
   assert.deepEqual(requested, [`${news}/earlier`]);
-  assert.equal(report.links.length, 1);
+  assert.equal(report.links.length, 2);
   assert.equal(report.links[0]!.postUrl, `${news}/earlier`);
-  assert.equal(report.posts[0]!.linkCount, 0);
+  assert.equal(report.posts[0]!.linkCount, 1);
   assert.equal(report.links[0]!.date, "2026-08-31");
 });
 
@@ -151,7 +166,7 @@ test("incremental run processes only new and failed articles, skips zero-link po
     [`${news}/failed`, false],
   ]);
   assert.equal(checkpoints, 2);
-  assert.equal(report.links.length, 1);
+  assert.equal(report.links.length, 2);
   assert.equal(report.complete, true);
   await updateReport(
     report,
@@ -161,7 +176,7 @@ test("incremental run processes only new and failed articles, skips zero-link po
     },
     async () => {},
   );
-  assert.equal(report.links.length, 1);
+  assert.equal(report.links.length, 2);
 });
 
 test("failed new article preserves earlier links and checkpoints the failure", async () => {
@@ -177,6 +192,66 @@ test("failed new article preserves earlier links and checkpoints the failure", a
   assert.equal(report.links.length, 1);
   assert.equal(report.posts[1]!.status, "unread");
   assert.equal(report.complete, false);
+});
+
+test("cached articles restore missing announcement occurrences without losing uncached posts", async (t) => {
+  const cache = await mkdtemp(join(tmpdir(), "kdm-history-test-"));
+  t.after(() => rm(cache, { recursive: true, force: true }));
+  const earlier = { ...post, date: "2026-07-31", postUrl: `${news}/earlier` };
+  const report = newReport();
+  report.posts = [
+    { ...earlier, status: "read" },
+    { ...post, status: "read" },
+  ];
+  report.links = [{ ...post, itemName: "Aya", shopUrl: shop + "aya" }];
+  await writeFile(
+    join(cache, createHash("sha256").update(earlier.postUrl).digest("hex") + ".html"),
+    page({ article: { body: `<a href="${shop}aya">Aya</a>` } }),
+  );
+  await recoverCachedHistory(report, cache);
+  assert.equal(report.links.length, 2);
+  assert.deepEqual(
+    report.links.map((row) => row.postUrl),
+    [earlier.postUrl, post.postUrl],
+  );
+  assert.deepEqual(report.historyRecovery, { postsRecovered: 1, postsMissingCache: 1 });
+  const recovered = JSON.stringify(report);
+  await recoverCachedHistory(report, cache);
+  assert.equal(JSON.stringify(report), recovered);
+});
+
+test("a failed refresh preserves successful contents, then an incremental run retries it", async () => {
+  const report = newReport();
+  report.posts = [{ ...post, status: "read" }];
+  report.links = [{ ...post, itemName: "Aya", shopUrl: shop + "aya" }];
+  await updateReport(
+    report,
+    { stories: [story("old")] },
+    async () => {
+      throw new Error("Temporary failure");
+    },
+    async () => {},
+    true,
+  );
+  assert.equal(report.complete, false);
+  assert.equal(report.posts[0]!.status, "read");
+  assert.equal(report.links[0]!.itemName, "Aya");
+  assert.match(report.posts[0]!.error!, /Temporary failure/);
+  const requests: boolean[] = [];
+  await updateReport(
+    report,
+    { stories: [story("old")] },
+    async (_url, cached) => {
+      requests.push(cached);
+      return page({ article: { body: `<a href="${shop}rene">Rene</a>` } });
+    },
+    async () => {},
+  );
+  assert.deepEqual(requests, [false]);
+  assert.equal(report.complete, true);
+  assert.equal(report.posts[0]!.error, undefined);
+  assert.equal(report.links.length, 1);
+  assert.equal(report.links[0]!.itemName, "Rene");
 });
 
 test("malformed checkpoints are not silently replaced", async (t) => {

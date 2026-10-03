@@ -1,6 +1,9 @@
 /** Keep in sync with the --duration-fast CSS custom property in src/app.css. */
 export const DURATION_FAST = 180;
 
+/** Hold threshold in milliseconds, also supplied to the hold ripple's CSS animation. */
+export const DURATION_HOLD = 600;
+
 export const KD_ICONS = {
   activation: "q",
   armor: "M",
@@ -145,7 +148,12 @@ export type StatusInfo = {
 const statusDefinitions = {
   "status:threat": { label: "Threat", icon: "i-material-symbols:location-searching", activeIcon: "i-material-symbols:my-location" },
   "status:act": { label: "Act", summary: "Acted", icon: "i-material-symbols:play-circle", activeIcon: "i-material-symbols:check" },
-  "status:monster-controller": { label: "Mon Controller", summary: "Monster Controller", icon: "i-material-symbols:sports-esports" },
+  "status:monster-controller": {
+    label: "Mon Controller",
+    summary: "Monster Controller",
+    icon: "i-material-symbols:sports-esports",
+    iconClass: "controller-icon",
+  },
   "status:blind-spot": {
     label: "In Blind Spot",
     icon: "i-lucide:eye-dashed",
@@ -165,7 +173,12 @@ const statusDefinitions = {
   "status:deaf": { label: "Deaf", icon: "i-lucide:ear", activeIcon: "i-lucide:ear-off" },
   "status:blind": { label: "Blind", icon: "i-lucide:eye", activeIcon: "i-lucide:eye-off" },
   "status:dead": { label: "Dead", icon: "i-material-symbols:sentiment-very-dissatisfied", iconClass: "dead-icon" },
-  "status:cease-to-exist": { label: "Cease to Exist", icon: "i-material-symbols:deblur", iconClass: "cease-icon" },
+  "status:cease-to-exist": {
+    label: "Cease to Exist",
+    icon: "i-material-symbols:deblur",
+    activeIcon: "i-material-symbols:blur-on",
+    iconClass: "cease-icon",
+  },
 } as const;
 export type SurvivorStatusIcons = keyof typeof statusDefinitions;
 export const statuses: Record<string, StatusInfo> = statusDefinitions;

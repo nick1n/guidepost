@@ -1,5 +1,8 @@
 <script lang="ts">
   import { resolve } from "$app/paths";
+  import { onMount } from "svelte";
+  import HoldRipple from "#lib/components/gestures/HoldRipple.svelte";
+  import { sectionName } from "./sections";
   import { dragScroll } from "./drag-scroll";
   import Monster from "./Monster.svelte";
   import Survivor from "./Survivor.svelte";
@@ -29,6 +32,45 @@
   let awakening = $state(0);
   let sheets = $state(survivors.map((_, index) => makeSheet(index)));
   let menuOpen = $state(false);
+  let fullscreen = $state(false);
+  let fullscreenAvailable = $state(false);
+  let fullscreenPending = $state(false);
+  let fullscreenError = $state("");
+
+  onMount(() => {
+    fullscreenAvailable = document.fullscreenEnabled;
+    onfullscreenchange();
+  });
+
+  function onfullscreenchange() {
+    fullscreen = Boolean(document.fullscreenElement);
+    fullscreenError = "";
+  }
+
+  async function toggleFullscreen() {
+    if (!fullscreenAvailable || fullscreenPending) return;
+    fullscreenPending = true;
+    fullscreenError = "";
+    try {
+      if (document.fullscreenElement) await document.exitFullscreen();
+      else await document.documentElement.requestFullscreen();
+    } catch {
+      fullscreenError = "Could not change fullscreen mode. Please try again.";
+    } finally {
+      fullscreenPending = false;
+    }
+  }
+  let dashboards = $state<
+    {
+      areSectionsOpen: () => boolean;
+      setSectionsOpen: (open: boolean) => void;
+      hasSection: (title: string) => boolean;
+      isSectionOpen: (title: string) => boolean;
+      setSectionOpen: (title: string, open: boolean) => void;
+    }[]
+  >([]);
+  let currentExpanded = $derived(dashboards[active]?.areSectionsOpen() ?? false);
+  let allExpanded = $derived(dashboards.length > 0 && dashboards.every((dashboard) => dashboard.areSectionsOpen()));
   const initialMix = { foreground: 70, background: 50 } as const;
   let foregroundMix = $state(initialMix.foreground);
   let backgroundMix = $state(initialMix.background);
@@ -184,9 +226,32 @@
     const { movement, activation } = sheets[index - 1].remaining;
     return `${movement} movement and ${activation} activation remaining`;
   }
+
+  function setSectionsOpen(open: boolean, all = false) {
+    for (const dashboard of all ? dashboards : [dashboards[active]]) dashboard.setSectionsOpen(open);
+  }
+
+  function toggleCurrentSections() {
+    setSectionsOpen(!currentExpanded);
+  }
+
+  function toggleAllSections() {
+    const open = !allExpanded;
+    setSectionsOpen(open, true);
+    return `Sections ${open ? "expanded" : "collapsed"} in all dashboards.`;
+  }
+
+  function toggleRelatedSections(title: string) {
+    const name = sectionName(title);
+    const matching = dashboards.filter((dashboard) => dashboard.hasSection(name));
+    const open = !matching.every((dashboard) => dashboard.isSectionOpen(name));
+    for (const dashboard of matching) dashboard.setSectionOpen(name, open);
+    return open;
+  }
 </script>
 
 <svelte:window {onkeydown} />
+<svelte:document {onfullscreenchange} />
 <svelte:head><title>{design.name} Showdown | Guidepost</title></svelte:head>
 
 <main
@@ -213,6 +278,7 @@
       >
         {#if index === 0}
           <Monster
+            bind:this={dashboards[index]}
             {variant}
             {round}
             {monsterTurn}
@@ -221,14 +287,17 @@
             bind:values={monsterTokens}
             bind:stats={monsterStats}
             onturn={toggleTurn}
+            ontogglesection={toggleRelatedSections}
           />
         {:else}
           <Survivor
+            bind:this={dashboards[index]}
             person={survivors[index - 1]}
             number={index}
             {variant}
             survivorTurn={!monsterTurn}
             settlementSurvivors={sheets}
+            ontogglesection={toggleRelatedSections}
             monsterDefense={{
               toughness: (monsterStats.toughness ?? 0) + tokenNet(monsterTokens[monsterTokenIndex.toughness]),
               luck: tokenNet(monsterTokens[monsterTokenIndex.luck]),
@@ -240,7 +309,7 @@
       </div>
     {/each}
   </div>
-  <footer class="toolbar">
+  <footer>
     <nav class="roster" aria-label="Jump to dashboard">
       {#each roster as person, index (person.name)}
         <button
@@ -255,20 +324,48 @@
         >
           <strong>{index === 0 ? "White Lion" : survivorName(index)}</strong>
           {#if index === 0}
+            <span>
+              Mov <b>{(monsterStats.movement || 0) + tokenNet(monsterTokens[monsterTokenIndex.movement])}</b>
+              Tgh <b>{(monsterStats.toughness || 0) + tokenNet(monsterTokens[monsterTokenIndex.toughness])}</b>
+            </span>
             <span class="monster-flags" aria-hidden="true">
               {#if monsterTurn}<StatusIcon icon="turn" active context="legend" />{/if}
               {#if monsterKnockedDown}<StatusIcon icon="status:knocked-down" active context="legend" />{/if}
             </span>
-            <span
-              >Mov <b>{(monsterStats.movement || 0) + tokenNet(monsterTokens[monsterTokenIndex.movement])}</b> Tgh
-              <b>{(monsterStats.toughness || 0) + tokenNet(monsterTokens[monsterTokenIndex.toughness])}</b></span
-            >
           {:else}
             <QuickStatus sheet={sheets[index - 1]} showResources={!monsterTurn} />
           {/if}
         </button>
       {/each}
     </nav>
+
+    <HoldRipple
+      ontap={toggleCurrentSections}
+      onhold={toggleAllSections}
+      holdHint="Hold or press Shift+Enter to expand or collapse sections in all dashboards."
+    >
+      {#snippet children(events, paint, holding)}
+        <button
+          class="sections-button hold-button"
+          type="button"
+          aria-label={`${currentExpanded ? "Collapse" : "Expand"} sections in ${active === 0 ? roster[active].name : survivorName(active)} dashboard`}
+          title={currentExpanded ? "Collapse current dashboard sections" : "Expand current dashboard sections"}
+          {...events}
+        >
+          <span
+            class={["menu-icon", currentExpanded ? "i-material-symbols:unfold-less" : "i-material-symbols:unfold-more"]}
+            style:opacity={holding ? 0 : 1}
+            aria-hidden="true"
+          ></span>
+          <span
+            class={["menu-icon", allExpanded ? "i-material-symbols:unfold-less-double" : "i-material-symbols:unfold-more-double"]}
+            style:opacity={holding ? 1 : 0}
+            aria-hidden="true"
+          ></span>
+          {@render paint()}
+        </button>
+      {/snippet}
+    </HoldRipple>
 
     <button class="advance" onclick={advance}>
       <span class="turn-label" aria-live="polite">{`Round ${round}: ` + (monsterTurn ? "Monster's Turn" : "Survivors' Turn")}</span>
@@ -284,12 +381,12 @@
 
     <button
       class="menu-button"
-      aria-label="Showdown Menu"
+      aria-label={menuOpen ? "Close Showdown Menu" : "Showdown Menu"}
       aria-expanded={menuOpen}
       aria-controls={menuOpen ? "showdown-menu" : undefined}
       onclick={() => (menuOpen = !menuOpen)}
     >
-      <span class="menu-icon i-material-symbols:menu" aria-hidden="true"></span>
+      <span class={["menu-icon", menuOpen ? "i-material-symbols:close" : "i-material-symbols:menu"]} aria-hidden="true"></span>
     </button>
     {#if menuOpen}
       <div class="menu" id="showdown-menu">
@@ -297,11 +394,34 @@
         {#if active > 0}
           <p class="menu-status">{statusText(sheets[active - 1])}</p>
           <div class="menu-counts">
-            <span>{tokenTotal(sheets[active - 1])} Tokens</span><span
-              >{availableActions(sheets[active - 1])} Survival Actions Available</span
-            >
+            <span>{tokenTotal(sheets[active - 1])} Tokens</span>
+            <span>{availableActions(sheets[active - 1])} Survival Actions Available</span>
           </div>
         {/if}
+        <div class="display-settings">
+          <fieldset class="setting">
+            <legend class="setting-label">Display</legend>
+            <button
+              class="menu-option fullscreen-option"
+              type="button"
+              disabled={!fullscreenAvailable || fullscreenPending}
+              onclick={toggleFullscreen}
+            >
+              <span
+                class={["menu-icon", fullscreen ? "i-material-symbols:fullscreen-exit" : "i-material-symbols:fullscreen"]}
+                aria-hidden="true"
+              ></span>
+              {fullscreenAvailable ? (fullscreen ? "Exit Fullscreen" : "Enter Fullscreen") : "Fullscreen unavailable"}
+            </button>
+            {#if fullscreenError}<p role="alert">{fullscreenError}</p>{/if}
+          </fieldset>
+          <fieldset class="setting">
+            <legend class="setting-label">Survivor colors</legend>
+            <button class="menu-option" aria-pressed={brightenZachary} onclick={() => (brightenZachary = !brightenZachary)}>
+              Brighten Zachary
+            </button>
+          </fieldset>
+        </div>
         <fieldset class="setting">
           <legend class="setting-label">Dashboard snap</legend>
           <div class="options snap-options">
@@ -326,12 +446,6 @@
               </button>
             {/each}
           </div>
-        </fieldset>
-        <fieldset class="setting">
-          <legend class="setting-label">Survivor colors</legend>
-          <button class="menu-option" aria-pressed={brightenZachary} onclick={() => (brightenZachary = !brightenZachary)}>
-            Brighten Zachary
-          </button>
         </fieldset>
         <fieldset class="setting">
           <legend class="setting-label">Attribute and token colors</legend>
@@ -415,10 +529,13 @@
   .showdown {
     --color-monster: #bda17b;
     --feedback-brightness: 1.12;
-    --size-control-compact: 32px;
+    --scale-control-compact: calc(32 / 44);
+    --scale-control-content: 1;
+    --size-control-compact: calc(var(--size-control-default) * var(--scale-control-compact));
     --size-control-default: 44px;
     --size-control-comfortable: 56px;
     --size-control: var(--size-control-default);
+    --size-number-max: 48px;
     --size-column: 20rem;
 
     display: grid;
@@ -427,12 +544,9 @@
     background: var(--background);
     font-variant-numeric: lining-nums tabular-nums;
   }
-  .showdown :global(input[type="number"]) {
-    border: var(--border-width) solid var(--field-border);
-    font-size: var(--text-num-input);
-  }
   .showdown[data-density="compact"] {
     --size-control: var(--size-control-compact);
+    --scale-control-content: var(--scale-control-compact);
   }
   .showdown[data-density="comfortable"] {
     --size-control: var(--size-control-comfortable);
@@ -440,6 +554,30 @@
   .showdown :global(:where(a[href], button, input:not([type="hidden"]), select, textarea, summary, [role="button"], [role="link"])) {
     min-inline-size: var(--size-control);
     min-block-size: var(--size-control);
+  }
+  .showdown :global(:where(input[type="number"], [data-stacked-control])) {
+    inline-size: var(--size-number-inline, min(var(--size-control), var(--size-number-max)));
+    block-size: var(--size-number-block, var(--size-control));
+    min-inline-size: 0;
+    min-block-size: 0;
+    max-inline-size: var(--size-number-inline, var(--size-number-max));
+  }
+  .showdown :global(:where(input[type="number"], [data-stacked-control="armor"])) {
+    border: var(--border-width) solid var(--field-border, color-mix(var(--identity) 60%, var(--panel)));
+    border-radius: var(--radius-control);
+    background: var(--field-bg, color-mix(var(--identity) 18%, var(--panel)));
+    color: var(--field-fg, var(--foreground));
+    font-weight: var(--font-bold);
+    text-align: center;
+  }
+  .showdown :global(:where(input[type="number"], button[data-stacked-control])) {
+    font-size: calc(var(--text-num-input) * var(--scale-control-content));
+  }
+  .showdown :global(input[type="number"]) {
+    appearance: textfield;
+    &::-webkit-inner-spin-button {
+      appearance: none;
+    }
   }
   .workspace {
     --size-panel: max(var(--size-column), 20%);
@@ -473,12 +611,12 @@
   .monster-panel {
     background: linear-gradient(color-mix(var(--color-monster) 5%, var(--background)), var(--background));
   }
-  .toolbar {
+  footer {
     display: grid;
     position: relative;
-    grid-template-columns: minmax(0, 1fr) repeat(2, var(--size-control));
+    grid-template-columns: var(--size-control) minmax(0, 1fr) repeat(2, var(--size-control));
     padding: 0.375rem 0.375rem max(0.375rem, env(safe-area-inset-bottom));
-    gap: 0.125rem;
+    gap: var(--border-width);
     border-block-start: 1px solid var(--color-divider);
     background: var(--panel);
   }
@@ -553,10 +691,11 @@
     font-size: var(--text-xs);
   }
   .arrow {
-    inline-size: 0.875rem;
-    block-size: 0.875rem;
+    inline-size: var(--size-icon-control);
+    block-size: var(--size-icon-control);
   }
   .undo,
+  .sections-button,
   .menu-button {
     display: grid;
     place-items: center;
@@ -566,8 +705,30 @@
     background: var(--card);
   }
   .menu-icon {
-    inline-size: 1.125rem;
-    block-size: 1.125rem;
+    inline-size: var(--size-icon-control);
+    block-size: var(--size-icon-control);
+  }
+  .hold-button {
+    position: relative;
+    user-select: none;
+    -webkit-touch-callout: none;
+  }
+  .hold-button .menu-icon {
+    grid-area: 1 / 1;
+  }
+  .fullscreen-option {
+    gap: 0.375rem;
+    &:disabled {
+      opacity: 0.5;
+    }
+  }
+  .display-settings {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem;
+  }
+  .display-settings .menu-option {
+    inline-size: 100%;
   }
   .menu-status {
     margin-block: 0.375rem;
@@ -726,6 +887,9 @@
     --feedback-brightness: 1.18;
   }
   @media (prefers-reduced-motion: no-preference) {
+    .hold-button .menu-icon {
+      transition: opacity var(--duration-fast);
+    }
     .showdown :global(button) {
       transition: filter 100ms ease-out;
       &:active:not(:disabled) {
@@ -749,8 +913,8 @@
   }
 
   @media (min-width: 1100px) {
-    .toolbar {
-      grid-template-columns: minmax(22rem, 42rem) 13rem 3.5rem 3.5rem;
+    footer {
+      grid-template-columns: minmax(22rem, 42rem) 3.5rem 13rem repeat(2, 3.5rem);
       align-items: stretch;
       justify-content: center;
       gap: 0.5rem;
@@ -762,11 +926,13 @@
       flex-direction: column;
     }
     .advance,
+    .sections-button,
     .undo,
     .menu-button {
       block-size: 3.5rem;
     }
     .undo,
+    .sections-button,
     .menu-button {
       inline-size: 3.5rem;
     }
@@ -779,6 +945,15 @@
     cursor: grabbing;
   }
   @media (hover: hover) and (pointer: fine) {
+    .roster-button,
+    .advance,
+    .sections-button,
+    .undo,
+    .menu-button {
+      &:hover:not(:disabled) {
+        filter: brightness(var(--feedback-brightness));
+      }
+    }
     .workspace,
     .dashboard {
       cursor: grab;

@@ -26,9 +26,9 @@
   --old-green: #4ae111;
   --old-blue: #11b2e1;
 
-  --affinity-red: #BA0000;
+  --affinity-red: #ba0000;
   --affinity-green: #279515;
-  --affinity-blue: #1067B4;
+  --affinity-blue: #1067b4;
 
   --accent-red: var(--old-red);
   --accent-green: var(--old-green);
@@ -55,10 +55,43 @@
   --text-xl: 1.5rem;
   --text-num-input: 1.625rem;
 
+  --size-icon-control: 1.5rem;
+
   --border-width: 2px;
   --gear-gap: 2px;
   --duration-fast: 180ms;
+  --duration-medium: 600ms;
+  --duration-slow: 1s;
   --ease-standard: ease;
+  /* from https://open-props.style/#easing */
+  --ease-bounce: linear(
+    0,
+    0.004,
+    0.016,
+    0.035,
+    0.063,
+    0.098,
+    0.141,
+    0.191,
+    0.25,
+    0.316,
+    0.391 36.8%,
+    0.563,
+    0.766,
+    1 58.8%,
+    0.946,
+    0.908 69.1%,
+    0.895,
+    0.885,
+    0.879,
+    0.878,
+    0.879,
+    0.885,
+    0.895,
+    0.908 89.7%,
+    0.946,
+    1
+  );
   --letter-spacing-tight: -0.03em;
   --line-height-none: 1;
   --line-height-snug: 1.25;
@@ -116,49 +149,49 @@
   --mix-attr-fg: 70%;
 
   /* Card Colors */
-  --mon-resource-background: #D5A421;
-  --mon-resource-border: #F9F7F2;
+  --mon-resource-background: #d5a421;
+  --mon-resource-border: #f9f7f2;
   --mon-resource-foreground: #fff;
 
-  --strange-resource-back-yellow: #FEF4B4;
-  --strange-resource-back-dark-yellow: #D7C562;
-  --strange-resource-foreground: #BDAD51;
-  --strange-resource-border: #BDAD51;
+  --strange-resource-back-yellow: #fef4b4;
+  --strange-resource-back-dark-yellow: #d7c562;
+  --strange-resource-foreground: #bdad51;
+  --strange-resource-border: #bdad51;
 
   --sfa-background: #601714;
-  --sfa-border: #D76758;
-  --sfa-foreground: #D14941;
+  --sfa-border: #d76758;
+  --sfa-foreground: #d14941;
 
-  --hit-location-background: #5E615D;
+  --hit-location-background: #5e615d;
   --hit-location-border: #040404;
   --hit-location-foreground: #fff;
 
-  --hunt-event-background: #AD9481;
+  --hunt-event-background: #ad9481;
   --hunt-event-foreground: #fff;
-  --hunt-event-border: #F6F5F4;
+  --hunt-event-border: #f6f5f4;
 
-  --card-back-background: #100F0D;
+  --card-back-background: #100f0d;
   --card-back-border: #686766;
 
-  --disorder-foreground: #715FC9;
-  --fa-foreground: #FF411B;
-  --innovation-foreground: #5ECEFC;
+  --disorder-foreground: #715fc9;
+  --fa-foreground: #ff411b;
+  --innovation-foreground: #5ecefc;
 
-  --seed-background: #B53F05;
-  --seed-border: #EADC9A;
-  --seed-foreground: #E6D0CC;
+  --seed-background: #b53f05;
+  --seed-border: #eadc9a;
+  --seed-foreground: #e6d0cc;
 
   --seed-title: #060605;
-  --seed-blue: #379CDC;
-  --seed-grey: #94838B;
-  --seed-red: #9A094B;
-  --seed-black: #1E1E1E;
+  --seed-blue: #379cdc;
+  --seed-grey: #94838b;
+  --seed-red: #9a094b;
+  --seed-black: #1e1e1e;
   --seed-item: #353230;
-  --seed-yellow: #BD930C;
+  --seed-yellow: #bd930c;
 
-  --gear-center: #EFE7E6;
-  --gear-outside: #DCD3D0;
-  --gear-box-background: #CBC9C4;
+  --gear-center: #efe7e6;
+  --gear-outside: #dcd3d0;
+  --gear-box-background: #cbc9c4;
 
   /* Currently unused vars */
   --beta-foreground: #fdfffe;
@@ -309,7 +342,7 @@ textarea {
   p {
     font-size: 0.75rem;
 
-    +p {
+    + p {
       margin-block-start: 0.25rem;
     }
   }

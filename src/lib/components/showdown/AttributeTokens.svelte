@@ -32,6 +32,7 @@
       <span class="label">{labels[index]}</span>
       <button
         class={["net", editing === index && "selected"]}
+        data-stacked-control
         aria-label={`${owner} ${name} tokens: ${tokenNet(counts[index])} net, ${counts[index].positive} positive, ${counts[index].negative} negative. Edit counts`}
         aria-expanded={editing === index}
         aria-controls={editing === index ? `${id}-editor` : undefined}
@@ -103,14 +104,11 @@
     font-size: var(--text-xs);
   }
   .net {
-    inline-size: 2.75rem;
-    block-size: 2.75rem;
     border: var(--border-width) solid var(--field-border);
     border-radius: 50%;
     background: var(--field-bg);
     color: var(--field-fg);
     font-weight: var(--font-bold);
-    font-size: var(--text-num-input);
     &.selected {
       outline: 2px solid var(--field-border);
       outline-offset: 2px;
@@ -170,20 +168,7 @@
     gap: 0.25rem;
     font-size: var(--text-xs);
   }
-  input {
-    appearance: textfield;
-    inline-size: var(--size-control);
-    block-size: var(--size-control);
-    border: var(--border-width) solid var(--field-border);
-    border-radius: var(--radius-control);
-    background: var(--field-bg);
-    color: var(--field-fg);
-    font-weight: var(--font-bold);
-    text-align: center;
-    &::-webkit-inner-spin-button {
-      appearance: none;
-    }
-  }
+
   :global(.signal) .net {
     grid-row: 3;
     border-radius: 50% 50% 0.375rem 0.375rem;

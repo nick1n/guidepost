@@ -1,4 +1,5 @@
 <script lang="ts">
+  import HoldRipple from "#lib/components/gestures/HoldRipple.svelte";
   import AttributeTokens from "./AttributeTokens.svelte";
   import ActionRow from "./ActionRow.svelte";
   import AttackProfile from "./AttackProfile.svelte";
@@ -8,6 +9,7 @@
   import EntryList from "./EntryList.svelte";
   import ProgressTrack from "./ProgressTrack.svelte";
   import StatusIcon from "./StatusIcon.svelte";
+  import { SectionControls, setSectionControls } from "./sections";
   import { statuses, statusOrder, statusIcons } from "#lib/constants.ts";
   import {
     attributes,
@@ -38,6 +40,7 @@
     survivorTurn,
     monsterDefense,
     settlementSurvivors,
+    ontogglesection,
     sheet = $bindable(),
   }: {
     person: { name: string; color: string; gender: string };
@@ -46,6 +49,7 @@
     survivorTurn: boolean;
     monsterDefense: { toughness: number; luck: number; evasion: number };
     settlementSurvivors: Sheet[];
+    ontogglesection: (title: string) => boolean;
     sheet: Sheet;
   } = $props();
 
@@ -63,6 +67,45 @@
   const foundingStoneRuleText = foundingStoneRule.replace("[activation]", "an activation").replaceAll("**", "");
   const attackCost = ["activation"] as const;
   let showMore = $state(false);
+  const sections = setSectionControls(new SectionControls((title) => ontogglesection(title)));
+
+  function toggleMore() {
+    showMore = !showMore;
+  }
+
+  function toggleMoreGroup() {
+    const open = ontogglesection("More");
+    return `Extra sections ${open ? "shown" : "hidden"} in all dashboards.`;
+  }
+
+  export function areSectionsOpen() {
+    return showMore && sections.allOpen;
+  }
+
+  export function setSectionsOpen(open: boolean) {
+    showMore = open;
+    sections.setOpen(open);
+  }
+
+  export function isSectionOpen(title: string) {
+    if (title === "More") return showMore;
+    const name = title === "Trinkets and Baubles" ? "Trinkets" : title;
+    return sections.isOpen(title) && (showMore || !extras.some((section) => section.name === name && !section.populated));
+  }
+
+  export function hasSection(title: string) {
+    return title === "More" || sections.hasSection(title);
+  }
+
+  export function setSectionOpen(title: string, open: boolean) {
+    if (title === "More") {
+      showMore = open;
+      return;
+    }
+    const name = title === "Trinkets and Baubles" ? "Trinkets" : title;
+    if (open && extras.some((section) => section.name === name && !section.populated)) showMore = true;
+    sections.setSectionOpen(title, open);
+  }
   let expandedAction = $state<string | null>(null);
   let compactGear = $state(false);
   let gearCount = $derived(compactGear ? 4 : 9);
@@ -246,7 +289,7 @@
     <div class="armor">
       {#each armor as location, index (location.name)}
         <div class="armor-cell">
-          <span class="armor-input">
+          <span class="armor-input" data-stacked-control="armor">
             {#if location.icon}
               <KdIcon class="armor-icon" i={location.icon} />
             {:else}
@@ -268,6 +311,7 @@
                 <input
                   id={`${id}-${location.name}-${injury}`}
                   type="checkbox"
+                  data-stacked-control
                   bind:checked={sheet.injuries[location.name + injury]}
                   aria-label={`${person.name} ${location.name} ${injury} injury`}
                 />
@@ -528,7 +572,7 @@
           <input id={`${id}-life`} class="attribute-value" type="number" min="1" step="1" value={sheet.life} oninput={oninputLife} />
         </div>
         <div class="stat">
-          <label for={`${id}-perfect-hit-range`} class="stat-label">Perfect Hit Range</label>
+          <label for={`${id}-perfect-hit-range`} class="stat-label">Perf Hit Range</label>
           <input id={`${id}-perfect-hit-range`} class="attribute-value" type="number" min="0" step="1" bind:value={sheet.perfectHitRange} />
         </div>
       </div>
@@ -753,24 +797,34 @@
 
   {#each orderedExtras as section (section.name)}
     {#if section.name === "divider"}
-      <button
-        class="more"
-        aria-expanded={showMore}
-        aria-controls={extras
-          .filter((section) => !section.populated)
-          .map((section) => `${id}-${section.name.replaceAll(" ", "-")}`)
-          .join(" ") || undefined}
-        onclick={() => (showMore = !showMore)}
+      <HoldRipple
+        ontap={toggleMore}
+        onhold={toggleMoreGroup}
+        holdHint="Hold or press Shift+Enter to show or hide extra sections in all dashboards."
       >
-        <span class="more-label">
-          {#if variant === 1}
-            {showMore ? "Less" : "More"}
-          {:else}
-            {showMore ? "Show less" : "Show more"}
-          {/if}
-          <KdIcon class={["more-icon", showMore && "expanded"]} i="flow-arrow" />
-        </span>
-      </button>
+        {#snippet children(events, paint)}
+          <button
+            class="more"
+            type="button"
+            aria-expanded={showMore}
+            aria-controls={extras
+              .filter((section) => !section.populated)
+              .map((section) => `${id}-${section.name.replaceAll(" ", "-")}`)
+              .join(" ") || undefined}
+            {...events}
+          >
+            <span class="more-label">
+              {#if variant === 1}
+                {showMore ? "Less" : "More"}
+              {:else}
+                {showMore ? "Show less" : "Show more"}
+              {/if}
+              <KdIcon class={["more-icon", showMore && "expanded"]} i="flow-arrow" />
+            </span>
+            {@render paint()}
+          </button>
+        {/snippet}
+      </HoldRipple>
     {:else}
       <div id={`${id}-${section.name.replaceAll(" ", "-")}`} hidden={!section.populated && !showMore}>
         {@render extraSection(section.name)}
@@ -781,6 +835,9 @@
 
 <style>
   .more {
+    position: relative;
+    user-select: none;
+    -webkit-touch-callout: none;
     display: flex;
     align-items: center;
     inline-size: 100%;
@@ -934,18 +991,7 @@
   .survival label {
     font-size: var(--text-xs);
   }
-  input[type="number"] {
-    appearance: textfield;
-    inline-size: var(--size-control);
-    block-size: var(--size-control);
-    border: var(--border-width) solid var(--field-border, color-mix(var(--identity) 60%, var(--panel)));
-    border-radius: var(--radius-control);
-    background: var(--field-bg, color-mix(var(--identity) 18%, var(--panel)));
-    text-align: center;
-    &::-webkit-inner-spin-button {
-      appearance: none;
-    }
-  }
+
   .survival input {
     border-radius: 50%;
     border-color: color-mix(var(--identity-ink) 42%, transparent);
@@ -997,7 +1043,6 @@
     display: block;
     margin-inline: auto;
     color: var(--field-fg, color-mix(var(--identity) 55%, var(--foreground)));
-    font-weight: var(--font-bold);
     line-height: 1.3;
     font-variant-numeric: lining-nums tabular-nums;
   }
@@ -1015,8 +1060,8 @@
     color: var(--affinity-color);
   }
   .affinity-value {
-    border-color: color-mix(var(--affinity-color) 60%, var(--panel));
-    background: color-mix(var(--affinity-color) 18%, var(--panel));
+    --field-border: color-mix(var(--affinity-color) 60%, var(--panel));
+    --field-bg: color-mix(var(--affinity-color) 18%, var(--panel));
   }
   .armor {
     row-gap: 0.625rem;
@@ -1034,32 +1079,26 @@
     color: var(--foreground);
   }
   .armor-input {
-    --field-border: color-mix(var(--identity) 60%, var(--panel));
     display: grid;
     place-items: center;
-    inline-size: var(--size-control);
-    block-size: var(--size-control);
-    border-radius: var(--radius-control);
-    background: color-mix(var(--identity) 18%, var(--panel));
   }
   .armor-input :global(.armor-icon),
   .armor-input .brain-icon {
     grid-area: 1 / 1;
     color: color-mix(var(--identity) 42%, var(--foreground));
-    font-size: 2rem;
+    font-size: calc(2rem * var(--scale-control-content));
     opacity: 0.2;
     pointer-events: none;
   }
   .brain-icon {
-    inline-size: 2.25rem;
-    block-size: 2.25rem;
-    translate: 0 -0.125rem;
+    inline-size: calc(2.25rem * var(--scale-control-content));
+    block-size: calc(2.25rem * var(--scale-control-content));
+    translate: 0 calc(-0.125rem * var(--scale-control-content));
     scale: -1 1;
   }
   .armor-input .armor-value {
     grid-area: 1 / 1;
     inline-size: 100%;
-    min-inline-size: 0;
     block-size: 100%;
     border: 0;
     border-radius: inherit;
@@ -1078,8 +1117,6 @@
   input[type="checkbox"] {
     appearance: none;
     grid-area: 1 / 1;
-    inline-size: var(--size-control);
-    block-size: var(--size-control);
     border: 0;
     cursor: pointer;
     &:checked + span {

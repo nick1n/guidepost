@@ -2,7 +2,7 @@ import { readFile, writeFile } from "node:fs/promises";
 import { setTimeout as sleep } from "node:timers/promises";
 import { fileURLToPath } from "node:url";
 import { format, resolveConfig } from "prettier";
-import type { BundleItem, ContentItem, DiceItem, KingdomDeathCatalog } from "../src/lib/types/gen/kdm-data.d.ts";
+import type { BundleItem, ContentItem, DiceItem, KingdomDeathCatalog } from "#lib/types/gen/kdm-data.d.ts";
 
 const catalogPath = fileURLToPath(new URL("../src/lib/kdm-data.json", import.meta.url));
 const catalog: KingdomDeathCatalog = JSON.parse(await readFile(catalogPath, "utf8"));

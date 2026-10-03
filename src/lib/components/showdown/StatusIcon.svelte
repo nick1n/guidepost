@@ -5,7 +5,14 @@
   let classes = $derived(iconView(icon, { active, context }));
 </script>
 
-<span class={classes} data-context={context} aria-hidden="true"></span>
+{#if icon === "status:cease-to-exist"}
+  <span class="cease-icon" data-context={context} aria-hidden="true">
+    <span class={["cease-symbol", iconView(icon, { context })[1]]} data-visible={!active}></span>
+    <span class={["cease-symbol", iconView(icon, { active: true, context })[1]]} data-visible={active}></span>
+  </span>
+{:else}
+  <span class={classes} data-context={context} aria-hidden="true"></span>
+{/if}
 
 <style>
   span {
@@ -14,15 +21,25 @@
     inline-size: var(--size-status-icon, 1rem);
     block-size: var(--size-status-icon, 1rem);
     &[data-context="control"] {
-      inline-size: 1.5rem;
-      block-size: 1.5rem;
+      inline-size: var(--size-icon-control);
+      block-size: var(--size-icon-control);
     }
     &[data-context="quick"] {
       color: var(--foreground);
     }
   }
   .cease-icon {
-    rotate: 45deg;
+    display: inline-grid;
+    rotate: 25deg;
+  }
+  .cease-symbol {
+    grid-area: 1 / 1;
+    inline-size: 100%;
+    block-size: 100%;
+    opacity: 0;
+    &[data-visible="true"] {
+      opacity: 1;
+    }
   }
   .retired-icon {
     rotate: -70deg;
@@ -54,18 +71,51 @@
   }
 
   @media (prefers-reduced-motion: no-preference) {
+    .cease-icon[data-context="control"] > .cease-symbol {
+      transition: opacity var(--duration-slow) var(--ease-standard);
+    }
     .retired-icon[data-context="control"] {
-      transition: rotate 1s var(--ease-standard);
+      transition: rotate var(--duration-slow) linear;
     }
     .dead-icon[data-context="control"] {
-      transition: rotate var(--duration-fast) var(--ease-standard);
+      transition: rotate var(--duration-slow) var(--ease-standard);
+    }
+    :global(.active) > .dead-icon[data-context="control"] {
+      transition-timing-function: var(--ease-bounce);
     }
     :global(.active) > .insane-icon[data-context="control"] {
-      animation: shake 50ms linear 7;
+      animation: shake 55ms linear 7;
+    }
+    :global(.active) > .controller-icon[data-context="control"] {
+      animation: controller-play var(--duration-medium) ease-in-out;
     }
     .blind-icon[data-context="quick"],
-    .priority-icon[data-context="quick"] {
+    .priority-icon[data-context="quick"],
+    :global(.active) > .priority-icon[data-context="control"] {
       animation: pulse 2s ease-in-out infinite;
+    }
+  }
+  @keyframes controller-play {
+    0%,
+    100% {
+      rotate: 0deg;
+      scale: 1;
+    }
+    20% {
+      rotate: -10deg;
+      scale: 1.06 0.94;
+    }
+    40% {
+      rotate: 10deg;
+      scale: 1;
+    }
+    60% {
+      rotate: -6deg;
+      scale: 1.03 0.97;
+    }
+    80% {
+      rotate: 4deg;
+      scale: 1;
     }
   }
   @keyframes shake {

@@ -28,6 +28,11 @@ export default defineConfig({
     "i-material-symbols:swap-horiz",
     "i-material-symbols:inventory-2-outline",
     "i-material-symbols:delete-outline",
+    "i-material-symbols:fullscreen",
+    "i-material-symbols:fullscreen-exit",
+    "i-material-symbols:unfold-less-double",
+    "i-material-symbols:unfold-more-double",
+    "i-material-symbols:close",
   ],
   presets: [presetIcons()],
 });

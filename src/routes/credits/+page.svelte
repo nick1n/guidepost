@@ -60,6 +60,11 @@
       ],
     },
     {
+      id: "design-tools",
+      title: "Design tools",
+      list: [{ name: "Open Props", href: "https://open-props.style/" }],
+    },
+    {
       id: "ai-tools",
       title: "AI tools",
       list: [

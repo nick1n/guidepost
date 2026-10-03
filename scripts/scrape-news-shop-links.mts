@@ -2,9 +2,11 @@ import { createHash } from "node:crypto";
 import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import { setTimeout as sleep } from "node:timers/promises";
+import { format, resolveConfig } from "prettier";
 import { fileURLToPath } from "node:url";
 import { parseArgs } from "node:util";
 import { Parser } from "htmlparser2";
+import { productUrl, shopLinkUrl } from "./catalog/shop.mts";
 
 const newsUrl = "https://kingdomdeath.com/news";
 type Post = { date: string; title: string; postUrl: string };
@@ -24,6 +26,8 @@ export type Report = {
   skippedPostsThisRun: number;
   processedPostsThisRun: number;
   removedLinksThisRun: number;
+  linkHistoryVersion?: number;
+  historyRecovery?: { postsRecovered: number; postsMissingCache: number };
 };
 type Anchor = { href: string; text: string[]; alt: string[]; line: (string | Anchor)[] };
 const clean = (text: string) => text.replace(/\s+/g, " ").trim();
@@ -72,13 +76,8 @@ export function pageData(html: string) {
 
 export function keepUrl(value: string) {
   try {
-    const url = new URL(value);
-    return (
-      ["http:", "https:"].includes(url.protocol) &&
-      url.hostname === "shop.kingdomdeath.com" &&
-      /^\/products(?:\/|$)/.test(url.pathname) &&
-      !/collections/i.test(value)
-    );
+    productUrl(value);
+    return true;
   } catch {
     return false;
   }
@@ -150,7 +149,7 @@ export function extractLinks(body: string, metadata: Post): Link[] {
   for (const anchor of anchors) {
     let url: URL;
     try {
-      url = new URL(anchor.href.trim(), metadata.postUrl);
+      url = shopLinkUrl(anchor.href.trim(), metadata.postUrl);
     } catch {
       continue;
     }
@@ -197,6 +196,8 @@ export async function loadReport(output: string): Promise<Report> {
   const data = record(JSON.parse(text));
   if (data.source !== newsUrl || !Array.isArray(data.posts) || !Array.isArray(data.links)) throw new Error("Invalid existing export");
   const report = newReport();
+  if (typeof data.linkHistoryVersion === "number") report.linkHistoryVersion = data.linkHistoryVersion;
+  if (data.historyRecovery) report.historyRecovery = data.historyRecovery as Report["historyRecovery"];
   report.posts = data.posts.map((value) => {
     const entry = record(value);
     if (entry.status !== "read" && entry.status !== "unread") throw new Error("Invalid post status in export");
@@ -222,9 +223,10 @@ export function normalizeReport(report: Report, publicationDates = new Map<strin
   const timestamp = (link: Link) => Date.parse(publicationDates.get(link.postUrl) ?? link.date);
   report.links = report.links
     .filter((link) => keepUrl(link.shopUrl))
+    .map((link) => ({ ...link, shopUrl: shopLinkUrl(link.shopUrl).href }))
     .sort((a, b) => timestamp(a) - timestamp(b) || a.postUrl.localeCompare(b.postUrl))
     .filter((link) => {
-      const key = JSON.stringify([link.shopUrl, link.itemName]);
+      const key = JSON.stringify([link.postUrl, link.shopUrl, link.itemName]);
       if (seen.has(key)) return false;
       seen.add(key);
       return true;
@@ -235,6 +237,34 @@ export function normalizeReport(report: Report, publicationDates = new Map<strin
     entry.date = entry.date.slice(0, 10);
     if (entry.status === "read") entry.linkCount = report.links.filter((link) => link.postUrl === entry.postUrl).length;
   }
+}
+
+export async function recoverCachedHistory(report: Report, cache: string) {
+  if (report.linkHistoryVersion === 3) return;
+  let postsRecovered = 0;
+  let postsMissingCache = 0;
+  for (const metadata of report.posts.filter((entry) => entry.status === "read")) {
+    const path = join(cache, createHash("sha256").update(metadata.postUrl).digest("hex") + ".html");
+    let html: string;
+    try {
+      html = await readFile(path, "utf8");
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
+      postsMissingCache++;
+      continue;
+    }
+    const article = record(pageData(html).article);
+    if (typeof article.body !== "string" || !article.body.trim() || article.bottomLink) {
+      postsMissingCache++;
+      continue;
+    }
+    report.links = report.links.filter((row) => row.postUrl !== metadata.postUrl);
+    report.links.push(...extractLinks(article.body, metadata));
+    postsRecovered++;
+  }
+  report.linkHistoryVersion = 3;
+  report.historyRecovery = { postsRecovered, postsMissingCache };
+  normalizeReport(report);
 }
 
 export function csv(report: Report) {
@@ -249,7 +279,10 @@ export function csv(report: Report) {
 export async function saveReport(report: Report, output: string) {
   await mkdir(output, { recursive: true });
   for (const [name, text] of [
-    ["news-shop-links.json", JSON.stringify(report, null, 2) + "\n"],
+    [
+      "news-shop-links.json",
+      await format(JSON.stringify(report), { ...(await resolveConfig(join(output, "news-shop-links.json"))), parser: "json" }),
+    ],
     ["news-shop-links.csv", csv(report)],
   ] as const) {
     const target = join(output, name);
@@ -309,6 +342,7 @@ export async function updateReport(
   index: Record<string, unknown>,
   getArticle: (url: string, cached: boolean) => Promise<string>,
   checkpoint: () => Promise<void>,
+  refreshPosts = false,
 ) {
   if (!Array.isArray(index.stories) || !index.stories.length) throw new Error("News index has no stories");
   const posts = index.stories.map((value) => {
@@ -319,6 +353,7 @@ export async function updateReport(
   report.discoveredPosts = posts.length;
   report.discoveredPostUrls = posts.map((entry) => entry.postUrl);
   const publicationDates = new Map(posts.map((entry) => [entry.postUrl, entry.date]));
+  let failed = false;
   const persist = async () => {
     normalizeReport(report, publicationDates);
     await checkpoint();
@@ -326,7 +361,7 @@ export async function updateReport(
   normalizeReport(report, publicationDates);
   for (const metadata of posts) {
     const position = report.posts.findIndex((entry) => entry.postUrl === metadata.postUrl);
-    if (position !== -1 && report.posts[position]!.status === "read") {
+    if (position !== -1 && report.posts[position]!.status === "read" && !report.posts[position]!.error && !refreshPosts) {
       report.skippedPostsThisRun++;
       continue;
     }
@@ -337,10 +372,14 @@ export async function updateReport(
       const body = string(article.body);
       if (!body.trim() || article.bottomLink) throw new Error("Missing article body or unsupported bottomLink");
       const links = extractLinks(body, metadata);
+      report.links = report.links.filter((row) => row.postUrl !== metadata.postUrl);
       report.links.push(...links);
       entry = { ...metadata, status: "read", linkCount: links.length };
     } catch (error) {
-      entry = { ...metadata, status: "unread", error: message(error) };
+      failed = true;
+      const previous = report.posts[position];
+      entry =
+        previous?.status === "read" ? { ...previous, error: message(error) } : { ...metadata, status: "unread", error: message(error) };
       if (position === -1) report.posts.push(entry);
       else report.posts[position] = entry;
       await persist();
@@ -356,7 +395,9 @@ export async function updateReport(
     else report.posts[position] = entry;
     await persist();
   }
-  report.complete = posts.every((metadata) => report.posts.some((entry) => entry.postUrl === metadata.postUrl && entry.status === "read"));
+  report.complete =
+    !failed &&
+    posts.every((metadata) => report.posts.some((entry) => entry.postUrl === metadata.postUrl && entry.status === "read" && !entry.error));
 }
 
 async function main() {
@@ -366,16 +407,18 @@ async function main() {
       cache: { type: "string", default: ".cache/kingdom-death-news" },
       delay: { type: "string", default: "2" },
       help: { type: "boolean", short: "h" },
+      "refresh-posts": { type: "boolean", default: false },
     },
   });
   if (values.help) {
-    console.log("node scripts/scrape-news-shop-links.mts [--delay 2] [--output directory] [--cache directory]");
+    console.log("node scripts/scrape-news-shop-links.mts [--delay 2] [--output directory] [--cache directory] [--refresh-posts]");
     return;
   }
   const delay = Number(values.delay);
   if (!Number.isFinite(delay) || delay < 2) throw new Error("--delay must be a finite number of at least 2 seconds");
   // Validate before writing anything, so a damaged checkpoint cannot erase earlier results.
   const report = await loadReport(values.output);
+  await recoverCachedHistory(report, values.cache);
   const controller = new AbortController();
   const stop = () => controller.abort();
   process.once("SIGINT", stop);
@@ -395,6 +438,7 @@ async function main() {
         return downloader.get(url, cached);
       },
       checkpoint,
+      values["refresh-posts"],
     );
   } catch (error) {
     report.complete = false;

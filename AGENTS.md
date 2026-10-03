@@ -1,270 +1,133 @@
 # Guidepost
 
-## Project overview
-
-Guidepost is a personal hub for board game companion tools. It is a SvelteKit 3 application using Svelte 5 runes, UnoCSS, and Material Symbols.
-
-Kingdom Death: Monster is currently the largest set of tools. Its catalog is data-driven, and collection state is stored locally in the browser. Guidepost may also link to tools and resources for other board games.
+See [README.md](README.md) for the project overview, setup, commands, catalog workflows, and known warnings. This file defines coding conventions, architecture constraints, and required checks.
 
 ## AI output style
 
-Never use em dashes or centered dots in user-facing output. Use commas, colons, semicolons, parentheses, bullets, or separate sentences instead.
-
-## Landing page
-
-`src/routes/+page.svelte` is the Guidepost landing page and tool directory.
-
-Keep it lightweight, dark, and mobile-first. On mobile, the Guidepost header appears above the navigation and aligns right. At the wider layout breakpoint, it stays fixed in the bottom-left and aligns left while the navigation remains on the right.
-
-The window owns page scrolling as the link list grows. Do not create a separate scrolling container for the navigation.
-
-Preserve the full-bleed warm glow, subtle pointer or device-orientation movement, occasional flicker, slow pulse, and reduced-motion behavior unless a redesign explicitly changes them. The landing page may override the global stable scrollbar gutter so its background reaches the viewport edges.
+Never use em dashes or centered dots in user-facing output. Use commas, colons, semicolons, parentheses, bullets, or separate sentences.
 
 ## Required skills
 
 - For creating, editing, reviewing, or debugging `.svelte`, `.svelte.ts`, or `.svelte.js` files, always use `svelte-code-writer` and `svelte-core-bestpractices`.
-- For Effect workflows, services, errors, or tests, use the project-local `effect` skill in `.agents/skills/effect` alongside the installed-package guidance below.
+- For Effect workflows, services, errors, or tests, use `.agents/skills/effect` alongside the installed-package guidance below.
 
-## Commands
+## Landing page
 
-Run these from the project root:
+`src/routes/+page.svelte` is the tool directory. Keep it lightweight, dark, and mobile-first. On mobile, the header sits above the navigation and aligns right. At the wide breakpoint, it stays fixed in the bottom-left and aligns left, with navigation on the right.
 
-```bash
-pnpm dev
-pnpm check
-pnpm test:run
-pnpm build
-pnpm format
-pnpm format:check
-```
-
-Always run `pnpm check` after TypeScript or Svelte changes. The following warning may appear during `pnpm dev`, `pnpm check`, or `pnpm build` and is safe to ignore with the current UnoCSS integration:
-
-```text
-The following plugins may not work correctly because they use the `transformIndexHtml` hook which is not supported:
-  - unocss:svelte-scoped:global-styles
-```
-
-SvelteKit warns because the plugin declares `transformIndexHtml`, but UnoCSS skips that hook for SvelteKit and uses `transform` and `renderChunk` instead. This warning alone does not indicate missing styles or a failed command. Keep the integration as-is rather than adding a workaround solely to silence it.
-
-After changing UnoCSS/SvelteKit dependencies or their integration, run `pnpm build` and verify that generated app pages link to an existing global UnoCSS stylesheet, safelisted icons have CSS rules, and no `%unocss-svelte-scoped.global%` placeholders remain in the generated HTML. Investigate other warnings separately.
+The window owns scrolling as the link list grows; do not add a navigation scrolling container. Preserve the full-bleed warm glow, pointer or device-orientation movement, flicker, slow pulse, and reduced-motion behavior unless a redesign changes them. This page may override the global stable scrollbar gutter for edge-to-edge backgrounds.
 
 ## TypeScript
 
-Prefer inferred TypeScript types when the compiler can determine them clearly. Add explicit annotations for public APIs, complex values, or cases where they improve readability or prevent an incorrect widening; do not add redundant annotations solely to restate an inferred type.
+Prefer inferred types. Add annotations for public APIs, complex values, readability, or to prevent incorrect widening. Prefer type names of one or two words unless a longer name is clearer; descriptive function names may be longer.
 
-Prefer concise type names, ideally one or two words. Use a longer type name when shortening it would make its purpose unclear. Function and method names may be longer when the extra words clearly describe their behavior; do not shorten them solely to match the type-name guideline.
+Before adding a constants-only module, check `src/lib/constants.ts` and existing modules. Keep single-component constants local and shared constants in the module serving their consumers. Create a new module only for a distinct feature with enough related data or behavior. Update imports and remove obsolete modules when consolidating.
 
-Before creating a file that only exports constants, check `src/lib/constants.ts` and other existing constants modules. Add shared app constants there when the file already serves their consumers, and keep a constant local when only one component uses it. Create a new module when the constants form a distinct feature with enough related data or behavior to justify its own file. Update existing imports and remove an obsolete constants-only file when consolidating.
-
-## Svelte conventions
+## Svelte
 
 Use Svelte 5 runes and callback props.
 
-Use event attribute shorthand whenever a local handler's name matches the attribute. Apply this to each binding independently, including bindings on Svelte special elements such as `<svelte:window>` and `<svelte:document>`. When a handler serves only one event binding, prefer naming it after the event attribute.
+Use event shorthand when a local handler matches the attribute, including on `<svelte:window>` and `<svelte:document>`. Name handlers used by only one binding after that event. Keep explicit attributes for argument passing, event transformations, propagation control, or shared/imported handlers with meaningful names. Do not rename domain handlers to force shorthand. Move multiline inline handlers into `<script>`.
 
-```svelte
-<script lang="ts">
-  function onclick() {
-    // ...
-  }
+Use `$effect` only for external synchronization that cannot happen in an event handler. Prefer derived values or direct handlers otherwise, and comment above each required effect explaining why it cannot be replaced.
 
-  function onpointermove(event: PointerEvent) {
-    // ...
-  }
-</script>
+Use class arrays for conditional classes, such as `class={["item", active && "is-active"]}`. Avoid template strings and do not add `class:` directives.
 
-<svelte:window {onpointermove} />
-<button {onclick}>Save</button>
-```
+## Accessibility
 
-Keep the attribute explicit when passing arguments, transforming the event, controlling propagation, or using a shared or imported handler whose descriptive name is clearer. Do not rename shared or domain-specific handlers solely to force shorthand. Move an inline handler into the `<script>` block when it is more than one line.
+Use semantic HTML without redundant roles or ARIA. Add ARIA only for names, descriptions, states, or relationships HTML cannot express. Prefer visible labels; use `aria-label` only without a suitable visible label and `aria-describedby` for supplemental information. Referenced IDs must be unique and present. Do not substitute `title` for an accessible name or description.
 
-```svelte
-<button onclick={(event) => selectVersion(event, version.v)}>Select</button>
-<button onclick={saveCampaign}>Save</button>
-```
+Hide non-focusable decorative icons and effects with `aria-hidden="true"`. Never hide focusable elements or their ancestors. Informative icons need a text equivalent.
 
-Avoid `$effect` when a derived value or direct event handler is sufficient. Effects are reserved for external synchronization that cannot happen directly in an event handler. Add a comment above every required effect explaining why it cannot be replaced.
+## Styling
 
-Prefer Svelte class arrays for conditional classes over template strings:
+Never use all-uppercase text in interface designs. Use sentence case for headings, labels, buttons, and navigation; do not apply `text-transform: uppercase` or manually capitalize entire words for visual emphasis.
 
-```svelte
-<div class={["item", active && "is-active"]}></div>
-```
+Use component-scoped `<style>` blocks for layout, spacing, typography, and interaction. Keep UnoCSS for icons; do not add Tailwind-style layout utilities, Tailwind, `clsx`, `tailwind-merge`, or `cn`. Migrate existing utility-heavy components incrementally when touched.
 
-Do not use `class:` directives for new code.
+### Selectors and markup
 
-```svelte
-<!-- Avoid --><div class={`item ${active ? "is-active" : ""}`}></div><div class:active></div>
-```
+- Use top-level, unqualified tag selectors when an element is unique or all instances share styling. Svelte already provides scope; do not wrap styles in a root selector or qualify semantic tags just to scope them.
+- Use short purpose-based classes when instances differ, styles span tags, or a stable hook is clearer. Prefer at most two classes per element: a role plus a state, variant, or icon. Do not replace useful classes with positional selectors.
+- Keep selectors shallow and low-specificity, usually with at most two classes. Do not mirror markup hierarchy or nest type selectors.
+- Use native nesting for the same subject's pseudo-elements, states, and variants, such as `&:hover` or `&.accent-primary`. Prefer one nesting level; a second is acceptable for a closely related variant state. Do not flatten or nest mechanically.
+- Use modern pseudo-classes such as `:is()` and `:where()` and logical properties such as `inline-size`, `block-size`, and `margin-inline`.
 
-## Accessibility and ARIA
+### Declarations and responsive layout
 
-Start with semantic HTML. Native elements such as `<a href>`, `<button>`, `<nav>`, and headings already provide roles, names, and behavior; do not restate those semantics with redundant `role` or ARIA attributes.
+Prefer simple modern CSS and native platform features. Use legacy workarounds or performance optimizations only for verified browser-support or profiling needs.
 
-Add ARIA when HTML alone cannot expose a needed name, description, state, or relationship. Prefer visible text for accessible names. Use `aria-label` only when no suitable visible label exists, since it overrides descendant text, and use `aria-describedby` for supplemental information. Keep every referenced ID unique and present in the document. Do not use the `title` attribute as a substitute for an accessible name or description.
+Every declaration must change a supported layout or state. Avoid repeating inherited fonts/colors, preflight resets, or sizing/alignment supplied by normal block/grid layout. Do not add `position`, `z-index`, `overflow`, `isolation`, `contain`, `will-change`, or `pointer-events` defensively; each needs a specific purpose. Preserve companion declarations required for that behavior.
 
-Mark non-focusable decorative icons and visual effects with `aria-hidden="true"`. Never apply `aria-hidden` to a focusable element or an ancestor of focusable content. Informative icons need an accessible text equivalent instead of being hidden.
+Remove obsolete declarations and tokens when touching a rule. Check base/wide layouts, interaction, and reduced-motion states before deciding something is redundant. Matching pixels at one viewport is insufficient evidence.
 
-## Styling and icons
+Write mobile-first styles with shared mobile/tablet defaults and occasional `min-width` overrides. Prefer normal flow and fluid values (`clamp()`, `min()`, `max()`) to spacing/type breakpoints. Avoid `max-width` and viewport-height queries unless needed for usability. Group a small component's overrides for one breakpoint in a top-level media query; keep capability queries, including reduced motion, separate.
 
-Prefer standard, component-scoped CSS in `<style>` blocks for layout, spacing, typography, and interaction. Do not add new Tailwind-style UnoCSS utilities for those concerns. Migrate existing utility-heavy components incrementally when they are touched. Keep UnoCSS for icon classes while the current icon integration remains. Do not add Tailwind, `clsx`, `tailwind-merge`, or `cn` utilities.
+### Tokens and theme
 
-Keep markup plain and semantic:
+[src/app.css](src/app.css) owns shared colors, type sizes, weights, line heights, borders, radii, and motion values; [uno.config.ts](uno.config.ts) exposes the theme to UnoCSS. Declare each custom property once. Put component-specific layout values and complex effects on that component's root selector.
 
-- In a scoped component, use a top-level, unqualified tag selector when an element is unique or every instance shares the same styling. Prefer `header`, `nav`, `h1`, and `h2` over `.page > header`, `header h1`, or other ancestor-qualified selectors; Svelte already provides component scope.
-- When instances of the same element need different styling, add a short role class rather than distinguishing them through an ancestor chain. Keep a role class when one style spans different tags or when a stable hook is clearer than the DOM structure. Do not replace a useful class with a positional selector such as `:nth-child()`.
-- Use short class names that describe purpose, usually one word or two words joined by a hyphen. Avoid long utility strings and elaborate naming schemes.
-- Prefer no more than two classes on an element: one role and, when needed, one state, variant, or generated icon class.
+Use `var(--token)` for theme colors and semantic color utilities in existing utility markup. Prefer role aliases (`--accent`, `--primary`, `--destructive`) when appropriate, otherwise named palette tokens (`--background`, `--panel`, `--card`, `--foreground`, `--muted-foreground`, and `--accent-blue/green/red/purple`). Add missing tokens to the theme before using them. Read palette values from the source files.
 
-Keep scoped selectors shallow and low-specificity. Use native CSS nesting to keep closely related rules together; the goal is purposeful nesting, not a completely flat stylesheet:
+Name tokens by purpose, with broad-to-specific grouping such as `--layer-content`, `--size-icon`, or `--duration-pulse`. Use variables for reused/tunable values. A one-use token needs a meaningful concept, local override, or clearer representation of a complex value. Remove unused/duplicate tokens without merging unrelated concepts. Structural values (`0`, `100%`, `auto`, grid ratios, media thresholds) may stay literal.
 
-- Do not wrap an entire component stylesheet in the component's root selector or qualify semantic element selectors with a root or ancestor merely to scope them.
-- Do not nest type selectors or mirror the markup hierarchy in CSS. Keep semantic element rules top-level within the style block or their containing at-rule.
-- Reserve selector nesting for rules that extend the same subject: pseudo-elements, states, and variants such as `&::before`, `&:hover`, and `&.accent-primary`.
-- Prefer one selector-nesting level. A second level is acceptable for a tightly related variant state such as `.tool { &.muted { &:hover { ... } } }`.
-- Express a state or variant on the same element with `&`, such as `&.accent-primary`, rather than repeating the full selector or adding an ancestor chain.
-- Aim for no more than two classes in a selector. Lower specificity keeps component states and future overrides predictable.
-- When several rules in a small component share one layout breakpoint, group their overrides in one top-level media query. Keep capability queries such as `prefers-reduced-motion` separate.
-- Do not flatten or nest selectors mechanically, add redundant classes, or use positional selectors. Choose the shallowest structure that keeps related rules together and their ownership clear.
+Use alpha hex (`#RRGGBBAA`) for fixed translucent colors. Reserve `color-mix()` for token-derived colors or blends; specify an interpolation space such as `in oklch` only when blending distinct colors benefits. Omit it for one-color/transparent mixes and gradients. Open Props may guide naming/scales; add the dependency only if a substantial portion is needed.
 
-Use modern pseudo-classes such as `:is()` and `:where()`, and logical properties such as `inline-size`, `block-size`, and `margin-inline`.
+### Icons
 
-Prefer the simplest modern CSS that expresses the intent clearly. Use focused properties and native platform features when they reduce indirection, extra markup, or duplicated declarations. Avoid legacy workarounds and performance folklore unless a verified browser-support or profiling need justifies them; use more complex CSS only when the simpler form cannot preserve the required behavior.
+Use Material Symbols through UnoCSS, for example `class="search-icon i-material-symbols:search"`. Give inline icons `display: inline-block` when dimensions must apply, explicit sizes, and an explicit text color on contrasting backgrounds. Follow the accessibility rules above.
 
-Treat every declaration as an active dependency, not boilerplate:
+Safelist icon classes in `uno.config.ts` when extraction is unreliable. Verify production CSS if an icon works only in development.
 
-- Before adding or keeping a property, identify the browser default, inherited value, global or preflight rule, or layout behavior it overrides. Remove it when none of the supported layouts or states change without it.
-- Do not repeat inherited colors or fonts, reset values already guaranteed by the project preflight, or sizing that normal block and grid layout already provides.
-- Do not add `position`, `z-index`, `overflow`, `isolation`, `contain`, `will-change`, or `pointer-events` defensively. Each must solve a specific containing-block, stacking, clipping, containment, compositing, or interaction problem. Preserve companion declarations when the behavior depends on their combination.
-- Prefer layout-driven defaults. Avoid declarations such as `inline-size: 100%` on a normal block, `display: inline-block` on a grid item, or alignment on an item that already fills its track unless the declaration changes a verified layout.
-- When touching a rule, remove declarations and custom properties that another change made obsolete. Check the base and wide layouts plus relevant interaction and reduced-motion states before treating a declaration as redundant.
-- Do not remove a declaration solely because its computed pixels match at one viewport. Confirm why it is redundant so future content, breakpoints, and states remain safe.
+## Catalog
 
-Use custom properties as a small design-token system:
+`src/lib/kdm-data.json` is the live app's source of truth. Data is grouped by category and IDs are object keys; do not add `id` fields to objects. Update `src/lib/kdm-data.schema.json` when the shape changes and regenerate types as described in [README.md](README.md#catalog).
 
-- Put shared colors, type sizes, font weights, line heights, border sizes, radii, and motion values in `src/app.css`.
-- Put page- or component-specific layout values and complex effects on that component's root selector.
-- Give tokens names based on purpose. Remove unused or duplicate tokens, and do not merge unrelated tokens merely because their current values match.
-- Do not introduce a custom property merely to rename a simple value used once. A one-use token should communicate a meaningful concept, be locally overridden, or hold a complex value that is clearer out of line.
-- Name multiword custom properties from broad category to specific label or purpose, following Open Props-style grouping. Prefer `--layer-content`, `--size-icon`, and `--duration-pulse` over `--content-layer`, `--icon-size`, and `--pulse-cycle`. Keep related properties grouped under the same leading category.
-- Use alpha hex notation (`#RRGGBBAA`) for hardcoded translucent colors. Do not use `color-mix()` merely to add transparency to a fixed color; reserve it for colors that must remain derived from custom properties or blended from multiple source colors. Use an explicit interpolation space such as `in oklch` only when blending distinct colors benefits from that space. Omit it from `color-mix()` calls and gradients that combine one color with transparent.
-- Use variables for hardcoded design values that are reused or likely to be tuned. Structural values such as `0`, `100%`, `auto`, grid ratios, and media-query thresholds may remain literal when a variable would obscure the rule or cannot be used by CSS.
-- Open Props may be used as a naming and scale reference. Do not add the full dependency unless the project needs a substantial portion of it.
+Keep catalog-derived helpers in `src/lib/kdm-data.ts` or `src/lib/catalog-view.ts`, not duplicated in components.
 
-Write responsive styles mobile-first. Let mobile and tablet layouts share base styles, then add an occasional min-width override when a wider layout needs one. Do not add breakpoints for small spacing or type changes that can share a base value or use fluid sizing. Prefer normal flow and values such as `clamp()`, `min()`, and `max()` before adding a breakpoint. Avoid max-width and viewport-height queries unless the layout cannot stay usable without one. Accessibility and capability queries such as `prefers-reduced-motion` are not layout breakpoints and should remain when needed.
+## Effect
 
-Use Material Symbols through UnoCSS icon classes:
+This project uses Effect v4. Before changing Effect code, read `node_modules/effect/AGENTS.md` completely and follow relevant linked references. For uncovered APIs/behavior, inspect the installed source and types. Prefer version-matched guidance over examples from other releases. If unavailable, report it and consult official documentation matching the installed version; do not upgrade Effect just to obtain guidance.
 
-```svelte
-<span class="search-icon i-material-symbols:search" aria-hidden="true"></span>
-
-<style>
-  .search-icon {
-    display: inline-block;
-    inline-size: 1rem;
-    block-size: 1rem;
-  }
-</style>
-```
-
-For inline icons, use `inline-block` when width and height need to apply. Give icons an explicit text color when they sit on a contrasting background.
-
-Use the UnoCSS safelist in `uno.config.ts` for icon classes that must be present in production but cannot reliably be extracted. Verify generated production CSS if an icon appears to work only in development.
-
-## Theme
-
-Global theme tokens are defined in `src/app.css` and exposed to UnoCSS through `uno.config.ts`. Treat those files as the source of truth. Keep each custom property declared once.
-
-Use `var(--token)` instead of hardcoding theme colors in components. When maintaining existing utility markup, use semantic UnoCSS color utilities rather than palette literals.
-
-The core palette is:
-
-- `--background`: `#151515`
-- `--panel`: `#1e1e1e`
-- `--card`: `#2b2b2b`
-- `--foreground`: `#fdfffe`
-- `--muted-foreground`: `#a29c9a`
-- `--accent-blue`: `#11b2e1`
-- `--accent-green`: `#4ae111`
-- `--accent-red`: `#e14011`
-- `--accent-purple`: `#a811e1`
-
-Prefer semantic aliases such as `--accent`, `--primary`, and `--destructive` when the color communicates a role. Use the named palette variables when no semantic token fits. If a listed token is missing from `src/app.css` or `uno.config.ts`, add it to the theme before using it instead of hardcoding its value in a component.
-
-## Catalog data
-
-The source of truth is `src/lib/kdm-data.json`. Data is grouped by category and IDs are object keys:
-
-```json
-{
-  "content": {
-    "core": {
-      "name": "Kingdom Death: Monster"
-    }
-  }
-}
-```
-
-Do not add `id` fields back into catalog objects. Update `src/lib/schema.json` when the JSON shape changes. Keep catalog-derived helpers in `src/lib/kdm-data.ts` or `src/lib/catalog-view.ts`, rather than duplicating lookup logic in components.
-
-## Effect guidance
-
-This project uses Effect v4. Before writing or changing Effect code, read `node_modules/effect/AGENTS.md` completely and follow its linked references when relevant to the task. For APIs or behavior not covered there, inspect `node_modules/effect/src` and the installed type declarations. Prefer these version-matched sources over examples written for other Effect releases.
-
-If the installed guidance is unavailable, report that and consult official documentation matching the installed version. Do not install or upgrade Effect solely to obtain guidance. Keep the project-specific state, persistence, and UI boundaries below; library guidance is not a reason to convert every helper or component callback into an Effect.
-
-Use `Schema.TaggedError` for concrete failures and unions of those classes at action boundaries. Keep errors in their owning feature modules. Use named `Effect.fn` for significant effectful operations, preserving deferred execution and instance binding. Keep pure helpers and UI callbacks ordinary functions. Preserve interruption when handling broad causes; cancellation must not produce failure notifications.
+Use feature-owned `Schema.TaggedError` classes and unions at action boundaries. Use named `Effect.fn` for significant effectful operations, preserving deferred execution and instance binding. Keep pure helpers and UI callbacks ordinary functions. Preserve interruption when handling broad causes; cancellation must not produce failure notifications. Library guidance does not override the state, persistence, and UI boundaries below.
 
 ## State and persistence
 
-For campaign, settlement, survivor, gameplay undo/redo, preferences, or Dexie synchronization work, read the
-[local-first KDM architecture](docs/kdm-architecture.md). It covers one owner and one settlement per campaign, many survivors per
-settlement, campaign memberships, and shared history across showdown, settlement, and hunt. It is a proposed design with explicit
-implementation gaps, not a description of existing campaign services. Preserve the current collection boundaries below unless a task
-explicitly changes them.
+For campaign, settlement, survivor, gameplay undo/redo, preferences, or Dexie synchronization work, read [docs/kdm-architecture.md](docs/kdm-architecture.md). It proposes one owner and settlement per campaign, many survivors, memberships, and shared showdown/settlement/hunt history. It has explicit implementation gaps; do not treat proposed campaign services as existing code.
 
-`ContentState` owns collection commands. `CollectionStore` and `GuestStore` are defined in `src/lib/state/stores.ts`; collection-state data types are defined in `src/lib/types`.
+Preserve these collection boundaries unless the task explicitly changes them:
 
 ```text
 ContentState -> OptimisticStore -> GuestStore -> BrowserStorage
 ```
 
-`CollectionStore` is the persistence interface implemented by `GuestStore`, not an additional runtime layer. `GuestStore` reads and writes complete collection snapshots without keeping a second state cache. It handles collection JSON through the `BrowserStorage` Effect service in `src/lib/state/browser-storage.ts`. Only the browser service implementation accesses `localStorage`; it translates browser failures into `StorageError`. Provide `BrowserStorage.layer` when creating a store with `GuestStore.make()`. Keep browser-storage details out of `ContentState` so collection commands remain separate from persistence.
+- `ContentState` owns collection commands. `CollectionStore` is the persistence interface implemented by `GuestStore`, not another runtime layer. Both stores are defined in `src/lib/state/stores.ts`; data types live in `src/lib/types`.
+- `GuestStore` reads/writes complete snapshots without a second cache. Only `BrowserStorage` in `src/lib/state/browser-storage.ts` accesses `localStorage` and translates failures to `StorageError`. Provide `BrowserStorage.layer` to `GuestStore.make()`; keep storage details out of `ContentState`.
+- `OptimisticStore` holds confirmed state plus pending field patches, serializes persistence, and removes failed patches without overwriting newer edits. Only persistence waits in the queue. Batch related updates in one `saveMany()` transaction.
+- Run UI Effects through `collectionActions.run()`, for example `collectionActions.run(collection.setManyOwned(ids, true))`. This ordinary TypeScript module owns no reactive state. Loading errors belong to `ContentState.loadError` alongside `loadStatus`, and clear on retry or user changes.
+- `Notifications` currently logs outcomes to the console; visible toasts are planned. Initialize with `{ success: false }` to avoid startup save announcements.
+- Reusable dialogs use ordinary callbacks and close immediately on confirmation. They own focus, dismissal, and closing-animation guards; the parent owns persistence/workflows. Quick Start assumes core ownership and navigates independently of saving, even on failure.
 
-State commands apply field patches optimistically through `OptimisticStore`. It keeps confirmed state plus pending changes, serializes persistence, and removes failed changes without overwriting newer edits. Only persistence waits in the queue. Batch related updates with one transaction through `saveMany()`.
-
-```ts
-collectionActions.run(collection.setManyOwned(ids, true));
-```
-
-Run UI commands through `collectionActions.run()` so their Effects execute and report outcomes. This ordinary TypeScript module owns no reactive state. Collection loading errors belong to `ContentState.loadError`, alongside `loadStatus`, and are cleared when loading is retried or the user changes. The `Notifications` Effect service currently logs successes and errors to the console; a visible toast implementation will come later. Initialization uses `{ success: false }` to avoid announcing a save on startup.
-
-Reusable dialogs use ordinary callbacks and close immediately on confirmation. They own focus, dismissal, and closing-animation guards, not persistence or asynchronous pending state. The parent owns the workflow. Quick Start assumes core ownership, so navigation starts independently of collection persistence and still proceeds if saving fails.
-
-Tests live in `test/` and run with Vitest 5 and the version-aligned `@effect/vitest` adapter. Use `pnpm test:run` for a single run or `pnpm test` for watch mode. Prefer `it.effect`, injected test services, `Deferred` synchronization, and `TestClock` for time-dependent behavior. Run the suite after changing Effect workflows or persistence. Keep optimistic-update, rollback, interruption, and finalization coverage when refactoring the queue.
+Tests live in `test/`, using Vitest 5 and the version-aligned `@effect/vitest` adapter. Prefer `it.effect`, injected services, `Deferred` synchronization, and `TestClock`. Preserve optimistic-update, rollback, interruption, and finalization coverage when refactoring the queue.
 
 ## PWA and service worker
 
-The service worker uses SvelteKit 3 APIs:
+Use SvelteKit 3 APIs:
 
-- `immutable`, `assets`, and `prerendered` from `$app/manifest`
+- `immutable`, `assets`, `prerendered` from `$app/manifest`
 - `version` from `$app/env`
 - `resolve` from `$app/paths`
 - `self` from `$app/service-worker`
 
-Do not use the removed `$service-worker` module. Precache assets individually so one unavailable asset does not reject the entire service-worker install.
+Do not use the removed `$service-worker` module. Precache assets individually so one missing asset does not reject installation. The service worker caches the app shell/assets; `GuestStore` owns collection persistence.
 
-The service worker is for app-shell and asset caching. Do not use it as a collection-state persistence layer; `GuestStore` owns that responsibility.
+## Required checks
 
-## Formatting
+Run commands from the project root. Preserve unrelated user changes; do not reset or overwrite the working tree wholesale.
 
-Prettier is configured with a 140-character print width and the Svelte plugin. Use the project formatter instead of manual formatting. Keep imports, object literals, and long expressions readable at the configured width.
+1. Run `pnpm check` before finishing.
+2. Run `pnpm format:check` or format touched files with project Prettier (140-character width and Svelte plugin).
+3. Run `pnpm test:run` after Effect workflow or persistence changes (`pnpm test` is watch mode).
+4. Run `pnpm build` for build, service-worker, UnoCSS, or routing changes. After UnoCSS/SvelteKit dependency or integration changes, verify pages link to an existing global stylesheet, safelisted icons have CSS rules, and generated HTML has no `%unocss-svelte-scoped.global%` placeholders.
 
-## Before finishing a change
-
-1. Run `pnpm check`.
-2. Run `pnpm format:check` or format the touched files.
-3. Run `pnpm build` for build, service-worker, UnoCSS, or routing changes.
-4. Preserve unrelated user changes and do not reset or overwrite the working tree wholesale.
+The [documented warnings](README.md#known-warnings) are safe to ignore. Preserve the UnoCSS integration and `corner-shape` enhancement rather than changing them solely to silence those warnings. Investigate other warnings separately.

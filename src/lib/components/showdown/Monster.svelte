@@ -1,4 +1,5 @@
 <script lang="ts">
+  import HoldRipple from "#lib/components/gestures/HoldRipple.svelte";
   import AttributeTokens from "./AttributeTokens.svelte";
   import AttackProfile from "./AttackProfile.svelte";
   import InlineMarkdown from "#lib/components/InlineMarkdown.svelte";
@@ -7,6 +8,7 @@
   import ShowdownEmblem from "./ShowdownEmblem.svelte";
   import StatusIcon from "./StatusIcon.svelte";
   import { survivors, type TokenCount } from "./data";
+  import { SectionControls, setSectionControls } from "./sections";
 
   type Stats = { life: number; movement: number; toughness: number; damage: number; speed: number };
 
@@ -17,6 +19,7 @@
     knockedDown = $bindable(),
     awakening,
     onturn,
+    ontogglesection,
     values = $bindable(),
     stats = $bindable(),
   }: {
@@ -26,11 +29,53 @@
     knockedDown: boolean;
     awakening: number;
     onturn: Noop;
+    ontogglesection: (title: string) => boolean;
     values: TokenCount[];
     stats: Stats;
   } = $props();
 
   let showMore = $state(false);
+  const sections = setSectionControls(new SectionControls((title) => ontogglesection(title)));
+
+  function toggleMore() {
+    showMore = !showMore;
+  }
+
+  function toggleMoreGroup() {
+    const open = ontogglesection("More");
+    return `Extra sections ${open ? "shown" : "hidden"} in all dashboards.`;
+  }
+
+  export function areSectionsOpen() {
+    return showMore && sections.allOpen;
+  }
+
+  export function setSectionsOpen(open: boolean) {
+    showMore = open;
+    sections.setOpen(open);
+  }
+
+  function isSectionHidden(title: string) {
+    return title === "Showdown Setup" || title === "Resource Deck" || (title === "Tokens" && !tokenCount);
+  }
+
+  export function hasSection(title: string) {
+    return title === "More" || sections.hasSection(title);
+  }
+
+  export function isSectionOpen(title: string) {
+    if (title === "More") return showMore;
+    return sections.isOpen(title) && (showMore || !isSectionHidden(title));
+  }
+
+  export function setSectionOpen(title: string, open: boolean) {
+    if (title === "More") {
+      showMore = open;
+      return;
+    }
+    if (open && isSectionHidden(title)) showMore = true;
+    sections.setSectionOpen(title, open);
+  }
   const id = $props.id();
   let tokenCount = $derived(values.reduce((sum, token) => sum + token.positive + token.negative, 0));
   let resources = $state([
@@ -259,23 +304,33 @@
 
 {#each extras as section (section)}
   {#if section === "divider"}
-    <button
-      class="more"
-      aria-expanded={showMore}
-      aria-controls={`${id}-Setup${tokenCount ? "" : ` ${id}-Tokens`}${resourceCount ? "" : ` ${id}-Resource-Deck`}`}
-      onclick={() => (showMore = !showMore)}
+    <HoldRipple
+      ontap={toggleMore}
+      onhold={toggleMoreGroup}
+      holdHint="Hold or press Shift+Enter to show or hide extra sections in all dashboards."
     >
-      <span class="more-label">
-        {#if variant === 1}
-          {showMore ? "Less" : "More"}
-        {:else}
-          {showMore ? "Show less" : "Show more"}
-        {/if}
-        <KdIcon class={["more-icon", showMore && "expanded"]} i="flow-arrow" />
-      </span>
-    </button>
+      {#snippet children(events, paint)}
+        <button
+          class="more"
+          type="button"
+          aria-expanded={showMore}
+          aria-controls={`${id}-Setup${tokenCount ? "" : ` ${id}-Tokens`} ${id}-Resource-Deck`}
+          {...events}
+        >
+          <span class="more-label">
+            {#if variant === 1}
+              {showMore ? "Less" : "More"}
+            {:else}
+              {showMore ? "Show less" : "Show more"}
+            {/if}
+            <KdIcon class={["more-icon", showMore && "expanded"]} i="flow-arrow" />
+          </span>
+          {@render paint()}
+        </button>
+      {/snippet}
+    </HoldRipple>
   {:else}
-    <div id={`${id}-${section}`} hidden={!showMore && !(section === "Tokens" && tokenCount)}>
+    <div id={`${id}-${section.replaceAll(" ", "-")}`} hidden={!showMore && !(section === "Tokens" && tokenCount)}>
       {#if section === "Tokens"}
         <Section title="Attribute Tokens" meta={`${tokenCount} Tokens`}>
           <AttributeTokens
@@ -391,6 +446,11 @@
       color: var(--foreground);
     }
   }
+  button.more {
+    position: relative;
+    user-select: none;
+    -webkit-touch-callout: none;
+  }
   .more-label {
     display: flex;
     align-items: center;
@@ -484,18 +544,7 @@
     font-family: var(--font-display);
     letter-spacing: var(--letter-spacing-tight);
   }
-  input {
-    appearance: textfield;
-    inline-size: var(--size-control);
-    block-size: var(--size-control);
-    border: var(--border-width) solid color-mix(var(--identity) 60%, var(--panel));
-    border-radius: var(--radius-control);
-    background: color-mix(var(--identity) 18%, var(--panel));
-    text-align: center;
-    &::-webkit-inner-spin-button {
-      appearance: none;
-    }
-  }
+
   .vitals {
     display: flex;
     max-inline-size: 16.25rem;
@@ -513,9 +562,10 @@
     font-size: var(--text-xs);
   }
   .life-value {
+    --scale-control-content: 1;
     --text-num-input: 3.125rem;
-    inline-size: 4.5rem;
-    block-size: 4.5rem;
+    --size-number-inline: 4.5rem;
+    --size-number-block: 4.5rem;
     background: var(--field-bg);
     color: var(--field-fg);
     line-height: 1;
@@ -555,7 +605,6 @@
   .attribute-value {
     background: var(--field-bg);
     color: var(--field-fg);
-    font-weight: var(--font-bold);
   }
   .attributes span {
     color: var(--muted-foreground);
@@ -683,11 +732,6 @@
   }
   .resource-actions .action.drawn {
     background: color-mix(var(--identity) 38%, var(--panel));
-  }
-  .resource-quantity {
-    inline-size: 3rem;
-    min-block-size: var(--size-control);
-    text-align: center;
   }
   .resource-stepper {
     display: flex;

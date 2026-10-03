@@ -89,23 +89,23 @@
             },
           ],
         },
-        {
-          title: "Dune: Imperium",
-          note: "Player token upgrades",
-          icon: "i-material-symbols:3d-outline-sharp",
-          destinations: [
-            {
-              label: "MakerWorld",
-              href: "https://makerworld.com/en/models/2958034",
-              brand: "makerworld",
-            },
-            {
-              label: "Cults3D",
-              href: "https://cults3d.com/en/3d-model/game/queens-dilemma-treasury-insert-ideology-markers",
-              brand: "cults3d",
-            },
-          ],
-        },
+        // {
+        //   title: "Dune: Imperium",
+        //   note: "Player token upgrades",
+        //   icon: "i-material-symbols:3d-outline-sharp",
+        //   destinations: [
+        //     {
+        //       label: "MakerWorld",
+        //       href: "https://makerworld.com/en/models/2958034",
+        //       brand: "makerworld",
+        //     },
+        //     {
+        //       label: "Cults3D",
+        //       href: "https://cults3d.com/en/3d-model/game/queens-dilemma-treasury-insert-ideology-markers",
+        //       brand: "cults3d",
+        //     },
+        //   ],
+        // },
         {
           title: "The King's Dilemma",
           note: "Printable reference cards",
