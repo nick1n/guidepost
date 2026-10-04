@@ -13,7 +13,7 @@ import {
 } from "./types.mts";
 import { productUrl } from "./shop.mts";
 import { normalizeCatalog } from "./normalize.mts";
-import { organizeCatalog, compareEditions } from "./order.mts";
+import { organizeCatalog, editionComparator } from "./order.mts";
 import { applyTags, type Tags } from "./tags.mts";
 
 export function normalized(value: string) {
@@ -295,7 +295,7 @@ export function planUpdate(
       delete item.shopReachable;
       for (const edition of item.editions)
         if (Object.hasOwn(edition, "gameplay") && edition.gameplay === item.gameplay) delete edition.gameplay;
-      item.editions.sort(compareEditions);
+      item.editions.sort(editionComparator(item, mapping.itemId));
     }
     const announcements = news
       .filter((row) => {
@@ -324,7 +324,8 @@ export function planUpdate(
     mappings,
   );
   normalizeCatalog(catalog);
-  for (const category of categories) for (const item of Object.values(catalog[category])) item.editions?.sort(compareEditions);
+  for (const category of categories)
+    for (const [id, item] of Object.entries(catalog[category])) item.editions?.sort(editionComparator(item, id));
   applyTags(catalog, tags, mappings);
   organizeCatalog(catalog);
   const changes = categories.flatMap((category) =>

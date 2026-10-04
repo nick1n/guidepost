@@ -3,14 +3,15 @@
   "title": "Kingdom Death combined review catalog",
   "description": "Review export combining the app catalog, news product links, and collection workbook. IDs remain object keys. Monetary amounts use integer cents. Personal ownership is stored in imports/kdm-import-records.json.",
   "type": "object",
-  "required": ["content", "accessories", "bundles", "homebrew"],
+  "required": ["content", "included-only", "accessories", "bundles", "homebrew"],
   "additionalProperties": false,
   "properties": {
     "$schema": { "type": "string" },
     "content": { "$ref": "#/$defs/content" },
     "bundles": { "$ref": "#/$defs/items" },
     "homebrew": { "$ref": "#/$defs/content" },
-    "accessories": { "$ref": "#/$defs/accessories" }
+    "accessories": { "$ref": "#/$defs/accessories" },
+    "included-only": { "$ref": "#/$defs/content" }
   },
   "$defs": {
     "items": { "type": "object", "additionalProperties": { "$ref": "#/$defs/item" } },
@@ -29,7 +30,6 @@
         "kind": {
           "enum": [
             "core",
-            "beta",
             "promo",
             "expansion",
             "white-box",
@@ -40,9 +40,11 @@
             "terrain",
             "accessory",
             "armor-kit",
-            "naked"
+            "naked",
+            "Beta",
+            "Box"
           ],
-          "description": "Product classification. Bundles may omit kind."
+          "description": "Product classification. Beta means all editions are Beta; Box means a mix of Beta and non-Beta editions. Bundles may omit kind."
         },
         "gameplay": {
           "const": true,
@@ -60,7 +62,7 @@
           "items": { "$ref": "#/$defs/edition" },
           "uniqueItems": true,
           "minItems": 1,
-          "description": "Selectable releases in the catalog edition order. Painters and Bust releases may have run-qualified labels."
+          "description": "Selectable releases, ordered with Sim first and then chronologically by release date or release window; unknown dates last."
         },
         "tags": {
           "type": "array",
@@ -122,7 +124,46 @@
       "required": ["v"],
       "additionalProperties": false,
       "properties": {
-        "v": { "type": "string", "description": "Selectable release label, such as First Run, Encore, Plastic, or Sim." },
+        "v": {
+          "type": "string",
+          "description": "Selectable release label, such as First Run, Encore, Plastic, or Sim.",
+          "enum": [
+            "1.3",
+            "1.5",
+            "1.6",
+            "1.7",
+            "Box",
+            "Bust",
+            "Bust: Encore",
+            "Bust: First Run",
+            "Deathgrey",
+            "Deathgrey M2",
+            "Deathpink",
+            "Early Variant",
+            "Encore",
+            "First Run",
+            "Metal",
+            "Original",
+            "Painters",
+            "Painters: Cheeky",
+            "Painters: Encore",
+            "Painters: First Run",
+            "Photoresin",
+            "Plastic",
+            "Remaster",
+            "Remaster: Encore",
+            "Remaster: Deathgrey",
+            "Remaster: First Run",
+            "Resculpt: Encore",
+            "Resculpt: Deathgrey",
+            "Resculpt: First Run",
+            "Resin",
+            "Resin (2015)",
+            "Resin & Metal",
+            "Sim",
+            "White Resin"
+          ]
+        },
         "$": {
           "type": "array",
           "items": { "type": "integer", "minimum": 0, "description": "Amount in cents; USD unless currency is specified." },
@@ -174,7 +215,13 @@
           "type": "boolean",
           "const": true,
           "description": "Available in at least one matching cached shop variant. False by default; omit when unavailable or unknown."
-        }
+        },
+        "standalone": {
+          "type": "boolean",
+          "const": false,
+          "description": "False when confirmed to be available only as part of another product. Omit for standalone or unconfirmed releases. Collection views may hide these editions."
+        },
+        "beta": { "type": "boolean", "const": true, "description": "Beta release. Omit for non-Beta editions." }
       }
     },
     "announcement": {
@@ -220,8 +267,7 @@
         "^(?!vignette-of-death-)": { "properties": { "kind": { "not": { "const": "vignette" } } } },
         "^(?!set-)": { "properties": { "kind": { "not": { "const": "set" } } } },
         "^(?!expansion-)": { "properties": { "kind": { "not": { "const": "expansion" } } } },
-        "^(?!armor-kit-)": { "properties": { "kind": { "not": { "const": "armor-kit" } } } },
-        "^(?!beta-)": { "properties": { "kind": { "not": { "const": "beta" } } } }
+        "^(?!armor-kit-)": { "properties": { "kind": { "not": { "const": "armor-kit" } } } }
       }
     },
     "accessories": {

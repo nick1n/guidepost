@@ -36,7 +36,19 @@ function compareDates(left: number[], right: number[]) {
   return 0;
 }
 
-const editionOrder = ["Sim", "Box", "First Run", "Deathgrey", "Deathgrey M2", "Deathpink", "Encore", "Plastic", "Painters", "Bust"];
+const editionOrder = [
+  "Sim",
+  "Box",
+  "Original",
+  "First Run",
+  "Deathgrey",
+  "Deathgrey M2",
+  "Deathpink",
+  "Encore",
+  "Plastic",
+  "Painters",
+  "Bust",
+];
 
 export function compareEditions(a: Edition, b: Edition) {
   const rank = (label: string) => {
@@ -49,9 +61,10 @@ export function compareEditions(a: Edition, b: Edition) {
     return index === -1 ? editionOrder.length : index;
   };
   return (
+    Number(b.v === "Sim") - Number(a.v === "Sim") ||
+    compareDates(releaseDate(a), releaseDate(b)) ||
     rank(a.v) - rank(b.v) ||
-    rank(a.v.split(": ")[1] ?? a.v) - rank(b.v.split(": ")[1] ?? b.v) ||
-    compareDates(releaseDate(a), releaseDate(b))
+    rank(a.v.split(": ")[1] ?? a.v) - rank(b.v.split(": ")[1] ?? b.v)
   );
 }
 
@@ -61,6 +74,10 @@ function itemDate(item: Item) {
   if (dates[0]?.[0] !== undefined && dates[0][0] !== Infinity) return dates[0]!;
   if (typeof item.releaseYear === "number") return [item.releaseYear, 0, 0];
   return [Infinity, 0, 0];
+}
+
+export function editionComparator(_item: Item, _id: string) {
+  return compareEditions;
 }
 
 export function catalogGroup(category: Category, id: string, item: Item) {
@@ -82,7 +99,6 @@ export function catalogGroup(category: Category, id: string, item: Item) {
   if (category !== "content") return "4:other";
   if (item.kind === "core") return "0:core";
   if (item.kind === "expansion") return "1:expansions";
-  if (item.kind === "beta") return "3:beta";
   if (item.kind === "set") return "2:sets";
   if (item.kind === "vignette") return "2:vignettes";
   if (item.kind === "armor-kit") return "2:armor-kits";

@@ -62,9 +62,15 @@ function planUpdate(
   return prepareUpdate(before, evidence, mappings, news, tags);
 }
 
-const tagFile = (content: Record<string, string[]> = {}): Tags => ({ content, accessories: {}, bundles: {}, homebrew: {} });
+const tagFile = (content: Record<string, string[]> = {}): Tags => ({
+  content,
+  accessories: {},
+  bundles: {},
+  homebrew: {},
+  "included-only": {},
+});
 
-const empty = (): Catalog => ({ content: {}, accessories: {}, bundles: {}, homebrew: {} });
+const empty = (): Catalog => ({ content: {}, accessories: {}, bundles: {}, homebrew: {}, "included-only": {} });
 const product = (overrides: Partial<Product> = {}): Product => ({
   id: 1,
   handle: "kds-rene",
@@ -243,28 +249,19 @@ test("availability respects mapped variants and format editions while unknown ev
   assert.equal(Object.hasOwn(item.editions![0]!, "available"), false);
 });
 
-test("edition ordering follows the selected labels and keeps format runs together", () => {
-  const order = [
-    "Sim",
-    "Box",
-    "First Run",
-    "Deathgrey",
-    "Deathgrey M2",
-    "Deathpink",
-    "Encore",
-    "Plastic",
-    "Painters: First Run",
-    "Painters: Encore",
-    "Bust: First Run",
-    "Bust: Encore",
-  ];
-  const editions = order
-    .map((v, index) => ({ v, r: `${2025 - index}-01-01` }))
-    .reverse()
-    .sort(compareEditions);
+test("editions use release chronology, with Sim first and unknown dates last", () => {
+  const editions = [
+    { v: "Encore" },
+    { v: "First Run", r: "2022-01-01" },
+    { v: "Plastic", releaseWindow: "2026 Q4" },
+    { v: "Painters", r: "2021-01-01" },
+    { v: "Sim", r: "2024-01-01" },
+    { v: "Box", r: "2020-01-01" },
+    { v: "Deathgrey", r: "2022-01-01" },
+  ].sort(compareEditions);
   assert.deepEqual(
-    editions.map((edition) => edition.v),
-    order,
+    editions.map((e) => e.v),
+    ["Sim", "Box", "Painters", "First Run", "Deathgrey", "Plastic", "Encore"],
   );
 });
 
@@ -858,11 +855,11 @@ test("family IDs distinguish boxes, sculpt formats, singular Pinups and confirme
   );
   assert.equal(
     prefixedId("frozen-survivor-hellebore-beta", { name: "Frozen Survivor - Hellebore (Beta)", kind: "beta", tags: ["frozen-survivor"] }),
-    "beta-frozen-survivor-hellebore",
+    "frozen-survivor-hellebore",
   );
   assert.equal(
     prefixedId("beta-frozen-survivor-hellebore", { name: "Frozen Survivor - Hellebore (Beta)", kind: "beta", tags: ["frozen-survivor"] }),
-    "beta-frozen-survivor-hellebore",
+    "frozen-survivor-hellebore",
   );
 });
 
@@ -1234,4 +1231,30 @@ test("unavailable shop listings are cached so reruns do not repeat the request",
   await assert.rejects(new ShopClient({ cache }).get(url), (error) => error instanceof ShopError && error.status === 404 && !error.cached);
   await assert.rejects(new ShopClient({ cache }).get(url), (error) => error instanceof ShopError && error.status === 404 && error.cached);
   assert.equal(fetchMock.mock.callCount(), 1);
+});
+
+test("included-only items retain parent references and reviewed tags across categories", async (t) => {
+  const workspace = await mkdtemp(join(tmpdir(), "kdm-included-only-"));
+  const root = join(workspace, "exports/kdm-catalog");
+  await mkdir(root, { recursive: true });
+  t.after(() => rm(workspace, { recursive: true, force: true }));
+  const schemaPath = join(root, "kdm-data.schema.json");
+  await writeFile(schemaPath, await readFile("exports/kdm-catalog/kdm-data.schema.json", "utf8"));
+  const catalog = empty();
+  catalog.content["set-example"] = {
+    name: "Example Box",
+    kind: "set",
+    tags: ["generic"],
+    editions: [{ v: "Plastic" }],
+    includes: [{ item: "joe", edition: "Plastic" }],
+  };
+  catalog["included-only"].joe = { name: "Joe", kind: "model", tags: ["generic"], editions: [{ v: "Plastic", standalone: false }] };
+  organizeCatalog(catalog);
+  assert.equal((await validateCatalog(catalog, schemaPath)).items, 2);
+  const tags = tagFile({ "set-example": ["generic"] });
+  tags["included-only"].joe = ["generic"];
+  assert.deepEqual(organizeTags(catalog, tags)["included-only"].joe, ["generic"]);
+  applyTags(catalog, tags);
+  delete catalog["included-only"].joe.editions![0]!.standalone;
+  await assert.rejects(validateCatalog(catalog, schemaPath), /Included-only item has a standalone or unconfirmed edition/);
 });

@@ -3,7 +3,7 @@ import { readFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { Ajv2020 } from "ajv/dist/2020.js";
-import { compareEditions } from "./order.mts";
+import { editionComparator } from "./order.mts";
 import { categories, type Catalog, type Category } from "./types.mts";
 import { normalizeItem } from "./normalize.mts";
 import { organizeCatalog } from "./order.mts";
@@ -23,6 +23,10 @@ export async function validateCatalog(catalog: Catalog, schemaPath = "exports/kd
   const items = new Map<string, Catalog["content"][string]>();
   for (const category of categories)
     for (const [id, item] of Object.entries(catalog[category])) {
+      const includedOnly = !!item.editions?.length && item.editions.every((edition) => edition.standalone === false);
+      if (category === "included-only" && !includedOnly)
+        throw new Error("Included-only item has a standalone or unconfirmed edition: " + id);
+      if (category === "content" && includedOnly) throw new Error("Move included-only item to included-only: " + id);
       if (category !== "bundles" && prefixedId(id, item) !== id)
         throw new Error("Item ID needs its family prefix: " + id + " -> " + prefixedId(id, item));
       if (items.has(id)) throw new Error("Duplicate item ID: " + id);
@@ -33,7 +37,7 @@ export async function validateCatalog(catalog: Catalog, schemaPath = "exports/kd
       const labels = (item.editions ?? []).map((edition) => edition.v);
       if (new Set(labels).size !== labels.length) throw new Error("Duplicate edition label: " + id);
       if (labels.includes("Sim") && labels[0] !== "Sim") throw new Error("Sim must be first: " + id);
-      if (labels.some((label, index) => label !== item.editions!.toSorted(compareEditions)[index]!.v))
+      if (labels.some((label, index) => label !== item.editions!.toSorted(editionComparator(item, id))[index]!.v))
         throw new Error("Editions are out of release order: " + id);
       for (const edition of item.editions ?? []) {
         if (edition.r && (!Number.isFinite(Date.parse(edition.r)) || new Date(edition.r).toISOString().slice(0, 10) !== edition.r))

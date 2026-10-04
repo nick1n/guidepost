@@ -8,7 +8,7 @@ export type Tags = Record<Category, Record<string, string[]>>;
 
 export function organizeTags(catalog: Catalog, tags: Tags) {
   return Object.fromEntries(
-    (["content", "bundles", "homebrew", "accessories"] as const).map((category) => [
+    (["content", "included-only", "bundles", "homebrew", "accessories"] as const).map((category) => [
       category,
       Object.fromEntries(
         [...new Set([...Object.keys(catalog[category]), ...Object.keys(tags[category])])].map((id) => [id, tags[category][id]]),

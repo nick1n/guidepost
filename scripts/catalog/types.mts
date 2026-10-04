@@ -1,6 +1,8 @@
 export type Edition = {
   v: string;
   available?: true;
+  standalone?: false;
+  beta?: true;
   $?: number[];
   r?: string;
   releaseWindow?: string;
@@ -32,7 +34,7 @@ export type Item = {
   price?: number;
   [field: string]: unknown;
 };
-export const categories = ["content", "accessories", "bundles", "homebrew"] as const;
+export const categories = ["content", "included-only", "accessories", "bundles", "homebrew"] as const;
 export type Category = (typeof categories)[number];
 export type Catalog = Record<Category, Record<string, Item>> & { $schema?: string };
 export type Variant = {

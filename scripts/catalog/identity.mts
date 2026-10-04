@@ -30,12 +30,12 @@ export function itemFamily(id: string, item: Item) {
 }
 
 function familyId(id: string, item: Item) {
+  id = id.replace(/^beta-/, "").replace(/-beta$/, "");
   if (item.accessoryType === "dice" || item.accessoryType === "shirt") {
     const type = item.accessoryType;
     const base = id.replace(new RegExp("^" + type + "-"), "").replace(type === "dice" ? /-(?:death-)?dice$/ : /-shirt$/, "");
     return type + "-" + base;
   }
-  if (item.kind === "beta") return "beta-" + id.replace(/^beta-/, "").replace(/-beta$/, "");
   if (item.kind === "vignette") return "vignette-of-death-" + id.replace(/^set-/, "").replace(/^vignette(?:-of-death)?-/, "");
   if (item.kind === "armor-kit") return "armor-kit-" + id.replace(/^(?:set-|armor-kit-)/, "").replace(/-armor-(?:kit|set)$/, "");
   if (item.kind === "naked" && id.startsWith("set-")) id = id.slice(4);

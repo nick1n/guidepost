@@ -73,6 +73,23 @@ Shop responses are cached for 24 hours, with requests at least 35 seconds apart.
 
 The [catalog guide](exports/kdm-catalog/README.md) covers tag editing, mappings, data rules, and migration requirements before app adoption.
 
+### Filling missing editions
+
+To fill missing content editions from Shopify variants:
+
+```bash
+# Fetch .js JSON listings 33 seconds apart; writes missing editions, mappings, cache, and retrieval report.
+pnpm catalog:editions
+
+# Reuse the saved responses without requests; writes editions, mappings, and the report.
+pnpm catalog:editions --offline
+```
+
+This only processes content items without editions. Shipping warehouse options are grouped under their release label.
+Responses, including HTTP failures, are cached in `temp/kdm-catalog/shopify-products/edition-cache/` until explicitly refreshed with
+`--refresh`. Unreachable or invalid listings remain unchanged and appear in `temp/kdm-catalog/reports/edition-retrieval.json`.
+The command writes the review catalog after validation and refuses to overwrite catalog or mapping edits made during retrieval.
+
 ### Updating tags
 
 Edit the grouped assignments in `temp/kdm-catalog/kdm-tags.json`. Each item ID maps to an array of tags, for example:
