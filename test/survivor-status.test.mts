@@ -1,9 +1,8 @@
 import unoConfig from "../uno.config.ts";
 import { statuses } from "#lib/constants.ts";
-import { iconView } from "#lib/components/showdown/statuses.ts";
+import { iconView } from "#lib/kdm/ui/status/statuses.ts";
 import { describe, expect, it } from "vitest";
 import {
-  attackStats,
   availableActions,
   isReady,
   lifeState,
@@ -12,7 +11,8 @@ import {
   toggleStatus,
   updateDeath,
   useDodge,
-} from "#lib/components/showdown/data.ts";
+} from "#lib/kdm/showdown/sheet.ts";
+import { attackStats } from "#lib/kdm/showdown/rules.ts";
 
 describe("survivor statuses", () => {
   it("stores IDs independently of control labels", () => {

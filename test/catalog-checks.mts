@@ -2,16 +2,25 @@ import { catalogTemp } from "../scripts/catalog/paths.mts";
 import assert from "node:assert/strict";
 import { mkdtemp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 import { createHash } from "node:crypto";
 import { gunzipSync } from "node:zlib";
 import { test } from "node:test";
-import { observedPrices, planUpdate as prepareUpdate, productExclusion, releaseGaps } from "../scripts/catalog/update.mts";
+import {
+  applyAvailability,
+  observedPrices,
+  planUpdate as prepareUpdate,
+  productExclusion,
+  releaseGaps,
+  variantLabel,
+} from "../scripts/catalog/update.mts";
 import { productUrl, ShopClient, ShopError, shopProduct } from "../scripts/catalog/shop.mts";
 import { applyReview } from "../scripts/update-catalog.mts";
+import { refreshAvailability } from "../scripts/refresh-catalog-availability.mts";
+import { availabilityFromUrls } from "../scripts/catalog/availability.mts";
 import { categories, type Catalog, type Product } from "../scripts/catalog/types.mts";
 import { normalizeItem } from "../scripts/catalog/normalize.mts";
-import { organizeCatalog } from "../scripts/catalog/order.mts";
+import { organizeCatalog, compareEditions } from "../scripts/catalog/order.mts";
 import { validateCatalog } from "../scripts/catalog/validate.mts";
 import { applyTags, loadTags, tagSchema, organizeTags, type Tags } from "../scripts/catalog/tags.mts";
 import { prefixedId } from "../scripts/catalog/identity.mts";
@@ -68,6 +77,227 @@ const source = (data: Product) => ({
   data,
   url: "https://shop.kingdomdeath.com/products/" + data.handle + ".js",
   checkedAt: "2026-10-01T00:00:00Z",
+});
+
+test("URL availability uses handles and release variants without name matching", () => {
+  const catalog = empty();
+  catalog.content.aya = {
+    name: "Different name",
+    tags: ["aya"],
+    url: "/products/aya.js?variant=1",
+    editions: [{ v: "First Run" }, { v: "Encore", available: true }, { v: "Painters", url: "/products/aya-painters" }],
+  };
+  catalog.content.unlinked = { name: "Aya", tags: ["aya"], editions: [{ v: "Plastic", available: true }] };
+  const variant = product().variants[0]!;
+  availabilityFromUrls(catalog, [
+    product({
+      handle: "aya",
+      variants: [
+        { ...variant, title: "USA First Run", requires_shipping: true, available: false },
+        { ...variant, title: "UK First Run", requires_shipping: true, available: true },
+        { ...variant, title: "Encore", requires_shipping: true, available: false },
+      ],
+    }),
+    product({ handle: "aya-painters", variants: [{ ...variant, requires_shipping: true, available: true }] }),
+  ]);
+  assert.equal(catalog.content.aya.editions?.[0]?.available, true);
+  assert.equal(catalog.content.aya.editions?.[1]?.available, undefined);
+  assert.equal(catalog.content.aya.editions?.[2]?.available, true);
+  assert.equal(catalog.content.unlinked.editions?.[0]?.available, undefined);
+});
+
+test("availability refresh downloads all pages, preserves raw snapshots, and changes only availability", async (t) => {
+  const root = await mkdtemp(join(tmpdir(), "kdm-availability-"));
+  t.after(() => rm(root, { recursive: true, force: true }));
+  const path = join(root, "exports/kdm-catalog/kdm-data.json");
+  await mkdir(join(root, "exports/kdm-catalog"), { recursive: true });
+  const catalog = empty();
+  catalog.content.aya = { name: "Aya", tags: ["aya"], url: "/products/aya", editions: [{ v: "Plastic", $: [3000], r: "2020-01-01" }] };
+  await writeFile(path, JSON.stringify(catalog));
+  const raw = (handle: string, available: boolean) => ({
+    ...product({ handle }),
+    variants: [{ ...product().variants[0]!, title: "Warehouse", requires_shipping: true, price: "7.00", available }],
+  });
+  const calls: string[] = [];
+  const result = await refreshAvailability({
+    catalog: path,
+    client: {
+      async get(url: string) {
+        calls.push(url);
+        return {
+          url,
+          checkedAt: "2026-10-03",
+          data: {
+            products:
+              calls.length === 1 ? Array.from({ length: 250 }, (_, n) => raw(n ? `other-${n}` : "aya", true)) : [raw("last", false)],
+          },
+        };
+      },
+    },
+  });
+  assert.deepEqual(calls, [
+    "https://shop.kingdomdeath.com/products.json?limit=250&page=1",
+    "https://shop.kingdomdeath.com/products.json?limit=250&page=2",
+  ]);
+  assert.equal(result.pages, 2);
+  assert.equal(result.available, 1);
+  const saved = JSON.parse(await readFile(path, "utf8"));
+  assert.deepEqual(saved.content.aya.editions[0], { ...catalog.content.aya.editions![0], available: true });
+  Reflect.deleteProperty(saved.content.aya.editions[0], "available");
+  assert.deepEqual(saved, catalog);
+  const page = JSON.parse(await readFile(join(result.folder, "products-page-1.json"), "utf8"));
+  assert.equal(page.products[0].variants[0].price, "7.00");
+  assert.equal((await refreshAvailability({ catalog: path, offline: true })).changed, 0);
+});
+
+test("a failed pagination request cannot clear availability or replace named snapshots", async (t) => {
+  const root = await mkdtemp(join(tmpdir(), "kdm-availability-failure-"));
+  t.after(() => rm(root, { recursive: true, force: true }));
+  const path = join(root, "exports/kdm-catalog/kdm-data.json");
+  const folder = join(root, "temp/kdm-catalog/shopify-products");
+  await mkdir(dirname(path), { recursive: true });
+  await mkdir(folder, { recursive: true });
+  const original = JSON.stringify({
+    ...empty(),
+    content: { aya: { name: "Aya", tags: ["aya"], editions: [{ v: "Plastic", available: true }] } },
+  });
+  await writeFile(path, original);
+  await writeFile(join(folder, "products-page-1.json"), "old snapshot");
+  let calls = 0;
+  await assert.rejects(
+    refreshAvailability({
+      catalog: path,
+      client: {
+        async get(url: string) {
+          if (++calls === 2) throw new Error("Shop unavailable");
+          return {
+            url,
+            checkedAt: "2026-10-03",
+            data: {
+              products: Array.from({ length: 250 }, () => ({
+                ...product(),
+                variants: [{ ...product().variants[0]!, price: "7.00", available: false }],
+              })),
+            },
+          };
+        },
+      },
+    }),
+    /Shop unavailable/,
+  );
+  assert.equal(await readFile(path, "utf8"), original);
+  assert.equal(await readFile(join(folder, "products-page-1.json"), "utf8"), "old snapshot");
+});
+
+test("availability aggregates warehouses and listings without changing release facts", () => {
+  const catalog = empty();
+  catalog.content.aya = {
+    name: "Aya",
+    tags: ["aya"],
+    editions: [
+      { v: "First Run", $: [3000], r: "2020-01-01" },
+      { v: "Encore", available: true },
+    ],
+  };
+  const variant = product().variants[0]!;
+  const listings = [
+    product({
+      handle: "aya",
+      title: "Aya",
+      variants: [
+        { ...variant, id: 1, requires_shipping: true, title: "USA - First Run", available: false },
+        { ...variant, id: 2, requires_shipping: true, title: "UK - First Run", available: true },
+        { ...variant, id: 3, requires_shipping: true, title: "Encore", available: false },
+      ],
+    }),
+    product({
+      handle: "aya-other",
+      title: "Aya",
+      variants: [{ ...variant, requires_shipping: true, title: "First Run", available: false }],
+    }),
+  ];
+  applyAvailability(catalog, listings);
+  assert.deepEqual(catalog.content.aya.editions, [{ v: "First Run", $: [3000], r: "2020-01-01", available: true }, { v: "Encore" }]);
+});
+
+test("availability respects mapped variants and format editions while unknown evidence preserves facts", () => {
+  const catalog = empty();
+  catalog.content.aya = { name: "Aya", tags: ["aya"], editions: [{ v: "Plastic", available: true }, { v: "Painters" }] };
+  const data = product({
+    handle: "aya-painters",
+    variants: [
+      { ...product().variants[0]!, id: 1, requires_shipping: true, title: "USA", available: true },
+      { ...product().variants[0]!, id: 2, requires_shipping: true, title: "UK", available: false },
+    ],
+  });
+  const mapping = { "aya-painters": { category: "content" as const, itemId: "aya", edition: "Painters", variantIds: [2] } };
+  applyAvailability(catalog, [data], mapping);
+  assert.equal(catalog.content.aya.editions?.[1]?.available, undefined);
+  mapping["aya-painters"].variantIds = [1, 2];
+  applyAvailability(catalog, [data], mapping);
+  assert.equal(catalog.content.aya.editions?.[1]?.available, true);
+  applyAvailability(catalog, [product({ title: "Aya" })]);
+  assert.equal(catalog.content.aya.editions?.[0]?.available, true);
+  const item = { name: "Aya", tags: ["aya"], editions: [{ v: "Encore", available: false }] } as unknown as Catalog["content"][string];
+  normalizeItem(item);
+  assert.equal(Object.hasOwn(item.editions![0]!, "available"), false);
+});
+
+test("edition ordering follows the selected labels and keeps format runs together", () => {
+  const order = [
+    "Sim",
+    "Box",
+    "First Run",
+    "Deathgrey",
+    "Deathgrey M2",
+    "Deathpink",
+    "Encore",
+    "Plastic",
+    "Painters: First Run",
+    "Painters: Encore",
+    "Bust: First Run",
+    "Bust: Encore",
+  ];
+  const editions = order
+    .map((v, index) => ({ v, r: `${2025 - index}-01-01` }))
+    .reverse()
+    .sort(compareEditions);
+  assert.deepEqual(
+    editions.map((edition) => edition.v),
+    order,
+  );
+});
+
+test("format mappings preserve release selectors and cannot remove standard gameplay", () => {
+  const catalog = empty();
+  catalog.content.morgan = {
+    name: "Morgan",
+    kind: "model",
+    gameplay: true,
+    tags: ["survivor"],
+    editions: [
+      { v: "Plastic" },
+      { v: "Bust: First Run", gameplay: false, url: "/products/morgan-bust" },
+      { v: "Bust: Encore", gameplay: false, url: "/products/morgan-bust" },
+    ],
+  };
+  const data = product({ handle: "morgan-bust", variants: [{ ...product().variants[0]!, requires_shipping: true, title: "Encore" }] });
+  assert.equal(variantLabel(data.variants[0]!, "Painters"), "Painters");
+  assert.equal(variantLabel(data.variants[0]!, "Bust: First Run"), "Bust: Encore");
+  const review = planUpdate(
+    catalog,
+    [source(data)],
+    { "morgan-bust": { category: "content", itemId: "morgan", edition: "Bust: First Run", gameplay: false } },
+    [],
+  );
+  assert.equal(review.catalog.content.morgan?.gameplay, true);
+  assert.equal(review.catalog.content.morgan?.editions?.find((edition) => edition.v === "Bust: Encore")?.gameplay, false);
+  assert.equal(review.catalog.content.morgan?.editions?.length, 3);
+  const inferred = planUpdate(catalog, [source(data)], {}, []);
+  assert.equal(inferred.unresolved.length, 0);
+  assert.equal(inferred.catalog.content.morgan?.editions?.length, 3);
+  assert.equal(inferred.catalog.content.morgan?.gameplay, true);
+  assert.equal(inferred.catalog.content.morgan?.editions?.find((edition) => edition.v === "Bust: Encore")?.gameplay, false);
 });
 
 test("reviews expose missing editions and dates without assigning later announcements to older runs", () => {

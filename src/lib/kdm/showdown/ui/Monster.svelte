@@ -1,14 +1,16 @@
 <script lang="ts">
+  import Counter from "../../ui/Counter.svelte";
   import HoldRipple from "#lib/components/gestures/HoldRipple.svelte";
-  import AttributeTokens from "./AttributeTokens.svelte";
+  import AttributeTokens from "../../ui/status/AttributeTokens.svelte";
   import AttackProfile from "./AttackProfile.svelte";
   import InlineMarkdown from "#lib/components/InlineMarkdown.svelte";
   import KdIcon from "#lib/components/KdIcon.svelte";
-  import Section from "./Section.svelte";
+  import Section from "../../ui/sections/Section.svelte";
   import ShowdownEmblem from "./ShowdownEmblem.svelte";
-  import StatusIcon from "./StatusIcon.svelte";
-  import { survivors, type TokenCount } from "./data";
-  import { SectionControls, setSectionControls } from "./sections";
+  import StatusIcon from "../../ui/status/StatusIcon.svelte";
+  import { type TokenCount } from "../sheet";
+  import { survivors } from "../fixtures";
+  import { SectionControls, setSectionControls } from "../../ui/sections/sections";
 
   type Stats = { life: number; movement: number; toughness: number; damage: number; speed: number };
 
@@ -178,7 +180,7 @@
   <div class="vitals">
     <div class="life">
       <label for={`${id}-life`}>Life</label>
-      <input id={`${id}-life`} class="life-value field-life" type="number" aria-label="Monster Life" bind:value={stats.life} />
+      <Counter id={`${id}-life`} class="field-life" large min={0} label="Monster Life" bind:value={stats.life} />
       <div class="ai-cards" aria-label="Monster's AI cards">
         <span class="ai-card"><KdIcon class="ai-card-icon" i="card-b" /><span>5</span></span>
         <span class="ai-card"><KdIcon class="ai-card-icon" i="card-a" /><span>3</span></span>
@@ -188,12 +190,7 @@
     <div class="attributes">
       {#each statNames as stat (stat.name)}
         <div>
-          <input
-            class={["attribute-value", `field-${stat.key}`]}
-            type="number"
-            aria-label={`Monster ${stat.name}`}
-            bind:value={stats[stat.key]}
-          />
+          <Counter class={"field-" + stat.key} label={`Monster ${stat.name}`} bind:value={stats[stat.key]} />
           <span>{stat.name}</span>
         </div>
       {/each}
@@ -371,24 +368,24 @@
                   >
                     <span class="step-icon i-material-symbols:remove" aria-hidden="true"></span>
                   </button>
-                  <input
+                  <Counter
                     id={`${id}-${resource.name.toLowerCase().replaceAll(" ", "-")}-quantity`}
                     class="resource-quantity"
-                    type="number"
-                    min="0"
+                    min={0}
                     bind:value={resource.quantity}
+                    label={`Monster ${resource.name} quantity`}
                   />
                   <button aria-label={`Increase ${resource.name} quantity`} onclick={() => (resource.quantity += 1)}>
                     <span class="step-icon i-material-symbols:add" aria-hidden="true"></span>
                   </button>
                 </div>
               {:else}
-                <input
+                <Counter
                   id={`${id}-${resource.name.toLowerCase().replaceAll(" ", "-")}-quantity`}
                   class="resource-quantity"
-                  type="number"
-                  min="0"
+                  min={0}
                   bind:value={resource.quantity}
+                  label={`Monster ${resource.name} quantity`}
                 />
               {/if}
             {/each}
@@ -561,16 +558,6 @@
     color: var(--muted-foreground);
     font-size: var(--text-xs);
   }
-  .life-value {
-    --scale-control-content: 1;
-    --text-num-input: 3.125rem;
-    --size-number-inline: 4.5rem;
-    --size-number-block: 4.5rem;
-    background: var(--field-bg);
-    color: var(--field-fg);
-    line-height: 1;
-    font-family: var(--font-sans);
-  }
   .ai-cards,
   .ai-card {
     display: flex;
@@ -601,10 +588,6 @@
     flex-direction: column;
     padding-inline-start: 0.625rem;
     border-inline-start: 1px solid var(--color-divider);
-  }
-  .attribute-value {
-    background: var(--field-bg);
-    color: var(--field-fg);
   }
   .attributes span {
     color: var(--muted-foreground);
@@ -746,7 +729,7 @@
     background: var(--panel);
     color: var(--foreground);
   }
-  .resource-stepper .resource-quantity {
+  .resource-stepper :global(.resource-quantity) {
     border-radius: 0;
     border-inline: 0;
   }

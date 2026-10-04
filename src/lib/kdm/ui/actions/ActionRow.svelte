@@ -1,13 +1,13 @@
 <script lang="ts">
   import InlineMarkdown from "#lib/components/InlineMarkdown.svelte";
   import ActionCost from "./ActionCost.svelte";
-  import { describeCost, type Cost } from "./data";
+  import { describeCost, type Cost } from "../../showdown/sheet";
 
   let {
     title,
     cost,
+    short,
     description,
-    accessibleDescription,
     open,
     disabled,
     onexpand,
@@ -15,8 +15,8 @@
   }: {
     title: string;
     cost: readonly Cost[];
+    short: string;
     description: string;
-    accessibleDescription?: string;
     open: boolean;
     disabled: boolean;
     onexpand: () => void;
@@ -32,7 +32,7 @@
       <strong>{title}</strong>
       <span class="chevron i-material-symbols:expand-more" aria-hidden="true"></span>
     </span>
-    {#if !open}<small class="preview" aria-hidden="true"><InlineMarkdown text={description} /></small>{/if}
+    {#if !open}<small class="preview">{short}</small>{/if}
   </button>
   <button
     class="spend"
@@ -44,12 +44,7 @@
     <ActionCost {cost} />
   </button>
   <div class="description" id={descriptionId} hidden={!open}>
-    {#if accessibleDescription}
-      <p aria-hidden="true"><InlineMarkdown text={description} /></p>
-      <p class="visually-hidden">{accessibleDescription}</p>
-    {:else}
-      <p><InlineMarkdown text={description} /></p>
-    {/if}
+    <p><InlineMarkdown text={description} /></p>
   </div>
 </li>
 
@@ -65,7 +60,6 @@
     min-inline-size: 0;
     padding: 0.375rem 0.5rem;
     text-align: start;
-    /* border: 2px solid var(--color-divider); */
 
     &:hover {
       background: color-mix(var(--identity) 10%, transparent);
@@ -95,14 +89,13 @@
     rotate: 180deg;
   }
   .preview {
-    display: -webkit-box;
-    line-clamp: 1;
+    display: block;
     overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
     color: var(--muted-foreground);
     font-size: var(--text-xs);
     line-height: var(--line-height-snug);
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 1;
   }
   .spend {
     padding-inline: 0.5rem;

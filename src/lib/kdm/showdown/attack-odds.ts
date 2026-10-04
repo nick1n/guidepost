@@ -1,4 +1,4 @@
-import type { attackStats } from "./data";
+import type { attackStats } from "./rules";
 
 type RollProfile = Pick<ReturnType<typeof attackStats>, "speed" | "acc" | "wound" | "crit">;
 

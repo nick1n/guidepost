@@ -1,12 +1,7 @@
 import { statusOrder, type SurvivorStatusIcons, type Icon } from "#lib/constants.ts";
-import { statusSummary } from "./statuses";
+import { statusSummary } from "../ui/status/statuses";
 
-export const survivors = [
-  { name: "Erza", color: "#B4745A", ink: "var(--contrast)", gender: "Female" },
-  { name: "Zachary", color: "#7C562B", ink: "var(--foreground)", gender: "Male" },
-  { name: "Allister", color: "#A4B3A6", ink: "var(--contrast)", gender: "Male" },
-  { name: "Lucy", color: "#307FA7", ink: "var(--contrast)", gender: "Female" },
-];
+import { survivors } from "./fixtures";
 
 export const attributes = ["Movement", "Speed", "Accuracy", "Strength", "Luck", "Evasion"];
 export const abbreviations = ["Mov", "Spd", "Acc", "Str", "Luck", "Eva"];
@@ -20,17 +15,6 @@ export type TokenCount = ReturnType<typeof makeTokens>[number];
 export function tokenNet(count: TokenCount) {
   return count.positive - count.negative;
 }
-
-export type AttackWeapon = "Founding Stone" | "Fist & Tooth";
-
-type WeaponStats = { speed: number; accuracy: number; strength: number; luck: number; keywords: readonly string[] };
-
-const weaponStats: Record<AttackWeapon, WeaponStats> = {
-  "Founding Stone": { speed: 2, accuracy: 7, strength: 1, luck: 0, keywords: ["weapon", "melee", "stone"] },
-  "Fist & Tooth": { speed: 2, accuracy: 8, strength: 0, luck: 1, keywords: ["weapon", "melee", "fist & tooth"] },
-};
-
-const clampTarget = (value: number) => Math.max(2, Math.min(10, value));
 
 export function makeSheet(index = -1) {
   return {
@@ -114,23 +98,6 @@ export function toggleActed(sheet: Sheet) {
   }
 }
 
-export function attackStats(sheet: Sheet, weapon: AttackWeapon, monster: { toughness: number; luck: number; evasion: number }) {
-  const base = weaponStats[weapon];
-  const modifier = (index: number) => (sheet.attributes[index] ?? 0) + (sheet.bonuses[index] ?? 0) + tokenNet(sheet.tokens[index]);
-  const crit = 10 + monster.luck - base.luck - modifier(4);
-  const phit = sheet.perfectHitRange <= 0 ? null : Math.max(1, 11 - Math.trunc(sheet.perfectHitRange));
-  const accuracy = clampTarget(base.accuracy + monster.evasion - modifier(2) - Number(sheet.statuses.includes("status:blind-spot")));
-
-  return {
-    keywords: base.keywords,
-    speed: Math.max(1, Math.trunc(base.speed + modifier(1))),
-    phit,
-    acc: phit === null ? accuracy : Math.min(accuracy, phit),
-    wound: clampTarget(monster.toughness - base.strength - modifier(3)),
-    crit: crit > 10 ? null : clampTarget(crit),
-  };
-}
-
 export function isReady(sheet: Sheet) {
   return isAlive(sheet) && !sheet.statuses.includes("status:act") && !sheet.statuses.includes("status:knocked-down");
 }
@@ -170,12 +137,6 @@ export function statusItems(sheet: Sheet) {
 export function statusText(sheet: Sheet) {
   return statusItems(sheet).join(", ");
 }
-export const designs = [
-  { name: "Obsidian", subtitle: "The Command Table", className: "obsidian", href: "/showdown1" },
-  { name: "Folio", subtitle: "The Survivor Chronicles", className: "folio", href: "/showdown2" },
-  { name: "Signal", subtitle: "The Combat Console", className: "signal", href: "/showdown3" },
-] as const;
-
 export const restrictions = [
   { key: "survival", label: "Use survival actions" },
   { key: "fightingArts", label: "Use fighting arts" },
@@ -206,41 +167,3 @@ export function spendCost(sheet: Sheet, cost: readonly Cost[]) {
   for (const item of cost) sheet.remaining[item]--;
   return true;
 }
-
-// Illustrative copy to test a crowded action list; these are not game rules.
-export const sampleActions = [
-  {
-    title: "Hold Ground",
-    cost: ["movement", "activation"] as const,
-    description: "Plant your feet as the monster closes in. Stay ready to protect the survivor beside you when the next attack begins.",
-  },
-  {
-    title: "Call the Opening",
-    cost: [] as const,
-    description: "Draw an ally's attention to a gap in the monster's guard. Give them a moment to choose when to step in.",
-  },
-  {
-    title: "Read the Beast",
-    cost: ["movement", "activation"] as const,
-    description: "Study the monster's posture before committing to an attack. Its next movement may reveal a safer path around it.",
-  },
-];
-
-// Small example decks for the prototype, not the complete game card catalog.
-export const sampleDecks: Record<string, Omit<ListEntry, "id">[]> = {
-  "Fighting Arts": [
-    { text: "Last Man Standing", description: "Become stronger and harder to hit when you are the only survivor still standing." },
-    { text: "Rhythm Chaser", description: "Build momentum as you move and carry that rhythm into your attacks." },
-    { text: "Extra Sense", description: "Trust your instincts to avoid danger that other survivors cannot anticipate." },
-  ],
-  Disorders: [
-    { text: "Fear of the Dark", description: "The darkness beyond the lantern's glow makes it difficult to leave the settlement." },
-    { text: "Immortal", description: "A conviction that death cannot claim you changes how you face every showdown." },
-    { text: "Aichmophobia", description: "Sharp points and bladed weapons provoke an overwhelming fear." },
-  ],
-  Abilities: [
-    { text: "Analyze", description: "Study the monster's behavior to anticipate what it will do next." },
-    { text: "Courageous", description: "Standing at the center of danger restores your resolve." },
-    { text: "Tough", description: "Your hardened body gives you a better chance of enduring severe injuries." },
-  ],
-};

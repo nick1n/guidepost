@@ -1,20 +1,20 @@
 <script lang="ts">
+  import Counter from "../../ui/Counter.svelte";
   import HoldRipple from "#lib/components/gestures/HoldRipple.svelte";
-  import AttributeTokens from "./AttributeTokens.svelte";
-  import ActionRow from "./ActionRow.svelte";
+  import AttributeTokens from "../../ui/status/AttributeTokens.svelte";
+  import ActionRow from "../../ui/actions/ActionRow.svelte";
   import AttackProfile from "./AttackProfile.svelte";
   import KdIcon from "#lib/components/KdIcon.svelte";
-  import Section from "./Section.svelte";
-  import Gear from "./Gear.svelte";
-  import EntryList from "./EntryList.svelte";
-  import ProgressTrack from "./ProgressTrack.svelte";
-  import StatusIcon from "./StatusIcon.svelte";
-  import { SectionControls, setSectionControls } from "./sections";
+  import Section from "../../ui/sections/Section.svelte";
+  import Gear from "../../survivors/ui/Gear.svelte";
+  import EntryList from "../../ui/sections/EntryList.svelte";
+  import ProgressTrack from "../../survivors/ui/ProgressTrack.svelte";
+  import StatusIcon from "../../ui/status/StatusIcon.svelte";
+  import { SectionControls, setSectionControls } from "../../ui/sections/sections";
   import { statuses, statusOrder, statusIcons } from "#lib/constants.ts";
   import {
     attributes,
     abbreviations,
-    attackStats,
     availableActions,
     canSpendCost,
     isReady,
@@ -25,13 +25,13 @@
     toggleActed,
     useDodge,
     restrictions,
-    sampleActions,
-    sampleDecks,
     survivorTypes,
     type Cost,
     type ListEntry,
     type Sheet,
-  } from "./data";
+  } from "../sheet";
+  import { attackStats } from "../rules";
+  import { sampleActions, sampleDecks } from "../fixtures";
 
   let {
     person,
@@ -64,7 +64,6 @@
   );
   const foundingStoneRule =
     "Spend [activation] to sling the stone from anywhere on the board! **Archive** this card for 1 automatic hit that only inflicts a critical wound.";
-  const foundingStoneRuleText = foundingStoneRule.replace("[activation]", "an activation").replaceAll("**", "");
   const attackCost = ["activation"] as const;
   let showMore = $state(false);
   const sections = setSectionControls(new SectionControls((title) => ontogglesection(title)));
@@ -234,17 +233,13 @@
     if (sheet.nameless) sheet.name = `Nameless ${number}`;
   }
 
-  function oninputBleeding(event: Event) {
-    const input = event.currentTarget;
-    if (!(input instanceof HTMLInputElement) || !Number.isFinite(input.valueAsNumber)) return;
-    sheet.bleeding = input.valueAsNumber;
+  function setBleeding(value: number) {
+    sheet.bleeding = value;
     updateDeath(sheet);
   }
 
-  function oninputLife(event: Event) {
-    const input = event.currentTarget;
-    if (!(input instanceof HTMLInputElement) || !Number.isFinite(input.valueAsNumber)) return;
-    sheet.life = input.valueAsNumber;
+  function setLife(value: number) {
+    sheet.life = value;
     updateDeath(sheet);
   }
 
@@ -270,13 +265,12 @@
       {#each attributes as attribute, index (attribute)}
         <div class="stat">
           <span class="stat-label" aria-label={attribute}>{abbreviations[index]}</span>
-          <input
-            aria-label={`${person.name} ${attribute}`}
+          <Counter
+            label={`${person.name} ${attribute}`}
             bind:value={sheet.attributes[index]}
-            class={["attribute-value", `field-${attribute.toLowerCase()}`]}
-            max="99"
-            min="-9"
-            type="number"
+            class={"field-" + attribute.toLowerCase()}
+            max={99}
+            min={-9}
           />
         </div>
       {/each}
@@ -289,21 +283,15 @@
     <div class="armor">
       {#each armor as location, index (location.name)}
         <div class="armor-cell">
-          <span class="armor-input" data-stacked-control="armor">
-            {#if location.icon}
-              <KdIcon class="armor-icon" i={location.icon} />
-            {:else}
-              <span class="brain-icon i-game-icons:brain" aria-hidden="true"></span>
-            {/if}
-            <input
-              class="armor-value"
-              aria-label={`${person.name} ${location.name}`}
-              type="number"
-              min="0"
-              max="99"
-              bind:value={sheet.armorValues[index]}
-            />
-          </span>
+          <Counter label={`${person.name} ${location.name}`} shape="armor" min={0} max={99} bind:value={sheet.armorValues[index]}>
+            {#snippet icon()}
+              {#if location.icon}
+                <KdIcon class="armor-icon" i={location.icon} />
+              {:else}
+                <span class="brain-icon i-game-icons:brain" aria-hidden="true"></span>
+              {/if}
+            {/snippet}
+          </Counter>
           <div class="injuries">
             {#if index === 1}<span class="injury-gap" aria-hidden="true"></span>{/if}
             {#each index === 0 ? ["Light"] : index === 1 ? ["Heavy"] : ["Light", "Heavy"] as injury (injury)}
@@ -352,14 +340,14 @@
   <div class="extra-tokens">
     <label for={`${id}-bleeding`}>
       Bleeding
-      <input
-        class="bleeding"
+      <Counter
+        class="field-bleeding"
         id={`${id}-bleeding`}
-        type="number"
-        min="0"
+        min={0}
         max={sheet.life}
-        value={sheet.bleeding}
-        oninput={oninputBleeding}
+        bind:value={() => sheet.bleeding, setBleeding}
+        label={`${person.name} Bleeding`}
+        shape="circle"
       />
     </label>
     {@render priorityButton()}
@@ -395,8 +383,8 @@
         <ActionRow
           title="Founding Stone"
           cost={attackCost}
+          short="Archive to inflict an automatic critical wound"
           description={foundingStoneRule}
-          accessibleDescription={foundingStoneRuleText}
           open={expandedAction === "founding-stone"}
           disabled={!canUse(attackCost)}
           onexpand={() => (expandedAction = expandedAction === "founding-stone" ? null : "founding-stone")}
@@ -408,6 +396,7 @@
           <ActionRow
             title={action.title}
             cost={action.cost}
+            short={action.short}
             description={action.description}
             open={expandedAction === action.title}
             disabled={!canUse(action.cost)}
@@ -538,14 +527,12 @@
         {#each ["Red", "Green", "Blue"] as color, index (color)}
           <div class={["stat", `affinity-${color.toLowerCase()}`]}>
             <label for={`${id}-affinity-${index}`} class="stat-label affinity-label">{color}</label>
-            <input
+            <Counter
               id={`${id}-affinity-${index}`}
-              class="attribute-value affinity-value"
-              type="number"
-              min="-10"
-              max="10"
-              step="1"
+              min={-10}
+              max={10}
               bind:value={sheet.affinities[index]}
+              label={`${person.name} ${color} affinity`}
             />
           </div>
         {/each}
@@ -554,26 +541,26 @@
       <div class="numbers">
         <div class="stat">
           <label for={`${id}-survival-limit`} class="stat-label">Survival</label>
-          <input id={`${id}-survival-limit`} class="attribute-value" type="number" min="0" step="1" bind:value={sheet.survivalLimit} />
+          <Counter id={`${id}-survival-limit`} min={0} bind:value={sheet.survivalLimit} label={`${person.name} Survival limit`} />
         </div>
         <div class="stat">
           <label for={`${id}-fa-limit`} class="stat-label">Fighting Arts</label>
-          <input id={`${id}-fa-limit`} class="attribute-value" type="number" min="0" step="1" bind:value={sheet.fightingArtLimit} />
+          <Counter id={`${id}-fa-limit`} min={0} bind:value={sheet.fightingArtLimit} label={`${person.name} Fighting arts limit`} />
         </div>
         <div class="stat">
           <label for={`${id}-disorder-limit`} class="stat-label">Disorders</label>
-          <input id={`${id}-disorder-limit`} class="attribute-value" type="number" min="0" step="1" bind:value={sheet.disorderLimit} />
+          <Counter id={`${id}-disorder-limit`} min={0} bind:value={sheet.disorderLimit} label={`${person.name} Disorder limit`} />
         </div>
       </div>
       <h3>Other</h3>
       <div class="numbers">
         <div class="stat">
           <label for={`${id}-life`} class="stat-label">Life</label>
-          <input id={`${id}-life`} class="attribute-value" type="number" min="1" step="1" value={sheet.life} oninput={oninputLife} />
+          <Counter id={`${id}-life`} min={1} bind:value={() => sheet.life, setLife} label={`${person.name} Life`} />
         </div>
         <div class="stat">
           <label for={`${id}-perfect-hit-range`} class="stat-label">Perf Hit Range</label>
-          <input id={`${id}-perfect-hit-range`} class="attribute-value" type="number" min="0" step="1" bind:value={sheet.perfectHitRange} />
+          <Counter id={`${id}-perfect-hit-range`} min={0} bind:value={sheet.perfectHitRange} label={`${person.name} Perfect hit range`} />
         </div>
       </div>
       <h3>Restrictions</h3>
@@ -605,10 +592,9 @@
         {#each attributes as attribute, index (attribute)}
           <div class="stat">
             <span class="stat-label" aria-label={attribute}>{abbreviations[index]}</span>
-            <input
-              class={["attribute-value", `field-${attribute.toLowerCase()}`]}
-              type="number"
-              aria-label={`${person.name} ${attribute} gear bonus`}
+            <Counter
+              class={[`field-${attribute.toLowerCase()}`]}
+              label={`${person.name} ${attribute} gear bonus`}
               bind:value={sheet.bonuses[index]}
             />
           </div>
@@ -621,10 +607,9 @@
             {#each ["Survival", "Insanity"] as bonus, index (bonus)}
               <label for={`${id}-departure-${index}`}>
                 {bonus}
-                <input
+                <Counter
                   id={`${id}-departure-${index}`}
-                  type="number"
-                  aria-label={`${person.name} depart ${bonus} bonus`}
+                  label={`${person.name} depart ${bonus} bonus`}
                   bind:value={sheet.departure[index]}
                 />
               </label>
@@ -637,12 +622,7 @@
             {#each ["Survival", "Insanity"] as bonus, index (bonus)}
               <label for={`${id}-arrival-${index}`}>
                 {bonus}
-                <input
-                  id={`${id}-arrival-${index}`}
-                  type="number"
-                  aria-label={`${person.name} arrival ${bonus} bonus`}
-                  bind:value={sheet.arrival[index]}
-                />
+                <Counter id={`${id}-arrival-${index}`} label={`${person.name} arrival ${bonus} bonus`} bind:value={sheet.arrival[index]} />
               </label>
             {/each}
           </div>
@@ -730,7 +710,13 @@
     </div>
     <div class="survival">
       <label for={`survival-${number}`}>Survival</label>
-      <input id={`survival-${number}`} type="number" min="0" max={sheet.survivalLimit ?? 1} step="1" bind:value={sheet.survival} />
+      <Counter
+        id={`survival-${number}`}
+        min={0}
+        max={sheet.survivalLimit ?? 1}
+        bind:value={sheet.survival}
+        label={`${person.name} Survival`}
+      />
       <small>Limit {sheet.survivalLimit ?? 1}</small>
     </div>
   </header>
@@ -982,6 +968,10 @@
     }
   }
   .survival {
+    --counter-radius: 50%;
+    --field-border: color-mix(var(--identity-ink) 42%, transparent);
+    --counter-bg: color-mix(var(--identity-ink) 12%, transparent);
+    --counter-fg: var(--identity-ink);
     display: grid;
     justify-items: center;
     padding-inline-start: 0.625rem;
@@ -992,39 +982,24 @@
     font-size: var(--text-xs);
   }
 
-  .survival input {
-    border-radius: 50%;
-    border-color: color-mix(var(--identity-ink) 42%, transparent);
-    background: color-mix(var(--identity-ink) 12%, transparent);
-    color: var(--identity-ink);
-    font-weight: var(--font-bold);
-    font-variant-numeric: lining-nums tabular-nums;
-  }
   :global(.folio) .survival {
+    --counter-radius: 0;
+    --counter-bg: transparent;
+    --counter-weight: var(--font-normal);
+    --counter-font: var(--font-editorial);
     padding-inline-start: 0.75rem;
   }
   :global(.folio) .survival label {
     font-family: var(--font-editorial);
   }
-  :global(.folio) .survival input[type="number"] {
-    border: 0;
-    border-radius: 0;
-    border-block-end: 2px solid currentColor;
-    background: transparent;
-    font-weight: var(--font-normal);
-    font-family: var(--font-editorial);
-  }
   :global(.signal) .survival {
+    --counter-radius: 0.75rem 0.25rem 0.75rem 0.25rem;
+    --counter-bg: var(--foreground);
+    --counter-fg: var(--background);
     padding: 0.25rem;
     border-radius: 1rem 0.25rem 1rem 0.25rem;
     border-inline-start: 0;
     background: color-mix(in srgb, var(--background) 48%, transparent);
-  }
-  :global(.signal) .survival input[type="number"] {
-    border: 0;
-    border-radius: 0.75rem 0.25rem 0.75rem 0.25rem;
-    background: var(--foreground);
-    color: var(--background);
   }
   .stats,
   .armor {
@@ -1033,18 +1008,15 @@
     gap: 0.125rem;
     text-align: center;
   }
+  .stat {
+    display: grid;
+    justify-items: center;
+  }
   .stat-label {
     display: block;
     color: var(--muted-foreground);
     font-size: var(--text-xs);
     text-align: center;
-  }
-  .attribute-value {
-    display: block;
-    margin-inline: auto;
-    color: var(--field-fg, color-mix(var(--identity) 55%, var(--foreground)));
-    line-height: 1.3;
-    font-variant-numeric: lining-nums tabular-nums;
   }
   .affinity-red {
     --affinity-color: var(--accent-red);
@@ -1055,11 +1027,11 @@
   .affinity-blue {
     --affinity-color: var(--accent-blue);
   }
-  .affinity-label,
-  .affinity-value {
+  .affinity-label {
     color: var(--affinity-color);
   }
-  .affinity-value {
+  .stat:is(.affinity-red, .affinity-green, .affinity-blue) {
+    --field-fg: var(--affinity-color);
     --field-border: color-mix(var(--affinity-color) 60%, var(--panel));
     --field-bg: color-mix(var(--affinity-color) 18%, var(--panel));
   }
@@ -1074,35 +1046,14 @@
     color: var(--muted-foreground);
     font-size: var(--text-xs);
   }
-  .armor-value {
-    position: relative;
-    color: var(--foreground);
-  }
-  .armor-input {
-    display: grid;
-    place-items: center;
-  }
-  .armor-input :global(.armor-icon),
-  .armor-input .brain-icon {
-    grid-area: 1 / 1;
-    color: color-mix(var(--identity) 42%, var(--foreground));
+  .armor-cell :global(.armor-icon) {
     font-size: calc(2rem * var(--scale-control-content));
-    opacity: 0.2;
-    pointer-events: none;
   }
   .brain-icon {
     inline-size: calc(2.25rem * var(--scale-control-content));
     block-size: calc(2.25rem * var(--scale-control-content));
     translate: 0 calc(-0.125rem * var(--scale-control-content));
     scale: -1 1;
-  }
-  .armor-input .armor-value {
-    grid-area: 1 / 1;
-    inline-size: 100%;
-    block-size: 100%;
-    border: 0;
-    border-radius: inherit;
-    background: transparent;
   }
   .injuries {
     display: grid;
@@ -1302,9 +1253,6 @@
     font-size: 2.25rem;
     font-family: var(--font-editorial);
   }
-  :global(.folio) .attribute-value {
-    font-family: var(--font-sans);
-  }
   :global(.signal) .identity {
     --signal-threat: none;
     --signal-acted: none;
@@ -1480,11 +1428,6 @@
     background: var(--identity);
     color: var(--identity-ink);
   }
-  :global(.signal) .attribute-value {
-    background: var(--field-bg, var(--identity));
-    color: var(--field-fg, inherit);
-    font-family: var(--font-sans);
-  }
   :global(.signal) .stat-label {
     color: inherit;
   }
@@ -1492,11 +1435,7 @@
     background: var(--affinity-color);
     color: var(--contrast);
   }
-  :global(.signal) .affinity-label,
-  :global(.signal) .affinity-value {
-    color: inherit;
-  }
-  :global(.signal) .affinity-value {
+  :global(.signal) .affinity-label {
     border: 0;
     background: var(--affinity-color);
   }
@@ -1508,25 +1447,9 @@
       color: var(--identity-ink);
     }
   }
-  :global(.obsidian) .extra-tokens input,
-  :global(.folio) .extra-tokens input {
-    border-radius: 50%;
-  }
-  :global(.folio) .armor-input {
-    border-radius: 0.25rem 0.25rem 50% 50% / 0.25rem 0.25rem 35% 35%;
-  }
-  :global(.obsidian) .armor-input {
-    border-radius: 1rem 1rem 50% 50% / 0.5rem 0.5rem 70% 70%;
-  }
   :global(.signal) .survival-action {
     border: 0;
     background: color-mix(var(--identity) 16%, var(--background));
-  }
-  .bleeding {
-    --field-border: var(--bleeding-border);
-    --field-bg: var(--color-bleeding-bg);
-    color: var(--foreground);
-    font-weight: var(--font-bold);
   }
   .priority {
     display: flex;

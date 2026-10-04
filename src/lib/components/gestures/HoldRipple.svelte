@@ -197,7 +197,7 @@
 
 {@render children(events, paint, holding)}
 {#if onhold}
-  {#if holdHint}<p class="visually-hidden" id={hintId}>{holdHint}</p>{/if}
+  {#if holdHint}<span class="visually-hidden" id={hintId}>{holdHint}</span>{/if}
   <span class="visually-hidden" role="status">{announcement}</span>
 {/if}
 

@@ -1,5 +1,7 @@
 <script lang="ts">
-  import { tokenNet, type TokenCount } from "./data";
+  import { tick } from "svelte";
+  import Counter from "../Counter.svelte";
+  import { tokenNet, type TokenCount } from "../../showdown/sheet";
 
   let { owner, names, labels, counts = $bindable() }: { owner: string; names: string[]; labels: string[]; counts: TokenCount[] } = $props();
 
@@ -7,12 +9,21 @@
   let monsterTokens = $derived(names.length > 6);
   let editing = $state<number | null>(null);
   let selected = $derived(editing === null ? null : counts[editing]);
-  let triggers: HTMLButtonElement[] = [];
+
+  function removeToken(index: number) {
+    counts[index].negative++;
+  }
+
+  async function open(index: number) {
+    editing = index;
+    await tick();
+    document.getElementById(`${id}-positive`)?.focus();
+  }
 
   function close() {
     const index = editing;
     editing = null;
-    if (index !== null) triggers[index]?.focus();
+    if (index !== null) document.getElementById(`${id}-token-${index}`)?.focus();
   }
   function setCount(kind: keyof TokenCount, value: number | undefined) {
     if (selected) selected[kind] = Math.max(0, Math.trunc(value || 0));
@@ -30,19 +41,19 @@
       style:grid-row={monsterTokens ? (index < 4 ? 1 : 2) : undefined}
     >
       <span class="label">{labels[index]}</span>
-      <button
-        class={["net", editing === index && "selected"]}
-        data-stacked-control
-        aria-label={`${owner} ${name} tokens: ${tokenNet(counts[index])} net, ${counts[index].positive} positive, ${counts[index].negative} negative. Edit counts`}
-        aria-expanded={editing === index}
-        aria-controls={editing === index ? `${id}-editor` : undefined}
-        onclick={() => (editing = editing === index ? null : index)}
-        {@attach (element) => {
-          triggers[index] = element;
-        }}
-      >
-        {tokenNet(counts[index])}
-      </button>
+      <Counter
+        id={`${id}-token-${index}`}
+        class="net"
+        shape="circle"
+        value={tokenNet(counts[index])}
+        label={`${owner} ${name} tokens, ${counts[index].positive} positive, ${counts[index].negative} negative, net`}
+        selected={editing === index}
+        expanded={editing === index}
+        controls={editing === index ? `${id}-editor` : undefined}
+        ontap={() => removeToken(index)}
+        onhold={() => open(index)}
+        holdHint="Click to remove a positive token first, otherwise a negative token. Hold or press Shift+Enter to edit token counts."
+      />
       <span class="balance" aria-hidden="true">
         <span class={["positive", counts[index].positive === 0 && "empty"]}>+{counts[index].positive}</span>
         <span class={["negative", counts[index].negative === 0 && "empty"]}>−{counts[index].negative}</span>
@@ -61,28 +72,26 @@
       </button>
     </div>
     <div class="counts">
-      <label for={`${id}-positive`}>
-        Positive (+1)
-        <input
-          id={`${id}-positive`}
-          type="number"
-          min="0"
-          step="1"
-          aria-label={`${owner} ${names[editing]} positive tokens`}
-          bind:value={() => selected?.positive, (value) => setCount("positive", value)}
-        />
-      </label>
-      <label for={`${id}-negative`}>
-        Negative (-1)
-        <input
+      <div class="token">
+        <label class="label" for={`${id}-negative`}>Neg</label>
+        <Counter
           id={`${id}-negative`}
-          type="number"
-          min="0"
-          step="1"
-          aria-label={`${owner} ${names[editing]} negative tokens`}
-          bind:value={() => selected?.negative, (value) => setCount("negative", value)}
+          shape="circle"
+          min={0}
+          label={`${owner} ${names[editing]} negative tokens`}
+          bind:value={() => selected?.negative ?? 0, (value) => setCount("negative", value)}
         />
-      </label>
+      </div>
+      <div class="token">
+        <label class="label" for={`${id}-positive`}>Pos</label>
+        <Counter
+          id={`${id}-positive`}
+          shape="circle"
+          min={0}
+          label={`${owner} ${names[editing]} positive tokens`}
+          bind:value={() => selected?.positive ?? 0, (value) => setCount("positive", value)}
+        />
+      </div>
     </div>
   </div>
 {/if}
@@ -102,17 +111,6 @@
   .label {
     color: var(--muted-foreground);
     font-size: var(--text-xs);
-  }
-  .net {
-    border: var(--border-width) solid var(--field-border);
-    border-radius: 50%;
-    background: var(--field-bg);
-    color: var(--field-fg);
-    font-weight: var(--font-bold);
-    &.selected {
-      outline: 2px solid var(--field-border);
-      outline-offset: 2px;
-    }
   }
   .balance {
     display: flex;
@@ -158,20 +156,13 @@
   }
   .counts {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, max-content);
+    justify-content: space-evenly;
     gap: 0.5rem;
   }
-  label {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.25rem;
-    font-size: var(--text-xs);
-  }
 
-  :global(.signal) .net {
+  :global(.signal) .token :global(.net) {
     grid-row: 3;
-    border-radius: 50% 50% 0.375rem 0.375rem;
   }
   :global(.signal) .label {
     grid-row: 1;

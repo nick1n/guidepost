@@ -216,6 +216,12 @@
 }
 
 /* Field colors are inherited by inputs and token controls. */
+.field-bleeding {
+  --field-border: var(--bleeding-border);
+  --field-bg: var(--color-bleeding-bg);
+  --field-fg: var(--foreground);
+}
+
 .field-accuracy {
   --field-border: var(--accuracy-border);
   --field-bg: color-mix(in oklch, var(--accuracy-background), black var(--mix-attr-bg));

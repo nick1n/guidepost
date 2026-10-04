@@ -12,6 +12,7 @@
     "check:shop-links": "node scripts/check-shop-links.mts",
     "scrape:news": "node scripts/scrape-news-shop-links.mts",
     "catalog:update": "node scripts/update-catalog.mts",
+    "catalog:availability": "node scripts/refresh-catalog-availability.mts",
     "catalog:validate": "node scripts/catalog/validate.mts",
     "catalog:tags": "node scripts/update-catalog.mts --tags-only",
     "catalog:tags-schema": "node scripts/update-catalog.mts --tags-schema",

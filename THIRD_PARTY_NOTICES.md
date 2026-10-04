@@ -21,7 +21,7 @@ The Guidepost logo and derived application icons are original project assets. Th
 
 - [Game-icons.net](https://game-icons.net/) icons are available under [Creative Commons Attribution 3.0](https://creativecommons.org/licenses/by/3.0/). Individual icon authors are identified by the upstream project.
 - [Google Material Symbols](https://github.com/google/material-design-icons) are available under the [Apache License 2.0](https://github.com/google/material-design-icons/blob/master/LICENSE).
-- [Material Design Icons](https://github.com/Templarian/MaterialDesign) by Pictogrammers are available under the [Apache License 2.0](https://github.com/Templarian/MaterialDesign/blob/master/LICENSE).
+- [Lucide icons](https://lucide.dev/) by Lucide Icons and Contributors are available under the [ISC License](https://lucide.dev/license). Icons derived from Feather retain the MIT License and attribution to Cole Bemis, as detailed in Lucide's license notice.
 
 ## Dependencies
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { ListEntry } from "./data";
+  import type { ListEntry } from "../../showdown/sheet";
   import Section from "./Section.svelte";
 
   let {

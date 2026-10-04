@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { canDropGear, dropGear, trinketSpace } from "#lib/components/showdown/gear-drag.ts";
+import { canDropGear, dropGear, trinketSpace } from "#lib/kdm/survivors/ui/gear-drag.ts";
 
 describe("gear dragging", () => {
   it.each([3, 6])("adds a row when moving gear to %i occupied trinket slots", (occupied) => {

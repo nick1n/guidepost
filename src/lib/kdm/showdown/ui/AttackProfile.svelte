@@ -1,7 +1,8 @@
 <script lang="ts">
-  import ActionCost from "./ActionCost.svelte";
-  import { attackOdds } from "./attack-odds";
-  import { describeCost, type attackStats, type Cost } from "./data";
+  import ActionCost from "../../ui/actions/ActionCost.svelte";
+  import { attackOdds } from "../attack-odds";
+  import { describeCost, type Cost } from "../sheet";
+  import { type attackStats } from "../rules";
   import type { Snippet } from "svelte";
 
   type RollSpread = ReturnType<typeof attackOdds>["hits"];

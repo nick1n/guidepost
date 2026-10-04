@@ -1,6 +1,6 @@
 <script lang="ts">
   import KdIcon from "#lib/components/KdIcon.svelte";
-  import { availableActions, lifeState, type Sheet } from "./data";
+  import { availableActions, lifeState, type Sheet } from "../../showdown/sheet";
   import { statusFlags } from "#lib/constants.ts";
   import StatusIcon from "./StatusIcon.svelte";
   let { sheet, showResources = false }: { sheet: Sheet; showResources?: boolean } = $props();

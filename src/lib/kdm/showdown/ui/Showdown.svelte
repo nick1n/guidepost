@@ -1,26 +1,22 @@
 <script lang="ts">
   import { resolve } from "$app/paths";
-  import { onMount } from "svelte";
+  import { onMount, tick } from "svelte";
   import HoldRipple from "#lib/components/gestures/HoldRipple.svelte";
-  import { sectionName } from "./sections";
+  import { sectionName } from "../../ui/sections/sections";
   import { dragScroll } from "./drag-scroll";
   import Monster from "./Monster.svelte";
   import Survivor from "./Survivor.svelte";
-  import { setGearDrag } from "./gear-drag";
-  import QuickStatus from "./QuickStatus.svelte";
-  import StatusIcon from "./StatusIcon.svelte";
-  import {
-    designs,
-    survivors,
-    makeSheet,
-    statusText,
-    tokenTotal,
-    availableActions,
-    makeTokens,
-    tokenNet,
-    toggleActed,
-    useDodge,
-  } from "./data";
+  import { setGearDrag } from "../../survivors/ui/gear-drag";
+  import QuickStatus from "../../ui/status/QuickStatus.svelte";
+  import StatusIcon from "../../ui/status/StatusIcon.svelte";
+  import { makeSheet, statusText, tokenTotal, availableActions, makeTokens, tokenNet, toggleActed, useDodge } from "../sheet";
+  import { survivors } from "../fixtures";
+
+  const designs = [
+    { name: "Obsidian", subtitle: "The Command Table", className: "obsidian", href: "/showdown1" },
+    { name: "Folio", subtitle: "The Survivor Chronicles", className: "folio", href: "/showdown2" },
+    { name: "Signal", subtitle: "The Combat Console", className: "signal", href: "/showdown3" },
+  ] as const;
 
   let { variant = 1 }: { variant?: number } = $props();
   setGearDrag({ current: null, selection: null });
@@ -32,10 +28,34 @@
   let awakening = $state(0);
   let sheets = $state(survivors.map((_, index) => makeSheet(index)));
   let menuOpen = $state(false);
+  let keyOpen = $state(false);
+  let menu = $state<HTMLDivElement>();
   let fullscreen = $state(false);
   let fullscreenAvailable = $state(false);
   let fullscreenPending = $state(false);
   let fullscreenError = $state("");
+  const quickViewStatuses = [
+    ["status:threat", "Threat", "Marked as a threat"],
+    ["status:act", "Acted", "Has acted this round"],
+    ["status:knocked-down", "Down", "Knocked down"],
+    ["priority", "Priority", "Priority target"],
+    ["status:blind-spot", "In Blind Spot", "In the monster's blind spot"],
+    ["status:deaf", "Deaf", "Deaf"],
+    ["status:blind", "Blind", "Blind"],
+  ] as const;
+
+  function toggleMenu() {
+    keyOpen = false;
+    menuOpen = !menuOpen;
+  }
+
+  async function showQuickView(show: boolean) {
+    keyOpen = show;
+    await tick();
+    if (!menu) return;
+    menu.scrollTop = 0;
+    menu.querySelector<HTMLButtonElement>(show ? ".back-option" : ".key-button")?.focus();
+  }
 
   onMount(() => {
     fullscreenAvailable = document.fullscreenEnabled;
@@ -71,16 +91,21 @@
   >([]);
   let currentExpanded = $derived(dashboards[active]?.areSectionsOpen() ?? false);
   let allExpanded = $derived(dashboards.length > 0 && dashboards.every((dashboard) => dashboard.areSectionsOpen()));
-  const initialMix = { foreground: 70, background: 50 } as const;
-  let foregroundMix = $state(initialMix.foreground);
-  let backgroundMix = $state(initialMix.background);
-  let brightenZachary = $state(true);
+  let foregroundMix = $state(70);
+  let backgroundMix = $state(50);
+  let brightenZachary = $state(false);
   const colorId = $props.id();
   let density = $state<Density>("default");
   let snap = $state<Snap>("free");
   let monsterStats = $state({ life: 8, movement: 6, toughness: 6, damage: 0, speed: 0 });
   let monsterTokens = $state(makeTokens(7));
   const monsterTokenIndex = { movement: 0, evasion: 4, toughness: 5, luck: 6 };
+  let monsterMovement = $derived((monsterStats.movement || 0) + tokenNet(monsterTokens[monsterTokenIndex.movement]));
+  let monsterDefense = $derived({
+    toughness: (monsterStats.toughness ?? 0) + tokenNet(monsterTokens[monsterTokenIndex.toughness]),
+    luck: tokenNet(monsterTokens[monsterTokenIndex.luck]),
+    evasion: tokenNet(monsterTokens[monsterTokenIndex.evasion]),
+  });
 
   type Density = "compact" | "default" | "comfortable";
   type Snap = "left" | "center" | "right" | "free";
@@ -119,7 +144,8 @@
     ),
   ]);
 
-  function survivorName(index: number) {
+  function dashboardName(index: number) {
+    if (index === 0) return roster[0].name;
     const sheet = sheets[index - 1];
     return sheet.nameless ? `Nameless ${index}` : sheet.name.trim() || `Nameless ${index}`;
   }
@@ -206,20 +232,33 @@
     }
     jump(0);
   }
+
   function onkeydown(event: KeyboardEvent) {
-    if (event.key === "Escape") menuOpen = false;
-    if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+    if (event.key === "Escape") {
+      menuOpen = false;
+      keyOpen = false;
+    }
+    const len = roster.length;
+    const numberShortcut = RegExp(`^[1-${Math.min(len, 9)}]$`).test(event.key) && !event.altKey && !event.ctrlKey && !event.metaKey;
+    if (!numberShortcut && event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+
     const target = event.target;
     if (
       target instanceof HTMLInputElement ||
       target instanceof HTMLTextAreaElement ||
       target instanceof HTMLSelectElement ||
       (target instanceof HTMLElement && target.isContentEditable)
-    )
+    ) {
       return;
+    }
+
     event.preventDefault();
+    if (numberShortcut) {
+      jump(Number(event.key) - 1);
+      return;
+    }
     const direction = event.key === "ArrowLeft" ? -1 : 1;
-    jump((active + direction + roster.length) % roster.length);
+    jump((active + direction + len) % len);
   }
 
   function resourceText(index: number) {
@@ -272,7 +311,7 @@
         style:--identity={person.color}
         style:--identity-ink={person.ink}
         role="region"
-        aria-label={`${index === 0 ? person.name : survivorName(index)} dashboard`}
+        aria-label={`${dashboardName(index)} dashboard`}
         tabindex="0"
         {@attach dashboardSpacing}
       >
@@ -298,11 +337,7 @@
             survivorTurn={!monsterTurn}
             settlementSurvivors={sheets}
             ontogglesection={toggleRelatedSections}
-            monsterDefense={{
-              toughness: (monsterStats.toughness ?? 0) + tokenNet(monsterTokens[monsterTokenIndex.toughness]),
-              luck: tokenNet(monsterTokens[monsterTokenIndex.luck]),
-              evasion: tokenNet(monsterTokens[monsterTokenIndex.evasion]),
-            }}
+            {monsterDefense}
             bind:sheet={sheets[index - 1]}
           />
         {/if}
@@ -313,20 +348,21 @@
     <nav class="roster" aria-label="Jump to dashboard">
       {#each roster as person, index (person.name)}
         <button
-          class={["roster-button", active === index && "selected"]}
+          class="roster-button"
+          aria-keyshortcuts={`${index + 1}`}
           style:--identity={person.color}
           style:--identity-ink={person.ink}
           aria-current={active === index ? "true" : undefined}
           aria-label={index === 0
-            ? `White Lion, ${monsterTurn ? "current turn" : "waiting"}${monsterKnockedDown ? ", knocked down" : ""}, movement ${(monsterStats.movement || 0) + tokenNet(monsterTokens[monsterTokenIndex.movement])}, toughness ${(monsterStats.toughness || 0) + tokenNet(monsterTokens[monsterTokenIndex.toughness])}, round ${round}`
-            : `${survivorName(index)}, ${statusText(sheets[index - 1])}, ${tokenTotal(sheets[index - 1])} tokens, ${availableActions(sheets[index - 1]) ? "Dodge available" : "Dodge unavailable"}${monsterTurn ? (availableActions(sheets[index - 1]) ? ", press again when selected to Dodge" : "") : `, ${resourceText(index)}, press again when selected to toggle Acted`}`}
+            ? `White Lion, ${monsterTurn ? "current turn" : "waiting"}${monsterKnockedDown ? ", knocked down" : ""}, movement ${monsterMovement}, toughness ${monsterDefense.toughness}, round ${round}`
+            : `${dashboardName(index)}, ${statusText(sheets[index - 1])}, ${tokenTotal(sheets[index - 1])} tokens, ${availableActions(sheets[index - 1]) ? "Dodge available" : "Dodge unavailable"}${monsterTurn ? (availableActions(sheets[index - 1]) ? ", press again when selected to Dodge" : "") : `, ${resourceText(index)}, press again when selected to toggle Acted`}`}
           onclick={() => selectSurvivor(index)}
         >
-          <strong>{index === 0 ? "White Lion" : survivorName(index)}</strong>
+          <strong>{dashboardName(index)}</strong>
           {#if index === 0}
             <span>
-              Mov <b>{(monsterStats.movement || 0) + tokenNet(monsterTokens[monsterTokenIndex.movement])}</b>
-              Tgh <b>{(monsterStats.toughness || 0) + tokenNet(monsterTokens[monsterTokenIndex.toughness])}</b>
+              Mov <b>{monsterMovement}</b>
+              Tgh <b>{monsterDefense.toughness}</b>
             </span>
             <span class="monster-flags" aria-hidden="true">
               {#if monsterTurn}<StatusIcon icon="turn" active context="legend" />{/if}
@@ -346,9 +382,9 @@
     >
       {#snippet children(events, paint, holding)}
         <button
-          class="sections-button hold-button"
+          class="sections-button icon-button"
           type="button"
-          aria-label={`${currentExpanded ? "Collapse" : "Expand"} sections in ${active === 0 ? roster[active].name : survivorName(active)} dashboard`}
+          aria-label={`${currentExpanded ? "Collapse" : "Expand"} sections in ${dashboardName(active)} dashboard`}
           title={currentExpanded ? "Collapse current dashboard sections" : "Expand current dashboard sections"}
           {...events}
         >
@@ -371,95 +407,31 @@
       <span class="turn-label" aria-live="polite">{`Round ${round}: ` + (monsterTurn ? "Monster's Turn" : "Survivors' Turn")}</span>
       <span class="next-label">
         {monsterTurn ? "Survivors Next" : "Next Round"}
-        <span class="arrow i-material-symbols:arrow-forward" aria-hidden="true"></span>
+        <span class="menu-icon i-material-symbols:arrow-forward" aria-hidden="true"></span>
       </span>
     </button>
 
-    <button class="undo" aria-label="Undo">
+    <button class="icon-button" aria-label="Undo">
       <span class="menu-icon i-material-symbols:undo" aria-hidden="true"></span>
     </button>
 
     <button
-      class="menu-button"
+      class="icon-button"
       aria-label={menuOpen ? "Close Showdown Menu" : "Showdown Menu"}
       aria-expanded={menuOpen}
       aria-controls={menuOpen ? "showdown-menu" : undefined}
-      onclick={() => (menuOpen = !menuOpen)}
+      onclick={toggleMenu}
     >
       <span class={["menu-icon", menuOpen ? "i-material-symbols:close" : "i-material-symbols:menu"]} aria-hidden="true"></span>
     </button>
     {#if menuOpen}
-      <div class="menu" id="showdown-menu">
-        <strong>{active === 0 ? roster[active].name : survivorName(active)}</strong>
-        {#if active > 0}
-          <p class="menu-status">{statusText(sheets[active - 1])}</p>
-          <div class="menu-counts">
-            <span>{tokenTotal(sheets[active - 1])} Tokens</span>
-            <span>{availableActions(sheets[active - 1])} Survival Actions Available</span>
-          </div>
-        {/if}
-        <div class="display-settings">
-          <fieldset class="setting">
-            <legend class="setting-label">Display</legend>
-            <button
-              class="menu-option fullscreen-option"
-              type="button"
-              disabled={!fullscreenAvailable || fullscreenPending}
-              onclick={toggleFullscreen}
-            >
-              <span
-                class={["menu-icon", fullscreen ? "i-material-symbols:fullscreen-exit" : "i-material-symbols:fullscreen"]}
-                aria-hidden="true"
-              ></span>
-              {fullscreenAvailable ? (fullscreen ? "Exit Fullscreen" : "Enter Fullscreen") : "Fullscreen unavailable"}
-            </button>
-            {#if fullscreenError}<p role="alert">{fullscreenError}</p>{/if}
-          </fieldset>
-          <fieldset class="setting">
-            <legend class="setting-label">Survivor colors</legend>
-            <button class="menu-option" aria-pressed={brightenZachary} onclick={() => (brightenZachary = !brightenZachary)}>
-              Brighten Zachary
-            </button>
-          </fieldset>
-        </div>
-        <fieldset class="setting">
-          <legend class="setting-label">Dashboard snap</legend>
-          <div class="options snap-options">
-            {#each snapOptions as option (option.value)}
-              <button class="menu-option" aria-pressed={snap === option.value} onclick={() => selectSnap(option.value)}>
-                {option.label}
-              </button>
-            {/each}
-          </div>
-        </fieldset>
-        <fieldset class="setting">
-          <legend class="setting-label">Interface density</legend>
-          <div class="options">
-            {#each densityOptions as option (option.value)}
-              <button
-                class="menu-option density-option"
-                style:--size-preview={`var(--size-control-${option.value})`}
-                aria-pressed={density === option.value}
-                onclick={() => (density = option.value)}
-              >
-                {option.label}
-              </button>
-            {/each}
-          </div>
-        </fieldset>
-        <fieldset class="setting">
-          <legend class="setting-label">Attribute and token colors</legend>
-          <label class="color-setting hidden" for={`${colorId}-foreground`}>
-            Foreground lightening <output for={`${colorId}-foreground`}>{foregroundMix}%</output>
-            <input id={`${colorId}-foreground`} type="range" min="0" max="100" step="1" bind:value={foregroundMix} />
-          </label>
-          <label class="color-setting" for={`${colorId}-background`}>
-            Background darkening <output for={`${colorId}-background`}>{backgroundMix}%</output>
-            <input id={`${colorId}-background`} type="range" min="0" max="100" step="1" bind:value={backgroundMix} />
-          </label>
-        </fieldset>
-        <div class="hidden">
-          <strong>Quick View Key</strong>
+      <div class="menu" id="showdown-menu" bind:this={menu}>
+        {#if keyOpen}
+          <button class="menu-option back-option" onclick={() => showQuickView(false)}>
+            <span class="back-icon i-material-symbols:arrow-back" aria-hidden="true"></span>
+            Back to menu
+          </button>
+          <h2>Quick View Key</h2>
           <dl>
             <div>
               <dt>M / T</dt>
@@ -469,34 +441,12 @@
               <dt>Ready</dt>
               <dd>Alive and ready to act</dd>
             </div>
-            <div>
-              <dt><StatusIcon icon="status:threat" active context="legend" />Threat</dt>
-              <dd>Marked as a threat</dd>
-            </div>
-            <div>
-              <dt><StatusIcon icon="status:act" active context="legend" />Acted</dt>
-              <dd>Has acted this round</dd>
-            </div>
-            <div>
-              <dt><StatusIcon icon="status:knocked-down" active context="legend" />Down</dt>
-              <dd>Knocked down</dd>
-            </div>
-            <div>
-              <dt><StatusIcon icon="priority" active context="legend" />Priority</dt>
-              <dd>Priority target</dd>
-            </div>
-            <div>
-              <dt><StatusIcon icon="status:blind-spot" active context="legend" />In Blind Spot</dt>
-              <dd>In the monster's blind spot</dd>
-            </div>
-            <div>
-              <dt><StatusIcon icon="status:deaf" active context="legend" />Deaf</dt>
-              <dd>Survivor is deaf</dd>
-            </div>
-            <div>
-              <dt><StatusIcon icon="status:blind" active context="legend" />Blind</dt>
-              <dd>Survivor is blind</dd>
-            </div>
+            {#each quickViewStatuses as [icon, label, description] (icon)}
+              <div>
+                <dt><StatusIcon {icon} active context="legend" />{label}</dt>
+                <dd>{description}</dd>
+              </div>
+            {/each}
             <div>
               <dt><span class="key-icon i-material-symbols:filter-none" aria-hidden="true"></span>Tokens</dt>
               <dd>Total tokens, including bleeding</dd>
@@ -506,20 +456,94 @@
               <dd>Available survival actions</dd>
             </div>
           </dl>
-        </div>
-        <fieldset class="setting">
-          <legend class="setting-label">Theme</legend>
-          <nav class="options" aria-label="Showdown themes">
-            {#each designs as item (item.name)}
-              <a class="menu-option" href={resolve(item.href)} aria-current={item.name === design.name ? "page" : undefined}>{item.name}</a>
-            {/each}
-          </nav>
-        </fieldset>
-        <a class="menu-option back-option" href={resolve("/")}>
-          <span class="back-icon i-material-symbols:arrow-back" aria-hidden="true"></span>
-          Back to Guidepost
-        </a>
-        <p>Design preview. Rules and setup are illustrative.</p>
+        {:else}
+          <strong>{dashboardName(active)}</strong>
+          {#if active > 0}
+            <p class="menu-status">{statusText(sheets[active - 1])}</p>
+            <div class="menu-counts">
+              <span>{tokenTotal(sheets[active - 1])} Tokens</span>
+              <span>{availableActions(sheets[active - 1])} Survival Actions Available</span>
+            </div>
+          {/if}
+          <div class="menu-settings">
+            <div class="display-settings">
+              <fieldset>
+                <legend>Survivor colors</legend>
+                <button class="menu-option" aria-pressed={brightenZachary} onclick={() => (brightenZachary = !brightenZachary)}>
+                  Brighten Zachary
+                </button>
+              </fieldset>
+              <fieldset>
+                <legend>Display</legend>
+                <button
+                  class="menu-option fullscreen-option"
+                  type="button"
+                  disabled={!fullscreenAvailable || fullscreenPending}
+                  onclick={toggleFullscreen}
+                >
+                  <span
+                    class={["menu-icon", fullscreen ? "i-material-symbols:fullscreen-exit" : "i-material-symbols:fullscreen"]}
+                    aria-hidden="true"
+                  ></span>
+                  {fullscreenAvailable ? (fullscreen ? "Exit Fullscreen" : "Enter Fullscreen") : "Fullscreen unavailable"}
+                </button>
+                {#if fullscreenError}<p role="alert">{fullscreenError}</p>{/if}
+              </fieldset>
+            </div>
+            <fieldset>
+              <legend>Dashboard snap</legend>
+              <div class="options snap-options">
+                {#each snapOptions as option (option.value)}
+                  <button class="menu-option" aria-pressed={snap === option.value} onclick={() => selectSnap(option.value)}>
+                    {option.label}
+                  </button>
+                {/each}
+              </div>
+            </fieldset>
+            <fieldset>
+              <legend>Interface density</legend>
+              <div class="options">
+                {#each densityOptions as option (option.value)}
+                  <button
+                    class="menu-option density-option"
+                    style:--size-preview={`var(--size-control-${option.value})`}
+                    aria-pressed={density === option.value}
+                    onclick={() => (density = option.value)}
+                  >
+                    {option.label}
+                  </button>
+                {/each}
+              </div>
+            </fieldset>
+            <fieldset>
+              <legend>Attribute and token colors</legend>
+              <label class="hidden" for={`${colorId}-foreground`}>
+                Foreground lightening <output for={`${colorId}-foreground`}>{foregroundMix}%</output>
+                <input id={`${colorId}-foreground`} type="range" min="0" max="100" step="1" bind:value={foregroundMix} />
+              </label>
+              <label for={`${colorId}-background`}>
+                Background darkening <output for={`${colorId}-background`}>{backgroundMix}%</output>
+                <input id={`${colorId}-background`} type="range" min="0" max="100" step="1" bind:value={backgroundMix} />
+              </label>
+            </fieldset>
+            <fieldset>
+              <legend>Theme</legend>
+              <nav class="options" aria-label="Showdown themes">
+                {#each designs as item (item.name)}
+                  <a class="menu-option" href={resolve(item.href)} aria-current={item.name === design.name ? "page" : undefined}
+                    >{item.name}</a
+                  >
+                {/each}
+              </nav>
+            </fieldset>
+            <button class="menu-option key-button" onclick={() => showQuickView(true)}>Quick View Key</button>
+          </div>
+          <a class="menu-option back-option" href={resolve("/")}>
+            <span class="back-icon i-material-symbols:arrow-back" aria-hidden="true"></span>
+            Back to Guidepost
+          </a>
+          <p>Design preview. Rules and setup are illustrative.</p>
+        {/if}
       </div>
     {/if}
   </footer>
@@ -555,29 +579,11 @@
     min-inline-size: var(--size-control);
     min-block-size: var(--size-control);
   }
-  .showdown :global(:where(input[type="number"], [data-stacked-control])) {
-    inline-size: var(--size-number-inline, min(var(--size-control), var(--size-number-max)));
-    block-size: var(--size-number-block, var(--size-control));
+  .showdown :global([data-stacked-control]) {
+    inline-size: min(var(--size-control), var(--size-number-max));
+    block-size: var(--size-control);
     min-inline-size: 0;
     min-block-size: 0;
-    max-inline-size: var(--size-number-inline, var(--size-number-max));
-  }
-  .showdown :global(:where(input[type="number"], [data-stacked-control="armor"])) {
-    border: var(--border-width) solid var(--field-border, color-mix(var(--identity) 60%, var(--panel)));
-    border-radius: var(--radius-control);
-    background: var(--field-bg, color-mix(var(--identity) 18%, var(--panel)));
-    color: var(--field-fg, var(--foreground));
-    font-weight: var(--font-bold);
-    text-align: center;
-  }
-  .showdown :global(:where(input[type="number"], button[data-stacked-control])) {
-    font-size: calc(var(--text-num-input) * var(--scale-control-content));
-  }
-  .showdown :global(input[type="number"]) {
-    appearance: textfield;
-    &::-webkit-inner-spin-button {
-      appearance: none;
-    }
   }
   .workspace {
     --size-panel: max(var(--size-column), 20%);
@@ -642,7 +648,7 @@
     white-space: nowrap;
     touch-action: manipulation;
 
-    &.selected {
+    &[aria-current="true"] {
       border-color: var(--foreground);
     }
     & strong {
@@ -652,8 +658,6 @@
       background: var(--identity);
       color: var(--identity-ink);
       font-weight: var(--font-bold);
-      font-size: var(--text-xs);
-      line-height: 0.875rem;
       text-overflow: ellipsis;
     }
     & b {
@@ -688,15 +692,8 @@
     display: flex;
     align-items: center;
     gap: 0.25rem;
-    font-size: var(--text-xs);
   }
-  .arrow {
-    inline-size: var(--size-icon-control);
-    block-size: var(--size-icon-control);
-  }
-  .undo,
-  .sections-button,
-  .menu-button {
+  .icon-button {
     display: grid;
     place-items: center;
     inline-size: var(--size-control);
@@ -708,12 +705,12 @@
     inline-size: var(--size-icon-control);
     block-size: var(--size-icon-control);
   }
-  .hold-button {
+  .sections-button {
     position: relative;
     user-select: none;
     -webkit-touch-callout: none;
   }
-  .hold-button .menu-icon {
+  .sections-button .menu-icon {
     grid-area: 1 / 1;
   }
   .fullscreen-option {
@@ -758,17 +755,22 @@
   .menu strong {
     font-size: var(--text-sm);
   }
-  .setting {
-    margin-block: 0.75rem;
+  fieldset {
+    margin: 0;
     padding: 0;
     border: 0;
   }
-  .setting-label {
+  .menu-settings {
+    display: grid;
+    margin-block: 0.75rem;
+    gap: 0.75rem;
+  }
+  legend {
     margin-block-end: 0.375rem;
     font-weight: var(--font-bold);
     font-size: var(--text-sm);
   }
-  .color-setting {
+  label {
     display: grid;
     grid-template-columns: 1fr auto;
     align-items: center;
@@ -812,15 +814,18 @@
     block-size: var(--size-preview);
     min-block-size: var(--size-preview) !important;
   }
+  h2 {
+    margin-block: 0.75rem;
+    font-size: var(--text-sm);
+  }
   dl {
     display: grid;
-    margin-block: 0.75rem;
     gap: 0.5rem;
     font-size: var(--text-xs);
   }
   dl > div {
     display: grid;
-    grid-template-columns: 5.5rem 1fr;
+    grid-template-columns: 6.5rem 1fr;
     gap: 0.5rem;
   }
   dt {
@@ -828,8 +833,7 @@
     align-items: center;
     gap: 0.25rem;
   }
-  dd,
-  .menu p {
+  dd {
     color: var(--muted-foreground);
   }
   .key-icon {
@@ -846,6 +850,7 @@
     block-size: 1rem;
   }
   .menu p {
+    color: var(--muted-foreground);
     font-size: var(--text-xs);
   }
   .folio .workspace {
@@ -853,9 +858,6 @@
 
     padding-block: 0.375rem;
     gap: 0.375rem;
-  }
-  .showdown[data-snap="left"] .workspace {
-    padding-inline: 0;
   }
   .showdown[data-snap="center"] .workspace {
     padding-inline: max(0px, calc((100% - var(--size-panel)) / 2));
@@ -865,7 +867,6 @@
     padding-inline-end: 0;
   }
   .showdown[data-snap="free"] .workspace {
-    padding-inline: 0;
     scroll-snap-type: none;
   }
   .showdown[data-snap="left"] .dashboard {
@@ -877,9 +878,6 @@
   .showdown[data-snap="right"] .dashboard {
     scroll-snap-align: end;
   }
-  .showdown[data-snap="free"] .dashboard {
-    scroll-snap-align: none;
-  }
   .folio {
     --feedback-brightness: 0.94;
   }
@@ -887,7 +885,7 @@
     --feedback-brightness: 1.18;
   }
   @media (prefers-reduced-motion: no-preference) {
-    .hold-button .menu-icon {
+    .sections-button .menu-icon {
       transition: opacity var(--duration-fast);
     }
     .showdown :global(button) {
@@ -915,7 +913,6 @@
   @media (min-width: 1100px) {
     footer {
       grid-template-columns: minmax(22rem, 42rem) 3.5rem 13rem repeat(2, 3.5rem);
-      align-items: stretch;
       justify-content: center;
       gap: 0.5rem;
     }
@@ -926,14 +923,10 @@
       flex-direction: column;
     }
     .advance,
-    .sections-button,
-    .undo,
-    .menu-button {
+    .icon-button {
       block-size: 3.5rem;
     }
-    .undo,
-    .sections-button,
-    .menu-button {
+    .icon-button {
       inline-size: 3.5rem;
     }
   }
@@ -947,9 +940,7 @@
   @media (hover: hover) and (pointer: fine) {
     .roster-button,
     .advance,
-    .sections-button,
-    .undo,
-    .menu-button {
+    .icon-button {
       &:hover:not(:disabled) {
         filter: brightness(var(--feedback-brightness));
       }
