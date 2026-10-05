@@ -64,34 +64,32 @@
   --duration-slow: 1s;
   --ease-standard: ease;
   /* from https://open-props.style/#easing */
-  --ease-bounce: linear(
-    0,
-    0.004,
-    0.016,
-    0.035,
-    0.063,
-    0.098,
-    0.141,
-    0.191,
-    0.25,
-    0.316,
-    0.391 36.8%,
-    0.563,
-    0.766,
-    1 58.8%,
-    0.946,
-    0.908 69.1%,
-    0.895,
-    0.885,
-    0.879,
-    0.878,
-    0.879,
-    0.885,
-    0.895,
-    0.908 89.7%,
-    0.946,
-    1
-  );
+  --ease-bounce: linear(0,
+      0.004,
+      0.016,
+      0.035,
+      0.063,
+      0.098,
+      0.141,
+      0.191,
+      0.25,
+      0.316,
+      0.391 36.8%,
+      0.563,
+      0.766,
+      1 58.8%,
+      0.946,
+      0.908 69.1%,
+      0.895,
+      0.885,
+      0.879,
+      0.878,
+      0.879,
+      0.885,
+      0.895,
+      0.908 89.7%,
+      0.946,
+      1);
   --letter-spacing-tight: -0.03em;
   --line-height-none: 1;
   --line-height-snug: 1.25;
@@ -295,6 +293,7 @@
 
 html:has(.scrollbar-stable) {
   scrollbar-gutter: stable both-edges;
+  scrollbar-width: thin;
 }
 
 body {
@@ -348,7 +347,7 @@ textarea {
   p {
     font-size: 0.75rem;
 
-    + p {
+    +p {
       margin-block-start: 0.25rem;
     }
   }

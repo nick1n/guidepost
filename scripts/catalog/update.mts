@@ -64,10 +64,11 @@ export function variantLabel(variant: Variant, fallback: string): string {
   const format = fallback.match(/^(Painters|Bust)(?:: (.+))?$/);
   if (format) return format[2] ? `${format[1]}: ${variantLabel(variant, format[2])}` : format[1]!;
   if (/first run/i.test(variant.title)) return "First Run";
+  if (/second run collectors edition/i.test(variant.title)) return "Second Run";
   if (/encore/i.test(variant.title)) return "Encore";
   if (/deathgrey.*m2/i.test(variant.title)) return "Deathgrey M2";
-  if (/deathgrey/i.test(variant.title)) return "Deathgrey";
-  if (/deathpink/i.test(variant.title)) return "Deathpink";
+  if (/deathgrey|death grey edition/i.test(variant.title)) return "Deathgrey";
+  if (/deathpink|death pink edition/i.test(variant.title)) return "Deathpink";
   if (/general/i.test(variant.title)) return "General";
   return fallback;
 }

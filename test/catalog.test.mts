@@ -1,8 +1,23 @@
 import { describe, expect, it } from "vitest";
 import { catalogTags, editionGameplay, editionMaterials, editionSize, editionUrl } from "#lib/kdm-data.ts";
-import { reviewInclusions, reviewIndex, type ReviewCatalog } from "#lib/catalog-view.ts";
+import { reviewEditions, reviewInclusions, reviewIndex, type ReviewCatalog } from "#lib/catalog-view.ts";
 
 describe("review catalog facts", () => {
+  it("tracks synthetic editions by category and release date without modifying source items", () => {
+    const data: ReviewCatalog = {
+      content: {},
+      bundles: { set: { name: "Set", tags: [], releaseDate: "2024-01-01" } },
+      homebrew: { model: { name: "Model", tags: [], releaseWindow: "2025" } },
+      accessories: {},
+      "included-only": {},
+    };
+    const index = reviewIndex(data);
+    expect(reviewEditions(index.byCategory.get("bundles")![0])).toEqual([{ v: "Bundle", r: "2024-01-01", releaseWindow: undefined }]);
+    expect(reviewEditions(index.byCategory.get("homebrew")![0])).toEqual([{ v: "Item", r: undefined, releaseWindow: "2025" }]);
+    expect(data.bundles.set.editions).toBeUndefined();
+    expect(data.homebrew.model.editions).toBeUndefined();
+  });
+
   it("compares bundle prices with direct included editions without counting nested contents twice", () => {
     const data: ReviewCatalog = {
       content: {
@@ -147,6 +162,20 @@ describe("Simulator key access", () => {
         .includedEditions("core", "1.6")
         .map(({ edition }) => edition.v),
     ).toEqual(["1.6"]);
+  });
+
+  it("keeps direct bundle contents separate from recursively included ownership after either lookup", () => {
+    const data = catalog();
+    data.content.core.includes = [{ item: "expansion-flower-knight", edition: "1.6", parentEditions: ["Sim"] }];
+    const index = reviewIndex(data);
+    const direct = () =>
+      index.includedEditions("kingdom-death-simulator", "Dwelling Key", false).map(({ item, edition }) => [item.id, edition.v]);
+    expect(direct()).toEqual([["core", "Sim"]]);
+    expect(index.includedEditions("kingdom-death-simulator", "Dwelling Key").map(({ item, edition }) => [item.id, edition.v])).toEqual([
+      ["core", "Sim"],
+      ["expansion-flower-knight", "1.6"],
+    ]);
+    expect(direct()).toEqual([["core", "Sim"]]);
   });
 
   it("refreshes cached search text and inclusions when the catalog index is rebuilt", () => {

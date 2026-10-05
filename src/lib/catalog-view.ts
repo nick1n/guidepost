@@ -79,6 +79,7 @@ export type ReviewEdition = {
 export type ReviewItem = {
   name: string;
   kind?: string;
+  accessoryType?: string;
   tags: string[];
   aliases?: string[];
   editions?: ReviewEdition[];
@@ -133,6 +134,21 @@ export function reviewNumberedEditions(item: ReviewItem) {
 // Rebuild this index when the catalog changes; cached results belong to that snapshot.
 export function reviewIndex(catalog: ReviewCatalog) {
   const entries = reviewEntries(catalog);
+  // Resolve synthetic editions once on the indexed copies, leaving source items unchanged.
+  for (const item of entries) item.editions = reviewEditions(item);
+  const byCategory = new Map<string, typeof entries>();
+  for (const item of entries) {
+    const grouped = byCategory.get(item.category) ?? [];
+    grouped.push(item);
+    byCategory.set(item.category, grouped);
+  }
+  const tags = new Map([...byCategory].map(([category, items]) => [category, reviewTags(items)]));
+  const itemTags = new Map(
+    [...byCategory].flatMap(([category, items]) => {
+      const order = new Map(tags.get(category)!.map(({ tag }, index) => [tag, index]));
+      return items.map((item) => [item.id, item.tags.toSorted((a, b) => (order.get(a) ?? 0) - (order.get(b) ?? 0))] as const);
+    }),
+  );
   const byId = new Map(entries.map((item) => [item.id, item]));
   const sim = entries.filter((item) => item.editions?.some((edition) => edition.v === "Sim"));
   const search = new Map(
@@ -171,8 +187,13 @@ export function reviewIndex(catalog: ReviewCatalog) {
     return included;
   }
 
+  type Included = { item: (typeof entries)[number]; edition: ReviewEdition };
+  const includedCache = new Map<string, Included[]>();
   function includedEditions(id: string, edition: string, includeNested = true) {
-    const included: { item: (typeof entries)[number]; edition: ReviewEdition }[] = [];
+    const cacheKey = `${id}:${edition}:${includeNested}`;
+    const cached = includedCache.get(cacheKey);
+    if (cached) return cached;
+    const included: Included[] = [];
     const visited = new Set([`${id}:${edition}`]);
     function visit(parentId: string, parentEdition: string) {
       for (const reference of inclusions(parentId, parentEdition)) {
@@ -195,12 +216,18 @@ export function reviewIndex(catalog: ReviewCatalog) {
       }
     }
     visit(id, edition);
+    includedCache.set(cacheKey, included);
     return included;
   }
 
+  type Pricing = { total: number; missing: number; savings: number | undefined; percent: number | undefined };
+  const pricingCache = new Map<string, Pricing>();
   function bundlePricing(id: string, edition: string) {
     const item = byId.get(id);
     if (item?.category !== "bundles" || !inclusions(id, edition).length) return;
+    const cacheKey = `${id}:${edition}`;
+    const cached = pricingCache.get(cacheKey);
+    if (cached) return cached;
     const release = reviewEditions(item).find((release) => release.v === edition);
     if (!release) return;
     const price = reviewPrice(item, release);
@@ -223,10 +250,17 @@ export function reviewIndex(catalog: ReviewCatalog) {
       else total += amount;
     }
     const savings = !missing && price !== undefined ? total - price : undefined;
-    return { total, missing, savings, percent: savings !== undefined && total > 0 ? Math.round((savings / total) * 100) : undefined };
+    const pricing = {
+      total,
+      missing,
+      savings,
+      percent: savings !== undefined && total > 0 ? Math.round((savings / total) * 100) : undefined,
+    };
+    pricingCache.set(cacheKey, pricing);
+    return pricing;
   }
 
-  return { entries, search, inclusions, includedEditions, bundlePricing };
+  return { entries, byCategory, tags, itemTags, search, inclusions, includedEditions, bundlePricing };
 }
 
 export function reviewInclusions(catalog: ReviewCatalog, id: string, edition: string) {

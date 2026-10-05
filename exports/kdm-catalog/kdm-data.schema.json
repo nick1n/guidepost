@@ -6,7 +6,7 @@
   "required": ["content", "included-only", "accessories", "bundles", "homebrew"],
   "additionalProperties": false,
   "properties": {
-    "$schema": { "type": "string" },
+    "$schema": { "type": "string", "minLength": 1 },
     "content": { "$ref": "#/$defs/content" },
     "bundles": { "$ref": "#/$defs/items" },
     "homebrew": { "$ref": "#/$defs/content" },
@@ -20,13 +20,13 @@
       "required": ["name", "tags"],
       "additionalProperties": false,
       "properties": {
-        "name": { "type": "string" },
+        "name": { "type": "string", "minLength": 1 },
         "releaseDate": {
           "type": "string",
           "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
           "description": "Release date for an item without selectable editions, YYYY-MM-DD."
         },
-        "desc": { "type": "string", "description": "Item description." },
+        "desc": { "type": "string", "description": "Item description.", "minLength": 1 },
         "kind": {
           "enum": [
             "core",
@@ -43,7 +43,7 @@
             "box",
             "simulator"
           ],
-          "description": "Product classification. Beta means all editions are Beta; Box means a mix of Beta and non-Beta editions. Bundles may omit kind."
+          "description": "Product classification. The beta kind means all editions are Beta; box may contain mixed Beta and non-Beta editions or other boxed products. Bundles may omit kind."
         },
         "gameplay": {
           "const": true,
@@ -70,15 +70,16 @@
           "minItems": 1,
           "description": "Reviewed descriptive tags from the master tag file."
         },
-        "requires": { "type": "array", "items": { "type": "string" }, "uniqueItems": true, "minItems": 1 },
+        "requires": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true, "minItems": 1 },
         "url": {
           "type": "string",
-          "description": "Shared product listing for all editions, or the primary listing for an item without editions. Edition-specific URLs override this value. Omit variant selectors."
+          "description": "Shared product listing for all editions, or the primary listing for an item without editions. Edition-specific URLs override this value. Omit variant selectors.",
+          "minLength": 1
         },
-        "aliases": { "type": "array", "items": { "type": "string" }, "uniqueItems": true, "minItems": 1 },
+        "aliases": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true, "minItems": 1 },
         "urls": {
           "type": "array",
-          "items": { "type": "string" },
+          "items": { "type": "string", "minLength": 1 },
           "uniqueItems": true,
           "minItems": 1,
           "description": "Additional product URLs for an item without editions."
@@ -94,7 +95,8 @@
           "type": "array",
           "items": { "$ref": "#/$defs/inclusion" },
           "uniqueItems": true,
-          "description": "Known included items, optionally qualified by their editions/materials and the containing release. Partial list; unspecified editions are not automatically owned."
+          "description": "Known included items, optionally qualified by their editions/materials and the containing release. Partial list; unspecified editions are not automatically owned.",
+          "minItems": 1
         },
         "notes": { "type": "string", "minLength": 1, "description": "Item history and release notes." },
         "size": {
@@ -108,8 +110,18 @@
           "description": "Gameplay content supplied with this item. Release differences, when known, are described here."
         },
         "accessoryType": { "enum": ["shirt", "dice", "other"] },
-        "colors": { "type": "array", "items": { "type": "string" } },
-        "text": { "type": "array", "items": { "type": "string" } },
+        "colors": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "minItems": 1,
+          "description": "Color swatches in display order, paired by index with text labels when present."
+        },
+        "text": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "minItems": 1,
+          "description": "Labels for color swatches in matching order. Repeated labels are allowed for distinct swatches."
+        },
         "releaseYear": {
           "type": "integer",
           "minimum": 1900,
@@ -134,14 +146,16 @@
             "2013",
             "2015",
             "2025",
+            "3D Files",
             "Box",
+            "Bust",
             "Bust: Encore",
             "Bust: First Run",
-            "Bust",
-            "Deathgrey M2",
+            "Bust: Second Run",
             "Deathgrey",
-            "Deathmas 2024",
+            "Deathgrey M2",
             "Deathmas",
+            "Deathmas 2024",
             "Deathpink",
             "Dwelling Key",
             "Early Variant",
@@ -154,22 +168,22 @@
             "Metal",
             "Naked",
             "Original",
+            "Painters",
             "Painters: Cheeky",
             "Painters: Encore",
             "Painters: First Run",
-            "Painters",
             "Photoresin",
             "Plastic",
             "Pledge",
             "Prize",
+            "Remaster",
             "Remaster: Deathgrey",
             "Remaster: Encore",
             "Remaster: First Run",
-            "Remaster",
             "Resculpt: Encore",
             "Resculpt: First Run",
-            "Resin & Metal",
             "Resin",
+            "Resin & Metal",
             "Sim",
             "Valentines",
             "White Resin"
@@ -177,7 +191,11 @@
         },
         "$": {
           "type": "array",
-          "items": { "type": "integer", "minimum": 0, "description": "Amount in cents; USD unless currency is specified." },
+          "items": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Amount in cents; inherits the item currency, which defaults to USD."
+          },
           "uniqueItems": true,
           "description": "Known sale amounts plus current MSRP in cents. Maximum is MSRP; the array makes no active-sale claim. Price evidence and estimates remain in the audit.",
           "minItems": 1
@@ -190,32 +208,35 @@
         },
         "materials": {
           "type": "array",
-          "items": { "type": "string" },
+          "items": { "type": "string", "minLength": 1 },
           "uniqueItems": true,
           "minItems": 1,
           "description": "Materials of this release. First Run and Encore labels carry explicit materials. When omitted, infer a single material only for the exact labels Plastic, Resin, Photoresin, Deathgrey, Metal, and Deathpink; otherwise material is unspecified."
         },
         "size": {
           "type": "string",
-          "description": "Physical release size override when it differs from the item default. Sim never has a model size. Omit unknown placeholders."
+          "description": "Physical release size override when it differs from the item default. Sim never has a model size. Omit unknown placeholders.",
+          "minLength": 1
         },
         "releaseWindow": {
           "type": "string",
-          "description": "An imprecise release date, including a year alone such as 2024, a quarter in year-first format such as 2026 Q4, or a named source window. No exact date is invented."
+          "description": "An imprecise release date, including a year alone such as 2024, a quarter in year-first format such as 2026 Q4, or a named source window. No exact date is invented.",
+          "minLength": 1
         },
         "runSize": {
           "type": "integer",
           "minimum": 1,
           "description": "Known production or sale limit. Omit unknown counts; preserve supplied First Run and Encore counts. Do not infer counts from units sold."
         },
-        "expansion": { "type": "string", "description": "Workbook Expansion value." },
+        "expansion": { "type": "string", "description": "Workbook Expansion value.", "minLength": 1 },
         "gameplay": {
           "type": "boolean",
           "description": "Override of the item gameplay default (false when omitted). Store only when different from the item default."
         },
         "name": {
           "type": "string",
-          "description": "Release-specific name when it differs from the sculpt item name, such as Plastic Ramette."
+          "description": "Release-specific name when it differs from the sculpt item name, such as Plastic Ramette.",
+          "minLength": 1
         },
         "url": {
           "type": "string",
@@ -248,7 +269,8 @@
       "oneOf": [
         {
           "type": "string",
-          "description": "Included catalog key. The source does not specify a particular edition; this does not mean every edition is included."
+          "description": "Included catalog key. The source does not specify a particular edition; this does not mean every edition is included.",
+          "minLength": 1
         },
         {
           "type": "object",

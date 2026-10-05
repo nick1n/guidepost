@@ -33,6 +33,7 @@ export default defineConfig({
     "i-material-symbols:unfold-less-double",
     "i-material-symbols:unfold-more-double",
     "i-material-symbols:close",
+    "i-material-symbols:link-off",
   ],
   presets: [presetIcons()],
 });

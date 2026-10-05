@@ -88,7 +88,7 @@
 
   export function isSectionOpen(title: string) {
     if (title === "More") return showMore;
-    const name = title === "Trinkets and Baubles" ? "Trinkets" : title;
+    const name = title === "Trinkets & Baubles" ? "Trinkets" : title;
     return sections.isOpen(title) && (showMore || !extras.some((section) => section.name === name && !section.populated));
   }
 
@@ -101,7 +101,7 @@
       showMore = open;
       return;
     }
-    const name = title === "Trinkets and Baubles" ? "Trinkets" : title;
+    const name = title === "Trinkets & Baubles" ? "Trinkets" : title;
     if (open && extras.some((section) => section.name === name && !section.populated)) showMore = true;
     sections.setSectionOpen(title, open);
   }
@@ -121,8 +121,7 @@
     "Fighting Arts",
     "Disorders",
     "Abilities",
-    "Impairments",
-    "Severe Injuries",
+    "Impairments & Injuries",
     "Resources",
     "Per Lifetimes",
     "Cursed Gear",
@@ -446,7 +445,7 @@
       {@render tokenControls()}
     </Section>
   {:else if name === "Trinkets"}
-    <Section title="Trinkets and Baubles" meta={`${sheet.gear.slice(10).filter(Boolean).length || "No"} Gear`}>
+    <Section title="Trinkets & Baubles" meta={`${sheet.gear.slice(10).filter(Boolean).length || "No"} Gear`}>
       <Gear
         bind:slots={sheet.gear}
         bind:selected={selectedGear}

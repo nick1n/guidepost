@@ -1,22 +1,9 @@
-<script lang="ts">
-  import { resolve } from "$app/paths";
-  import { onDestroy } from "svelte";
-  import TagRail from "#lib/components/track/TagRail.svelte";
-  import HoldRipple from "#lib/components/gestures/HoldRipple.svelte";
-  import {
-    reviewEntries,
-    reviewEditions,
-    reviewIndex,
-    reviewNumberedEditions,
-    reviewPrice,
-    reviewTags,
-    reviewTagLabel,
-    type ReviewCatalog,
-    type ReviewEdition,
-  } from "#lib/catalog-view.ts";
-  import { editionGameplay, editionMaterials, editionUrl, formatPrice, storeUrl } from "#lib/kdm-data.ts";
+<script module lang="ts">
+  import rawCatalog from "../../../exports/kdm-catalog/kdm-data.json";
+  import { reviewIndex, type reviewEntries, type ReviewCatalog, type ReviewEdition } from "#lib/catalog-view.ts";
 
-  let { data }: { data: { catalog: ReviewCatalog } } = $props();
+  const catalog = reviewIndex(rawCatalog as ReviewCatalog);
+  const entries = catalog.entries;
 
   const eurToUsd = 1.13;
   const categories = [
@@ -26,10 +13,38 @@
     { id: "homebrew", label: "Homebrew" },
   ] as const;
   type Entry = ReturnType<typeof reviewEntries>[number];
+
+  function key(item: Entry, edition: ReviewEdition) {
+    return `${item.id}:${edition.v}`;
+  }
+  function release(edition: ReviewEdition) {
+    return edition.r ?? edition.releaseWindow ?? "Date unknown";
+  }
+</script>
+
+<script lang="ts">
+  import { resolve } from "$app/paths";
+  import { onDestroy } from "svelte";
+  import TagRail from "#lib/components/track/TagRail.svelte";
+  import HoldRipple from "#lib/components/gestures/HoldRipple.svelte";
+  import { swipe, type SwipeDirection } from "#lib/swipe.ts";
+  import { reviewEditions, reviewNumberedEditions, reviewPrice, reviewTags, reviewTagLabel } from "#lib/catalog-view.ts";
+  import { editionGameplay, editionMaterials, editionUrl, formatPrice, storeUrl } from "#lib/kdm-data.ts";
+
   type Selection = { owned?: boolean; wished?: boolean; copy?: string };
   type Owner = { parent: string; parentEdition: string; edition?: string };
 
+  const swipeFeedbackDuration = 900;
+  const emptySelection: Readonly<Selection> = {};
+
   let category = $state<(typeof categories)[number]["id"]>("content");
+  let categoryResults = $state.raw<Partial<Record<typeof category, Entry[]>>>({ content: catalog.byCategory.get("content") ?? [] });
+  let dragDistance = $state(0);
+  let categoriesVisible = $state(true);
+  let categoryBar: HTMLElement | undefined;
+  let swipeFeedback = $state(false);
+  let swipeFeedbackTimer: ReturnType<typeof setTimeout> | undefined;
+  const showSwipeTabs = $derived((dragDistance !== 0 || swipeFeedback) && !categoriesVisible);
   let query = $state("");
   let tagsOpen = $state(false);
   let allTagsOpen = $state(false);
@@ -42,7 +57,10 @@
   let rendered = $state<Record<string, boolean>>({});
   let ownershipFeedback = $state<{ item: string; kind: "cleared" | "hint" }>();
   let feedbackTimer: ReturnType<typeof setTimeout> | undefined;
-  onDestroy(() => clearTimeout(feedbackTimer));
+  onDestroy(() => {
+    clearTimeout(feedbackTimer);
+    clearTimeout(swipeFeedbackTimer);
+  });
   // Observer bookkeeping is nonreactive; rendered owns the state used by the template.
   const nearby = new Set<string>();
   const observedCards = new Map<HTMLElement, string>();
@@ -60,6 +78,7 @@
       if (!collapse && nearby.has(item.id)) rendered[item.id] = true;
       collapsed[item.id] = collapse;
     }
+    return collapse ? "All cards collapsed." : "All cards expanded.";
   }
 
   function observeCard(item: Entry) {
@@ -93,28 +112,23 @@
     };
   }
 
-  const catalog = $derived(reviewIndex(data.catalog));
-  const entries = $derived(catalog.entries);
   const searchQuery = $derived(query.trim().toLowerCase());
-  const categoryEntries = $derived(entries.filter((item) => item.category === category));
-  const tags = $derived(reviewTags(categoryEntries));
-  const tagOrder = $derived(new Map(tags.map(({ tag }, index) => [tag, index])));
-  const itemTags = $derived(
-    new Map(categoryEntries.map((item) => [item.id, item.tags.toSorted((a, b) => (tagOrder.get(a) ?? 0) - (tagOrder.get(b) ?? 0))])),
-  );
+  const categoryEntries = $derived(catalog.byCategory.get(category) ?? []);
+  const tags = $derived(catalog.tags.get(category) ?? []);
   const cloudTags = $derived(tags.filter(({ tag, count }) => count >= 5 && !/^\d+$/.test(tag)));
   const allTags = $derived(
     tags.filter(({ count }) => count > 1).toSorted((a, b) => reviewTagLabel(a.tag).localeCompare(reviewTagLabel(b.tag), "en")),
   );
-  const filtered = $derived(
-    categoryEntries.filter((item) => {
+  const filtered = $derived.by(() => {
+    if (!searchQuery && !selectedTags.length && status === "all") return categoryEntries;
+    return categoryEntries.filter((item) => {
       if (!selectedTags.every((tag) => item.tags.includes(tag))) return false;
       if (searchQuery && !catalog.search.get(item.id)?.includes(searchQuery)) return false;
       if (status === "owned" && !reviewEditions(item).some((edition) => selection(item, edition).owned)) return false;
       if (status === "wishlist" && !reviewEditions(item).some((edition) => selection(item, edition).wished)) return false;
       return true;
-    }),
-  );
+    });
+  });
   const allCollapsed = $derived(filtered.length > 0 && filtered.every((item) => collapsed[item.id]));
   const latestUnowned = $derived(
     filtered.flatMap((item) => {
@@ -122,7 +136,7 @@
       return edition && edition.standalone !== false && !selection(item, edition).owned ? [{ item, edition }] : [];
     }),
   );
-  const tagCounts = $derived(new Map(reviewTags(filtered).map(({ tag, count }) => [tag, count])));
+  const tagCounts = $derived(new Map((filtered === categoryEntries ? tags : reviewTags(filtered)).map(({ tag, count }) => [tag, count])));
   const owned = $derived(
     entries.flatMap((item) =>
       reviewEditions(item)
@@ -148,15 +162,19 @@
     return grouped;
   });
 
-  function key(item: Entry, edition: ReviewEdition) {
-    return `${item.id}:${edition.v}`;
-  }
   function selection(item: Entry, edition: ReviewEdition) {
-    return selections[key(item, edition)] ?? {};
+    return selections[key(item, edition)] ?? emptySelection;
+  }
+  function editableSelection(item: Entry, edition: ReviewEdition) {
+    return (selections[key(item, edition)] ??= {});
   }
   function selectedEdition(item: Entry) {
     const editions = reviewEditions(item);
-    return editions.find((edition) => edition.v === inspected[item.id]) ?? editions.at(-1);
+    return (
+      editions.find((edition) => edition.v === inspected[item.id]) ??
+      editions.findLast((edition) => edition.standalone !== false) ??
+      editions.at(-1)
+    );
   }
   function markSelectedOwned(item: Entry) {
     const edition = selectedEdition(item);
@@ -200,13 +218,14 @@
   }
   function setEditionOwned(item: Entry, edition: ReviewEdition, owned: boolean) {
     for (const target of [{ item, edition }, ...catalog.includedEditions(item.id, edition.v)]) {
-      const value = selection(target.item, target.edition);
-      selections[key(target.item, target.edition)] = { ...value, owned, wished: owned ? false : value.wished };
+      const value = editableSelection(target.item, target.edition);
+      value.owned = owned;
+      if (owned) value.wished = false;
     }
   }
   function toggleWish(item: Entry, edition: ReviewEdition) {
-    const value = selection(item, edition);
-    selections[key(item, edition)] = { ...value, wished: !value.wished };
+    const value = editableSelection(item, edition);
+    value.wished = !value.wished;
   }
   function markLatestOwned() {
     for (const { item, edition } of latestUnowned) {
@@ -214,12 +233,52 @@
     }
   }
   function updateCopy(item: Entry, edition: ReviewEdition, copy: string) {
-    selections[key(item, edition)] = { ...selection(item, edition), copy };
+    editableSelection(item, edition).copy = copy;
   }
   function changeCategory(next: typeof category) {
+    // Retain the outgoing results without rebuilding hidden cards when search is cleared.
+    categoryResults = {
+      ...categoryResults,
+      [category]: filtered,
+      [next]: categoryResults[next] ?? catalog.byCategory.get(next) ?? [],
+    };
     category = next;
     query = "";
     selectedTags = [];
+  }
+  function swipeCategory(direction: SwipeDirection) {
+    const index = categories.findIndex((option) => option.id === category);
+    const offset = direction === "left" ? 1 : -1;
+    const next = categories[(index + offset + categories.length) % categories.length];
+    changeCategory(next.id);
+    if (!categoriesVisible) {
+      clearTimeout(swipeFeedbackTimer);
+      swipeFeedback = true;
+      swipeFeedbackTimer = setTimeout(() => (swipeFeedback = false), swipeFeedbackDuration);
+    }
+  }
+  function dragCatalog(distance: number) {
+    if (distance !== 0 && dragDistance === 0) {
+      clearTimeout(swipeFeedbackTimer);
+      swipeFeedback = false;
+    }
+    // Measure at gesture start so feedback does not wait for the observer's next frame.
+    if (distance !== 0 && dragDistance === 0 && categoryBar) {
+      const bounds = categoryBar.getBoundingClientRect();
+      categoriesVisible = bounds.bottom > 0 && bounds.top < window.innerHeight;
+    }
+    dragDistance = distance;
+  }
+  function observeCategories(element: HTMLElement) {
+    categoryBar = element;
+    const observer = new IntersectionObserver(([entry]) => {
+      categoriesVisible = entry.isIntersecting;
+    });
+    observer.observe(element);
+    return () => {
+      observer.disconnect();
+      categoryBar = undefined;
+    };
   }
   function toggleTag(tag: string) {
     selectedTags = selectedTags.includes(tag) ? selectedTags.filter((value) => value !== tag) : [...selectedTags, tag];
@@ -232,9 +291,6 @@
   function toggleStatus(next: "owned" | "wishlist") {
     status = status === next ? "all" : next;
   }
-  function release(edition: ReviewEdition) {
-    return edition.r ?? edition.releaseWindow ?? "Date unknown";
-  }
   function owners(item: Entry, edition: ReviewEdition) {
     return (coverage.get(item.id) ?? []).filter((reference) => !reference.edition || reference.edition === edition.v);
   }
@@ -242,12 +298,12 @@
 
 <svelte:head><title>Collection | Guidepost</title></svelte:head>
 
-<main>
+<main {@attach swipe({ onSwipe: swipeCategory, onDrag: dragCatalog })} class="scrollbar-stable">
   <a class="back" href={resolve("/track")}>
     <span class="back-icon i-material-symbols:arrow-back" aria-hidden="true"></span>Current tracker
   </a>
   <header>
-    <h1>Your Collection</h1>
+    <h1>Collection</h1>
     <p class="subtitle">Kingdom Death: Monster collection tracker</p>
   </header>
 
@@ -266,10 +322,11 @@
     </button>
   </section>
 
-  <nav class="categories" aria-label="Catalog categories">
-    {#each categories as option (option.id)}
-      <button type="button" aria-pressed={category === option.id} onclick={() => changeCategory(option.id)}>{option.label}</button>
-    {/each}
+  <nav class="categories" aria-label="Catalog categories" {@attach observeCategories}>
+    {@render categoryButtons()}
+  </nav>
+  <nav class={["swipe-tabs", showSwipeTabs && "is-visible"]} aria-label="Catalog categories while swiping" inert={!showSwipeTabs}>
+    {@render categoryButtons()}
   </nav>
 
   <div class="catalog-filters">
@@ -357,17 +414,40 @@
     </div>
   </div>
 
-  {#if !filtered.length}
-    <p class="empty">No items match. Try another search, tag, category, or ownership filter.</p>
-  {:else}
-    <div class="cards">
-      {#each filtered as item, index (item.id)}
-        <article class="card" {@attach observeCard(item)}>{@render itemDetail(item, index < 6 || !!rendered[item.id])}</article>
+  <div class="catalog-viewport">
+    <div class={["catalog-content", dragDistance !== 0 && "is-dragging"]} style:--drag-distance={`${dragDistance}px`}>
+      {#each categories as option (option.id)}
+        {#if categoryResults[option.id]}
+          {@const items = option.id === category ? filtered : categoryResults[option.id]!}
+          <!-- Keep visited cards mounted so category changes preserve their controls and deferred bodies. -->
+          <div data-category={option.id} hidden={option.id !== category}>
+            {#if !items.length}
+              <p class="empty">No items match. Try another search, tag, category, or ownership filter.</p>
+            {:else}
+              <div class="cards">
+                {#each items as item, index (item.id)}
+                  <article class={["card", collapsed[item.id] && "is-collapsed"]} {@attach observeCard(item)}>
+                    {@render itemDetail(item, index < 6 || !!rendered[item.id])}
+                  </article>
+                {/each}
+              </div>
+            {/if}
+          </div>
+        {/if}
       {/each}
     </div>
-  {/if}
+  </div>
   <footer>Preview selections reset when this page reloads. Your saved collection is unchanged.</footer>
 </main>
+
+{#snippet categoryButtons()}
+  {#each categories as option (option.id)}
+    <button class="category-tab" type="button" aria-pressed={category === option.id} onclick={() => changeCategory(option.id)}
+      >{option.label}</button
+    >
+  {/each}
+  <span class="tab-highlight" aria-hidden="true"></span>
+{/snippet}
 
 {#snippet tagButton(tag: string, weight?: number)}
   {@const selected = selectedTags.includes(tag)}
@@ -400,11 +480,21 @@
       {#if edition.includesAllSim}
         <p>Includes every current and future Sim edition. This list shows the editions currently in the catalog.</p>
       {/if}
-      {#if contentsOpen[key(item, edition)]}
+      {#if contentsOpen[key(item, edition)] && selectedEdition(item)?.v === edition.v}
         <ul>
-          {#each included as child, index (`${child.item}:${child.edition ?? index}`)}
-            <li><span>{child.name}</span><small>{child.edition ?? child.materials?.join(", ") ?? "Edition unspecified"}</small></li>
-          {/each}
+          {#if item.category === "bundles"}
+            {#each catalog.includedEditions(item.id, edition.v, false) as child (`${child.item.id}:${child.edition.v}`)}
+              {@const price = reviewPrice(child.item, child.edition)}
+              <li>
+                <span>{child.item.name} <small>{child.edition.v}</small></span>
+                <span class="included-price">{price === undefined ? "Price unknown" : formatPrice(price, child.item.currency)}</span>
+              </li>
+            {/each}
+          {:else}
+            {#each included as child, index (`${child.item}:${child.edition ?? index}`)}
+              <li><span>{child.name}</span><small>{child.edition ?? child.materials?.join(", ") ?? "Edition unspecified"}</small></li>
+            {/each}
+          {/if}
         </ul>
       {/if}
       {#if !included.length}<p>No inclusions are listed for this edition.</p>{/if}
@@ -414,11 +504,16 @@
 
 {#snippet shopLink(item: Entry, edition: ReviewEdition)}
   {@const url = storeUrl(editionUrl(item, edition))}
-  {#if edition.available === true && url}
-    <a class="shop" href={url} target="_blank" rel="noreferrer">
-      Shop<span class="external-icon i-material-symbols:arrow-outward" aria-hidden="true"></span>
+  {@const unavailable = edition.available !== true}
+  {#if url}
+    <a class={["shop", unavailable && "unavailable"]} href={url} target="_blank" rel="noreferrer">
+      Shop<span
+        class={["external-icon", unavailable ? "i-material-symbols:link-off" : "i-material-symbols:arrow-outward"]}
+        aria-hidden="true"
+      ></span>
       <span class="visually-hidden">
         {item.name}, {edition.v}
+        {unavailable ? ", unavailable" : ""}
       </span>
     </a>
   {/if}
@@ -431,30 +526,35 @@
   {@const hasOwned = editions.some((release) => selection(item, release).owned)}
   {@const feedback = ownershipFeedback?.item === item.id ? ownershipFeedback.kind : undefined}
   <h2>
-    <button
-      class="card-heading"
-      type="button"
-      aria-expanded={!collapsed[item.id]}
-      aria-controls={`card-body-${item.id}`}
-      onclick={() => toggleCard(item)}
+    <HoldRipple
+      ontap={() => toggleCard(item)}
+      onhold={toggleAllCards}
+      holdHint="Click to collapse or expand this card. Hold or press Shift+Enter to collapse or expand all cards in the current results."
     >
-      <span class="card-label">
-        <span class="card-title">{item.name}</span>
-        <span class="card-meta">
-          <span class={[feedback && "inactive"]} aria-hidden={!!feedback}>
-            {item.category === "bundles" ? "bundle" : (item.kind ?? "Item")}
-            {#if editions.length > 1}
-              &nbsp;/ {editions.length} versions
-            {/if}
+      {#snippet children(events, paint)}
+        <button class="card-heading" type="button" aria-expanded={!collapsed[item.id]} aria-controls={`card-body-${item.id}`} {...events}>
+          {@render paint()}
+          <span class="card-label">
+            <span class="card-title">{item.name}</span>
+            <span class="card-meta">
+              <span class={[feedback && "inactive"]} aria-hidden={!!feedback}>
+                {item.category === "bundles" ? "bundle" : (item.kind ?? "Item")}
+                {#if editions.length > 1}
+                  &nbsp;/ {editions.length} versions
+                {/if}
+              </span>
+              <span class={["clear-feedback", feedback !== "cleared" && "inactive"]} aria-hidden={feedback !== "cleared"}>
+                Ownership cleared
+              </span>
+              <span class={["hold-hint", feedback !== "hint" && "inactive"]} aria-hidden={feedback !== "hint"}>
+                Hold to clear ownership
+              </span>
+            </span>
           </span>
-          <span class={["clear-feedback", feedback !== "cleared" && "inactive"]} aria-hidden={feedback !== "cleared"}>
-            Ownership cleared
-          </span>
-          <span class={["hold-hint", feedback !== "hint" && "inactive"]} aria-hidden={feedback !== "hint"}> Hold to clear ownership </span>
-        </span>
-      </span>
-      <span class="card-chevron i-material-symbols:expand-more" aria-hidden="true"></span>
-    </button>
+          <span class="card-chevron i-material-symbols:expand-more" aria-hidden="true"></span>
+        </button>
+      {/snippet}
+    </HoldRipple>
     <HoldRipple
       ontap={() => tapOwnership(item)}
       onhold={() => clearItemOwned(item)}
@@ -493,7 +593,11 @@
                 <span class="caption">Viewing {summaryEdition.v}</span>
               </div>
               <div class="badges">
-                <span class={["badge", gameplay && "gameplay"]}>{gameplay ? "Gameplay" : "Models only"}</span>
+                {#if item.category === "accessories"}
+                  {#if item.accessoryType}<span class="badge">{item.accessoryType}</span>{/if}
+                {:else}
+                  <span class={["badge", gameplay && "gameplay"]}>{gameplay ? "Gameplay" : "Models only"}</span>
+                {/if}
                 {#if summaryEdition.beta}<span class="badge beta">Beta</span>{/if}
               </div>
               {#if bundle}
@@ -513,7 +617,7 @@
             {@const value = selection(item, releaseEdition)}
             {@const gameplay = editionGameplay(item, releaseEdition)}
             {@const price = reviewPrice(item, releaseEdition)}
-            {@const detail = releaseEdition.name ?? (releaseEdition.v === "Sim" ? "Digital" : editionMaterials(releaseEdition).join(", "))}
+            {@const detail = releaseEdition.v === "Sim" ? "Digital" : editionMaterials(releaseEdition).join(", ")}
             <div class={["edition", edition.v === releaseEdition.v && "inspected"]}>
               <label class="own">
                 <input
@@ -603,7 +707,7 @@
       {:else}<p class="included-note">No selectable editions are recorded yet.</p>{/if}
       <TagRail
         tagLabel={reviewTagLabel}
-        tags={itemTags.get(item.id) ?? []}
+        tags={catalog.itemTags.get(item.id) ?? []}
         {selectedTags}
         label={`${item.name} tags`}
         onTagClick={toggleTag}
@@ -628,17 +732,32 @@
 
 <style>
   main {
-    overflow-anchor: none;
     --space-card: 0.75rem;
     --size-edition-control: 1.5rem;
     --size-card-placeholder: 14rem;
-    max-inline-size: 72rem;
+    --size-card-collapsed: 4.5rem;
+    --distance-swipe-limit: 2.25rem;
+    --size-catalog: 72rem;
+    max-inline-size: var(--size-catalog);
     margin-inline: auto;
-    padding: 0.75rem 0.75rem 2rem;
+    padding: 0.75rem 0.25rem 2rem;
+    overflow-anchor: none;
+  }
+  .catalog-viewport {
+    /* Clip the shifted catalog without creating a scrolling container. */
+    overflow-x: clip;
+  }
+  .catalog-content {
+    translate: clamp(calc(-1 * var(--distance-swipe-limit)), calc(var(--drag-distance) * 0.3), var(--distance-swipe-limit)) 0;
+    transition: translate var(--duration-fast) var(--ease-standard);
+
+    &.is-dragging {
+      transition: none;
+      cursor: grabbing;
+    }
   }
   header {
     margin-block-end: 0.75rem;
-    padding-inline: 1rem;
     text-align: center;
   }
   h1 {
@@ -673,24 +792,89 @@
   small {
     color: var(--muted-foreground);
   }
-  .categories {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+  .categories,
+  .swipe-tabs {
+    display: flex;
     margin-block-start: 0.75rem;
     padding: 0.25rem;
+    overflow-x: auto;
     gap: 0.25rem;
     border-radius: var(--radius-control);
     background: var(--panel);
   }
-  nav button {
+  .swipe-tabs {
+    /* Keep the gesture's category controls visible without moving the page layout. */
+    position: fixed;
+    inset-block-start: 0;
+    inset-inline: 0.25rem;
+    z-index: 2;
+    max-inline-size: calc(var(--size-catalog) - 0.5rem);
+    margin-inline: auto;
+    margin-block-start: 0;
+    padding-block-start: max(0.25rem, env(safe-area-inset-top));
+    box-shadow: 0 0.25rem 0.5rem color-mix(var(--contrast) 25%, transparent);
+    translate: 0 calc(-100% - 0.5rem);
+    visibility: hidden;
+    transition:
+      translate var(--duration-fast) var(--ease-standard),
+      visibility 0s var(--duration-fast);
+
+    &.is-visible {
+      translate: 0 0;
+      visibility: visible;
+      transition-delay: 0s;
+    }
+  }
+  .category-tab {
+    flex: 1 0 auto;
     min-block-size: 2.75rem;
-    padding: 0.4rem;
+    padding: 0.4rem 0.25rem;
     border-radius: calc(var(--radius-control) - 0.25rem);
     color: var(--muted-foreground);
+    font-size: var(--text-sm);
+    white-space: nowrap;
 
     &[aria-pressed="true"] {
       background: var(--card);
       color: var(--foreground);
+    }
+  }
+  .tab-highlight {
+    display: none;
+  }
+  @supports (anchor-name: --active-category) and (anchor-scope: --active-category) {
+    .categories {
+      position: relative;
+      isolation: isolate;
+    }
+    .categories,
+    .swipe-tabs {
+      anchor-scope: --active-category;
+    }
+    .category-tab {
+      position: relative;
+      z-index: 1;
+
+      &[aria-pressed="true"] {
+        anchor-name: --active-category;
+        background: transparent;
+      }
+    }
+    .tab-highlight {
+      position: absolute;
+      position-anchor: --active-category;
+      inset-block-start: anchor(--active-category top);
+      inset-block-end: anchor(--active-category bottom);
+      inset-inline-start: anchor(--active-category left);
+      inset-inline-end: anchor(--active-category right);
+      display: block;
+      border-radius: calc(var(--radius-control) - 0.25rem);
+      background: var(--card);
+      transition:
+        inset-block-start var(--duration-fast) var(--ease-standard),
+        inset-block-end var(--duration-fast) var(--ease-standard),
+        inset-inline-start var(--duration-fast) var(--ease-standard),
+        inset-inline-end var(--duration-fast) var(--ease-standard);
     }
   }
   .stats {
@@ -952,15 +1136,22 @@
     align-items: start;
   }
   .card {
+    content-visibility: auto;
+    contain-intrinsic-block-size: auto calc(var(--size-card-placeholder) + var(--size-card-collapsed));
+    container-type: inline-size;
     overflow: hidden;
     border-radius: var(--radius-card);
     background: var(--card);
+    &.is-collapsed {
+      contain-intrinsic-block-size: var(--size-card-collapsed);
+    }
   }
   h2 {
     display: flex;
     background: var(--panel);
   }
   .card-heading {
+    position: relative;
     display: flex;
     flex: 1;
     align-items: center;
@@ -996,8 +1187,6 @@
     color: var(--accent-red);
   }
   .card-body {
-    contain-intrinsic-block-size: auto var(--size-card-placeholder);
-    content-visibility: auto;
     padding: var(--space-card);
     &.pending {
       min-block-size: var(--size-card-placeholder);
@@ -1013,7 +1202,7 @@
   .ownership {
     position: relative;
     padding-inline: var(--space-card);
-    border-inline-start: var(--border-width) solid color-mix(var(--foreground) 4%, transparent);
+    border-inline-start: 1px solid color-mix(var(--foreground) 3%, transparent);
     font-weight: var(--font-bold);
     font-size: var(--text-sm);
   }
@@ -1029,6 +1218,9 @@
   }
   .ownership[aria-pressed="true"] .ownership-label {
     opacity: 1;
+  }
+  .ownership:disabled .ownership-label {
+    opacity: 0;
   }
   .collapse-all {
     display: grid;
@@ -1108,6 +1300,9 @@
     font-size: var(--text-lg);
     line-height: var(--size-edition-control);
     white-space: nowrap;
+    &.unavailable {
+      --accent: var(--accent-red);
+    }
   }
   .external-icon {
     inline-size: 1em;
@@ -1182,7 +1377,9 @@
     flex-wrap: wrap;
     align-items: baseline;
     gap: 0.15rem 0.5rem;
-    overflow-wrap: anywhere;
+    & strong {
+      white-space: nowrap;
+    }
   }
   .edition-date {
     font-variant-numeric: tabular-nums;
@@ -1266,6 +1463,10 @@
   .contents li small {
     flex-shrink: 0;
   }
+  .included-price {
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
   .notes p {
     margin-block-start: 0.5rem;
     color: var(--muted-foreground);
@@ -1328,14 +1529,24 @@
       text-underline-offset: 0.2em;
     }
     .cloud-tag:not(:disabled):hover {
+      z-index: 1;
       scale: 1.25;
       background: color-mix(var(--accent) 14%, var(--panel));
       box-shadow: 0 0.5rem 1rem color-mix(var(--contrast) 25%, transparent);
-      z-index: 1;
       color: var(--accent);
     }
   }
   @media (prefers-reduced-motion: reduce) {
+    .tab-highlight {
+      transition: none;
+    }
+    .swipe-tabs {
+      transition: none;
+    }
+    .catalog-content {
+      translate: none;
+      transition: none;
+    }
     button,
     a,
     summary,
@@ -1354,6 +1565,31 @@
       padding: 0;
       border: 0;
       background: none;
+    }
+  }
+  @container (max-width: 24rem) {
+    .edition-label {
+      grid-template-columns: minmax(0, 1fr) var(--size-icon-control);
+      min-inline-size: 0;
+      gap: 0.15rem 0.25rem;
+    }
+    .edition-name {
+      flex-wrap: nowrap;
+      overflow: hidden;
+    }
+    .edition-meta {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .edition-date {
+      grid-row: 2;
+      grid-column: 1 / -1;
+      white-space: nowrap;
+    }
+    .gameplay-icon {
+      grid-row: 1;
+      grid-column: 2;
     }
   }
   @media (min-width: 60rem) {

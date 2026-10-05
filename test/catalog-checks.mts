@@ -123,6 +123,56 @@ test("physical Simulator key availability excludes digital access variants", () 
   assert.equal(catalog.content.core.editions![0]!.available, undefined);
 });
 
+test("spaced Death Grey shop variants match Deathgrey during availability refresh", () => {
+  const catalog = empty();
+  catalog.content.aya = {
+    name: "Aya",
+    tags: ["aya"],
+    url: "/products/aya",
+    editions: [{ v: "First Run" }, { v: "Deathgrey", $: [3500] }],
+  };
+  const listing = product({
+    handle: "aya",
+    variants: [
+      { ...product().variants[0]!, title: "HQ Warehouse (USA) - First Run Collectors Edition", requires_shipping: true, available: true },
+      { ...product().variants[0]!, title: "HQ Warehouse (USA) - Death Grey Edition", requires_shipping: true, available: false },
+    ],
+  });
+  availabilityFromUrls(catalog, [listing]);
+  assert.equal(catalog.content.aya.editions![1]!.available, undefined);
+  listing.variants[1]!.available = true;
+  availabilityFromUrls(catalog, [listing]);
+  assert.deepEqual(catalog.content.aya.editions![1], { v: "Deathgrey", $: [3500], available: true });
+});
+
+test("cached Death Pink and Second Run names match their distinct catalog editions during availability refresh", () => {
+  for (const [label, title] of [
+    ["Deathpink", "HQ Warehouse (USA) - Death Pink Edition"],
+    ["Bust: Second Run", "HQ Warehouse (USA) - Second Run Collectors Edition"],
+  ]) {
+    const catalog = empty();
+    catalog.content.model = {
+      name: "Model",
+      tags: ["model"],
+      url: "/products/model",
+      editions: [{ v: label!.startsWith("Bust:") ? "Bust: First Run" : "First Run" }, { v: label!, $: [3000] }],
+    };
+    const listing = product({
+      handle: "model",
+      variants: [
+        { ...product().variants[0]!, title: "HQ Warehouse (USA) - First Run Collectors Edition", requires_shipping: true, available: true },
+        { ...product().variants[0]!, title: title!, requires_shipping: true, available: false },
+      ],
+    });
+    availabilityFromUrls(catalog, [listing]);
+    assert.equal(catalog.content.model.editions![1]!.available, undefined);
+    listing.variants[1]!.available = true;
+    availabilityFromUrls(catalog, [listing]);
+    assert.deepEqual(catalog.content.model.editions![1], { v: label, $: [3000], available: true });
+    if (label === "Bust: Second Run") assert.equal(variantLabel(listing.variants[1]!, "Bust: First Run"), "Bust: Second Run");
+  }
+});
+
 test("digital inclusions allow explicitly scoped physical keys", async (t) => {
   const workspace = await mkdtemp(join(tmpdir(), "kdm-key-scope-"));
   t.after(() => rm(workspace, { recursive: true, force: true }));

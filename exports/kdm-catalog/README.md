@@ -1,4 +1,4 @@
-The review catalog has 878 items and 1253 editions. It combines the app catalog, collection workbook, and cached news. The live app still reads `src/lib/kdm-data.json`; this export needs app integration before adoption.
+The review catalog has 877 items and 1444 editions. It combines the app catalog, collection workbook, and cached news. The live app still reads `src/lib/kdm-data.json`; this export needs app integration before adoption.
 
 | File                                                         | Purpose                                     |
 | ------------------------------------------------------------ | ------------------------------------------- |
@@ -84,4 +84,12 @@ Armor-kit Naked editions retain the former standalone edition's price and date. 
 
 Included Plastic monster editions follow the same zero-price and parent-date convention. Resin, Encore, Bust, and other standalone releases retain their own prices and dates. Physical Core and official expansion editions use Plastic materials, except Core's Resin edition; Sim editions have no physical material.
 
-Repeated release labels and shorthand were cleaned up without changing the underlying product facts. Notes about collectible packaging, print runs, and card differences remain in the catalog. The unresolved painting-contest prize model and Ultimate Starting Survivor Set Finale listing remain in the local cached-product audit. Sleeves and Kickstarter listings are excluded from that audit's pending work.
+Repeated release labels and shorthand were cleaned up without changing the underlying product facts. Notes about collectible packaging, print runs, and card differences remain in the catalog. The painting-contest prize model remains unresolved in the local cached-product audit. The Ultimate Starting Survivor Set - Finale Edition has been added from its cached product listing. Sleeves and Kickstarter listings are excluded from that audit's pending work.
+
+The Ultimate Starting Survivor Set - Finale Edition uses the cached `products-page-2.json` listing with handle `starting-survivor-set-copy`, published on 2025-02-14. Its contents follow that listing rather than inheriting the other Ultimate bundle. The unnamed ?Indomitable Survivors (6)? entry is interpreted as the six physical releases available by that date: Longclaw Lenore, Stampede Glaive Xell, Gusk Knives Grimmory, Lordsruin Titus, Greatest Gaxe Morg, and Thumping Timpani Ledla. This selection is inferred from the release chronology.
+
+The regular Ultimate Starting Survivor Set follows the cached `lantern-year-29-bundle` listing: Core 1.6, Gambler's Chest, Frogdog, Black Knight, Flower Knight, Sunstalker, Dragon King, Slenderman, Lonely Tree, Dung Beetle Knight, Gorm, Lion Knight, White Gigalion, and Killennium Butcher. It does not use the earlier assumption that the bundle contains all Vol. 1 expansions. Green Knight Armor Expansion retains `kind: "box"` as requested.
+
+The Oblivion Mosquito monster and Oblivion Mosquito Armor Kit have separate included Plastic editions for the expansion's 2027 release window. These editions use `[0]` for no separate component price and `standalone: false`. Their earlier Naked editions keep their own prices and dates.
+
+Goblin Dragon is confirmed by the catalog owner as part of Abyssal Woods. Its included Plastic edition follows the expansion's 2030 release window; the Naked edition retains its 2023 date and price. Steel Wax Armor Kit is confirmed by the catalog owner as part of Honeycomb Weaver. Its included Plastic edition follows the expansion's 2026 release window and uses [0] with standalone: false; the Naked edition retains its 2024 date and $30 price.

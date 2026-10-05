@@ -46,6 +46,7 @@
   let rippleStarted = 0;
   let holdTimer: ReturnType<typeof setTimeout> | undefined;
   let fadeTimer: ReturnType<typeof setTimeout> | undefined;
+  let watching = false;
 
   function showRipple(button: HTMLButtonElement, point?: Point) {
     clearTimeout(fadeTimer);
@@ -81,6 +82,7 @@
   }
 
   function startHold() {
+    watchPress();
     clearTimeout(holdTimer);
     if (onhold) {
       holding = true;
@@ -93,6 +95,7 @@
     clearTimeout(holdTimer);
     pointer = undefined;
     spaceDown = false;
+    stopWatching();
     suppressClick = true;
     fadeRipple();
   }
@@ -122,6 +125,7 @@
     if (pointer?.id !== event.pointerId) return;
     clearTimeout(holdTimer);
     pointer = undefined;
+    stopWatching();
     suppressClick = completed;
     fadeRipple();
   }
@@ -169,6 +173,7 @@
     event.preventDefault();
     if (!spaceDown) return;
     spaceDown = false;
+    stopWatching();
     clearTimeout(holdTimer);
     if (!completed) ontap();
     suppressClick = false;
@@ -183,7 +188,33 @@
     if (event.key === "Escape") cancelPress();
   }
 
+  // Idle controls need no global listeners; track release and cancellation only during a press.
+  function watchPress() {
+    if (watching) return;
+    watching = true;
+    window.addEventListener("pointermove", onpointermove);
+    window.addEventListener("pointerup", onpointerup);
+    window.addEventListener("pointercancel", onpointercancel);
+    window.addEventListener("blur", cancelPress);
+    window.addEventListener("resize", cancelPress);
+    window.addEventListener("keydown", dismissWithEscape);
+    document.addEventListener("visibilitychange", cancelPress);
+  }
+
+  function stopWatching() {
+    if (!watching) return;
+    watching = false;
+    window.removeEventListener("pointermove", onpointermove);
+    window.removeEventListener("pointerup", onpointerup);
+    window.removeEventListener("pointercancel", onpointercancel);
+    window.removeEventListener("blur", cancelPress);
+    window.removeEventListener("resize", cancelPress);
+    window.removeEventListener("keydown", dismissWithEscape);
+    document.removeEventListener("visibilitychange", cancelPress);
+  }
+
   onDestroy(() => {
+    stopWatching();
     clearTimeout(holdTimer);
     clearTimeout(fadeTimer);
   });
@@ -200,9 +231,6 @@
     },
   };
 </script>
-
-<svelte:window {onpointermove} {onpointerup} {onpointercancel} onblur={cancelPress} onresize={cancelPress} onkeydown={dismissWithEscape} />
-<svelte:document onvisibilitychange={cancelPress} />
 
 {@render children(events, paint, holding)}
 {#if onhold}

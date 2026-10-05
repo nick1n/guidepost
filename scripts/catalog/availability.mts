@@ -10,7 +10,7 @@ function handle(url: string) {
   }
 }
 
-const runLabels = ["First Run", "Deathgrey", "Deathgrey M2", "Deathpink", "Encore", "General"];
+const runLabels = ["First Run", "Second Run", "Deathgrey", "Deathgrey M2", "Deathpink", "Encore", "General"];
 
 function variantsFor(edition: Edition, product: Product, candidates: Edition[]) {
   if (["Dwelling Key", "Illusionist Key", "Master Dwelling Key"].includes(edition.v)) {
