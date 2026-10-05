@@ -22,13 +22,20 @@ export const nameById: Record<string, string> = Object.fromEntries(collectionIte
 export const priceById: Record<string, number> = Object.fromEntries(collectionItems.map((item) => [item.id, item.price ?? 0]));
 
 const priceFormatters = {
-  USD: new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 0, maximumFractionDigits: 2 }),
-  EUR: new Intl.NumberFormat("en-US", { style: "currency", currency: "EUR", minimumFractionDigits: 0, maximumFractionDigits: 2 }),
-} satisfies Record<Currency, Intl.NumberFormat>;
+  USD: {
+    whole: new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }),
+    fractional: new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+  },
+  EUR: {
+    whole: new Intl.NumberFormat("en-US", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }),
+    fractional: new Intl.NumberFormat("en-US", { style: "currency", currency: "EUR", minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+  },
+} satisfies Record<Currency, Record<"whole" | "fractional", Intl.NumberFormat>>;
 
 export function formatPrice(cents?: number, currency: Currency = "USD") {
   if (cents == null) return "Not priced";
-  return priceFormatters[currency].format(cents / 100);
+  const formatter = cents % 100 === 0 ? priceFormatters[currency].whole : priceFormatters[currency].fractional;
+  return formatter.format(cents / 100);
 }
 
 // default exchange rate: 1 EUR = 1.13 USD.

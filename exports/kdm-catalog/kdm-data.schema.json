@@ -32,7 +32,6 @@
             "core",
             "promo",
             "expansion",
-            "white-box",
             "set",
             "vignette",
             "model",
@@ -40,9 +39,9 @@
             "terrain",
             "accessory",
             "armor-kit",
-            "naked",
-            "Beta",
-            "Box"
+            "beta",
+            "box",
+            "simulator"
           ],
           "description": "Product classification. Beta means all editions are Beta; Box means a mix of Beta and non-Beta editions. Bundles may omit kind."
         },
@@ -132,17 +131,28 @@
             "1.5",
             "1.6",
             "1.7",
+            "2013",
+            "2015",
+            "2025",
             "Box",
             "Bust",
             "Bust: Encore",
             "Bust: First Run",
             "Deathgrey",
             "Deathgrey M2",
+            "Deathmas",
+            "Deathmas 2024",
             "Deathpink",
+            "Dwelling Key",
             "Early Variant",
+            "Easter",
             "Encore",
             "First Run",
+            "Halloween",
+            "Illusionist Key",
+            "Master Dwelling Key",
             "Metal",
+            "Naked",
             "Original",
             "Painters",
             "Painters: Cheeky",
@@ -150,17 +160,17 @@
             "Painters: First Run",
             "Photoresin",
             "Plastic",
+            "Prize",
             "Remaster",
-            "Remaster: Encore",
             "Remaster: Deathgrey",
+            "Remaster: Encore",
             "Remaster: First Run",
             "Resculpt: Encore",
-            "Resculpt: Deathgrey",
             "Resculpt: First Run",
             "Resin",
-            "Resin (2015)",
             "Resin & Metal",
             "Sim",
+            "Valentines",
             "White Resin"
           ]
         },
@@ -182,7 +192,7 @@
           "items": { "type": "string" },
           "uniqueItems": true,
           "minItems": 1,
-          "description": "Materials of this release. First Run, Encore, and General labels carry explicit materials. When omitted, infer a single material only for the exact labels Plastic, Resin, Photoresin, Deathgrey, Metal, PVC, and Deathpink; otherwise material is unspecified."
+          "description": "Materials of this release. First Run and Encore labels carry explicit materials. When omitted, infer a single material only for the exact labels Plastic, Resin, Photoresin, Deathgrey, Metal, and Deathpink; otherwise material is unspecified."
         },
         "size": {
           "type": "string",
@@ -221,7 +231,11 @@
           "const": false,
           "description": "False when confirmed to be available only as part of another product. Omit for standalone or unconfirmed releases. Collection views may hide these editions."
         },
-        "beta": { "type": "boolean", "const": true, "description": "Beta release. Omit for non-Beta editions." }
+        "beta": { "type": "boolean", "const": true, "description": "Beta release. Omit for non-Beta editions." },
+        "includesAllSim": {
+          "const": true,
+          "description": "Grants every current and future Sim edition. Resolve against items with an edition labeled Sim when reading the catalog; do not materialize a static list."
+        }
       }
     },
     "announcement": {

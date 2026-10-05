@@ -85,6 +85,64 @@ const source = (data: Product) => ({
   checkedAt: "2026-10-01T00:00:00Z",
 });
 
+test("physical Simulator key availability excludes digital access variants", () => {
+  const catalog = empty();
+  catalog.content.core = {
+    name: "Core",
+    tags: ["core"],
+    editions: [{ v: "Sim", url: "/products/kingdom-death-simulator-1" }],
+  };
+  catalog.content["kingdom-death-simulator"] = {
+    name: "Simulator",
+    kind: "simulator",
+    tags: ["simulator"],
+    editions: [{ v: "Master Dwelling Key", url: "/products/kingdom-death-simulator-1" }],
+  };
+  const listing = product({
+    handle: "kingdom-death-simulator-1",
+    variants: [
+      { id: 1, title: "Master Key", price: 30000, compare_at_price: null, requires_shipping: true, sku: "master", available: false },
+      {
+        id: 2,
+        title: "Digital Dwelling Key",
+        price: 2000,
+        compare_at_price: null,
+        requires_shipping: false,
+        sku: "digital",
+        available: true,
+      },
+    ],
+  });
+  availabilityFromUrls(catalog, [listing]);
+  assert.equal(catalog.content["kingdom-death-simulator"].editions![0]!.available, undefined);
+  assert.equal(catalog.content.core.editions![0]!.available, true);
+  listing.variants[0]!.available = true;
+  listing.variants[1]!.available = false;
+  availabilityFromUrls(catalog, [listing]);
+  assert.equal(catalog.content["kingdom-death-simulator"].editions![0]!.available, true);
+  assert.equal(catalog.content.core.editions![0]!.available, undefined);
+});
+
+test("digital inclusions allow explicitly scoped physical keys", async (t) => {
+  const workspace = await mkdtemp(join(tmpdir(), "kdm-key-scope-"));
+  t.after(() => rm(workspace, { recursive: true, force: true }));
+  const schemaPath = join(workspace, "kdm-data.schema.json");
+  await writeFile(schemaPath, await readFile("exports/kdm-catalog/kdm-data.schema.json"));
+  const catalog = empty();
+  catalog.content.core = { name: "Core", kind: "core", tags: ["core"], editions: [{ v: "Sim" }] };
+  catalog.content["kingdom-death-simulator"] = {
+    name: "Simulator",
+    kind: "simulator",
+    tags: ["simulator"],
+    editions: [{ v: "Dwelling Key" }],
+    includes: [{ item: "core", edition: "Sim", parentEditions: ["Dwelling Key"] }],
+  };
+  organizeCatalog(catalog);
+  await validateCatalog(catalog, schemaPath);
+  catalog.content["kingdom-death-simulator"].includes = [{ item: "core", edition: "Sim" }];
+  await assert.rejects(validateCatalog(catalog, schemaPath), /Unscoped digital inclusion/);
+});
+
 test("URL availability uses handles and release variants without name matching", () => {
   const catalog = empty();
   catalog.content.aya = {

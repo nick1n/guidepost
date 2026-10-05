@@ -61,8 +61,7 @@ export async function validateCatalog(catalog: Catalog, schemaPath = "exports/kd
           throw new Error("Missing child edition: " + childId + "/" + reference.edition);
         for (const label of reference.parentEditions ?? [])
           if (!item.editions?.some((edition) => edition.v === label)) throw new Error("Missing parent edition: " + id + "/" + label);
-        if (reference.edition === "Sim" && (!reference.parentEditions?.length || reference.parentEditions.some((label) => label !== "Sim")))
-          throw new Error("Unscoped digital inclusion: " + id);
+        if (reference.edition === "Sim" && !reference.parentEditions?.length) throw new Error("Unscoped digital inclusion: " + id);
       }
       walk(childId, new Set([...path, id]));
     }

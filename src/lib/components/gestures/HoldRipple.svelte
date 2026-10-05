@@ -1,7 +1,7 @@
 <script module lang="ts">
   type Point = { x: number; y: number; bounds: DOMRect };
   type Press = Point & { id: number };
-  type Ripple = { x: number; y: number; radius: number; complete: boolean; fading: boolean };
+  type Ripple = { x: number; y: number; radius: number; scale: number; complete: boolean; fading: boolean };
 
   function measureRipple(surface: HTMLElement, point?: Point, bounds = surface.getBoundingClientRect()) {
     const width = surface.clientWidth;
@@ -15,6 +15,9 @@
 <script lang="ts">
   import { onDestroy, type Snippet } from "svelte";
   import { DURATION_FAST, DURATION_HOLD } from "#lib/constants.ts";
+
+  const rippleFadeDuration = 270;
+  const holdDelay = DURATION_HOLD * 0.125;
 
   // Render a native button with the supplied events and place the ripple inside its positioned surface.
   // coverParent lets a header's ripple cover sibling actions without making those actions hold targets.
@@ -40,6 +43,7 @@
   let spaceDown = false;
   let suppressClick = false;
   let completed = false;
+  let rippleStarted = 0;
   let holdTimer: ReturnType<typeof setTimeout> | undefined;
   let fadeTimer: ReturnType<typeof setTimeout> | undefined;
 
@@ -48,7 +52,8 @@
     const surface = coverParent ? button.parentElement! : button;
     const geometry = measureRipple(surface, point, !coverParent ? point?.bounds : undefined);
     rippleId += 1;
-    ripple = { ...geometry, complete: false, fading: false };
+    ripple = { ...geometry, scale: Math.min(1, 8 / geometry.radius), complete: false, fading: false };
+    rippleStarted = performance.now();
     completed = false;
     suppressClick = false;
     announcement = "";
@@ -58,8 +63,12 @@
     clearTimeout(fadeTimer);
     holding = false;
     if (!ripple) return;
+    if (onhold && !ripple.complete) {
+      const progress = Math.min(1, Math.max(0, (performance.now() - rippleStarted - holdDelay) / (DURATION_HOLD - holdDelay)));
+      ripple.scale += (1 - ripple.scale) * progress;
+    }
     ripple.fading = true;
-    fadeTimer = setTimeout(() => (ripple = null), DURATION_FAST);
+    fadeTimer = setTimeout(() => (ripple = null), rippleFadeDuration);
   }
 
   function completeHold() {
@@ -211,7 +220,10 @@
           style:--point-x={`${ripple.x}px`}
           style:--point-y={`${ripple.y}px`}
           style:--radius-ripple={`${ripple.radius}px`}
+          style:--scale-ripple={ripple.scale}
           style:--duration-hold={`${DURATION_HOLD}ms`}
+          style:--delay-hold={`${holdDelay}ms`}
+          style:--duration-ripple-fade={`${rippleFadeDuration}ms`}
         ></span>
       {/key}
     {/if}
@@ -228,29 +240,45 @@
   }
   .ripple {
     position: absolute;
-    inset: 0;
+    inset-inline-start: var(--point-x);
+    inset-block-start: var(--point-y);
+    inline-size: calc(var(--radius-ripple) * 2);
+    block-size: calc(var(--radius-ripple) * 2);
+    translate: -50% -50%;
+    border-radius: 50%;
     background: var(--foreground);
     opacity: 0.08;
-    clip-path: circle(0.5rem at var(--point-x) var(--point-y));
-    transition: opacity var(--duration-fast);
+    transition: opacity var(--duration-ripple-fade);
     &.complete {
       animation: none;
-      clip-path: none;
       opacity: 0.12;
     }
     &.fading {
-      animation-play-state: paused;
       opacity: 0;
     }
   }
-  @keyframes hold-ripple {
+  @keyframes wave-ripple {
+    from {
+      transform: scale(var(--scale-ripple));
+    }
     to {
-      clip-path: circle(var(--radius-ripple) at var(--point-x) var(--point-y));
+      transform: scale(1);
+    }
+  }
+  @keyframes hold-ripple {
+    from {
+      transform: scale(var(--scale-ripple));
+    }
+    to {
+      transform: scale(1);
     }
   }
   @media (prefers-reduced-motion: no-preference) {
-    .ripple[data-hold="true"]:not(.complete) {
-      animation: hold-ripple calc(var(--duration-hold) * 0.875) calc(var(--duration-hold) * 0.125) linear forwards;
+    .ripple:not(.complete) {
+      animation: wave-ripple var(--duration-ripple-fade) ease-out both;
+    }
+    .ripple[data-hold="true"]:not(.complete, .fading) {
+      animation: hold-ripple calc(var(--duration-hold) - var(--delay-hold)) var(--delay-hold) linear both;
     }
   }
   @media (prefers-reduced-motion: reduce) {

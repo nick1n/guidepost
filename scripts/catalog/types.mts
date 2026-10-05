@@ -11,6 +11,7 @@ export type Edition = {
   size?: string;
   url?: string;
   runSize?: number;
+  includesAllSim?: true;
   [field: string]: unknown;
 };
 export type Inclusion = string | { item: string; edition?: string; materials?: string[]; parentEditions?: string[] };

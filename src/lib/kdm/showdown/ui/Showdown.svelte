@@ -621,7 +621,7 @@
     display: grid;
     position: relative;
     grid-template-columns: var(--size-control) minmax(0, 1fr) repeat(2, var(--size-control));
-    padding: 0.375rem 0.375rem max(0.375rem, env(safe-area-inset-bottom));
+    padding: 0.125rem 0.125rem max(0.125rem, env(safe-area-inset-bottom));
     gap: var(--border-width);
     border-block-start: 1px solid var(--color-divider);
     background: var(--panel);
@@ -678,8 +678,8 @@
     align-items: center;
     justify-content: center;
     min-block-size: var(--size-control);
-    padding: 0.25rem 0.375rem;
-    gap: 0.125rem 0.625rem;
+    padding-inline: 0.25rem;
+    gap: 0 0.625rem;
     border-radius: var(--radius-control);
     background: var(--foreground);
     color: var(--contrast);
@@ -690,8 +690,14 @@
   }
   .next-label {
     display: flex;
+    align-content: center;
     align-items: center;
     gap: 0.25rem;
+
+    .menu-icon {
+      inline-size: 1.25rem;
+      block-size: 1.25rem;
+    }
   }
   .icon-button {
     display: grid;

@@ -73,6 +73,14 @@ Shop responses are cached for 24 hours, with requests at least 35 seconds apart.
 
 The [catalog guide](exports/kdm-catalog/README.md) covers tag editing, mappings, data rules, and migration requirements before app adoption.
 
+### Tracker design drafts
+
+With `pnpm dev` running, open [/track-preview/](http://localhost:5173/track-preview/) to compare three tracker layouts using the review catalog:
+edition cards, a compact list, and a catalog with a detail panel. Search includes aliases and tags. Select editions to inspect their prices,
+dates, shop links, gameplay, and included content; check ownership or wishlist editions to try the collection controls.
+
+These drafts keep selections in memory and reset on reload. They do not save collection changes or replace the live tracker.
+
 ### Filling missing editions
 
 To fill missing content editions from Shopify variants:
@@ -105,6 +113,8 @@ Release-year tags are plain strings such as `"2018"`. Use the earliest known phy
 item year or earliest Sim release when physical dates are unavailable. If no edition release date is known, use the earliest physical
 `releaseWindow` year, including planned releases. A year tag can therefore indicate a scheduled release rather than an already released item.
 Do not infer an original release year from restock announcements.
+Use `upcoming` for any item with an upcoming edition, including an already released model awaiting a new release. Remove the tag once all of
+its planned editions have been released. An unknown historical release date does not make an item upcoming.
 For undated products, cached Shopify publication dates can supply a release-date proxy. Prefer older cached release records;
 use `created_at` instead when it is at least one calendar year older than `published_at`. These choices are recorded in
 `temp/kdm-catalog/reports/cached-release-dates.json`. Items without selectable editions store their date in `releaseDate`.

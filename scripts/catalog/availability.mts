@@ -13,6 +13,19 @@ function handle(url: string) {
 const runLabels = ["First Run", "Deathgrey", "Deathgrey M2", "Deathpink", "Encore", "General"];
 
 function variantsFor(edition: Edition, product: Product, candidates: Edition[]) {
+  if (["Dwelling Key", "Illusionist Key", "Master Dwelling Key"].includes(edition.v)) {
+    const physical = product.variants.filter((variant) => variant.requires_shipping);
+    const matches = (title: string) =>
+      edition.v === "Master Dwelling Key"
+        ? /master/i.test(title)
+        : edition.v === "Illusionist Key"
+          ? /illusionist/i.test(title)
+          : /dwelling/i.test(title) && !/master/i.test(title);
+    const named = physical.filter((variant) => matches(variant.title));
+    if (named.length) return named;
+    // A dedicated key listing can use warehouse-only variant labels.
+    return candidates.length === 1 && !physical.some((variant) => /master|illusionist|dwelling/i.test(variant.title)) ? physical : [];
+  }
   const label = edition.v
     .split(": ")
     .at(-1)!
@@ -22,7 +35,8 @@ function variantsFor(edition: Edition, product: Product, candidates: Edition[]) 
     if (candidates.length === 1 && product.variants.every((variant) => !named(variant))) return product.variants;
     return product.variants.filter((variant) => named(variant) === label);
   }
-  if (candidates.length === 1 || edition.v === "Sim") return product.variants;
+  if (edition.v === "Sim") return product.variants.filter((variant) => !variant.requires_shipping);
+  if (candidates.length === 1) return product.variants;
   // Warehouse-only options describe the whole listing. Use them only when one
   // edition is compatible; a shared URL alone cannot distinguish two materials.
   const generic = candidates.filter(

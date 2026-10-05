@@ -1,7 +1,32 @@
 import { describe, expect, it } from "vitest";
 import { catalogTags, editionGameplay, editionMaterials, editionSize, editionUrl } from "#lib/kdm-data.ts";
+import { reviewInclusions, reviewIndex, type ReviewCatalog } from "#lib/catalog-view.ts";
 
 describe("review catalog facts", () => {
+  it("compares bundle prices with direct included editions without counting nested contents twice", () => {
+    const data: ReviewCatalog = {
+      content: {
+        box: { name: "Box", tags: [], editions: [{ v: "Plastic", $: [1000] }], includes: [{ item: "model", edition: "Plastic" }] },
+        model: {
+          name: "Model",
+          tags: [],
+          editions: [
+            { v: "Plastic", $: [500] },
+            { v: "Sim", $: [100] },
+          ],
+        },
+      },
+      bundles: { set: { name: "Set", tags: [], price: 800, includes: [{ item: "box", edition: "Plastic" }] } },
+      "included-only": {},
+      accessories: {},
+      homebrew: {},
+    };
+    expect(reviewIndex(data).bundlePricing("set", "Item")).toEqual({ total: 1000, missing: 0, savings: 200, percent: 20 });
+    data.bundles.set.includes!.push({ item: "model", edition: "Missing" });
+    expect(reviewIndex(data).bundlePricing("set", "Item")).toEqual({ total: 1000, missing: 1, savings: undefined, percent: undefined });
+    data.content.box.currency = "EUR";
+    expect(reviewIndex(data).bundlePricing("set", "Item")?.savings).toBeUndefined();
+  });
   it("defaults missing and formerly unknown gameplay to false while preserving overrides", () => {
     expect(editionGameplay({ gameplay: true }, { v: "First Run", gameplay: null })).toBe(false);
     expect(editionGameplay({}, { v: "First Run" })).toBe(false);
@@ -33,5 +58,110 @@ describe("review catalog facts", () => {
     expect(catalogTags({ gameplay: false, kind: "accessory", accessoryType: "shirt" }, "accessories")).toEqual(["accessory", "shirt"]);
     expect(catalogTags({ kind: "armor-kit" }, "content")).toEqual(["armor-kit", "models-only"]);
     expect(catalogTags({ kind: "naked" }, "content")).toEqual(["models-only", "naked"]);
+  });
+});
+
+describe("Simulator key access", () => {
+  function catalog(): ReviewCatalog {
+    return {
+      content: {
+        core: { name: "Core", tags: ["core"], editions: [{ v: "Sim" }, { v: "1.6" }] },
+        "expansion-flower-knight": { name: "Flower Knight", tags: ["expansion"], editions: [{ v: "Sim" }, { v: "1.6" }] },
+        "kingdom-death-simulator": {
+          name: "Simulator",
+          tags: ["simulator"],
+          editions: [{ v: "Dwelling Key" }, { v: "Illusionist Key" }, { v: "Master Dwelling Key", includesAllSim: true }],
+          includes: [{ item: "core", edition: "Sim", parentEditions: ["Dwelling Key", "Illusionist Key"] }],
+        },
+      },
+      "included-only": {},
+      accessories: {},
+      bundles: {},
+      homebrew: {},
+    };
+  }
+
+  it("limits ordinary keys to Core's digital edition", () => {
+    for (const key of ["Dwelling Key", "Illusionist Key"])
+      expect(reviewInclusions(catalog(), "kingdom-death-simulator", key).map(({ item, edition }) => [item, edition])).toEqual([
+        ["core", "Sim"],
+      ]);
+  });
+
+  it("automatically adds future Sim editions without granting physical ownership", () => {
+    const data = catalog();
+    expect(reviewInclusions(data, "kingdom-death-simulator", "Master Dwelling Key")).toHaveLength(2);
+    data.content["expansion-future"] = { name: "Future", tags: ["expansion"], editions: [{ v: "Sim" }, { v: "Box" }] };
+    data.content["physical-only"] = { name: "Physical", tags: ["model"], editions: [{ v: "Plastic" }] };
+    expect(reviewInclusions(data, "kingdom-death-simulator", "Master Dwelling Key").map(({ item, edition }) => [item, edition])).toEqual([
+      ["core", "Sim"],
+      ["expansion-flower-knight", "Sim"],
+      ["expansion-future", "Sim"],
+    ]);
+  });
+
+  it("does not duplicate explicit inclusions covered by the master entitlement", () => {
+    const data = catalog();
+    data.content["kingdom-death-simulator"].includes!.push({ item: "core", edition: "Sim", parentEditions: ["Master Dwelling Key"] });
+    expect(reviewInclusions(data, "kingdom-death-simulator", "Master Dwelling Key")).toHaveLength(2);
+  });
+
+  it("keeps cached inclusions separate for each item and edition", () => {
+    const index = reviewIndex(catalog());
+    const master = index.inclusions("kingdom-death-simulator", "Master Dwelling Key");
+    expect(index.inclusions("kingdom-death-simulator", "Dwelling Key").map(({ item, edition }) => [item, edition])).toEqual([
+      ["core", "Sim"],
+    ]);
+    expect(index.inclusions("core", "Sim")).toEqual([]);
+    expect(index.inclusions("kingdom-death-simulator", "Master Dwelling Key")).toBe(master);
+    expect(master).toHaveLength(2);
+  });
+
+  it("resolves included ownership recursively without granting other editions or looping through cycles", () => {
+    const data = catalog();
+    data.content.core.includes = [{ item: "expansion-flower-knight", edition: "1.6", parentEditions: ["1.6"] }];
+    data.content["expansion-flower-knight"].includes = [{ item: "core", edition: "1.6", parentEditions: ["1.6"] }];
+    const index = reviewIndex(data);
+    expect(index.includedEditions("core", "1.6").map(({ item, edition }) => [item.id, edition.v])).toEqual([
+      ["expansion-flower-knight", "1.6"],
+    ]);
+    expect(index.includedEditions("core", "Sim")).toEqual([]);
+    expect(index.includedEditions("kingdom-death-simulator", "Master Dwelling Key").map(({ edition }) => edition.v)).toEqual([
+      "Sim",
+      "Sim",
+    ]);
+  });
+
+  it("matches material references and chooses one physical edition for unspecified inclusions", () => {
+    const data = catalog();
+    data.content.core.includes = [{ item: "expansion-flower-knight", materials: ["Resin"] }];
+    data.content["expansion-flower-knight"].editions!.push({ v: "First Run", materials: ["Resin"] });
+    expect(
+      reviewIndex(data)
+        .includedEditions("core", "Resin")
+        .map(({ edition }) => edition.v),
+    ).toEqual(["First Run"]);
+    data.content.core.includes = ["expansion-flower-knight"];
+    expect(
+      reviewIndex(data)
+        .includedEditions("core", "1.6")
+        .map(({ edition }) => edition.v),
+    ).toEqual(["1.6"]);
+  });
+
+  it("refreshes cached search text and inclusions when the catalog index is rebuilt", () => {
+    const data = catalog();
+    const before = reviewIndex(data);
+    before.inclusions("kingdom-death-simulator", "Master Dwelling Key");
+    data.content["expansion-future"] = {
+      name: "Future Knight",
+      aliases: ["Tomorrow"],
+      tags: ["monster-lion"],
+      editions: [{ v: "Sim" }],
+    };
+    const after = reviewIndex(data);
+    expect(after.inclusions("kingdom-death-simulator", "Master Dwelling Key")).toHaveLength(3);
+    expect(after.search.get("expansion-future")).toContain("future knight expansion-future tomorrow monster-lion lion");
+    expect(before.inclusions("kingdom-death-simulator", "Master Dwelling Key")).toHaveLength(2);
   });
 });

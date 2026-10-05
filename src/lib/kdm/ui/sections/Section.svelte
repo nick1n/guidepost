@@ -198,8 +198,8 @@
     display: inline-block;
     grid-row: 1;
     grid-column: 2;
-    inline-size: 1.25rem;
-    block-size: 1.25rem;
+    inline-size: var(--size-icon-control);
+    block-size: var(--size-icon-control);
     color: var(--muted-foreground);
     transition: rotate var(--duration-fast);
   }
@@ -211,8 +211,8 @@
   .toggle:has(.restricted) .chevron {
     grid-row: 1 / 3;
   }
-  .toggle[aria-expanded="false"] .chevron {
-    rotate: -90deg;
+  .toggle[aria-expanded="true"] .chevron {
+    rotate: 180deg;
   }
   .content {
     padding-block-end: 0.5rem;
