@@ -1,6 +1,8 @@
 <script lang="ts">
   import { resolve } from "$app/paths";
+  import { onDestroy } from "svelte";
   import TagRail from "#lib/components/track/TagRail.svelte";
+  import HoldRipple from "#lib/components/gestures/HoldRipple.svelte";
   import {
     reviewEntries,
     reviewEditions,
@@ -16,6 +18,7 @@
 
   let { data }: { data: { catalog: ReviewCatalog } } = $props();
 
+  const eurToUsd = 1.13;
   const categories = [
     { id: "content", label: "Content" },
     { id: "accessories", label: "Accessories" },
@@ -24,24 +27,26 @@
   ] as const;
   type Entry = ReturnType<typeof reviewEntries>[number];
   type Selection = { owned?: boolean; wished?: boolean; copy?: string };
+  type Owner = { parent: string; parentEdition: string; edition?: string };
 
   let category = $state<(typeof categories)[number]["id"]>("content");
   let query = $state("");
-  let tagQuery = $state("");
   let tagsOpen = $state(false);
   let allTagsOpen = $state(false);
   let contentsOpen = $state<Record<string, boolean>>({});
   let selectedTags = $state<string[]>([]);
   let status = $state("all");
   let selections = $state<Record<string, Selection>>({});
-  let inspected = $state<Record<string, string>>({ core: "1.6" });
+  let inspected = $state<Record<string, string>>({});
   let collapsed = $state<Record<string, boolean>>({});
   let rendered = $state<Record<string, boolean>>({});
+  let ownershipFeedback = $state<{ item: string; kind: "cleared" | "hint" }>();
+  let feedbackTimer: ReturnType<typeof setTimeout> | undefined;
+  onDestroy(() => clearTimeout(feedbackTimer));
   // Observer bookkeeping is nonreactive; rendered owns the state used by the template.
   const nearby = new Set<string>();
   const observedCards = new Map<HTMLElement, string>();
   let cardObserver: IntersectionObserver | undefined;
-  let lastEditionClick: string | undefined;
 
   function toggleCard(item: Entry) {
     const collapse = !collapsed[item.id];
@@ -91,17 +96,15 @@
   const catalog = $derived(reviewIndex(data.catalog));
   const entries = $derived(catalog.entries);
   const searchQuery = $derived(query.trim().toLowerCase());
-  const tagSearchQuery = $derived(tagQuery.trim().toLowerCase());
   const categoryEntries = $derived(entries.filter((item) => item.category === category));
   const tags = $derived(reviewTags(categoryEntries));
   const tagOrder = $derived(new Map(tags.map(({ tag }, index) => [tag, index])));
   const itemTags = $derived(
     new Map(categoryEntries.map((item) => [item.id, item.tags.toSorted((a, b) => (tagOrder.get(a) ?? 0) - (tagOrder.get(b) ?? 0))])),
   );
-  const tagOptions = $derived(tags.filter(({ tag }) => `${tag} ${reviewTagLabel(tag)}`.includes(tagSearchQuery)));
-  const cloudTags = $derived(tagOptions.filter(({ tag, count }) => count >= 5 && !/^\d+$/.test(tag)));
+  const cloudTags = $derived(tags.filter(({ tag, count }) => count >= 5 && !/^\d+$/.test(tag)));
   const allTags = $derived(
-    tagOptions.filter(({ count }) => count > 1).toSorted((a, b) => reviewTagLabel(a.tag).localeCompare(reviewTagLabel(b.tag), "en")),
+    tags.filter(({ count }) => count > 1).toSorted((a, b) => reviewTagLabel(a.tag).localeCompare(reviewTagLabel(b.tag), "en")),
   );
   const filtered = $derived(
     categoryEntries.filter((item) => {
@@ -113,6 +116,12 @@
     }),
   );
   const allCollapsed = $derived(filtered.length > 0 && filtered.every((item) => collapsed[item.id]));
+  const latestUnowned = $derived(
+    filtered.flatMap((item) => {
+      const edition = reviewEditions(item).at(-1);
+      return edition && edition.standalone !== false && !selection(item, edition).owned ? [{ item, edition }] : [];
+    }),
+  );
   const tagCounts = $derived(new Map(reviewTags(filtered).map(({ tag, count }) => [tag, count])));
   const owned = $derived(
     entries.flatMap((item) =>
@@ -121,18 +130,23 @@
         .map((edition) => ({ item, edition })),
     ),
   );
-  const wished = $derived(entries.flatMap((item) => reviewEditions(item).filter((edition) => selection(item, edition).wished)));
-  const knownValue = $derived(
-    owned.reduce((total, { item, edition }) => total + (item.currency === "EUR" ? 0 : (reviewPrice(item, edition) ?? 0)), 0),
+  const wishlistCount = $derived(
+    entries.reduce((total, item) => total + reviewEditions(item).filter((edition) => selection(item, edition).wished).length, 0),
   );
-  const unvalued = $derived(
-    owned.filter(({ item, edition }) => item.currency === "EUR" || reviewPrice(item, edition) === undefined).length,
+  const collectionValue = $derived(
+    owned.reduce((total, { item, edition }) => total + (reviewPrice(item, edition) ?? 0) * (item.currency === "EUR" ? eurToUsd : 1), 0),
   );
-  const coverage = $derived(
-    owned.flatMap(({ item, edition }) =>
-      catalog.inclusions(item.id, edition.v).map((child) => ({ ...child, parent: item.name, parentEdition: edition.v })),
-    ),
-  );
+  const coverage = $derived.by(() => {
+    const grouped = new Map<string, Owner[]>();
+    for (const { item, edition } of owned) {
+      for (const child of catalog.inclusions(item.id, edition.v)) {
+        const owners = grouped.get(child.item) ?? [];
+        owners.push({ parent: item.name, parentEdition: edition.v, edition: child.edition });
+        grouped.set(child.item, owners);
+      }
+    }
+    return grouped;
+  });
 
   function key(item: Entry, edition: ReviewEdition) {
     return `${item.id}:${edition.v}`;
@@ -142,49 +156,69 @@
   }
   function selectedEdition(item: Entry) {
     const editions = reviewEditions(item);
-    return (
-      editions.find((edition) => edition.v === inspected[item.id]) ??
-      editions.find((edition) => edition.available && edition.v !== "Sim") ??
-      editions.find((edition) => edition.v !== "Sim") ??
-      editions[0]
-    );
+    return editions.find((edition) => edition.v === inspected[item.id]) ?? editions.at(-1);
+  }
+  function markSelectedOwned(item: Entry) {
+    const edition = selectedEdition(item);
+    if (!edition || edition.standalone === false) return;
+    if (!selection(item, edition).owned) toggleOwned(item, edition);
+  }
+  function showOwnershipFeedback(item: Entry, kind: "cleared" | "hint") {
+    clearTimeout(feedbackTimer);
+    ownershipFeedback = { item: item.id, kind };
+    feedbackTimer = setTimeout(() => (ownershipFeedback = undefined), 2000);
+  }
+  function tapOwnership(item: Entry) {
+    const hasOwned = reviewEditions(item).some((edition) => selection(item, edition).owned);
+    markSelectedOwned(item);
+    if (hasOwned) showOwnershipFeedback(item, "hint");
+  }
+  function clearItemOwned(item: Entry) {
+    const ownedEditions = reviewEditions(item).filter((edition) => selection(item, edition).owned);
+    for (const edition of ownedEditions) setEditionOwned(item, edition, false);
+    showOwnershipFeedback(item, "cleared");
+    return `${item.name}, all editions marked not owned.`;
   }
   function inspect(item: Entry, edition: ReviewEdition) {
-    lastEditionClick = undefined;
     inspected[item.id] = edition.v;
   }
   function selectEdition(item: Entry, edition: ReviewEdition) {
-    const editionKey = key(item, edition);
-    if (lastEditionClick === editionKey) {
+    if (selectedEdition(item)?.v === edition.v) {
       toggleOwned(item, edition);
     } else {
       inspect(item, edition);
     }
-    lastEditionClick = editionKey;
   }
   function toggleOwned(item: Entry, edition: ReviewEdition) {
     if (edition.standalone === false) return;
-    const value = selection(item, edition);
-    selections[key(item, edition)] = { ...value, owned: !value.owned, wished: false };
-    if (!value.owned)
-      for (const included of catalog.includedEditions(item.id, edition.v)) {
-        const includedKey = key(included.item, included.edition);
-        selections[includedKey] = { ...selections[includedKey], owned: true, wished: false };
-      }
+    if (ownershipFeedback?.item === item.id) {
+      clearTimeout(feedbackTimer);
+      ownershipFeedback = undefined;
+    }
+    setEditionOwned(item, edition, !selection(item, edition).owned);
     inspect(item, edition);
+  }
+  function setEditionOwned(item: Entry, edition: ReviewEdition, owned: boolean) {
+    for (const target of [{ item, edition }, ...catalog.includedEditions(item.id, edition.v)]) {
+      const value = selection(target.item, target.edition);
+      selections[key(target.item, target.edition)] = { ...value, owned, wished: owned ? false : value.wished };
+    }
   }
   function toggleWish(item: Entry, edition: ReviewEdition) {
     const value = selection(item, edition);
     selections[key(item, edition)] = { ...value, wished: !value.wished };
   }
+  function markLatestOwned() {
+    for (const { item, edition } of latestUnowned) {
+      if (!selection(item, edition).owned) toggleOwned(item, edition);
+    }
+  }
   function updateCopy(item: Entry, edition: ReviewEdition, copy: string) {
     selections[key(item, edition)] = { ...selection(item, edition), copy };
   }
   function changeCategory(next: typeof category) {
-    lastEditionClick = undefined;
     category = next;
     query = "";
-    tagQuery = "";
     selectedTags = [];
   }
   function toggleTag(tag: string) {
@@ -192,7 +226,6 @@
   }
   function clearSearch() {
     query = "";
-    tagQuery = "";
     selectedTags = [];
     status = "all";
   }
@@ -203,18 +236,18 @@
     return edition.r ?? edition.releaseWindow ?? "Date unknown";
   }
   function owners(item: Entry, edition: ReviewEdition) {
-    return coverage.filter((reference) => reference.item === item.id && (!reference.edition || reference.edition === edition.v));
+    return (coverage.get(item.id) ?? []).filter((reference) => !reference.edition || reference.edition === edition.v);
   }
 </script>
 
-<svelte:head><title>Collection preview | Guidepost</title></svelte:head>
+<svelte:head><title>Collection | Guidepost</title></svelte:head>
 
 <main>
   <a class="back" href={resolve("/track")}>
     <span class="back-icon i-material-symbols:arrow-back" aria-hidden="true"></span>Current tracker
   </a>
   <header>
-    <h1>Collection</h1>
+    <h1>Your Collection</h1>
     <p class="subtitle">Kingdom Death: Monster collection tracker</p>
   </header>
 
@@ -225,11 +258,11 @@
     </button>
     <div class="stat-value">
       <span class="stat-label">Collection value</span>
-      <strong>{formatPrice(knownValue)}</strong>{#if unvalued}<small>{unvalued} excluded from this USD total</small>{/if}
+      <strong>{formatPrice(collectionValue)}</strong>
     </div>
     <button class="stat-wishlist" type="button" aria-pressed={status === "wishlist"} onclick={() => toggleStatus("wishlist")}>
       <span class="stat-label"><span class="stat-icon i-material-symbols:favorite-outline" aria-hidden="true"></span>Wishlist</span>
-      <strong>{wished.length}</strong>
+      <strong>{wishlistCount}</strong>
     </button>
   </section>
 
@@ -241,14 +274,18 @@
 
   <div class="catalog-filters">
     <div class="search-controls">
-      <label class="search" for="catalog-search">Search catalog</label>
-      <button
-        class="clear-search"
-        type="button"
-        onclick={clearSearch}
-        disabled={!query && !tagQuery && !selectedTags.length && status === "all"}>Clear search</button
-      >
-      <p class="results">{filtered.length} items</p>
+      <div class="search-heading">
+        <label class="search" for="catalog-search">Search catalog</label>
+        {#if searchQuery || selectedTags.length}
+          <button class="search-command" type="button" onclick={markLatestOwned} disabled={!latestUnowned.length}>
+            Mark latest editions owned
+          </button>
+        {/if}
+        <button class="search-command" type="button" onclick={clearSearch} disabled={!query && !selectedTags.length && status === "all"}>
+          Clear search
+        </button>
+        <p class="results">{filtered.length} items</p>
+      </div>
       <div class="search-row">
         <input id="catalog-search" type="search" bind:value={query} placeholder="Name, alias, or tag" />
         {#if selectedTags.length}
@@ -289,8 +326,6 @@
     </div>
     <div class="tag-body" id="tag-browser" hidden={!tagsOpen}>
       {#if tagsOpen}
-        <label class="tag-search"><span>Find a tag</span><input type="search" bind:value={tagQuery} placeholder="Search tag names" /></label
-        >
         {#if cloudTags.length}
           <fieldset class="tag-cloud">
             <legend class="visually-hidden">Filter by tags</legend>
@@ -317,7 +352,7 @@
             {/if}
           </details>
         {/if}
-        {#if !tagOptions.length}<p>No tags match that search.</p>{/if}
+        {#if !tags.length}<p>No tags are listed for this category.</p>{/if}
       {/if}
     </div>
   </div>
@@ -381,9 +416,10 @@
   {@const url = storeUrl(editionUrl(item, edition))}
   {#if edition.available === true && url}
     <a class="shop" href={url} target="_blank" rel="noreferrer">
-      Shop<span class="external-icon i-material-symbols:arrow-outward" aria-hidden="true"></span><span class="visually-hidden">
-        {item.name}, {edition.v}</span
-      >
+      Shop<span class="external-icon i-material-symbols:arrow-outward" aria-hidden="true"></span>
+      <span class="visually-hidden">
+        {item.name}, {edition.v}
+      </span>
     </a>
   {/if}
 {/snippet}
@@ -391,8 +427,9 @@
 {#snippet itemDetail(item: Entry, ready: boolean)}
   {@const editions = reviewEditions(item)}
   {@const edition = selectedEdition(item)}
-  {@const numberedEditions = reviewNumberedEditions(item)}
+  {@const numberedEditions = reviewNumberedEditions(item).filter((release) => selection(item, release).owned)}
   {@const hasOwned = editions.some((release) => selection(item, release).owned)}
+  {@const feedback = ownershipFeedback?.item === item.id ? ownershipFeedback.kind : undefined}
   <h2>
     <button
       class="card-heading"
@@ -401,17 +438,42 @@
       aria-controls={`card-body-${item.id}`}
       onclick={() => toggleCard(item)}
     >
-      <span>
+      <span class="card-label">
         <span class="card-title">{item.name}</span>
         <span class="card-meta">
-          {item.kind ?? "Item"}
-          {#if editions.length > 1}
-            &nbsp;/ {editions.length} versions
-          {/if}
+          <span class={[feedback && "inactive"]} aria-hidden={!!feedback}>
+            {item.category === "bundles" ? "bundle" : (item.kind ?? "Item")}
+            {#if editions.length > 1}
+              &nbsp;/ {editions.length} versions
+            {/if}
+          </span>
+          <span class={["clear-feedback", feedback !== "cleared" && "inactive"]} aria-hidden={feedback !== "cleared"}>
+            Ownership cleared
+          </span>
+          <span class={["hold-hint", feedback !== "hint" && "inactive"]} aria-hidden={feedback !== "hint"}> Hold to clear ownership </span>
         </span>
       </span>
-      <span class="badge owned" aria-hidden={!hasOwned} style:visibility={hasOwned ? "visible" : "hidden"}>Owned</span>
+      <span class="card-chevron i-material-symbols:expand-more" aria-hidden="true"></span>
     </button>
+    <HoldRipple
+      ontap={() => tapOwnership(item)}
+      onhold={() => clearItemOwned(item)}
+      holdHint="Click to own the selected edition. Hold or press Shift+Enter to remove ownership from all editions of this item."
+    >
+      {#snippet children(events, paint)}
+        <button
+          class="ownership"
+          type="button"
+          aria-label="Owned editions of {item.name}"
+          aria-pressed={hasOwned}
+          disabled={!hasOwned && (!edition || edition.standalone === false)}
+          {...events}
+        >
+          {@render paint()}
+          <span class="ownership-label">Owned</span>
+        </button>
+      {/snippet}
+    </HoldRipple>
   </h2>
   <div class={["card-body", !ready && "pending"]} id={`card-body-${item.id}`} hidden={!!collapsed[item.id]}>
     {#if ready}
@@ -432,7 +494,6 @@
               </div>
               <div class="badges">
                 <span class={["badge", gameplay && "gameplay"]}>{gameplay ? "Gameplay" : "Models only"}</span>
-                {@render shopLink(item, summaryEdition)}
                 {#if summaryEdition.beta}<span class="badge beta">Beta</span>{/if}
               </div>
               {#if bundle}
@@ -475,15 +536,26 @@
                   {#if detail && detail !== releaseEdition.v}<span class="edition-meta">{detail}</span>{/if}
                 </span>
                 <small class="edition-date">{release(releaseEdition)}</small>
-                {#if gameplay}<span class="gameplay-icon i-material-symbols:sports-esports" aria-hidden="true"></span>{/if}
+                {#if gameplay}
+                  <span
+                    class="gameplay-icon i-material-symbols:sports-esports"
+                    style:color={releaseEdition.beta ? "var(--accent-blue)" : undefined}
+                    title={releaseEdition.beta ? "Beta" : "Gameplay"}
+                    aria-hidden="true"
+                  ></span>
+                {/if}
               </button>
               {@render shopLink(item, releaseEdition)}
               <div class="edition-price">
-                {price === undefined ? "Unknown" : formatPrice(price, item.currency)}
-                {#if releaseEdition.standalone === false}<small>Included only</small>{/if}
+                {#if releaseEdition.standalone === false}
+                  <small>Included only</small>
+                {:else}
+                  {price === undefined ? "Unknown" : formatPrice(price, item.currency)}
+                {/if}
               </div>
               <button
                 class="wish"
+                style:visibility={value.owned ? "hidden" : "visible"}
                 type="button"
                 aria-pressed={!!value.wished}
                 aria-label="Wishlist {item.name}, {releaseEdition.v}"
@@ -508,8 +580,7 @@
                   type="number"
                   min="1"
                   max={numberedEdition.runSize ?? 999}
-                  maxlength="3"
-                  disabled={!value.owned || numberedEdition.standalone === false}
+                  disabled={numberedEdition.standalone === false}
                   value={value.copy ?? ""}
                   oninput={(event) => updateCopy(item, numberedEdition, event.currentTarget.value)}
                   placeholder="13"
@@ -650,8 +721,8 @@
     --stat-accent: var(--accent-red);
   }
   .stat-value {
-    grid-column: 1 / -1;
     grid-row: 2;
+    grid-column: 1 / -1;
   }
   .stat-label {
     display: flex;
@@ -674,14 +745,10 @@
     line-height: var(--line-height-snug);
     font-variant-numeric: tabular-nums;
   }
-  .stats small {
-    color: var(--muted-foreground);
-    font-size: var(--text-sm);
-  }
   .bundle-price {
     display: flex;
-    flex-wrap: wrap;
     flex-basis: 100%;
+    flex-wrap: wrap;
     gap: 0.25rem 0.75rem;
     color: var(--muted-foreground);
     font-size: var(--text-sm);
@@ -691,30 +758,29 @@
     color: var(--accent-green);
   }
   .catalog-filters {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: end;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
     margin-block: 0.75rem;
     gap: 0.5rem;
   }
   .search {
+    margin-inline-end: auto;
     color: var(--muted-foreground);
     font-size: var(--text-sm);
   }
   .search-controls {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) auto auto;
-    flex-basis: 100%;
-    align-items: center;
-    min-inline-size: 0;
-    gap: 0.25rem 0.5rem;
+    gap: 0.25rem;
   }
+  .search-heading,
   .search-row {
     display: flex;
     flex-wrap: wrap;
-    grid-column: 1 / -1;
     align-items: center;
     gap: 0.5rem;
+  }
+  .search-heading {
+    row-gap: 0.25rem;
   }
   .search-row input {
     flex: 1 1 8rem;
@@ -758,7 +824,8 @@
   }
   .tag-icon,
   .tag-chevron,
-  .more-chevron {
+  .more-chevron,
+  .card-chevron {
     display: inline-block;
     flex-shrink: 0;
     inline-size: var(--size-icon-control);
@@ -769,17 +836,17 @@
     flex: 1;
   }
   .tag-chevron,
-  .more-chevron {
+  .more-chevron,
+  .card-chevron {
     transition: rotate var(--duration-fast) var(--ease-standard);
   }
   .tag-heading[aria-expanded="true"] .tag-chevron,
-  .more-tags[open] .more-chevron {
+  .more-tags[open] .more-chevron,
+  .card-heading[aria-expanded="true"] .card-chevron {
     rotate: 180deg;
   }
   .tag-body {
     display: grid;
-    flex-basis: 100%;
-    min-inline-size: 0;
     padding: 0.75rem;
     gap: 0.75rem;
     border: var(--border-width) solid var(--color-divider);
@@ -790,14 +857,9 @@
       display: none;
     }
   }
-  .tag-body p,
-  .tag-search span {
+  .tag-body p {
     color: var(--muted-foreground);
     font-size: var(--text-sm);
-  }
-  .tag-search span {
-    display: block;
-    margin-block-end: 0.35rem;
   }
   .tag-cloud,
   .tag-list,
@@ -824,7 +886,7 @@
     max-inline-size: 100%;
     min-block-size: 2rem;
     padding: 0 0.5em;
-    /* translate: 0 calc((0.5 - var(--tag-weight)) * 0.4rem); */
+    transform-origin: bottom;
     border-radius: 99px;
     background: color-mix(var(--card) 75%, transparent);
     box-shadow: 0 0.2rem 0.6rem color-mix(var(--contrast) 18%, transparent);
@@ -871,7 +933,7 @@
     font-size: var(--text-sm);
     white-space: nowrap;
   }
-  .clear-search {
+  .search-command {
     min-block-size: 1.5rem;
     padding-inline: 0.25rem;
     border-radius: var(--radius-control);
@@ -894,11 +956,15 @@
     border-radius: var(--radius-card);
     background: var(--card);
   }
+  h2 {
+    display: flex;
+    background: var(--panel);
+  }
   .card-heading {
     display: flex;
+    flex: 1;
     align-items: center;
-    justify-content: space-between;
-    inline-size: 100%;
+    min-inline-size: 0;
     padding: var(--space-card);
     gap: 0.5rem;
     background: var(--panel);
@@ -906,13 +972,28 @@
   }
   .card-title {
     display: block;
-    font: var(--font-semibold) var(--text-card-title) / var(--line-height-snug) var(--font-display);
+    overflow: hidden;
+    font: var(--font-semibold) calc(var(--text-card-title) * 0.92) / var(--line-height-snug) var(--font-display);
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
   .card-meta {
-    display: block;
+    display: grid;
     margin-block-start: 0.15rem;
     color: var(--muted-foreground);
     font-size: var(--text-sm);
+  }
+  .card-meta > span {
+    grid-area: 1 / 1;
+    &.inactive {
+      visibility: hidden;
+    }
+  }
+  .clear-feedback {
+    color: var(--accent-green);
+  }
+  .hold-hint {
+    color: var(--accent-red);
   }
   .card-body {
     contain-intrinsic-block-size: auto var(--size-card-placeholder);
@@ -925,8 +1006,29 @@
       display: none;
     }
   }
-  .card-heading > span:first-child {
+  .card-label {
     flex: 1;
+    min-inline-size: 0;
+  }
+  .ownership {
+    position: relative;
+    padding-inline: var(--space-card);
+    border-inline-start: var(--border-width) solid color-mix(var(--foreground) 4%, transparent);
+    font-weight: var(--font-bold);
+    font-size: var(--text-sm);
+  }
+  .ownership-label {
+    display: inline-block;
+    padding: 0.2rem 0.45rem;
+    border: var(--border-width) solid var(--accent);
+    border-radius: var(--radius-control);
+    background: var(--accent);
+    color: var(--foreground);
+    opacity: 0.05;
+    transition: opacity var(--duration-fast) var(--ease-standard);
+  }
+  .ownership[aria-pressed="true"] .ownership-label {
+    opacity: 1;
   }
   .collapse-all {
     display: grid;
@@ -996,13 +1098,6 @@
     &.gameplay {
       border-color: var(--accent-green);
       color: var(--accent-green);
-    }
-
-    &.owned {
-      border-color: var(--accent);
-      background: var(--accent);
-      color: var(--foreground);
-      font-weight: var(--font-bold);
     }
   }
   .shop {
@@ -1138,7 +1233,6 @@
   .copy {
     display: flex;
     align-items: center;
-    justify-content: left;
     gap: 0.5rem;
   }
   .copy input {
@@ -1195,17 +1289,24 @@
   button,
   a,
   summary,
-  input {
+  input,
+  .edition {
     transition:
       background-color var(--duration-fast) var(--ease-standard),
       color var(--duration-fast) var(--ease-standard),
       border-color var(--duration-fast) var(--ease-standard);
   }
   @media (hover: hover) {
-    button:not(:disabled, .wish, .cloud-tag):hover,
+    .ownership[aria-pressed="false"]:not(:disabled):hover .ownership-label {
+      opacity: 0.5;
+    }
+    button:not(:disabled, .wish, .cloud-tag, .search-command, .edition-label):hover,
     summary:hover,
-    .own:has(input:not(:disabled)):hover {
+    .edition:has(.edition-label:hover, .own:hover) {
       background: color-mix(var(--accent) 14%, var(--panel));
+      color: var(--accent);
+    }
+    .search-command:not(:disabled):hover {
       color: var(--accent);
     }
     .active-tag:not(:disabled):hover,
@@ -1213,6 +1314,7 @@
       border-color: var(--accent);
     }
     .tag-heading:hover :is(.tag-icon, .tag-chevron),
+    .card-heading:hover .card-chevron,
     summary:hover :is(.tag-icon, .tag-chevron, .more-chevron, .contents-count) {
       color: var(--accent);
     }
@@ -1226,11 +1328,10 @@
       text-underline-offset: 0.2em;
     }
     .cloud-tag:not(:disabled):hover {
-      isolation: isolate;
-      transform-origin: bottom;
       scale: 1.25;
       background: color-mix(var(--accent) 14%, var(--panel));
       box-shadow: 0 0.5rem 1rem color-mix(var(--contrast) 25%, transparent);
+      z-index: 1;
       color: var(--accent);
     }
   }
@@ -1239,9 +1340,11 @@
     a,
     summary,
     input,
-    .cloud-tag,
+    .edition,
+    .ownership-label,
     .tag-chevron,
-    .more-chevron {
+    .more-chevron,
+    .card-chevron {
       transition: none;
     }
   }
@@ -1263,8 +1366,8 @@
       grid-template-columns: repeat(3, minmax(0, 1fr));
     }
     .stat-value {
-      grid-column: auto;
       grid-row: auto;
+      grid-column: auto;
     }
   }
 </style>

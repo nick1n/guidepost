@@ -115,9 +115,11 @@ export function reviewPrice(item: ReviewItem, edition: ReviewEdition) {
   return edition.$?.length ? Math.max(...edition.$) : item.price;
 }
 
-export function reviewEditions(item: ReviewItem): ReviewEdition[] {
-  // Accessories and homebrew can be tracked as one item without catalog editions.
-  return item.editions?.length ? item.editions : [{ v: "Item", r: item.releaseDate, releaseWindow: item.releaseWindow }];
+export function reviewEditions(item: ReviewItem & { category?: string }): ReviewEdition[] {
+  // Items without catalog editions get one trackable edition named for their category.
+  return item.editions?.length
+    ? item.editions
+    : [{ v: item.category === "bundles" ? "Bundle" : "Item", r: item.releaseDate, releaseWindow: item.releaseWindow }];
 }
 
 export function reviewNumberedEditions(item: ReviewItem) {

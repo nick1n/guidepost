@@ -21,11 +21,11 @@ describe("review catalog facts", () => {
       accessories: {},
       homebrew: {},
     };
-    expect(reviewIndex(data).bundlePricing("set", "Item")).toEqual({ total: 1000, missing: 0, savings: 200, percent: 20 });
+    expect(reviewIndex(data).bundlePricing("set", "Bundle")).toEqual({ total: 1000, missing: 0, savings: 200, percent: 20 });
     data.bundles.set.includes!.push({ item: "model", edition: "Missing" });
-    expect(reviewIndex(data).bundlePricing("set", "Item")).toEqual({ total: 1000, missing: 1, savings: undefined, percent: undefined });
+    expect(reviewIndex(data).bundlePricing("set", "Bundle")).toEqual({ total: 1000, missing: 1, savings: undefined, percent: undefined });
     data.content.box.currency = "EUR";
-    expect(reviewIndex(data).bundlePricing("set", "Item")?.savings).toBeUndefined();
+    expect(reviewIndex(data).bundlePricing("set", "Bundle")?.savings).toBeUndefined();
   });
   it("defaults missing and formerly unknown gameplay to false while preserving overrides", () => {
     expect(editionGameplay({ gameplay: true }, { v: "First Run", gameplay: null })).toBe(false);
