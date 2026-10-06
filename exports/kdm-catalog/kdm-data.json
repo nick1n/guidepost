@@ -34,11 +34,11 @@
       ],
       "aliases": ["Collector's Resin Edition Kingdom Death Core 1.0", "Monster 1.5 Core Game", "Kingdom Death Monster 1.5", "Monster 1.6 Core Game", "Kingdom Death Monster 1.6", "KINGDOM DEATH"],
       "editions": [
-        { "v": "Sim", "$": [2000], "r": "2022-11-25", "available": true, "handle": "kingdom-death-simulator-1" },
+        { "v": "Sim", "$": [2000], "r": "2022-11-25", "handle": "kingdom-death-simulator-1", "available": true },
         { "v": "1.3", "$": [10000], "r": "2015-09-15", "materials": ["Plastic"] },
         { "v": "Resin", "$": [60000], "r": "2015-10-31" },
         { "v": "1.5", "$": [25000], "r": "2017-10-13", "materials": ["Plastic"] },
-        { "v": "1.6", "$": [40000, 44400], "r": "2021-11-26", "available": true, "materials": ["Plastic"], "handle": "kingdom-death-monster-1-5" }
+        { "v": "1.6", "$": [40000, 44400], "r": "2021-11-26", "materials": ["Plastic"], "handle": "kingdom-death-monster-1-5", "available": true }
       ],
       "includes": [
         { "item": "butcher", "parentEditions": ["1.3", "1.5", "1.6"], "edition": "Plastic" },
@@ -86,9 +86,9 @@
         { "item": "armor-kit-dragon-king", "edition": "Plastic", "parentEditions": ["1.3", "1.6"] }
       ],
       "editions": [
-        { "v": "Sim", "$": [1750], "r": "2023-11-24", "available": true, "handle": "kds-dragon-king-expansion-1" },
+        { "v": "Sim", "$": [1750], "r": "2023-11-24", "handle": "kds-dragon-king-expansion-1", "available": true },
         { "v": "1.3", "materials": ["Plastic"], "r": "2016-02-16", "$": [7500, 15000] },
-        { "v": "1.6", "$": [15000, 18500], "r": "2021-11-26", "available": true, "materials": ["Plastic"], "handle": "dragon-king-expansion-1-6" }
+        { "v": "1.6", "$": [15000, 18500], "r": "2021-11-26", "materials": ["Plastic"], "handle": "dragon-king-expansion-1-6", "available": true }
       ]
     },
     "expansion-dung-beetle-knight": {
@@ -103,10 +103,10 @@
         { "item": "dung-beetle-knight-armor", "edition": "Plastic", "parentEditions": ["1.3", "1.6", "1.7"] }
       ],
       "editions": [
-        { "v": "Sim", "$": [700], "r": "2023-11-24", "available": true, "handle": "kds-dung-beetle-knight-expansion" },
+        { "v": "Sim", "$": [700], "r": "2023-11-24", "handle": "kds-dung-beetle-knight-expansion", "available": true },
         { "v": "1.3", "materials": ["Plastic"], "r": "2016-02-16", "$": [3000, 6000] },
-        { "v": "1.6", "$": [6500, 8000], "r": "2021-11-26", "available": true, "materials": ["Plastic"], "handle": "dung-beetle-expansion-1-6" },
-        { "v": "1.7", "$": [9000], "r": "2026-09-30", "available": true, "materials": ["Plastic"], "handle": "dung-beetle-knight-expansion-1-7" }
+        { "v": "1.6", "$": [6500, 8000], "r": "2021-11-26", "materials": ["Plastic"], "handle": "dung-beetle-expansion-1-6", "available": true },
+        { "v": "1.7", "$": [9000], "r": "2026-09-30", "materials": ["Plastic"], "handle": "dung-beetle-knight-expansion-1-7", "available": true }
       ]
     },
     "expansion-flower-knight": {
@@ -118,9 +118,9 @@
       "announcements": ["2022-12-25", "2023-11-24"],
       "includes": [{ "item": "flower-knight", "edition": "Plastic", "parentEditions": ["1.3", "1.6"] }],
       "editions": [
-        { "v": "Sim", "$": [700], "r": "2023-11-24", "available": true, "handle": "kds-flower-knight-expansion" },
+        { "v": "Sim", "$": [700], "r": "2023-11-24", "handle": "kds-flower-knight-expansion", "available": true },
         { "v": "1.3", "materials": ["Plastic"], "r": "2016-02-16", "$": [4000, 6000] },
-        { "v": "1.6", "$": [5000, 8000], "r": "2021-11-26", "available": true, "materials": ["Plastic"], "handle": "flower-knight-expansion-1-6" }
+        { "v": "1.6", "$": [5000, 8000], "r": "2021-11-26", "materials": ["Plastic"], "handle": "flower-knight-expansion-1-6", "available": true }
       ]
     },
     "expansion-gorm": {
@@ -135,7 +135,7 @@
         { "item": "armor-kit-gorment", "edition": "Plastic", "parentEditions": ["1.3", "1.6"] }
       ],
       "editions": [
-        { "v": "Sim", "$": [850], "r": "2023-11-24", "available": true, "handle": "kds-gorm-expansion" },
+        { "v": "Sim", "$": [850], "r": "2023-11-24", "handle": "kds-gorm-expansion", "available": true },
         { "v": "1.3", "materials": ["Plastic"], "r": "2016-02-16", "$": [5000, 7500] },
         { "v": "1.6", "$": [9500], "r": "2021-11-26", "materials": ["Plastic"], "handle": "gorm-expansion-1-6" }
       ]
@@ -149,7 +149,7 @@
       "announcements": ["2022-12-25", "2023-11-24"],
       "includes": [{ "item": "lion-god", "edition": "Plastic", "parentEditions": ["1.3", "1.6"] }],
       "editions": [
-        { "v": "Sim", "$": [700], "r": "2023-11-24", "available": true, "handle": "kds-lion-god-expansion" },
+        { "v": "Sim", "$": [700], "r": "2023-11-24", "handle": "kds-lion-god-expansion", "available": true },
         { "v": "1.3", "materials": ["Plastic"], "r": "2016-02-16", "$": [4000, 6000] },
         { "v": "1.6", "$": [5000, 8000], "r": "2021-11-26", "materials": ["Plastic"], "handle": "lion-god-expansion-1-6" }
       ]
@@ -166,7 +166,7 @@
         { "item": "role-survivors-set-of-4", "edition": "Plastic", "parentEditions": ["1.3", "1.6"] }
       ],
       "editions": [
-        { "v": "Sim", "$": [750], "r": "2023-11-24", "available": true, "handle": "kds-lion-knight-expansion" },
+        { "v": "Sim", "$": [750], "r": "2023-11-24", "handle": "kds-lion-knight-expansion", "available": true },
         { "v": "1.3", "materials": ["Plastic"], "r": "2016-02-16", "$": [3500, 7000] },
         { "v": "1.6", "$": [5000, 8500], "r": "2021-11-26", "materials": ["Plastic"], "handle": "lion-knight-expansion-1-6" }
       ]
@@ -183,7 +183,7 @@
         { "item": "lonely-tree", "edition": "Plastic", "parentEditions": ["1.3", "1.6"] }
       ],
       "editions": [
-        { "v": "Sim", "$": [850], "r": "2023-11-24", "available": true, "handle": "kds-lonely-tree-expansion" },
+        { "v": "Sim", "$": [850], "r": "2023-11-24", "handle": "kds-lonely-tree-expansion", "available": true },
         { "v": "1.3", "materials": ["Plastic"], "r": "2016-02-16", "$": [4000, 7500] },
         { "v": "1.6", "$": [9500], "r": "2021-11-26", "materials": ["Plastic"], "handle": "lonely-tree-expansion-1-6" }
       ]
@@ -197,7 +197,7 @@
       "announcements": ["2022-12-25", "2023-11-24"],
       "includes": [{ "item": "manhunter", "edition": "Plastic", "parentEditions": ["1.3", "1.6"] }],
       "editions": [
-        { "v": "Sim", "$": [700], "r": "2023-11-24", "available": true, "handle": "kds-manhunter-expansion" },
+        { "v": "Sim", "$": [700], "r": "2023-11-24", "handle": "kds-manhunter-expansion", "available": true },
         { "v": "1.3", "materials": ["Plastic"], "r": "2016-02-16", "$": [3500, 6000] },
         { "v": "1.6", "$": [6500, 8000], "r": "2021-11-26", "materials": ["Plastic"], "handle": "manhunter-expansion-1-6" }
       ]
@@ -211,10 +211,10 @@
       "announcements": ["2022-12-25", "2023-11-24", "2026-09-30"],
       "includes": [{ "item": "slenderman", "edition": "Plastic", "parentEditions": ["1.3", "1.6", "1.7"] }],
       "editions": [
-        { "v": "Sim", "$": [700], "r": "2023-11-24", "available": true, "handle": "kds-slenderman-expansion" },
+        { "v": "Sim", "$": [700], "r": "2023-11-24", "handle": "kds-slenderman-expansion", "available": true },
         { "v": "1.3", "materials": ["Plastic"], "r": "2016-02-16", "$": [4000, 6000] },
         { "v": "1.6", "$": [6500, 8000], "r": "2021-11-26", "materials": ["Plastic"], "handle": "slenderman-expansion-1-6" },
-        { "v": "1.7", "$": [9000], "r": "2026-09-30", "available": true, "materials": ["Plastic"], "handle": "slenderman-expansion-1-7" }
+        { "v": "1.7", "$": [9000], "r": "2026-09-30", "materials": ["Plastic"], "handle": "slenderman-expansion-1-7", "available": true }
       ]
     },
     "expansion-spidicules": {
@@ -229,7 +229,7 @@
         { "item": "armor-kit-spider-silk", "edition": "Plastic", "parentEditions": ["1.3", "1.6"] }
       ],
       "editions": [
-        { "v": "Sim", "$": [1200], "r": "2023-11-24", "available": true, "handle": "kds-spidicules-expansion" },
+        { "v": "Sim", "$": [1200], "r": "2023-11-24", "handle": "kds-spidicules-expansion", "available": true },
         { "v": "1.3", "materials": ["Plastic"], "r": "2016-02-16", "$": [6000, 10000] },
         { "v": "1.6", "$": [8000, 13500], "r": "2021-11-26", "materials": ["Plastic"], "handle": "spidicules-expansion-1-6" }
       ]
@@ -247,9 +247,9 @@
         { "item": "priests-of-the-sun", "edition": "Plastic", "parentEditions": ["1.3", "1.6"] }
       ],
       "editions": [
-        { "v": "Sim", "$": [1250], "r": "2023-11-24", "available": true, "handle": "kds-sunstalker-expansion" },
+        { "v": "Sim", "$": [1250], "r": "2023-11-24", "handle": "kds-sunstalker-expansion", "available": true },
         { "v": "1.3", "materials": ["Plastic"], "r": "2016-02-16", "$": [6000, 10000] },
-        { "v": "1.6", "$": [8000, 13500], "r": "2021-11-26", "available": true, "materials": ["Plastic"], "handle": "sunstalker-expansion" }
+        { "v": "1.6", "$": [8000, 13500], "r": "2021-11-26", "materials": ["Plastic"], "handle": "sunstalker-expansion", "available": true }
       ]
     },
     "expansion-gamblers-chest": {
@@ -363,8 +363,8 @@
         { "item": "sci-fi-aya-the-survivor", "edition": "Plastic", "parentEditions": ["1.6"] }
       ],
       "editions": [
-        { "v": "Sim", "$": [4200], "r": "2025-11-28", "available": true, "handle": "kds-gamblers-chest" },
-        { "v": "1.6", "$": [37000, 42000], "r": "2023-11-24", "available": true, "materials": ["Plastic"], "handle": "gamblers-chest-expansion" }
+        { "v": "Sim", "$": [4200], "r": "2025-11-28", "handle": "kds-gamblers-chest", "available": true },
+        { "v": "1.6", "$": [37000, 42000], "r": "2023-11-24", "materials": ["Plastic"], "handle": "gamblers-chest-expansion", "available": true }
       ]
     },
     "expansion-black-knight": {
@@ -379,8 +379,8 @@
         { "item": "black-knights-squire-male", "edition": "Plastic", "parentEditions": ["1.6"] }
       ],
       "editions": [
-        { "v": "Sim", "$": [1250], "r": "2024-11-29", "available": true, "handle": "kds-black-knight" },
-        { "v": "1.6", "$": [13500], "r": "2024-04-02", "available": true, "materials": ["Plastic"], "handle": "black-knight-expansion" }
+        { "v": "Sim", "$": [1250], "r": "2024-11-29", "handle": "kds-black-knight", "available": true },
+        { "v": "1.6", "$": [13500], "r": "2024-04-02", "materials": ["Plastic"], "handle": "black-knight-expansion", "available": true }
       ]
     },
     "expansion-frogdog": {
@@ -406,8 +406,8 @@
       ],
       "includes": [{ "item": "frogdog", "edition": "Plastic", "parentEditions": ["1.6"] }],
       "editions": [
-        { "v": "Sim", "$": [1200], "r": "2025-01-31", "available": true, "handle": "kds-frogdog-expansion" },
-        { "v": "1.6", "$": [13500], "r": "2024-07-26", "available": true, "materials": ["Plastic"], "handle": "frogdog-expansion" }
+        { "v": "Sim", "$": [1200], "r": "2025-01-31", "handle": "kds-frogdog-expansion", "available": true },
+        { "v": "1.6", "$": [13500], "r": "2024-07-26", "materials": ["Plastic"], "handle": "frogdog-expansion", "available": true }
       ]
     },
     "expansion-pariah": {
@@ -418,8 +418,8 @@
       "aliases": ["KDS Pariah Expansion"],
       "includes": [{ "item": "pariah", "edition": "Plastic", "parentEditions": ["Box"] }],
       "editions": [
-        { "v": "Sim", "$": [1350], "r": "2025-09-30", "available": true, "handle": "kds-pariah" },
-        { "v": "Box", "$": [13500], "r": "2025-09-30", "available": true, "materials": ["Plastic"], "handle": "pariah-expansion" }
+        { "v": "Sim", "$": [1350], "r": "2025-09-30", "handle": "kds-pariah", "available": true },
+        { "v": "Box", "$": [13500], "r": "2025-09-30", "materials": ["Plastic"], "handle": "pariah-expansion", "available": true }
       ],
       "tags": ["gameplay", "monster", "2025", "sim", "expansion", "expansions-of-death-vol-2", "node-1-nemesis", "monster-pariah"]
     },
@@ -430,8 +430,8 @@
       "announcements": ["2025-07-22", "2025-09-30", "2025-10-31", "2025-12-25", "2026-01-30", "2026-02-27", "2026-04-01", "2026-04-30", "2026-05-29", "2026-06-30", "2026-08-31", "2026-09-30"],
       "aliases": ["KDS Red Witches Expansion"],
       "editions": [
-        { "v": "Sim", "$": [1500], "r": "2025-09-30", "available": true, "handle": "kds-red-witches" },
-        { "v": "Box", "$": [15000], "r": "2025-09-30", "available": true, "materials": ["Plastic"], "handle": "red-witches-expansion" }
+        { "v": "Sim", "$": [1500], "r": "2025-09-30", "handle": "kds-red-witches", "available": true },
+        { "v": "Box", "$": [15000], "r": "2025-09-30", "materials": ["Plastic"], "handle": "red-witches-expansion", "available": true }
       ],
       "tags": ["gameplay", "monster", "2025", "sim", "expansion", "expansions-of-death-vol-2", "node-2-nemesis", "monster-red-witches"]
     },
@@ -463,8 +463,8 @@
         { "item": "parasite-queen", "edition": "Plastic", "parentEditions": ["Box"] }
       ],
       "editions": [
-        { "v": "Sim", "$": [1750], "r": "2026-07-31", "available": true, "handle": "kds-screaming-god" },
-        { "v": "Box", "$": [17500, 20000], "r": "2026-07-31", "available": true, "materials": ["Plastic"], "handle": "screaming-god-expansion" }
+        { "v": "Sim", "$": [1750], "r": "2026-07-31", "handle": "kds-screaming-god", "available": true },
+        { "v": "Box", "$": [17500, 20000], "r": "2026-07-31", "materials": ["Plastic"], "handle": "screaming-god-expansion", "available": true }
       ],
       "tags": ["gameplay", "monster", "2026", "sim", "expansion", "expansions-of-death-vol-2", "node-4-quarry", "monster-screaming-god"]
     },
@@ -583,7 +583,7 @@
       "kind": "armor-kit",
       "tags": ["female", "plastic", "male", "2015", "2016", "2021", "naked", "armor-kit", "monster-dragon-king", "pot-star"],
       "editions": [
-        { "v": "Naked", "$": [2500, 3000], "expansion": "Dragon King", "r": "2015-11-23", "available": true, "materials": ["Plastic"], "handle": "naked-dragon-king-armor-kit" },
+        { "v": "Naked", "$": [2500, 3000], "expansion": "Dragon King", "r": "2015-11-23", "materials": ["Plastic"], "handle": "naked-dragon-king-armor-kit", "available": true },
         { "v": "Plastic", "$": [0], "standalone": false, "r": "2016-02-16" }
       ],
       "size": "30",
@@ -595,7 +595,7 @@
       "kind": "armor-kit",
       "tags": ["female", "plastic", "male", "2015", "2016", "2021", "naked", "armor-kit", "monster-gorm"],
       "editions": [
-        { "v": "Naked", "$": [2500, 3000], "expansion": "Gorm", "r": "2015-11-23", "available": true, "materials": ["Plastic"], "handle": "naked-gorm-armor-kit" },
+        { "v": "Naked", "$": [2500, 3000], "expansion": "Gorm", "r": "2015-11-23", "materials": ["Plastic"], "handle": "naked-gorm-armor-kit", "available": true },
         { "v": "Plastic", "$": [0], "standalone": false, "r": "2016-02-16" }
       ],
       "size": "30",
@@ -767,7 +767,7 @@
       "gameplay": true,
       "tags": ["female", "plastic", "gameplay", "survivor", "2024", "gear", "bust", "hunt-event", "zelda"],
       "editions": [
-        { "v": "Plastic", "$": [3400], "r": "2024-01-31", "available": true, "handle": "early-survivor-zelda" },
+        { "v": "Plastic", "$": [3400], "r": "2024-01-31", "handle": "early-survivor-zelda", "available": true },
         { "v": "Bust", "$": [7500], "r": "2024-02-29", "runSize": 400, "materials": ["Photoresin"], "size": "120", "gameplay": false }
       ],
       "announcements": ["2024-01-31", "2024-07-26"],
@@ -782,7 +782,7 @@
         { "v": "First Run", "$": [3000], "size": "30", "r": "2011-12-10", "runSize": 200, "expansion": "Flower Knight", "materials": ["Resin"] },
         { "v": "Encore", "size": "30", "expansion": "Flower Knight", "materials": ["Resin"], "$": [3000], "r": "2011-12-10" },
         { "v": "Plastic", "expansion": "Flower Knight", "$": [0], "r": "2016-02-16", "standalone": false },
-        { "v": "Bust", "available": true, "r": "2025-08-29", "$": [25000], "handle": "flower-knight-bust" }
+        { "v": "Bust", "r": "2025-08-29", "$": [25000], "handle": "flower-knight-bust", "available": true }
       ],
       "aliases": ["Flower Knight (Resin)", "Flower Knight Bust"],
       "notes": "First Run and early encores came with a black plastic base.",
@@ -1139,7 +1139,7 @@
       "editions": [
         { "v": "First Run", "r": "2025-09-30", "$": [3400], "materials": ["Photoresin"] },
         { "v": "Deathgrey", "r": "2025-09-30", "$": [3900] },
-        { "v": "Encore", "r": "2025-09-30", "$": [3400], "available": true, "materials": ["Photoresin"] }
+        { "v": "Encore", "r": "2025-09-30", "$": [3400], "materials": ["Photoresin"], "available": true }
       ],
       "handle": "death-high-satan-x"
     },
@@ -1268,8 +1268,8 @@
       "tags": ["female", "deathgrey", "survivor", "2026", "beta", "frozen-survivor", "cyclamen"],
       "announcements": ["2026-01-30"],
       "editions": [
-        { "v": "First Run", "r": "2026-01-30", "$": [3400], "available": true, "materials": ["Photoresin"], "beta": true },
-        { "v": "Deathgrey", "r": "2026-01-30", "$": [3900], "available": true, "beta": true },
+        { "v": "First Run", "r": "2026-01-30", "$": [3400], "materials": ["Photoresin"], "beta": true, "available": true },
+        { "v": "Deathgrey", "r": "2026-01-30", "$": [3900], "beta": true, "available": true },
         { "v": "Encore", "r": "2026-01-30", "$": [3400], "materials": ["Photoresin"], "beta": true }
       ],
       "handle": "frozen-survivor-cyclamen"
@@ -1283,7 +1283,7 @@
       "editions": [
         { "v": "First Run", "$": [3400], "r": "2024-01-31", "runSize": 500, "materials": ["Photoresin"], "beta": true },
         { "v": "Deathgrey", "$": [3900], "r": "2024-01-31", "runSize": 250, "beta": true },
-        { "v": "Encore", "materials": ["Photoresin"], "$": [3400], "r": "2024-01-31", "available": true, "beta": true }
+        { "v": "Encore", "materials": ["Photoresin"], "$": [3400], "r": "2024-01-31", "beta": true, "available": true }
       ],
       "announcements": ["2024-01-31", "2026-01-30"],
       "size": "30",
@@ -1296,7 +1296,7 @@
       "tags": ["female", "gameplay", "2023", "survivor", "gear", "beta", "frozen-survivor", "hellebore"],
       "editions": [
         { "v": "First Run", "$": [3400], "r": "2023-01-31", "runSize": 500, "materials": ["Photoresin"], "beta": true },
-        { "v": "Encore", "materials": ["Photoresin"], "$": [3400], "r": "2023-01-31", "available": true, "beta": true }
+        { "v": "Encore", "materials": ["Photoresin"], "$": [3400], "r": "2023-01-31", "beta": true, "available": true }
       ],
       "aliases": ["Hellebore", "Hellebore - A Frozen Survivor", "Hellebore - A Frozen Survivor (Beta)"],
       "announcements": ["2023-02-01", "2026-01-30"],
@@ -1328,7 +1328,7 @@
       "kind": "model",
       "tags": ["female", "plastic", "survivor", "2025", "indomitable-survivor", "domino"],
       "announcements": ["2025-09-30"],
-      "editions": [{ "v": "Plastic", "r": "2025-09-30", "available": true, "$": [3400] }],
+      "editions": [{ "v": "Plastic", "r": "2025-09-30", "$": [3400], "available": true }],
       "handle": "indomitable-survivor-fated-dagger-domino"
     },
     "indomitable-survivor-greatest-gaxe-morg": {
@@ -1337,8 +1337,8 @@
       "gameplay": true,
       "tags": ["plastic", "gameplay", "male", "survivor", "2024", "sim", "pattern", "indomitable-survivor", "resource", "morg"],
       "editions": [
-        { "v": "Sim", "$": [700], "r": "2023-11-24", "available": true, "handle": "kds-morg" },
-        { "v": "Plastic", "$": [3400], "r": "2024-07-03", "available": true, "handle": "indomitable-survivor-greatest-gaxe-morg" }
+        { "v": "Sim", "$": [700], "r": "2023-11-24", "handle": "kds-morg", "available": true },
+        { "v": "Plastic", "$": [3400], "r": "2024-07-03", "handle": "indomitable-survivor-greatest-gaxe-morg", "available": true }
       ],
       "announcements": ["2023-11-24", "2024-07-03"],
       "aliases": ["kds morg"],
@@ -1350,8 +1350,8 @@
       "gameplay": true,
       "tags": ["plastic", "gameplay", "male", "survivor", "2024", "sim", "pattern", "indomitable-survivor", "resource", "grimmory"],
       "editions": [
-        { "v": "Sim", "$": [700], "r": "2024-04-02", "available": true, "handle": "kds-grimmory" },
-        { "v": "Plastic", "$": [3400], "r": "2024-04-02", "available": true, "handle": "gusk-knives-grimmory" }
+        { "v": "Sim", "$": [700], "r": "2024-04-02", "handle": "kds-grimmory", "available": true },
+        { "v": "Plastic", "$": [3400], "r": "2024-04-02", "handle": "gusk-knives-grimmory", "available": true }
       ],
       "announcements": ["2024-04-02"],
       "size": "30"
@@ -1362,8 +1362,8 @@
       "tags": ["female", "gameplay", "survivor", "2026", "sim", "indomitable-survivor", "rene"],
       "announcements": ["2026-02-27", "2026-09-30"],
       "editions": [
-        { "v": "Sim", "$": [700], "gameplay": true, "r": "2026-09-30", "available": true, "handle": "kds-rene" },
-        { "v": "Box", "r": "2026-02-27", "available": true, "$": [3400], "handle": "indomitable-survivor-heartleech-baselard-rene" }
+        { "v": "Sim", "$": [700], "gameplay": true, "r": "2026-09-30", "handle": "kds-rene", "available": true },
+        { "v": "Box", "r": "2026-02-27", "$": [3400], "handle": "indomitable-survivor-heartleech-baselard-rene", "available": true }
       ]
     },
     "indomitable-survivor-longclaw-lenore": {
@@ -1372,8 +1372,8 @@
       "gameplay": true,
       "tags": ["female", "plastic", "gameplay", "2023", "survivor", "painters-scale", "sim", "pattern", "indomitable-survivor", "resource", "lenore"],
       "editions": [
-        { "v": "Sim", "$": [700], "r": "2024-01-31", "available": true, "handle": "kds-longclaw-lenore" },
-        { "v": "Plastic", "$": [3400], "r": "2023-08-28", "size": "30", "available": true, "handle": "longclaw-lenore" },
+        { "v": "Sim", "$": [700], "r": "2024-01-31", "handle": "kds-longclaw-lenore", "available": true },
+        { "v": "Plastic", "$": [3400], "r": "2023-08-28", "size": "30", "handle": "longclaw-lenore", "available": true },
         { "v": "Painters", "$": [6000], "r": "2024-05-31", "materials": ["Photoresin"], "size": "50", "gameplay": false, "handle": "longclaw-lenore-painters-scale" }
       ],
       "aliases": ["Longclaw Lenore", "Longclaw Lenore - Painter's Scale"],
@@ -1395,7 +1395,7 @@
       "kind": "model",
       "tags": ["female", "plastic", "survivor", "2025", "indomitable-survivor", "arco"],
       "announcements": ["2025-08-29"],
-      "editions": [{ "v": "Plastic", "r": "2025-08-29", "available": true, "$": [3400] }],
+      "editions": [{ "v": "Plastic", "r": "2025-08-29", "$": [3400], "available": true }],
       "handle": "indomitable-survivor-oblouk-shield-arco"
     },
     "indomitable-survivor-poison-partisan-ritika": {
@@ -1404,7 +1404,7 @@
       "tags": ["female", "plastic", "survivor", "2025", "indomitable-survivor", "ritika"],
       "announcements": ["2025-05-30"],
       "aliases": ["Indomitable - Poison Partisan Ritika"],
-      "editions": [{ "v": "Plastic", "r": "2025-05-30", "available": true, "$": [3400] }],
+      "editions": [{ "v": "Plastic", "r": "2025-05-30", "$": [3400], "available": true }],
       "handle": "indomitable-survivor-poison-partisan-ritika"
     },
     "indomitable-survivor-pulverizing-star-venus": {
@@ -1412,7 +1412,7 @@
       "kind": "model",
       "tags": ["female", "plastic", "survivor", "2026", "indomitable-survivor", "venus"],
       "announcements": ["2026-06-30"],
-      "editions": [{ "v": "Plastic", "r": "2026-06-30", "available": true, "$": [3400] }],
+      "editions": [{ "v": "Plastic", "r": "2026-06-30", "$": [3400], "available": true }],
       "handle": "indomitable-survivor-pulverizing-star-venus"
     },
     "indomitable-survivor-roaring-harmonica-kale": {
@@ -1421,8 +1421,8 @@
       "gameplay": true,
       "tags": ["plastic", "gameplay", "male", "survivor", "2025", "sim", "pattern", "indomitable-survivor", "resource", "kale"],
       "editions": [
-        { "v": "Sim", "$": [700], "r": "2024-04-30", "available": true, "handle": "kds-kale" },
-        { "v": "Plastic", "$": [3400], "r": "2025-03-03", "available": true, "handle": "indomitable-survivor-roaring-harmonica-kale" }
+        { "v": "Sim", "$": [700], "r": "2024-04-30", "handle": "kds-kale", "available": true },
+        { "v": "Plastic", "$": [3400], "r": "2025-03-03", "handle": "indomitable-survivor-roaring-harmonica-kale", "available": true }
       ],
       "aliases": ["Indomitable - Roaring Harmonica Kale"],
       "announcements": ["2025-03-03"],
@@ -1434,8 +1434,8 @@
       "gameplay": true,
       "tags": ["female", "plastic", "gameplay", "survivor", "2024", "sim", "pattern", "indomitable-survivor", "resource", "xell"],
       "editions": [
-        { "v": "Sim", "$": [700], "r": "2024-02-29", "available": true, "handle": "kds-xell" },
-        { "v": "Plastic", "$": [3400], "r": "2024-01-31", "available": true, "handle": "stampede-glaive-xell" }
+        { "v": "Sim", "$": [700], "r": "2024-02-29", "handle": "kds-xell", "available": true },
+        { "v": "Plastic", "$": [3400], "r": "2024-01-31", "handle": "stampede-glaive-xell", "available": true }
       ],
       "aliases": ["Stampede Glaive - Xell"],
       "announcements": ["2024-01-31"],
@@ -1447,8 +1447,8 @@
       "gameplay": true,
       "tags": ["female", "plastic", "gameplay", "survivor", "2025", "sim", "pattern", "indomitable-survivor", "resource", "rubi"],
       "editions": [
-        { "v": "Sim", "$": [700], "r": "2025-06-30", "available": true, "handle": "kds-rubi" },
-        { "v": "Plastic", "$": [3400], "r": "2025-03-31", "available": true, "handle": "indomitable-survivor-tachyon-nodachi-rubi" }
+        { "v": "Sim", "$": [700], "r": "2025-06-30", "handle": "kds-rubi", "available": true },
+        { "v": "Plastic", "$": [3400], "r": "2025-03-31", "handle": "indomitable-survivor-tachyon-nodachi-rubi", "available": true }
       ],
       "aliases": ["Indomitable - Tachyon Nodachi Rubi"],
       "announcements": ["2025-03-31"],
@@ -1469,7 +1469,7 @@
       "kind": "model",
       "tags": ["plastic", "male", "survivor", "2025", "indomitable-survivor", "badar"],
       "announcements": ["2025-08-29"],
-      "editions": [{ "v": "Plastic", "r": "2025-08-29", "available": true, "$": [3400] }],
+      "editions": [{ "v": "Plastic", "r": "2025-08-29", "$": [3400], "available": true }],
       "handle": "indomitable-survivor-toxicimitar-badar"
     },
     "indomitable-survivor-tyrant-slayer-scarlet": {
@@ -1478,7 +1478,7 @@
       "tags": ["female", "plastic", "survivor", "2025", "indomitable-survivor", "scarlet"],
       "announcements": ["2025-06-30"],
       "aliases": ["Indomitable - Tyrant Slayer Scarlet"],
-      "editions": [{ "v": "Plastic", "r": "2025-06-30", "available": true, "$": [3400] }],
+      "editions": [{ "v": "Plastic", "r": "2025-06-30", "$": [3400], "available": true }],
       "handle": "indomitable-survivor-tyrant-slayer-scarlet"
     },
     "legendary-character-glow": {
@@ -1487,7 +1487,7 @@
       "gameplay": true,
       "tags": ["female", "plastic", "gameplay", "2024", "gear", "sim", "character", "legendary", "glow"],
       "editions": [
-        { "v": "Sim", "$": [770], "r": "2025-12-25", "available": true, "handle": "kds-glow" },
+        { "v": "Sim", "$": [770], "r": "2025-12-25", "handle": "kds-glow", "available": true },
         { "v": "Plastic", "$": [6000], "r": "2024-08-01", "handle": "glow" }
       ],
       "aliases": ["Survivor Character - Glow"],
@@ -1541,7 +1541,7 @@
       "kind": "model",
       "tags": ["female", "plastic", "gameplay", "2025", "savior", "character", "snow", "legendary"],
       "announcements": ["2025-08-29"],
-      "editions": [{ "v": "Plastic", "r": "2025-08-29", "available": true, "$": [7700] }],
+      "editions": [{ "v": "Plastic", "r": "2025-08-29", "$": [7700], "available": true }],
       "includes": [
         { "item": "savior-20-years", "edition": "Plastic" },
         { "item": "savior-40-years", "edition": "Plastic" },
@@ -1719,7 +1719,7 @@
         { "v": "First Run", "$": [2500], "r": "2012-01-30", "runSize": 200, "materials": ["Resin"], "size": "30" },
         { "v": "Encore", "materials": ["Resin"], "$": [2500], "r": "2012-01-30", "size": "30" },
         { "v": "Early Variant", "$": [0], "r": "2013-11-29", "name": "Mother (early variant)", "materials": ["Resin"], "standalone": false, "size": "30" },
-        { "v": "Painters", "available": true, "r": "2026-04-01", "$": [6700], "handle": "mother-painters-scale" }
+        { "v": "Painters", "r": "2026-04-01", "$": [6700], "handle": "mother-painters-scale", "available": true }
       ],
       "tags": ["painters-scale", "variant", "2013", "2012", "mother"],
       "aliases": ["Mother - Painter's Scale", "Mother (early variant)"],
@@ -1790,7 +1790,7 @@
       "tags": ["female", "2026", "painters-scale", "death-high", "simone"],
       "editions": [
         { "v": "Painters: First Run", "$": [7000], "materials": ["Photoresin"], "r": "2026-09-30" },
-        { "v": "Painters: Encore", "$": [7000], "materials": ["Photoresin"], "r": "2026-09-30" }
+        { "v": "Painters: Encore", "$": [7000], "materials": ["Photoresin"], "r": "2026-09-30", "available": true }
       ],
       "announcements": ["2026-09-30"],
       "aliases": ["Life Model Simone - Painter's Scale"],
@@ -1873,7 +1873,7 @@
       "tags": ["generic", "male", "survivor", "2026", "painters-scale", "pot-mirrorstone"],
       "announcements": ["2026-05-29"],
       "aliases": ["Painters Scale - Mirrorstone Survivor - Male", "People of the Mirrorstone - Male - Painter's Scale"],
-      "editions": [{ "v": "Painters", "available": true, "r": "2026-05-29", "$": [6700] }],
+      "editions": [{ "v": "Painters", "r": "2026-05-29", "$": [6700] }],
       "handle": "people-of-the-mirrorstone-male-painters-scale"
     },
     "painters-scale-neko-twilight-knight-maid": {
@@ -1911,7 +1911,7 @@
       "kind": "model",
       "tags": ["female", "2026", "painters-scale", "core-survivor", "lucy", "lagomorph"],
       "announcements": ["2026-04-30"],
-      "editions": [{ "v": "Painters", "available": true, "r": "2026-04-30", "$": [13000] }],
+      "editions": [{ "v": "Painters", "r": "2026-04-30", "$": [13000], "available": true }],
       "handle": "reverse-lagomorph-lucy-painters-scale"
     },
     "painters-scale-summer-archivist": {
@@ -2060,8 +2060,8 @@
       "announcements": ["2025-08-29"],
       "aliases": ["Pillar Survivor - Fade"],
       "editions": [
-        { "v": "Sim", "$": [700], "gameplay": true, "r": "2025-10-31", "available": true, "handle": "kds-fade" },
-        { "v": "Box", "r": "2025-08-29", "available": true, "$": [3400], "handle": "fade-pillar-survivor" }
+        { "v": "Sim", "$": [700], "gameplay": true, "r": "2025-10-31", "handle": "kds-fade", "available": true },
+        { "v": "Box", "r": "2025-08-29", "$": [3400], "handle": "fade-pillar-survivor", "available": true }
       ]
     },
     "pillar-forge-priest": {
@@ -2072,7 +2072,7 @@
         { "v": "First Run", "materials": ["Resin"], "runSize": 150, "$": [2500], "r": "2011-12-10", "gameplay": false },
         { "v": "Encore", "materials": ["Resin"], "$": [2500], "r": "2011-12-10", "gameplay": false },
         { "v": "Naked", "r": "2017-11-24", "$": [2500], "materials": ["Plastic"], "gameplay": false, "standalone": false },
-        { "v": "Plastic", "r": "2026-04-01", "available": true, "$": [3400], "handle": "forge-priest-1" }
+        { "v": "Plastic", "r": "2026-04-01", "$": [3400], "handle": "forge-priest-1", "available": true }
       ],
       "size": "30",
       "gameplay": true,
@@ -2087,8 +2087,8 @@
       "tags": ["female", "gameplay", "survivor", "2025", "sim", "hunt-event", "percival", "pillar", "secret-fighting-art"],
       "announcements": ["2025-07-22", "2025-09-30"],
       "editions": [
-        { "v": "Sim", "$": [700], "r": "2025-10-31", "available": true, "handle": "kds-percival" },
-        { "v": "Box", "$": [3400], "r": "2025-09-30", "available": true, "handle": "pillar-percival" }
+        { "v": "Sim", "$": [700], "r": "2025-10-31", "handle": "kds-percival", "available": true },
+        { "v": "Box", "$": [3400], "r": "2025-09-30", "handle": "pillar-percival", "available": true }
       ]
     },
     "pillar-summer-grimmory": {
@@ -2150,7 +2150,7 @@
       "kind": "model",
       "tags": ["female", "plastic", "generic", "monster", "pinup", "2020", "painters-scale", "monster-butcher", "node-1-nemesis"],
       "editions": [
-        { "v": "Plastic", "$": [3000], "r": "2020-12-12", "size": "30", "available": true, "handle": "pinup-butcher" },
+        { "v": "Plastic", "$": [3000], "r": "2020-12-12", "size": "30", "handle": "pinup-butcher", "available": true },
         { "v": "Painters", "$": [5000], "r": "2023-06-12", "size": "50", "materials": ["Photoresin"], "handle": "pinup-butcher-painters-scale" }
       ],
       "aliases": ["Pinup Butcher - Painter's Scale"],
@@ -2309,7 +2309,7 @@
       "kind": "model",
       "tags": ["female", "plastic", "generic", "monster", "pinup", "2020", "painters-scale", "node-3-nemesis", "monster-honeycomb-weaver"],
       "editions": [
-        { "v": "Plastic", "$": [3000], "r": "2020-12-12", "size": "54", "available": true, "handle": "pinup-honeycomb-weaver" },
+        { "v": "Plastic", "$": [3000], "r": "2020-12-12", "size": "54", "handle": "pinup-honeycomb-weaver", "available": true },
         { "v": "Painters", "$": [3000, 6000], "r": "2023-10-02", "size": "50", "materials": ["Photoresin"], "handle": "pinup-honey-comb-weaver-painters-scale" }
       ],
       "aliases": ["Pinup Honeycomb Weaver - Painter's Scale"],
@@ -2547,7 +2547,7 @@
       "tags": ["female", "plastic", "generic", "monster", "pinup", "2020", "armor", "node-4-quarry", "monster-screaming-god"],
       "editions": [
         { "v": "First Run", "runSize": 900, "materials": ["Resin"], "$": [2700], "r": "2020-02-14", "handle": "pinup-screaming-god-armor" },
-        { "v": "Plastic", "$": [3000], "r": "2020-12-12", "available": true, "handle": "pinup-screaming-god-armor-1" }
+        { "v": "Plastic", "$": [3000], "r": "2020-12-12", "handle": "pinup-screaming-god-armor-1", "available": true }
       ],
       "announcements": ["2020-02-14"],
       "notes": "First released as a resin (run of 900) during Valentine's Day 2020.",
@@ -2580,7 +2580,7 @@
       "editions": [
         { "v": "Resin", "$": [2700], "r": "2016-04-18", "size": "30" },
         { "v": "Painters", "$": [5000], "r": "2023-05-02", "size": "50", "materials": ["Photoresin"], "handle": "pinup-storm-armor-painters-scale" },
-        { "v": "Plastic", "$": [3000], "r": "2025-11-27", "size": "30", "available": true, "handle": "pinup-storm-knight-armor" }
+        { "v": "Plastic", "$": [3000], "r": "2025-11-27", "size": "30", "handle": "pinup-storm-knight-armor", "available": true }
       ],
       "notes": "Renamed from Pinup Storm Armor to Pinup Storm Knight Armor for Pinups of Death III.\n\nPainter's Scale: selected by winners of the 2022 Pinup Painting Contest and limited to 450 prints.",
       "announcements": ["2023-05-02"]
@@ -2615,7 +2615,7 @@
       "name": "Pinup Titan Bee Armor",
       "kind": "model",
       "tags": ["female", "plastic", "generic", "monster", "pinup", "2020", "armor", "node-1-quarry", "monster-titan-bee"],
-      "editions": [{ "v": "Plastic", "r": "2020-12-12", "available": true, "$": [3000] }],
+      "editions": [{ "v": "Plastic", "r": "2020-12-12", "$": [3000], "available": true }],
       "size": "30",
       "handle": "pinup-titan-bee-armor"
     },
@@ -2679,7 +2679,7 @@
       "tags": ["female", "plastic", "generic", "pinup", "2020", "resin", "2014", "visionary"],
       "editions": [
         { "v": "Resin", "$": [2500], "r": "2014-10-31", "handle": "pinup-visionary" },
-        { "v": "Plastic", "$": [3000], "r": "2020-12-12", "available": true, "handle": "pinup-visionary-1" }
+        { "v": "Plastic", "$": [3000], "r": "2020-12-12", "handle": "pinup-visionary-1", "available": true }
       ],
       "announcements": ["2020-06-24"],
       "size": "30"
@@ -2688,7 +2688,7 @@
       "name": "Pinup Visionary Male",
       "kind": "model",
       "tags": ["plastic", "generic", "male", "pinup", "2020", "visionary"],
-      "editions": [{ "v": "Plastic", "r": "2020-12-12", "available": true, "$": [3000] }],
+      "editions": [{ "v": "Plastic", "r": "2020-12-12", "$": [3000], "available": true }],
       "size": "30",
       "handle": "pinup-male-visionary"
     },
@@ -2867,7 +2867,7 @@
       "kind": "model",
       "tags": ["female", "plastic", "survivor", "2026", "seed", "ingama"],
       "announcements": ["2026-01-30"],
-      "editions": [{ "v": "Plastic", "r": "2026-01-30", "available": true, "$": [3400] }],
+      "editions": [{ "v": "Plastic", "r": "2026-01-30", "$": [3400], "available": true }],
       "handle": "seed-pattern-ingama"
     },
     "seed-pattern-survivor-jackel": {
@@ -2899,7 +2899,7 @@
       "kind": "model",
       "tags": ["female", "plastic", "survivor", "2026", "seed", "zaniyah"],
       "announcements": ["2026-04-30"],
-      "editions": [{ "v": "Plastic", "r": "2026-04-30", "available": true, "$": [3400] }],
+      "editions": [{ "v": "Plastic", "r": "2026-04-30", "$": [3400], "available": true }],
       "handle": "seed-pattern-zaniyah"
     },
     "set-10th-anniversary-survivors": {
@@ -2930,8 +2930,8 @@
       "gameplay": true,
       "tags": ["female", "plastic", "generic", "gameplay", "sim", "2018", "strain", "echoes-of-death", "fighting-art"],
       "editions": [
-        { "v": "Sim", "$": [1000], "r": "2024-07-26", "available": true, "handle": "kds-echoes-of-death-1" },
-        { "v": "Plastic", "$": [7700], "r": "2018-08-20", "available": true, "handle": "echoes-of-death-one" }
+        { "v": "Sim", "$": [1000], "r": "2024-07-26", "handle": "kds-echoes-of-death-1", "available": true },
+        { "v": "Plastic", "$": [7700], "r": "2018-08-20", "handle": "echoes-of-death-one", "available": true }
       ],
       "announcements": ["2019-03-27"],
       "notes": "First release at Gen Con 2018. Features canon variants of Fighter, Mage, Thief & Necromancer.",
@@ -2944,8 +2944,8 @@
       "gameplay": true,
       "tags": ["female", "plastic", "generic", "gameplay", "2019", "sim", "strain", "echoes-of-death", "fighting-art"],
       "editions": [
-        { "v": "Sim", "$": [1000], "r": "2025-03-31", "available": true, "handle": "kds-echoes-of-death-2" },
-        { "v": "Plastic", "$": [7700], "r": "2019-08-16", "available": true, "handle": "echoes-of-death-two" }
+        { "v": "Sim", "$": [1000], "r": "2025-03-31", "handle": "kds-echoes-of-death-2", "available": true },
+        { "v": "Plastic", "$": [7700], "r": "2019-08-16", "handle": "echoes-of-death-two", "available": true }
       ],
       "announcements": ["2019-08-16", "2020-11-27", "2022-03-01", "2022-04-22", "2022-06-01", "2023-08-28"],
       "aliases": ["Echoes of Death II"],
@@ -2959,8 +2959,8 @@
       "gameplay": true,
       "tags": ["female", "plastic", "generic", "gameplay", "2020", "sim", "strain", "echoes-of-death", "fighting-art"],
       "editions": [
-        { "v": "Sim", "$": [1000], "r": "2025-06-30", "available": true, "handle": "kds-echoes-of-death-4" },
-        { "v": "Plastic", "$": [7700], "r": "2020-11-27", "available": true, "handle": "echoes-of-death-three" }
+        { "v": "Sim", "$": [1000], "r": "2025-06-30", "handle": "kds-echoes-of-death-4", "available": true },
+        { "v": "Plastic", "$": [7700], "r": "2020-11-27", "handle": "echoes-of-death-three", "available": true }
       ],
       "aliases": ["Echoes of Death III"],
       "announcements": ["2020-11-27", "2022-03-01", "2022-04-22", "2022-06-01", "2023-08-28"],
@@ -3066,7 +3066,7 @@
       "aliases": ["Pinups of Death II Collection", "Naked Pinups of Death II Bundle"],
       "editions": [
         { "v": "Naked", "$": [10000], "r": "2019-11-29", "materials": ["Plastic"], "gameplay": false, "handle": "naked-pinups-of-death-2" },
-        { "v": "Plastic", "$": [11500, 12000], "r": "2020-12-12", "available": true, "handle": "pinups-of-death-series-2" }
+        { "v": "Plastic", "$": [11500, 12000], "r": "2020-12-12", "handle": "pinups-of-death-series-2", "available": true }
       ],
       "announcements": ["2019-11-29", "2021-07-19"],
       "includes": [
@@ -3190,7 +3190,7 @@
       "kind": "set",
       "tags": ["female", "plastic", "generic", "male", "survivor", "2025"],
       "announcements": ["2025-08-29"],
-      "editions": [{ "v": "Plastic", "r": "2025-08-29", "available": true, "$": [7700] }],
+      "editions": [{ "v": "Plastic", "r": "2025-08-29", "$": [7700], "available": true }],
       "handle": "survivors-of-death-2"
     },
     "set-survivors-of-death-3": {
@@ -3230,8 +3230,8 @@
       ],
       "aliases": ["Vignettes of Death - Killennium Butcher"],
       "editions": [
-        { "v": "Sim", "$": [900], "r": "2025-03-03", "available": true, "handle": "kds-killenium-butcher-vignette" },
-        { "v": "Plastic", "$": [10000], "r": "2024-02-29", "available": true, "handle": "vignette-of-death-killennium-butcher" }
+        { "v": "Sim", "$": [900], "r": "2025-03-03", "handle": "kds-killenium-butcher-vignette", "available": true },
+        { "v": "Plastic", "$": [10000], "r": "2024-02-29", "handle": "vignette-of-death-killennium-butcher", "available": true }
       ],
       "announcements": ["2024-02-29", "2024-11-29", "2025-07-29"],
       "includes": [{ "item": "vignette-of-death-killennium-butcher-survivors", "edition": "Plastic", "parentEditions": ["Plastic"] }],
@@ -3244,8 +3244,8 @@
       "announcements": ["2025-10-31", "2026-06-30"],
       "aliases": ["KDS Vignette of Death: Screaming Nukealope", "Screaming Nukealope"],
       "editions": [
-        { "v": "Sim", "$": [1000], "r": "2026-06-30", "available": true, "handle": "kds-nukealope" },
-        { "v": "Box", "$": [10000], "r": "2025-10-31", "available": true, "handle": "vignette-of-death-screaming-nukealope" }
+        { "v": "Sim", "$": [1000], "r": "2026-06-30", "handle": "kds-nukealope", "available": true },
+        { "v": "Box", "$": [10000], "r": "2025-10-31", "handle": "vignette-of-death-screaming-nukealope", "available": true }
       ],
       "tags": ["gameplay", "monster", "2025", "sim", "node-2-quarry", "vignette", "monster-screaming-nukealope"]
     },
@@ -3263,8 +3263,8 @@
       "kind": "vignette",
       "gameplay": true,
       "editions": [
-        { "v": "Sim", "$": [850], "r": "2023-11-24", "available": true, "handle": "kds-gigalion-expansion" },
-        { "v": "Plastic", "$": [9000], "r": "2019-08-16", "available": true, "handle": "vignette-of-death-white-gigalion" }
+        { "v": "Sim", "$": [850], "r": "2023-11-24", "handle": "kds-gigalion-expansion", "available": true },
+        { "v": "Plastic", "$": [9000], "r": "2019-08-16", "handle": "vignette-of-death-white-gigalion", "available": true }
       ],
       "announcements": ["2019-08-16", "2020-11-27", "2022-12-25", "2023-11-24"],
       "includes": [{ "item": "vignette-of-death-white-gigalion-survivors", "edition": "Plastic", "parentEditions": ["Plastic"] }],
@@ -3279,8 +3279,8 @@
       "tags": ["female", "plastic", "gameplay", "2025", "gear", "sim", "wanderer", "secret-fighting-art", "philosophy", "aeneas"],
       "aliases": ["Anonymous Survivor / Aeneas the Wanderer", "KDS Wanderer - Aeneas", "Aeneas the Wanderer"],
       "editions": [
-        { "v": "Sim", "$": [500], "r": "2026-04-30", "available": true, "handle": "kds-aeneas" },
-        { "v": "Plastic", "$": [5000], "r": "2025-09-30", "available": true, "handle": "wanderer-aeneas" }
+        { "v": "Sim", "$": [500], "r": "2026-04-30", "handle": "kds-aeneas", "available": true },
+        { "v": "Plastic", "$": [5000], "r": "2025-09-30", "handle": "wanderer-aeneas", "available": true }
       ],
       "announcements": ["2025-07-22", "2025-09-30", "2026-04-30"],
       "size": "30",
@@ -3294,9 +3294,9 @@
       "requires": ["expansion-gamblers-chest"],
       "aliases": ["Lantern Year 3 Candy & Cola", "KDS Wanderer - Candy & Cola", "Wanderer - Candy"],
       "editions": [
-        { "v": "Sim", "$": [500], "r": "2026-04-01", "available": true, "handle": "kds-candy-cola" },
+        { "v": "Sim", "$": [500], "r": "2026-04-01", "handle": "kds-candy-cola", "available": true },
         { "v": "Plastic", "$": [4000], "r": "2015-09-03", "size": "30", "gameplay": false, "handle": "candy-and-cola" },
-        { "v": "Box", "$": [5000], "r": "2025-11-26", "materials": ["Plastic"], "available": true, "handle": "wanderer-candy" }
+        { "v": "Box", "$": [5000], "r": "2025-11-26", "materials": ["Plastic"], "handle": "wanderer-candy", "available": true }
       ],
       "announcements": ["2025-07-22", "2025-09-30", "2026-04-01"],
       "notes": "Crossover with Soda Pop.\n\nPlastic: Super Dungeon Explore."
@@ -3307,8 +3307,8 @@
       "gameplay": true,
       "tags": ["plastic", "generic", "gameplay", "male", "2025", "sim", "promo", "crossover", "wanderer"],
       "editions": [
-        { "v": "Sim", "$": [500], "r": "2026-05-29", "available": true, "handle": "kds-death-drifter" },
-        { "v": "Plastic", "$": [5000], "r": "2025-09-30", "available": true, "handle": "wanderer-death-drifter" }
+        { "v": "Sim", "$": [500], "r": "2026-05-29", "handle": "kds-death-drifter", "available": true },
+        { "v": "Plastic", "$": [5000], "r": "2025-09-30", "handle": "wanderer-death-drifter", "available": true }
       ],
       "aliases": ["KDS Wanderer - Hyperlight Drifter", "Death Drifter"],
       "announcements": ["2025-07-22", "2025-09-30", "2026-05-29"],
@@ -3322,8 +3322,8 @@
       "tags": ["female", "plastic", "gameplay", "2025", "sim", "promo", "crossover", "wanderer", "goth", "amy"],
       "aliases": ["Goth Amy, the Unraveling", "KDS Wanderer Goth"],
       "editions": [
-        { "v": "Sim", "$": [500], "r": "2026-02-27", "available": true, "handle": "kds-wanderer-goth" },
-        { "v": "Plastic", "$": [5000], "r": "2025-09-30", "available": true, "handle": "wanderer-goth" }
+        { "v": "Sim", "$": [500], "r": "2026-02-27", "handle": "kds-wanderer-goth", "available": true },
+        { "v": "Plastic", "$": [5000], "r": "2025-09-30", "handle": "wanderer-goth", "available": true }
       ],
       "announcements": ["2025-07-22", "2025-09-30", "2026-02-27"],
       "notes": "Plastic: Zombicide.",
@@ -3335,7 +3335,7 @@
       "tags": ["female", "plastic", "generic", "2026", "wanderer", "preacher"],
       "announcements": ["2026-01-30", "2026-04-30", "2026-05-29", "2026-06-30"],
       "aliases": ["Wanderer - Preacher AT REGIONAL WAREHOUSES"],
-      "editions": [{ "v": "Plastic", "r": "2026-01-30", "available": true, "$": [5000] }],
+      "editions": [{ "v": "Plastic", "r": "2026-01-30", "$": [5000], "available": true }],
       "handle": "wanderer-preacher"
     },
     "10th-anniversary-white-speaker": {
@@ -3555,7 +3555,7 @@
       "editions": [
         { "v": "First Run", "gameplay": false, "materials": ["Resin"], "runSize": 250, "$": [2500], "r": "2012-06-01" },
         { "v": "Encore", "gameplay": false, "materials": ["Resin"], "$": [2500], "r": "2012-06-01" },
-        { "v": "Plastic", "$": [2500], "r": "2024-08-29", "available": true, "handle": "beyond-the-wall-1a" }
+        { "v": "Plastic", "$": [2500], "r": "2024-08-29", "handle": "beyond-the-wall-1a", "available": true }
       ],
       "announcements": ["2024-08-29"],
       "notes": "Includes two body options. Also offered through Promos of Death.",
@@ -3772,7 +3772,7 @@
         { "v": "First Run", "$": [3000], "size": "30", "r": "2023-03-31", "runSize": 500, "gameplay": false, "materials": ["Photoresin"], "handle": "stone-wrecker" },
         { "v": "Deathgrey", "$": [3500], "materials": ["Photoresin"], "size": "30", "r": "2023-03-31", "runSize": 350, "gameplay": false, "handle": "stone-wrecker" },
         { "v": "Encore", "size": "30", "gameplay": false, "materials": ["Photoresin"], "$": [3000], "r": "2023-03-31", "handle": "stone-wrecker" },
-        { "v": "Plastic", "r": "2026-05-29", "available": true, "$": [3400], "handle": "stone-wrecker-1" }
+        { "v": "Plastic", "r": "2026-05-29", "$": [3400], "handle": "stone-wrecker-1" }
       ],
       "announcements": ["2023-03-31", "2026-05-29"],
       "gameplayContent": "Character Card"
@@ -4215,7 +4215,7 @@
       "announcements": ["2025-10-31"],
       "tags": ["deathgrey", "2025", "endemic-life"],
       "editions": [
-        { "v": "First Run", "r": "2025-10-31", "$": [7500], "available": true, "materials": ["Photoresin"] },
+        { "v": "First Run", "r": "2025-10-31", "$": [7500], "materials": ["Photoresin"], "available": true },
         { "v": "Deathgrey", "r": "2025-10-31", "$": [8000], "available": true },
         { "v": "Encore", "r": "2025-10-31", "$": [7500], "materials": ["Photoresin"] }
       ],
@@ -4283,7 +4283,7 @@
       "aliases": ["Green Knight"],
       "announcements": ["2022-12-25", "2023-11-24"],
       "editions": [
-        { "v": "Sim", "$": [350], "r": "2025-11-25", "available": true, "handle": "kds-green-knight-armor-expansion" },
+        { "v": "Sim", "$": [350], "r": "2025-11-25", "handle": "kds-green-knight-armor-expansion", "available": true },
         { "v": "1.3", "materials": ["Plastic"], "r": "2016-02-16", "$": [1500, 2500] },
         { "v": "1.6", "$": [6500, 8000], "r": "2021-11-26", "materials": ["Plastic"], "handle": "green-knight-armor-expansion-1-6" }
       ],
@@ -4984,7 +4984,7 @@
       ],
       "tags": ["gameplay", "2026", "2020", "resin", "upcoming", "legendary", "cards"],
       "editions": [
-        { "v": "I", "r": "2020-11-25", "$": [3000], "available": true, "handle": "legendary-card-pack-1-6-upgrade", "gameplay": false },
+        { "v": "I", "r": "2020-11-25", "$": [3000], "handle": "legendary-card-pack-1-6-upgrade", "gameplay": false, "available": true },
         { "v": "II", "$": [3000], "releaseWindow": "2026", "materials": ["Plastic"] }
       ],
       "gameplay": true
@@ -5018,7 +5018,7 @@
       "announcements": ["2026-04-01"],
       "tags": ["2026", "champion", "lion-champion"],
       "editions": [
-        { "v": "First Run", "r": "2026-04-01", "$": [6700], "available": true, "materials": ["Photoresin"] },
+        { "v": "First Run", "r": "2026-04-01", "$": [6700], "materials": ["Photoresin"], "available": true },
         { "v": "Encore", "r": "2026-04-01", "$": [6700], "materials": ["Photoresin"] }
       ],
       "handle": "lion-champion"
@@ -5121,7 +5121,7 @@
       "editions": [
         { "v": "First Run", "$": [2700], "r": "2021-02-15", "runSize": 500, "gameplay": false, "materials": ["Resin"], "handle": "lune" },
         { "v": "Encore", "gameplay": false, "materials": ["Resin"], "$": [2700], "r": "2021-02-15", "handle": "lune" },
-        { "v": "Plastic", "$": [3400], "r": "2023-08-28", "available": true, "handle": "lune-2" }
+        { "v": "Plastic", "$": [3400], "r": "2023-08-28", "handle": "lune-2", "available": true }
       ],
       "aliases": ["Lune (Hard Plastic Character)", "Lune (Plastic)", "Lune (Resin)"],
       "announcements": ["2021-02-15", "2022-10-01", "2023-08-28"],
@@ -5156,8 +5156,8 @@
       "tags": ["male", "deathgrey", "survivor", "2026", "guy"],
       "announcements": ["2026-05-29"],
       "editions": [
-        { "v": "First Run", "r": "2026-05-29", "$": [3400], "available": true, "materials": ["Photoresin"], "runSize": 500 },
-        { "v": "Deathgrey", "r": "2026-05-29", "$": [3900], "available": true },
+        { "v": "First Run", "r": "2026-05-29", "$": [3400], "materials": ["Photoresin"], "runSize": 500 },
+        { "v": "Deathgrey", "r": "2026-05-29", "$": [3900] },
         { "v": "Encore", "r": "2026-05-29", "$": [3400], "materials": ["Photoresin"] }
       ],
       "handle": "male-survivor-guy"
@@ -5168,8 +5168,8 @@
       "tags": ["male", "deathgrey", "survivor", "2026", "lionel"],
       "announcements": ["2026-05-29"],
       "editions": [
-        { "v": "First Run", "r": "2026-05-29", "$": [3400], "available": true, "materials": ["Photoresin"] },
-        { "v": "Deathgrey", "r": "2026-05-29", "$": [3900], "available": true },
+        { "v": "First Run", "r": "2026-05-29", "$": [3400], "materials": ["Photoresin"] },
+        { "v": "Deathgrey", "r": "2026-05-29", "$": [3900] },
         { "v": "Encore", "r": "2026-05-29", "$": [3400], "materials": ["Photoresin"] }
       ],
       "handle": "white-lion-lionel"
@@ -5539,8 +5539,8 @@
       "announcements": ["2025-07-22", "2025-09-30", "2026-08-31"],
       "aliases": ["KDS Philosophies of Death: Gatherism"],
       "editions": [
-        { "v": "Sim", "$": [650], "r": "2026-08-31", "available": true, "handle": "kds-gatherism" },
-        { "v": "Box", "$": [6500], "r": "2025-09-30", "available": true, "handle": "philosophy-of-death-gatherism" }
+        { "v": "Sim", "$": [650], "r": "2026-08-31", "handle": "kds-gatherism", "available": true },
+        { "v": "Box", "$": [6500], "r": "2025-09-30", "handle": "philosophy-of-death-gatherism", "available": true }
       ],
       "tags": ["gameplay", "2025", "sim", "gatherism", "philosophy", "philosophies-of-death"]
     },
@@ -5832,7 +5832,7 @@
       "editions": [
         { "v": "First Run", "materials": ["Resin"], "runSize": 500, "$": [5500], "r": "2014-04-28" },
         { "v": "Encore", "materials": ["Resin"], "$": [5500], "r": "2014-04-28" },
-        { "v": "Plastic", "$": [3400], "r": "2025-12-04", "available": true, "handle": "satan-1" }
+        { "v": "Plastic", "$": [3400], "r": "2025-12-04", "handle": "satan-1", "available": true }
       ],
       "announcements": ["2022-08-09", "2022-11-25"],
       "notes": "The plastic version of the old sculpt was contained in the Wave 3.1 release, along with a newly sculpted pair.",
@@ -6006,8 +6006,8 @@
       "gameplay": true,
       "tags": ["female", "plastic", "gameplay", "2023", "sim", "innovation", "settlement-event", "skrelle"],
       "editions": [
-        { "v": "Sim", "$": [700], "r": "2024-07-03", "available": true, "handle": "kds-skrelle" },
-        { "v": "Plastic", "$": [3400], "r": "2023-03-31", "available": true, "handle": "skrelle" }
+        { "v": "Sim", "$": [700], "r": "2024-07-03", "handle": "kds-skrelle", "available": true },
+        { "v": "Plastic", "$": [3400], "r": "2023-03-31", "handle": "skrelle", "available": true }
       ],
       "announcements": ["2023-03-31"],
       "size": "30"
@@ -7956,7 +7956,7 @@
       "tags": ["2026", "phobia", "settlement"],
       "handle": "kingdom-death-comic-phobia-2-the-settlement",
       "editions": [
-        { "v": "Pawel Zdanowski", "$": [1300], "r": "2026-08-31", "available": true, "materials": ["Original"] },
+        { "v": "Pawel Zdanowski", "$": [1300], "r": "2026-08-31", "materials": ["Original"], "available": true },
         { "v": "Ein Lee", "$": [1300], "r": "2026-08-31", "available": true },
         { "v": "Lokman Lam", "$": [1300], "r": "2026-08-31", "available": true }
       ]
@@ -8181,7 +8181,7 @@
       "aliases": ["Expansions of Death Bundle", "expansions of death 1 6", "Expansion of Death Vol 1.6", "KDS - Digital Expansion of Death Vol. 1"],
       "announcements": ["2022-12-25", "2023-11-24", "2024-11-29"],
       "editions": [
-        { "v": "Sim", "$": [10550], "name": "KDS - Digital Expansion of Death Vol. 1", "r": "2023-11-24", "available": true, "handle": "kds-wave-2-bundle" },
+        { "v": "Sim", "$": [10550], "name": "KDS - Digital Expansion of Death Vol. 1", "r": "2023-11-24", "handle": "kds-wave-2-bundle", "available": true },
         { "v": "1.6", "$": [105500], "name": "Expansion of Death Vol 1.6", "r": "2016-02-16", "handle": "expansion-of-death-vol-1-6" }
       ],
       "notes": "Sim edition: Requires Kingdom Death: Simulator and the digital Kingdom Death: Monster core game."

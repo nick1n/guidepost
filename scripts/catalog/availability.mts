@@ -76,7 +76,10 @@ export function availabilityFromUrls(catalog: Catalog, products: Product[]) {
         const url = catalogListing(item, edition);
         const key = url ? handle(url) : undefined;
         const product = key ? listings.get(key) : undefined;
-        if (!product) {
+        // Promotional prize fulfillment is not a purchasable listing, despite Shopify stock availability.
+        if (key === "kings-coin-prize") {
+          checked++;
+        } else if (!product) {
           unmatched.push({
             category,
             itemId,

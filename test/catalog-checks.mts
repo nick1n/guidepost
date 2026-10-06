@@ -1437,3 +1437,24 @@ test("catalog tags use global item popularity while master tags remain alphabeti
   assert.deepEqual(master.content.aya, ["a-rare", "female", "z-common"]);
   assert.deepEqual(tags.content.aya, ["z-common", "a-rare", "female"]);
 });
+
+test("King's Coin prize stays unavailable despite Shopify stock availability", () => {
+  const catalog = empty();
+  catalog.accessories["kings-coins"] = {
+    name: "King's Coins",
+    tags: ["coins"],
+    editions: [
+      { v: "Original", handle: "kings-coins" },
+      { v: "Prize", handle: "kings-coin-prize", available: true },
+    ],
+  };
+  const listings = ["kings-coins", "kings-coin-prize"].map((handle) =>
+    product({ handle, variants: [{ ...product().variants[0]!, title: "HQ Warehouse (USA)", requires_shipping: true, available: true }] }),
+  );
+  const result = availabilityFromUrls(catalog, listings);
+  assert.equal(catalog.accessories["kings-coins"]!.editions![0]!.available, true);
+  assert.equal(catalog.accessories["kings-coins"]!.editions![1]!.available, undefined);
+  assert.equal(result.available, 1);
+  assert.equal(result.changed, 2);
+  assert.equal(availabilityFromUrls(catalog, listings).changed, 0);
+});

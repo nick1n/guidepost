@@ -107,3 +107,5 @@ without restoring the obsolete handle. Mappings live in `temp/kdm-catalog/shopif
 this local file is Git-ignored, so keep a copy if you need to preserve historical mappings when clearing temporary files.
 A different release needs its own edition. A shared listing that splits into different listings becomes edition-level handles.
 Homebrew editions retain their manually assigned availability during shop availability refreshes.
+
+The availability refresh excludes `kings-coin-prize`: Shopify reports it in stock, but it is a promotional prize rather than a purchasable listing. Its edition remains unavailable.
