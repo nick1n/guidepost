@@ -1,4 +1,4 @@
-import { shopLinkUrl } from "./shop.mts";
+import { productUrl, shopLinkUrl } from "./shop.mts";
 import { categories, type Catalog, type Item } from "./types.mts";
 
 export function catalogUrl(value: string) {
@@ -25,6 +25,24 @@ export function normalizeItem(item: Item) {
   for (const edition of item.editions ?? []) {
     if (edition.v === "Deathgrey M2 Edition") edition.v = "Deathgrey M2";
     if (edition.available !== true) delete edition.available;
+  }
+  // Accept legacy shop URLs at import boundaries, then store only the handle.
+  for (const listing of [item, ...(item.editions ?? [])]) {
+    if (!listing.url) continue;
+    const parsed = new URL(listing.url, "https://shop.kingdomdeath.com");
+    if (parsed.hostname === "shop.kingdomdeath.com" && /\/products\//.test(parsed.pathname)) {
+      listing.handle = productUrl(listing.url).split("/").at(-1)!;
+      delete listing.url;
+    }
+  }
+  const handles = item.editions?.map((edition) => edition.handle ?? item.handle);
+  if (handles?.length && handles.every((handle) => handle && handle === handles[0])) {
+    item.handle = handles[0];
+    for (const edition of item.editions!) delete edition.handle;
+  } else if (item.handle && item.editions) {
+    // A new listing splits a formerly shared handle into explicit edition handles.
+    for (const edition of item.editions) edition.handle ??= item.handle;
+    delete item.handle;
   }
   inheritEncoreDates(item);
   if (typeof item.alt === "string") {

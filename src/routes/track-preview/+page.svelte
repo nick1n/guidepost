@@ -13,6 +13,10 @@
     { id: "homebrew", label: "Homebrew" },
   ] as const;
   type Entry = ReturnType<typeof reviewEntries>[number];
+  type Selection = { owned?: boolean; wished?: boolean; copy?: string };
+
+  const swipeFeedbackDuration = 900;
+  const emptySelection: Readonly<Selection> = {};
 
   function key(item: Entry, edition: ReviewEdition) {
     return `${item.id}:${edition.v}`;
@@ -28,14 +32,10 @@
   import TagRail from "#lib/components/track/TagRail.svelte";
   import HoldRipple from "#lib/components/gestures/HoldRipple.svelte";
   import { swipe, type SwipeDirection } from "#lib/swipe.ts";
-  import { reviewEditions, reviewNumberedEditions, reviewPrice, reviewTags, reviewTagLabel } from "#lib/catalog-view.ts";
-  import { editionGameplay, editionMaterials, editionUrl, formatPrice, storeUrl } from "#lib/kdm-data.ts";
+  import { reviewShopUrl, reviewEditions, reviewNumberedEditions, reviewPrice, reviewTags, reviewTagLabel } from "#lib/catalog-view.ts";
+  import { editionGameplay, editionMaterials, formatPrice } from "#lib/kdm-data.ts";
 
-  type Selection = { owned?: boolean; wished?: boolean; copy?: string };
   type Owner = { parent: string; parentEdition: string; edition?: string };
-
-  const swipeFeedbackDuration = 900;
-  const emptySelection: Readonly<Selection> = {};
 
   let category = $state<(typeof categories)[number]["id"]>("content");
   let categoryResults = $state.raw<Partial<Record<typeof category, Entry[]>>>({ content: catalog.byCategory.get("content") ?? [] });
@@ -115,10 +115,8 @@
   const searchQuery = $derived(query.trim().toLowerCase());
   const categoryEntries = $derived(catalog.byCategory.get(category) ?? []);
   const tags = $derived(catalog.tags.get(category) ?? []);
-  const cloudTags = $derived(tags.filter(({ tag, count }) => count >= 5 && !/^\d+$/.test(tag)));
-  const allTags = $derived(
-    tags.filter(({ count }) => count > 1).toSorted((a, b) => reviewTagLabel(a.tag).localeCompare(reviewTagLabel(b.tag), "en")),
-  );
+  const cloudTags = $derived(catalog.tagViews.get(category)?.cloud ?? []);
+  const allTags = $derived(catalog.tagViews.get(category)?.all ?? []);
   const filtered = $derived.by(() => {
     if (!searchQuery && !selectedTags.length && status === "all") return categoryEntries;
     return categoryEntries.filter((item) => {
@@ -136,7 +134,10 @@
       return edition && edition.standalone !== false && !selection(item, edition).owned ? [{ item, edition }] : [];
     }),
   );
-  const tagCounts = $derived(new Map((filtered === categoryEntries ? tags : reviewTags(filtered)).map(({ tag, count }) => [tag, count])));
+  const tagCounts = $derived.by(() => {
+    if (filtered === categoryEntries) return catalog.tagViews.get(category)?.counts ?? new Map<string, number>();
+    return new Map(reviewTags(filtered).map(({ tag, count }) => [tag, count]));
+  });
   const owned = $derived(
     entries.flatMap((item) =>
       reviewEditions(item)
@@ -438,6 +439,12 @@
     </div>
   </div>
   <footer>Preview selections reset when this page reloads. Your saved collection is unchanged.</footer>
+  <div class={["swipe-previous", dragDistance > 0 && "is-visible"]} aria-hidden="true">
+    <span class="swipe-icon i-material-symbols:chevron-left"></span>
+  </div>
+  <div class={["swipe-next", dragDistance < 0 && "is-visible"]} aria-hidden="true">
+    <span class="swipe-icon i-material-symbols:chevron-right"></span>
+  </div>
 </main>
 
 {#snippet categoryButtons()}
@@ -503,7 +510,7 @@
 {/snippet}
 
 {#snippet shopLink(item: Entry, edition: ReviewEdition)}
-  {@const url = storeUrl(editionUrl(item, edition))}
+  {@const url = reviewShopUrl(item, edition)}
   {@const unavailable = edition.available !== true}
   {#if url}
     <a class={["shop", unavailable && "unavailable"]} href={url} target="_blank" rel="noreferrer">
@@ -590,7 +597,7 @@
             >
               <div class="edition-value">
                 <strong class="price">{price === undefined ? "Price unknown" : formatPrice(price, item.currency)}</strong>
-                <span class="caption">Viewing {summaryEdition.v}</span>
+                <span class="caption">{summaryEdition.v} selected</span>
               </div>
               <div class="badges">
                 {#if item.category === "accessories"}
@@ -659,7 +666,7 @@
               </div>
               <button
                 class="wish"
-                style:visibility={value.owned ? "hidden" : "visible"}
+                style:visibility={!!value.owned || releaseEdition.standalone === false ? "hidden" : "visible"}
                 type="button"
                 aria-pressed={!!value.wished}
                 aria-label="Wishlist {item.name}, {releaseEdition.v}"
@@ -707,7 +714,7 @@
       {:else}<p class="included-note">No selectable editions are recorded yet.</p>{/if}
       <TagRail
         tagLabel={reviewTagLabel}
-        tags={catalog.itemTags.get(item.id) ?? []}
+        tags={item.tags}
         {selectedTags}
         label={`${item.name} tags`}
         onTagClick={toggleTag}
@@ -738,6 +745,7 @@
     --size-card-collapsed: 4.5rem;
     --distance-swipe-limit: 2.25rem;
     --size-catalog: 72rem;
+    --size-swipe-icon: clamp(3rem, 8vw, 7rem);
     max-inline-size: var(--size-catalog);
     margin-inline: auto;
     padding: 0.75rem 0.25rem 2rem;
@@ -755,6 +763,42 @@
       transition: none;
       cursor: grabbing;
     }
+  }
+  .swipe-previous,
+  .swipe-next {
+    position: fixed;
+    inset-block-start: 50%;
+    z-index: 2;
+    display: grid;
+    /* Shadow the icon's silhouette, since a text shadow does not apply to its mask. */
+    filter: drop-shadow(0 0.125rem 0.25rem color-mix(var(--contrast) 80%, transparent))
+      drop-shadow(0 0 0.5rem color-mix(var(--foreground) 20%, transparent));
+    visibility: hidden;
+    /* Decorative gesture feedback must not intercept the swipe or nearby controls. */
+    pointer-events: none;
+    transition:
+      translate var(--duration-fast) var(--ease-standard),
+      visibility 0s var(--duration-fast);
+
+    &.is-visible {
+      translate: 0 -50%;
+      visibility: visible;
+      transition-delay: 0s;
+    }
+  }
+  .swipe-previous {
+    inset-inline-start: 0;
+    translate: calc(-100% - 0.5rem) -50%;
+  }
+  .swipe-next {
+    inset-inline-end: 0;
+    translate: calc(100% + 0.5rem) -50%;
+  }
+  .swipe-icon {
+    display: inline-block;
+    inline-size: var(--size-swipe-icon);
+    block-size: var(--size-swipe-icon);
+    color: var(--foreground);
   }
   header {
     margin-block-end: 0.75rem;
@@ -903,10 +947,12 @@
   }
   .stat-wishlist {
     --stat-accent: var(--accent-red);
+    justify-items: end;
   }
   .stat-value {
     grid-row: 2;
     grid-column: 1 / -1;
+    justify-items: center;
   }
   .stat-label {
     display: flex;
@@ -1386,8 +1432,8 @@
   }
   .gameplay-icon {
     display: inline-block;
-    inline-size: var(--size-icon-control);
-    block-size: var(--size-icon-control);
+    inline-size: 1.25rem;
+    block-size: 1.25rem;
     color: var(--accent-green);
   }
   .edition-meta {
@@ -1537,6 +1583,10 @@
     }
   }
   @media (prefers-reduced-motion: reduce) {
+    .swipe-previous,
+    .swipe-next {
+      transition: none;
+    }
     .tab-highlight {
       transition: none;
     }
@@ -1570,6 +1620,7 @@
   @container (max-width: 24rem) {
     .edition-label {
       grid-template-columns: minmax(0, 1fr) var(--size-icon-control);
+      grid-template-rows: minmax(1.25rem, auto) auto;
       min-inline-size: 0;
       gap: 0.15rem 0.25rem;
     }

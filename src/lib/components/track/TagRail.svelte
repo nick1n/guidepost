@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { identity } from "#lib/constants.ts";
+
   type Props = {
     tags: string[];
     selectedTags?: string[];
@@ -7,7 +9,7 @@
     tagLabel?: (tag: string) => string;
   };
 
-  let { tags, selectedTags, label, onTagClick, tagLabel = (tag) => tag }: Props = $props();
+  let { tags, selectedTags, label, onTagClick, tagLabel = identity }: Props = $props();
 
   let dragging = $state(false);
   let dragged = false;

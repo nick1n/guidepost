@@ -11,7 +11,7 @@ import {
   type Product,
   type Variant,
 } from "./types.mts";
-import { productUrl } from "./shop.mts";
+import { catalogListing, productUrl } from "./shop.mts";
 import { normalizeCatalog } from "./normalize.mts";
 import { organizeCatalog, editionComparator } from "./order.mts";
 import { applyTags, type Tags } from "./tags.mts";
@@ -61,6 +61,9 @@ export function contents(html: string) {
 
 export function variantLabel(variant: Variant, fallback: string): string {
   if (!variant.requires_shipping) return "Sim";
+  if (/^original cover$/i.test(variant.title)) return "Pawel Zdanowski";
+  const cover = variant.title.match(/^(Ein Lee|Lokman Lam|Wenjuinn Png) variant cover$/i);
+  if (cover) return ["Ein Lee", "Lokman Lam", "Wenjuinn Png"].find((name) => name.toLowerCase() === cover[1]!.toLowerCase())!;
   const format = fallback.match(/^(Painters|Bust)(?:: (.+))?$/);
   if (format) return format[2] ? `${format[1]}: ${variantLabel(variant, format[2])}` : format[1]!;
   if (/first run/i.test(variant.title)) return "First Run";
@@ -99,7 +102,9 @@ function match(catalog: Catalog, product: Product, mappings: Record<string, Mapp
   const listing = productUrl("/products/" + product.handle);
   const matches = categories.flatMap((category) =>
     Object.entries(catalog[category]).flatMap(([itemId, item]) => {
-      const urls = [item.url, ...(item.urls ?? []), ...(item.editions ?? []).map((e) => e.url)].filter((url): url is string => !!url);
+      const urls = [catalogListing(item), ...(item.urls ?? []), ...(item.editions ?? []).map((e) => catalogListing(item, e))].filter(
+        (url): url is string => !!url,
+      );
       const urlMatches = urls.some((url) => {
         try {
           return productUrl(url) === listing;
@@ -115,7 +120,7 @@ function match(catalog: Catalog, product: Product, mappings: Record<string, Mapp
   const { category, itemId, item, urlMatches } = matches[0]!;
   const edition = item.editions?.filter((e) => {
     try {
-      const url = e.url ?? item.url;
+      const url = catalogListing(item, e);
       return !!url && productUrl(url) === listing;
     } catch {
       return false;
@@ -217,6 +222,17 @@ export function planUpdate(
     if (!item) {
       unresolved.push({ handle: product.handle, reason: "Mapping refers to a missing item" });
       continue;
+    }
+    // Work with listing URLs internally; normalization writes compact handles.
+    if (item.handle) {
+      item.url = catalogListing(item);
+      delete item.handle;
+    }
+    for (const edition of item.editions ?? []) {
+      if (edition.handle) {
+        edition.url = catalogListing(item, edition);
+        delete edition.handle;
+      }
     }
     const digital = product.variants.every((v) => !v.requires_shipping);
     if (digital && !item.editions && item.url) {

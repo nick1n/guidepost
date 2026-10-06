@@ -1,4 +1,9 @@
 <script module lang="ts">
+  import { DURATION_FAST, DURATION_HOLD } from "#lib/constants.ts";
+
+  const rippleFadeDuration = 270;
+  const holdDelay = DURATION_HOLD * 0.125;
+
   type Point = { x: number; y: number; bounds: DOMRect };
   type Press = Point & { id: number };
   type Ripple = { x: number; y: number; radius: number; scale: number; complete: boolean; fading: boolean };
@@ -14,10 +19,6 @@
 
 <script lang="ts">
   import { onDestroy, type Snippet } from "svelte";
-  import { DURATION_FAST, DURATION_HOLD } from "#lib/constants.ts";
-
-  const rippleFadeDuration = 270;
-  const holdDelay = DURATION_HOLD * 0.125;
 
   // Render a native button with the supplied events and place the ripple inside its positioned surface.
   // coverParent lets a header's ripple cover sibling actions without making those actions hold targets.

@@ -6,12 +6,21 @@ import { categories, type Catalog, type Category, type Mapping } from "./types.m
 
 export type Tags = Record<Category, Record<string, string[]>>;
 
+export function sortCatalogTags(catalog: Catalog) {
+  const counts = new Map<string, number>();
+  for (const category of categories)
+    for (const item of Object.values(catalog[category])) for (const tag of new Set(item.tags)) counts.set(tag, (counts.get(tag) ?? 0) + 1);
+  for (const category of categories)
+    for (const item of Object.values(catalog[category]))
+      item.tags.sort((a, b) => counts.get(b)! - counts.get(a)! || (a < b ? -1 : a > b ? 1 : 0));
+}
+
 export function organizeTags(catalog: Catalog, tags: Tags) {
   return Object.fromEntries(
     (["content", "included-only", "bundles", "homebrew", "accessories"] as const).map((category) => [
       category,
       Object.fromEntries(
-        [...new Set([...Object.keys(catalog[category]), ...Object.keys(tags[category])])].map((id) => [id, tags[category][id]]),
+        [...new Set([...Object.keys(catalog[category]), ...Object.keys(tags[category])])].map((id) => [id, tags[category][id]?.toSorted()]),
       ),
     ]),
   ) as Tags;
@@ -75,6 +84,7 @@ export function applyTags(catalog: Catalog, tags: Tags, mappings: Record<string,
         throw new Error("Invalid or duplicate master tags: " + id);
       item.tags = [...values];
     }
+  sortCatalogTags(catalog);
 }
 
 export function tagSchema(vocabulary: string[]) {
@@ -102,6 +112,6 @@ export function checkTags(catalog: Catalog, tags: Tags, mappings: Record<string,
   applyTags(expected, tags, mappings);
   for (const category of categories)
     for (const id of Object.keys(catalog[category]))
-      if (JSON.stringify(catalog[category][id]!.tags) !== JSON.stringify(expected[category][id]!.tags))
+      if (JSON.stringify(catalog[category][id]!.tags.toSorted()) !== JSON.stringify(expected[category][id]!.tags.toSorted()))
         throw new Error("Catalog tags differ from kdm-tags.json for " + id + "; regenerate the review with pnpm catalog:tags");
 }

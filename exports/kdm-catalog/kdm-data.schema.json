@@ -73,7 +73,7 @@
         "requires": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true, "minItems": 1 },
         "url": {
           "type": "string",
-          "description": "Shared product listing for all editions, or the primary listing for an item without editions. Edition-specific URLs override this value. Omit variant selectors.",
+          "description": "External listing URL. Kingdom Death shop product listings use handle instead.",
           "minLength": 1
         },
         "aliases": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true, "minItems": 1 },
@@ -109,7 +109,7 @@
           "minLength": 1,
           "description": "Gameplay content supplied with this item. Release differences, when known, are described here."
         },
-        "accessoryType": { "enum": ["shirt", "dice", "other"] },
+        "accessoryType": { "enum": ["shirt", "dice", "other", "comic"] },
         "colors": {
           "type": "array",
           "items": { "type": "string", "minLength": 1 },
@@ -127,6 +127,11 @@
           "minimum": 1900,
           "maximum": 2100,
           "description": "Explicitly supplied product release year. Shirt and dice years are stored here rather than in editions; unknown years are omitted."
+        },
+        "handle": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+          "description": "Shared Kingdom Death shop product handle. Applies to every edition; omit edition handles when present."
         }
       }
     },
@@ -160,10 +165,14 @@
             "Dwelling Key",
             "Early Variant",
             "Easter",
+            "Ein Lee",
             "Encore",
             "First Run",
             "Halloween",
+            "I",
+            "II",
             "Illusionist Key",
+            "Lokman Lam",
             "Master Dwelling Key",
             "Metal",
             "Naked",
@@ -172,9 +181,11 @@
             "Painters: Cheeky",
             "Painters: Encore",
             "Painters: First Run",
+            "Pawel Zdanowski",
             "Photoresin",
             "Plastic",
             "Pledge",
+            "Preorder",
             "Prize",
             "Remaster",
             "Remaster: Deathgrey",
@@ -186,6 +197,7 @@
             "Resin & Metal",
             "Sim",
             "Valentines",
+            "Wenjuinn Png",
             "White Resin"
           ]
         },
@@ -241,7 +253,7 @@
         "url": {
           "type": "string",
           "minLength": 1,
-          "description": "Edition-specific listing. When omitted, inherit item.url. Omit variant selectors."
+          "description": "External listing URL. Kingdom Death shop product listings use handle instead."
         },
         "available": {
           "type": "boolean",
@@ -257,6 +269,11 @@
         "includesAllSim": {
           "const": true,
           "description": "Grants every current and future Sim edition. Resolve against items with an edition labeled Sim when reading the catalog; do not materialize a static list."
+        },
+        "handle": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+          "description": "Kingdom Death shop product handle. Used only when the item has no shared handle."
         }
       }
     },

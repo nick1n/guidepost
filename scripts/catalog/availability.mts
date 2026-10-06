@@ -1,4 +1,4 @@
-import { productUrl } from "./shop.mts";
+import { catalogListing, productUrl } from "./shop.mts";
 import { variantLabel } from "./update.mts";
 import { categories, type Catalog, type Edition, type Product } from "./types.mts";
 
@@ -13,6 +13,8 @@ function handle(url: string) {
 const runLabels = ["First Run", "Second Run", "Deathgrey", "Deathgrey M2", "Deathpink", "Encore", "General"];
 
 function variantsFor(edition: Edition, product: Product, candidates: Edition[]) {
+  if (["Pawel Zdanowski", "Ein Lee", "Lokman Lam", "Wenjuinn Png"].includes(edition.v))
+    return product.variants.filter((variant) => variantLabel(variant, "") === edition.v);
   if (["Dwelling Key", "Illusionist Key", "Master Dwelling Key"].includes(edition.v)) {
     const physical = product.variants.filter((variant) => variant.requires_shipping);
     const matches = (title: string) =>
@@ -61,16 +63,17 @@ export function availabilityFromUrls(catalog: Catalog, products: Product[]) {
   let changed = 0;
   for (const category of categories) {
     for (const [itemId, item] of Object.entries(catalog[category])) {
+      if (category === "homebrew") continue;
       const groups = new Map<string, Edition[]>();
       for (const edition of item.editions ?? []) {
-        const url = edition.url ?? item.url;
+        const url = catalogListing(item, edition);
         const key = url ? handle(url) : undefined;
         if (key) groups.set(key, [...(groups.get(key) ?? []), edition]);
       }
       for (const edition of item.editions ?? []) {
         const previous = edition.available;
         delete edition.available;
-        const url = edition.url ?? item.url;
+        const url = catalogListing(item, edition);
         const key = url ? handle(url) : undefined;
         const product = key ? listings.get(key) : undefined;
         if (!product) {

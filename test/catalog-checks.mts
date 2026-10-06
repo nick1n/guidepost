@@ -14,7 +14,7 @@ import {
   releaseGaps,
   variantLabel,
 } from "../scripts/catalog/update.mts";
-import { productUrl, ShopClient, ShopError, shopProduct } from "../scripts/catalog/shop.mts";
+import { catalogListing, productUrl, ShopClient, ShopError, shopProduct } from "../scripts/catalog/shop.mts";
 import { applyReview } from "../scripts/update-catalog.mts";
 import { refreshAvailability } from "../scripts/refresh-catalog-availability.mts";
 import { availabilityFromUrls } from "../scripts/catalog/availability.mts";
@@ -491,7 +491,7 @@ test("digital additions preserve a known physical listing and default gameplay t
   assert.equal(item.gameplay, undefined);
   assert.deepEqual(
     item.editions?.find((e) => e.v === "Box"),
-    { v: "Box", url: "/products/physical-rene", $: [3400] },
+    { v: "Box", handle: "physical-rene", $: [3400] },
   );
   assert.equal(item.editions?.[0]?.gameplay, true);
   assert.equal(catalog.content.rene.price, 3400);
@@ -541,7 +541,7 @@ test("master tags replace existing and mapping tags without guessing or merging 
     [],
     tags,
   );
-  assert.deepEqual(plan.catalog.content.rene?.tags, ["survivor", "male"]);
+  assert.deepEqual(plan.catalog.content.rene?.tags, ["male", "survivor"]);
   assert.deepEqual(before.content.rene.tags, ["generic", "female"]);
   assert.equal(prepareUpdate(plan.catalog, [], {}, [], tags).changes.length, 0);
   const mappings = {
@@ -657,10 +657,10 @@ test("applying reviewed tags works without local imports, mappings, or reports a
   );
   const applied = JSON.parse(await readFile(join(root, "kdm-data.json"), "utf8"));
   assert.deepEqual(Object.keys(applied.content), ["neko", "aya"]);
-  assert.deepEqual(applied.content.neko, { ...before.content.neko, tags: tags.content.neko });
+  assert.deepEqual(applied.content.neko, { ...before.content.neko, tags: tags.content.neko!.toSorted() });
   const master = JSON.parse(await readFile(join(catalogTemp(root), "kdm-tags.json"), "utf8"));
   assert.deepEqual(Object.keys(master.content), ["neko", "aya"]);
-  assert.deepEqual(master.content.neko, tags.content.neko);
+  assert.deepEqual(master.content.neko, tags.content.neko!.toSorted());
   const report = JSON.parse(await readFile(join(catalogTemp(root), "reports/kdm-merge-report.json"), "utf8"));
   const update = report.catalogUpdates[0];
   assert.deepEqual(
@@ -788,7 +788,7 @@ test("shared URLs and false gameplay compact without losing different edition fa
     name: "Aya",
     tags: ["aya"],
     gameplay: true,
-    url: "/products/aya",
+    handle: "aya",
     editions: [
       { v: "First Run", gameplay: false, $: [700] },
       { v: "Encore", gameplay: false, runSize: 100, releaseWindow: "2026 Q4" },
@@ -814,8 +814,8 @@ test("an added digital edition preserves an inherited physical URL", () => {
     [],
   );
   assert.equal(plan.catalog.content.rene?.url, undefined);
-  assert.equal(plan.catalog.content.rene?.editions?.find((e) => e.v === "First Run")?.url, "/products/physical-rene");
-  assert.equal(plan.catalog.content.rene?.editions?.find((e) => e.v === "Sim")?.url, "/products/kds-rene");
+  assert.equal(plan.catalog.content.rene?.editions?.find((e) => e.v === "First Run")?.handle, "physical-rene");
+  assert.equal(plan.catalog.content.rene?.editions?.find((e) => e.v === "Sim")?.handle, "kds-rene");
   assert.equal(plan.catalog.content.rene?.editions?.find((e) => e.v === "First Run")?.runSize, undefined);
 });
 
@@ -981,7 +981,7 @@ test("applying a review persists ordering even when no item facts changed", asyn
   await mkdir(join(catalogTemp(root), "reports"));
   const before = empty();
   before.content.aya = { name: "Aya", kind: "model", tags: ["aya"], editions: [{ v: "Plastic", r: "2019-01-01" }] };
-  before.content.neko = { name: "Neko", kind: "model", tags: ["neko", "death-high"], editions: [{ v: "Plastic", r: "2020-01-01" }] };
+  before.content.neko = { name: "Neko", kind: "model", tags: ["death-high", "neko"], editions: [{ v: "Plastic", r: "2020-01-01" }] };
   const tags = tagFile({ aya: ["aya"], neko: ["neko", "death-high"] });
   const schema = await readFile("exports/kdm-catalog/kdm-data.schema.json", "utf8");
   const files = {
@@ -1270,7 +1270,7 @@ test("temporary preorder links stay in announcement evidence without replacing e
       },
     ],
   );
-  assert.equal(plan.catalog.content.core?.url, "/products/kingdom-death-monster-1-6");
+  assert.equal(plan.catalog.content.core?.handle, "kingdom-death-monster-1-6");
   assert.deepEqual(plan.catalog.content.core?.announcements, ["2026-02-27"]);
 });
 
@@ -1365,4 +1365,75 @@ test("included-only items retain parent references and reviewed tags across cate
   applyTags(catalog, tags);
   delete catalog["included-only"].joe.editions![0]!.standalone;
   await assert.rejects(validateCatalog(catalog, schemaPath), /Included-only item has a standalone or unconfirmed edition/);
+});
+
+test("handles resolve shared and edition-specific listings while external homebrew remains available", () => {
+  const item = { name: "Model", tags: ["model"], handle: "shared", editions: [{ v: "First Run" }, { v: "Encore" }] };
+  assert.equal(catalogListing(item, item.editions[0]), "https://shop.kingdomdeath.com/products/shared");
+  const split = { name: "Model", tags: ["model"], editions: [{ v: "Resin", handle: "resin" }, { v: "Plastic" }] };
+  assert.equal(catalogListing(split, split.editions[0]), "https://shop.kingdomdeath.com/products/resin");
+  assert.equal(catalogListing(split, split.editions[1]), undefined);
+  const catalog = empty();
+  catalog.homebrew.example = {
+    name: "Files",
+    tags: ["homebrew"],
+    url: "https://ko-fi.com/s/example",
+    editions: [{ v: "3D Files", available: true }],
+  };
+  availabilityFromUrls(catalog, []);
+  assert.equal(catalog.homebrew.example.editions![0]!.available, true);
+  assert.equal(catalogListing(catalog.homebrew.example), "https://ko-fi.com/s/example");
+});
+
+test("a curated handle replacement keeps old cached listings mapped to the same edition", () => {
+  const catalog = empty();
+  catalog.content.rene = { name: "Rene", tags: ["rene"], handle: "old-rene", editions: [{ v: "Sim", $: [700] }] };
+  const mappings = {
+    "old-rene": { category: "content" as const, itemId: "rene", edition: "Sim" },
+    "kds-rene": { category: "content" as const, itemId: "rene", edition: "Sim", replaceUrl: true },
+  };
+  const updated = planUpdate(catalog, [source(product())], mappings, []).catalog;
+  assert.equal(updated.content.rene!.handle, "kds-rene");
+  const historical = planUpdate(updated, [source(product({ handle: "old-rene" }))], mappings, []);
+  assert.equal(historical.catalog.content.rene!.handle, "kds-rene");
+  assert.equal(historical.catalog.content.rene!.editions!.length, 1);
+});
+
+test("comic availability matches individual artist covers on a shared handle", () => {
+  const catalog = empty();
+  catalog.accessories.phobia = {
+    name: "Phobia",
+    tags: ["phobia"],
+    handle: "phobia",
+    editions: [{ v: "Pawel Zdanowski" }, { v: "Ein Lee" }, { v: "Lokman Lam" }],
+  };
+  const listing = product({
+    handle: "phobia",
+    variants: [
+      { ...product().variants[0]!, id: 1, title: "Original Cover", requires_shipping: true, available: false },
+      { ...product().variants[0]!, id: 2, title: "Ein Lee variant cover", requires_shipping: true, available: true },
+      { ...product().variants[0]!, id: 3, title: "Lokman Lam variant cover", requires_shipping: true, available: false },
+    ],
+  });
+  const result = availabilityFromUrls(catalog, [listing]);
+  assert.equal(result.unmatched.length, 0);
+  assert.deepEqual(
+    catalog.accessories.phobia.editions!.map((e) => e.available),
+    [undefined, true, undefined],
+  );
+});
+
+test("catalog tags use global item popularity while master tags remain alphabetical", () => {
+  const catalog = empty();
+  catalog.content.aya = { name: "Aya", tags: ["aya"] };
+  catalog.content.rene = { name: "Rene", tags: ["rene"] };
+  catalog.accessories.example = { name: "Example", tags: ["accessory"] };
+  const tags = tagFile({ aya: ["z-common", "a-rare", "female"], rene: ["z-common", "female"] });
+  tags.accessories.example = ["z-common", "accessory"];
+  applyTags(catalog, tags);
+  assert.deepEqual(catalog.content.aya.tags, ["z-common", "female", "a-rare"]);
+  assert.deepEqual(catalog.accessories.example.tags, ["z-common", "accessory"]);
+  const master = organizeTags(catalog, tags);
+  assert.deepEqual(master.content.aya, ["a-rare", "female", "z-common"]);
+  assert.deepEqual(tags.content.aya, ["z-common", "a-rare", "female"]);
 });

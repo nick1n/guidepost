@@ -38,7 +38,7 @@ async function fixture() {
   await writeFile(
     path,
     JSON.stringify({
-      content: { example: { name: "Example", kind: "model", tags: ["generic"], releaseDate: "2025-01-01", url: "/products/example" } },
+      content: { example: { name: "Example", kind: "model", tags: ["generic"], releaseDate: "2025-01-01", handle: "example" } },
       accessories: {},
       bundles: {},
       homebrew: {},

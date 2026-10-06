@@ -3,7 +3,7 @@ import { createHash } from "node:crypto";
 import { access, mkdir, open, readFile, unlink, writeFile } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import { setTimeout as sleep } from "node:timers/promises";
-import type { Mapping, Product } from "./types.mts";
+import type { Edition, Item, Mapping, Product } from "./types.mts";
 
 export async function loadMappings(root: string, path?: string): Promise<Record<string, Mapping>> {
   const text = await readFile(path ?? join(catalogTemp(root), "shopify-products/kdm-shop-mappings.json"), "utf8").catch(
@@ -48,6 +48,12 @@ export function shopLinkUrl(value: string, base = "https://shop.kingdomdeath.com
   url.pathname = url.pathname.replace(/^(?:\/products\/+){2,}/i, "/products/").replace(/(\/products\/)(?:%20)+/i, "$1");
   url.protocol = "https:";
   return url;
+}
+
+// Shared handles apply to every edition; external links remain URLs.
+export function catalogListing(item: Item, edition?: Edition) {
+  const handle = item.handle ?? edition?.handle;
+  return handle ? "https://shop.kingdomdeath.com/products/" + handle : (edition?.url ?? item.url);
 }
 
 export function productUrl(value: string) {

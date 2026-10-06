@@ -94,7 +94,7 @@ export async function fillEditions(
     try {
       const names = [item.name, ...(item.aliases ?? [])].map(normalized);
       const listing =
-        item.url ??
+        (item.handle ? "/products/" + item.handle : item.url) ??
         news.links
           .filter((row) => names.includes(normalized(row.itemName)) && !/preorder/i.test(row.shopUrl))
           .sort((a, b) => b.date.localeCompare(a.date))[0]?.shopUrl;
@@ -105,7 +105,8 @@ export async function fillEditions(
       if (product.handle !== productUrl(listing).split("/").at(-1)) throw new Error("Response handle does not match listing");
       const result = productEditions(item, product);
       item.editions = result.editions.sort(editionComparator(item, itemId));
-      item.url = "/products/" + product.handle;
+      item.handle = product.handle;
+      delete item.url;
       delete item.releaseDate;
       delete item.price;
       delete item.priceMinimum;

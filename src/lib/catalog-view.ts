@@ -71,6 +71,7 @@ export type ReviewEdition = {
   gameplay?: boolean;
   materials?: string[];
   size?: string;
+  handle?: string;
   url?: string;
   runSize?: number;
   includesAllSim?: true;
@@ -86,6 +87,7 @@ export type ReviewItem = {
   gameplay?: true;
   gameplayContent?: string;
   notes?: string;
+  handle?: string;
   url?: string;
   price?: number;
   currency?: Currency;
@@ -110,6 +112,11 @@ export function reviewTags(items: readonly Pick<ReviewItem, "tags">[]) {
   const counts = new Map<string, number>();
   for (const item of items) for (const tag of new Set(item.tags)) counts.set(tag, (counts.get(tag) ?? 0) + 1);
   return [...counts].map(([tag, count]) => ({ tag, count })).sort((a, b) => b.count - a.count || a.tag.localeCompare(b.tag, "en"));
+}
+
+export function reviewShopUrl(item: ReviewItem, edition: ReviewEdition) {
+  const handle = item.handle ?? edition.handle;
+  return handle ? "https://shop.kingdomdeath.com/products/" + handle : (edition.url ?? item.url);
 }
 
 export function reviewPrice(item: ReviewItem, edition: ReviewEdition) {
@@ -143,11 +150,15 @@ export function reviewIndex(catalog: ReviewCatalog) {
     byCategory.set(item.category, grouped);
   }
   const tags = new Map([...byCategory].map(([category, items]) => [category, reviewTags(items)]));
-  const itemTags = new Map(
-    [...byCategory].flatMap(([category, items]) => {
-      const order = new Map(tags.get(category)!.map(({ tag }, index) => [tag, index]));
-      return items.map((item) => [item.id, item.tags.toSorted((a, b) => (order.get(a) ?? 0) - (order.get(b) ?? 0))] as const);
-    }),
+  const tagViews = new Map(
+    [...tags].map(([category, values]) => [
+      category,
+      {
+        cloud: values.filter(({ tag, count }) => count >= 5 && !/^\d+$/.test(tag)),
+        all: values.filter(({ count }) => count > 1).toSorted((a, b) => reviewTagLabel(a.tag).localeCompare(reviewTagLabel(b.tag), "en")),
+        counts: new Map(values.map(({ tag, count }) => [tag, count])),
+      },
+    ]),
   );
   const byId = new Map(entries.map((item) => [item.id, item]));
   const sim = entries.filter((item) => item.editions?.some((edition) => edition.v === "Sim"));
@@ -260,7 +271,7 @@ export function reviewIndex(catalog: ReviewCatalog) {
     return pricing;
   }
 
-  return { entries, byCategory, tags, itemTags, search, inclusions, includedEditions, bundlePricing };
+  return { entries, byCategory, tags, tagViews, search, inclusions, includedEditions, bundlePricing };
 }
 
 export function reviewInclusions(catalog: ReviewCatalog, id: string, edition: string) {

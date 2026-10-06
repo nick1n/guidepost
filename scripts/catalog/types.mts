@@ -9,6 +9,7 @@ export type Edition = {
   materials?: string[];
   gameplay?: boolean;
   size?: string;
+  handle?: string;
   url?: string;
   runSize?: number;
   includesAllSim?: true;
@@ -30,6 +31,7 @@ export type Item = {
   includes?: Inclusion[];
   requires?: string[];
   announcements?: string[];
+  handle?: string;
   url?: string;
   urls?: string[];
   price?: number;

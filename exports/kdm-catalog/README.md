@@ -1,11 +1,11 @@
-The review catalog has 877 items and 1444 editions. It combines the app catalog, collection workbook, and cached news. The live app still reads `src/lib/kdm-data.json`; this export needs app integration before adoption.
+The review catalog has 876 items and 1451 editions. It combines the app catalog, collection workbook, and cached news. The live app still reads `src/lib/kdm-data.json`; this export needs app integration before adoption.
 
 | File                                                         | Purpose                                     |
 | ------------------------------------------------------------ | ------------------------------------------- |
 | [Catalog](./kdm-data.json), [schema](./kdm-data.schema.json) | Product facts and relationships             |
 | [News export](../kingdom-death-news/news-shop-links.json)    | Cached announcement dates and product links |
 
-The Git-ignored `temp/kdm-catalog/kdm-tags.json` and `temp/kdm-catalog/kdm-tags.schema.json` files are optional personal review tools. Apply your edits with `pnpm catalog:tags --apply` before deleting both files. Without the local assignments, updates and validation use the tags saved in `kdm-data.json`. Edit local tags in `temp/kdm-catalog/kdm-tags.json`. Allowed values live in `temp/kdm-catalog/kdm-tags.schema.json` under `$defs.tag.enum`. VS Code provides tag-value completions and flags misspellings, empty arrays, and duplicates. The schema accepts any item key; merging checks missing and unknown IDs. While local assignments are present, stored catalog tags come exactly from that file, preserving assignment order.
+The Git-ignored `temp/kdm-catalog/kdm-tags.json` and `temp/kdm-catalog/kdm-tags.schema.json` files are optional personal review tools. Apply your edits with `pnpm catalog:tags --apply` before deleting both files. Without the local assignments, updates and validation use the tags saved in `kdm-data.json`. Edit local tags in `temp/kdm-catalog/kdm-tags.json`. Allowed values live in `temp/kdm-catalog/kdm-tags.schema.json` under `$defs.tag.enum`. VS Code provides tag-value completions and flags misspellings, empty arrays, and duplicates. The schema accepts any item key; merging checks missing and unknown IDs. While local assignments are present, stored catalog tags come exactly from that file, ordering catalog tags by popularity across all catalog items, with alphabetical ties. The master tag file keeps each item?s tags alphabetical.
 
 ```bash
 pnpm catalog:tags
@@ -13,7 +13,7 @@ pnpm catalog:tags --apply
 pnpm catalog:validate
 ```
 
-The first command prepares a review; the second prepares and applies the current assignments. Tag-only commands make no shop requests. `pnpm catalog:tags-schema` refreshes the schema structure while preserving the vocabulary and custom tag definitions. Catalog additions do not require per-ID schema regeneration.
+The first command prepares a review with catalog tags ordered by popularity; the second applies that order and writes alphabetical tag lists to the local master tag file before writing the catalog. Tag-only commands make no shop requests. `pnpm catalog:tags-schema` refreshes the schema structure while preserving the vocabulary and custom tag definitions. Catalog additions do not require per-ID schema regeneration.
 
 For news updates:
 
@@ -93,3 +93,17 @@ The regular Ultimate Starting Survivor Set follows the cached `lantern-year-29-b
 The Oblivion Mosquito monster and Oblivion Mosquito Armor Kit have separate included Plastic editions for the expansion's 2027 release window. These editions use `[0]` for no separate component price and `standalone: false`. Their earlier Naked editions keep their own prices and dates.
 
 Goblin Dragon is confirmed by the catalog owner as part of Abyssal Woods. Its included Plastic edition follows the expansion's 2030 release window; the Naked edition retains its 2023 date and price. Steel Wax Armor Kit is confirmed by the catalog owner as part of Honeycomb Weaver. Its included Plastic edition follows the expansion's 2026 release window and uses [0] with standalone: false; the Naked edition retains its 2024 date and $30 price.
+
+## Shop handles
+
+Kingdom Death product listings use `handle`, matching the cached Shopify product handle. Build shop links as
+`https://shop.kingdomdeath.com/products/` plus the handle. An item-level handle applies to every edition.
+Without it, only editions with their own handle have a shop link. External listings, including homebrew, retain `url`.
+Shared handles identify listings; release variants still determine edition pricing and availability.
+
+When a listing changes handle, add a reviewed mapping for the new handle to the same item and edition, with
+`replaceUrl: true`. Keep the old handle mapping without that flag so historical cache and news entries still resolve
+without restoring the obsolete handle. Mappings live in `temp/kdm-catalog/shopify-products/kdm-shop-mappings.json`;
+this local file is Git-ignored, so keep a copy if you need to preserve historical mappings when clearing temporary files.
+A different release needs its own edition. A shared listing that splits into different listings becomes edition-level handles.
+Homebrew editions retain their manually assigned availability during shop availability refreshes.

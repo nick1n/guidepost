@@ -7,11 +7,11 @@ import { parseArgs } from "node:util";
 import { gzipSync } from "node:zlib";
 import { format, resolveConfig } from "prettier";
 import { keepUrl, loadReport, recoverCachedHistory, saveReport, type Report } from "./scrape-news-shop-links.mts";
-import { productUrl, ShopClient, ShopError, shopProduct, loadMappings } from "./catalog/shop.mts";
+import { catalogListing, productUrl, ShopClient, ShopError, shopProduct, loadMappings } from "./catalog/shop.mts";
 import { planUpdate, productExclusion, releaseGaps } from "./catalog/update.mts";
 import { validateCatalog } from "./catalog/validate.mts";
 import { categories, type Catalog, type Evidence, type Mapping } from "./catalog/types.mts";
-import { loadTags, checkTags, tagSchema, organizeTags } from "./catalog/tags.mts";
+import { loadTags, checkTags, tagSchema, organizeTags, sortCatalogTags } from "./catalog/tags.mts";
 import { organizeCatalog } from "./catalog/order.mts";
 
 const digest = (value: string) => createHash("sha256").update(value).digest("hex");
@@ -58,6 +58,7 @@ export async function applyReview(
   }
   const mappings: Record<string, Mapping> = await loadMappings(root);
   checkTags(catalog, master.tags, mappings);
+  sortCatalogTags(catalog);
   organizeCatalog(catalog);
   const validation = await validateCatalog(catalog, join(root, "kdm-data.schema.json"));
   const orderedTags = { $schema: "./kdm-tags.schema.json", ...organizeTags(catalog, master.tags) };
@@ -207,7 +208,7 @@ async function main() {
     for (const category of categories)
       for (const item of Object.values(before[category]))
         for (const edition of item.editions ?? []) {
-          const listing = edition.url ?? item.url;
+          const listing = catalogListing(item, edition);
           if (edition.v !== "Sim" || !listing) continue;
           const url = productUrl(listing);
           const handle = new URL(url).pathname.split("/").at(-1)!;
