@@ -1,4 +1,4 @@
-import { bundles, collectionItems, content, dice, editionMaterials, effectivePrice, homebrew } from "./kdm-data";
+import { bundles, collectionItems, content, dice, editionGameplay, editionMaterials, effectivePrice, homebrew } from "./kdm-data";
 import type { Bundle, ContentItem, DiceSet, Filters, CollectionState, Currency } from "#lib/types/index.ts";
 
 type CatalogItem = ContentItem | DiceSet | Bundle;
@@ -136,6 +136,21 @@ export function reviewNumberedEditions(item: ReviewItem) {
       edition.runSize !== undefined ||
       /\bfirst[\s-]+run\b|\bdeathgrey\b/i.test([edition.v, edition.name, ...editionMaterials(edition)].join(" ")),
   );
+}
+
+export function reviewGameplayFirst(items: ReturnType<typeof reviewEntries>) {
+  const gameplay = new Set(
+    items.filter((item) => reviewEditions(item).some((edition) => editionGameplay(item, edition))).map((item) => item.id),
+  );
+  return items.toSorted((a, b) => Number(gameplay.has(b.id)) - Number(gameplay.has(a.id)));
+}
+
+export function reviewBadges(item: ReviewItem) {
+  const editions = reviewEditions(item);
+  return {
+    gameplay: editions.some((edition) => editionGameplay(item, edition) && (!edition.beta || edition.gameplay === true)),
+    beta: editions.some((edition) => edition.beta),
+  };
 }
 
 // Rebuild this index when the catalog changes; cached results belong to that snapshot.

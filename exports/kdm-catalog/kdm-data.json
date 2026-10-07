@@ -702,7 +702,7 @@
     },
     "ashbloom-of-dedheim": {
       "name": "Ashbloom of Dedheim",
-      "kind": "model",
+      "kind": "box",
       "tags": ["female", "gameplay", "2025", "painters-scale", "bust", "dedheim", "ashbloom"],
       "announcements": ["2025-10-31", "2025-11-28"],
       "editions": [
@@ -763,7 +763,7 @@
     },
     "early-survivor-zelda": {
       "name": "Early Survivor - Zelda",
-      "kind": "model",
+      "kind": "box",
       "gameplay": true,
       "tags": ["female", "plastic", "gameplay", "survivor", "2024", "gear", "bust", "hunt-event", "zelda"],
       "editions": [
@@ -803,7 +803,7 @@
     },
     "morgan-the-savior": {
       "name": "Morgan the Savior",
-      "kind": "model",
+      "kind": "box",
       "gameplay": true,
       "tags": ["female", "plastic", "gameplay", "2024", "bust", "savior", "character", "secret-fighting-art", "morgan"],
       "editions": [
@@ -1314,7 +1314,7 @@
     },
     "indomitable-survivor-dashing-reaper-paleun": {
       "name": "Indomitable Survivor - Dashing Reaper Paleun",
-      "kind": "model",
+      "kind": "box",
       "gameplay": true,
       "tags": ["female", "plastic", "gameplay", "survivor", "2025", "pattern", "indomitable-survivor", "resource", "paleun"],
       "editions": [{ "v": "Plastic", "$": [3400], "r": "2025-04-30", "available": true }],
@@ -1333,7 +1333,7 @@
     },
     "indomitable-survivor-greatest-gaxe-morg": {
       "name": "Indomitable Survivor - Greatest Gaxe Morg",
-      "kind": "model",
+      "kind": "box",
       "gameplay": true,
       "tags": ["plastic", "gameplay", "male", "survivor", "2024", "sim", "pattern", "indomitable-survivor", "resource", "morg"],
       "editions": [
@@ -1346,7 +1346,7 @@
     },
     "indomitable-survivor-gusk-knives-grimmory": {
       "name": "Indomitable Survivor - Gusk Knives Grimmory",
-      "kind": "model",
+      "kind": "box",
       "gameplay": true,
       "tags": ["plastic", "gameplay", "male", "survivor", "2024", "sim", "pattern", "indomitable-survivor", "resource", "grimmory"],
       "editions": [
@@ -1358,7 +1358,7 @@
     },
     "indomitable-survivor-heartleech-baselard-rene": {
       "name": "Indomitable Survivor - Heartleech Baselard Rene",
-      "kind": "model",
+      "kind": "box",
       "tags": ["female", "gameplay", "survivor", "2026", "sim", "indomitable-survivor", "rene"],
       "announcements": ["2026-02-27", "2026-09-30"],
       "editions": [
@@ -1368,7 +1368,7 @@
     },
     "indomitable-survivor-longclaw-lenore": {
       "name": "Indomitable Survivor - Longclaw Lenore",
-      "kind": "model",
+      "kind": "box",
       "gameplay": true,
       "tags": ["female", "plastic", "gameplay", "2023", "survivor", "painters-scale", "sim", "pattern", "indomitable-survivor", "resource", "lenore"],
       "editions": [
@@ -1382,7 +1382,7 @@
     },
     "indomitable-survivor-lordsruin-titus": {
       "name": "Indomitable Survivor - Lordsruin Titus",
-      "kind": "model",
+      "kind": "box",
       "gameplay": true,
       "tags": ["plastic", "gameplay", "male", "survivor", "2024", "pattern", "indomitable-survivor", "resource", "titus"],
       "editions": [{ "v": "Plastic", "$": [3400], "r": "2024-04-30", "available": true }],
@@ -1417,7 +1417,7 @@
     },
     "indomitable-survivor-roaring-harmonica-kale": {
       "name": "Indomitable Survivor - Roaring Harmonica Kale",
-      "kind": "model",
+      "kind": "box",
       "gameplay": true,
       "tags": ["plastic", "gameplay", "male", "survivor", "2025", "sim", "pattern", "indomitable-survivor", "resource", "kale"],
       "editions": [
@@ -1430,7 +1430,7 @@
     },
     "indomitable-survivor-stampede-glaive-xell": {
       "name": "Indomitable Survivor - Stampede Glaive Xell",
-      "kind": "model",
+      "kind": "box",
       "gameplay": true,
       "tags": ["female", "plastic", "gameplay", "survivor", "2024", "sim", "pattern", "indomitable-survivor", "resource", "xell"],
       "editions": [
@@ -1443,7 +1443,7 @@
     },
     "indomitable-survivor-tachyon-nodachi-rubi": {
       "name": "Indomitable Survivor - Tachyon Nodachi Rubi",
-      "kind": "model",
+      "kind": "box",
       "gameplay": true,
       "tags": ["female", "plastic", "gameplay", "survivor", "2025", "sim", "pattern", "indomitable-survivor", "resource", "rubi"],
       "editions": [
@@ -1456,7 +1456,7 @@
     },
     "indomitable-survivor-thumping-timpani-ledla": {
       "name": "Indomitable Survivor - Thumping Timpani Ledla",
-      "kind": "model",
+      "kind": "box",
       "gameplay": true,
       "tags": ["female", "plastic", "gameplay", "survivor", "2024", "pattern", "indomitable-survivor", "resource", "ledla"],
       "editions": [{ "v": "Plastic", "$": [3400], "r": "2024-08-01", "available": true }],
@@ -1483,7 +1483,7 @@
     },
     "legendary-character-glow": {
       "name": "Legendary Character - Glow",
-      "kind": "model",
+      "kind": "box",
       "gameplay": true,
       "tags": ["female", "plastic", "gameplay", "2024", "gear", "sim", "character", "legendary", "glow"],
       "editions": [
@@ -1538,7 +1538,7 @@
     },
     "legendary-character-snow-the-savior": {
       "name": "Legendary Character - Snow the Savior",
-      "kind": "model",
+      "kind": "box",
       "tags": ["female", "plastic", "gameplay", "2025", "savior", "character", "snow", "legendary"],
       "announcements": ["2025-08-29"],
       "editions": [{ "v": "Plastic", "r": "2025-08-29", "$": [7700], "available": true }],
@@ -1633,7 +1633,7 @@
     },
     "erza-of-dedheim": {
       "name": "Erza of Dedheim",
-      "kind": "model",
+      "kind": "box",
       "gameplay": true,
       "tags": ["female", "plastic", "gameplay", "seasonal", "painters-scale", "core-survivor", "2022", "erza", "seed", "dedheim"],
       "editions": [{ "v": "Plastic", "$": [6000], "r": "2022-10-31" }],
@@ -1672,7 +1672,7 @@
     },
     "holiday-white-speaker-nico": {
       "name": "Holiday White Speaker Nico",
-      "kind": "model",
+      "kind": "box",
       "gameplay": true,
       "tags": ["female", "plastic", "gameplay", "2024", "2015", "seasonal", "painters-scale", "promo", "white-speaker", "deathmas", "nico"],
       "editions": [
@@ -1699,7 +1699,7 @@
     },
     "lunar-aya": {
       "name": "Lunar Aya",
-      "kind": "model",
+      "kind": "box",
       "gameplay": true,
       "tags": ["female", "plastic", "gameplay", "2024", "seasonal", "painters-scale", "sim", "pattern", "aya", "lunar"],
       "editions": [
@@ -1718,7 +1718,7 @@
       "editions": [
         { "v": "First Run", "$": [2500], "r": "2012-01-30", "runSize": 200, "materials": ["Resin"], "size": "30" },
         { "v": "Encore", "materials": ["Resin"], "$": [2500], "r": "2012-01-30", "size": "30" },
-        { "v": "Early Variant", "$": [0], "r": "2013-11-29", "name": "Mother (early variant)", "materials": ["Resin"], "standalone": false, "size": "30" },
+        { "v": "Early Variant", "$": [0], "r": "2013-11-29", "materials": ["Resin"], "standalone": false, "size": "30" },
         { "v": "Painters", "r": "2026-04-01", "$": [6700], "handle": "mother-painters-scale", "available": true }
       ],
       "tags": ["painters-scale", "variant", "2013", "2012", "mother"],
@@ -1762,7 +1762,7 @@
       "announcements": ["2026-02-27", "2026-04-30"],
       "editions": [
         { "v": "Painters", "r": "2026-02-27", "$": [7500], "handle": "allison-loves-kingdom-death-painters-scale" },
-        { "v": "Painters: Cheeky", "r": "2026-04-30", "$": [7500], "name": "Cheeky Allison", "handle": "cheeky-allison-painters-scale" }
+        { "v": "Painters: Cheeky", "r": "2026-04-30", "$": [7500], "handle": "cheeky-allison-painters-scale" }
       ],
       "aliases": ["Cheeky Allison - Painter's Scale"]
     },
@@ -1887,7 +1887,7 @@
     },
     "painters-scale-possessed-twilight-knight": {
       "name": "Possessed Twilight Knight - Painter's Scale",
-      "kind": "model",
+      "kind": "box",
       "gameplay": true,
       "tags": ["female", "generic", "gameplay", "2023", "knight", "painters-scale", "twilight-knight"],
       "aliases": ["Possessed Twilight Knight - Painter's Scale (Oracle of Nozuki)"],
@@ -2040,7 +2040,7 @@
     },
     "white-speaker-koshka": {
       "name": "White Speaker Koshka",
-      "kind": "model",
+      "kind": "box",
       "gameplay": true,
       "tags": ["female", "plastic", "generic", "gameplay", "painters-scale", "promo", "white-speaker", "2009", "koshka"],
       "editions": [
@@ -2055,7 +2055,7 @@
     },
     "pillar-fade": {
       "name": "Pillar - Fade",
-      "kind": "model",
+      "kind": "box",
       "tags": ["female", "gameplay", "survivor", "2025", "sim", "pillar", "fade"],
       "announcements": ["2025-08-29"],
       "aliases": ["Pillar Survivor - Fade"],
@@ -2066,7 +2066,7 @@
     },
     "pillar-forge-priest": {
       "name": "Pillar - Forge Priest",
-      "kind": "model",
+      "kind": "box",
       "tags": ["female", "plastic", "generic", "gameplay", "2026", "2017", "naked", "2011", "pillar", "minion"],
       "editions": [
         { "v": "First Run", "materials": ["Resin"], "runSize": 150, "$": [2500], "r": "2011-12-10", "gameplay": false },
@@ -2120,7 +2120,7 @@
       "tags": ["female", "plastic", "generic", "pinup", "2016", "2020", "resin", "resculpt", "remaster", "apotheosis"],
       "editions": [
         { "v": "Resin", "$": [2600], "r": "2016-02-14" },
-        { "v": "Plastic", "$": [3000], "r": "2020-12-12", "name": "Remaster" }
+        { "v": "Plastic", "$": [3000], "r": "2020-12-12", "name": "remaster" }
       ],
       "size": "30",
       "aliases": ["Pinup Apotheosis (Remastered)"],
@@ -2234,7 +2234,7 @@
     },
     "pinup-easter-twilight-knight": {
       "name": "Pinup Easter Twilight Knight",
-      "kind": "model",
+      "kind": "box",
       "gameplay": true,
       "tags": ["female", "plastic", "generic", "gameplay", "knight", "pinup", "seasonal", "resin", "2017", "promo", "twilight-knight", "easter"],
       "editions": [
@@ -2292,7 +2292,7 @@
     },
     "pinup-halloween-special-twilight-knight": {
       "name": "Halloween Special Pinup Twilight Knight",
-      "kind": "model",
+      "kind": "box",
       "gameplay": true,
       "tags": ["female", "plastic", "generic", "gameplay", "knight", "pinup", "seasonal", "painters-scale", "resin", "promo", "2014", "twilight-knight", "halloween"],
       "editions": [
@@ -2391,7 +2391,7 @@
       "tags": ["female", "plastic", "generic", "pinup", "2016", "painters-scale", "resin", "armor"],
       "editions": [
         { "v": "Resin", "r": "2016-06-17", "$": [1500], "size": "30" },
-        { "v": "Plastic", "$": [1500], "r": "2020-12-12", "name": "Pinup Ramette", "size": "30" },
+        { "v": "Plastic", "$": [1500], "r": "2020-12-12", "size": "30" },
         { "v": "Painters", "$": [5000], "r": "2023-03-31", "size": "50", "materials": ["Photoresin"], "handle": "pinup-nightmare-ram-armor-painters-scale" }
       ],
       "aliases": ["Pinup Ramette", "Pinup Nightmare Ram Armor - Painter's Scale", "Pinup Nightmare Ram (Painter's Scale)"],
@@ -2408,7 +2408,7 @@
     },
     "pinup-order-knight": {
       "name": "Pinup Order Knight",
-      "kind": "model",
+      "kind": "box",
       "gameplay": true,
       "tags": ["female", "plastic", "generic", "gameplay", "knight", "pinup", "2016", "promo", "order-knight"],
       "editions": [{ "v": "Plastic", "$": [2500], "r": "2016-08-16" }],
@@ -2444,7 +2444,7 @@
     },
     "pinup-preacher-wendy": {
       "name": "Pinup Preacher Wendy",
-      "kind": "model",
+      "kind": "box",
       "tags": ["female", "plastic", "pinup", "painters-scale", "resin", "beta", "2014", "2011", "preacher", "wendy"],
       "editions": [
         { "v": "Resin", "$": [2500], "r": "2011-03-17", "size": "30" },
@@ -2524,7 +2524,7 @@
     },
     "pinup-sci-fi-twilight-knight": {
       "name": "Pinup Sci-Fi Twilight Knight",
-      "kind": "model",
+      "kind": "box",
       "gameplay": true,
       "tags": ["female", "plastic", "generic", "gameplay", "knight", "pinup", "2015", "promo", "twilight-knight", "sci-fi"],
       "editions": [{ "v": "Plastic", "$": [2500], "r": "2015-08-01" }],
@@ -2664,7 +2664,7 @@
     },
     "pinup-valentines-day-twilight-knight": {
       "name": "Valentines Day Pinup Twilight Knight",
-      "kind": "model",
+      "kind": "box",
       "gameplay": true,
       "tags": ["female", "plastic", "generic", "gameplay", "knight", "pinup", "seasonal", "2019", "promo", "twilight-knight", "valentine"],
       "editions": [{ "v": "Plastic", "$": [6000], "r": "2019-02-14" }],
@@ -2694,7 +2694,7 @@
     },
     "pinup-warrior-of-the-sun": {
       "name": "Pinup Warrior of the Sun",
-      "kind": "model",
+      "kind": "box",
       "gameplay": true,
       "tags": ["female", "plastic", "generic", "gameplay", "pinup", "2016", "resin", "promo", "pot-sun", "warrior"],
       "editions": [
@@ -2713,7 +2713,7 @@
     },
     "pinup-wet-nurse": {
       "name": "Pinup Wet Nurse",
-      "kind": "model",
+      "kind": "box",
       "gameplay": true,
       "tags": ["female", "plastic", "generic", "gameplay", "pinup", "resin", "promo", "2014"],
       "editions": [
@@ -2739,7 +2739,7 @@
     },
     "pinup-x-mas-special-twilight-knight": {
       "name": "X-mas Special Pinup Twilight Knight",
-      "kind": "model",
+      "kind": "box",
       "gameplay": true,
       "tags": ["female", "plastic", "generic", "gameplay", "knight", "pinup", "seasonal", "promo", "naked", "2014", "twilight-knight", "deathmas"],
       "editions": [
@@ -2843,7 +2843,7 @@
     },
     "sci-fi-white-speaker": {
       "name": "Sci-Fi White Speaker",
-      "kind": "model",
+      "kind": "box",
       "gameplay": true,
       "tags": ["female", "plastic", "generic", "gameplay", "2016", "promo", "white-speaker", "sci-fi"],
       "editions": [{ "v": "Plastic", "$": [2500], "r": "2016-08-16" }],
@@ -2854,7 +2854,7 @@
     },
     "seed-pattern-survivor-astri-the-promised": {
       "name": "Seed Pattern Survivor - Astri the Promised",
-      "kind": "model",
+      "kind": "box",
       "gameplay": true,
       "tags": ["female", "plastic", "gameplay", "survivor", "2026", "gear", "pattern", "seed", "astri"],
       "notes": "Includes Cleaner Bird Cloak and Seeker Lantern seed pattern cards, matching gear cards, and Seed Pattern rules. Gen Con 2026 premiere.",
@@ -2872,7 +2872,7 @@
     },
     "seed-pattern-survivor-jackel": {
       "name": "Seed Pattern Survivor - Jackel",
-      "kind": "model",
+      "kind": "box",
       "gameplay": true,
       "tags": ["female", "plastic", "gameplay", "survivor", "2025", "pattern", "seed", "jackel"],
       "editions": [{ "v": "Plastic", "$": [3400], "r": "2025-01-31", "available": true }],
@@ -2884,7 +2884,7 @@
     },
     "seed-pattern-survivor-willow": {
       "name": "Seed Pattern Survivor - Willow",
-      "kind": "model",
+      "kind": "box",
       "gameplay": true,
       "tags": ["female", "plastic", "gameplay", "survivor", "2024", "pattern", "seed", "weapon-proficiency", "willow"],
       "aliases": ["Willow / Seed Pattern - Willow", "Seed Pattern - Willow"],
@@ -3274,7 +3274,7 @@
     },
     "wanderer-aeneas": {
       "name": "Wanderer - Aeneas",
-      "kind": "model",
+      "kind": "box",
       "gameplay": true,
       "tags": ["female", "plastic", "gameplay", "2025", "gear", "sim", "wanderer", "secret-fighting-art", "philosophy", "aeneas"],
       "aliases": ["Anonymous Survivor / Aeneas the Wanderer", "KDS Wanderer - Aeneas", "Aeneas the Wanderer"],
@@ -3303,7 +3303,7 @@
     },
     "wanderer-death-drifter": {
       "name": "Wanderer - Death Drifter",
-      "kind": "model",
+      "kind": "box",
       "gameplay": true,
       "tags": ["plastic", "generic", "gameplay", "male", "2025", "sim", "promo", "crossover", "wanderer"],
       "editions": [
@@ -3317,7 +3317,7 @@
     },
     "wanderer-goth": {
       "name": "Wanderer - Goth",
-      "kind": "model",
+      "kind": "box",
       "gameplay": true,
       "tags": ["female", "plastic", "gameplay", "2025", "sim", "promo", "crossover", "wanderer", "goth", "amy"],
       "aliases": ["Goth Amy, the Unraveling", "KDS Wanderer Goth"],
@@ -3340,7 +3340,7 @@
     },
     "10th-anniversary-white-speaker": {
       "name": "10th Anniversary White Speaker",
-      "kind": "model",
+      "kind": "box",
       "gameplay": true,
       "tags": ["female", "gameplay", "2019", "white-speaker", "anniversary"],
       "editions": [{ "v": "First Run", "$": [3000], "r": "2019-10-09", "runSize": 5000, "materials": ["Plastic"] }],
@@ -3359,7 +3359,7 @@
     },
     "allison-the-twilight-knight": {
       "name": "Allison The Twilight Knight",
-      "kind": "model",
+      "kind": "box",
       "gameplay": true,
       "tags": ["female", "plastic", "gameplay", "knight", "2015", "promo", "twilight-knight", "allison"],
       "aliases": ["Allison The Twilight Knight, Pinup Reversal"],
@@ -3403,11 +3403,11 @@
       "editions": [
         { "v": "First Run", "materials": ["Resin"], "runSize": 500, "$": [2500], "r": "2015-04-08", "expansion": "Inverted Mountain" },
         { "v": "Encore", "materials": ["Resin"], "$": [2500], "r": "2015-04-08" },
-        { "v": "Deathmas", "$": [4000], "r": "2023-12-25", "materials": ["Deathgrey"], "name": "Deathmas Apotheosis", "handle": "apotheosis" },
-        { "v": "Easter", "$": [4000], "r": "2024-04-30", "materials": ["Photoresin"], "name": "Easter Apotheosis", "handle": "easter-apotheosis" },
-        { "v": "Halloween", "$": [4000], "r": "2024-10-31", "materials": ["Photoresin"], "name": "Halloween - Apotheosis", "handle": "halloween-apotheosis" },
-        { "v": "Deathmas 2024", "$": [4000], "r": "2024-12-25", "name": "2 Deathmas 2 Apotheosis", "materials": ["Photoresin"], "handle": "deathmas-apotheosis-2024" },
-        { "v": "Valentines", "r": "2025-03-03", "$": [4000], "materials": ["Photoresin"], "name": "Valentine's Day - Apotheosis", "handle": "valentines-apotheosis" },
+        { "v": "Deathmas", "$": [4000], "r": "2023-12-25", "materials": ["Deathgrey"], "handle": "apotheosis" },
+        { "v": "Easter", "$": [4000], "r": "2024-04-30", "materials": ["Photoresin"], "handle": "easter-apotheosis" },
+        { "v": "Halloween", "$": [4000], "r": "2024-10-31", "materials": ["Photoresin"], "handle": "halloween-apotheosis" },
+        { "v": "Deathmas 2024", "$": [4000], "r": "2024-12-25", "materials": ["Photoresin"], "handle": "deathmas-apotheosis-2024" },
+        { "v": "Valentines", "r": "2025-03-03", "$": [4000], "materials": ["Photoresin"], "handle": "valentines-apotheosis" },
         { "v": "Plastic", "$": [2500], "releaseWindow": "2029", "expansion": "Inverted Mountain" }
       ],
       "aliases": ["Apotheosis (Male)", "Deathmas Apotheosis", "Deathmas - Apotheosis 2024", "2 Deathmas 2 Apotheosis", "Easter Apotheosis", "Halloween - Apotheosis", "Valentine's Day - Apotheosis"],
@@ -3427,7 +3427,7 @@
     },
     "architect-female-beta-build": {
       "name": "Architect - Female (Beta Build)",
-      "kind": "model",
+      "kind": "box",
       "tags": ["female", "generic", "2019", "beta", "photoresin", "architect"],
       "editions": [{ "v": "Photoresin", "$": [1600], "r": "2019-11-29" }],
       "aliases": ["Black Friday Female Architect"],
@@ -3527,7 +3527,7 @@
     },
     "basara": {
       "name": "Basara",
-      "kind": "model",
+      "kind": "box",
       "gameplay": true,
       "tags": ["female", "plastic", "gameplay", "2023", "pattern", "character", "settlement-event", "basara"],
       "editions": [{ "v": "Plastic", "$": [6500], "r": "2023-10-31", "available": true }],
@@ -3538,7 +3538,7 @@
     },
     "before-the-wall": {
       "name": "Before the Wall",
-      "kind": "model",
+      "kind": "box",
       "gameplay": true,
       "tags": ["female", "plastic", "generic", "gameplay", "2016", "promo"],
       "editions": [{ "v": "Plastic", "$": [2500], "r": "2016-08-16" }],
@@ -3575,7 +3575,7 @@
     },
     "birthday-aya": {
       "name": "Birthday Aya",
-      "kind": "model",
+      "kind": "box",
       "gameplay": true,
       "tags": ["female", "plastic", "gameplay", "2023", "seasonal", "resource", "aya", "trait"],
       "aliases": ["Birthday Aya / Mystery Birthday Gift", "Mystery Birthday Gift"],
@@ -3587,7 +3587,7 @@
     },
     "bjorn": {
       "name": "Björn",
-      "kind": "model",
+      "kind": "box",
       "gameplay": true,
       "tags": ["female", "gameplay", "deathgrey", "2024", "gear", "bjorn"],
       "aliases": ["Björn Deathgrey M2 Edition"],
@@ -3602,7 +3602,7 @@
     },
     "black-friday-ninja": {
       "name": "Black Friday Ninja",
-      "kind": "model",
+      "kind": "box",
       "gameplay": true,
       "tags": ["female", "plastic", "generic", "gameplay", "2015", "seasonal", "promo", "black-friday", "ninja"],
       "editions": [{ "v": "Plastic", "$": [2500], "r": "2015-11-27" }],
@@ -3704,7 +3704,7 @@
     },
     "brave-and-hollow": {
       "name": "Brave + Hollow",
-      "kind": "model",
+      "kind": "box",
       "gameplay": true,
       "tags": ["female", "plastic", "gameplay", "2024", "pattern", "hollow", "brave"],
       "editions": [{ "v": "Plastic", "$": [4000], "r": "2024-10-31" }],
@@ -3764,7 +3764,7 @@
     },
     "character-stone-wrecker": {
       "name": "Character - Stone Wrecker",
-      "kind": "model",
+      "kind": "box",
       "gameplay": true,
       "tags": ["female", "plastic", "generic", "gameplay", "2023", "deathgrey", "character"],
       "aliases": ["Stone Wrecker (Resin)"],
@@ -3928,7 +3928,7 @@
     },
     "death-crown-inheritor-aya": {
       "name": "Death Crown Inheritor Aya",
-      "kind": "model",
+      "kind": "box",
       "gameplay": true,
       "tags": ["female", "plastic", "gameplay", "2023", "seasonal", "pattern", "aya"],
       "editions": [{ "v": "Plastic", "$": [6500], "r": "2023-02-28", "available": true }],
@@ -3968,7 +3968,7 @@
     },
     "detective-twilight-knight": {
       "name": "Detective Twilight Knight",
-      "kind": "model",
+      "kind": "box",
       "gameplay": true,
       "tags": ["female", "plastic", "generic", "gameplay", "knight", "2017", "promo", "twilight-knight"],
       "editions": [{ "v": "Plastic", "$": [2700], "r": "2017-08-31" }],
@@ -3979,7 +3979,7 @@
     },
     "devil-satan": {
       "name": "Devil Satan",
-      "kind": "model",
+      "kind": "box",
       "gameplay": true,
       "tags": ["female", "plastic", "gameplay", "seasonal", "promo", "2018", "satan"],
       "editions": [{ "v": "Plastic", "$": [5000], "r": "2018-10-31" }],
@@ -4131,7 +4131,7 @@
     },
     "easter-aya": {
       "name": "Easter Aya",
-      "kind": "model",
+      "kind": "box",
       "gameplay": true,
       "tags": ["female", "plastic", "gameplay", "seasonal", "2019", "promo", "aya", "easter"],
       "editions": [{ "v": "Plastic", "$": [6000], "r": "2019-04-22" }],
@@ -4187,7 +4187,7 @@
     },
     "elgnirk-the-chaos-elf": {
       "name": "Elgnirk, The Chaos Elf",
-      "kind": "model",
+      "kind": "box",
       "gameplay": true,
       "tags": ["female", "plastic", "gameplay", "seasonal", "2022", "hunt-event", "secret-fighting-art", "elgnirk"],
       "aliases": ["Elgnirk, The Choas Elf"],
@@ -4200,7 +4200,7 @@
     },
     "elsbeth": {
       "name": "Elsbeth",
-      "kind": "model",
+      "kind": "box",
       "gameplay": true,
       "tags": ["female", "plastic", "gameplay", "2024", "character", "elsbeth"],
       "editions": [{ "v": "Plastic", "$": [3400], "r": "2024-05-31", "available": true }],
@@ -4291,7 +4291,7 @@
     },
     "fade": {
       "name": "Fade",
-      "kind": "model",
+      "kind": "box",
       "gameplay": true,
       "tags": ["female", "plastic", "gameplay", "2016", "promo", "fade"],
       "editions": [{ "v": "Plastic", "$": [2500], "r": "2016-08-16" }],
@@ -4590,7 +4590,7 @@
     },
     "guinevere": {
       "name": "Guinevere",
-      "kind": "model",
+      "kind": "box",
       "gameplay": true,
       "tags": ["female", "plastic", "gameplay", "2024", "character", "guinevere"],
       "editions": [{ "v": "Plastic", "$": [3400], "r": "2024-09-30", "available": true }],
@@ -4615,7 +4615,7 @@
     },
     "halloween-ringtail-vixen": {
       "name": "Halloween Ringtail Vixen",
-      "kind": "model",
+      "kind": "box",
       "gameplay": true,
       "tags": ["female", "plastic", "gameplay", "2020", "seasonal", "pattern", "halloween", "ringtail"],
       "editions": [{ "v": "Plastic", "$": [5000], "r": "2020-10-30" }],
@@ -4626,7 +4626,7 @@
     },
     "halloween-survivor-flower-knight-costume": {
       "name": "Halloween Survivor - Flower Knight Costume",
-      "kind": "model",
+      "kind": "box",
       "gameplay": true,
       "tags": ["female", "plastic", "gameplay", "survivor", "knight", "seasonal", "pattern", "2022", "halloween"],
       "editions": [{ "v": "Plastic", "$": [3000], "r": "2022-10-31" }],
@@ -4639,7 +4639,7 @@
     },
     "halloween-survivors-king-costume": {
       "name": "Halloween Survivors - King Costume",
-      "kind": "model",
+      "kind": "box",
       "gameplay": true,
       "tags": ["plastic", "gameplay", "2023", "male", "survivor", "seasonal", "pattern", "halloween"],
       "editions": [{ "v": "Plastic", "$": [3000], "r": "2023-10-31" }],
@@ -4650,7 +4650,7 @@
     },
     "halloween-white-speaker": {
       "name": "Halloween White Speaker",
-      "kind": "model",
+      "kind": "box",
       "gameplay": true,
       "tags": ["female", "plastic", "gameplay", "seasonal", "resin", "2017", "pattern", "white-speaker", "halloween"],
       "editions": [
@@ -4955,7 +4955,7 @@
     },
     "laurie-the-librarian-legacy-model": {
       "name": "Laurie the Librarian (Legacy Model)",
-      "kind": "model",
+      "kind": "box",
       "tags": ["female", "beta", "2013", "laurie"],
       "aliases": ["Librarian Legacy Model (Archivist variant)/Laurie the Librarian"],
       "editions": [{ "v": "Encore", "$": [2700], "r": "2013-11-29", "materials": ["Resin"] }],
@@ -5058,7 +5058,7 @@
     },
     "lolowen": {
       "name": "Lolowen",
-      "kind": "model",
+      "kind": "box",
       "gameplay": true,
       "tags": ["female", "plastic", "gameplay", "2023", "seasonal", "pattern", "character", "lolowen"],
       "editions": [{ "v": "Plastic", "$": [6000], "r": "2023-05-02" }],
@@ -5091,7 +5091,7 @@
     },
     "lunar-twilight-knight": {
       "name": "Lunar Twilight Knight",
-      "kind": "model",
+      "kind": "box",
       "gameplay": true,
       "tags": ["female", "plastic", "gameplay", "2023", "knight", "seasonal", "gear", "twilight-knight", "hunt-event", "lunar"],
       "editions": [{ "v": "Plastic", "$": [6000], "r": "2023-02-28" }],
@@ -5115,7 +5115,7 @@
     },
     "lune": {
       "name": "Lune",
-      "kind": "model",
+      "kind": "box",
       "gameplay": true,
       "tags": ["female", "plastic", "generic", "gameplay", "2021", "character", "lune"],
       "editions": [
@@ -5355,7 +5355,7 @@
     },
     "necromancer-boss": {
       "name": "Necromancer Boss",
-      "kind": "model",
+      "kind": "box",
       "tags": ["female", "generic", "gameplay", "2024", "2017", "resculpt", "remaster", "necromancer"],
       "editions": [
         { "v": "First Run", "$": [4500], "r": "2017-05-26", "runSize": 350, "materials": ["Resin"], "size": "50", "gameplay": false, "handle": "necromancer-boss" },
@@ -5406,7 +5406,7 @@
     },
     "oktoberfest-aya": {
       "name": "Oktoberfest Aya",
-      "kind": "model",
+      "kind": "box",
       "gameplay": true,
       "tags": ["female", "plastic", "gameplay", "seasonal", "2019", "pattern", "aya", "oktoberfest"],
       "editions": [{ "v": "Plastic", "$": [5000], "r": "2019-10-31" }],
@@ -5510,7 +5510,7 @@
     },
     "percival": {
       "name": "Percival (Resin)",
-      "kind": "model",
+      "kind": "box",
       "tags": ["female", "plastic", "gameplay", "2024", "2015", "promo", "resculpt", "percival"],
       "editions": [
         { "v": "First Run", "r": "2015-07-01", "materials": ["Resin"], "runSize": 500, "$": [2500], "size": "30", "gameplay": false },
@@ -5534,7 +5534,7 @@
     },
     "philosophies-of-death-gatherism": {
       "name": "Philosophies of Death: Gatherism",
-      "kind": "model",
+      "kind": "box",
       "gameplay": true,
       "announcements": ["2025-07-22", "2025-09-30", "2026-08-31"],
       "aliases": ["KDS Philosophies of Death: Gatherism"],
@@ -5546,7 +5546,7 @@
     },
     "philosophies-of-death-heliocenterism": {
       "name": "Philosophies of Death: Heliocenterism",
-      "kind": "model",
+      "kind": "box",
       "gameplay": true,
       "tags": ["gameplay", "upcoming", "2027", "preorder", "philosophy", "philosophies-of-death", "heliocenterism"],
       "editions": [{ "v": "Preorder", "$": [6500], "releaseWindow": "2027", "materials": ["Plastic"] }]
@@ -5761,7 +5761,7 @@
     },
     "ringtail-vixen": {
       "name": "Ringtail Vixen",
-      "kind": "model",
+      "kind": "box",
       "gameplay": true,
       "tags": ["female", "plastic", "generic", "gameplay", "2017", "promo", "ringtail"],
       "editions": [
@@ -5816,7 +5816,7 @@
     },
     "santa-satan": {
       "name": "Santa Satan",
-      "kind": "model",
+      "kind": "box",
       "gameplay": true,
       "tags": ["female", "plastic", "gameplay", "seasonal", "promo", "2018", "satan"],
       "editions": [{ "v": "Plastic", "$": [5000], "r": "2018-12-25" }],
@@ -6002,7 +6002,7 @@
     },
     "skrelle": {
       "name": "Skrelle",
-      "kind": "model",
+      "kind": "box",
       "gameplay": true,
       "tags": ["female", "plastic", "gameplay", "2023", "sim", "innovation", "settlement-event", "skrelle"],
       "editions": [
@@ -6169,7 +6169,7 @@
     },
     "summer-goth": {
       "name": "Summer Goth",
-      "kind": "model",
+      "kind": "box",
       "gameplay": true,
       "tags": ["female", "plastic", "gameplay", "knight", "seasonal", "pattern", "2022", "summer", "goth"],
       "editions": [{ "v": "Plastic", "$": [6000], "r": "2022-09-30" }],
@@ -6269,7 +6269,7 @@
     },
     "swashbuckler": {
       "name": "Swashbuckler",
-      "kind": "model",
+      "kind": "box",
       "gameplay": true,
       "tags": ["female", "plastic", "generic", "gameplay", "2019", "promo"],
       "editions": [{ "v": "Plastic", "$": [2500], "r": "2019-03-27" }],
@@ -6327,7 +6327,7 @@
     },
     "the-preacher": {
       "name": "The Preacher",
-      "kind": "model",
+      "kind": "box",
       "tags": ["female", "generic", "beta", "2009", "preacher"],
       "aliases": ["Preacher, The"],
       "editions": [{ "v": "First Run", "$": [2500], "r": "2009-11-26", "runSize": 100, "materials": ["Resin"] }],
@@ -6384,7 +6384,7 @@
     },
     "till-death-do-us-part": {
       "name": "Till Death Do Us Part",
-      "kind": "model",
+      "kind": "box",
       "gameplay": true,
       "tags": ["female", "generic", "gameplay", "2026", "2018", "resculpt", "remaster"],
       "aliases": ["Till Death do Us Part (Intimacy Couple)", "Til Death Do Us Part", "Till Death Do Us Part (Remaster)"],
@@ -6412,7 +6412,7 @@
     },
     "twilight-knight-alternate": {
       "name": "Twilight Knight Alternate",
-      "kind": "model",
+      "kind": "box",
       "tags": ["female", "generic", "knight", "resin", "beta", "twilight-knight", "2009", "metal"],
       "aliases": ["Twilight Knight, Alternate /w metal sword"],
       "editions": [
@@ -6476,7 +6476,7 @@
     },
     "vignette-of-death-killennium-butcher-survivors": {
       "name": "Vignette of Death: Killennium Butcher Survivors",
-      "kind": "model",
+      "kind": "box",
       "gameplay": true,
       "tags": ["female", "plastic", "generic", "gameplay", "survivor", "2024"],
       "aliases": ["Vignette of Death: Killennium Butcher Survivors (x4)"],
@@ -6486,7 +6486,7 @@
     },
     "vignette-of-death-white-gigalion-survivors": {
       "name": "Vignette of Death: White Gigalion Survivors",
-      "kind": "model",
+      "kind": "box",
       "gameplay": true,
       "tags": ["female", "plastic", "generic", "gameplay", "survivor", "2019"],
       "aliases": ["Vignette of Death: White Gigalion Survivors (x4)"],
@@ -6647,12 +6647,12 @@
     },
     "white-speaker-sword-hunter": {
       "name": "White Speaker - Sword Hunter",
-      "kind": "model",
+      "kind": "box",
       "tags": ["female", "plastic", "generic", "gameplay", "2015", "2019", "promo", "white-speaker", "sword-hunter"],
       "editions": [
         { "v": "First Run", "$": [2500], "r": "2015-05-19", "runSize": 500, "materials": ["Resin"], "size": "30", "gameplay": false },
         { "v": "Encore", "materials": ["Resin"], "$": [2500], "r": "2015-05-19", "size": "30", "gameplay": false },
-        { "v": "Plastic", "$": [3400], "r": "2019-08-16", "size": "30", "name": "With blindfold", "handle": "white-speaker-sword-hunter-wb" }
+        { "v": "Plastic", "$": [3400], "r": "2019-08-16", "size": "30", "name": "w/ blindfold", "handle": "white-speaker-sword-hunter-wb" }
       ],
       "gameplay": true,
       "aliases": ["White Speaker - Sword Hunter (with blindfold)", "Sword Hunter", "White Speaker Sword Hunter", "white speaker sword hunter wb"],
@@ -6695,7 +6695,7 @@
     },
     "winter-solstice-lucy": {
       "name": "Winter Solstice Lucy",
-      "kind": "model",
+      "kind": "box",
       "gameplay": true,
       "tags": ["female", "plastic", "gameplay", "2020", "seasonal", "core-survivor", "pattern", "lucy", "doggo", "winter"],
       "editions": [{ "v": "Plastic", "$": [6000], "r": "2020-12-22" }],
@@ -7221,7 +7221,7 @@
     },
     "sci-fi-aya-the-survivor": {
       "name": "Sci-Fi Aya the Survivor",
-      "kind": "model",
+      "kind": "box",
       "gameplay": true,
       "tags": ["female", "plastic", "gameplay", "2023", "survivor", "gamblers-chest", "pattern", "aya", "sci-fi"],
       "editions": [{ "v": "Plastic", "$": [0], "expansion": "Gambler's Chest", "r": "2023-11-24", "standalone": false }],
@@ -7316,7 +7316,7 @@
     },
     "the-blessed-one": {
       "name": "The Blessed One",
-      "kind": "model",
+      "kind": "box",
       "tags": ["2015", "resin", "beta"],
       "aliases": ["Blessed One, The"],
       "editions": [{ "v": "Resin", "$": [0], "standalone": false, "releaseWindow": "2015" }],
@@ -7948,31 +7948,31 @@
       "releaseYear": 2018,
       "tags": ["2018", "shirt", "monster-watcher"]
     },
-    "phobia-2-the-settlement": {
-      "name": "Phobia #2: The Settlement",
-      "kind": "accessory",
-      "accessoryType": "comic",
-      "announcements": ["2026-08-31"],
-      "tags": ["2026", "phobia", "settlement"],
-      "handle": "kingdom-death-comic-phobia-2-the-settlement",
-      "editions": [
-        { "v": "Pawel Zdanowski", "$": [1300], "r": "2026-08-31", "materials": ["Original"], "available": true },
-        { "v": "Ein Lee", "$": [1300], "r": "2026-08-31", "available": true },
-        { "v": "Lokman Lam", "$": [1300], "r": "2026-08-31", "available": true }
-      ]
-    },
-    "phobia-the-hunt": {
-      "name": "Phobia: The Hunt",
+    "phobia-1-the-hunt": {
+      "name": "Kingdom Death Comic: Phobia 1 - The Hunt",
       "kind": "accessory",
       "accessoryType": "comic",
       "announcements": ["2025-08-29"],
-      "tags": ["2025", "phobia", "hunt"],
+      "tags": ["2025", "comic", "phobia", "hunt"],
       "handle": "phobia-the-hunt",
       "editions": [
-        { "v": "Pawel Zdanowski", "$": [1300], "r": "2025-08-29", "materials": ["Original"] },
-        { "v": "Wenjuinn Png", "$": [1300], "r": "2025-08-29" },
-        { "v": "Ein Lee", "$": [1300], "r": "2025-08-29" },
-        { "v": "Lokman Lam", "$": [1300], "r": "2025-08-29" }
+        { "v": "Pawel Zdanowski", "$": [1300], "r": "2025-08-29", "name": "original" },
+        { "v": "Wenjuinn Png", "$": [1300], "r": "2025-08-29", "name": "grey cover" },
+        { "v": "Ein Lee", "$": [1300], "r": "2025-08-29", "name": "red cover" },
+        { "v": "Lokman Lam", "$": [1300], "r": "2025-08-29", "name": "pink cover" }
+      ]
+    },
+    "phobia-2-the-settlement": {
+      "name": "Kingdom Death Comic: Phobia 2 - The Settlement",
+      "kind": "accessory",
+      "accessoryType": "comic",
+      "announcements": ["2026-08-31"],
+      "tags": ["2026", "comic", "phobia", "settlement"],
+      "handle": "kingdom-death-comic-phobia-2-the-settlement",
+      "editions": [
+        { "v": "Pawel Zdanowski", "$": [1300], "r": "2026-08-31", "name": "original", "available": true },
+        { "v": "Ein Lee", "$": [1300], "r": "2026-08-31", "available": true, "name": "dark blue cover" },
+        { "v": "Lokman Lam", "$": [1300], "r": "2026-08-31", "available": true, "name": "tan cover" }
       ]
     },
     "black-knight-citadel-board-travel-edition": {
@@ -8181,8 +8181,8 @@
       "aliases": ["Expansions of Death Bundle", "expansions of death 1 6", "Expansion of Death Vol 1.6", "KDS - Digital Expansion of Death Vol. 1"],
       "announcements": ["2022-12-25", "2023-11-24", "2024-11-29"],
       "editions": [
-        { "v": "Sim", "$": [10550], "name": "KDS - Digital Expansion of Death Vol. 1", "r": "2023-11-24", "handle": "kds-wave-2-bundle", "available": true },
-        { "v": "1.6", "$": [105500], "name": "Expansion of Death Vol 1.6", "r": "2016-02-16", "handle": "expansion-of-death-vol-1-6" }
+        { "v": "Sim", "$": [10550], "r": "2023-11-24", "handle": "kds-wave-2-bundle", "available": true },
+        { "v": "1.6", "$": [105500], "r": "2016-02-16", "handle": "expansion-of-death-vol-1-6" }
       ],
       "notes": "Sim edition: Requires Kingdom Death: Simulator and the digital Kingdom Death: Monster core game."
     },

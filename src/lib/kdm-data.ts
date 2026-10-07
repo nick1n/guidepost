@@ -70,7 +70,7 @@ export const allContentTags = [...new Set(content.flatMap((item) => item.tags))]
 export const allDiceTags = [...new Set(dice.flatMap((item) => item.tags))].sort();
 export const allHomebrewTags = [...new Set(homebrew.flatMap((item) => item.tags))].sort();
 
-type Release = { v: string; materials?: string[]; gameplay?: boolean | null; size?: string; url?: string };
+type Release = { v: string; materials?: string[]; gameplay?: boolean | null; size?: string; url?: string; name?: string };
 type Facts = {
   gameplay?: boolean | null;
   size?: string;
@@ -83,7 +83,7 @@ type Facts = {
 const standardMaterials = new Set(["Plastic", "Resin", "Photoresin", "Deathgrey", "Metal", "PVC", "Deathpink"]);
 
 export function editionMaterials(edition: Release) {
-  return edition.v === "Sim" ? [] : (edition.materials ?? (standardMaterials.has(edition.v) ? [edition.v] : []));
+  return edition.name ? [edition.name] : (edition.materials ?? (standardMaterials.has(edition.v) ? [edition.v] : []));
 }
 
 export function editionGameplay(item: Facts, edition: Release) {
