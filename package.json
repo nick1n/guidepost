@@ -25,35 +25,35 @@
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },
+  "dependencies": {
+    "@unocss/reset": "^66.10.5",
+    "effect": "^4.0.1"
+  },
   "devDependencies": {
-    "@effect/vitest": "4.0.0-rc.115",
+    "@effect/vitest": "^4.0.1",
     "@iconify-json/game-icons": "^1.2.4",
-    "@iconify-json/lucide": "^1.2.136",
-    "@iconify-json/material-symbols": "^1.2.90",
-    "@sveltejs/adapter-static": "4.0.0-next.4",
-    "@sveltejs/kit": "next",
-    "@sveltejs/vite-plugin-svelte": "^7.3.0",
-    "@types/node": "^26.4.0",
+    "@iconify-json/lucide": "^1.2.140",
+    "@iconify-json/material-symbols": "^1.2.94",
+    "@sveltejs/adapter-static": "^4.0.0",
+    "@sveltejs/kit": "^3.0.1",
+    "@sveltejs/vite-plugin-svelte": "^7.3.1",
+    "@types/node": "^26.6.4",
     "@typescript/native": "npm:typescript@^7.0.2",
-    "@unocss/svelte-scoped": "66.9.1",
-    "ajv": "8.17.1",
+    "@unocss/svelte-scoped": "^66.10.5",
+    "ajv": "^8.20.0",
     "htmlparser2": "^12.0.0",
     "json-schema-to-typescript": "^16.0.0",
-    "prettier": "^3.9.6",
+    "prettier": "^3.9.9",
     "prettier-plugin-svelte": "^4.1.1",
-    "svelte": "^5.57.0",
+    "svelte": "^5.57.2",
     "svelte-check": "^4.7.6",
-    "typescript": "6.0.3",
-    "unocss": "^66.9.1",
-    "vite": "^8.2.2",
-    "vitest": "^5.0.0"
+    "typescript": "^6.0.3",
+    "unocss": "^66.10.5",
+    "vite": "^8.3.3",
+    "vitest": "^5.0.3"
   },
   "imports": {
     "#lib": "./src/lib/index.ts",
     "#lib/*": "./src/lib/*"
-  },
-  "dependencies": {
-    "@unocss/reset": "^66.9.1",
-    "effect": "4.0.0-rc.115"
   }
 }
