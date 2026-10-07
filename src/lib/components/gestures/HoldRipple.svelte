@@ -278,15 +278,6 @@
     background: var(--foreground);
     opacity: 0.08;
     transition: opacity var(--duration-ripple-fade);
-    &::after {
-      position: absolute;
-      inset: 0;
-      border-radius: inherit;
-      background: var(--contrast);
-      mask-image: url("./ripple-noise.svg");
-      opacity: 0.6;
-      content: "";
-    }
     &.complete {
       animation: none;
       opacity: 0.12;
@@ -297,18 +288,18 @@
   }
   @keyframes wave-ripple {
     from {
-      clip-path: circle(calc(var(--radius-ripple) * var(--scale-ripple)));
+      transform: scale(var(--scale-ripple));
     }
     to {
-      clip-path: circle(var(--radius-ripple));
+      transform: scale(1);
     }
   }
   @keyframes hold-ripple {
     from {
-      clip-path: circle(calc(var(--radius-ripple) * var(--scale-ripple)));
+      transform: scale(var(--scale-ripple));
     }
     to {
-      clip-path: circle(var(--radius-ripple));
+      transform: scale(1);
     }
   }
   @media (prefers-reduced-motion: no-preference) {

@@ -3,6 +3,6 @@
   "printWidth": 140,
   "overrides": [
     { "files": "temp/kdm-catalog/kdm-tags.json", "options": { "printWidth": 1000 } },
-    { "files": "exports/kdm-catalog/kdm-data.json", "options": { "printWidth": 200 } }
+    { "files": "static/kdm-catalog/data.json", "options": { "printWidth": 200 } }
   ]
 }

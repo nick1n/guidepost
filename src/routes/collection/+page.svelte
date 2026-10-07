@@ -1,8 +1,8 @@
 <script module lang="ts">
-  import rawCatalog from "../../../exports/kdm-catalog/kdm-data.json";
-  import { reviewIndex, reviewGameplayFirst, type reviewEntries, type ReviewCatalog, type ReviewEdition } from "#lib/catalog-view.ts";
+  import { data } from "#lib/kdm-data.ts";
+  import { reviewIndex, reviewGameplayFirst, type reviewEntries, type ReviewEdition } from "#lib/catalog-view.ts";
 
-  const catalog = reviewIndex(rawCatalog as ReviewCatalog);
+  const catalog = reviewIndex(data);
   const entries = catalog.entries;
   const contentEntries = reviewGameplayFirst(catalog.byCategory.get("content") ?? []);
   const catalogBatchSize = 100;
@@ -205,7 +205,7 @@
             } else nearby.delete(id);
           }
         },
-        { rootMargin: "600px" },
+        { rootMargin: "600px 0px" },
       );
       observedCards.set(element, item.id);
       cardObserver.observe(element);
@@ -421,15 +421,15 @@
 <svelte:head><title>Collection | Guidepost</title></svelte:head>
 
 <main {@attach swipe({ onSwipe: swipeCategory, onDrag: dragCatalog })} class="scrollbar-stable">
-  <a class="back" href={resolve("/track")}>
-    <span class="back-icon i-material-symbols:arrow-back" aria-hidden="true"></span>Current tracker
+  <a class="back" href={resolve("/")}>
+    <span class="back-icon i-material-symbols:arrow-back" aria-hidden="true"></span>Guidepost
   </a>
   <header>
     <h1>Collection</h1>
     <p class="subtitle">Kingdom Death: Monster collection tracker</p>
   </header>
 
-  <section class="stats" aria-label="Preview collection totals">
+  <section class="stats" aria-label="Collection totals">
     <button class="stat-owned" type="button" aria-pressed={status === "owned"} onclick={() => toggleStatus("owned")}>
       <span class="stat-label">Owned<span class="stat-icon i-material-symbols:inventory-2-outline" aria-hidden="true"></span></span>
       <strong>{owned.length}</strong>

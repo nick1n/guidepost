@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onDestroy, type Snippet } from "svelte";
   import { DURATION_FAST } from "#lib/constants.ts";
+  import InlineMarkdown from "./InlineMarkdown.svelte";
 
   type Props = {
     title: string;
@@ -92,7 +93,7 @@
       <h2 id={`${id}-title`}>{title}</h2>
       <span class={["icon", icon]} aria-hidden="true"></span>
     </div>
-    <p id={`${id}-description`}>{description}</p>
+    <p id={`${id}-description`}><InlineMarkdown text={description} /></p>
     {#if children}
       <fieldset>
         <legend class="visually-hidden">Dialog options</legend>

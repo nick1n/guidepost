@@ -26,7 +26,8 @@
   };
 
   const quickStartHref = resolve("/start");
-  const coreVersions = content.find((item) => item.id === "core")?.versions ?? [];
+  const coreVersions =
+    content.find((item) => item.id === "core")?.editions?.filter((edition) => edition.v === "Sim" || /^\d+\.\d+$/.test(edition.v)) ?? [];
   const latestCoreVersion = coreVersions.at(-1)?.v;
 
   const navigationSections: NavigationSection[] = [
@@ -46,7 +47,7 @@
           title: "Collection",
           note: "Keep track of all your content",
           icon: "i-material-symbols:inventory-2-outline-sharp",
-          href: resolve("/track"),
+          href: resolve("/collection"),
         },
         {
           title: "Hunt Events",
@@ -156,7 +157,7 @@
   let landing: HTMLElement;
   let ownershipDialog: { show: Noop };
   let quickStartTrigger: HTMLAnchorElement | undefined;
-  let selectedCoreVersion = $state(latestCoreVersion);
+  let selectedCoreVersion = $state<string | undefined>(latestCoreVersion);
   let lightingFrame: number | undefined;
   let lightingX = 0;
   let lightingY = 0;

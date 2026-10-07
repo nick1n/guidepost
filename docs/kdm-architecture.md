@@ -15,7 +15,8 @@ Gameplay uses an action history; collection tracking, campaign management, and p
 | Preferences         | Account and device settings                                      | None                    |
 | Catalog             | Bundled, versioned reference data                                | None                    |
 
-The collection currently saves complete snapshots through this path:
+The existing collection service saves complete snapshots through this path. The `/collection/` page currently keeps edition selections
+in memory; connecting it to this service and migrating old catalog IDs and version selections remain pending.
 
 ```text
 ContentState -> OptimisticStore -> GuestStore -> BrowserStorage

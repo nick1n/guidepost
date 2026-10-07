@@ -1,79 +1,219 @@
-/* Generated from src/lib/kdm-data.schema.json. Do not edit. Run pnpm generate:types to regenerate. */
+/* Generated from static/kdm-catalog/data.schema.json. Do not edit. Run pnpm generate:types to regenerate. */
+
+export type Content = Record<string, Item>;
+/**
+ * News publication date, YYYY-MM-DD. Full post details remain in kingdom-death-news/news-shop-links.json.
+ */
+export type Announcement = string;
+export type Inclusion =
+  | string
+  | {
+      item: string;
+      /**
+       * @minItems 1
+       */
+      materials?: string[];
+      /**
+       * Edition labels on the containing item for which this inclusion applies. Omitted means no edition restriction on the containing item; physical contents still require a physical release.
+       *
+       * @minItems 1
+       */
+      parentEditions?: string[];
+      /**
+       * Selected edition label on the included child item, such as Plastic or Sim. Use separate references for separate child editions, qualified by parentEditions when needed.
+       */
+      edition?: string;
+    };
+export type Accessories = Record<string, Item>;
 
 /**
- * Latest HEAD check: true for HTTP 2xx after redirects, false for HTTP or request errors, null when no URL exists. Omitted until checked.
+ * Review export combining the app catalog, news product links, and collection workbook. IDs remain object keys. Monetary amounts use integer cents. Personal ownership is stored in imports/kdm-import-records.json.
  */
-export type ShopReachable = boolean | null;
-
-export interface KingdomDeathCatalog {
+export interface KingdomDeathCombinedReviewCatalog {
   $schema?: string;
   content: Content;
-  dice: Dice;
-  bundles: Bundles;
+  bundles: Items;
   homebrew: Content;
+  accessories: Accessories;
+  "included-only": Content;
 }
-export interface Content {
-  [k: string]: ContentItem;
+export interface Items {
+  [k: string]: Item;
 }
-export interface ContentItem {
+export interface Item {
   name: string;
   /**
-   * Alternative or corrected name.
+   * Release date for an item without selectable editions, YYYY-MM-DD.
    */
-  alt?: string;
+  releaseDate?: string;
+  /**
+   * Imprecise release date for an item without selectable editions, such as a year or a year-first quarter.
+   */
+  releaseWindow?: string;
   /**
    * Item description.
    */
   desc?: string;
-  kind: "core" | "beta" | "promo" | "expansion" | "white-box" | "set" | "model" | "base" | "terrain" | "accessory";
-  gameplay: boolean;
+  /**
+   * Product classification. The beta kind means all editions are Beta; box may contain mixed Beta and non-Beta editions or other boxed products. Bundles may omit kind.
+   */
+  kind?: string;
+  /**
+   * Gameplay is false by default. Store this field only when true; editions may override it.
+   */
+  gameplay?: boolean | null;
+  /**
+   * Item price in cents for products without editions. Products with editions use the edition's $ array.
+   */
   price?: number;
   currency?: "USD" | "EUR";
   priceMinimum?: boolean;
-  versions?: Edition[];
+  /**
+   * Selectable releases, ordered with Sim first and then chronologically by release date or release window; unknown dates last.
+   *
+   * @minItems 1
+   */
   editions?: Edition[];
+  /**
+   * Reviewed descriptive tags from the master tag file.
+   *
+   * @minItems 1
+   */
   tags: string[];
+  /**
+   * @minItems 1
+   */
   requires?: string[];
+  /**
+   * External listing URL. Kingdom Death shop product listings use handle instead.
+   */
   url?: string;
-  shopReachable?: ShopReachable;
+  /**
+   * @minItems 1
+   */
+  aliases?: string[];
+  /**
+   * Additional product URLs for an item without editions.
+   *
+   * @minItems 1
+   */
+  urls?: string[];
+  /**
+   * Unique news publication dates, sorted chronologically.
+   *
+   * @minItems 1
+   */
+  announcements?: Announcement[];
+  /**
+   * Known included items, optionally qualified by their editions/materials and the containing release. Partial list; unspecified editions are not automatically owned.
+   *
+   * @minItems 1
+   */
+  includes?: Inclusion[];
+  /**
+   * Item history and release notes.
+   */
+  notes?: string;
+  /**
+   * Default physical model size or scale (mm), retained as supplied text. Edition size overrides this value; Sim never inherits it. Omit unknown sizes.
+   */
+  size?: string;
+  /**
+   * Gameplay content supplied with this item. Release differences, when known, are described here.
+   */
+  gameplayContent?: string;
+  accessoryType?: "shirt" | "dice" | "other" | "comic";
+  /**
+   * Color swatches in display order, paired by index with text labels when present.
+   *
+   * @minItems 1
+   */
+  colors?: string[];
+  /**
+   * Labels for color swatches in matching order. Repeated labels are allowed for distinct swatches.
+   *
+   * @minItems 1
+   */
+  text?: string[];
+  /**
+   * Explicitly supplied product release year. Shirt and dice years are stored here rather than in editions; unknown years are omitted.
+   */
+  releaseYear?: number;
+  /**
+   * Shared Kingdom Death shop product handle. Applies to every edition; omit edition handles when present.
+   */
+  handle?: string;
 }
 export interface Edition {
+  /**
+   * Selectable release label, such as First Run, Encore, Plastic, or Sim.
+   */
   v: string;
-  $: number[];
+  /**
+   * Known sale amounts plus current MSRP in cents. Maximum is MSRP; the array makes no active-sale claim. Price evidence and estimates remain in the audit.
+   *
+   * @minItems 1
+   *
+   * Items: Amount in cents; inherits the item currency, which defaults to USD.
+   */
+  $?: number[];
   limit?: boolean;
+  /**
+   * Exact release date, YYYY-MM-DD. Derive its year from this value; use releaseWindow when only a year or an imprecise date is known.
+   */
   r?: string;
-}
-export interface Dice {
-  [k: string]: DiceItem;
-}
-export interface DiceItem {
-  name: string;
-  price?: number;
-  currency?: "USD" | "EUR";
   /**
-   * @minItems 2
-   * @maxItems 2
+   * Materials of this release. First Run and Encore labels carry explicit materials. When omitted, infer a single material only for the exact labels Plastic, Resin, Photoresin, Deathgrey, Metal, and Deathpink; otherwise material is unspecified.
+   *
+   * @minItems 1
    */
-  colors: [string, string];
+  materials?: string[];
   /**
-   * @minItems 2
-   * @maxItems 2
+   * Physical release size override when it differs from the item default. Sim never has a model size. Omit unknown placeholders.
    */
-  text: [string, string];
-  tags: string[];
+  size?: string;
+  /**
+   * An imprecise release date, including a year alone such as 2024, a quarter in year-first format such as 2026 Q4, or a named source window. No exact date is invented.
+   */
+  releaseWindow?: string;
+  /**
+   * Known production or sale limit. Omit unknown counts; preserve supplied First Run and Encore counts. Do not infer counts from units sold.
+   */
+  runSize?: number;
+  /**
+   * Workbook Expansion value.
+   */
+  expansion?: string;
+  /**
+   * Override of the item gameplay default (false when omitted). Store only when different from the item default.
+   */
+  gameplay?: boolean | null;
+  /**
+   * Release-specific name when it differs from the sculpt item name, such as Plastic Ramette.
+   */
+  name?: string;
+  /**
+   * External listing URL. Kingdom Death shop product listings use handle instead.
+   */
   url?: string;
-  shopReachable?: ShopReachable;
-}
-export interface Bundles {
-  [k: string]: BundleItem;
-}
-export interface BundleItem {
-  name: string;
-  price?: number;
-  currency?: "USD" | "EUR";
-  gameplay: boolean;
-  tags: string[];
-  includes: string[];
-  url?: string;
-  shopReachable?: ShopReachable;
+  /**
+   * Available in at least one matching cached shop variant. False by default; omit when unavailable or unknown.
+   */
+  available?: true;
+  /**
+   * False when confirmed to be available only as part of another product. Omit for standalone or unconfirmed releases. Collection views may hide these editions.
+   */
+  standalone?: false;
+  /**
+   * Beta release. Omit for non-Beta editions.
+   */
+  beta?: true;
+  /**
+   * Grants every current and future Sim edition. Resolve against items with an edition labeled Sim when reading the catalog; do not materialize a static list.
+   */
+  includesAllSim?: true;
+  /**
+   * Kingdom Death shop product handle. Used only when the item has no shared handle.
+   */
+  handle?: string;
 }

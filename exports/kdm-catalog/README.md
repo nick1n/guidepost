@@ -1,11 +1,11 @@
-The review catalog has 876 items and 1451 editions. It combines the app catalog, collection workbook, and cached news. The live app still reads `src/lib/kdm-data.json`; this export needs app integration before adoption.
+The live catalog combines the previous app catalog, collection workbook, and cached news. Its data and schema live in `static/kdm-catalog/`, and the collection page at `/collection/` uses its generated types. The previous catalog and schema are archived locally in `temp/kdm-data.json` and `temp/kdm-data.schema.json`.
 
-| File                                                         | Purpose                                     |
-| ------------------------------------------------------------ | ------------------------------------------- |
-| [Catalog](./kdm-data.json), [schema](./kdm-data.schema.json) | Product facts and relationships             |
-| [News export](../kingdom-death-news/news-shop-links.json)    | Cached announcement dates and product links |
+| File                                                                                               | Purpose                                     |
+| -------------------------------------------------------------------------------------------------- | ------------------------------------------- |
+| [Catalog](../../static/kdm-catalog/data.json), [schema](../../static/kdm-catalog/data.schema.json) | Product facts and relationships             |
+| [News export](../kingdom-death-news/news-shop-links.json)                                          | Cached announcement dates and product links |
 
-The Git-ignored `temp/kdm-catalog/kdm-tags.json` and `temp/kdm-catalog/kdm-tags.schema.json` files are optional personal review tools. Apply your edits with `pnpm catalog:tags --apply` before deleting both files. Without the local assignments, updates and validation use the tags saved in `kdm-data.json`. Edit local tags in `temp/kdm-catalog/kdm-tags.json`. Allowed values live in `temp/kdm-catalog/kdm-tags.schema.json` under `$defs.tag.enum`. VS Code provides tag-value completions and flags misspellings, empty arrays, and duplicates. The schema accepts any item key; merging checks missing and unknown IDs. While local assignments are present, stored catalog tags come exactly from that file, ordering catalog tags by popularity across all catalog items, with alphabetical ties. The master tag file keeps each item?s tags alphabetical.
+The Git-ignored `temp/kdm-catalog/kdm-tags.json` and `temp/kdm-catalog/kdm-tags.schema.json` files are optional personal review tools. Apply your edits with `pnpm catalog:tags --apply` before deleting both files. Without the local assignments, updates and validation use the tags saved in `data.json`. Edit local tags in `temp/kdm-catalog/kdm-tags.json`. Allowed values live in `temp/kdm-catalog/kdm-tags.schema.json` under `$defs.tag.enum`. VS Code provides tag-value completions and flags misspellings, empty arrays, and duplicates. The schema accepts any item key; merging checks missing and unknown IDs. While local assignments are present, stored catalog tags come exactly from that file, ordering catalog tags by popularity across all catalog items, with alphabetical ties. The master tag file keeps each item?s tags alphabetical.
 
 ```bash
 pnpm catalog:tags
@@ -47,15 +47,15 @@ Current data rules:
 
 The schema retains ID-pattern rules and basic field validation without conditional branches. The CLI additionally checks references, cycles, edition labels, real dates, normalization, and ordering.
 
-Before adopting this export, update the app's older catalog shape and migrate saved item IDs and edition selections. Historical migration maps are retained in the optional local archive at `temp/kdm-catalog/reports/archive/kdm-merge-history.json.gz`. Archives are ignored by Git and are not required to use the catalog or run updates. No collection ownership is inferred from ambiguous material or run choices. The original workbook remains in `temp/kdm-catalog/imports/KDM Collection Sheets.xlsx`; 705 active rows have catalog pointers, and excluded rows are preserved in the archive.
+The collection page uses this catalog, but migration of saved item IDs and edition selections remains pending. Historical migration maps are retained in the optional local archive at `temp/kdm-catalog/reports/archive/kdm-merge-history.json.gz`. Archives are ignored by Git and are not required to use the catalog or run updates. No collection ownership is inferred from ambiguous material or run choices. The original workbook remains in `temp/kdm-catalog/imports/KDM Collection Sheets.xlsx`; 705 active rows have catalog pointers, and excluded rows are preserved in the archive.
 
 The Git-ignored `temp/kdm-catalog/imports/` folder contains temporary workbook data. Validation checks import records and their schema when records are present; catalog updates and validation also work without them. After completing the Excel import, you can remove this folder. Optional shop mappings live in the Git-ignored `temp/kdm-catalog/shopify-products/kdm-shop-mappings.json` file. Updates work without this file; unknown or ambiguous products remain in the review for resolution. An explicit `--mappings` path must exist.
 
-All optional working files live under the workspace's `temp/kdm-catalog/` folder, covered by the single `/temp/` ignore rule. Store product snapshots and mappings share `shopify-products/`. Maintained catalog data and its schema remain here in `exports/kdm-catalog/`. Custom catalog paths follow the same `exports/` and `temp/` workspace layout.
+All optional working files live under the workspace's `temp/kdm-catalog/` folder, covered by the single `/temp/` ignore rule. Store product snapshots and mappings share `shopify-products/`. Maintained catalog data and its schema live in `static/kdm-catalog/`. Custom catalog paths follow the same `static/kdm-catalog/` and `temp/` workspace layout.
 
 Refresh shop availability independently with `pnpm catalog:availability`. It downloads `/products.json?limit=250&page=N`, at least 35 seconds between requests, into `temp/kdm-catalog/shopify-products/products-page-N.json`. After every page succeeds, it updates only edition `available` fields in this catalog. Each `edition.url ?? item.url` must resolve to the product handle; names and optional mappings are not used. Named release variants distinguish First Run, Encore, and format-qualified runs. Any matching warehouse with `available: true` makes that edition available; unmatched or ambiguous editions omit the field. Details go to `temp/kdm-catalog/reports/availability-refresh.json`.
 
-Use `pnpm catalog:availability --offline` to apply the saved pages without downloading, or `--catalog path/to/exports/kdm-catalog/kdm-data.json` to select a different catalog. Failed downloads leave the named snapshots and catalog unchanged. Catalog edits made during the refresh prevent the catalog write.
+Use `pnpm catalog:availability --offline` to apply the saved pages without downloading, or `--catalog path/to/static/kdm-catalog/data.json` to select a different catalog. Failed downloads leave the named snapshots and catalog unchanged. Catalog edits made during the refresh prevent the catalog write.
 
 ## Item notes and review decisions
 

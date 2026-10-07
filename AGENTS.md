@@ -81,7 +81,7 @@ Safelist icon classes in `uno.config.ts` when extraction is unreliable. Verify p
 
 ## Catalog
 
-`src/lib/kdm-data.json` is the live app's source of truth. Data is grouped by category and IDs are object keys; do not add `id` fields to objects. Update `src/lib/kdm-data.schema.json` when the shape changes and regenerate types as described in [README.md](README.md#catalog).
+`static/kdm-catalog/data.json` is the live app's source of truth. Data is grouped by category and IDs are object keys; do not add `id` fields to objects. Update `static/kdm-catalog/data.schema.json` when the shape changes and regenerate types as described in [README.md](README.md#catalog).
 
 Keep catalog-derived helpers in `src/lib/kdm-data.ts` or `src/lib/catalog-view.ts`, not duplicated in components.
 

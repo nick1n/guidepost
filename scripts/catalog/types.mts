@@ -1,40 +1,12 @@
-export type Edition = {
-  v: string;
-  available?: true;
-  standalone?: false;
-  beta?: true;
-  $?: number[];
-  r?: string;
-  releaseWindow?: string;
-  materials?: string[];
-  gameplay?: boolean;
-  size?: string;
-  handle?: string;
-  url?: string;
-  runSize?: number;
-  includesAllSim?: true;
-  [field: string]: unknown;
-};
-export type Inclusion = string | { item: string; edition?: string; materials?: string[]; parentEditions?: string[] };
-export type Item = {
-  name: string;
-  releaseDate?: string;
-  gameplay?: true;
-  gameplayContent?: string;
+import type * as Schema from "../../src/lib/types/gen/kdm-data.d.ts";
+
+// Staging accepts source labels and extra fields before normalization and schema validation.
+export type Edition = Omit<Schema.Edition, "v"> & { v: string; [field: string]: unknown };
+export type Inclusion = Schema.Inclusion;
+export type Item = Omit<Schema.Item, "kind" | "accessoryType" | "editions"> & {
   kind?: string;
   accessoryType?: string;
-  tags: string[];
-  aliases?: string[];
-  notes?: string;
-  size?: string;
   editions?: Edition[];
-  includes?: Inclusion[];
-  requires?: string[];
-  announcements?: string[];
-  handle?: string;
-  url?: string;
-  urls?: string[];
-  price?: number;
   [field: string]: unknown;
 };
 export const categories = ["content", "included-only", "accessories", "bundles", "homebrew"] as const;

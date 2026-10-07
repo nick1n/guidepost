@@ -1,111 +1,17 @@
-import { bundles, collectionItems, content, dice, editionGameplay, editionMaterials, effectivePrice, homebrew } from "./kdm-data";
-import type { Bundle, ContentItem, DiceSet, Filters, CollectionState, Currency } from "#lib/types/index.ts";
+import { editionGameplay, editionMaterials } from "./kdm-data";
+import type { Catalog, Edition, Item } from "#lib/types/index.ts";
 
-type CatalogItem = ContentItem | DiceSet | Bundle;
-type FilterableItem = Pick<CatalogItem, "id" | "name" | "tags"> & Partial<Pick<ContentItem, "alt" | "desc" | "gameplay" | "kind">>;
-
-export const bundleTags = [...new Set(bundles.flatMap((bundle) => bundle.tags))].sort();
-
-export function getCollectionStats(state: CollectionState) {
-  let ownedCount = 0;
-  const ownedValue: Partial<Record<Currency, number>> = {};
-  let wishlistCount = 0;
-  const wishlistValue: Partial<Record<Currency, number>> = {};
-
-  for (const item of collectionItems) {
-    const entry = state[item.id];
-    const price = "versions" in item || "editions" in item ? effectivePrice(item, entry?.versions, entry?.editions) : (item.price ?? 0);
-    const currency = item.currency ?? "USD";
-    if (entry?.owned) {
-      ownedCount += 1;
-      ownedValue[currency] = (ownedValue[currency] ?? 0) + price;
-    } else if (entry?.wishlisted) {
-      wishlistCount += 1;
-      wishlistValue[currency] = (wishlistValue[currency] ?? 0) + price;
-    }
-  }
-
-  return { ownedCount, totalCount: collectionItems.length, ownedValue, wishlistCount, wishlistValue };
-}
-
-export function getVisibleCatalog(filters: Filters, state: CollectionState) {
-  const query = filters.query.trim().toLowerCase();
-  const matches = (item: FilterableItem) => {
-    if (query && !`${item.name} ${item.alt ?? ""} ${item.desc ?? ""} ${item.tags.join(" ")}`.toLowerCase().includes(query)) return false;
-    if (filters.tags.length && !filters.tags.every((tag) => item.tags.includes(tag))) return false;
-    if (filters.kind !== "any" && item.kind !== filters.kind) return false;
-    if (filters.gameplay === "gameplay" && item.gameplay === false) return false;
-    if (filters.gameplay === "models" && item.gameplay === true) return false;
-    const entry = state[item.id];
-    return !(
-      (filters.status === "owned" && !entry?.owned) ||
-      (filters.status === "unowned" && entry?.owned) ||
-      (filters.status === "wishlisted" && !entry?.wishlisted)
-    );
-  };
-
-  return {
-    content: sort(content.filter(matches), filters.sort),
-    dice: sort(dice.filter(matches), filters.sort),
-    bundles: sort(bundles.filter(matches), filters.sort),
-    homebrew: sort(homebrew.filter(matches), filters.sort),
-  };
-}
-
-function sort<T extends Pick<CatalogItem, "name" | "price">>(items: T[], key: Filters["sort"]) {
-  if (key === "name") return items.toSorted((a, b) => a.name.localeCompare(b.name));
-  const direction = key === "price-asc" ? 1 : -1;
-  return items.toSorted((a, b) => direction * ((a.price ?? 0) - (b.price ?? 0)));
-}
-
-// The review catalog stays separate from the live collection until its migration is ready.
-export type ReviewEdition = {
-  v: string;
-  name?: string;
-  $?: number[];
-  r?: string;
-  releaseWindow?: string;
-  available?: true;
-  standalone?: false;
-  beta?: true;
-  gameplay?: boolean;
-  materials?: string[];
-  size?: string;
-  handle?: string;
-  url?: string;
-  runSize?: number;
-  includesAllSim?: true;
-};
-
-export type ReviewItem = {
-  name: string;
-  kind?: string;
-  accessoryType?: string;
-  tags: string[];
-  aliases?: string[];
-  editions?: ReviewEdition[];
-  gameplay?: true;
-  gameplayContent?: string;
-  notes?: string;
-  handle?: string;
-  url?: string;
-  price?: number;
-  currency?: Currency;
-  releaseDate?: string;
-  releaseWindow?: string;
-  includes?: (string | { item: string; edition?: string; materials?: string[]; parentEditions?: string[] })[];
-};
-
-export type ReviewCatalog = Record<"content" | "included-only" | "accessories" | "bundles" | "homebrew", Record<string, ReviewItem>>;
+export type ReviewEdition = Edition;
+export type ReviewItem = Item;
+export type ReviewCatalog = Catalog;
 
 export function reviewTagLabel(tag: string) {
   return tag.replace(/^monster-/, "").replaceAll("-", " ");
 }
 
 export function reviewEntries(catalog: ReviewCatalog) {
-  return Object.entries(catalog).flatMap(([category, items]) =>
-    typeof items === "object" ? Object.entries(items).map(([id, item]) => ({ ...item, id, category })) : [],
-  );
+  const { $schema, ...categories } = catalog;
+  return Object.entries(categories).flatMap(([category, items]) => Object.entries(items).map(([id, item]) => ({ ...item, id, category })));
 }
 
 export function reviewTags(items: readonly Pick<ReviewItem, "tags">[]) {

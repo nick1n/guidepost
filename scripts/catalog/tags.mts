@@ -32,7 +32,7 @@ export async function loadTags(root: string) {
     throw error;
   });
   if (text === undefined) {
-    const catalog: Catalog = JSON.parse(await readFile(join(root, "kdm-data.json"), "utf8"));
+    const catalog: Catalog = JSON.parse(await readFile(join(root, "data.json"), "utf8"));
     const tags = Object.fromEntries(
       categories.map((category) => [
         category,

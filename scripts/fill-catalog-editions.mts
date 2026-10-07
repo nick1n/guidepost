@@ -62,7 +62,7 @@ export function productEditions(item: Item, product: Product) {
 export async function fillEditions(
   options: { catalog?: string; offline?: boolean; refresh?: boolean; signal?: AbortSignal; client?: Pick<ShopClient, "get"> } = {},
 ) {
-  const path = resolve(options.catalog ?? "exports/kdm-catalog/kdm-data.json");
+  const path = resolve(options.catalog ?? "static/kdm-catalog/data.json");
   const original = await readFile(path, "utf8");
   const catalog: Catalog = JSON.parse(original);
   const root = dirname(path);
@@ -74,7 +74,7 @@ export async function fillEditions(
   });
   const mappings = await loadMappings(root);
   const news: { links: { itemName: string; shopUrl: string; date: string }[] } = JSON.parse(
-    await readFile(resolve(root, "../kingdom-death-news/news-shop-links.json"), "utf8"),
+    await readFile(resolve(root, "../../exports/kingdom-death-news/news-shop-links.json"), "utf8"),
   );
   const client =
     options.client ?? new ShopClient({ cache: join(temp, "shopify-products/edition-cache"), delay: 33, maxAgeMs: Infinity, ...options });
@@ -126,7 +126,7 @@ export async function fillEditions(
     }
     await save(reportPath, report);
   }
-  await validateCatalog(catalog, join(root, "kdm-data.schema.json"));
+  await validateCatalog(catalog, join(root, "data.schema.json"));
   if ((await readFile(path, "utf8")) !== original || (await readFile(mappingsPath, "utf8").catch(() => undefined)) !== mappingText)
     throw new Error("Catalog or mappings changed during retrieval. Cached responses are saved; rerun to preserve your edits.");
   await save(mappingsPath, mappings);

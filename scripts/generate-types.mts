@@ -4,13 +4,15 @@ import { fileURLToPath } from "node:url";
 import { compileFromFile } from "json-schema-to-typescript";
 import { resolveConfig } from "prettier";
 
-export const schemaPath = fileURLToPath(new URL("../src/lib/kdm-data.schema.json", import.meta.url));
+export const schemaPath = fileURLToPath(new URL("../static/kdm-catalog/data.schema.json", import.meta.url));
 const outputPath = fileURLToPath(new URL("../src/lib/types/gen/kdm-data.d.ts", import.meta.url));
 
 export async function generateTypes() {
   const output = await compileFromFile(schemaPath, {
+    // Catalog validation checks array cardinality; consumers work with ordinary arrays.
+    ignoreMinAndMaxItems: true,
     style: (await resolveConfig(outputPath)) ?? {},
-    bannerComment: "/* Generated from src/lib/kdm-data.schema.json. Do not edit. Run pnpm generate:types to regenerate. */",
+    bannerComment: "/* Generated from static/kdm-catalog/data.schema.json. Do not edit. Run pnpm generate:types to regenerate. */",
   });
   const previous = await readFile(outputPath, "utf8").catch((error) => {
     if (error.code !== "ENOENT") throw error;

@@ -1,6 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Kingdom Death combined review catalog",
+  "$comment": "tsType annotations include computed view labels and legacy gameplay values in generated types without relaxing stored-catalog validation.",
   "description": "Review export combining the app catalog, news product links, and collection workbook. IDs remain object keys. Monetary amounts use integer cents. Personal ownership is stored in imports/kdm-import-records.json.",
   "type": "object",
   "required": ["content", "included-only", "accessories", "bundles", "homebrew"],
@@ -26,8 +27,14 @@
           "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
           "description": "Release date for an item without selectable editions, YYYY-MM-DD."
         },
+        "releaseWindow": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Imprecise release date for an item without selectable editions, such as a year or a year-first quarter."
+        },
         "desc": { "type": "string", "description": "Item description.", "minLength": 1 },
         "kind": {
+          "tsType": "string",
           "enum": [
             "core",
             "promo",
@@ -46,6 +53,7 @@
           "description": "Product classification. The beta kind means all editions are Beta; box may contain mixed Beta and non-Beta editions or other boxed products. Bundles may omit kind."
         },
         "gameplay": {
+          "tsType": "boolean | null",
           "const": true,
           "description": "Gameplay is false by default. Store this field only when true; editions may override it."
         },
@@ -141,6 +149,7 @@
       "additionalProperties": false,
       "properties": {
         "v": {
+          "tsType": "string",
           "type": "string",
           "description": "Selectable release label, such as First Run, Encore, Plastic, or Sim.",
           "enum": [
@@ -243,6 +252,7 @@
         "expansion": { "type": "string", "description": "Workbook Expansion value.", "minLength": 1 },
         "gameplay": {
           "type": "boolean",
+          "tsType": "boolean | null",
           "description": "Override of the item gameplay default (false when omitted). Store only when different from the item default."
         },
         "name": {
@@ -314,6 +324,7 @@
       ]
     },
     "content": {
+      "tsType": "Record<string, Item>",
       "type": "object",
       "additionalProperties": false,
       "patternProperties": {
@@ -325,6 +336,7 @@
       }
     },
     "accessories": {
+      "tsType": "Record<string, Item>",
       "type": "object",
       "additionalProperties": false,
       "patternProperties": {

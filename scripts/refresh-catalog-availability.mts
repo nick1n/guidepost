@@ -19,7 +19,7 @@ async function save(path: string, value: unknown) {
 export async function refreshAvailability(
   options: { catalog?: string; offline?: boolean; signal?: AbortSignal; client?: Pick<ShopClient, "get"> } = {},
 ) {
-  const path = resolve(options.catalog ?? "exports/kdm-catalog/kdm-data.json");
+  const path = resolve(options.catalog ?? "static/kdm-catalog/data.json");
   const original = await readFile(path, "utf8");
   const catalog: Catalog = JSON.parse(original);
   const folder = join(catalogTemp(dirname(path)), "shopify-products");

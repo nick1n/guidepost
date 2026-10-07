@@ -40,10 +40,10 @@ export async function applyReview(
   newsPath: string,
 ) {
   if (review.unresolved.length) throw new Error("Resolve the unmatched or ambiguous products in the review before applying it");
-  const path = join(root, "kdm-data.json");
+  const path = join(root, "data.json");
   const original = await readFile(path, "utf8");
   if (digest(original) !== review.baselineHash) throw new Error("Catalog changed after this review was created; regenerate the review");
-  if (digest(await readFile(join(root, "kdm-data.schema.json"), "utf8")) !== review.schemaHash)
+  if (digest(await readFile(join(root, "data.schema.json"), "utf8")) !== review.schemaHash)
     throw new Error("Schema changed after this review was created");
   if (digest(await readFile(newsPath, "utf8")) !== review.newsHash) throw new Error("News export changed after this review was created");
   const master = await loadTags(root);
@@ -60,7 +60,7 @@ export async function applyReview(
   checkTags(catalog, master.tags, mappings);
   sortCatalogTags(catalog);
   organizeCatalog(catalog);
-  const validation = await validateCatalog(catalog, join(root, "kdm-data.schema.json"));
+  const validation = await validateCatalog(catalog, join(root, "data.schema.json"));
   const orderedTags = { $schema: "./kdm-tags.schema.json", ...organizeTags(catalog, master.tags) };
   if (master.local && JSON.stringify(JSON.parse(master.text)) !== JSON.stringify(orderedTags))
     await save(join(catalogTemp(root), "kdm-tags.json"), orderedTags);
@@ -102,7 +102,7 @@ export async function applyReview(
 async function main() {
   const { values } = parseArgs({
     options: {
-      catalog: { type: "string", default: "exports/kdm-catalog" },
+      catalog: { type: "string", default: "static/kdm-catalog" },
       news: { type: "string", default: "exports/kingdom-death-news" },
       cache: { type: "string", default: ".cache/kdm-shop" },
       mappings: { type: "string" },
@@ -144,16 +144,16 @@ async function main() {
   }
   const master = await loadTags(root);
   if (values["tags-only"]) {
-    const baselineText = await readFile(join(root, "kdm-data.json"), "utf8");
+    const baselineText = await readFile(join(root, "data.json"), "utf8");
     const mappings = await loadMappings(root, values.mappings);
     const plan = planUpdate(JSON.parse(baselineText), [], mappings, [], master.tags);
     const { catalog, ...summary } = plan;
-    const validation = await validateCatalog(catalog, join(root, "kdm-data.schema.json"));
+    const validation = await validateCatalog(catalog, join(root, "data.schema.json"));
     const review = {
       preparedAt: new Date().toISOString(),
       date: "tags-only",
       baselineHash: digest(baselineText),
-      schemaHash: digest(await readFile(join(root, "kdm-data.schema.json"), "utf8")),
+      schemaHash: digest(await readFile(join(root, "data.schema.json"), "utf8")),
       newsHash: digest(await readFile(newsPath, "utf8")),
       tagsHash: digest(master.text),
       tagSchemaHash: digest(master.schemaText),
@@ -174,7 +174,7 @@ async function main() {
   await saveReport(news, values.news);
   if (!news.complete) throw new Error("News export is partial; finish scrape:news before preparing a catalog update");
   const mappings: Record<string, Mapping> = await loadMappings(root, values.mappings);
-  const baselineText = await readFile(join(root, "kdm-data.json"), "utf8");
+  const baselineText = await readFile(join(root, "data.json"), "utf8");
   const before: Catalog = JSON.parse(baselineText);
   const date = values.date ?? news.posts.reduce((latest, post) => (post.date > latest ? post.date : latest), "");
   const links = news.links.filter((row) => row.date === date && keepUrl(row.shopUrl));
@@ -224,12 +224,12 @@ async function main() {
         }
   }
   const plan = planUpdate(before, evidence, mappings, news.links, master.tags);
-  const validation = await validateCatalog(plan.catalog, join(root, "kdm-data.schema.json"));
+  const validation = await validateCatalog(plan.catalog, join(root, "data.schema.json"));
   const review = {
     preparedAt: new Date().toISOString(),
     date,
     baselineHash: digest(baselineText),
-    schemaHash: digest(await readFile(join(root, "kdm-data.schema.json"), "utf8")),
+    schemaHash: digest(await readFile(join(root, "data.schema.json"), "utf8")),
     newsHash: digest(await readFile(newsPath, "utf8")),
     tagsHash: digest(master.text),
     tagSchemaHash: digest(master.schemaText),

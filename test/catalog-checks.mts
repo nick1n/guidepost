@@ -31,13 +31,13 @@ function fixturePath(root: string, path: string) {
 
 test("deleted local tag files fall back to saved catalog assignments", async (t) => {
   const workspace = await mkdtemp(join(tmpdir(), "kdm-catalog-tags-"));
-  const root = join(workspace, "exports/kdm-catalog");
+  const root = join(workspace, "static/kdm-catalog");
   await mkdir(root, { recursive: true });
   await mkdir(catalogTemp(root), { recursive: true });
   t.after(() => rm(workspace, { recursive: true, force: true }));
   const catalog = empty();
   catalog.content.aya = { name: "Aya", kind: "model", tags: ["aya", "female"] };
-  await writeFile(join(root, "kdm-data.json"), JSON.stringify(catalog));
+  await writeFile(join(root, "data.json"), JSON.stringify(catalog));
   const master = await loadTags(root);
   assert.equal(master.local, false);
   assert.deepEqual(master.tags.content.aya, ["aya", "female"]);
@@ -176,8 +176,8 @@ test("cached Death Pink and Second Run names match their distinct catalog editio
 test("digital inclusions allow explicitly scoped physical keys", async (t) => {
   const workspace = await mkdtemp(join(tmpdir(), "kdm-key-scope-"));
   t.after(() => rm(workspace, { recursive: true, force: true }));
-  const schemaPath = join(workspace, "kdm-data.schema.json");
-  await writeFile(schemaPath, await readFile("exports/kdm-catalog/kdm-data.schema.json"));
+  const schemaPath = join(workspace, "data.schema.json");
+  await writeFile(schemaPath, await readFile("static/kdm-catalog/data.schema.json"));
   const catalog = empty();
   catalog.content.core = { name: "Core", kind: "core", tags: ["core"], editions: [{ v: "Sim" }] };
   catalog.content["kingdom-death-simulator"] = {
@@ -223,8 +223,8 @@ test("URL availability uses handles and release variants without name matching",
 test("availability refresh downloads all pages, preserves raw snapshots, and changes only availability", async (t) => {
   const root = await mkdtemp(join(tmpdir(), "kdm-availability-"));
   t.after(() => rm(root, { recursive: true, force: true }));
-  const path = join(root, "exports/kdm-catalog/kdm-data.json");
-  await mkdir(join(root, "exports/kdm-catalog"), { recursive: true });
+  const path = join(root, "static/kdm-catalog/data.json");
+  await mkdir(join(root, "static/kdm-catalog"), { recursive: true });
   const catalog = empty();
   catalog.content.aya = { name: "Aya", tags: ["aya"], url: "/products/aya", editions: [{ v: "Plastic", $: [3000], r: "2020-01-01" }] };
   await writeFile(path, JSON.stringify(catalog));
@@ -267,7 +267,7 @@ test("availability refresh downloads all pages, preserves raw snapshots, and cha
 test("a failed pagination request cannot clear availability or replace named snapshots", async (t) => {
   const root = await mkdtemp(join(tmpdir(), "kdm-availability-failure-"));
   t.after(() => rm(root, { recursive: true, force: true }));
-  const path = join(root, "exports/kdm-catalog/kdm-data.json");
+  const path = join(root, "static/kdm-catalog/data.json");
   const folder = join(root, "temp/kdm-catalog/shopify-products");
   await mkdir(dirname(path), { recursive: true });
   await mkdir(folder, { recursive: true });
@@ -567,7 +567,7 @@ test("master tags reject missing items, mistaken IDs, duplicate tags and invalid
 
 test("the editor schema validates vocabulary and preserves author assignments", async (t) => {
   const workspace = await mkdtemp(join(tmpdir(), "kdm-tag-schema-"));
-  const root = join(workspace, "exports/kdm-catalog");
+  const root = join(workspace, "static/kdm-catalog");
   await mkdir(root, { recursive: true });
   await mkdir(catalogTemp(root), { recursive: true });
   t.after(() => rm(workspace, { recursive: true, force: true }));
@@ -587,7 +587,7 @@ test("the editor schema validates vocabulary and preserves author assignments", 
 
 test("tag edits invalidate a prepared review before catalog writes", async (t) => {
   const workspace = await mkdtemp(join(tmpdir(), "kdm-stale-tags-"));
-  const root = join(workspace, "exports/kdm-catalog");
+  const root = join(workspace, "static/kdm-catalog");
   await mkdir(root, { recursive: true });
   await mkdir(catalogTemp(root), { recursive: true });
   t.after(() => rm(workspace, { recursive: true, force: true }));
@@ -596,8 +596,8 @@ test("tag edits invalidate a prepared review before catalog writes", async (t) =
   const catalogText = JSON.stringify(catalog),
     schemaText = JSON.stringify(tagSchema(["aya", "female"]));
   const news = join(root, "news.json");
-  await writeFile(join(root, "kdm-data.json"), catalogText);
-  await writeFile(join(root, "kdm-data.schema.json"), "{}");
+  await writeFile(join(root, "data.json"), catalogText);
+  await writeFile(join(root, "data.schema.json"), "{}");
   await writeFile(news, "{}");
   await writeFile(join(catalogTemp(root), "kdm-tags.schema.json"), schemaText);
   await writeFile(join(catalogTemp(root), "kdm-tags.json"), JSON.stringify(tagFile({ aya: ["female"] })));
@@ -618,12 +618,12 @@ test("tag edits invalidate a prepared review before catalog writes", async (t) =
     ),
     /Master tags changed/,
   );
-  assert.equal(await readFile(join(root, "kdm-data.json"), "utf8"), catalogText);
+  assert.equal(await readFile(join(root, "data.json"), "utf8"), catalogText);
 });
 
 test("applying reviewed tags works without local imports, mappings, or reports and persists family order", async (t) => {
   const workspace = await mkdtemp(join(tmpdir(), "kdm-apply-tags-"));
-  const root = join(workspace, "exports/kdm-catalog");
+  const root = join(workspace, "static/kdm-catalog");
   await mkdir(root, { recursive: true });
   await mkdir(catalogTemp(root), { recursive: true });
   t.after(() => rm(workspace, { recursive: true, force: true }));
@@ -631,10 +631,10 @@ test("applying reviewed tags works without local imports, mappings, or reports a
   before.content.aya = { name: "Aya", kind: "model", tags: ["aya"], editions: [{ v: "Plastic", r: "2019-01-01", $: [3400] }] };
   before.content.neko = { name: "Neko", kind: "model", tags: ["neko"], editions: [{ v: "Plastic", r: "2020-01-01", $: [2700] }] };
   const tags = tagFile({ aya: ["aya"], neko: ["neko", "death-high"] });
-  const schema = await readFile("exports/kdm-catalog/kdm-data.schema.json", "utf8");
+  const schema = await readFile("static/kdm-catalog/data.schema.json", "utf8");
   const inputs = {
-    "kdm-data.json": JSON.stringify(before),
-    "kdm-data.schema.json": schema,
+    "data.json": JSON.stringify(before),
+    "data.schema.json": schema,
     "kdm-tags.json": JSON.stringify(tags),
     "kdm-tags.schema.json": JSON.stringify(tagSchema(["aya", "neko", "death-high"])),
     "news.json": "{}",
@@ -644,7 +644,7 @@ test("applying reviewed tags works without local imports, mappings, or reports a
   const hash = (s: string) => createHash("sha256").update(s).digest("hex");
   await applyReview(
     {
-      baselineHash: hash(inputs["kdm-data.json"]),
+      baselineHash: hash(inputs["data.json"]),
       schemaHash: hash(schema),
       newsHash: hash("{}"),
       tagsHash: hash(inputs["kdm-tags.json"]),
@@ -655,7 +655,7 @@ test("applying reviewed tags works without local imports, mappings, or reports a
     root,
     join(root, "news.json"),
   );
-  const applied = JSON.parse(await readFile(join(root, "kdm-data.json"), "utf8"));
+  const applied = JSON.parse(await readFile(join(root, "data.json"), "utf8"));
   assert.deepEqual(Object.keys(applied.content), ["neko", "aya"]);
   assert.deepEqual(applied.content.neko, { ...before.content.neko, tags: tags.content.neko!.toSorted() });
   const master = JSON.parse(await readFile(join(catalogTemp(root), "kdm-tags.json"), "utf8"));
@@ -973,7 +973,7 @@ test("family IDs distinguish boxes, sculpt formats, singular Pinups and confirme
 
 test("applying a review persists ordering even when no item facts changed", async (t) => {
   const workspace = await mkdtemp(join(tmpdir(), "kdm-order-only-"));
-  const root = join(workspace, "exports/kdm-catalog");
+  const root = join(workspace, "static/kdm-catalog");
   await mkdir(root, { recursive: true });
   await mkdir(catalogTemp(root), { recursive: true });
   t.after(() => rm(workspace, { recursive: true, force: true }));
@@ -983,10 +983,10 @@ test("applying a review persists ordering even when no item facts changed", asyn
   before.content.aya = { name: "Aya", kind: "model", tags: ["aya"], editions: [{ v: "Plastic", r: "2019-01-01" }] };
   before.content.neko = { name: "Neko", kind: "model", tags: ["death-high", "neko"], editions: [{ v: "Plastic", r: "2020-01-01" }] };
   const tags = tagFile({ aya: ["aya"], neko: ["neko", "death-high"] });
-  const schema = await readFile("exports/kdm-catalog/kdm-data.schema.json", "utf8");
+  const schema = await readFile("static/kdm-catalog/data.schema.json", "utf8");
   const files = {
-    "kdm-data.json": JSON.stringify(before),
-    "kdm-data.schema.json": schema,
+    "data.json": JSON.stringify(before),
+    "data.schema.json": schema,
     "kdm-tags.json": JSON.stringify(tags),
     "kdm-tags.schema.json": JSON.stringify(tagSchema(["aya", "neko", "death-high"])),
     "news.json": "{}",
@@ -1000,7 +1000,7 @@ test("applying a review persists ordering even when no item facts changed", asyn
   const hash = (s: string) => createHash("sha256").update(s).digest("hex");
   await applyReview(
     {
-      baselineHash: hash(files["kdm-data.json"]),
+      baselineHash: hash(files["data.json"]),
       schemaHash: hash(schema),
       newsHash: hash("{}"),
       tagsHash: hash(files["kdm-tags.json"]),
@@ -1011,7 +1011,7 @@ test("applying a review persists ordering even when no item facts changed", asyn
     root,
     join(root, "news.json"),
   );
-  const after = JSON.parse(await readFile(join(root, "kdm-data.json"), "utf8"));
+  const after = JSON.parse(await readFile(join(root, "data.json"), "utf8"));
   assert.deepEqual(after, before);
   assert.deepEqual(Object.keys(after.content), ["neko", "aya"]);
   const master = JSON.parse(await readFile(join(catalogTemp(root), "kdm-tags.json"), "utf8"));
@@ -1141,7 +1141,7 @@ test("schema checks ID prefixes and field types without conditional branches", a
   delete catalog.content.aya;
   catalog.accessories["old-dice-id"] = { name: "Dice", kind: "accessory", accessoryType: "dice", tags: ["dice"] };
   await assert.rejects(validateCatalog(catalog), /Catalog schema errors/);
-  const schema = JSON.parse(await readFile("exports/kdm-catalog/kdm-data.schema.json", "utf8"));
+  const schema = JSON.parse(await readFile("static/kdm-catalog/data.schema.json", "utf8"));
   assert.ok(!/"(?:if|then|else|allOf)"\s*:/.test(JSON.stringify(schema)));
   const { Ajv2020 } = await import("ajv/dist/2020.js");
   const check = new Ajv2020({ strict: false }).compile(schema);
@@ -1294,12 +1294,12 @@ test("offline reads reuse source evidence and aborted throttling never sends a r
 
 test("applying a stale review cannot overwrite newer catalog edits", async (t) => {
   const workspace = await mkdtemp(join(tmpdir(), "kdm-review-test-"));
-  const root = join(workspace, "exports/kdm-catalog");
+  const root = join(workspace, "static/kdm-catalog");
   await mkdir(root, { recursive: true });
   await mkdir(catalogTemp(root), { recursive: true });
   t.after(() => rm(workspace, { recursive: true, force: true }));
   await mkdir(join(catalogTemp(root), "reports"));
-  const path = join(root, "kdm-data.json");
+  const path = join(root, "data.json");
   await writeFile(path, JSON.stringify(empty()));
   const baselineHash = createHash("sha256")
     .update(await readFile(path))
@@ -1343,11 +1343,11 @@ test("unavailable shop listings are cached so reruns do not repeat the request",
 
 test("included-only items retain parent references and reviewed tags across categories", async (t) => {
   const workspace = await mkdtemp(join(tmpdir(), "kdm-included-only-"));
-  const root = join(workspace, "exports/kdm-catalog");
+  const root = join(workspace, "static/kdm-catalog");
   await mkdir(root, { recursive: true });
   t.after(() => rm(workspace, { recursive: true, force: true }));
-  const schemaPath = join(root, "kdm-data.schema.json");
-  await writeFile(schemaPath, await readFile("exports/kdm-catalog/kdm-data.schema.json", "utf8"));
+  const schemaPath = join(root, "data.schema.json");
+  await writeFile(schemaPath, await readFile("static/kdm-catalog/data.schema.json", "utf8"));
   const catalog = empty();
   catalog.content["set-example"] = {
     name: "Example Box",
