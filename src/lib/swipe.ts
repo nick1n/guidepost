@@ -6,6 +6,8 @@ type SwipeOptions = {
   onDrag?: (distance: number) => void;
   /** Minimum horizontal travel in CSS pixels. Defaults to 50. */
   threshold?: number;
+  /** Listen across the whole page instead of just the attached element. */
+  scope?: "element" | "page";
 };
 
 type Gesture = { id: number; x: number; y: number; time: number };
@@ -17,8 +19,9 @@ type Gesture = { id: number; x: number; y: number; time: number };
  * Inputs, editable content, horizontal scrollers, and `data-swipe-ignore` areas
  * keep their own gestures. Vertical scrolling and pinch zoom remain native.
  */
-export function swipe({ onSwipe, onDrag, threshold = 50 }: SwipeOptions) {
-  return (element: HTMLElement) => {
+export function swipe({ onSwipe, onDrag, threshold = 50, scope = "element" }: SwipeOptions) {
+  return (surface: HTMLElement) => {
+    const element = scope === "page" ? surface.ownerDocument.documentElement : surface;
     let start: Gesture | undefined;
     let mouse: Gesture | undefined;
     let suppressClick = false;

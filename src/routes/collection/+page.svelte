@@ -21,7 +21,7 @@
 
   const searchUrlDelay = 250;
   const swipeFeedbackDuration = 900;
-  const ownershipFeedbackDuration = 2000;
+  const ownershipFeedbackDuration = 5000;
   const emptySelection: Readonly<Selection> = {};
 
   function key(item: Entry, edition: ReviewEdition) {
@@ -111,7 +111,7 @@
   let inspected = $state<Record<string, string>>({});
   let collapsed = $state<Record<string, boolean>>({});
   let rendered = $state<Record<string, boolean>>({});
-  let ownershipFeedback = $state<{ item: string; kind: "cleared" | "hint" }>();
+  let ownershipFeedback = $state<{ item: string; kind: "cleared" | "owned" | "hint" | "own-hint" }>();
   let feedbackTimer: ReturnType<typeof setTimeout> | undefined;
   let cancelCardScroll: (() => void) | undefined;
   onDestroy(() => {
@@ -262,6 +262,7 @@
         .map((edition) => ({ item, edition })),
     ),
   );
+  const ownedCount = $derived(owned.filter(({ edition }) => edition.standalone !== false).length);
   const wishlistCount = $derived(
     entries.reduce((total, item) => total + reviewEditions(item).filter((edition) => selection(item, edition).wished).length, 0),
   );
@@ -299,7 +300,7 @@
     if (!edition || edition.standalone === false) return;
     if (!selection(item, edition).owned) toggleOwned(item, edition);
   }
-  function showOwnershipFeedback(item: Entry, kind: "cleared" | "hint") {
+  function showOwnershipFeedback(item: Entry, kind: "cleared" | "owned" | "hint" | "own-hint") {
     clearTimeout(feedbackTimer);
     ownershipFeedback = { item: item.id, kind };
     feedbackTimer = setTimeout(() => (ownershipFeedback = undefined), ownershipFeedbackDuration);
@@ -307,13 +308,22 @@
   function tapOwnership(item: Entry) {
     const hasOwned = reviewEditions(item).some((edition) => selection(item, edition).owned);
     markSelectedOwned(item);
-    if (hasOwned) showOwnershipFeedback(item, "hint");
+    showOwnershipFeedback(item, hasOwned ? "hint" : "own-hint");
   }
   function clearItemOwned(item: Entry) {
     const ownedEditions = reviewEditions(item).filter((edition) => selection(item, edition).owned);
     for (const edition of ownedEditions) setEditionOwned(item, edition, false);
     showOwnershipFeedback(item, "cleared");
     return `${item.name}, all editions marked not owned.`;
+  }
+  function holdOwnership(item: Entry) {
+    const editions = reviewEditions(item);
+    if (editions.some((edition) => selection(item, edition).owned)) return clearItemOwned(item);
+    for (const edition of editions) {
+      if (edition.standalone !== false) setEditionOwned(item, edition, true);
+    }
+    showOwnershipFeedback(item, "owned");
+    return `${item.name}, all editions marked owned.`;
   }
   function inspect(item: Entry, edition: ReviewEdition) {
     inspected[item.id] = edition.v;
@@ -420,7 +430,7 @@
 
 <svelte:head><title>Collection | Guidepost</title></svelte:head>
 
-<main {@attach swipe({ onSwipe: swipeCategory, onDrag: dragCatalog })} class="scrollbar-stable">
+<main {@attach swipe({ onSwipe: swipeCategory, onDrag: dragCatalog, scope: "page" })} class="scrollbar-stable">
   <a class="back" href={resolve("/")}>
     <span class="back-icon i-material-symbols:arrow-back" aria-hidden="true"></span>Guidepost
   </a>
@@ -432,7 +442,7 @@
   <section class="stats" aria-label="Collection totals">
     <button class="stat-owned" type="button" aria-pressed={status === "owned"} onclick={() => toggleStatus("owned")}>
       <span class="stat-label">Owned<span class="stat-icon i-material-symbols:inventory-2-outline" aria-hidden="true"></span></span>
-      <strong>{owned.length}</strong>
+      <strong>{ownedCount}</strong>
     </button>
     <div class="stat-value">
       <strong>{formatPrice(collectionValue)}</strong>
@@ -751,8 +761,14 @@
               <span class={["clear-feedback", feedback !== "cleared" && "inactive"]} aria-hidden={feedback !== "cleared"}>
                 Ownership cleared
               </span>
+              <span class={["clear-feedback", feedback !== "owned" && "inactive"]} aria-hidden={feedback !== "owned"}>
+                All editions owned
+              </span>
               <span class={["hold-hint", feedback !== "hint" && "inactive"]} aria-hidden={feedback !== "hint"}>
                 Hold to clear ownership
+              </span>
+              <span class={["clear-feedback", feedback !== "own-hint" && "inactive"]} aria-hidden={feedback !== "own-hint"}>
+                Hold when unowned to own all editions
               </span>
             </span>
           </span>
@@ -762,8 +778,10 @@
     </HoldRipple>
     <HoldRipple
       ontap={() => tapOwnership(item)}
-      onhold={() => clearItemOwned(item)}
-      holdHint="Click to own the selected edition. Hold or press Shift+Enter to remove ownership from all editions of this item."
+      onhold={() => holdOwnership(item)}
+      holdHint={hasOwned
+        ? "Click to own the selected edition. Hold or press Shift+Enter to remove ownership from all editions of this item."
+        : "Click to own the selected edition. Hold or press Shift+Enter to own all editions of this item."}
     >
       {#snippet children(events, paint)}
         <button
@@ -911,25 +929,28 @@
     /* Shadow the icon's silhouette, since a text shadow does not apply to its mask. */
     filter: drop-shadow(0 0.125rem 0.25rem color-mix(in oklch, var(--contrast) 80%, transparent))
       drop-shadow(0 0 0.5rem color-mix(in oklch, var(--foreground) 20%, transparent));
+    opacity: 0;
     /* Decorative gesture feedback must not intercept the swipe or nearby controls. */
     pointer-events: none;
     transition:
+      opacity var(--duration-fast) var(--ease-standard),
       translate var(--duration-fast) var(--ease-standard),
       visibility 0s var(--duration-fast);
 
     &.is-visible {
       visibility: visible;
       translate: 0 -50%;
+      opacity: 1;
       transition-delay: 0s;
     }
   }
   .swipe-previous {
     inset-inline-start: 0;
-    translate: calc(-100% - 0.5rem) -50%;
+    translate: -25% -50%;
   }
   .swipe-next {
     inset-inline-end: 0;
-    translate: calc(100% + 0.5rem) -50%;
+    translate: 25% -50%;
   }
   .swipe-icon {
     display: inline-block;
@@ -1559,13 +1580,14 @@
     grid-column: 1 / -1;
     align-items: center;
     gap: 0.25rem;
-    border-block-end: var(--border-width) solid var(--color-divider);
+    border-block-end: 1px solid #fff1;
+    background-clip: padding-box;
 
     &:last-child {
       border-block-end: 0;
     }
     &.inspected {
-      background: var(--panel);
+      background-color: var(--panel);
     }
   }
   .own,
@@ -1574,6 +1596,7 @@
     place-items: center;
     min-block-size: var(--size-edition-control);
     padding-inline: 0.25rem;
+    cursor: pointer;
   }
   .own {
     border-radius: var(--radius-control);
@@ -1587,6 +1610,11 @@
     border-radius: 0;
     background: var(--contrast);
     cursor: pointer;
+    opacity: 0.5;
+
+    &:is(:hover, :focus-visible, :checked) {
+      opacity: 1;
+    }
 
     &:checked {
       background:
