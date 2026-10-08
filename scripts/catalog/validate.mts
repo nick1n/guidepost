@@ -19,7 +19,7 @@ export async function validateCatalog(catalog: Catalog, schemaPath = "static/kdm
   const ordered = organizeCatalog(structuredClone(catalog));
   for (const category of categories)
     if (JSON.stringify(Object.keys(catalog[category])) !== JSON.stringify(Object.keys(ordered[category])))
-      throw new Error("Catalog items are out of group/release order: " + category);
+      throw new Error("Catalog items are out of catalog order: " + category);
   const items = new Map<string, Catalog["content"][string]>();
   for (const category of categories)
     for (const [id, item] of Object.entries(catalog[category])) {

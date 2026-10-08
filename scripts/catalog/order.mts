@@ -1,19 +1,4 @@
-import { categories, type Catalog, type Category, type Edition, type Item } from "./types.mts";
-import { itemFamily } from "./identity.mts";
-
-const families = [
-  "frozen-survivor",
-  "indomitable-survivor",
-  "legendary-character",
-  "pillar",
-  "seed-pattern",
-  "wanderer",
-  "death-high",
-  "pinup",
-  "bust",
-  "painters-scale",
-  "sci-fi",
-];
+import { categories, type Catalog, type Edition, type Item } from "./types.mts";
 
 export function releaseDate(edition: Edition): number[] {
   if (edition.r) return edition.r.split("-").map(Number);
@@ -80,42 +65,16 @@ export function editionComparator(_item: Item, _id: string) {
   return compareEditions;
 }
 
-export function catalogGroup(category: Category, id: string, item: Item) {
-  if (category === "accessories") {
-    const type = item.accessoryType ?? "other";
-    const rank = ["dice", "shirt"].indexOf(type);
-    return `${rank === -1 ? 2 : rank}:${type}`;
-  }
-  if (category === "homebrew") {
-    const sourceId = id.replace(/^(?:set|expansion|vignette-of-death)-/, "");
-    const creators = ["revampedgame", "craft-of-death", "raitenjuro"];
-    const creator = creators.find((name) => sourceId.startsWith(name + "-")) ?? "other";
-    const creatorRank = creators.indexOf(creator);
-    const kinds = ["expansion", "set", "vignette", "armor-kit", "naked", "model", "terrain", "base", "accessory"];
-    const kind = kinds.includes(item.kind ?? "") ? item.kind! : "other";
-    const kindRank = kinds.indexOf(kind);
-    return `${creatorRank === -1 ? creators.length : creatorRank}:${creator}:${kindRank === -1 ? kinds.length : kindRank}:${kind}`;
-  }
-  if (category !== "content") return "4:other";
-  if (item.kind === "core") return "0:core";
-  if (item.kind === "expansion") return "1:expansions";
-  if (item.kind === "set") return "2:sets";
-  if (item.kind === "vignette") return "2:vignettes";
-  if (item.kind === "armor-kit") return "2:armor-kits";
-  if (item.kind === "naked") return "2:naked";
-  const family = itemFamily(id, item) ?? families.find((tag) => item.tags?.includes(tag));
-  return family ? "2:" + family : "4:other";
-}
-
 export function organizeCatalog(catalog: Catalog) {
   for (const category of categories) {
     const entries = Object.entries(catalog[category]);
-    // Keep category/family blocks together; only expansions use release chronology.
+    const rank = (item: Item) => (category === "content" ? (item.kind === "core" ? 0 : item.kind === "expansion" ? 1 : 2) : 2);
+    // Keep core and expansions first; alphabetize all remaining items by ID.
     entries.sort(([leftId, left], [rightId, right]) => {
-      const a = catalogGroup(category, leftId, left);
-      const b = catalogGroup(category, rightId, right);
-      if (a !== b) return a.localeCompare(b);
-      if (left.kind === "expansion" && right.kind === "expansion") {
+      const a = rank(left);
+      const b = rank(right);
+      if (a !== b) return a - b;
+      if (a === 1) {
         return compareDates(itemDate(left), itemDate(right)) || leftId.localeCompare(rightId, "en");
       }
       return leftId.localeCompare(rightId, "en");

@@ -1,6 +1,6 @@
 <script module lang="ts">
   import { data } from "#lib/kdm-data.ts";
-  import { reviewIndex, reviewGameplayFirst, type reviewEntries, type ReviewEdition } from "#lib/catalog-view.ts";
+  import { reviewIndex, reviewGameplayFirst, type ReviewEdition } from "#lib/catalog-view.ts";
 
   const catalog = reviewIndex(data);
   const entries = catalog.entries;
@@ -16,8 +16,16 @@
     { id: "homebrew", label: "Homebrew" },
   ] as const;
   type Category = (typeof categories)[number]["id"];
-  type Entry = ReturnType<typeof reviewEntries>[number];
+  type Entry = (typeof entries)[number];
   type Selection = { owned?: boolean; wished?: boolean; copy?: string };
+
+  const ownershipMessages = {
+    cleared: "Ownership cleared",
+    owned: "All editions owned",
+    hint: "Hold to clear ownership",
+    "own-hint": "Hold when unowned to own all editions",
+  };
+  type OwnershipFeedback = { item: string; kind: keyof typeof ownershipMessages };
 
   const searchUrlDelay = 250;
   const swipeFeedbackDuration = 900;
@@ -62,12 +70,49 @@
   let categoryResults = $state.raw<Partial<Record<Category, Entry[]>>>({ content: contentPreview });
   let categoryLimits = $state<Partial<Record<Category, number>>>({});
   let dragDistance = $state(0);
+  let swipeReady = $state(false);
   let categoriesVisible = $state(true);
   let categoryBar: HTMLElement | undefined;
   let swipeFeedback = $state(false);
   let swipeFeedbackTimer: ReturnType<typeof setTimeout> | undefined;
   const showSwipeTabs = $derived((dragDistance !== 0 || swipeFeedback) && !categoriesVisible);
   let query = $state("");
+  let searchInput: HTMLInputElement | undefined;
+
+  function onkeydown(event: KeyboardEvent) {
+    if (event.defaultPrevented || event.isComposing || event.repeat || event.altKey) return;
+    const target = event.target;
+    const modified = event.ctrlKey || event.metaKey;
+    if (event.key === "Backspace" && !modified && !event.shiftKey && target === searchInput && !query && selectedTags.length) {
+      event.preventDefault();
+      selectedTags = selectedTags.slice(0, -1);
+      updateCatalogUrl();
+      return;
+    }
+    if (event.key === "Enter" && !modified && !event.shiftKey && target === searchInput) {
+      const match =
+        tags.find(({ tag }) => tag.toLowerCase() === searchQuery) ??
+        tags.find(({ tag }) => reviewTagLabel(tag).toLowerCase() === searchQuery);
+      if (!match) return;
+      event.preventDefault();
+      if (!selectedTags.includes(match.tag)) selectedTags = [...selectedTags, match.tag];
+      setQuery("");
+      return;
+    }
+    if (event.key === "Escape" && !modified && !event.shiftKey && target === searchInput) {
+      event.preventDefault();
+      searchInput?.blur();
+      return;
+    }
+    const searchShortcut = event.key.toLowerCase() === "k" && modified && !event.shiftKey;
+    if (!searchShortcut) {
+      if (event.key !== "/" || modified) return;
+      if (target instanceof HTMLElement && (target.closest("input, textarea, select") || target.isContentEditable)) return;
+    }
+    event.preventDefault();
+    searchInput?.focus();
+  }
+
   let searchUrlTimer: ReturnType<typeof setTimeout> | undefined;
   beforeNavigate(() => clearTimeout(searchUrlTimer));
   afterNavigate(({ to }) => {
@@ -111,7 +156,7 @@
   let inspected = $state<Record<string, string>>({});
   let collapsed = $state<Record<string, boolean>>({});
   let rendered = $state<Record<string, boolean>>({});
-  let ownershipFeedback = $state<{ item: string; kind: "cleared" | "owned" | "hint" | "own-hint" }>();
+  let ownershipFeedback = $state<OwnershipFeedback>();
   let feedbackTimer: ReturnType<typeof setTimeout> | undefined;
   let cancelCardScroll: (() => void) | undefined;
   onDestroy(() => {
@@ -226,7 +271,8 @@
   const tags = $derived(catalog.tags.get(category) ?? []);
   const cloudTags = $derived(category === "content" ? (catalog.tagViews.get(category)?.cloud ?? []) : tags);
   const allTags = $derived(catalog.tagViews.get(category)?.all ?? []);
-  const catalogLimited = $derived(!searchQuery && !selectedTags.length && status === "all");
+  const hasSearch = $derived(!!searchQuery || selectedTags.length > 0);
+  const catalogLimited = $derived(!hasSearch && status === "all");
   const filtered = $derived.by(() => {
     if (catalogLimited) return categoryEntries;
     return categoryEntries.filter((item) => {
@@ -295,44 +341,30 @@
       editions.at(-1)
     );
   }
-  function markSelectedOwned(item: Entry) {
-    const edition = selectedEdition(item);
-    if (!edition || edition.standalone === false) return;
-    if (!selection(item, edition).owned) toggleOwned(item, edition);
-  }
-  function showOwnershipFeedback(item: Entry, kind: "cleared" | "owned" | "hint" | "own-hint") {
+  function showOwnershipFeedback(item: Entry, kind: OwnershipFeedback["kind"]) {
     clearTimeout(feedbackTimer);
     ownershipFeedback = { item: item.id, kind };
     feedbackTimer = setTimeout(() => (ownershipFeedback = undefined), ownershipFeedbackDuration);
   }
   function tapOwnership(item: Entry) {
     const hasOwned = reviewEditions(item).some((edition) => selection(item, edition).owned);
-    markSelectedOwned(item);
+    const edition = selectedEdition(item);
+    if (edition && !selection(item, edition).owned) toggleOwned(item, edition);
     showOwnershipFeedback(item, hasOwned ? "hint" : "own-hint");
-  }
-  function clearItemOwned(item: Entry) {
-    const ownedEditions = reviewEditions(item).filter((edition) => selection(item, edition).owned);
-    for (const edition of ownedEditions) setEditionOwned(item, edition, false);
-    showOwnershipFeedback(item, "cleared");
-    return `${item.name}, all editions marked not owned.`;
   }
   function holdOwnership(item: Entry) {
     const editions = reviewEditions(item);
-    if (editions.some((edition) => selection(item, edition).owned)) return clearItemOwned(item);
-    for (const edition of editions) {
-      if (edition.standalone !== false) setEditionOwned(item, edition, true);
-    }
-    showOwnershipFeedback(item, "owned");
-    return `${item.name}, all editions marked owned.`;
-  }
-  function inspect(item: Entry, edition: ReviewEdition) {
-    inspected[item.id] = edition.v;
+    const owned = !editions.some((edition) => selection(item, edition).owned);
+    const targets = editions.filter((edition) => (owned ? edition.standalone !== false : selection(item, edition).owned));
+    for (const edition of targets) setEditionOwned(item, edition, owned);
+    showOwnershipFeedback(item, owned ? "owned" : "cleared");
+    return `${item.name}, all editions marked ${owned ? "owned" : "not owned"}.`;
   }
   function selectEdition(item: Entry, edition: ReviewEdition) {
     if (selectedEdition(item)?.v === edition.v) {
       toggleOwned(item, edition);
     } else {
-      inspect(item, edition);
+      inspected[item.id] = edition.v;
     }
   }
   function toggleOwned(item: Entry, edition: ReviewEdition) {
@@ -342,7 +374,7 @@
       ownershipFeedback = undefined;
     }
     setEditionOwned(item, edition, !selection(item, edition).owned);
-    inspect(item, edition);
+    inspected[item.id] = edition.v;
   }
   function setEditionOwned(item: Entry, edition: ReviewEdition, owned: boolean) {
     for (const target of [{ item, edition }, ...catalog.includedEditions(item.id, edition.v)]) {
@@ -388,7 +420,7 @@
       swipeFeedbackTimer = setTimeout(() => (swipeFeedback = false), swipeFeedbackDuration);
     }
   }
-  function dragCatalog(distance: number) {
+  function dragCatalog(distance: number, ready = false) {
     if (distance !== 0 && dragDistance === 0) {
       clearTimeout(swipeFeedbackTimer);
       swipeFeedback = false;
@@ -399,6 +431,7 @@
       }
     }
     dragDistance = distance;
+    swipeReady = ready;
   }
   function observeCategories(element: HTMLElement) {
     categoryBar = element;
@@ -429,6 +462,8 @@
 </script>
 
 <svelte:head><title>Collection | Guidepost</title></svelte:head>
+
+<svelte:window {onkeydown} />
 
 <main {@attach swipe({ onSwipe: swipeCategory, onDrag: dragCatalog, scope: "page" })} class="scrollbar-stable">
   <a class="back" href={resolve("/")}>
@@ -464,7 +499,7 @@
     <div class={["search-controls", selectedTags.length > 0 && selectedTags.length <= 2 && "is-inline"]}>
       <div class="search-heading">
         <label class="search" for="catalog-search">Search catalog</label>
-        {#if searchQuery || selectedTags.length}
+        {#if hasSearch}
           <button class="search-command" type="button" onclick={markLatestOwned} disabled={!latestUnowned.length}>
             Mark latest editions owned
           </button>
@@ -475,7 +510,20 @@
         <p class="results">{filtered.length} items</p>
       </div>
       <div class="search-row">
-        <input id="catalog-search" type="search" bind:value={() => query, setQuery} placeholder="Name, alias, or tag" />
+        <div class="search-field">
+          <input
+            id="catalog-search"
+            type="search"
+            bind:this={searchInput}
+            bind:value={() => query, setQuery}
+            aria-keyshortcuts="/ Control+k Meta+k"
+            aria-describedby="search-shortcut"
+            placeholder="Name, alias, or tag"
+          />
+          <span id="search-shortcut" class={["shortcut", query && "is-hidden"]}>
+            <span class="visually-hidden">Press </span><kbd>/</kbd><span class="visually-hidden"> to focus search</span>
+          </span>
+        </div>
         {#if selectedTags.length}
           <section class="tag-filters" aria-label="Selected tags">
             {#each selectedTags as tag (tag)}
@@ -554,13 +602,7 @@
             {:else}
               <div class="cards">
                 {#each items as item, index (item.id)}
-                  {@const badges = reviewBadges(item)}
-                  <article
-                    class={["card", badges.beta && !badges.gameplay && "beta-only", collapsed[item.id] && "is-collapsed"]}
-                    {@attach observeCard(item)}
-                  >
-                    {@render itemDetail(item, index < 6 || !!rendered[item.id])}
-                  </article>
+                  {@render itemCard(item, index < 6 || !!rendered[item.id])}
                 {/each}
               </div>
               {#if option.id === category && items.length < filtered.length}
@@ -576,10 +618,20 @@
     </div>
   </div>
   <footer>Preview selections reset when this page reloads. Your saved collection is unchanged.</footer>
-  <div class={["swipe-previous", dragDistance > 0 && "is-visible"]} aria-hidden="true">
+  <div
+    class={["swipe-previous", dragDistance > 0 && "is-visible"]}
+    data-ready={swipeReady}
+    style:--swipe-pull={`${Math.max(0, dragDistance)}px`}
+    aria-hidden="true"
+  >
     <span class="swipe-icon i-material-symbols:chevron-left"></span>
   </div>
-  <div class={["swipe-next", dragDistance < 0 && "is-visible"]} aria-hidden="true">
+  <div
+    class={["swipe-next", dragDistance < 0 && "is-visible"]}
+    data-ready={swipeReady}
+    style:--swipe-pull={`${Math.max(0, -dragDistance)}px`}
+    aria-hidden="true"
+  >
     <span class="swipe-icon i-material-symbols:chevron-right"></span>
   </div>
 </main>
@@ -599,7 +651,7 @@
   <span class="tab-highlight" aria-hidden="true"></span>
 {/snippet}
 
-{#snippet tagButton(tag: string, weight?: number)}
+{#snippet tagButton(tag: string, weight = 0)}
   {@const selected = selectedTags.includes(tag)}
   <button
     class="cloud-tag"
@@ -733,162 +785,157 @@
   </div>
 {/snippet}
 
-{#snippet itemDetail(item: Entry, ready: boolean)}
+{#snippet itemCard(item: Entry, ready: boolean)}
   {@const editions = reviewEditions(item)}
   {@const badges = reviewBadges(item)}
   {@const edition = selectedEdition(item)}
   {@const numberedEditions = reviewNumberedEditions(item).filter((release) => selection(item, release).owned)}
   {@const hasOwned = editions.some((release) => selection(item, release).owned)}
   {@const feedback = ownershipFeedback?.item === item.id ? ownershipFeedback.kind : undefined}
-  <h2>
-    <HoldRipple
-      ontap={() => toggleCard(item)}
-      onhold={() => holdCard(item)}
-      holdHint="Click to collapse or expand this card. Hold or press Shift+Enter to collapse or expand all cards across every category."
-    >
-      {#snippet children(events, paint)}
-        <button class="card-heading" type="button" aria-expanded={!collapsed[item.id]} aria-controls={`card-body-${item.id}`} {...events}>
-          {@render paint()}
-          <span class="card-label">
-            <span class="card-title">{item.name}</span>
-            <span class="card-meta">
-              <span class={[feedback && "inactive"]} aria-hidden={!!feedback}>
-                {item.category === "bundles" ? "bundle" : (item.kind ?? "Item")}
-                {#if editions.length > 1}
-                  &nbsp;/ {editions.length} versions
+  <article
+    class={["card", badges.beta && !badges.gameplay && "beta-only", collapsed[item.id] && "is-collapsed"]}
+    {@attach observeCard(item)}
+  >
+    <h2>
+      <HoldRipple
+        ontap={() => toggleCard(item)}
+        onhold={() => holdCard(item)}
+        holdHint="Click to collapse or expand this card. Hold or press Shift+Enter to collapse or expand all cards across every category."
+      >
+        {#snippet children(events, paint)}
+          <button class="card-heading" type="button" aria-expanded={!collapsed[item.id]} aria-controls={`card-body-${item.id}`} {...events}>
+            {@render paint()}
+            <span class="card-label">
+              <span class="card-title">{item.name}</span>
+              <span class={["card-meta", feedback && (feedback === "hint" ? "hold-hint" : "ownership-feedback")]}>
+                {#if feedback}
+                  {ownershipMessages[feedback]}
+                {:else}
+                  {item.category === "bundles" ? "bundle" : (item.kind ?? "Item")}
+                  {#if editions.length > 1}
+                    &nbsp;/ {editions.length} versions
+                  {/if}
                 {/if}
-              </span>
-              <span class={["clear-feedback", feedback !== "cleared" && "inactive"]} aria-hidden={feedback !== "cleared"}>
-                Ownership cleared
-              </span>
-              <span class={["clear-feedback", feedback !== "owned" && "inactive"]} aria-hidden={feedback !== "owned"}>
-                All editions owned
-              </span>
-              <span class={["hold-hint", feedback !== "hint" && "inactive"]} aria-hidden={feedback !== "hint"}>
-                Hold to clear ownership
-              </span>
-              <span class={["clear-feedback", feedback !== "own-hint" && "inactive"]} aria-hidden={feedback !== "own-hint"}>
-                Hold when unowned to own all editions
               </span>
             </span>
-          </span>
-          <span class="card-chevron i-material-symbols:expand-more" aria-hidden="true"></span>
-        </button>
-      {/snippet}
-    </HoldRipple>
-    <HoldRipple
-      ontap={() => tapOwnership(item)}
-      onhold={() => holdOwnership(item)}
-      holdHint={hasOwned
-        ? "Click to own the selected edition. Hold or press Shift+Enter to remove ownership from all editions of this item."
-        : "Click to own the selected edition. Hold or press Shift+Enter to own all editions of this item."}
-    >
-      {#snippet children(events, paint)}
-        <button
-          class="ownership"
-          type="button"
-          aria-label="Owned editions of {item.name}"
-          aria-pressed={hasOwned}
-          disabled={!hasOwned && (!edition || edition.standalone === false)}
-          {...events}
-        >
-          {@render paint()}
-          <span class="ownership-label">Owned</span>
-        </button>
-      {/snippet}
-    </HoldRipple>
-  </h2>
-  <div class={["card-body", !ready && "pending"]} id={`card-body-${item.id}`} hidden={!!collapsed[item.id]}>
-    {#if ready}
-      {#if edition}
-        <div class="edition-details">
-          {#each editions as summaryEdition (summaryEdition.v)}
-            {@const active = edition.v === summaryEdition.v}
-            {@const price = reviewPrice(item, summaryEdition)}
-            {@const bundle = catalog.bundlePricing(item.id, summaryEdition.v)}
-            <div class={["edition-summary", !active && "inactive"]} inert={!active}>
-              <div class="edition-value">
-                <strong class="price">{price === undefined ? "Price unknown" : formatPrice(price, item.currency)}</strong>
-                <span class="caption">for {summaryEdition.v}</span>
-              </div>
-              <div class="badges">
-                {#if item.category === "accessories"}
-                  {#if item.accessoryType}{@render badge(item.accessoryType, item.accessoryType)}{/if}
-                {:else if badges.gameplay}
-                  {@render badge("gameplay", "Gameplay", "gameplay")}
-                {:else if !badges.beta}
-                  <span class="badge">Models only</span>
-                {/if}
-                {#if badges.beta}{@render badge("beta", "Beta", "beta")}{/if}
-              </div>
-              {#if bundle}
-                <p class="bundle-price">
-                  {bundle.missing ? "Known item prices" : "Items separately"}: {formatPrice(bundle.total, item.currency)}
-                  {#if bundle.missing}<span>{bundle.missing} item prices unavailable</span>
-                  {:else if bundle.savings !== undefined && bundle.savings > 0}
-                    <strong>Save {formatPrice(bundle.savings, item.currency)} ({bundle.percent}%)</strong>
+            <span class="card-chevron i-material-symbols:expand-more" aria-hidden="true"></span>
+          </button>
+        {/snippet}
+      </HoldRipple>
+      <HoldRipple
+        ontap={() => tapOwnership(item)}
+        onhold={() => holdOwnership(item)}
+        holdHint={hasOwned
+          ? "Click to own the selected edition. Hold or press Shift+Enter to remove ownership from all editions of this item."
+          : "Click to own the selected edition. Hold or press Shift+Enter to own all editions of this item."}
+      >
+        {#snippet children(events, paint)}
+          <button
+            class="ownership"
+            type="button"
+            aria-label="Owned editions of {item.name}"
+            aria-pressed={hasOwned}
+            disabled={!hasOwned && (!edition || edition.standalone === false)}
+            {...events}
+          >
+            {@render paint()}
+            <span class="ownership-label">Owned</span>
+          </button>
+        {/snippet}
+      </HoldRipple>
+    </h2>
+    <div class={["card-body", !ready && "pending"]} id={`card-body-${item.id}`} hidden={!!collapsed[item.id]}>
+      {#if ready}
+        {#if edition}
+          <div class="edition-details">
+            {#each editions as summaryEdition (summaryEdition.v)}
+              {@const active = edition.v === summaryEdition.v}
+              {@const price = reviewPrice(item, summaryEdition)}
+              {@const bundle = catalog.bundlePricing(item.id, summaryEdition.v)}
+              <div class={["edition-summary", !active && "inactive"]} inert={!active}>
+                <div class="edition-value">
+                  <strong class="price">{price === undefined ? "Price unknown" : formatPrice(price, item.currency)}</strong>
+                  <span class="caption">for {summaryEdition.v}</span>
+                </div>
+                <div class="badges">
+                  {#if item.category === "accessories"}
+                    {#if item.accessoryType}{@render badge(item.accessoryType, item.accessoryType)}{/if}
+                  {:else if badges.gameplay}
+                    {@render badge("gameplay", "Gameplay", "gameplay")}
+                  {:else if !badges.beta}
+                    <span class="badge">Models only</span>
                   {/if}
-                </p>
-              {/if}
-            </div>
-          {/each}
-        </div>
-        <div class="editions">
-          {#each editions as releaseEdition (releaseEdition.v)}
-            {@render editionRow(item, releaseEdition, edition.v === releaseEdition.v)}
-          {/each}
-        </div>
-        {#if numberedEditions.length}
-          <div class="copies">
-            {#each numberedEditions as numberedEdition (numberedEdition.v)}
-              {@const value = selection(item, numberedEdition)}
-              <label class="copy">
-                <span>{numberedEdition.v} #</span>
-                <input
-                  type="number"
-                  min="1"
-                  max={numberedEdition.runSize ?? 999}
-                  disabled={numberedEdition.standalone === false}
-                  value={value.copy ?? ""}
-                  oninput={(event) => updateCopy(item, numberedEdition, event.currentTarget.value)}
-                  placeholder="13"
-                />
-              </label>
+                  {#if badges.beta}{@render badge("beta", "Beta", "beta")}{/if}
+                </div>
+                {#if bundle}
+                  <p class="bundle-price">
+                    {bundle.missing ? "Known item prices" : "Items separately"}: {formatPrice(bundle.total, item.currency)}
+                    {#if bundle.missing}<span>{bundle.missing} item prices unavailable</span>
+                    {:else if bundle.savings !== undefined && bundle.savings > 0}
+                      <strong>Save {formatPrice(bundle.savings, item.currency)} ({bundle.percent}%)</strong>
+                    {/if}
+                  </p>
+                {/if}
+              </div>
             {/each}
           </div>
-        {/if}
-        <div class="edition-details">
-          {#each editions as detailEdition (detailEdition.v)}
-            {@const active = edition.v === detailEdition.v}
-            <div class={["edition-detail", !active && "inactive"]} inert={!active}>
-              {@render editionDetail(item, detailEdition)}
+          <div class="editions">
+            {#each editions as releaseEdition (releaseEdition.v)}
+              {@render editionRow(item, releaseEdition, edition.v === releaseEdition.v)}
+            {/each}
+          </div>
+          {#if numberedEditions.length}
+            <div class="copies">
+              {#each numberedEditions as numberedEdition (numberedEdition.v)}
+                {@const value = selection(item, numberedEdition)}
+                <label class="copy">
+                  <span>{numberedEdition.v} #</span>
+                  <input
+                    type="number"
+                    min="1"
+                    max={numberedEdition.runSize ?? 999}
+                    disabled={numberedEdition.standalone === false}
+                    value={value.copy ?? ""}
+                    oninput={(event) => updateCopy(item, numberedEdition, event.currentTarget.value)}
+                    placeholder="13"
+                  />
+                </label>
+              {/each}
             </div>
-          {/each}
-        </div>
-      {:else}<p class="included-note">No selectable editions are recorded yet.</p>{/if}
-      <TagRail
-        tagLabel={reviewTagLabel}
-        tags={item.tags}
-        {selectedTags}
-        label={`${item.name} tags`}
-        onTagClick={toggleTag}
-        --tag-gap="0.25rem"
-        --tag-margin="0"
-        --tag-rail-padding="0.2rem"
-        --tag-padding="0.2rem 0.4rem"
-        --tag-color="var(--muted-foreground)"
-        --tag-font-size="var(--text-sm)"
-      />
-      {#if item.notes || item.aliases?.length || item.gameplayContent}
-        <details class="notes">
-          <summary>Notes &amp; other names</summary>
-          {#if item.notes}<p>{item.notes}</p>{/if}
-          {#if item.gameplayContent}<p>{item.gameplayContent}</p>{/if}
-          {#if item.aliases?.length}<p>Also known as: {item.aliases.join(", ")}</p>{/if}
-        </details>
+          {/if}
+          <div class="edition-details">
+            {#each editions as detailEdition (detailEdition.v)}
+              {@const active = edition.v === detailEdition.v}
+              <div class={["edition-detail", !active && "inactive"]} inert={!active}>
+                {@render editionDetail(item, detailEdition)}
+              </div>
+            {/each}
+          </div>
+        {:else}<p class="included-note">No selectable editions are recorded yet.</p>{/if}
+        <TagRail
+          tagLabel={reviewTagLabel}
+          tags={item.tags}
+          {selectedTags}
+          label={`${item.name} tags`}
+          onTagClick={toggleTag}
+          --tag-gap="0.25rem"
+          --tag-margin="0"
+          --tag-rail-padding="0.2rem"
+          --tag-padding="0.2rem 0.4rem"
+          --tag-color="var(--muted-foreground)"
+          --tag-font-size="var(--text-sm)"
+        />
+        {#if item.notes || item.aliases?.length || item.gameplayContent}
+          <details class="notes">
+            <summary>Notes &amp; other names</summary>
+            {#if item.notes}<p>{item.notes}</p>{/if}
+            {#if item.gameplayContent}<p>{item.gameplayContent}</p>{/if}
+            {#if item.aliases?.length}<p>Also known as: {item.aliases.join(", ")}</p>{/if}
+          </details>
+        {/if}
       {/if}
-    {/if}
-  </div>
+    </div>
+  </article>
 {/snippet}
 
 <style>
@@ -900,6 +947,7 @@
     --distance-swipe-limit: 2.25rem;
     --size-catalog: 72rem;
     --size-swipe-icon: clamp(3rem, 8vw, 7rem);
+    --distance-swipe-cue-limit: calc(var(--size-swipe-icon) * 0.5);
 
     max-inline-size: var(--size-catalog);
     margin-inline: auto;
@@ -939,24 +987,52 @@
 
     &.is-visible {
       visibility: visible;
-      translate: 0 -50%;
+      /* Follow the pointer immediately while retaining the opacity fade. */
+      transition-duration: var(--duration-fast), 0s, 0s;
       opacity: 1;
       transition-delay: 0s;
+    }
+    &[data-ready="true"] {
+      filter: drop-shadow(0 0.125rem 0.25rem color-mix(in srgb, var(--contrast) 80%, transparent))
+        drop-shadow(0 0 0.75rem color-mix(in srgb, var(--accent) 65%, transparent));
     }
   }
   .swipe-previous {
     inset-inline-start: 0;
     translate: -25% -50%;
+
+    &.is-visible {
+      translate: clamp(
+          calc(var(--size-swipe-icon) * -0.25),
+          calc(var(--size-swipe-icon) * -0.25 + var(--swipe-pull) * 0.5),
+          var(--distance-swipe-cue-limit)
+        ) -50%;
+    }
   }
   .swipe-next {
     inset-inline-end: 0;
     translate: 25% -50%;
+
+    &.is-visible {
+      translate: clamp(
+          calc(var(--distance-swipe-cue-limit) * -1),
+          calc(var(--size-swipe-icon) * 0.25 - var(--swipe-pull) * 0.5),
+          calc(var(--size-swipe-icon) * 0.25)
+        ) -50%;
+    }
   }
   .swipe-icon {
     display: inline-block;
     inline-size: var(--size-swipe-icon);
     block-size: var(--size-swipe-icon);
-    color: var(--foreground);
+    color: var(--muted-foreground);
+    transition:
+      color var(--duration-fast) var(--ease-standard),
+      scale var(--duration-fast) var(--ease-standard);
+  }
+  [data-ready="true"] .swipe-icon {
+    color: var(--accent);
+    scale: 1.12;
   }
   header {
     margin-block-end: 0.75rem;
@@ -1017,7 +1093,7 @@
   .categories,
   .swipe-tabs {
     display: flex;
-    margin-block-start: 0.75rem;
+    margin-block-start: 0.5rem;
     padding: 0.25rem;
     overflow-x: auto;
     gap: 0.25rem;
@@ -1107,16 +1183,14 @@
   .stats > :is(div, button) {
     display: grid;
     align-content: center;
-    padding: 0.75rem 1rem;
+    padding: 0.75rem;
     gap: 0.25rem;
-    border: var(--border-width) solid var(--color-divider);
     border-radius: var(--radius-card);
     background: var(--panel);
   }
   .stats button {
     text-align: start;
     &[aria-pressed="true"] {
-      border-color: var(--stat-accent);
       background: color-mix(in oklch, var(--stat-accent) 12%, var(--panel));
     }
   }
@@ -1168,13 +1242,33 @@
   .catalog-filters {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
-    margin-block: 0.75rem;
+    margin-block: 0.5rem;
     gap: 0.5rem;
   }
   .search {
     margin-inline-end: auto;
     color: var(--muted-foreground);
     font-size: var(--text-sm);
+  }
+  .shortcut {
+    grid-area: 1 / 1;
+    align-self: center;
+    justify-self: end;
+    margin-inline-end: 0.5rem;
+    color: var(--muted-foreground);
+    font-size: var(--text-sm);
+    /* Let clicks on the hint focus the input underneath it. */
+    pointer-events: none;
+
+    &.is-hidden {
+      visibility: hidden;
+    }
+  }
+  kbd {
+    padding: 0.125rem 0.25rem;
+    border: 1px solid var(--color-divider);
+    border-radius: 0.25rem;
+    background: var(--panel);
   }
   .search-controls {
     display: grid;
@@ -1192,8 +1286,17 @@
     align-items: center;
     gap: 0.5rem;
   }
-  .search-row input {
+  .search-field {
+    display: grid;
     min-inline-size: 0;
+  }
+  input[type="search"] {
+    grid-area: 1 / 1;
+    min-inline-size: 0;
+
+    &:placeholder-shown {
+      padding-inline-end: 2.5rem;
+    }
   }
   .tag-filters {
     grid-row: 2;
@@ -1411,26 +1514,22 @@
     padding: var(--space-card);
     text-align: start;
   }
-  .card-title {
+  .card-title,
+  .card-meta {
     display: block;
     overflow: hidden;
-    font: var(--font-semibold) 1rem / var(--line-height-snug) var(--font-display);
     text-overflow: ellipsis;
     white-space: nowrap;
   }
+  .card-title {
+    font: var(--font-semibold) 1rem / var(--line-height-snug) var(--font-display);
+  }
   .card-meta {
-    display: grid;
     margin-block-start: 0.15rem;
     color: var(--muted-foreground);
     font-size: var(--text-sm);
   }
-  .card-meta > span {
-    grid-area: 1 / 1;
-    &.inactive {
-      visibility: hidden;
-    }
-  }
-  .clear-feedback {
+  .ownership-feedback {
     color: var(--accent-green);
   }
   .hold-hint {
@@ -1576,6 +1675,7 @@
   }
   .edition {
     display: grid;
+    position: relative;
     grid-template-columns: subgrid;
     grid-column: 1 / -1;
     align-items: center;
@@ -1589,6 +1689,10 @@
     &.inspected {
       background-color: var(--panel);
     }
+  }
+  .edition > :is(.own, .shop, .wish) {
+    /* Keep the independent controls above the edition button's row-wide hit area. */
+    z-index: 1;
   }
   .own,
   .wish {
@@ -1634,6 +1738,13 @@
     font-size: var(--text-md);
     line-height: var(--line-height-snug);
     text-align: start;
+
+    &::after {
+      position: absolute;
+      inset: 0;
+      content: "";
+      cursor: pointer;
+    }
   }
   .edition-name {
     display: flex;
@@ -1716,7 +1827,7 @@
     font-size: var(--text-sm);
   }
   summary {
-    padding-block: 0.25rem;
+    padding: 0.25rem;
     cursor: pointer;
   }
   .contents-count {
@@ -1779,7 +1890,7 @@
     }
     button:not(:disabled, .wish, .cloud-tag, .search-command, .edition-label, .badge):hover,
     summary:hover,
-    .edition:has(.edition-label:hover, .own:hover) {
+    .edition:hover {
       background: color-mix(in oklch, var(--accent) 14%, var(--panel));
       color: var(--accent);
     }
@@ -1817,6 +1928,13 @@
     }
   }
   @media (prefers-reduced-motion: reduce) {
+    .swipe-icon {
+      transition: none;
+    }
+    .swipe-previous.is-visible,
+    .swipe-next.is-visible {
+      translate: 0 -50%;
+    }
     .catalog-content {
       translate: none;
     }

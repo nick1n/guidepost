@@ -25,13 +25,15 @@
   --old-red: #e14011;
   --old-green: #4ae111;
   --old-blue: #11b2e1;
+  --new-red: #FF6F4B;
+  --new-green: #3ec10d;
 
   --affinity-red: #ba0000;
   --affinity-green: #279515;
   --affinity-blue: #1067b4;
 
   --accent-red: var(--old-red);
-  --accent-green: var(--old-green);
+  --accent-green: var(--new-green);
   --accent-blue: var(--old-blue);
   --accent-purple: #a811e1;
 

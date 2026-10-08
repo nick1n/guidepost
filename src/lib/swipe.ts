@@ -2,8 +2,8 @@ export type SwipeDirection = "left" | "right";
 
 type SwipeOptions = {
   onSwipe: (direction: SwipeDirection) => void;
-  /** Signed horizontal travel in CSS pixels, or zero when feedback should reset. */
-  onDrag?: (distance: number) => void;
+  /** Signed travel and whether releasing now will switch. Zero resets feedback. */
+  onDrag?: (distance: number, ready?: boolean) => void;
   /** Minimum horizontal travel in CSS pixels. Defaults to 50. */
   threshold?: number;
   /** Listen across the whole page instead of just the attached element. */
@@ -11,6 +11,7 @@ type SwipeOptions = {
 };
 
 type Gesture = { id: number; x: number; y: number; time: number };
+const touchDuration = 700;
 
 /**
  * Detect horizontal mouse drags and single-finger swipes completed within 700 ms.
@@ -25,6 +26,8 @@ export function swipe({ onSwipe, onDrag, threshold = 50, scope = "element" }: Sw
     let start: Gesture | undefined;
     let mouse: Gesture | undefined;
     let suppressClick = false;
+    let touchDistance = 0;
+    let readinessTimer: ReturnType<typeof setTimeout> | undefined;
 
     function ignored(target: EventTarget | null) {
       if (!(target instanceof Element)) return true;
@@ -36,12 +39,17 @@ export function swipe({ onSwipe, onDrag, threshold = 50, scope = "element" }: Sw
     }
 
     function ontouchstart(event: TouchEvent) {
+      clearTimeout(readinessTimer);
+      touchDistance = 0;
       start = undefined;
       onDrag?.(0);
       suppressClick = false;
       if (event.touches.length !== 1 || ignored(event.target)) return;
       const touch = event.touches[0];
       start = { id: touch.identifier, x: touch.clientX, y: touch.clientY, time: event.timeStamp };
+      readinessTimer = setTimeout(() => {
+        if (start && touchDistance) onDrag?.(touchDistance, false);
+      }, touchDuration);
     }
 
     function ontouchmove(event: TouchEvent) {
@@ -60,11 +68,16 @@ export function swipe({ onSwipe, onDrag, threshold = 50, scope = "element" }: Sw
         onDrag?.(0);
       } else if (x > 10 && x > y * 1.5) {
         if (event.cancelable) event.preventDefault();
-        onDrag?.(touch.clientX - start.x);
-      } else onDrag?.(0);
+        touchDistance = touch.clientX - start.x;
+        onDrag?.(touchDistance, x >= threshold && event.timeStamp - start.time <= touchDuration);
+      } else {
+        touchDistance = 0;
+        onDrag?.(0);
+      }
     }
 
     function ontouchend(event: TouchEvent) {
+      clearTimeout(readinessTimer);
       const origin = start;
       start = undefined;
       onDrag?.(0);
@@ -74,7 +87,7 @@ export function swipe({ onSwipe, onDrag, threshold = 50, scope = "element" }: Sw
       finishSwipe(origin, touch.clientX, touch.clientY, event.timeStamp);
     }
 
-    function finishSwipe(origin: Gesture, clientX: number, clientY: number, time: number, maxDuration = 700) {
+    function finishSwipe(origin: Gesture, clientX: number, clientY: number, time: number, maxDuration = touchDuration) {
       const x = clientX - origin.x;
       const y = clientY - origin.y;
       if (Math.abs(x) < threshold || Math.abs(x) <= Math.abs(y) * 1.5 || time - origin.time > maxDuration) return;
@@ -84,6 +97,7 @@ export function swipe({ onSwipe, onDrag, threshold = 50, scope = "element" }: Sw
     }
 
     function ontouchcancel() {
+      clearTimeout(readinessTimer);
       start = undefined;
       onDrag?.(0);
     }
@@ -118,7 +132,7 @@ export function swipe({ onSwipe, onDrag, threshold = 50, scope = "element" }: Sw
         onDrag?.(0);
       } else if (x > 10 && x > y * 1.5) {
         event.preventDefault();
-        onDrag?.(event.clientX - mouse.x);
+        onDrag?.(event.clientX - mouse.x, x >= threshold);
       } else onDrag?.(0);
     }
 
@@ -138,6 +152,7 @@ export function swipe({ onSwipe, onDrag, threshold = 50, scope = "element" }: Sw
     }
 
     function onblur() {
+      clearTimeout(readinessTimer);
       mouse = undefined;
       start = undefined;
       onDrag?.(0);
@@ -164,6 +179,7 @@ export function swipe({ onSwipe, onDrag, threshold = 50, scope = "element" }: Sw
     window?.addEventListener("blur", onblur);
 
     return () => {
+      clearTimeout(readinessTimer);
       onDrag?.(0);
       element.removeEventListener("touchstart", ontouchstart);
       element.removeEventListener("touchmove", ontouchmove);

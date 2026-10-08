@@ -621,7 +621,7 @@ test("tag edits invalidate a prepared review before catalog writes", async (t) =
   assert.equal(await readFile(join(root, "data.json"), "utf8"), catalogText);
 });
 
-test("applying reviewed tags works without local imports, mappings, or reports and persists family order", async (t) => {
+test("applying reviewed tags works without local imports, mappings, or reports and persists alphabetical order", async (t) => {
   const workspace = await mkdtemp(join(tmpdir(), "kdm-apply-tags-"));
   const root = join(workspace, "static/kdm-catalog");
   await mkdir(root, { recursive: true });
@@ -656,10 +656,10 @@ test("applying reviewed tags works without local imports, mappings, or reports a
     join(root, "news.json"),
   );
   const applied = JSON.parse(await readFile(join(root, "data.json"), "utf8"));
-  assert.deepEqual(Object.keys(applied.content), ["neko", "aya"]);
+  assert.deepEqual(Object.keys(applied.content), ["aya", "neko"]);
   assert.deepEqual(applied.content.neko, { ...before.content.neko, tags: tags.content.neko!.toSorted() });
   const master = JSON.parse(await readFile(join(catalogTemp(root), "kdm-tags.json"), "utf8"));
-  assert.deepEqual(Object.keys(master.content), ["neko", "aya"]);
+  assert.deepEqual(Object.keys(master.content), ["aya", "neko"]);
   assert.deepEqual(master.content.neko, tags.content.neko!.toSorted());
   const report = JSON.parse(await readFile(join(catalogTemp(root), "reports/kdm-merge-report.json"), "utf8"));
   const update = report.catalogUpdates[0];
@@ -819,7 +819,7 @@ test("an added digital edition preserves an inherited physical URL", () => {
   assert.equal(plan.catalog.content.rene?.editions?.find((e) => e.v === "First Run")?.runSize, undefined);
 });
 
-test("catalog ordering keeps families together and sorts non-expansions by ID regardless of dates", () => {
+test("catalog ordering keeps core and expansions first and alphabetizes other IDs regardless of family or date", () => {
   const catalog = empty();
   const item = (name: string, kind: string, tags: string[], r?: string) => ({
     name,
@@ -841,14 +841,14 @@ test("catalog ordering keeps families together and sorts non-expansions by ID re
     a: item("Z bundle", "bundle", ["survivor"], "2025-01-01"),
   };
   organizeCatalog(catalog);
-  assert.deepEqual(Object.keys(catalog.content), ["core", "expansion", "early", "late", "beta", "other", "undated"]);
+  assert.deepEqual(Object.keys(catalog.content), ["core", "expansion", "beta", "early", "late", "other", "undated"]);
   assert.deepEqual(Object.keys(catalog.bundles), ["a", "z"]);
   const snapshot = JSON.stringify(catalog);
   organizeCatalog(catalog);
   assert.equal(JSON.stringify(catalog), snapshot);
 });
 
-test("only expansions use physical release windows, sculpt groups use IDs, and Sim stays first", () => {
+test("only content expansions use physical release windows, other items use IDs, and Sim stays first", () => {
   const catalog = empty();
   const expansion = (name: string, releaseWindow: string) => ({
     name,
@@ -980,8 +980,8 @@ test("applying a review persists ordering even when no item facts changed", asyn
   await mkdir(join(catalogTemp(root), "imports"));
   await mkdir(join(catalogTemp(root), "reports"));
   const before = empty();
-  before.content.aya = { name: "Aya", kind: "model", tags: ["aya"], editions: [{ v: "Plastic", r: "2019-01-01" }] };
   before.content.neko = { name: "Neko", kind: "model", tags: ["death-high", "neko"], editions: [{ v: "Plastic", r: "2020-01-01" }] };
+  before.content.aya = { name: "Aya", kind: "model", tags: ["aya"], editions: [{ v: "Plastic", r: "2019-01-01" }] };
   const tags = tagFile({ aya: ["aya"], neko: ["neko", "death-high"] });
   const schema = await readFile("static/kdm-catalog/data.schema.json", "utf8");
   const files = {
@@ -1013,12 +1013,12 @@ test("applying a review persists ordering even when no item facts changed", asyn
   );
   const after = JSON.parse(await readFile(join(root, "data.json"), "utf8"));
   assert.deepEqual(after, before);
-  assert.deepEqual(Object.keys(after.content), ["neko", "aya"]);
+  assert.deepEqual(Object.keys(after.content), ["aya", "neko"]);
   const master = JSON.parse(await readFile(join(catalogTemp(root), "kdm-tags.json"), "utf8"));
   assert.deepEqual(Object.keys(master.content), Object.keys(after.content));
 });
 
-test("accessory types and homebrew creator/type groups stay together without changing item facts", () => {
+test("accessories and homebrew sort alphabetically by ID without changing item facts", () => {
   const catalog = empty();
   catalog.accessories = {
     "late-shirt": { name: "Late Shirt", accessoryType: "shirt", tags: ["late"], releaseYear: 2024 },
@@ -1039,16 +1039,16 @@ test("accessory types and homebrew creator/type groups stay together without cha
   };
   const before = structuredClone(catalog);
   organizeCatalog(catalog);
-  assert.deepEqual(Object.keys(catalog.accessories), ["dated-dice", "unknown-dice", "early-shirt", "late-shirt", "other-accessory"]);
+  assert.deepEqual(Object.keys(catalog.accessories), ["dated-dice", "early-shirt", "late-shirt", "other-accessory", "unknown-dice"]);
   assert.deepEqual(Object.keys(catalog.homebrew), [
+    "craft-of-death-base",
+    "craft-of-death-terrain",
     "expansion-revampedgame-rosine",
+    "raitenjuro-perfect-lantern",
     "revampedgame-a-model",
     "revampedgame-dated-model",
-    "revampedgame-z-model",
     "revampedgame-terrain",
-    "craft-of-death-terrain",
-    "craft-of-death-base",
-    "raitenjuro-perfect-lantern",
+    "revampedgame-z-model",
   ]);
   assert.deepEqual(catalog, before);
   const ordered = JSON.stringify(catalog);
@@ -1056,7 +1056,7 @@ test("accessory types and homebrew creator/type groups stay together without cha
   assert.equal(JSON.stringify(catalog), ordered);
 });
 
-test("sets, vignettes, armor kits and naked models occupy separate ID-sorted blocks in the catalog and master tags", () => {
+test("sets, vignettes, armor kits and naked models sort alphabetically by ID in the catalog and master tags", () => {
   const catalog = empty();
   catalog.content = {
     "armor-kit-late": { name: "Late Armor Kit", kind: "armor-kit", tags: ["armor"], editions: [{ v: "Plastic", r: "2020-01-01" }] },
