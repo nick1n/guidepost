@@ -1,25 +1,18 @@
-import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
+import { readFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { parseArgs } from "node:util";
-import { format, resolveConfig } from "prettier";
+import { publishFiles } from "./catalog/publication.mts";
 import { availabilityFromUrls } from "./catalog/availability.mts";
 import { organizeCatalog } from "./catalog/order.mts";
 import { catalogTemp } from "./catalog/paths.mts";
 import { ShopClient, shopProduct } from "./catalog/shop.mts";
 import type { Catalog, Product } from "./catalog/types.mts";
 
-async function save(path: string, value: unknown) {
-  await mkdir(dirname(path), { recursive: true });
-  const text = await format(JSON.stringify(value), { ...(await resolveConfig(path)), parser: "json" });
-  const temporary = `${path}.${process.pid}.tmp`;
-  await writeFile(temporary, text);
-  await rename(temporary, path);
-}
-
 export async function refreshAvailability(
   options: { catalog?: string; offline?: boolean; signal?: AbortSignal; client?: Pick<ShopClient, "get"> } = {},
 ) {
+  options.signal?.throwIfAborted();
   const path = resolve(options.catalog ?? "static/kdm-catalog/data.json");
   const original = await readFile(path, "utf8");
   const catalog: Catalog = JSON.parse(original);
@@ -28,6 +21,7 @@ export async function refreshAvailability(
   const pages: { products: unknown[] }[] = [];
   const products: Product[] = [];
   for (let page = 1; ; page++) {
+    options.signal?.throwIfAborted();
     if (page > 100) throw new Error("Shop pagination exceeded 100 pages; catalog availability was not changed.");
     const raw = options.offline
       ? JSON.parse(await readFile(join(folder, `products-page-${page}.json`), "utf8"))
@@ -46,20 +40,27 @@ export async function refreshAvailability(
   }
   if (!products.length) throw new Error("Shop returned no products; catalog availability was not changed.");
   const result = availabilityFromUrls(catalog, products);
-  // Downloads can take minutes. Refuse to overwrite edits made while fetching.
-  if ((await readFile(path, "utf8")) !== original) throw new Error("Catalog changed during refresh; rerun to preserve those edits.");
-  if (!options.offline) for (const [index, page] of pages.entries()) await save(join(folder, `products-page-${index + 1}.json`), page);
-  await save(join(catalogTemp(dirname(path)), "reports/availability-refresh.json"), {
-    checkedAt: new Date().toISOString(),
-    offline: options.offline === true,
-    pages: pages.length,
-    products: products.length,
-    ...result,
-  });
-  if (result.changed) {
-    if ((await readFile(path, "utf8")) !== original) throw new Error("Catalog changed during refresh; rerun to preserve those edits.");
-    await save(path, organizeCatalog(catalog));
-  }
+  const reportPath = join(catalogTemp(dirname(path)), "reports/availability-refresh.json");
+  await publishFiles(
+    [
+      ...(options.offline ? [] : pages.map((page, index) => ({ path: join(folder, `products-page-${index + 1}.json`), json: page }))),
+      ...(result.changed ? [{ path, json: organizeCatalog(catalog) }] : []),
+      {
+        path: reportPath,
+        json: {
+          checkedAt: new Date().toISOString(),
+          offline: options.offline === true,
+          pages: pages.length,
+          products: products.length,
+          ...result,
+        },
+      },
+    ],
+    {
+      baselines: [{ path, text: original, message: "Catalog changed during refresh; rerun to preserve those edits." }],
+      signal: options.signal,
+    },
+  );
   return { ...result, pages: pages.length, products: products.length, catalog: path, folder };
 }
 

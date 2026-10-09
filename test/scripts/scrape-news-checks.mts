@@ -16,7 +16,7 @@ import {
   pageData,
   saveReport,
   updateReport,
-} from "../scripts/scrape-news-shop-links.mts";
+} from "#scripts/scrape-news-shop-links.mts";
 
 const news = "https://kingdomdeath.com/news";
 const shop = "https://shop.kingdomdeath.com/products/";

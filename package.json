@@ -8,6 +8,8 @@
   "scripts": {
     "test": "vitest",
     "test:run": "vitest run",
+    "test:client": "vitest run --project client",
+    "test:scripts": "vitest run --project scripts && node --test test/scripts/*-checks.mts",
     "generate:types": "node scripts/generate-types.mts",
     "check:shop-links": "node scripts/check-shop-links.mts",
     "scrape:news": "node scripts/scrape-news-shop-links.mts",
@@ -18,7 +20,7 @@
     "catalog:workbook": "node scripts/catalog/workbook.mts",
     "catalog:tags": "node scripts/update-catalog.mts --tags-only",
     "catalog:tags-schema": "node scripts/update-catalog.mts --tags-schema",
-    "test:catalog": "node --test test/scrape-news-checks.mts test/catalog-checks.mts test/edition-retrieval-checks.mts test/workbook-map-checks.mts",
+    "test:catalog": "pnpm test:scripts",
     "dev": "pnpm generate:types && vite dev",
     "build": "pnpm generate:types && vite build",
     "preview": "vite preview",
@@ -57,6 +59,7 @@
   },
   "imports": {
     "#lib": "./src/lib/index.ts",
-    "#lib/*": "./src/lib/*"
+    "#lib/*": "./src/lib/*",
+    "#scripts/*": "./scripts/*"
   }
 }

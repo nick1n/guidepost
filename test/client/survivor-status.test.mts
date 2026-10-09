@@ -1,4 +1,4 @@
-import unoConfig from "../uno.config.ts";
+import unoConfig from "../../uno.config.ts";
 import { statuses } from "#lib/constants.ts";
 import { iconView } from "#lib/kdm/ui/status/statuses.ts";
 import { describe, expect, it } from "vitest";

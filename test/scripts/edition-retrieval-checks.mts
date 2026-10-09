@@ -3,8 +3,8 @@ import { mkdtemp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { test } from "node:test";
-import { fillEditions, productEditions } from "../scripts/fill-catalog-editions.mts";
-import { shopProduct } from "../scripts/catalog/shop.mts";
+import { fillEditions, productEditions } from "#scripts/fill-catalog-editions.mts";
+import { shopProduct } from "#scripts/catalog/shop.mts";
 
 const raw = {
   id: 1,

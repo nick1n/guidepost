@@ -17,8 +17,10 @@ On Windows, if `pnpm` is missing, install the pinned version with `npm.cmd insta
 | Command                 | Purpose                            |
 | ----------------------- | ---------------------------------- |
 | `pnpm check`            | Check Svelte and TypeScript        |
-| `pnpm test:run`         | Run app tests once                 |
-| `pnpm test:catalog`     | Run catalog script tests           |
+| `pnpm test:run`         | Run all Vitest tests once          |
+| `pnpm test:client`      | Run client-facing app tests        |
+| `pnpm test:scripts`     | Run build and catalog script tests |
+| `pnpm test:catalog`     | Alias for script tests             |
 | `pnpm catalog:workbook` | Regenerate workbook row mappings   |
 | `pnpm build`            | Build the static site              |
 | `pnpm preview`          | Serve the production build locally |
@@ -27,6 +29,10 @@ On Windows, if `pnpm` is missing, install the pinned version with `npm.cmd insta
 
 See [AGENTS.md](AGENTS.md) for coding conventions and required checks. The
 [KDM architecture](docs/kdm-architecture.md) describes current collection storage and planned campaign and offline sync work.
+
+Client-facing tests live in `test/client/`; build and catalog script tests live in `test/scripts/`.
+Script tests import tooling through the package's `#scripts/*` alias, with the source extension included.
+`pnpm test` watches both Vitest projects. Script checks named `*-checks.mts` use Node's test runner through `pnpm test:scripts`.
 
 ## Catalog
 
@@ -81,6 +87,14 @@ pnpm catalog:validate
 Applying a review writes the live catalog and local reports. Stale inputs are rejected; prepare a new review if its inputs change.
 Validation checks schemas, references, ordering, and local tag assignments without changing them.
 Shop requests are at least 35 seconds apart and cached for 24 hours. Use `--offline` for cached evidence or `--refresh` to fetch again.
+
+Catalog review application, availability refresh, and edition retrieval share a publication module. It stages all outputs in unique
+adjacent temporary files, then rechecks captured inputs before each replacement. Completion reports publish last. Detected edits or
+cancellation before the first replacement leave destination files unchanged; temporary files are cleaned up. Failures after a replacement
+list the published and pending paths, retaining the original error. Rerun from the current files after inspecting those paths.
+Each replacement applies to one file. Publication across several files is not transactional, and an external edit between a baseline
+check and replacement can still race with the command. Edition retrieval still saves incomplete progress checkpoints while fetching;
+final publication marks them complete after the mappings and catalog publish.
 
 ### Edit tags
 

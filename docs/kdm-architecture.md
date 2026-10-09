@@ -372,14 +372,14 @@ Review existing registration before adding Dexie Cloud worker behavior.
 ## Tests and implementation sequence
 
 Use Vitest and the version-aligned `@effect/vitest` adapter. Existing
-[Dexie storage tests](../test/dexie-store.test.mts) cover snapshot transactions and stale revisions;
-[optimistic store tests](../test/optimistic-store.test.mts) cover pending patches and rollback. Proposed campaign memory layers should
+[Dexie storage tests](../test/client/dexie-store.test.mts) cover snapshot transactions and stale revisions;
+[optimistic store tests](../test/client/optimistic-store.test.mts) cover pending patches and rollback. Proposed campaign memory layers should
 allocate fresh state in `Layer.effect`, use atomic `Ref` updates, and match the Dexie contract. They need no browser, IndexedDB, Dexie
 import, credentials, or network.
 
-Current [collection tests](../test/collection.test.mts) also cover monitoring failures, retry readiness, changes during refresh, and
-owner changes during workbook operations. [Action tests](../test/collection-actions.test.mts) cover typed failures, mixed causes,
-defects, and cancellation; [transfer tests](../test/collection-transfer.test.mts) cover validated backups and workbook representation
+Current [collection tests](../test/client/collection.test.mts) also cover monitoring failures, retry readiness, changes during refresh, and
+owner changes during workbook operations. [Action tests](../test/client/collection-actions.test.mts) cover typed failures, mixed causes,
+defects, and cancellation; [transfer tests](../test/client/collection-transfer.test.mts) cover validated backups and workbook representation
 limits. Keep this coverage when simplifying Effect workflows.
 
 | Test layer                                           | Coverage                                                                                                                                                                      |

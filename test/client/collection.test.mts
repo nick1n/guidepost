@@ -6,8 +6,8 @@ import { Collection } from "#lib/state/collection.svelte.ts";
 import { CollectionError } from "#lib/state/collection-errors.ts";
 import { StoreError, type CollectionStore } from "#lib/state/stores.ts";
 import { collectionKey, type Catalog, type CollectionSnapshot } from "#lib/types/index.ts";
-import catalogJson from "../static/kdm-catalog/data.json";
-import workbookMap from "../static/kdm-catalog/workbook-map.json";
+import catalogJson from "../../static/kdm-catalog/data.json";
+import workbookMap from "../../static/kdm-catalog/workbook-map.json";
 
 const data = catalogJson as Catalog;
 const core = collectionKey("core", "1.6");

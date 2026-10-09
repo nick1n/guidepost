@@ -6,7 +6,7 @@ import { it, expect } from "@effect/vitest";
 import { Deferred, Effect, Fiber, Queue, Stream } from "effect";
 import { DexieStore } from "#lib/state/dexie-store.ts";
 import { StoreError } from "#lib/state/stores.ts";
-import catalogJson from "../static/kdm-catalog/data.json";
+import catalogJson from "../../static/kdm-catalog/data.json";
 import { collectionKey, entryId, type Catalog } from "#lib/types/index.ts";
 
 const data = catalogJson as Catalog;

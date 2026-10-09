@@ -1,4 +1,4 @@
-import { catalogTemp } from "../scripts/catalog/paths.mts";
+import { catalogTemp } from "#scripts/catalog/paths.mts";
 import assert from "node:assert/strict";
 import { mkdtemp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
@@ -13,17 +13,17 @@ import {
   productExclusion,
   releaseGaps,
   variantLabel,
-} from "../scripts/catalog/update.mts";
-import { catalogListing, productUrl, ShopClient, ShopError, shopProduct } from "../scripts/catalog/shop.mts";
-import { applyReview } from "../scripts/update-catalog.mts";
-import { refreshAvailability } from "../scripts/refresh-catalog-availability.mts";
-import { availabilityFromUrls } from "../scripts/catalog/availability.mts";
-import { categories, type Catalog, type Product } from "../scripts/catalog/types.mts";
-import { normalizeItem } from "../scripts/catalog/normalize.mts";
-import { organizeCatalog, compareEditions, orderItemFields } from "../scripts/catalog/order.mts";
-import { validateCatalog } from "../scripts/catalog/validate.mts";
-import { applyTags, loadTags, tagSchema, organizeTags, type Tags } from "../scripts/catalog/tags.mts";
-import { prefixedId } from "../scripts/catalog/identity.mts";
+} from "#scripts/catalog/update.mts";
+import { catalogListing, productUrl, ShopClient, ShopError, shopProduct } from "#scripts/catalog/shop.mts";
+import { applyReview } from "#scripts/update-catalog.mts";
+import { refreshAvailability } from "#scripts/refresh-catalog-availability.mts";
+import { availabilityFromUrls } from "#scripts/catalog/availability.mts";
+import { categories, type Catalog, type Product } from "#scripts/catalog/types.mts";
+import { normalizeItem } from "#scripts/catalog/normalize.mts";
+import { organizeCatalog, compareEditions, orderItemFields } from "#scripts/catalog/order.mts";
+import { validateCatalog } from "#scripts/catalog/validate.mts";
+import { applyTags, loadTags, tagSchema, organizeTags, type Tags } from "#scripts/catalog/tags.mts";
+import { prefixedId } from "#scripts/catalog/identity.mts";
 
 function fixturePath(root: string, path: string) {
   return join(/^(kdm-tags|imports\/|reports\/)/.test(path) ? catalogTemp(root) : root, path);

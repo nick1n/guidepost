@@ -1,8 +1,8 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { test } from "node:test";
-import { buildWorkbookMap, validateWorkbookMap, type WorkbookImports } from "../scripts/catalog/workbook.mts";
-import type { Catalog } from "../scripts/catalog/types.mts";
+import { buildWorkbookMap, validateWorkbookMap, type WorkbookImports } from "#scripts/catalog/workbook.mts";
+import type { Catalog } from "#scripts/catalog/types.mts";
 
 const first = "first-run";
 const encore = "encore";

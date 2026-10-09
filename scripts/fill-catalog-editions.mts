@@ -1,23 +1,16 @@
-import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
+import { readFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { parseArgs } from "node:util";
-import { format, resolveConfig } from "prettier";
+import { publishFiles } from "./catalog/publication.mts";
 import { catalogTemp } from "./catalog/paths.mts";
 import { editionComparator, organizeCatalog } from "./catalog/order.mts";
 import { editionId } from "./catalog/identity.mts";
 import { normalizeItem } from "./catalog/normalize.mts";
-import { loadMappings, productUrl, ShopClient, shopProduct } from "./catalog/shop.mts";
+import { productUrl, ShopClient, shopProduct } from "./catalog/shop.mts";
 import { normalized, variantLabel } from "./catalog/update.mts";
 import { validateCatalog } from "./catalog/validate.mts";
-import type { Catalog, Edition, Item, Product } from "./catalog/types.mts";
-
-async function save(path: string, data: unknown) {
-  await mkdir(dirname(path), { recursive: true });
-  const temporary = `${path}.${process.pid}.tmp`;
-  await writeFile(temporary, await format(JSON.stringify(data), { ...(await resolveConfig(path)), parser: "json" }));
-  await rename(temporary, path);
-}
+import type { Catalog, Edition, Item, Mapping, Product } from "./catalog/types.mts";
 
 export function productEditions(item: Item, product: Product) {
   if (!product.variants.length) throw new Error("Product has no variants");
@@ -67,6 +60,7 @@ export function productEditions(item: Item, product: Product) {
 export async function fillEditions(
   options: { catalog?: string; offline?: boolean; refresh?: boolean; signal?: AbortSignal; client?: Pick<ShopClient, "get"> } = {},
 ) {
+  options.signal?.throwIfAborted();
   const path = resolve(options.catalog ?? "static/kdm-catalog/data.json");
   const original = await readFile(path, "utf8");
   const catalog: Catalog = JSON.parse(original);
@@ -77,7 +71,9 @@ export async function fillEditions(
     if (error.code === "ENOENT") return undefined;
     throw error;
   });
-  const mappings = await loadMappings(root);
+  const mappings: Record<string, Mapping> = JSON.parse(mappingText ?? "{}");
+  const schemaPath = join(root, "data.schema.json");
+  const schemaText = await readFile(schemaPath, "utf8");
   const news: { links: { itemName: string; shopUrl: string; date: string }[] } = JSON.parse(
     await readFile(resolve(root, "../../exports/kingdom-death-news/news-shop-links.json"), "utf8"),
   );
@@ -129,17 +125,36 @@ export async function fillEditions(
       });
       console.log(`${report.reachable.length + report.unreachable.length}/${targets.length}: ${itemId}, not retrieved`);
     }
-    await save(reportPath, report);
+    await publishFiles([{ path: reportPath, json: report }], { signal: options.signal });
   }
   organizeCatalog(catalog);
-  await validateCatalog(catalog, join(root, "data.schema.json"));
-  if ((await readFile(path, "utf8")) !== original || (await readFile(mappingsPath, "utf8").catch(() => undefined)) !== mappingText)
-    throw new Error("Catalog or mappings changed during retrieval. Cached responses are saved; rerun to preserve your edits.");
-  await save(mappingsPath, mappings);
-  await save(path, catalog);
+  await validateCatalog(catalog, schemaPath);
+  const reportText = await readFile(reportPath, "utf8").catch((error: NodeJS.ErrnoException) => {
+    if (error.code === "ENOENT") return undefined;
+    throw error;
+  });
   report.complete = true;
   report.applied = true;
-  await save(reportPath, report);
+  await publishFiles(
+    [
+      { path: mappingsPath, json: mappings },
+      { path, json: catalog },
+      { path: reportPath, json: report },
+    ],
+    {
+      baselines: [
+        { path, text: original, message: "Catalog changed during retrieval. Cached responses are saved; rerun to preserve your edits." },
+        {
+          path: mappingsPath,
+          text: mappingText,
+          message: "Mappings changed during retrieval. Cached responses are saved; rerun to preserve your edits.",
+        },
+        { path: schemaPath, text: schemaText, message: "Schema changed during retrieval; rerun to validate against the current schema." },
+        { path: reportPath, text: reportText, message: "Retrieval report changed during publication; rerun to preserve its updates." },
+      ],
+      signal: options.signal,
+    },
+  );
   return report;
 }
 

@@ -1,8 +1,8 @@
 import assert from "node:assert/strict";
 import { it } from "@effect/vitest";
 import { Effect, Result } from "effect";
-import workbookMap from "../static/kdm-catalog/workbook-map.json";
-import catalogJson from "../static/kdm-catalog/data.json";
+import workbookMap from "../../static/kdm-catalog/workbook-map.json";
+import catalogJson from "../../static/kdm-catalog/data.json";
 import { decodeBackup, encodeBackup, previewWorkbookRows, exportWorkbookRows, TransferError } from "#lib/state/collection-transfer.ts";
 import { collectionKey, type Catalog } from "#lib/types/index.ts";
 

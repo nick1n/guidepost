@@ -1,5 +1,5 @@
 import { expect, it, vi } from "vitest";
-import { load } from "../src/routes/collection/+page.ts";
+import { load } from "../../src/routes/collection/+page.ts";
 
 vi.mock("$app/paths", () => ({ asset: (path: string) => `/test-base/${path}` }));
 

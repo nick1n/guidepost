@@ -1,5 +1,5 @@
 import { expect, it } from "vitest";
-import catalogJson from "../static/kdm-catalog/data.json";
+import catalogJson from "../../static/kdm-catalog/data.json";
 import coreEditions from "#lib/gen/core-editions.json";
 import { editionGameplay } from "#lib/kdm-data.ts";
 import type { Catalog } from "#lib/types/index.ts";
