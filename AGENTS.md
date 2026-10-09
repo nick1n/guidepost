@@ -87,13 +87,30 @@ Safelist icon classes in `uno.config.ts` when extraction is unreliable. Verify p
 
 `static/kdm-catalog/data.json` is the live app's source of truth. Data is grouped by category and IDs are object keys; do not add `id` fields to objects. Update `static/kdm-catalog/data.schema.json` when the shape changes and regenerate types as described in [README.md](README.md#catalog).
 
+Explicit editions require permanent readable lowercase kebab-case `id` values, unique within their item. Assign IDs once; never regenerate them when `label`, `name`, or other facts change, and never reuse retired IDs for different releases. Creation tooling in `scripts/catalog/identity.mts` rejects collisions for review. Keep `label` as a mutable display label and do not use it as collection identity. Items
+without explicit editions use synthetic `item` IDs, or `bundle` for bundles. The product-only
+`static/kdm-catalog/workbook-map.json` connects local workbook rows to these IDs; regenerate it with `pnpm catalog:workbook` from the
+Git-ignored import records. Sheet and row numbers are locators for that workbook snapshot, not permanent IDs. Review changed row
+identities and ambiguous release alternatives before import or export uses them. Do not put personal workbook cells in
+the map.
+
+Keep item fields alphabetical, edition fields starting with `id` then `label`, and inclusion-object fields starting with `item`; remaining fields are alphabetical. Use `orderItemFields`/`organizeCatalog` in `scripts/catalog/order.mts`. Preserve category/item ordering and edition/other array ordering. Inclusion `editionId` resolves on the child item; `parentEditionIds` resolves on the containing item. Edition IDs do not need global uniqueness. Reserve `item` and `bundle` for synthetic editions.
+
 Keep catalog-derived helpers in `src/lib/kdm-data.ts` or `src/lib/catalog-view.ts`, not duplicated in components.
+
+Load the full catalog only through the collection route. The root layout initializes an empty catalog. Quick Start directly imports
+generated `src/lib/gen/core-editions.json`, containing only playable core editions' IDs and labels in catalog order, excluding Resin;
+`pnpm generate:types` refreshes it from the live catalog. Catalog helpers receive data explicitly. Switching to
+the full catalog must preserve the owner's snapshot and pending writes. Disable collection-link hover data preloading and keep
+the full catalog and collection HTML out of service-worker precaching; cache them after collection is visited.
 
 ## Effect
 
 This project uses Effect v4. Before changing Effect code, read `node_modules/effect/AGENTS.md` completely and follow relevant linked references. For uncovered APIs/behavior, inspect the installed source and types. Prefer version-matched guidance over examples from other releases. If unavailable, report it and consult official documentation matching the installed version; do not upgrade Effect just to obtain guidance.
 
 Use feature-owned `Schema.TaggedError` classes and unions at action boundaries. Use named `Effect.fn` for significant effectful operations, preserving deferred execution and instance binding. Keep pure helpers and UI callbacks ordinary functions. Preserve interruption when handling broad causes; cancellation must not produce failure notifications. Library guidance does not override the state, persistence, and UI boundaries below.
+
+At action boundaries, inspect the full cause before extracting a typed error. Causes containing interruption remain interrupted, even if they also contain a typed failure. Causes containing defects log the full cause rather than hiding it behind an expected error message. Keep simple Effect operations direct; generator wrappers should express actual sequencing.
 
 ## State and persistence
 
@@ -102,17 +119,23 @@ For campaign, settlement, survivor, gameplay undo/redo, preferences, or Dexie sy
 Preserve these collection boundaries unless the task explicitly changes them:
 
 ```text
-ContentState -> OptimisticStore -> GuestStore -> BrowserStorage
+Collection -> OptimisticStore -> DexieStore (CollectionStore)
 ```
 
-- `ContentState` owns collection commands. `CollectionStore` is the persistence interface implemented by `GuestStore`, not another runtime layer. Both stores are defined in `src/lib/state/stores.ts`; data types live in `src/lib/types`.
-- `GuestStore` reads/writes complete snapshots without a second cache. Only `BrowserStorage` in `src/lib/state/browser-storage.ts` accesses `localStorage` and translates failures to `StorageError`. Provide `BrowserStorage.layer` to `GuestStore.make()`; keep storage details out of `ContentState`.
+- The root layout provides one `Collection` per app instance through Svelte context. `Collection` owns collection commands. `CollectionStore` in `src/lib/state/stores.ts` is the persistence interface implemented by `DexieStore` in `src/lib/state/dexie-store.ts`; data types live in `src/lib/types`.
+- `DexieStore` reads and writes complete snapshots scoped to one owner in IndexedDB. It applies changed rows and removals with the revision check and update in one transaction. The `ownerId` index serves snapshot reads; entry primary keys serve writes. Load Dexie only inside browser initialization. Metadata schema version 1 validates the stored shape and is not a migration. Keep storage details out of `Collection`.
+- `CollectionStore.changes` optionally reports stale snapshots. `DexieStore` uses metadata `liveQuery` subscriptions with Effect finalizers. `Collection.observeChanges()` blocks edits and offers explicit refresh without replacing optimistic state. Observations never advance the expected write revision; local saves must not report themselves as stale.
+- Observer failures set a load error and block edits while preserving the snapshot. The layout follows `Collection.canObserve`, keeps healthy monitoring active during refresh, and restarts failed monitoring only after a successful retry. Interrupt the subscription before closing Dexie. A storage-module download failure has no store to retry; offer a page reload.
+- Collection state stores `owned`, `wished`, and numeric `copyNumber` (integers 1 through 9999, bounded by a known run size) under stable content and edition IDs. Do not key saved entries by mutable edition labels.
 - `OptimisticStore` holds confirmed state plus pending field patches, serializes persistence, and removes failed patches without overwriting newer edits. Only persistence waits in the queue. Batch related updates in one `saveMany()` transaction.
-- Run UI Effects through `collectionActions.run()`, for example `collectionActions.run(collection.setManyOwned(ids, true))`. This ordinary TypeScript module owns no reactive state. Loading errors belong to `ContentState.loadError` alongside `loadStatus`, and clear on retry or user changes.
-- `Notifications` currently logs outcomes to the console; visible toasts are planned. Initialize with `{ success: false }` to avoid startup save announcements.
+- Backups validate before replacing a snapshot; workbook imports validate normalized row identities and merge provided fields in one queued save. Exports wait for queued writes and use confirmed data. Keep XLSX controls deferred.
+- Guard asynchronous results and failures against owner/store changes, including backup and workbook validation and export. Superseded operations interrupt before updating the next owner's state or reaching notifications.
+- Run UI Effects through `collectionActions.run()`, for example `collectionActions.run(collection.setManyOwned(ids, true))`. This ordinary TypeScript module owns no reactive state. Loading errors belong to `Collection.loadError` alongside `loadStatus`, and clear on retry or user changes.
+- `Notifications` currently uses injected Effect logging; visible toasts are planned. Initialize with `{ success: false }` to avoid startup save announcements.
 - Reusable dialogs use ordinary callbacks and close immediately on confirmation. They own focus, dismissal, and closing-animation guards; the parent owns persistence/workflows. Quick Start assumes core ownership and navigates independently of saving, even on failure.
 
-Tests live in `test/`, using Vitest 5 and the version-aligned `@effect/vitest` adapter. Prefer `it.effect`, injected services, `Deferred` synchronization, and `TestClock`. Preserve optimistic-update, rollback, interruption, and finalization coverage when refactoring the queue.
+Tests live in `test/`, using Vitest 5 and the version-aligned `@effect/vitest` adapter. Prefer `it.effect`, injected services, `Deferred` synchronization, and `TestClock`. Preserve optimistic-update, rollback, interruption, and finalization coverage when refactoring the queue. Keep Dexie snapshot, owner isolation, and stale-revision coverage in `test/dexie-store.test.mts`.
+Preserve mixed-cause handling, observer failure/retry, refresh races, and superseded transfer coverage in the collection action, collection, and transfer tests.
 
 ## PWA and service worker
 
@@ -123,7 +146,7 @@ Use SvelteKit 3 APIs:
 - `resolve` from `$app/paths`
 - `self` from `$app/service-worker`
 
-Do not use the removed `$service-worker` module. Precache assets individually so one missing asset does not reject installation. The service worker caches the app shell/assets; `GuestStore` owns collection persistence.
+Do not use the removed `$service-worker` module. Precache assets individually so one missing asset does not reject installation. The service worker caches the app shell/assets; `DexieStore` owns collection persistence.
 
 ## Required checks
 

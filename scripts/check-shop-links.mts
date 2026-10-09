@@ -23,7 +23,7 @@ for (const category of ["content", "included-only", "accessories", "bundles" /*,
       const handle = item.handle ?? edition.handle;
       const listing = handle ? `https://shop.kingdomdeath.com/products/${handle}` : (edition.url ?? item.url);
       if (!listing) {
-        listings.push({ category, itemId, edition: edition.v, reachable: null });
+        listings.push({ category, itemId, edition: edition.label, reachable: null });
         missing++;
         continue;
       }
@@ -46,7 +46,7 @@ for (const category of ["content", "included-only", "accessories", "bundles" /*,
       }
 
       const success = results.get(listing)!;
-      listings.push({ category, itemId, edition: edition.v, url: listing, reachable: success });
+      listings.push({ category, itemId, edition: edition.label, url: listing, reachable: success });
       if (success) reachable++;
       else unreachable++;
     }

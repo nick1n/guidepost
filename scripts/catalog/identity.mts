@@ -1,4 +1,18 @@
-import type { Item } from "./types.mts";
+import type { Edition, Item } from "./types.mts";
+
+// Use only when creating a release. Existing IDs survive label and fact changes.
+export function editionId(label: string, editions: readonly Pick<Edition, "id">[] = []) {
+  const id = label
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/['\u2019]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+  if (!id || id === "item" || id === "bundle") throw new Error(`Release label needs a curated edition ID: ${label}`);
+  if (editions.some((edition) => edition.id === id)) throw new Error(`Duplicate edition ID: ${id}; review the release identity`);
+  return id;
+}
 
 const families = [
   "frozen-survivor",

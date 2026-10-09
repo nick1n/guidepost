@@ -1,5 +1,5 @@
 <script module lang="ts">
-  import { content } from "#lib/kdm-data.ts";
+  import coreVersions from "#lib/gen/core-editions.json";
 
   type Accents = "primary" | "muted" | "red";
 
@@ -26,9 +26,8 @@
   };
 
   const quickStartHref = resolve("/start");
-  const coreVersions =
-    content.find((item) => item.id === "core")?.editions?.filter((edition) => edition.v === "Sim" || /^\d+\.\d+$/.test(edition.v)) ?? [];
-  const latestCoreVersion = coreVersions.at(-1)?.v;
+  const coreId = "core";
+  const latestCoreVersion = coreVersions.at(-1)?.id;
 
   const navigationSections: NavigationSection[] = [
     {
@@ -151,8 +150,10 @@
   import TrailBackground from "#lib/components/TrailBackground.svelte";
   import VersionPicker from "#lib/components/track/VersionPicker.svelte";
   import { navigate } from "#lib/navigation.ts";
-  import { collection } from "#lib/state/collection.svelte.ts";
+  import { getCollection } from "#lib/state/collection.svelte.ts";
   import { collectionActions } from "#lib/state/collection-actions.ts";
+  import { collectionKey } from "#lib/types/collection.ts";
+  const collection = getCollection();
 
   let landing: HTMLElement;
   let ownershipDialog: { show: Noop };
@@ -191,7 +192,7 @@
   }
 
   function openQuickStart(event: MouseEvent) {
-    if (collection.state.core?.owned) return;
+    if (coreVersions.some((edition) => collection.get(collectionKey(coreId, edition.id)).owned)) return;
     if (!(event.currentTarget instanceof HTMLAnchorElement)) return;
 
     quickStartTrigger = event.currentTarget;
@@ -207,8 +208,12 @@
   function confirmCoreOwnership() {
     const version = selectedCoreVersion;
     const save = Effect.suspend(() => {
-      if (collection.state.core?.owned) return Effect.void;
-      return collection.toggleOwned("core", { version });
+      if (!version) return Effect.void;
+      const edition = coreVersions.find((edition) => edition.id === version);
+      if (!edition) return Effect.void;
+      const key = collectionKey(coreId, edition.id);
+      if (collection.get(key).owned) return Effect.void;
+      return collection.setManyOwned([key], true);
     });
     collectionActions.run(save, { success: "Core game saved to your collection." });
     collectionActions.run(continueToQuickStart(), { success: false });
@@ -284,6 +289,7 @@
               target={i.href.startsWith("http") ? "_blank" : undefined}
               aria-describedby={i.href.startsWith("http") ? "new-tab-description" : undefined}
               onclick={i.requiresCore ? openQuickStart : undefined}
+              data-sveltekit-preload-data={i.href === resolve("/collection") ? false : undefined}
             >
               {@render toolContent(i)}
             </a>

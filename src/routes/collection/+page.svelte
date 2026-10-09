@@ -1,14 +1,7 @@
 <script module lang="ts">
-  import { data } from "#lib/kdm-data.ts";
-  import { reviewIndex, reviewGameplayFirst, type ReviewEdition } from "#lib/catalog-view.ts";
-
-  const catalog = reviewIndex(data);
-  const entries = catalog.entries;
-  const contentEntries = reviewGameplayFirst(catalog.byCategory.get("content") ?? []);
+  import { reviewGameplayFirst, type reviewEntries } from "#lib/catalog-view.ts";
   const catalogBatchSize = 100;
-  const contentPreview = contentEntries.slice(0, catalogBatchSize);
 
-  const eurToUsd = 1.13;
   const categories = [
     { id: "content", label: "Content" },
     { id: "accessories", label: "Accessories" },
@@ -16,18 +9,10 @@
     { id: "homebrew", label: "Homebrew" },
   ] as const;
   type Category = (typeof categories)[number]["id"];
-  type Entry = (typeof entries)[number];
-
-  type OwnershipFeedback = { item: string; kind: OwnershipKind };
+  type Entry = ReturnType<typeof reviewEntries>[number];
 
   const searchUrlDelay = 250;
   const swipeFeedbackDuration = 900;
-  const ownershipFeedbackDuration = 5000;
-  const emptySelection: Readonly<Selection> = {};
-
-  function key(item: Entry, edition: ReviewEdition) {
-    return `${item.id}:${edition.v}`;
-  }
   function tagWeight(count: number, maximum: number) {
     const proportion = Math.log(Math.max(3, count) / 3) / Math.log(Math.max(4, maximum) / 3);
     return Math.expm1(2 * proportion) / Math.expm1(2);
@@ -38,12 +23,24 @@
   import { afterNavigate, beforeNavigate, replaceState } from "$app/navigation";
   import { resolve } from "$app/paths";
   import { page } from "$app/state";
-  import { onDestroy, tick } from "svelte";
+  import { onDestroy, tick, untrack } from "svelte";
   import { innerHeight, scrollY } from "svelte/reactivity/window";
-  import CollectionCard, { type Selection, type Owner, type OwnershipKind } from "#lib/components/track/CollectionCard.svelte";
+  import CollectionCard from "#lib/components/track/CollectionCard.svelte";
   import { swipe, type SwipeDirection } from "#lib/swipe.ts";
-  import { reviewEditions, reviewPrice, reviewTags, reviewTagLabel } from "#lib/catalog-view.ts";
-  import { formatPrice } from "#lib/kdm-data.ts";
+  import { reviewEditions, reviewTags, reviewTagLabel } from "#lib/catalog-view.ts";
+  import { formatPriceTotals } from "#lib/kdm-data.ts";
+  import { collectionActions } from "#lib/state/collection-actions.ts";
+  import { getCollection } from "#lib/state/collection.svelte.ts";
+  import type { PageProps } from "./$types";
+
+  let { data }: PageProps = $props();
+  const collection = getCollection();
+  // Route entry installs the catalog before building this page's index and commands.
+  collection.setCatalog(untrack(() => data.catalog));
+  const catalog = collection.catalog;
+  const entries = catalog.entries;
+  const contentEntries = reviewGameplayFirst(catalog.byCategory.get("content") ?? []);
+  const contentPreview = contentEntries.slice(0, catalogBatchSize);
 
   let category = $state<Category>("content");
   let categoryResults = $state.raw<Partial<Record<Category, Entry[]>>>({ content: contentPreview });
@@ -128,19 +125,14 @@
   }
   let tagsOpen = $state(false);
   let allTagsOpen = $state(false);
-  let contentsOpen = $state<Record<string, boolean>>({});
   let selectedTags = $state<string[]>([]);
   let status = $state<"all" | "owned" | "wishlist">("all");
-  let selections = $state<Record<string, Selection>>({});
-  let inspected = $state<Record<string, string>>({});
+  const writable = $derived(collection.canWrite);
   let collapsed = $state<Record<string, boolean>>({});
   let rendered = $state<Record<string, boolean>>({});
-  let ownershipFeedback = $state<OwnershipFeedback>();
-  let feedbackTimer: ReturnType<typeof setTimeout> | undefined;
   let cancelCardScroll: (() => void) | undefined;
   onDestroy(() => {
     clearTimeout(searchUrlTimer);
-    clearTimeout(feedbackTimer);
     clearTimeout(swipeFeedbackTimer);
     cancelCardScroll?.();
   });
@@ -257,8 +249,8 @@
     return categoryEntries.filter((item) => {
       if (!selectedTags.every((tag) => item.tags.includes(tag))) return false;
       if (searchQuery && !catalog.search.get(item.id)?.includes(searchQuery)) return false;
-      if (status === "owned" && !reviewEditions(item).some((edition) => selection(item, edition).owned)) return false;
-      if (status === "wishlist" && !reviewEditions(item).some((edition) => selection(item, edition).wished)) return false;
+      if (status === "owned" && !reviewEditions(item).some((edition) => collection.getEdition(item.id, edition.id).owned)) return false;
+      if (status === "wishlist" && !reviewEditions(item).some((edition) => collection.getEdition(item.id, edition.id).wished)) return false;
       return true;
     });
   });
@@ -273,108 +265,23 @@
   const latestUnowned = $derived(
     filtered.flatMap((item) => {
       const edition = reviewEditions(item).at(-1);
-      return edition && edition.standalone !== false && !selection(item, edition).owned ? [{ item, edition }] : [];
+      return edition && edition.standalone !== false && !collection.getEdition(item.id, edition.id).owned ? [{ item, edition }] : [];
     }),
   );
   const tagCounts = $derived.by(() => {
     if (filtered === categoryEntries) return catalog.tagViews.get(category)?.counts ?? new Map<string, number>();
     return new Map(reviewTags(filtered).map(({ tag, count }) => [tag, count]));
   });
-  const owned = $derived(
-    entries.flatMap((item) =>
-      reviewEditions(item)
-        .filter((edition) => selection(item, edition).owned)
-        .map((edition) => ({ item, edition })),
-    ),
-  );
-  const ownedCount = $derived(owned.filter(({ edition }) => edition.standalone !== false).length);
-  const wishlistCount = $derived(
-    entries.reduce((total, item) => total + reviewEditions(item).filter((edition) => selection(item, edition).wished).length, 0),
-  );
-  const collectionValue = $derived(
-    owned.reduce((total, { item, edition }) => total + (reviewPrice(item, edition) ?? 0) * (item.currency === "EUR" ? eurToUsd : 1), 0),
-  );
-  const coverage = $derived.by(() => {
-    const grouped = new Map<string, Owner[]>();
-    for (const { item, edition } of owned) {
-      for (const child of catalog.inclusions(item.id, edition.v)) {
-        const owners = grouped.get(child.item) ?? [];
-        owners.push({ parent: item.name, parentEdition: edition.v, edition: child.edition });
-        grouped.set(child.item, owners);
-      }
-    }
-    return grouped;
-  });
-
-  function selection(item: Entry, edition: ReviewEdition) {
-    return selections[key(item, edition)] ?? emptySelection;
-  }
-  function editableSelection(item: Entry, edition: ReviewEdition) {
-    const id = key(item, edition);
-    selections[id] ??= {};
-    return selections[id];
-  }
-  function selectedEdition(item: Entry) {
-    const editions = reviewEditions(item);
-    return (
-      editions.find((edition) => edition.v === inspected[item.id]) ??
-      editions.findLast((edition) => edition.standalone !== false) ??
-      editions.at(-1)
-    );
-  }
-  function showOwnershipFeedback(item: Entry, kind: OwnershipFeedback["kind"]) {
-    clearTimeout(feedbackTimer);
-    ownershipFeedback = { item: item.id, kind };
-    feedbackTimer = setTimeout(() => (ownershipFeedback = undefined), ownershipFeedbackDuration);
-  }
-  function tapOwnership(item: Entry) {
-    const hasOwned = reviewEditions(item).some((edition) => selection(item, edition).owned);
-    const edition = selectedEdition(item);
-    if (edition && !selection(item, edition).owned) toggleOwned(item, edition);
-    showOwnershipFeedback(item, hasOwned ? "hint" : "own-hint");
-  }
-  function holdOwnership(item: Entry) {
-    const editions = reviewEditions(item);
-    const owned = !editions.some((edition) => selection(item, edition).owned);
-    const targets = editions.filter((edition) => (owned ? edition.standalone !== false : selection(item, edition).owned));
-    for (const edition of targets) setEditionOwned(item, edition, owned);
-    showOwnershipFeedback(item, owned ? "owned" : "cleared");
-    return `${item.name}, all editions marked ${owned ? "owned" : "not owned"}.`;
-  }
-  function selectEdition(item: Entry, edition: ReviewEdition) {
-    if (selectedEdition(item)?.v === edition.v) {
-      toggleOwned(item, edition);
-    } else {
-      inspected[item.id] = edition.v;
-    }
-  }
-  function toggleOwned(item: Entry, edition: ReviewEdition) {
-    if (edition.standalone === false) return;
-    if (ownershipFeedback?.item === item.id) {
-      clearTimeout(feedbackTimer);
-      ownershipFeedback = undefined;
-    }
-    setEditionOwned(item, edition, !selection(item, edition).owned);
-    inspected[item.id] = edition.v;
-  }
-  function setEditionOwned(item: Entry, edition: ReviewEdition, owned: boolean) {
-    for (const target of [{ item, edition }, ...catalog.includedEditions(item.id, edition.v)]) {
-      const value = editableSelection(target.item, target.edition);
-      value.owned = owned;
-      if (owned) value.wished = false;
-    }
-  }
-  function toggleWish(item: Entry, edition: ReviewEdition) {
-    const value = editableSelection(item, edition);
-    value.wished = !value.wished;
-  }
   function markLatestOwned() {
-    for (const { item, edition } of latestUnowned) {
-      if (!selection(item, edition).owned) toggleOwned(item, edition);
-    }
+    if (!writable) return;
+    collectionActions.run(collection.setEditionsOwned(latestUnowned, true));
   }
-  function updateCopy(item: Entry, edition: ReviewEdition, copy: string) {
-    editableSelection(item, edition).copy = copy;
+  function refreshCollection() {
+    if (!collection.hasStore) {
+      window.location.reload();
+      return;
+    }
+    collectionActions.run(collection.refresh(), { success: false });
   }
   function setCategory(next: Category) {
     // Retain the outgoing results without rebuilding hidden cards when search is cleared.
@@ -437,9 +344,6 @@
   function toggleStatus(next: "owned" | "wishlist") {
     status = status === next ? "all" : next;
   }
-  function owners(item: Entry, edition: ReviewEdition) {
-    return (coverage.get(item.id) ?? []).filter((reference) => !reference.edition || reference.edition === edition.v);
-  }
 </script>
 
 <svelte:head><title>Collection | Guidepost</title></svelte:head>
@@ -455,21 +359,37 @@
     <p class="subtitle">Kingdom Death: Monster collection tracker</p>
   </header>
 
+  {#if collection.loadStatus === "pending"}
+    <p class="collection-status" role="status">Loading your saved collection...</p>
+  {:else if collection.loadError || collection.saveError}
+    <div class="collection-status error">
+      <p role="alert">{(collection.loadError ?? collection.saveError)?.message}</p>
+      <button type="button" onclick={refreshCollection}>
+        {collection.loadError ? (collection.hasStore ? "Retry loading" : "Reload page") : "Refresh collection"}
+      </button>
+    </div>
+  {:else if collection.needsRefresh}
+    <div class="collection-status">
+      <p role="status">Your collection changed in another tab. Refresh your collection before editing again.</p>
+      <button onclick={refreshCollection}>Refresh collection</button>
+    </div>
+  {/if}
+
   <section class="stats" aria-label="Collection totals">
     <button class="stat-owned" type="button" aria-pressed={status === "owned"} onclick={() => toggleStatus("owned")}>
       <span class="stat-label"
         >Owned<span class="stat-icon control-icon i-material-symbols:inventory-2-outline" aria-hidden="true"></span></span
       >
-      <strong>{ownedCount}</strong>
+      <strong>{collection.ownedCount}</strong>
     </button>
     <div class="stat-value">
-      <strong>{formatPrice(collectionValue)}</strong>
+      <strong>{formatPriceTotals(collection.totals)}</strong>
     </div>
     <button class="stat-wishlist" type="button" aria-pressed={status === "wishlist"} onclick={() => toggleStatus("wishlist")}>
       <span class="stat-label"
         ><span class="stat-icon control-icon i-material-symbols:favorite-outline" aria-hidden="true"></span>Wishlist</span
       >
-      <strong>{wishlistCount}</strong>
+      <strong>{collection.wishlistCount}</strong>
     </button>
   </section>
 
@@ -485,7 +405,7 @@
       <div class="search-heading">
         <label class="search" for="catalog-search">Search catalog</label>
         {#if hasSearch}
-          <button class="search-command" type="button" onclick={markLatestOwned} disabled={!latestUnowned.length}>
+          <button class="search-command" type="button" onclick={markLatestOwned} disabled={!writable || !latestUnowned.length}>
             Mark latest editions owned
           </button>
         {/if}
@@ -593,24 +513,12 @@
                 {#each items as item, index (item.id)}
                   <CollectionCard
                     {item}
-                    {catalog}
                     ready={index < 6 || !!rendered[item.id]}
                     collapsed={!!collapsed[item.id]}
-                    selected={selectedEdition(item)}
-                    feedback={ownershipFeedback?.item === item.id ? ownershipFeedback.kind : undefined}
                     {selectedTags}
-                    bind:contentsOpen
-                    getSelection={(edition) => selection(item, edition)}
-                    getOwners={(edition) => owners(item, edition)}
                     observe={observeCard(item)}
                     onToggle={() => toggleCard(item)}
                     onHold={() => holdCard(item)}
-                    onOwnership={() => tapOwnership(item)}
-                    onHoldOwnership={() => holdOwnership(item)}
-                    onEditionSelect={(edition) => selectEdition(item, edition)}
-                    onOwnedChange={(edition) => toggleOwned(item, edition)}
-                    onWishChange={(edition) => toggleWish(item, edition)}
-                    onCopyChange={(edition, copy) => updateCopy(item, edition, copy)}
                     onTagClick={toggleTag}
                   />
                 {/each}
@@ -627,7 +535,7 @@
       {/each}
     </div>
   </div>
-  <footer>Preview selections reset when this page reloads. Your saved collection is unchanged.</footer>
+  <footer>Your collection is saved on this device and remains available offline.</footer>
   <div
     class={["swipe-previous", dragDistance > 0 && "is-visible"]}
     data-ready={swipeReady}
@@ -674,6 +582,27 @@
 {/snippet}
 
 <style>
+  .collection-status {
+    margin-block: 0.75rem;
+    padding: 0.75rem;
+    border: var(--border-width) solid var(--color-divider);
+    border-radius: var(--radius-control);
+    background: var(--panel);
+    color: var(--muted-foreground);
+
+    &.error {
+      display: grid;
+      gap: 0.5rem;
+      color: var(--accent-red);
+    }
+  }
+  .collection-status button {
+    justify-self: start;
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--radius-control);
+    background: var(--card);
+    color: var(--foreground);
+  }
   main {
     --distance-swipe-limit: 2.25rem;
     --size-catalog: 72rem;

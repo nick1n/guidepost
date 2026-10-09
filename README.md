@@ -12,15 +12,18 @@ pnpm install
 pnpm dev
 ```
 
-| Command             | Purpose                            |
-| ------------------- | ---------------------------------- |
-| `pnpm check`        | Check Svelte and TypeScript        |
-| `pnpm test:run`     | Run app tests once                 |
-| `pnpm test:catalog` | Run catalog script tests           |
-| `pnpm build`        | Build the static site              |
-| `pnpm preview`      | Serve the production build locally |
-| `pnpm format`       | Format project files in place      |
-| `pnpm format:check` | Check formatting                   |
+On Windows, if `pnpm` is missing, install the pinned version with `npm.cmd install --global pnpm@12.6.0`, then run the commands above.
+
+| Command                 | Purpose                            |
+| ----------------------- | ---------------------------------- |
+| `pnpm check`            | Check Svelte and TypeScript        |
+| `pnpm test:run`         | Run app tests once                 |
+| `pnpm test:catalog`     | Run catalog script tests           |
+| `pnpm catalog:workbook` | Regenerate workbook row mappings   |
+| `pnpm build`            | Build the static site              |
+| `pnpm preview`          | Serve the production build locally |
+| `pnpm format`           | Format project files in place      |
+| `pnpm format:check`     | Check formatting                   |
 
 See [AGENTS.md](AGENTS.md) for coding conventions and required checks. The
 [KDM architecture](docs/kdm-architecture.md) describes current collection storage and planned campaign and offline sync work.
@@ -30,12 +33,35 @@ See [AGENTS.md](AGENTS.md) for coding conventions and required checks. The
 The live app reads [static/kdm-catalog/data.json](static/kdm-catalog/data.json). Its
 [schema](static/kdm-catalog/data.schema.json) generates `src/lib/types/gen/kdm-data.d.ts`.
 After changing the schema, run `pnpm generate:types`. Development, checks, and builds also regenerate types;
-the dev server watches schema changes. Do not edit generated types by hand.
+the dev server watches schema changes. The same command generates `src/lib/gen/core-editions.json` for landing-page Quick Start,
+containing only playable core editions' IDs and labels in catalog order, excluding Resin from Quick Start.
+The dev server also watches catalog changes.
+Do not edit generated files by hand.
+
+The full catalog loads only when opening collection. Collection links disable hover data preloading. Quick Start imports the generated
+edition list directly and saves ownership by stable keys. The shared collection starts with an empty catalog; opening collection
+supplies the full catalog without resetting ownership or pending saves.
+The service worker defers the full catalog and collection HTML until collection is visited, then caches them for offline use,
+including reloads of collection URLs with search and filter parameters.
 
 The [catalog guide](exports/kdm-catalog/README.md) covers data rules, mappings, and review decisions.
 Catalog commands maintain the files in `static/kdm-catalog/`. The previous catalog and its schema are archived locally as
 `temp/kdm-data.json` and `temp/kdm-data.schema.json`. Working files, caches, and reports under `temp/` are Git-ignored.
 Keep a copy of the archived catalog, local tags, or mappings before clearing that folder.
+
+Catalog item IDs are object keys. Explicit editions have permanent readable `id` values, unique within each item, such as `first-run`,
+`resin`, or `1-6`; their display labels (`label`) can change without changing
+collection identity. Items without explicit editions use a synthetic `item` edition, or `bundle` for bundles.
+The JSON schema restricts nonempty labels to its enum; TypeScript uses strings. `name` can override the displayed label.
+Keep IDs when renaming labels. IDs use lowercase kebab-case; `item` and `bundle` are reserved for synthetic editions. Creation tooling
+suggests an ID from the initial label and rejects collisions for review. It never regenerates an existing ID.
+Inclusion selectors use `editionId` on the child item and `parentEditionIds` on the containing item; update any local shop mappings that use labels.
+Edition `format`, `simulator`, `numbered`, and `materials` facts determine behavior independently of display labels.
+Dates, prices, and descriptions use `releaseDate`, `prices`, and `description`.
+Review newly discovered shop labels before applying an update so a renamed release is not added as a separate edition.
+Item fields are alphabetical. Edition fields start with `id`, then `label`; inclusion-object fields start with `item`.
+Remaining fields are alphabetical. Catalog write commands preserve this property order without
+changing the established item, edition, or other array ordering.
 
 ### Prepare an update
 
@@ -95,6 +121,14 @@ Requests are 33 seconds apart; responses stay cached until `--refresh`.
 Results go to `temp/kdm-catalog/reports/edition-retrieval.json`.
 Both commands write the live catalog and refuse to overwrite catalog edits made during retrieval.
 
+### Workbook map
+
+`pnpm catalog:workbook` reads the local `temp/kdm-catalog/imports/kdm-import-records.json` and current catalog, then writes
+[`workbook-map.json`](static/kdm-catalog/workbook-map.json). The map connects each source row and its release columns to stable catalog
+content and edition IDs. It contains product references only, with no owned, wished, copy-number, comment, or other personal cell values.
+Workbook sheet and row numbers locate this source snapshot; they are not permanent IDs. The command rejects changed row identities and
+unresolved references for review. Validated row workflows are implemented; `.xlsx` parsing, writing, and controls are deferred.
+
 ### Live shop links
 
 `pnpm check:shop-links` checks item and edition listings in the live catalog, resolving shop handles and external URLs.
@@ -105,8 +139,33 @@ Failures may reflect rate limits or HEAD rejection. Reachability does not indica
 ### Collection
 
 With the dev server running, open [/collection/](http://localhost:5173/collection/) for search, edition details, ownership, and wishlist controls.
-The page currently keeps selections in memory; they reset on reload. Existing saved collection snapshots remain in browser storage,
-and migration of their old item IDs and version selections is still pending.
+Catalog loading failures show a collection error page with retry and home controls. Offline failures explain that a connection is needed
+when the catalog is not available locally; retry preserves the collection URL and saved ownership.
+Collection entries save locally in IndexedDB through Dexie. Each entry is keyed by stable content and edition IDs and stores owned,
+wished, and numeric `copyNumber` values. Copy numbers are integers from 1 to 9999, limited further by a known edition run size.
+Blank inputs remove the copy number. Saves apply the current owner's snapshot atomically, writing only changed rows. A persisted revision rejects
+writes from a stale tab. Open tabs observe revision changes and offer a refresh before further edits; they retain their current view
+until you refresh. Dexie loads only after the browser mounts the app.
+The schema version on collection metadata validates the stored format. It does not migrate older browser data.
+
+The root layout creates a `Collection` instance and provides it through Svelte context. Components call its commands through
+`collectionActions.run()`. `Collection` owns reactive state, `OptimisticStore` owns pending patches and confirmed snapshots, and
+`DexieStore` owns persistence. `isSaving` reports pending writes. The injected `Notifications` service uses Effect logging;
+visible notifications are planned. Expected action failures log their typed error messages; unexpected defects log the full Effect
+cause. Cancellation does not produce a failure notification.
+
+Monitoring stays active during refresh and restarts after an observer failure is retried. Observer failures block editing while
+preserving the current view. Database load failures offer a retry; a failed storage-module download offers a page reload.
+Commands discard superseded results and failures, including workbook validation interrupted by an owner change.
+
+`Collection.exportBackup()` produces a versioned JSON backup after queued saves settle. `restoreBackup(json)` validates the entire
+backup and replaces the snapshot in one queued save, with rollback on failure. `previewWorkbook(rows)` validates normalized product
+rows without writing; `importWorkbook(rows)` validates again and merges their provided fields in one save. Rows identify the sheet,
+row, and product name, with an explicit edition ID when release alternatives are ambiguous. Invalid numeric cells cause typed errors.
+Source-row ownership propagates to explicitly related editions; copy numbers apply only to the selected edition.
+
+`exportWorkbook()` returns normalized rows for a future XLSX adapter. It rejects unmapped editions and separate values that a shared
+workbook row cannot represent. JSON backups remain the complete snapshot format. The workbook map loads only when a row workflow runs.
 
 ## Known warnings
 

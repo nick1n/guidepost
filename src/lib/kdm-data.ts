@@ -1,8 +1,4 @@
-import catalog from "../../static/kdm-catalog/data.json";
-import type { Catalog, Currency, Edition, Item } from "#lib/types/index.ts";
-
-export const data = catalog as Catalog;
-export const content = Object.entries(data.content).map(([id, item]) => ({ id, ...item }));
+import type { Currency, Edition, Item } from "#lib/types/index.ts";
 
 const priceFormatters = {
   USD: {
@@ -36,10 +32,12 @@ export function storeUrl(path?: string) {
   return path.startsWith("http") ? path : `${STORE_BASE}${path}`;
 }
 
-const standardMaterials = new Set(["Plastic", "Resin", "Photoresin", "Deathgrey", "Metal", "PVC", "Deathpink"]);
+export function editionLabel(edition: Pick<Edition, "label" | "name">) {
+  return edition.name ?? edition.label;
+}
 
 export function editionMaterials(edition: Edition) {
-  return edition.name ? [edition.name] : (edition.materials ?? (standardMaterials.has(edition.v) ? [edition.v] : []));
+  return edition.materials ?? [];
 }
 
 export function editionGameplay(item: Partial<Item>, edition: Edition) {
@@ -51,7 +49,7 @@ export function editionUrl(item: Partial<Item>, edition: Edition) {
 }
 
 export function editionSize(item: Partial<Item>, edition: Edition) {
-  return edition.v === "Sim" ? undefined : (edition.size ?? item.size);
+  return edition.format === "digital" ? undefined : (edition.size ?? item.size);
 }
 
 export function catalogTags(item: Partial<Item>, category: string) {

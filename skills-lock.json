@@ -1,11 +1,23 @@
 {
   "version": 1,
   "skills": {
+    "dexiejs": {
+      "source": "devfirexyz/skills",
+      "sourceType": "github",
+      "skillPath": "dexiejs/SKILL.md",
+      "computedHash": "d39de76d7c29dba068d76dd17c1e168e0b04d9477d3daeb858bce8756f67e270"
+    },
     "effect": {
       "source": "kitlangton/skills",
       "sourceType": "github",
       "skillPath": "skills/effect/SKILL.md",
       "computedHash": "f4e0cfeee135a1569fc9e511c26d74fcd29d5ce03bc8066aea268fc87a88019e"
+    },
+    "improve-codebase-architecture": {
+      "source": "mattpocock/skills",
+      "sourceType": "github",
+      "skillPath": "skills/engineering/improve-codebase-architecture/SKILL.md",
+      "computedHash": "ac2c94885f34ff8492dc12aa4543182f661f32ea1722b8d6b6c2c7045af33ae3"
     },
     "pwa-development": {
       "source": "alinaqi/maggy",

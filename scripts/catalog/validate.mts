@@ -34,17 +34,26 @@ export async function validateCatalog(catalog: Catalog, schemaPath = "static/kdm
       const normalized = structuredClone(item);
       normalizeItem(normalized);
       if (JSON.stringify(normalized) !== JSON.stringify(item)) throw new Error("Untrimmed catalog facts or URLs: " + id);
-      const labels = (item.editions ?? []).map((edition) => edition.v);
+      const labels = (item.editions ?? []).map((edition) => edition.label);
       if (new Set(labels).size !== labels.length) throw new Error("Duplicate edition label: " + id);
-      if (labels.includes("Sim") && labels[0] !== "Sim") throw new Error("Sim must be first: " + id);
-      if (labels.some((label, index) => label !== item.editions!.toSorted(editionComparator(item, id))[index]!.v))
+      if (item.editions?.some((edition) => edition.simulator) && !item.editions[0]?.simulator) throw new Error("Sim must be first: " + id);
+      if (labels.some((label, index) => label !== item.editions!.toSorted(editionComparator(item, id))[index]!.label))
         throw new Error("Editions are out of release order: " + id);
+      const editionIds = new Set<string>();
       for (const edition of item.editions ?? []) {
-        if (edition.r && (!Number.isFinite(Date.parse(edition.r)) || new Date(edition.r).toISOString().slice(0, 10) !== edition.r))
+        if (editionIds.has(edition.id!)) throw new Error("Duplicate edition ID: " + id + "/" + edition.id);
+        editionIds.add(edition.id!);
+        if (
+          edition.releaseDate &&
+          (!Number.isFinite(Date.parse(edition.releaseDate)) ||
+            new Date(edition.releaseDate).toISOString().slice(0, 10) !== edition.releaseDate)
+        )
           throw new Error("Invalid release date: " + id);
         if (edition.gameplay !== undefined && edition.gameplay === (item.gameplay === true))
           throw new Error("Redundant gameplay override: " + id);
-        if (edition.v === "Sim" && (edition.size || edition.materials)) throw new Error("Physical model facts on Sim: " + id);
+        if (edition.simulator && (edition.format !== "digital" || edition.size || edition.materials))
+          throw new Error("Invalid simulator facts: " + id);
+        if (edition.format === "digital" && edition.size) throw new Error("Physical model size on digital edition: " + id);
       }
     }
   const visited = new Set<string>();
@@ -57,11 +66,16 @@ export async function validateCatalog(catalog: Catalog, schemaPath = "static/kdm
       const child = items.get(childId);
       if (!child) throw new Error("Missing included item: " + childId);
       if (typeof reference !== "string") {
-        if (reference.edition && !child.editions?.some((edition) => edition.v === reference.edition))
-          throw new Error("Missing child edition: " + childId + "/" + reference.edition);
-        for (const label of reference.parentEditions ?? [])
-          if (!item.editions?.some((edition) => edition.v === label)) throw new Error("Missing parent edition: " + id + "/" + label);
-        if (reference.edition === "Sim" && !reference.parentEditions?.length) throw new Error("Unscoped digital inclusion: " + id);
+        if (reference.editionId && !child.editions?.some((edition) => edition.id === reference.editionId))
+          throw new Error("Missing child edition: " + childId + "/" + reference.editionId);
+        for (const editionId of reference.parentEditionIds ?? [])
+          if (!item.editions?.some((edition) => edition.id === editionId))
+            throw new Error("Missing parent edition: " + id + "/" + editionId);
+        if (
+          child.editions?.some((edition) => edition.id === reference.editionId && edition.format === "digital") &&
+          !reference.parentEditionIds?.length
+        )
+          throw new Error("Unscoped digital inclusion: " + id);
       }
       walk(childId, new Set([...path, id]));
     }
@@ -85,7 +99,7 @@ export async function validateCatalog(catalog: Catalog, schemaPath = "static/kdm
     for (const ref of [record, ...(record.relatedItems ?? []), ...Object.values(record.releaseEditions ?? {}).flat()]) {
       const item = catalog[ref.category][ref.itemId];
       if (!item) throw new Error("Missing imported item: " + ref.itemId);
-      if (ref.edition && !item.editions?.some((edition) => edition.v === ref.edition))
+      if (ref.edition && !item.editions?.some((edition) => edition.label === ref.edition))
         throw new Error("Missing imported edition: " + ref.itemId + "/" + ref.edition);
     }
   }

@@ -4,7 +4,8 @@ import { fileURLToPath } from "node:url";
 import { parseArgs } from "node:util";
 import { format, resolveConfig } from "prettier";
 import { catalogTemp } from "./catalog/paths.mts";
-import { editionComparator } from "./catalog/order.mts";
+import { editionComparator, organizeCatalog } from "./catalog/order.mts";
+import { editionId } from "./catalog/identity.mts";
 import { normalizeItem } from "./catalog/normalize.mts";
 import { loadMappings, productUrl, ShopClient, shopProduct } from "./catalog/shop.mts";
 import { normalized, variantLabel } from "./catalog/update.mts";
@@ -42,12 +43,16 @@ export function productEditions(item: Item, product: Product) {
         ? variant.title.trim() || fallback
         : release;
     selectors[String(variant.id)] = label;
-    const edition = editions.get(label) ?? { v: label, ...(item.releaseDate ? { r: item.releaseDate } : {}) };
+    const edition = editions.get(label) ?? {
+      id: editionId(label, [...editions.values()]),
+      label: label,
+      ...(item.releaseDate ? { releaseDate: item.releaseDate } : {}),
+    };
     const prices = [
       variant.price,
       ...(variant.compare_at_price !== null && variant.compare_at_price > variant.price ? [variant.compare_at_price] : []),
     ];
-    edition.$ = [...new Set([...(edition.$ ?? []), ...prices])].sort((a, b) => a - b);
+    edition.prices = [...new Set([...(edition.prices ?? []), ...prices])].sort((a, b) => a - b);
     if (variant.available === true) edition.available = true;
     if (material && label !== "Sim" && material !== label && !/^Deathgrey|^Deathpink/.test(label)) edition.materials = [material];
     if (label === "First Run") {
@@ -112,7 +117,7 @@ export async function fillEditions(
       delete item.priceMinimum;
       normalizeItem(item);
       mappings[product.handle] = { ...mappings[product.handle], category: "content", itemId, variantEditions: result.selectors };
-      report.reachable.push({ itemId, url, editions: item.editions.map((e) => e.v) });
+      report.reachable.push({ itemId, url, editions: item.editions.map((e) => e.label) });
       console.log(`${report.reachable.length + report.unreachable.length}/${targets.length}: ${itemId}, ${item.editions.length} editions`);
     } catch (error) {
       if (options.signal?.aborted) throw error;
@@ -126,6 +131,7 @@ export async function fillEditions(
     }
     await save(reportPath, report);
   }
+  organizeCatalog(catalog);
   await validateCatalog(catalog, join(root, "data.schema.json"));
   if ((await readFile(path, "utf8")) !== original || (await readFile(mappingsPath, "utf8").catch(() => undefined)) !== mappingText)
     throw new Error("Catalog or mappings changed during retrieval. Cached responses are saved; rerun to preserve your edits.");

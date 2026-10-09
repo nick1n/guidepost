@@ -6,11 +6,8 @@ export class NavigationError extends Schema.TaggedError<NavigationError>()("Navi
   cause: Schema.Defect(),
 }) {}
 
-export const navigate = Effect.fn("Navigation.navigate")(function* (
-  href: string,
-  message = "The page could not be opened. Please try again.",
-) {
-  return yield* Effect.tryPromise({
+export const navigate = Effect.fn("Navigation.navigate")((href: string, message = "The page could not be opened. Please try again.") => {
+  return Effect.tryPromise({
     try: () => goto(href),
     catch: (cause) => new NavigationError({ message, cause }),
   });

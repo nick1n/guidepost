@@ -22,11 +22,13 @@ test("edition retrieval groups warehouses, preserves Ajax cents, and keeps relea
   const result = productEditions({ name: "Example", tags: ["generic"], releaseDate: "2025-01-01" }, shopProduct(raw, "ajax"));
   assert.deepEqual(result.selectors, { 11: "First Run", 12: "First Run", 13: "Encore" });
   assert.equal(result.editions.length, 2);
-  assert.deepEqual(result.editions[0]?.$, [3000, 3200, 4000]);
+  assert.match(result.editions[0]!.id!, /^[a-z0-9]+(?:-[a-z0-9]+)*$/);
+  assert.notEqual(result.editions[0]!.id, result.editions[1]!.id);
+  assert.deepEqual(result.editions[0]?.prices, [3000, 3200, 4000]);
   assert.equal(result.editions[0]?.runSize, 500);
   assert.equal(result.editions[0]?.available, true);
   assert.equal(result.editions[1]?.available, undefined);
-  assert.equal(result.editions[1]?.r, "2025-01-01");
+  assert.equal(result.editions[1]?.releaseDate, "2025-01-01");
 });
 
 async function fixture() {
@@ -68,6 +70,11 @@ test("retrieval writes editions and mappings while failed listings retain their 
     const item = JSON.parse(await readFile(path, "utf8")).content.example;
     assert.equal(item.releaseDate, undefined);
     assert.equal(item.editions.length, 2);
+    assert.equal(new Set(item.editions.map((edition: { id: string }) => edition.id)).size, 2);
+    assert.deepEqual(
+      item.editions.map((edition: { id: string }) => edition.id),
+      ["first-run", "encore"],
+    );
     const mappings = JSON.parse(await readFile(join(root, "temp/kdm-catalog/shopify-products/kdm-shop-mappings.json"), "utf8"));
     assert.equal(mappings.example.variantEditions[13], "Encore");
   } finally {

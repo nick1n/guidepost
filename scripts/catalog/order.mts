@@ -1,7 +1,7 @@
 import { categories, type Catalog, type Edition, type Item } from "./types.mts";
 
 export function releaseDate(edition: Edition): number[] {
-  if (edition.r) return edition.r.split("-").map(Number);
+  if (edition.releaseDate) return edition.releaseDate.split("-").map(Number);
   const window = edition.releaseWindow ?? "";
   const year = window.match(/\b(19\d{2}|20\d{2})\b/);
   if (!year) return [Infinity, 0, 0];
@@ -46,15 +46,15 @@ export function compareEditions(a: Edition, b: Edition) {
     return index === -1 ? editionOrder.length : index;
   };
   return (
-    Number(b.v === "Sim") - Number(a.v === "Sim") ||
+    Number(b.simulator === true) - Number(a.simulator === true) ||
     compareDates(releaseDate(a), releaseDate(b)) ||
-    rank(a.v) - rank(b.v) ||
-    rank(a.v.split(": ")[1] ?? a.v) - rank(b.v.split(": ")[1] ?? b.v)
+    rank(a.label) - rank(b.label) ||
+    rank(a.label.split(": ")[1] ?? a.label) - rank(b.label.split(": ")[1] ?? b.label)
   );
 }
 
 function itemDate(item: Item) {
-  const physical = (item.editions ?? []).filter((edition) => edition.v !== "Sim");
+  const physical = (item.editions ?? []).filter((edition) => !edition.simulator);
   const dates = (physical.length ? physical : (item.editions ?? [])).map(releaseDate).sort(compareDates);
   if (dates[0]?.[0] !== undefined && dates[0][0] !== Infinity) return dates[0]!;
   if (typeof item.releaseYear === "number") return [item.releaseYear, 0, 0];
@@ -65,9 +65,27 @@ export function editionComparator(_item: Item, _id: string) {
   return compareEditions;
 }
 
+function orderFields(record: object, first: readonly string[] = []) {
+  const rank = (key: string) => {
+    const index = first.indexOf(key);
+    return index === -1 ? first.length : index;
+  };
+  const entries = Object.entries(record).sort(([left], [right]) => rank(left) - rank(right) || (left < right ? -1 : left > right ? 1 : 0));
+  for (const [key] of entries) Reflect.deleteProperty(record, key);
+  Object.assign(record, Object.fromEntries(entries));
+}
+
+export function orderItemFields(item: Item) {
+  for (const edition of item.editions ?? []) orderFields(edition, ["id", "label"]);
+  for (const inclusion of item.includes ?? []) if (typeof inclusion !== "string") orderFields(inclusion, ["item"]);
+  orderFields(item);
+  return item;
+}
+
 export function organizeCatalog(catalog: Catalog) {
   for (const category of categories) {
     const entries = Object.entries(catalog[category]);
+    for (const [, item] of entries) orderItemFields(item);
     const rank = (item: Item) => (category === "content" ? (item.kind === "core" ? 0 : item.kind === "expansion" ? 1 : 2) : 2);
     // Keep core and expansions first; alphabetize all remaining items by ID.
     entries.sort(([leftId, left], [rightId, right]) => {

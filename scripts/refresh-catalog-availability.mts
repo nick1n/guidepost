@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url";
 import { parseArgs } from "node:util";
 import { format, resolveConfig } from "prettier";
 import { availabilityFromUrls } from "./catalog/availability.mts";
+import { organizeCatalog } from "./catalog/order.mts";
 import { catalogTemp } from "./catalog/paths.mts";
 import { ShopClient, shopProduct } from "./catalog/shop.mts";
 import type { Catalog, Product } from "./catalog/types.mts";
@@ -57,7 +58,7 @@ export async function refreshAvailability(
   });
   if (result.changed) {
     if ((await readFile(path, "utf8")) !== original) throw new Error("Catalog changed during refresh; rerun to preserve those edits.");
-    await save(path, catalog);
+    await save(path, organizeCatalog(catalog));
   }
   return { ...result, pages: pages.length, products: products.length, catalog: path, folder };
 }

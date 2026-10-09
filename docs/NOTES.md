@@ -75,3 +75,17 @@ They are Arc Survivors, plus:
 ## Attribute
 
 Disposition (❤︎ heart, i-material-symbols:favorite)
+
+# Taglines:
+
+"Tools left here for the next player."
+"Everything you need between sessions."
+"Find your way back to the table."
+"Pick up where you left off."
+
+"A light for the long campaign."
+"Made by players, for players."
+"Tools left behind by players, for players."
+"Companion tools for campaign board games."
+"Your campaign, kept safe."
+"Trail markers for tabletop campaigns."

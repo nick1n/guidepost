@@ -92,7 +92,9 @@
   function drawTrail(node: SVGGElement, { duration, marker }: { duration: number; marker: string }) {
     const path = node.querySelector("mask path") as SVGPathElement;
     const prefix = path.cloneNode() as SVGPathElement;
-    prefix.setAttribute("d", path.getAttribute("d")!.split(`${marker} C`)[0]);
+    const d = path.getAttribute("d")!;
+    const markerStart = d.indexOf(` ${marker} C`);
+    prefix.setAttribute("d", markerStart === -1 ? d : d.slice(0, markerStart + marker.length + 1));
     const markerAt = prefix.getTotalLength() / path.getTotalLength();
     const transition = draw(path, { duration });
 

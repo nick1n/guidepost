@@ -13,14 +13,14 @@ function handle(url: string) {
 const runLabels = ["First Run", "Second Run", "Deathgrey", "Deathgrey M2", "Deathpink", "Encore", "General"];
 
 function variantsFor(edition: Edition, product: Product, candidates: Edition[]) {
-  if (["Pawel Zdanowski", "Ein Lee", "Lokman Lam", "Wenjuinn Png"].includes(edition.v))
-    return product.variants.filter((variant) => variantLabel(variant, "") === edition.v);
-  if (["Dwelling Key", "Illusionist Key", "Master Dwelling Key"].includes(edition.v)) {
+  if (["Pawel Zdanowski", "Ein Lee", "Lokman Lam", "Wenjuinn Png"].includes(edition.label))
+    return product.variants.filter((variant) => variantLabel(variant, "") === edition.label);
+  if (["Dwelling Key", "Illusionist Key", "Master Dwelling Key"].includes(edition.label)) {
     const physical = product.variants.filter((variant) => variant.requires_shipping);
     const matches = (title: string) =>
-      edition.v === "Master Dwelling Key"
+      edition.label === "Master Dwelling Key"
         ? /master/i.test(title)
-        : edition.v === "Illusionist Key"
+        : edition.label === "Illusionist Key"
           ? /illusionist/i.test(title)
           : /dwelling/i.test(title) && !/master/i.test(title);
     const named = physical.filter((variant) => matches(variant.title));
@@ -28,7 +28,7 @@ function variantsFor(edition: Edition, product: Product, candidates: Edition[]) 
     // A dedicated key listing can use warehouse-only variant labels.
     return candidates.length === 1 && !physical.some((variant) => /master|illusionist|dwelling/i.test(variant.title)) ? physical : [];
   }
-  const label = edition.v
+  const label = edition.label
     .split(": ")
     .at(-1)!
     .replace(/ \(\d{4}\)$/, "");
@@ -37,21 +37,21 @@ function variantsFor(edition: Edition, product: Product, candidates: Edition[]) 
     if (candidates.length === 1 && product.variants.every((variant) => !named(variant))) return product.variants;
     return product.variants.filter((variant) => named(variant) === label);
   }
-  if (edition.v === "Sim") return product.variants.filter((variant) => !variant.requires_shipping);
+  if (edition.label === "Sim") return product.variants.filter((variant) => !variant.requires_shipping);
   if (candidates.length === 1) return product.variants;
   // Warehouse-only options describe the whole listing. Use them only when one
   // edition is compatible; a shared URL alone cannot distinguish two materials.
   const generic = candidates.filter(
     (candidate) =>
       !runLabels.includes(
-        candidate.v
+        candidate.label
           .split(": ")
           .at(-1)!
           .replace(/ \(\d{4}\)$/, ""),
       ),
   );
   if (generic.length === 1) return product.variants.filter((variant) => !named(variant));
-  if (edition.v === "Plastic" && product.product_type === "whitebox") return product.variants.filter((variant) => !named(variant));
+  if (edition.label === "Plastic" && product.product_type === "whitebox") return product.variants.filter((variant) => !named(variant));
   return [];
 }
 
@@ -83,14 +83,14 @@ export function availabilityFromUrls(catalog: Catalog, products: Product[]) {
           unmatched.push({
             category,
             itemId,
-            edition: edition.v,
+            edition: edition.label,
             ...(url ? { url } : {}),
             reason: url ? "No matching product handle" : "No URL",
           });
         } else {
           const variants = variantsFor(edition, product, groups.get(key!)!);
           if (!variants.length) {
-            unmatched.push({ category, itemId, edition: edition.v, url, reason: "No unambiguous matching variants" });
+            unmatched.push({ category, itemId, edition: edition.label, url, reason: "No unambiguous matching variants" });
           } else {
             checked++;
             if (variants.some((variant) => variant.available === true)) {

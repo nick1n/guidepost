@@ -1,46 +1,30 @@
 <script module lang="ts">
-  import type { reviewEntries, reviewIndex, ReviewEdition } from "#lib/catalog-view.ts";
+  import type { reviewEntries, ReviewEdition } from "#lib/catalog-view.ts";
   import type { Attachment } from "svelte/attachments";
 
   type Entry = ReturnType<typeof reviewEntries>[number];
-  export type Selection = { owned?: boolean; wished?: boolean; copy?: string };
-  export type Owner = { parent: string; parentEdition: string; edition?: string };
   const ownershipMessages = {
     cleared: "Ownership cleared",
     owned: "All editions owned",
     hint: "Hold to clear ownership",
     "own-hint": "Hold when unowned to own all editions",
   };
-  export type OwnershipKind = keyof typeof ownershipMessages;
+  type OwnershipKind = keyof typeof ownershipMessages;
+  const ownershipFeedbackDuration = 5000;
 
   type Props = {
     item: Entry;
-    catalog: ReturnType<typeof reviewIndex>;
     ready: boolean;
     collapsed: boolean;
-    selected: ReviewEdition | undefined;
-    feedback: OwnershipKind | undefined;
     selectedTags: string[];
-    contentsOpen: Record<string, boolean>;
-    getSelection: (edition: ReviewEdition) => Readonly<Selection>;
-    getOwners: (edition: ReviewEdition) => Owner[];
     observe: Attachment<HTMLElement>;
     onToggle: () => void;
     onHold: () => string;
-    onOwnership: () => void;
-    onHoldOwnership: () => string;
-    onEditionSelect: (edition: ReviewEdition) => void;
-    onOwnedChange: (edition: ReviewEdition) => void;
-    onWishChange: (edition: ReviewEdition) => void;
-    onCopyChange: (edition: ReviewEdition, copy: string) => void;
     onTagClick: (tag: string) => void;
   };
 
-  function key(item: Entry, edition: ReviewEdition) {
-    return `${item.id}:${edition.v}`;
-  }
   function release(edition: ReviewEdition) {
-    return edition.r ?? edition.releaseWindow ?? "Date unknown";
+    return edition.releaseDate ?? edition.releaseWindow ?? "Date unknown";
   }
 </script>
 
@@ -48,35 +32,77 @@
   import TagRail from "#lib/components/track/TagRail.svelte";
   import HoldRipple from "#lib/components/gestures/HoldRipple.svelte";
   import { reviewShopUrl, reviewEditions, reviewNumberedEditions, reviewPrice, reviewTagLabel, reviewBadges } from "#lib/catalog-view.ts";
-  import { editionGameplay, editionMaterials, formatPrice } from "#lib/kdm-data.ts";
+  import { editionGameplay, editionLabel, editionMaterials, formatPrice } from "#lib/kdm-data.ts";
+  import { onDestroy } from "svelte";
+  import { getCollection } from "#lib/state/collection.svelte.ts";
+  import { collectionActions } from "#lib/state/collection-actions.ts";
+  import { collectionKey, copyNumberMaximum } from "#lib/types/collection.ts";
 
-  let {
-    item,
-    catalog,
-    ready,
-    collapsed,
-    selected,
-    feedback,
-    selectedTags,
-    contentsOpen = $bindable(),
-    getSelection,
-    getOwners,
-    observe,
-    onToggle,
-    onHold,
-    onOwnership,
-    onHoldOwnership,
-    onEditionSelect,
-    onOwnedChange,
-    onWishChange,
-    onCopyChange,
-    onTagClick,
-  }: Props = $props();
+  let { item, ready, collapsed, selectedTags, observe, onToggle, onHold, onTagClick }: Props = $props();
 
+  const collection = getCollection();
+  const catalog = collection.catalog;
+  const writable = $derived(collection.canWrite);
+  let inspected = $state<string>();
+  let contentsOpen = $state<Record<string, boolean>>({});
+  let feedback = $state<OwnershipKind>();
+  let feedbackTimer: ReturnType<typeof setTimeout> | undefined;
+  onDestroy(() => clearTimeout(feedbackTimer));
   const editions = $derived(reviewEditions(item));
+  const selected = $derived(
+    editions.find((edition) => edition.id === inspected) ?? editions.findLast((edition) => edition.standalone !== false) ?? editions.at(-1),
+  );
   const badges = $derived(reviewBadges(item));
-  const numberedEditions = $derived(reviewNumberedEditions(item).filter((edition) => getSelection(edition).owned));
-  const hasOwned = $derived(editions.some((edition) => getSelection(edition).owned));
+  const numberedEditions = $derived(reviewNumberedEditions(item).filter((edition) => selection(edition).owned));
+  const hasOwned = $derived(editions.some((edition) => selection(edition).owned));
+
+  function selection(edition: ReviewEdition) {
+    return collection.getEdition(item.id, edition.id);
+  }
+  function showOwnershipFeedback(kind: OwnershipKind) {
+    clearTimeout(feedbackTimer);
+    feedback = kind;
+    feedbackTimer = setTimeout(() => (feedback = undefined), ownershipFeedbackDuration);
+  }
+  function tapOwnership() {
+    if (!writable) return;
+    const previouslyOwned = hasOwned;
+    if (selected && !selection(selected).owned) toggleOwned(selected);
+    showOwnershipFeedback(previouslyOwned ? "hint" : "own-hint");
+  }
+  function holdOwnership() {
+    if (!writable) return "Collection changes are unavailable until your collection is loaded.";
+    const owned = !hasOwned;
+    const targets = editions.filter((edition) => (owned ? edition.standalone !== false : selection(edition).owned));
+    collectionActions.run(
+      collection.setEditionsOwned(
+        targets.map((edition) => ({ item, edition })),
+        owned,
+      ),
+    );
+    showOwnershipFeedback(owned ? "owned" : "cleared");
+    return `${item.name}, all editions marked ${owned ? "owned" : "not owned"}.`;
+  }
+  function selectEdition(edition: ReviewEdition) {
+    if (selected?.id === edition.id) toggleOwned(edition);
+    else inspected = edition.id;
+  }
+  function toggleOwned(edition: ReviewEdition) {
+    if (!writable || edition.standalone === false) return;
+    clearTimeout(feedbackTimer);
+    feedback = undefined;
+    collectionActions.run(collection.setEditionsOwned([{ item, edition }], !selection(edition).owned));
+    inspected = edition.id;
+  }
+  function toggleWish(edition: ReviewEdition) {
+    if (!writable || edition.standalone === false) return;
+    collectionActions.run(collection.toggleWish(collectionKey(item.id, edition.id)));
+  }
+  function updateCopyNumber(edition: ReviewEdition, input: HTMLInputElement) {
+    if (!writable || edition.standalone === false) return;
+    const copyNumber = input.value === "" && !input.validity.badInput ? undefined : input.valueAsNumber;
+    collectionActions.run(collection.setCopyNumber(collectionKey(item.id, edition.id), copyNumber), { success: false });
+  }
 </script>
 
 <article class={[badges.beta && !badges.gameplay && "beta-only", collapsed && "is-collapsed"]} {@attach observe}>
@@ -107,8 +133,8 @@
       {/snippet}
     </HoldRipple>
     <HoldRipple
-      ontap={onOwnership}
-      onhold={onHoldOwnership}
+      ontap={tapOwnership}
+      onhold={holdOwnership}
       holdHint={hasOwned
         ? "Click to own the selected edition. Hold or press Shift+Enter to remove ownership from all editions of this item."
         : "Click to own the selected edition. Hold or press Shift+Enter to own all editions of this item."}
@@ -119,7 +145,7 @@
           type="button"
           aria-label="Owned editions of {item.name}"
           aria-pressed={hasOwned}
-          disabled={!hasOwned && (!selected || selected.standalone === false)}
+          disabled={!writable || (!hasOwned && (!selected || selected.standalone === false))}
           {...events}
         >
           {@render paint()}
@@ -132,14 +158,14 @@
     {#if ready}
       {#if selected}
         <div class="edition-details">
-          {#each editions as summaryEdition (summaryEdition.v)}
-            {@const active = selected.v === summaryEdition.v}
+          {#each editions as summaryEdition (summaryEdition.id)}
+            {@const active = selected.id === summaryEdition.id}
             {@const price = reviewPrice(item, summaryEdition)}
-            {@const bundle = catalog.bundlePricing(item.id, summaryEdition.v)}
+            {@const bundle = catalog.bundlePricing(item.id, summaryEdition.id)}
             <div class={["edition-summary", !active && "inactive"]} inert={!active}>
               <div class="edition-value">
                 <strong class="price">{price === undefined ? "Price unknown" : formatPrice(price, item.currency)}</strong>
-                <span class="caption">for {summaryEdition.v}</span>
+                <span class="caption">for {editionLabel(summaryEdition)}</span>
               </div>
               <div class="badges">
                 {#if item.category === "accessories"}
@@ -164,23 +190,23 @@
           {/each}
         </div>
         <div class="editions">
-          {#each editions as releaseEdition (releaseEdition.v)}
-            {@render editionRow(releaseEdition, selected.v === releaseEdition.v)}
+          {#each editions as releaseEdition (releaseEdition.id)}
+            {@render editionRow(releaseEdition, selected.id === releaseEdition.id)}
           {/each}
         </div>
         {#if numberedEditions.length}
           <div class="copies">
-            {#each numberedEditions as numberedEdition (numberedEdition.v)}
-              {@const value = getSelection(numberedEdition)}
+            {#each numberedEditions as numberedEdition (numberedEdition.id)}
+              {@const value = selection(numberedEdition)}
               <label class="copy">
-                <span>{numberedEdition.v} #</span>
+                <span>{editionLabel(numberedEdition)} #</span>
                 <input
                   type="number"
                   min="1"
-                  max={numberedEdition.runSize ?? 999}
-                  disabled={numberedEdition.standalone === false}
-                  value={value.copy ?? ""}
-                  oninput={(event) => onCopyChange(numberedEdition, event.currentTarget.value)}
+                  max={Math.min(numberedEdition.runSize ?? copyNumberMaximum, copyNumberMaximum)}
+                  disabled={!writable || numberedEdition.standalone === false}
+                  value={value.copyNumber ?? ""}
+                  oninput={(event) => updateCopyNumber(numberedEdition, event.currentTarget)}
                   placeholder="13"
                 />
               </label>
@@ -188,8 +214,8 @@
           </div>
         {/if}
         <div class="edition-details">
-          {#each editions as detailEdition (detailEdition.v)}
-            {@const active = selected.v === detailEdition.v}
+          {#each editions as detailEdition (detailEdition.id)}
+            {@const active = selected.id === detailEdition.id}
             <div class={["edition-detail", !active && "inactive"]} inert={!active}>
               {@render editionDetail(detailEdition)}
             </div>
@@ -227,7 +253,7 @@
 {/snippet}
 
 {#snippet editionDetail(edition: ReviewEdition)}
-  {@const references = getOwners(edition)}
+  {@const references = collection.getOwners(item.id, edition.id)}
   {#if edition.runSize}
     <p class="run">Limited run of {edition.runSize}</p>
   {/if}
@@ -239,27 +265,27 @@
     <p class="included-note">This edition is tracked through the item it comes with.</p>
   {/if}
   {#if item.includes?.length || edition.includesAllSim}
-    {@const included = catalog.inclusions(item.id, edition.v)}
-    <details class="contents" bind:open={contentsOpen[key(item, edition)]}>
-      <summary>Included with {edition.v} <span class="contents-count">{included.length} catalog entries</span></summary>
+    {@const included = catalog.inclusions(item.id, edition.id)}
+    <details class="contents" bind:open={contentsOpen[edition.id]}>
+      <summary>Included with {editionLabel(edition)} <span class="contents-count">{included.length} catalog entries</span></summary>
       {#if edition.includesAllSim}
         <p>Includes every current and future Sim edition. This list shows the editions currently in the catalog.</p>
       {/if}
-      {#if contentsOpen[key(item, edition)] && selected?.v === edition.v}
+      {#if contentsOpen[edition.id] && selected?.id === edition.id}
         <ul>
           {#if item.category === "bundles"}
-            {#each catalog.includedEditions(item.id, edition.v, false) as child (`${child.item.id}:${child.edition.v}`)}
+            {#each catalog.includedEditions(item.id, edition.id, false) as child (collectionKey(child.item.id, child.edition.id))}
               {@const price = reviewPrice(child.item, child.edition)}
               <li>
-                <span>{child.item.name} <small>{child.edition.v}</small></span>
+                <span>{child.item.name} <small>{editionLabel(child.edition)}</small></span>
                 <span class="included-price">{price === undefined ? "Price unknown" : formatPrice(price, child.item.currency)}</span>
               </li>
             {/each}
           {:else}
-            {#each included as child, index (`${child.item}:${child.edition ?? index}`)}
+            {#each included as child, index (JSON.stringify([child.item, child.editionId ?? index]))}
               <li>
                 <span>{child.name}</span>
-                <small>{child.edition ?? child.materials?.join(", ") ?? "Edition unspecified"}</small>
+                <small>{child.editionLabel ?? child.materials?.join(", ") ?? "Edition unspecified"}</small>
               </li>
             {/each}
           {/if}
@@ -280,7 +306,7 @@
         aria-hidden="true"
       ></span>
       <span class="visually-hidden">
-        {item.name}, {edition.v}
+        {item.name}, {editionLabel(edition)}
         {unavailable ? ", unavailable" : ""}
       </span>
     </a>
@@ -288,30 +314,34 @@
 {/snippet}
 
 {#snippet editionRow(edition: ReviewEdition, active: boolean)}
-  {@const value = getSelection(edition)}
+  {@const value = selection(edition)}
   {@const gameplay = editionGameplay(item, edition)}
   {@const price = reviewPrice(item, edition)}
-  {@const detail = edition.v === "Sim" ? "Digital" : editionMaterials(edition).join(", ")}
+  {@const detail = edition.format === "digital" ? "Digital" : editionMaterials(edition).join(", ")}
   <div class={["edition", active && "inspected"]}>
     <label class="own">
       <input
         type="checkbox"
-        aria-label="Own {item.name}, {edition.v}"
+        aria-label="Own {item.name}, {editionLabel(edition)}"
         checked={!!value.owned}
-        disabled={edition.standalone === false}
-        onchange={() => onOwnedChange(edition)}
+        disabled={!writable || edition.standalone === false}
+        onchange={() => toggleOwned(edition)}
       />
     </label>
     <button
       class="edition-label"
       type="button"
       aria-pressed={active}
-      aria-label="View {item.name}, {edition.v}{gameplay ? (edition.beta ? ', includes beta gameplay' : ', includes gameplay') : ''}"
-      onclick={() => onEditionSelect(edition)}
+      aria-label="View {item.name}, {editionLabel(edition)}{gameplay
+        ? edition.beta
+          ? ', includes beta gameplay'
+          : ', includes gameplay'
+        : ''}"
+      onclick={() => selectEdition(edition)}
     >
       <span class="edition-name">
-        <strong class="edition-title">{edition.v}</strong>
-        {#if detail && detail !== edition.v}<span class="edition-material">{detail}</span>{/if}
+        <strong class="edition-title">{editionLabel(edition)}</strong>
+        {#if detail && detail !== editionLabel(edition)}<span class="edition-material">{detail}</span>{/if}
       </span>
       <small class="edition-date">{release(edition)}</small>
     </button>
@@ -334,9 +364,9 @@
       class="wish"
       type="button"
       aria-pressed={!!value.wished}
-      aria-label="Wishlist {item.name}, {edition.v}"
-      disabled={!!value.owned || edition.standalone === false}
-      onclick={() => onWishChange(edition)}
+      aria-label="Wishlist {item.name}, {editionLabel(edition)}"
+      disabled={!writable || !!value.owned || edition.standalone === false}
+      onclick={() => toggleWish(edition)}
     >
       <span class={["wish-icon", value.wished ? "i-material-symbols:favorite" : "i-material-symbols:favorite-outline"]} aria-hidden="true"
       ></span>

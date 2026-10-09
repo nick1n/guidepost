@@ -1,29 +1,27 @@
-import { Effect } from "effect";
+import { Cause, Effect, Result, Schema, Stream } from "effect";
+import { createContext } from "svelte";
 import { CollectionError } from "./collection-errors.ts";
-import type { CollectionStore, StoreError } from "./stores";
+import { StoreError, type CollectionStore } from "./stores.ts";
 import { OptimisticStore } from "./optimistic-store.ts";
-import type { CollectionState, EntryState } from "#lib/types/index.ts";
+import { decodeBackup, encodeBackup, previewWorkbookRows, exportWorkbookRows } from "./collection-transfer.ts";
+import type { Catalog, CollectionPatch, CollectionSnapshot, Currency, EntryState } from "#lib/types/index.ts";
+import { collectionKey, copyNumberMaximum, CopyNumberSchema, parseCollectionKey } from "#lib/types/collection.ts";
+import { reviewIndex, reviewEditions, reviewPrice, type EditionSelection } from "#lib/catalog-view.ts";
 
 type LoadStatus = "pending" | "ready" | "error";
 
 function persistenceError(itemIds: readonly string[] = []) {
   return (error: StoreError) => {
     let message = "We couldn't save that change. Please try again.";
-    if (error.operation === "load") {
-      message = "We couldn't access your saved collection. Please try again.";
-      if (error.reason === "invalid-data") {
-        message = "Your saved collection data is invalid and could not be loaded.";
-      }
-    } else if (error.reason === "serialization") {
-      message = "Your collection data could not be prepared for saving. The change was not saved.";
+    if (error.reason === "stale") {
+      message = "Your collection changed in another tab. Refresh your collection before editing again.";
+    } else if (error.operation === "load") {
+      message =
+        error.reason === "invalid-data"
+          ? "Your saved collection data is invalid and could not be loaded."
+          : "We couldn't access your saved collection. Please try again.";
     }
-
-    return new CollectionError({
-      message,
-      operation: error.operation,
-      itemIds,
-      cause: error,
-    });
+    return new CollectionError({ message, operation: error.operation, itemIds, cause: error });
   };
 }
 
@@ -32,7 +30,7 @@ function unavailableStoreError(operation: CollectionError["operation"], itemIds:
     message: "Collection storage is unavailable. Reload the page and try again.",
     operation,
     itemIds,
-    cause: "Content state store is not initialized",
+    cause: "Collection store is not initialized",
   });
 }
 
@@ -44,90 +42,125 @@ function collectionNotReadyError(operation: CollectionError["operation"], itemId
         : "Your collection is still loading. Please try again in a moment.",
     operation,
     itemIds,
-    cause: `Content state store is ${loadStatus}`,
+    cause: "Collection store is " + loadStatus,
   });
 }
 
-function ownershipPatch(owned: boolean, defaults?: { version?: string; edition?: string }) {
-  if (!owned) {
-    return {
-      owned: false,
-      versions: undefined,
-      editions: undefined,
-      editionNumbers: undefined,
-    };
-  }
-
-  return {
-    owned: true,
-    wishlisted: false,
-    ...(defaults?.version ? { versions: [defaults.version] } : {}),
-    ...(defaults?.edition ? { editions: [defaults.edition] } : {}),
-  };
+function ownershipPatch(owned: boolean): EntryState {
+  return owned ? { owned: true, wished: false } : { owned: false };
 }
 
-export class ContentState {
-  state = $state.raw<CollectionState>({});
+export class Collection {
+  state = $state.raw<CollectionSnapshot>({});
   loadStatus = $state<LoadStatus>("pending");
   loadError = $state.raw<CollectionError | undefined>();
+  saveError = $state.raw<CollectionError | undefined>();
+  needsRefresh = $state(false);
+  pendingSaves = $state(0);
+  readonly isSaving = $derived(this.pendingSaves > 0);
+  readonly owned = $derived.by(() =>
+    this.catalog.entries.flatMap((item) =>
+      reviewEditions(item)
+        .filter((edition) => this.getEdition(item.id, edition.id).owned)
+        .map((edition) => ({ item, edition })),
+    ),
+  );
+  readonly ownedCount = $derived(this.owned.filter(({ edition }) => edition.standalone !== false).length);
+  readonly wishlistCount = $derived(
+    this.catalog.entries.reduce(
+      (total, item) => total + reviewEditions(item).filter((edition) => this.getEdition(item.id, edition.id).wished).length,
+      0,
+    ),
+  );
+  readonly totals = $derived.by(() => {
+    const totals: Partial<Record<Currency, number>> = {};
+    for (const { item, edition } of this.owned) {
+      const currency = item.currency ?? "USD";
+      totals[currency] = (totals[currency] ?? 0) + (reviewPrice(item, edition) ?? 0);
+    }
+    return totals;
+  });
+  private readonly coverage = $derived(this.catalog.ownershipCoverage(this.owned));
+  private catalogData: Catalog = $state.raw({ content: {}, "included-only": {}, accessories: {}, bundles: {}, homebrew: {} });
+  private readonly catalogIndex = $derived(reviewIndex(this.catalogData));
   private userId?: string;
   private store?: CollectionStore;
   private writer?: OptimisticStore;
   private generation = 0;
+  private changeVersion = 0;
+  private observationFailed = false;
 
-  private setLoadStatus(status: LoadStatus = "error") {
-    return Effect.sync(() => {
-      this.loadStatus = status;
-    });
+  constructor(catalogData?: Catalog) {
+    if (catalogData) this.catalogData = catalogData;
   }
 
-  private recordLoadError = (error: CollectionError) =>
-    Effect.sync(() => {
-      this.loadError = error;
-    });
+  get catalog() {
+    // Build the shared catalog index only when a collection view or command needs it.
+    return this.catalogIndex;
+  }
+
+  setCatalog(catalogData: Catalog) {
+    this.catalogData = catalogData;
+  }
+
+  get canWrite() {
+    return this.loadStatus === "ready" && !this.needsRefresh;
+  }
+
+  get hasStore() {
+    return this.store !== undefined;
+  }
+
+  get canObserve() {
+    // Keep an existing subscription active while a refresh reads the next snapshot.
+    return this.loadStatus !== "error" && this.writer !== undefined && !this.observationFailed;
+  }
 
   private isCurrent(generation: number) {
     return this.generation === generation;
   }
 
-  private finishLoad<A>(effect: Effect.Effect<A, CollectionError>, generation: number) {
+  private guardGeneration<A, E>(effect: Effect.Effect<A, E>, generation = this.generation) {
+    // Superseded results and failures must not reach the action boundary.
     return effect.pipe(
-      // Superseded results must not reach the action boundary as success or failure.
       Effect.tap(() => (this.isCurrent(generation) ? Effect.void : Effect.interrupt)),
       Effect.catchCause((cause) => (this.isCurrent(generation) ? Effect.failCause(cause) : Effect.interrupt)),
-      Effect.tapError(this.recordLoadError),
-      Effect.tapCause(() => (this.isCurrent(generation) ? this.setLoadStatus() : Effect.void)),
     );
   }
 
-  setStore = Effect.fn("ContentState.setStore")({ self: this }, function* (store: CollectionStore, migrateFrom?: CollectionStore) {
+  private finishLoad(effect: Effect.Effect<void, CollectionError>, generation: number) {
+    return effect.pipe(
+      (effect) => this.guardGeneration(effect, generation),
+      Effect.tapError((error) =>
+        Effect.sync(() => {
+          this.loadError = error;
+        }),
+      ),
+      Effect.tapCause(() =>
+        Effect.sync(() => {
+          if (this.isCurrent(generation)) this.loadStatus = "error";
+        }),
+      ),
+    );
+  }
+
+  setStore = Effect.fn("Collection.setStore")({ self: this }, function* (store: CollectionStore) {
     const generation = ++this.generation;
     this.store = store;
     this.writer = undefined;
     this.loadStatus = "pending";
     this.loadError = undefined;
-
+    this.saveError = undefined;
+    this.needsRefresh = false;
     return yield* Effect.gen({ self: this }, function* () {
-      const localState = migrateFrom ? yield* migrateFrom.load().pipe(Effect.mapError(persistenceError())) : {};
-      const storedState = yield* store.load().pipe(Effect.mapError(persistenceError()));
-      const state = { ...storedState, ...localState };
-      const itemIds = Object.keys(localState);
-
-      if (itemIds.length) {
-        if (!this.isCurrent(generation)) return yield* Effect.interrupt;
-        yield* store.save(state).pipe(Effect.mapError(persistenceError(itemIds)));
-        if (migrateFrom) {
-          if (!this.isCurrent(generation)) return yield* Effect.interrupt;
-          yield* migrateFrom.clear().pipe(Effect.mapError(persistenceError(itemIds)));
-        }
-      }
-
+      const state = yield* store.load().pipe(Effect.mapError(persistenceError()));
       if (!this.isCurrent(generation)) return yield* Effect.interrupt;
       this.state = state;
-      const writer = new OptimisticStore(store, this.state, (state) => {
-        if (this.writer === writer) this.state = state;
+      const writer = new OptimisticStore(store, state, (next) => {
+        if (this.writer === writer) this.state = next;
       });
       this.writer = writer;
+      this.observationFailed = false;
       this.loadStatus = "ready";
     }).pipe((effect) => this.finishLoad(effect, generation));
   });
@@ -141,109 +174,225 @@ export class ContentState {
     this.state = {};
     this.loadStatus = "pending";
     this.loadError = undefined;
+    this.saveError = undefined;
+    this.needsRefresh = false;
   }
 
-  refresh = Effect.fn("ContentState.refresh")({ self: this }, function* () {
+  observeChanges = Effect.fn("Collection.observeChanges")({ self: this }, function* () {
+    const store = this.store;
+    if (!store?.changes) return;
+    yield* store.changes.pipe(
+      Stream.runForEach((stale) =>
+        Effect.sync(() => {
+          if (stale && this.store === store) {
+            this.changeVersion += 1;
+            this.needsRefresh = true;
+          }
+        }),
+      ),
+      Effect.mapError(persistenceError()),
+      Effect.catchCause((cause) => {
+        if (this.store !== store) return Effect.interrupt;
+        if (Cause.hasInterrupts(cause)) return Effect.failCause(cause);
+        const error = Cause.findError(cause);
+        return Effect.sync(() => {
+          this.loadError =
+            Result.isSuccess(error) && !Cause.hasDies(cause)
+              ? error.success
+              : new CollectionError({
+                  operation: "load",
+                  itemIds: [],
+                  message: "Collection monitoring failed. Try loading your collection again.",
+                  cause,
+                });
+          this.loadStatus = "error";
+          this.observationFailed = true;
+        }).pipe(Effect.andThen(Effect.failCause(cause)));
+      }),
+    );
+  });
+
+  refresh = Effect.fn("Collection.refresh")({ self: this }, function* () {
     if (this.store && !this.writer) return yield* this.setStore(this.store);
     const generation = ++this.generation;
+    const changeVersion = this.changeVersion;
     this.loadError = undefined;
     return yield* Effect.gen({ self: this }, function* () {
-      if (!this.store) return yield* unavailableStoreError("load");
-      if (!this.writer) return yield* unavailableStoreError("load");
+      if (!this.store || !this.writer) return yield* unavailableStoreError("load");
       this.loadStatus = "pending";
       yield* this.writer.load().pipe(Effect.mapError(persistenceError()));
-      if (this.isCurrent(generation)) this.loadStatus = "ready";
+      if (this.isCurrent(generation)) {
+        this.observationFailed = false;
+        this.loadStatus = "ready";
+        this.saveError = undefined;
+        // A change reported during loading may be newer than the fetched snapshot.
+        this.needsRefresh = this.changeVersion !== changeVersion;
+      }
     }).pipe((effect) => this.finishLoad(effect, generation));
   });
 
-  get(id: string) {
-    return this.state[id] ?? {};
+  get(key: string): EntryState {
+    return this.state[key] ?? {};
   }
 
-  private update(itemId: string, change: (entry: EntryState) => EntryState) {
-    return Effect.suspend(() => this.commitMany({ [itemId]: change(this.get(itemId)) }));
+  getEdition(contentId: string, editionId: string) {
+    return this.get(collectionKey(contentId, editionId));
   }
 
-  private commitMany = Effect.fn("ContentState.commitMany")({ self: this }, function* (nextState: CollectionState) {
-    const itemIds = Object.keys(nextState);
-    const writer = yield* this.requireWriter("save", itemIds);
-    return yield* writer.saveMany(nextState).pipe(Effect.mapError(persistenceError(itemIds)));
+  getOwners(contentId: string, editionId: string) {
+    const edition = this.catalog.byId.get(contentId)?.editions?.find((edition) => edition.id === editionId);
+    return edition ? (this.coverage.get(contentId) ?? []).filter((owner) => !owner.editionId || owner.editionId === editionId) : [];
+  }
+
+  private reportSave(effect: Effect.Effect<void, StoreError>, keys: readonly string[]) {
+    const generation = this.generation;
+    return Effect.acquireUseRelease(
+      Effect.sync(() => {
+        this.pendingSaves += 1;
+      }),
+      () =>
+        effect.pipe(
+          Effect.mapError(persistenceError(keys)),
+          (effect) => this.guardGeneration(effect, generation),
+          Effect.tapError((error) =>
+            Effect.sync(() => {
+              if (!this.isCurrent(generation)) return;
+              this.saveError = error;
+              if (error.cause instanceof StoreError && error.cause.reason === "stale") this.needsRefresh = true;
+            }),
+          ),
+          Effect.tap(() =>
+            Effect.sync(() => {
+              if (this.isCurrent(generation)) this.saveError = undefined;
+            }),
+          ),
+        ),
+      () =>
+        Effect.sync(() => {
+          this.pendingSaves -= 1;
+        }),
+    );
+  }
+
+  private commitMany = Effect.fn("Collection.commitMany")({ self: this }, function* (patch: CollectionPatch) {
+    const keys = Object.keys(patch);
+    if (!keys.length) return;
+    const writer = yield* this.requireWriter("save", keys);
+    return yield* this.reportSave(writer.saveMany(patch), keys);
   });
 
-  private requireWriter(operation: "save" | "clear", itemIds: readonly string[]) {
+  private requireWriter(operation: "save" | "clear", keys: readonly string[]) {
     return Effect.suspend(() => {
-      if (!this.store) return Effect.fail(unavailableStoreError(operation, itemIds));
-      if (this.loadStatus !== "ready") return Effect.fail(collectionNotReadyError(operation, itemIds, this.loadStatus));
-      if (!this.writer) return Effect.fail(unavailableStoreError(operation, itemIds));
+      if (!this.store || !this.writer) {
+        return Effect.fail(this.store ? collectionNotReadyError(operation, keys, this.loadStatus) : unavailableStoreError(operation, keys));
+      }
+      if (this.loadStatus !== "ready") return Effect.fail(collectionNotReadyError(operation, keys, this.loadStatus));
+      if (this.needsRefresh)
+        return Effect.fail(persistenceError(keys)(new StoreError({ operation, reason: "stale", cause: "Refresh required" })));
       return Effect.succeed(this.writer);
     });
   }
 
-  toggleOwned = Effect.fn("ContentState.toggleOwned")(
+  toggleOwned = Effect.fn("Collection.toggleOwned")({ self: this }, function (key: string) {
+    return this.commitMany({ [key]: ownershipPatch(!this.get(key).owned) });
+  });
+
+  toggleWish = Effect.fn("Collection.toggleWish")({ self: this }, function (key: string) {
+    const entry = this.get(key);
+    return this.commitMany({ [key]: { wished: !entry.owned && !entry.wished } });
+  });
+
+  setCopyNumber = Effect.fn("Collection.setCopyNumber")({ self: this }, function* (key: string, copyNumber: number | undefined) {
+    if (copyNumber !== undefined) {
+      yield* Schema.decodeUnknownEffect(CopyNumberSchema)(copyNumber).pipe(
+        Effect.mapError(
+          (cause) =>
+            new CollectionError({
+              operation: "save",
+              itemIds: [key],
+              message: `Copy numbers must be whole numbers from 1 to ${copyNumberMaximum}.`,
+              cause,
+            }),
+        ),
+      );
+      const [contentId, editionId] = parseCollectionKey(key);
+      const runSize = this.catalog.byId.get(contentId)?.editions?.find((edition) => edition.id === editionId)?.runSize;
+      if (runSize !== undefined && copyNumber > runSize)
+        return yield* new CollectionError({
+          operation: "save",
+          itemIds: [key],
+          message: `Copy number must not exceed this edition's run of ${runSize}.`,
+          cause: copyNumber,
+        });
+    }
+    return yield* this.commitMany({ [key]: { copyNumber } });
+  });
+
+  setManyOwned = Effect.fn("Collection.setManyOwned")({ self: this }, function (keys: readonly string[], owned: boolean) {
+    return this.commitMany(Object.fromEntries(keys.map((key) => [key, ownershipPatch(owned)])));
+  });
+
+  setEditionsOwned = Effect.fn("Collection.setEditionsOwned")(
     { self: this },
-    function* (itemId: string, defaults?: { version?: string; edition?: string }) {
-      return yield* this.update(itemId, (entry) => ownershipPatch(!entry.owned, defaults));
+    function (targets: readonly EditionSelection[], owned: boolean) {
+      return this.setManyOwned(this.catalog.ownershipKeys(targets), owned);
     },
   );
 
-  toggleWishlisted = Effect.fn("ContentState.toggleWishlisted")({ self: this }, function* (itemId: string) {
-    return yield* this.update(itemId, (entry) => ({ wishlisted: !entry.wishlisted }));
+  exportBackup = Effect.fn("Collection.exportBackup")({ self: this }, function* () {
+    const generation = this.generation;
+    const writer = yield* this.requireWriter("save", []);
+    return yield* this.guardGeneration(
+      writer.snapshot().pipe(Effect.flatMap((snapshot) => encodeBackup(snapshot, this.catalogData))),
+      generation,
+    );
   });
 
-  setVersion = Effect.fn("ContentState.setVersion")({ self: this }, function* (itemId: string, version: string) {
-    return yield* this.update(itemId, (entry) => {
-      const versions = entry.versions ?? [];
-      const next = versions.includes(version) ? versions.filter((value) => value !== version) : [...versions, version];
-      return {
-        ...(next.length ? { owned: true, wishlisted: false } : {}),
-        versions: next.length ? next : undefined,
-      };
-    });
+  restoreBackup = Effect.fn("Collection.restoreBackup")({ self: this }, function* (json: string) {
+    const snapshot = yield* this.guardGeneration(decodeBackup(json, this.catalogData));
+    const keys = Object.keys(snapshot);
+    const writer = yield* this.requireWriter("save", keys);
+    return yield* this.reportSave(writer.replace(snapshot), keys);
   });
 
-  setEdition = Effect.fn("ContentState.setEdition")({ self: this }, function* (itemId: string, edition: string) {
-    return yield* this.update(itemId, (entry) => {
-      const editions = entry.editions ?? [];
-      const next = editions.includes(edition) ? editions.filter((value) => value !== edition) : [...editions, edition];
-      const numbers = { ...(entry.editionNumbers ?? {}) };
-      if (!next.includes(edition)) delete numbers[edition];
-      return {
-        ...(next.length ? { owned: true, wishlisted: false } : {}),
-        editions: next.length ? next : undefined,
-        editionNumbers: Object.keys(numbers).length ? numbers : undefined,
-      };
-    });
+  previewWorkbook = Effect.fn("Collection.previewWorkbook")({ self: this }, function* (rows: unknown) {
+    const entries = yield* this.guardGeneration(previewWorkbookRows(rows, this.catalogData));
+    const patch: CollectionPatch = {};
+    for (const [key, entry] of Object.entries(entries)) {
+      if (entry.owned === undefined) continue;
+      const [contentId, editionId] = parseCollectionKey(key);
+      const item = this.catalog.byId.get(contentId)!;
+      const edition = reviewEditions(item).find((edition) => edition.id === editionId)!;
+      for (const ownedKey of this.catalog.ownershipKeys([{ item, edition }])) {
+        patch[ownedKey] = { ...patch[ownedKey], ...ownershipPatch(entry.owned) };
+      }
+    }
+    for (const [key, entry] of Object.entries(entries)) patch[key] = { ...patch[key], ...entry };
+    for (const [key, entry] of Object.entries(patch)) {
+      if (entry.owned ?? this.get(key).owned) patch[key] = { ...entry, wished: false };
+    }
+    return patch;
   });
 
-  setEditionNumber = Effect.fn("ContentState.setEditionNumber")(
-    { self: this },
-    function* (itemId: string, edition: string, editionNumber?: number) {
-      return yield* this.update(itemId, (entry) => {
-        const numbers = { ...(entry.editionNumbers ?? {}) };
-        if (editionNumber == null) delete numbers[edition];
-        else numbers[edition] = editionNumber;
-        return { editionNumbers: Object.keys(numbers).length ? numbers : undefined };
-      });
-    },
-  );
-
-  setManyOwned = Effect.fn("ContentState.setManyOwned")({ self: this }, function* (ids: readonly string[], owned: boolean) {
-    const nextState = Object.fromEntries(ids.map((itemId) => [itemId, ownershipPatch(owned)]));
-    return yield* this.commitMany(nextState);
+  importWorkbook = Effect.fn("Collection.importWorkbook")({ self: this }, function* (rows: unknown) {
+    const entries = yield* this.previewWorkbook(rows);
+    return yield* this.commitMany(entries);
   });
 
-  setBundleOwned = Effect.fn("ContentState.setBundleOwned")(
-    { self: this },
-    function* (bundleId: string, ids: readonly string[], owned: boolean) {
-      return yield* this.setManyOwned([bundleId, ...ids], owned);
-    },
-  );
+  exportWorkbook = Effect.fn("Collection.exportWorkbook")({ self: this }, function* () {
+    const generation = this.generation;
+    const writer = yield* this.requireWriter("save", []);
+    return yield* this.guardGeneration(
+      writer.snapshot().pipe(Effect.flatMap((snapshot) => exportWorkbookRows(snapshot, this.catalogData))),
+      generation,
+    );
+  });
 
-  reset = Effect.fn("ContentState.reset")({ self: this }, function* () {
-    const itemIds = Object.keys(this.state);
-    const writer = yield* this.requireWriter("clear", itemIds);
-    return yield* writer.clear().pipe(Effect.mapError(persistenceError(itemIds)));
+  reset = Effect.fn("Collection.reset")({ self: this }, function* () {
+    const keys = Object.keys(this.state);
+    const writer = yield* this.requireWriter("clear", keys);
+    return yield* this.reportSave(writer.clear(), keys);
   });
 }
 
-export const collection = new ContentState();
+export const [getCollection, setCollection] = createContext<Collection>();

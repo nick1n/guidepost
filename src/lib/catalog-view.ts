@@ -1,9 +1,12 @@
-import { editionGameplay, editionMaterials } from "./kdm-data";
+import { editionGameplay, editionLabel, editionMaterials } from "./kdm-data";
 import type { Catalog, Edition, Item } from "#lib/types/index.ts";
+import { collectionKey } from "#lib/types/collection.ts";
 
 export type ReviewEdition = Edition;
 export type ReviewItem = Item;
 export type ReviewCatalog = Catalog;
+export type EditionSelection = { item: ReturnType<typeof reviewEntries>[number]; edition: ReviewEdition };
+type Owner = { parentId: string; parentEditionId: string; parent: string; parentEdition: string; editionId?: string };
 
 export function reviewTagLabel(tag: string) {
   return tag.replace(/^monster-/, "").replaceAll("-", " ");
@@ -26,22 +29,26 @@ export function reviewShopUrl(item: ReviewItem, edition: ReviewEdition) {
 }
 
 export function reviewPrice(item: ReviewItem, edition: ReviewEdition) {
-  return edition.$?.length ? Math.max(...edition.$) : item.price;
+  return edition.prices?.length ? Math.max(...edition.prices) : item.price;
 }
 
 export function reviewEditions(item: ReviewItem & { category?: string }): ReviewEdition[] {
   // Items without catalog editions get one trackable edition named for their category.
   return item.editions?.length
     ? item.editions
-    : [{ v: item.category === "bundles" ? "Bundle" : "Item", r: item.releaseDate, releaseWindow: item.releaseWindow }];
+    : [
+        {
+          id: item.category === "bundles" ? "bundle" : "item",
+          label: item.category === "bundles" ? "Bundle" : "Item",
+          format: "physical",
+          releaseDate: item.releaseDate,
+          releaseWindow: item.releaseWindow,
+        },
+      ];
 }
 
 export function reviewNumberedEditions(item: ReviewItem) {
-  return reviewEditions(item).filter(
-    (edition) =>
-      edition.runSize !== undefined ||
-      /\bfirst[\s-]+run\b|\bdeathgrey\b/i.test([edition.v, edition.name, ...editionMaterials(edition)].join(" ")),
-  );
+  return reviewEditions(item).filter((edition) => edition.numbered === true);
 }
 
 export function reviewGameplayFirst(items: ReturnType<typeof reviewEntries>) {
@@ -82,7 +89,7 @@ export function reviewIndex(catalog: ReviewCatalog) {
     ]),
   );
   const byId = new Map(entries.map((item) => [item.id, item]));
-  const sim = entries.filter((item) => item.editions?.some((edition) => edition.v === "Sim"));
+  const sim = entries.filter((item) => item.editions?.some((edition) => edition.simulator === true));
   const search = new Map(
     entries.map((item) => [
       item.id,
@@ -90,30 +97,44 @@ export function reviewIndex(catalog: ReviewCatalog) {
     ]),
   );
 
-  function findInclusions(id: string, edition: string) {
+  function findInclusions(id: string, editionId: string) {
     const item = byId.get(id);
     const included = (item?.includes ?? []).flatMap((inclusion) => {
       const reference = typeof inclusion === "string" ? { item: inclusion } : inclusion;
-      if (reference.parentEditions && !reference.parentEditions.includes(edition)) return [];
+      if (reference.parentEditionIds && !reference.parentEditionIds.includes(editionId)) return [];
       const child = byId.get(reference.item);
       if (!child) return [];
-      return [{ ...reference, name: child.name, category: child.category }];
+      const childEdition = child.editions?.find((release) => release.id === reference.editionId);
+      return [{ ...reference, name: child.name, category: child.category, editionLabel: childEdition && editionLabel(childEdition) }];
     });
-    if (item?.editions?.find((release) => release.v === edition)?.includesAllSim) {
-      const explicitSim = new Set(included.filter((reference) => reference.edition === "Sim").map((reference) => reference.item));
+    if (item?.editions?.find((release) => release.id === editionId)?.includesAllSim) {
+      const explicitSim = new Set(
+        included
+          .filter((reference) => byId.get(reference.item)?.editions?.find((release) => release.id === reference.editionId)?.simulator)
+          .map((reference) => reference.item),
+      );
       for (const child of sim)
         if (child.id !== id && !explicitSim.has(child.id))
-          included.push({ item: child.id, edition: "Sim", name: child.name, category: child.category });
+          for (const release of child.editions ?? []) {
+            if (release.simulator)
+              included.push({
+                item: child.id,
+                editionId: release.id,
+                name: child.name,
+                category: child.category,
+                editionLabel: editionLabel(release),
+              });
+          }
     }
     return included;
   }
 
   const cache = new Map<string, ReturnType<typeof findInclusions>>();
-  function inclusions(id: string, edition: string) {
-    const key = `${id}:${edition}`;
+  function inclusions(id: string, editionId: string) {
+    const key = collectionKey(id, editionId);
     let included = cache.get(key);
     if (!included) {
-      included = findInclusions(id, edition);
+      included = findInclusions(id, editionId);
       cache.set(key, included);
     }
     return included;
@@ -121,57 +142,64 @@ export function reviewIndex(catalog: ReviewCatalog) {
 
   type Included = { item: (typeof entries)[number]; edition: ReviewEdition };
   const includedCache = new Map<string, Included[]>();
-  function includedEditions(id: string, edition: string, includeNested = true) {
-    const cacheKey = `${id}:${edition}:${includeNested}`;
+  function includedEditions(id: string, editionId: string, includeNested = true) {
+    const cacheKey = JSON.stringify([id, editionId, includeNested]);
     const cached = includedCache.get(cacheKey);
     if (cached) return cached;
     const included: Included[] = [];
-    const visited = new Set([`${id}:${edition}`]);
-    function visit(parentId: string, parentEdition: string) {
-      for (const reference of inclusions(parentId, parentEdition)) {
+    const visited = new Set([collectionKey(id, editionId)]);
+    function visit(parentId: string, parentEditionId: string) {
+      const parentEdition = byId.get(parentId)?.editions?.find((release) => release.id === parentEditionId);
+      for (const reference of inclusions(parentId, parentEditionId)) {
         const item = byId.get(reference.item);
         if (!item) continue;
         const editions = reviewEditions(item);
-        const matches = reference.edition
-          ? editions.filter((release) => release.v === reference.edition)
+        const matches = reference.editionId
+          ? editions.filter((release) => release.id === reference.editionId)
           : reference.materials?.length
             ? editions.filter((release) => reference.materials!.every((material) => editionMaterials(release).includes(material)))
-            : [editions.find((release) => release.v === parentEdition) ?? editions.find((release) => release.v !== "Sim") ?? editions[0]];
+            : [
+                editions.find(
+                  (release) => release.format === parentEdition?.format && !!release.simulator === !!parentEdition?.simulator,
+                ) ??
+                  editions.find((release) => release.format === "physical") ??
+                  editions[0],
+              ];
         for (const release of matches) {
           if (!release) continue;
-          const key = `${item.id}:${release.v}`;
+          const key = collectionKey(item.id, release.id);
           if (visited.has(key)) continue;
           visited.add(key);
           included.push({ item, edition: release });
-          if (includeNested) visit(item.id, release.v);
+          if (includeNested) visit(item.id, release.id);
         }
       }
     }
-    visit(id, edition);
+    visit(id, editionId);
     includedCache.set(cacheKey, included);
     return included;
   }
 
   type Pricing = { total: number; missing: number; savings: number | undefined; percent: number | undefined };
   const pricingCache = new Map<string, Pricing>();
-  function bundlePricing(id: string, edition: string) {
+  function bundlePricing(id: string, editionId: string) {
     const item = byId.get(id);
-    if (item?.category !== "bundles" || !inclusions(id, edition).length) return;
-    const cacheKey = `${id}:${edition}`;
+    if (item?.category !== "bundles" || !inclusions(id, editionId).length) return;
+    const cacheKey = collectionKey(id, editionId);
     const cached = pricingCache.get(cacheKey);
     if (cached) return cached;
-    const release = reviewEditions(item).find((release) => release.v === edition);
+    const release = reviewEditions(item).find((release) => release.id === editionId);
     if (!release) return;
     const price = reviewPrice(item, release);
     let total = 0;
     let missing = 0;
-    const children = includedEditions(id, edition, false);
-    for (const reference of inclusions(id, edition))
+    const children = includedEditions(id, editionId, false);
+    for (const reference of inclusions(id, editionId))
       if (
         !children.some(
           (child) =>
             child.item.id === reference.item &&
-            (!reference.edition || child.edition.v === reference.edition) &&
+            (!reference.editionId || child.edition.id === reference.editionId) &&
             (!reference.materials?.length || reference.materials.every((material) => editionMaterials(child.edition).includes(material))),
         )
       )
@@ -192,9 +220,49 @@ export function reviewIndex(catalog: ReviewCatalog) {
     return pricing;
   }
 
-  return { entries, byCategory, tags, tagViews, search, inclusions, includedEditions, bundlePricing };
+  function ownershipKeys(targets: readonly EditionSelection[]) {
+    return [
+      ...new Set(
+        targets.flatMap(({ item, edition }) =>
+          [{ item, edition }, ...includedEditions(item.id, edition.id)].map(({ item, edition }) => collectionKey(item.id, edition.id)),
+        ),
+      ),
+    ];
+  }
+
+  function ownershipCoverage(owned: readonly EditionSelection[]) {
+    const grouped = new Map<string, Owner[]>();
+    for (const { item, edition } of owned) {
+      for (const child of inclusions(item.id, edition.id)) {
+        const owners = grouped.get(child.item) ?? [];
+        owners.push({
+          parentId: item.id,
+          parentEditionId: edition.id,
+          parent: item.name,
+          parentEdition: editionLabel(edition),
+          editionId: child.editionId,
+        });
+        grouped.set(child.item, owners);
+      }
+    }
+    return grouped;
+  }
+
+  return {
+    entries,
+    byId,
+    byCategory,
+    tags,
+    tagViews,
+    search,
+    inclusions,
+    includedEditions,
+    bundlePricing,
+    ownershipKeys,
+    ownershipCoverage,
+  };
 }
 
-export function reviewInclusions(catalog: ReviewCatalog, id: string, edition: string) {
-  return reviewIndex(catalog).inclusions(id, edition);
+export function reviewInclusions(catalog: ReviewCatalog, id: string, editionId: string) {
+  return reviewIndex(catalog).inclusions(id, editionId);
 }

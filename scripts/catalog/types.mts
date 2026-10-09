@@ -1,7 +1,12 @@
 import type * as Schema from "../../src/lib/types/gen/kdm-data.d.ts";
 
 // Staging accepts source labels and extra fields before normalization and schema validation.
-export type Edition = Omit<Schema.Edition, "v"> & { v: string; [field: string]: unknown };
+export type Edition = Omit<Schema.Edition, "id" | "label" | "format"> & {
+  id?: string;
+  label: string;
+  format?: "physical" | "digital";
+  [field: string]: unknown;
+};
 export type Inclusion = Schema.Inclusion;
 export type Item = Omit<Schema.Item, "kind" | "accessoryType" | "editions"> & {
   kind?: string;

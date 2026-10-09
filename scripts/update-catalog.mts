@@ -209,7 +209,7 @@ async function main() {
       for (const item of Object.values(before[category]))
         for (const edition of item.editions ?? []) {
           const listing = catalogListing(item, edition);
-          if (edition.v !== "Sim" || !listing) continue;
+          if (!edition.simulator || !listing) continue;
           const url = productUrl(listing);
           const handle = new URL(url).pathname.split("/").at(-1)!;
           if (seen.has(handle)) continue;

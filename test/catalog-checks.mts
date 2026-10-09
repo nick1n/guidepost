@@ -20,7 +20,7 @@ import { refreshAvailability } from "../scripts/refresh-catalog-availability.mts
 import { availabilityFromUrls } from "../scripts/catalog/availability.mts";
 import { categories, type Catalog, type Product } from "../scripts/catalog/types.mts";
 import { normalizeItem } from "../scripts/catalog/normalize.mts";
-import { organizeCatalog, compareEditions } from "../scripts/catalog/order.mts";
+import { organizeCatalog, compareEditions, orderItemFields } from "../scripts/catalog/order.mts";
 import { validateCatalog } from "../scripts/catalog/validate.mts";
 import { applyTags, loadTags, tagSchema, organizeTags, type Tags } from "../scripts/catalog/tags.mts";
 import { prefixedId } from "../scripts/catalog/identity.mts";
@@ -90,13 +90,13 @@ test("physical Simulator key availability excludes digital access variants", () 
   catalog.content.core = {
     name: "Core",
     tags: ["core"],
-    editions: [{ v: "Sim", url: "/products/kingdom-death-simulator-1" }],
+    editions: [{ label: "Sim", url: "/products/kingdom-death-simulator-1" }],
   };
   catalog.content["kingdom-death-simulator"] = {
     name: "Simulator",
     kind: "simulator",
     tags: ["simulator"],
-    editions: [{ v: "Master Dwelling Key", url: "/products/kingdom-death-simulator-1" }],
+    editions: [{ label: "Master Dwelling Key", url: "/products/kingdom-death-simulator-1" }],
   };
   const listing = product({
     handle: "kingdom-death-simulator-1",
@@ -129,7 +129,7 @@ test("spaced Death Grey shop variants match Deathgrey during availability refres
     name: "Aya",
     tags: ["aya"],
     url: "/products/aya",
-    editions: [{ v: "First Run" }, { v: "Deathgrey", $: [3500] }],
+    editions: [{ label: "First Run" }, { label: "Deathgrey", prices: [3500] }],
   };
   const listing = product({
     handle: "aya",
@@ -142,7 +142,7 @@ test("spaced Death Grey shop variants match Deathgrey during availability refres
   assert.equal(catalog.content.aya.editions![1]!.available, undefined);
   listing.variants[1]!.available = true;
   availabilityFromUrls(catalog, [listing]);
-  assert.deepEqual(catalog.content.aya.editions![1], { v: "Deathgrey", $: [3500], available: true });
+  assert.deepEqual(catalog.content.aya.editions![1], { label: "Deathgrey", prices: [3500], available: true });
 });
 
 test("cached Death Pink and Second Run names match their distinct catalog editions during availability refresh", () => {
@@ -155,7 +155,7 @@ test("cached Death Pink and Second Run names match their distinct catalog editio
       name: "Model",
       tags: ["model"],
       url: "/products/model",
-      editions: [{ v: label!.startsWith("Bust:") ? "Bust: First Run" : "First Run" }, { v: label!, $: [3000] }],
+      editions: [{ label: label!.startsWith("Bust:") ? "Bust: First Run" : "First Run" }, { label: label!, prices: [3000] }],
     };
     const listing = product({
       handle: "model",
@@ -168,7 +168,7 @@ test("cached Death Pink and Second Run names match their distinct catalog editio
     assert.equal(catalog.content.model.editions![1]!.available, undefined);
     listing.variants[1]!.available = true;
     availabilityFromUrls(catalog, [listing]);
-    assert.deepEqual(catalog.content.model.editions![1], { v: label, $: [3000], available: true });
+    assert.deepEqual(catalog.content.model.editions![1], { label: label, prices: [3000], available: true });
     if (label === "Bust: Second Run") assert.equal(variantLabel(listing.variants[1]!, "Bust: First Run"), "Bust: Second Run");
   }
 });
@@ -179,17 +179,22 @@ test("digital inclusions allow explicitly scoped physical keys", async (t) => {
   const schemaPath = join(workspace, "data.schema.json");
   await writeFile(schemaPath, await readFile("static/kdm-catalog/data.schema.json"));
   const catalog = empty();
-  catalog.content.core = { name: "Core", kind: "core", tags: ["core"], editions: [{ v: "Sim" }] };
+  catalog.content.core = {
+    name: "Core",
+    kind: "core",
+    tags: ["core"],
+    editions: [{ id: "sim", label: "Sim", format: "digital", simulator: true as const }],
+  };
   catalog.content["kingdom-death-simulator"] = {
     name: "Simulator",
     kind: "simulator",
     tags: ["simulator"],
-    editions: [{ v: "Dwelling Key" }],
-    includes: [{ item: "core", edition: "Sim", parentEditions: ["Dwelling Key"] }],
+    editions: [{ id: "dwelling-key", label: "Dwelling Key", format: "physical" }],
+    includes: [{ item: "core", editionId: "sim", parentEditionIds: ["dwelling-key"] }],
   };
   organizeCatalog(catalog);
   await validateCatalog(catalog, schemaPath);
-  catalog.content["kingdom-death-simulator"].includes = [{ item: "core", edition: "Sim" }];
+  catalog.content["kingdom-death-simulator"].includes = [{ item: "core", editionId: "sim" }];
   await assert.rejects(validateCatalog(catalog, schemaPath), /Unscoped digital inclusion/);
 });
 
@@ -199,9 +204,9 @@ test("URL availability uses handles and release variants without name matching",
     name: "Different name",
     tags: ["aya"],
     url: "/products/aya.js?variant=1",
-    editions: [{ v: "First Run" }, { v: "Encore", available: true }, { v: "Painters", url: "/products/aya-painters" }],
+    editions: [{ label: "First Run" }, { label: "Encore", available: true }, { label: "Painters", url: "/products/aya-painters" }],
   };
-  catalog.content.unlinked = { name: "Aya", tags: ["aya"], editions: [{ v: "Plastic", available: true }] };
+  catalog.content.unlinked = { name: "Aya", tags: ["aya"], editions: [{ label: "Plastic", available: true }] };
   const variant = product().variants[0]!;
   availabilityFromUrls(catalog, [
     product({
@@ -226,7 +231,12 @@ test("availability refresh downloads all pages, preserves raw snapshots, and cha
   const path = join(root, "static/kdm-catalog/data.json");
   await mkdir(join(root, "static/kdm-catalog"), { recursive: true });
   const catalog = empty();
-  catalog.content.aya = { name: "Aya", tags: ["aya"], url: "/products/aya", editions: [{ v: "Plastic", $: [3000], r: "2020-01-01" }] };
+  catalog.content.aya = {
+    name: "Aya",
+    tags: ["aya"],
+    url: "/products/aya",
+    editions: [{ label: "Plastic", prices: [3000], releaseDate: "2020-01-01" }],
+  };
   await writeFile(path, JSON.stringify(catalog));
   const raw = (handle: string, available: boolean) => ({
     ...product({ handle }),
@@ -273,7 +283,7 @@ test("a failed pagination request cannot clear availability or replace named sna
   await mkdir(folder, { recursive: true });
   const original = JSON.stringify({
     ...empty(),
-    content: { aya: { name: "Aya", tags: ["aya"], editions: [{ v: "Plastic", available: true }] } },
+    content: { aya: { name: "Aya", tags: ["aya"], editions: [{ label: "Plastic", available: true }] } },
   });
   await writeFile(path, original);
   await writeFile(join(folder, "products-page-1.json"), "old snapshot");
@@ -309,8 +319,8 @@ test("availability aggregates warehouses and listings without changing release f
     name: "Aya",
     tags: ["aya"],
     editions: [
-      { v: "First Run", $: [3000], r: "2020-01-01" },
-      { v: "Encore", available: true },
+      { label: "First Run", prices: [3000], releaseDate: "2020-01-01" },
+      { label: "Encore", available: true },
     ],
   };
   const variant = product().variants[0]!;
@@ -331,12 +341,15 @@ test("availability aggregates warehouses and listings without changing release f
     }),
   ];
   applyAvailability(catalog, listings);
-  assert.deepEqual(catalog.content.aya.editions, [{ v: "First Run", $: [3000], r: "2020-01-01", available: true }, { v: "Encore" }]);
+  assert.deepEqual(catalog.content.aya.editions, [
+    { label: "First Run", prices: [3000], releaseDate: "2020-01-01", available: true },
+    { label: "Encore" },
+  ]);
 });
 
 test("availability respects mapped variants and format editions while unknown evidence preserves facts", () => {
   const catalog = empty();
-  catalog.content.aya = { name: "Aya", tags: ["aya"], editions: [{ v: "Plastic", available: true }, { v: "Painters" }] };
+  catalog.content.aya = { name: "Aya", tags: ["aya"], editions: [{ label: "Plastic", available: true }, { label: "Painters" }] };
   const data = product({
     handle: "aya-painters",
     variants: [
@@ -352,23 +365,23 @@ test("availability respects mapped variants and format editions while unknown ev
   assert.equal(catalog.content.aya.editions?.[1]?.available, true);
   applyAvailability(catalog, [product({ title: "Aya" })]);
   assert.equal(catalog.content.aya.editions?.[0]?.available, true);
-  const item = { name: "Aya", tags: ["aya"], editions: [{ v: "Encore", available: false }] } as unknown as Catalog["content"][string];
+  const item = { name: "Aya", tags: ["aya"], editions: [{ label: "Encore", available: false }] } as unknown as Catalog["content"][string];
   normalizeItem(item);
   assert.equal(Object.hasOwn(item.editions![0]!, "available"), false);
 });
 
 test("editions use release chronology, with Sim first and unknown dates last", () => {
   const editions = [
-    { v: "Encore" },
-    { v: "First Run", r: "2022-01-01" },
-    { v: "Plastic", releaseWindow: "2026 Q4" },
-    { v: "Painters", r: "2021-01-01" },
-    { v: "Sim", r: "2024-01-01" },
-    { v: "Box", r: "2020-01-01" },
-    { v: "Deathgrey", r: "2022-01-01" },
+    { label: "Encore" },
+    { label: "First Run", releaseDate: "2022-01-01" },
+    { label: "Plastic", releaseWindow: "2026 Q4" },
+    { label: "Painters", releaseDate: "2021-01-01" },
+    { label: "Sim", simulator: true as const, releaseDate: "2024-01-01" },
+    { label: "Box", releaseDate: "2020-01-01" },
+    { label: "Deathgrey", releaseDate: "2022-01-01" },
   ].sort(compareEditions);
   assert.deepEqual(
-    editions.map((e) => e.v),
+    editions.map((e) => e.label),
     ["Sim", "Box", "Painters", "First Run", "Deathgrey", "Plastic", "Encore"],
   );
 });
@@ -381,9 +394,9 @@ test("format mappings preserve release selectors and cannot remove standard game
     gameplay: true,
     tags: ["survivor"],
     editions: [
-      { v: "Plastic" },
-      { v: "Bust: First Run", gameplay: false, url: "/products/morgan-bust" },
-      { v: "Bust: Encore", gameplay: false, url: "/products/morgan-bust" },
+      { label: "Plastic" },
+      { label: "Bust: First Run", gameplay: false, url: "/products/morgan-bust" },
+      { label: "Bust: Encore", gameplay: false, url: "/products/morgan-bust" },
     ],
   };
   const data = product({ handle: "morgan-bust", variants: [{ ...product().variants[0]!, requires_shipping: true, title: "Encore" }] });
@@ -396,13 +409,13 @@ test("format mappings preserve release selectors and cannot remove standard game
     [],
   );
   assert.equal(review.catalog.content.morgan?.gameplay, true);
-  assert.equal(review.catalog.content.morgan?.editions?.find((edition) => edition.v === "Bust: Encore")?.gameplay, false);
+  assert.equal(review.catalog.content.morgan?.editions?.find((edition) => edition.label === "Bust: Encore")?.gameplay, false);
   assert.equal(review.catalog.content.morgan?.editions?.length, 3);
   const inferred = planUpdate(catalog, [source(data)], {}, []);
   assert.equal(inferred.unresolved.length, 0);
   assert.equal(inferred.catalog.content.morgan?.editions?.length, 3);
   assert.equal(inferred.catalog.content.morgan?.gameplay, true);
-  assert.equal(inferred.catalog.content.morgan?.editions?.find((edition) => edition.v === "Bust: Encore")?.gameplay, false);
+  assert.equal(inferred.catalog.content.morgan?.editions?.find((edition) => edition.label === "Bust: Encore")?.gameplay, false);
 });
 
 test("reviews expose missing editions and dates without assigning later announcements to older runs", () => {
@@ -412,7 +425,7 @@ test("reviews expose missing editions and dates without assigning later announce
     name: "Older",
     kind: "model",
     tags: ["survivor"],
-    editions: [{ v: "First Run", r: "2018-01-01" }, { v: "Encore" }, { v: "Plastic", releaseWindow: "2027 Q3" }],
+    editions: [{ label: "First Run", releaseDate: "2018-01-01" }, { label: "Encore" }, { label: "Plastic", releaseWindow: "2027 Q3" }],
   };
   catalog.accessories["shirt-older"] = { name: "Older Shirt", kind: "accessory", accessoryType: "shirt", tags: ["survivor"] };
   const before = structuredClone(catalog);
@@ -430,13 +443,13 @@ test("reviews expose missing editions and dates without assigning later announce
     },
   ]);
   assert.deepEqual(review.releaseGaps, { ...gaps, missingDates: [] });
-  assert.equal(review.catalog.content.older?.editions?.find((edition) => edition.v === "Encore")?.r, "2018-01-01");
+  assert.equal(review.catalog.content.older?.editions?.find((edition) => edition.label === "Encore")?.releaseDate, "2018-01-01");
   assert.deepEqual(catalog, before);
 });
 
 test("an undated Encore inherits the curated First Run date", () => {
   const catalog = empty();
-  catalog.content.owl = { name: "Owl", kind: "model", tags: ["survivor"], editions: [{ v: "First Run" }, { v: "Encore" }] };
+  catalog.content.owl = { name: "Owl", kind: "model", tags: ["survivor"], editions: [{ label: "First Run" }, { label: "Encore" }] };
   const data = product({
     handle: "owl",
     title: "Owl",
@@ -451,8 +464,8 @@ test("an undated Encore inherits the curated First Run date", () => {
     { owl: { category: "content", itemId: "owl", edition: "First Run", releaseDate: "2024-02-29" } },
     [],
   );
-  assert.equal(review.catalog.content.owl?.editions?.find((edition) => edition.v === "First Run")?.r, "2024-02-29");
-  assert.equal(review.catalog.content.owl?.editions?.find((edition) => edition.v === "Encore")?.r, "2024-02-29");
+  assert.equal(review.catalog.content.owl?.editions?.find((edition) => edition.label === "First Run")?.releaseDate, "2024-02-29");
+  assert.equal(review.catalog.content.owl?.editions?.find((edition) => edition.label === "Encore")?.releaseDate, "2024-02-29");
   assert.deepEqual(review.releaseGaps.missingDates, []);
 });
 
@@ -461,19 +474,24 @@ test("Encore date fallback prefers First Run, supports Deathgrey, and preserves 
     const item = {
       name: "Owl",
       tags: ["survivor"],
-      editions: [{ v: "First Run", r: firstRunDate }, { v: "Deathgrey", r: "2021-01-01" }, { v: "Encore" }, { v: "Plastic" }],
+      editions: [
+        { label: "First Run", releaseDate: firstRunDate },
+        { label: "Deathgrey", releaseDate: "2021-01-01" },
+        { label: "Encore" },
+        { label: "Plastic" },
+      ],
     };
     normalizeItem(item);
-    assert.equal(item.editions[2]?.r, firstRunDate ?? "2021-01-01");
-    assert.equal(item.editions[3]?.r, undefined);
+    assert.equal(item.editions[2]?.releaseDate, firstRunDate ?? "2021-01-01");
+    assert.equal(item.editions[3]?.releaseDate, undefined);
   }
   for (const encore of [
-    { v: "Encore", r: "2023-01-01" },
-    { v: "Encore", releaseWindow: "2027 Q3" },
+    { label: "Encore", releaseDate: "2023-01-01" },
+    { label: "Encore", releaseWindow: "2027 Q3" },
   ]) {
-    const item = { name: "Owl", tags: ["survivor"], editions: [{ v: "First Run", r: "2020-01-01" }, { ...encore }] };
+    const item = { name: "Owl", tags: ["survivor"], editions: [{ label: "First Run", releaseDate: "2020-01-01" }, { ...encore }] };
     normalizeItem(item);
-    assert.deepEqual(item.editions[1], encore);
+    assert.deepEqual(item.editions[1], { ...encore, format: "physical" });
   }
 });
 
@@ -489,10 +507,9 @@ test("digital additions preserve a known physical listing and default gameplay t
   assert.equal(plan.unresolved.length, 0);
   const item = plan.catalog.content.rene!;
   assert.equal(item.gameplay, undefined);
-  assert.deepEqual(
-    item.editions?.find((e) => e.v === "Box"),
-    { v: "Box", handle: "physical-rene", $: [3400] },
-  );
+  const box = item.editions?.find((e) => e.label === "Box");
+  assert.match(box?.id ?? "", /^[a-z0-9]+(?:-[a-z0-9]+)*$/);
+  assert.deepEqual(box, { id: box!.id, label: "Box", handle: "physical-rene", prices: [3400], format: "physical" });
   assert.equal(item.editions?.[0]?.gameplay, true);
   assert.equal(catalog.content.rene.price, 3400);
   assert.equal(
@@ -508,7 +525,7 @@ test("digital additions preserve a known physical listing and default gameplay t
 
 test("the digital core selects one key and excludes physical keys and multipacks", () => {
   const catalog = empty();
-  catalog.content.core = { name: "Monster", tags: ["campaign"], gameplay: true, editions: [{ v: "Sim", $: [2000] }] };
+  catalog.content.core = { name: "Monster", tags: ["campaign"], gameplay: true, editions: [{ label: "Sim", prices: [2000] }] };
   const variants = [
     { id: 1, title: "Master Key", price: 32000, compare_at_price: null, requires_shipping: true, sku: "1" },
     { id: 2, title: "Digital Dwelling Key", price: 2000, compare_at_price: null, requires_shipping: false, sku: "2" },
@@ -520,7 +537,7 @@ test("the digital core selects one key and excludes physical keys and multipacks
     { "kingdom-death-simulator-1": { category: "content", itemId: "core", edition: "Sim", variantIds: [2] } },
     [],
   );
-  assert.deepEqual(plan.catalog.content.core?.editions?.[0]?.$, [2000]);
+  assert.deepEqual(plan.catalog.content.core?.editions?.[0]?.prices, [2000]);
   assert.equal(plan.catalog.content.core?.editions?.length, 1);
 });
 
@@ -628,8 +645,36 @@ test("applying reviewed tags works without local imports, mappings, or reports a
   await mkdir(catalogTemp(root), { recursive: true });
   t.after(() => rm(workspace, { recursive: true, force: true }));
   const before = empty();
-  before.content.aya = { name: "Aya", kind: "model", tags: ["aya"], editions: [{ v: "Plastic", r: "2019-01-01", $: [3400] }] };
-  before.content.neko = { name: "Neko", kind: "model", tags: ["neko"], editions: [{ v: "Plastic", r: "2020-01-01", $: [2700] }] };
+  before.content.aya = {
+    name: "Aya",
+    kind: "model",
+    tags: ["aya"],
+    editions: [
+      {
+        id: "plastic",
+        label: "Plastic",
+        releaseDate: "2019-01-01",
+        prices: [3400],
+        format: "physical",
+        materials: ["Plastic"],
+      },
+    ],
+  };
+  before.content.neko = {
+    name: "Neko",
+    kind: "model",
+    tags: ["neko"],
+    editions: [
+      {
+        id: "plastic",
+        label: "Plastic",
+        releaseDate: "2020-01-01",
+        prices: [2700],
+        format: "physical",
+        materials: ["Plastic"],
+      },
+    ],
+  };
   const tags = tagFile({ aya: ["aya"], neko: ["neko", "death-high"] });
   const schema = await readFile("static/kdm-catalog/data.schema.json", "utf8");
   const inputs = {
@@ -675,10 +720,10 @@ test("applying reviewed tags works without local imports, mappings, or reports a
 
 test("a verified price replaces an estimate even when its amount is unchanged", () => {
   const catalog = empty();
-  catalog.content.aya = { name: "Aya", tags: ["aya"], gameplay: true, editions: [{ v: "Sim", $: [700], priceEstimated: true }] };
+  catalog.content.aya = { name: "Aya", tags: ["aya"], gameplay: true, editions: [{ label: "Sim", prices: [700], priceEstimated: true }] };
   const data = product({ handle: "kds-aya" });
   const plan = planUpdate(catalog, [source(data)], { [data.handle]: { category: "content", itemId: "aya", edition: "Sim" } }, []);
-  assert.deepEqual(plan.catalog.content.aya?.editions?.[0]?.$, [700]);
+  assert.deepEqual(plan.catalog.content.aya?.editions?.[0]?.prices, [700]);
   assert.equal(plan.catalog.content.aya?.editions?.[0]?.priceEstimated, undefined);
   assert.equal(plan.changes.length, 1);
 });
@@ -779,8 +824,8 @@ test("shared URLs and false gameplay compact without losing different edition fa
     tags: ["aya"],
     gameplay: true as const,
     editions: [
-      { v: "First Run", url: "/products/aya?variant=1", gameplay: null, runSize: null, priceEstimated: true, $: [700] },
-      { v: "Encore", url: "/products/aya?variant=2", gameplay: false, runSize: 100, releaseWindow: "Q4 2026" },
+      { label: "First Run", url: "/products/aya?variant=1", gameplay: null, runSize: null, priceEstimated: true, prices: [700] },
+      { label: "Encore", url: "/products/aya?variant=2", gameplay: false, runSize: 100, releaseWindow: "Q4 2026" },
     ],
   };
   normalizeItem(item as unknown as Catalog["content"][string]);
@@ -790,8 +835,8 @@ test("shared URLs and false gameplay compact without losing different edition fa
     gameplay: true,
     handle: "aya",
     editions: [
-      { v: "First Run", gameplay: false, $: [700] },
-      { v: "Encore", gameplay: false, runSize: 100, releaseWindow: "2026 Q4" },
+      { label: "First Run", gameplay: false, prices: [700], format: "physical", numbered: true },
+      { label: "Encore", gameplay: false, runSize: 100, releaseWindow: "2026 Q4", format: "physical", numbered: true },
     ],
   });
   const snapshot = structuredClone(item);
@@ -805,7 +850,7 @@ test("an added digital edition preserves an inherited physical URL", () => {
     name: "Rene",
     tags: ["rene"],
     url: "/products/physical-rene",
-    editions: [{ v: "First Run", materials: ["Photoresin"], $: [3400] }],
+    editions: [{ label: "First Run", materials: ["Photoresin"], prices: [3400] }],
   };
   const plan = planUpdate(
     catalog,
@@ -814,9 +859,9 @@ test("an added digital edition preserves an inherited physical URL", () => {
     [],
   );
   assert.equal(plan.catalog.content.rene?.url, undefined);
-  assert.equal(plan.catalog.content.rene?.editions?.find((e) => e.v === "First Run")?.handle, "physical-rene");
-  assert.equal(plan.catalog.content.rene?.editions?.find((e) => e.v === "Sim")?.handle, "kds-rene");
-  assert.equal(plan.catalog.content.rene?.editions?.find((e) => e.v === "First Run")?.runSize, undefined);
+  assert.equal(plan.catalog.content.rene?.editions?.find((e) => e.label === "First Run")?.handle, "physical-rene");
+  assert.equal(plan.catalog.content.rene?.editions?.find((e) => e.label === "Sim")?.handle, "kds-rene");
+  assert.equal(plan.catalog.content.rene?.editions?.find((e) => e.label === "First Run")?.runSize, undefined);
 });
 
 test("catalog ordering keeps core and expansions first and alphabetizes other IDs regardless of family or date", () => {
@@ -825,7 +870,7 @@ test("catalog ordering keeps core and expansions first and alphabetizes other ID
     name,
     kind,
     tags,
-    ...(r ? { editions: [{ v: "Plastic", r }] } : {}),
+    ...(r ? { editions: [{ label: "Plastic", r }] } : {}),
   });
   catalog.content = {
     other: item("Other", "model", ["other"], "2000-01-01"),
@@ -848,6 +893,32 @@ test("catalog ordering keeps core and expansions first and alphabetizes other ID
   assert.equal(JSON.stringify(catalog), snapshot);
 });
 
+test("catalog fields put edition identity and included items first, preserving alphabetical facts and arrays", () => {
+  const item: Catalog["content"][string] = {
+    tags: ["zeta", "alpha"],
+    name: "Aya",
+    editions: [{ prices: [700, 600], label: "Sim", id: "sim", available: true, format: "digital" }],
+    includes: [{ parentEditionIds: ["sim"], editionId: "sim", item: "core", materials: ["Plastic"] }, "other"],
+    kind: "model",
+  };
+  const tags = item.tags;
+  const prices = item.editions![0]!.prices;
+
+  orderItemFields(item);
+  assert.deepEqual(Object.keys(item), ["editions", "includes", "kind", "name", "tags"]);
+  assert.deepEqual(Object.keys(item.editions![0]!), ["id", "label", "available", "format", "prices"]);
+  assert.deepEqual(Object.keys(item.includes![0]!), ["item", "editionId", "materials", "parentEditionIds"]);
+  assert.equal(item.includes![1], "other");
+  assert.equal(item.tags, tags);
+  assert.equal(item.editions![0]!.prices, prices);
+  assert.deepEqual(item.tags, ["zeta", "alpha"]);
+  assert.deepEqual(item.editions![0]!.prices, [700, 600]);
+
+  const snapshot = JSON.stringify(item);
+  orderItemFields(item);
+  assert.equal(JSON.stringify(item), snapshot);
+});
+
 test("only content expansions use physical release windows, other items use IDs, and Sim stays first", () => {
   const catalog = empty();
   const expansion = (name: string, releaseWindow: string) => ({
@@ -855,17 +926,17 @@ test("only content expansions use physical release windows, other items use IDs,
     kind: "expansion",
     tags: ["campaign"],
     editions: [
-      { v: "Sim", r: "2020-01-01" },
-      { v: "Box", releaseWindow },
+      { label: "Sim", simulator: true as const, releaseDate: "2020-01-01" },
+      { label: "Box", releaseWindow },
     ],
   });
   catalog.content = {
     "expansion-frogdog": expansion("Frogdog Expansion", "July 2024"),
     "expansion-black-knight": expansion("Black Knight Expansion", "March 2024"),
     "expansion-gamblers-chest": expansion("Gambler's Chest Expansion", "August 2023"),
-    "bust-late": { name: "Late Bust", tags: ["pinup"], editions: [{ v: "First Run", r: "2002-02-01" }] },
-    "pinup-early": { name: "Pinup Early", tags: ["pinup"], editions: [{ v: "First Run", r: "2012-01-01" }] },
-    "bust-early": { name: "Early Bust", tags: ["pinup"], editions: [{ v: "First Run", r: "2021-01-01" }] },
+    "bust-late": { name: "Late Bust", tags: ["pinup"], editions: [{ label: "First Run", releaseDate: "2002-02-01" }] },
+    "pinup-early": { name: "Pinup Early", tags: ["pinup"], editions: [{ label: "First Run", releaseDate: "2012-01-01" }] },
+    "bust-early": { name: "Early Bust", tags: ["pinup"], editions: [{ label: "First Run", releaseDate: "2021-01-01" }] },
   };
   organizeCatalog(catalog);
   assert.deepEqual(Object.keys(catalog.content), [
@@ -876,7 +947,7 @@ test("only content expansions use physical release windows, other items use IDs,
     "bust-late",
     "pinup-early",
   ]);
-  assert.equal(catalog.content["expansion-black-knight"]?.editions?.[0]?.v, "Sim");
+  assert.equal(catalog.content["expansion-black-knight"]?.editions?.[0]?.label, "Sim");
   const tags = tagFile(
     Object.fromEntries(
       Object.entries(catalog.content)
@@ -980,8 +1051,34 @@ test("applying a review persists ordering even when no item facts changed", asyn
   await mkdir(join(catalogTemp(root), "imports"));
   await mkdir(join(catalogTemp(root), "reports"));
   const before = empty();
-  before.content.neko = { name: "Neko", kind: "model", tags: ["death-high", "neko"], editions: [{ v: "Plastic", r: "2020-01-01" }] };
-  before.content.aya = { name: "Aya", kind: "model", tags: ["aya"], editions: [{ v: "Plastic", r: "2019-01-01" }] };
+  before.content.neko = {
+    name: "Neko",
+    kind: "model",
+    tags: ["death-high", "neko"],
+    editions: [
+      {
+        id: "plastic",
+        label: "Plastic",
+        releaseDate: "2020-01-01",
+        format: "physical",
+        materials: ["Plastic"],
+      },
+    ],
+  };
+  before.content.aya = {
+    name: "Aya",
+    kind: "model",
+    tags: ["aya"],
+    editions: [
+      {
+        id: "plastic",
+        label: "Plastic",
+        releaseDate: "2019-01-01",
+        format: "physical",
+        materials: ["Plastic"],
+      },
+    ],
+  };
   const tags = tagFile({ aya: ["aya"], neko: ["neko", "death-high"] });
   const schema = await readFile("static/kdm-catalog/data.schema.json", "utf8");
   const files = {
@@ -1059,33 +1156,43 @@ test("accessories and homebrew sort alphabetically by ID without changing item f
 test("sets, vignettes, armor kits and naked models sort alphabetically by ID in the catalog and master tags", () => {
   const catalog = empty();
   catalog.content = {
-    "armor-kit-late": { name: "Late Armor Kit", kind: "armor-kit", tags: ["armor"], editions: [{ v: "Plastic", r: "2020-01-01" }] },
+    "armor-kit-late": {
+      name: "Late Armor Kit",
+      kind: "armor-kit",
+      tags: ["armor"],
+      editions: [{ label: "Plastic", releaseDate: "2020-01-01" }],
+    },
     "pinup-naked-late": {
       name: "Naked Late Pinup",
       kind: "naked",
       tags: ["naked", "pinup"],
-      editions: [{ v: "Plastic", r: "2022-01-01" }],
+      editions: [{ label: "Plastic", releaseDate: "2022-01-01" }],
     },
     "set-death-high-late": {
       name: "Death High - Late Set",
       kind: "set",
       tags: ["death-high"],
-      editions: [{ v: "Plastic", r: "2023-01-01" }],
+      editions: [{ label: "Plastic", releaseDate: "2023-01-01" }],
     },
-    "armor-kit-early": { name: "Early Armor Kit", kind: "armor-kit", tags: ["armor"], editions: [{ v: "Plastic", r: "2015-01-01" }] },
-    "set-pinups-early": { name: "Pinups Early", kind: "set", tags: ["pinup"], editions: [{ v: "Plastic", r: "2014-01-01" }] },
-    "naked-early": { name: "Naked Early", kind: "naked", tags: ["naked"], editions: [{ v: "Plastic", r: "2016-01-01" }] },
+    "armor-kit-early": {
+      name: "Early Armor Kit",
+      kind: "armor-kit",
+      tags: ["armor"],
+      editions: [{ label: "Plastic", releaseDate: "2015-01-01" }],
+    },
+    "set-pinups-early": { name: "Pinups Early", kind: "set", tags: ["pinup"], editions: [{ label: "Plastic", releaseDate: "2014-01-01" }] },
+    "naked-early": { name: "Naked Early", kind: "naked", tags: ["naked"], editions: [{ label: "Plastic", releaseDate: "2016-01-01" }] },
     "vignette-of-death-white-gigalion": {
       name: "Vignette of Death: White Gigalion",
       kind: "vignette",
       tags: ["monster-white-lion"],
-      editions: [{ v: "Plastic", r: "2019-08-16" }],
+      editions: [{ label: "Plastic", releaseDate: "2019-08-16" }],
     },
     "vignette-of-death-screaming-nukealope": {
       name: "Vignette of Death: Screaming Nukealope",
       kind: "vignette",
       tags: ["monster-screaming-nukealope"],
-      editions: [{ v: "Box", r: "2025-10-31" }],
+      editions: [{ label: "Box", releaseDate: "2025-10-31" }],
     },
   };
   const assignments = tagFile(Object.fromEntries(Object.entries(catalog.content).map(([id, item]) => [id, item.tags])));
@@ -1113,11 +1220,26 @@ test("the schema requires descriptive tags and rejects obsolete nulls and price 
     { name: "Aya", kind: "model" },
     { name: "Aya", kind: "model", tags: [] },
     { name: "Aya", kind: "model", tags: ["aya"], gameplay: false },
-    { name: "Aya", kind: "model", tags: ["aya"], editions: [{ v: "First Run", materials: ["Resin"], runSize: null }] },
-    { name: "Aya", kind: "model", tags: ["aya"], editions: [{ v: "Sim", gameplay: null }] },
-    { name: "Aya", kind: "model", tags: ["aya"], editions: [{ v: "Sim", $: [700], priceEstimated: true }] },
+    {
+      name: "Aya",
+      kind: "model",
+      tags: ["aya"],
+      editions: [{ id: "first-run", label: "First Run", materials: ["Resin"], runSize: null }],
+    },
+    { name: "Aya", kind: "model", tags: ["aya"], editions: [{ id: "sim", label: "Sim", gameplay: null }] },
+    {
+      name: "Aya",
+      kind: "model",
+      tags: ["aya"],
+      editions: [{ id: "sim", label: "Sim", prices: [700], priceEstimated: true }],
+    },
     { name: "Aya", kind: "model", tags: ["aya"], alt: "Old Aya" },
-    { name: "Aya", kind: "model", tags: ["aya"], editions: [{ v: "Plastic", gameplayContent: "Gear" }] },
+    {
+      name: "Aya",
+      kind: "model",
+      tags: ["aya"],
+      editions: [{ id: "plastic", label: "Plastic", gameplayContent: "Gear" }],
+    },
   ]) {
     const catalog = empty();
     catalog.content.aya = item as Catalog["content"][string];
@@ -1134,6 +1256,56 @@ test("the schema requires descriptive tags and rejects obsolete nulls and price 
   await assert.rejects(validateCatalog(catalog), /Catalog schema errors/);
 });
 
+test("edition IDs are required and unique within each item", async (t) => {
+  const workspace = await mkdtemp(join(tmpdir(), "kdm-edition-ids-"));
+  const root = join(workspace, "static/kdm-catalog");
+  await mkdir(root, { recursive: true });
+  t.after(() => rm(workspace, { recursive: true, force: true }));
+  const schemaPath = join(root, "data.schema.json");
+  await writeFile(schemaPath, await readFile("static/kdm-catalog/data.schema.json", "utf8"));
+  const catalog = empty();
+  catalog.content.aya = {
+    name: "Aya",
+    kind: "model",
+    tags: ["aya"],
+    editions: [{ label: "First Run", format: "physical", numbered: true }],
+  };
+  await assert.rejects(validateCatalog(catalog, schemaPath), /must have required property 'id'/);
+  catalog.content.aya.editions![0]!.id = "first-run";
+  catalog.content.neko = {
+    name: "Neko",
+    kind: "model",
+    tags: ["neko"],
+    editions: [{ id: "first-run", label: "First Run", format: "physical", numbered: true }],
+  };
+  assert.equal((await validateCatalog(catalog, schemaPath)).editions, 2, "the same edition ID can belong to different items");
+  catalog.content.aya.editions!.push({ id: "first-run", label: "Encore", format: "physical" });
+  await assert.rejects(validateCatalog(catalog, schemaPath), /Duplicate edition ID/);
+});
+
+test("shop updates preserve permanent IDs and reject a new release that would reuse one", () => {
+  const catalog = empty();
+  catalog.content.rene = {
+    name: "Rene",
+    tags: ["rene"],
+    editions: [{ id: "first-run", label: "Encore", format: "physical" }],
+  };
+  const listing = product({
+    handle: "rene",
+    title: "Rene",
+    variants: [{ ...product().variants[0]!, title: "Encore", requires_shipping: true }],
+  });
+  const updated = planUpdate(catalog, [source(listing)], { rene: { category: "content", itemId: "rene", edition: "Encore" } }, []);
+  assert.equal(updated.catalog.content.rene!.editions![0]!.id, "first-run");
+  assert.equal(updated.catalog.content.rene!.editions![0]!.label, "Encore");
+  listing.variants[0]!.title = "First Run";
+  assert.throws(
+    () => planUpdate(catalog, [source(listing)], { rene: { category: "content", itemId: "rene", edition: "First Run" } }, []),
+    /Duplicate edition ID: first-run; review/,
+  );
+  assert.equal(catalog.content.rene!.editions!.length, 1);
+});
+
 test("schema checks ID prefixes and field types without conditional branches", async () => {
   const catalog = empty();
   catalog.content.aya = { name: "Set", kind: "set", tags: ["survivor"] };
@@ -1146,12 +1318,21 @@ test("schema checks ID prefixes and field types without conditional branches", a
   const { Ajv2020 } = await import("ajv/dist/2020.js");
   const check = new Ajv2020({ strict: false }).compile(schema);
   const simple = empty();
-  simple.content.aya = { name: "Aya", kind: "model", tags: ["model"], editions: [{ v: "First Run" }] };
+  simple.content.aya = {
+    name: "Aya",
+    kind: "model",
+    tags: ["model"],
+    editions: [{ id: "first-run", label: "First Run", format: "physical" }],
+  };
   assert.equal(check(simple), true, "Run materials and redundant classification tags are no longer schema conditions");
+  simple.content.aya.editions![0]!.id = "First Run";
+  assert.equal(check(simple), false, "Explicit edition IDs use lowercase kebab-case");
+  simple.content.aya.editions![0]!.id = "item";
+  assert.equal(check(simple), false, "Synthetic item IDs are reserved for items without explicit editions");
   simple.content.aya = { name: "Aya", kind: "set", tags: ["aya"] };
   assert.equal(check(simple), false, "A set still requires its ID prefix");
   simple.content = {
-    "set-aya": { name: "Aya", kind: "set", tags: ["aya"], editions: [{ v: "Plastic", $: ["bad"] }] },
+    "set-aya": { name: "Aya", kind: "set", tags: ["aya"], editions: [{ label: "Plastic", prices: ["bad"] }] },
   } as unknown as Catalog["content"];
   assert.equal(check(simple), false, "Pattern-matched items still receive the shared field validation");
 });
@@ -1162,8 +1343,8 @@ test("normalization moves legacy aliases and gameplay details to items without l
     alt: "Pillar, Grimmory",
     tags: ["grimmory"],
     editions: [
-      { v: "First Run", gameplayContent: "Beta Rules & Gear" },
-      { v: "Encore", gameplayContent: "Beta Rules & Gear" },
+      { label: "First Run", gameplayContent: "Beta Rules & Gear" },
+      { label: "Encore", gameplayContent: "Beta Rules & Gear" },
     ],
   };
   normalizeItem(shared);
@@ -1178,9 +1359,9 @@ test("normalization moves legacy aliases and gameplay details to items without l
     tags: ["aya"],
     gameplayContent: "Shared content",
     editions: [
-      { v: "First Run", gameplayContent: "Beta gear" },
-      { v: "Encore", gameplayContent: "Beta gear" },
-      { v: "Plastic", gameplayContent: "Final gear" },
+      { label: "First Run", gameplayContent: "Beta gear" },
+      { label: "Encore", gameplayContent: "Beta gear" },
+      { label: "Plastic", gameplayContent: "Final gear" },
     ],
   };
   normalizeItem(varied);
@@ -1198,7 +1379,7 @@ test("a box contents listing does not manufacture separate catalog items", () =>
     kind: "set",
     tags: ["survivor"],
     gameplay: true,
-    editions: [{ v: "Plastic", $: [7700] }],
+    editions: [{ label: "Plastic", prices: [7700] }],
   };
   const data = product({
     handle: "survivors-of-death-iii",
@@ -1242,7 +1423,7 @@ test("standalone art prints are excluded while miniature contents mentioning pri
     [],
   );
   assert.equal(included.excluded.length, 0);
-  assert.equal(included.catalog.content.aya?.editions?.[0]?.$?.[0], 7000);
+  assert.equal(included.catalog.content.aya?.editions?.[0]?.prices?.[0], 7000);
 });
 
 test("temporary preorder links stay in announcement evidence without replacing edition URLs", () => {
@@ -1251,7 +1432,7 @@ test("temporary preorder links stay in announcement evidence without replacing e
     name: "Monster",
     tags: ["campaign"],
     gameplay: true,
-    editions: [{ v: "1.6", url: "/products/kingdom-death-monster-1-6" }],
+    editions: [{ label: "1.6", url: "/products/kingdom-death-monster-1-6" }],
   };
   const data = product({
     handle: "preorder-kingdom-death-monster-1-6-reprint",
@@ -1353,10 +1534,15 @@ test("included-only items retain parent references and reviewed tags across cate
     name: "Example Box",
     kind: "set",
     tags: ["generic"],
-    editions: [{ v: "Plastic" }],
-    includes: [{ item: "joe", edition: "Plastic" }],
+    editions: [{ id: "plastic", label: "Plastic", format: "physical", materials: ["Plastic"] }],
+    includes: [{ item: "joe", editionId: "plastic" }],
   };
-  catalog["included-only"].joe = { name: "Joe", kind: "model", tags: ["generic"], editions: [{ v: "Plastic", standalone: false }] };
+  catalog["included-only"].joe = {
+    name: "Joe",
+    kind: "model",
+    tags: ["generic"],
+    editions: [{ id: "plastic", label: "Plastic", format: "physical", materials: ["Plastic"], standalone: false }],
+  };
   organizeCatalog(catalog);
   assert.equal((await validateCatalog(catalog, schemaPath)).items, 2);
   const tags = tagFile({ "set-example": ["generic"] });
@@ -1368,9 +1554,9 @@ test("included-only items retain parent references and reviewed tags across cate
 });
 
 test("handles resolve shared and edition-specific listings while external homebrew remains available", () => {
-  const item = { name: "Model", tags: ["model"], handle: "shared", editions: [{ v: "First Run" }, { v: "Encore" }] };
+  const item = { name: "Model", tags: ["model"], handle: "shared", editions: [{ label: "First Run" }, { label: "Encore" }] };
   assert.equal(catalogListing(item, item.editions[0]), "https://shop.kingdomdeath.com/products/shared");
-  const split = { name: "Model", tags: ["model"], editions: [{ v: "Resin", handle: "resin" }, { v: "Plastic" }] };
+  const split = { name: "Model", tags: ["model"], editions: [{ label: "Resin", handle: "resin" }, { label: "Plastic" }] };
   assert.equal(catalogListing(split, split.editions[0]), "https://shop.kingdomdeath.com/products/resin");
   assert.equal(catalogListing(split, split.editions[1]), undefined);
   const catalog = empty();
@@ -1378,7 +1564,7 @@ test("handles resolve shared and edition-specific listings while external homebr
     name: "Files",
     tags: ["homebrew"],
     url: "https://ko-fi.com/s/example",
-    editions: [{ v: "3D Files", available: true }],
+    editions: [{ label: "3D Files", available: true }],
   };
   availabilityFromUrls(catalog, []);
   assert.equal(catalog.homebrew.example.editions![0]!.available, true);
@@ -1387,16 +1573,19 @@ test("handles resolve shared and edition-specific listings while external homebr
 
 test("a curated handle replacement keeps old cached listings mapped to the same edition", () => {
   const catalog = empty();
-  catalog.content.rene = { name: "Rene", tags: ["rene"], handle: "old-rene", editions: [{ v: "Sim", $: [700] }] };
+  const id = "sim";
+  catalog.content.rene = { name: "Rene", tags: ["rene"], handle: "old-rene", editions: [{ id, label: "Sim", prices: [700] }] };
   const mappings = {
     "old-rene": { category: "content" as const, itemId: "rene", edition: "Sim" },
     "kds-rene": { category: "content" as const, itemId: "rene", edition: "Sim", replaceUrl: true },
   };
   const updated = planUpdate(catalog, [source(product())], mappings, []).catalog;
   assert.equal(updated.content.rene!.handle, "kds-rene");
+  assert.equal(updated.content.rene!.editions![0]!.id, id);
   const historical = planUpdate(updated, [source(product({ handle: "old-rene" }))], mappings, []);
   assert.equal(historical.catalog.content.rene!.handle, "kds-rene");
   assert.equal(historical.catalog.content.rene!.editions!.length, 1);
+  assert.equal(historical.catalog.content.rene!.editions![0]!.id, id);
 });
 
 test("comic availability matches individual artist covers on a shared handle", () => {
@@ -1405,7 +1594,7 @@ test("comic availability matches individual artist covers on a shared handle", (
     name: "Phobia",
     tags: ["phobia"],
     handle: "phobia",
-    editions: [{ v: "Pawel Zdanowski" }, { v: "Ein Lee" }, { v: "Lokman Lam" }],
+    editions: [{ label: "Pawel Zdanowski" }, { label: "Ein Lee" }, { label: "Lokman Lam" }],
   };
   const listing = product({
     handle: "phobia",
@@ -1444,8 +1633,8 @@ test("King's Coin prize stays unavailable despite Shopify stock availability", (
     name: "King's Coins",
     tags: ["coins"],
     editions: [
-      { v: "Original", handle: "kings-coins" },
-      { v: "Prize", handle: "kings-coin-prize", available: true },
+      { label: "Original", handle: "kings-coins" },
+      { label: "Prize", handle: "kings-coin-prize", available: true },
     ],
   };
   const listings = ["kings-coins", "kings-coin-prize"].map((handle) =>
