@@ -457,9 +457,9 @@
 
   <section class="stats" aria-label="Collection totals">
     <button class="stat-owned" type="button" aria-pressed={status === "owned"} onclick={() => toggleStatus("owned")}>
-      <span class="stat-label"
-        >Owned<span class="stat-icon control-icon i-material-symbols:inventory-2-outline" aria-hidden="true"></span></span
-      >
+      <span class="stat-label">
+        Owned<span class="stat-icon control-icon i-material-symbols:inventory-2-outline-sharp" aria-hidden="true"></span>
+      </span>
       <strong>{ownedCount}</strong>
     </button>
     <div class="stat-value">

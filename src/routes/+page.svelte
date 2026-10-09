@@ -140,12 +140,13 @@
         },
       ],
     },
-  ] as const;
+  ];
 </script>
 
 <script lang="ts">
   import { asset, resolve } from "$app/paths";
   import { Effect } from "effect";
+  import { onDestroy } from "svelte";
   import type { PointerEventHandler } from "svelte/elements";
   import ConfirmDialog from "#lib/components/ConfirmDialog.svelte";
   import TrailBackground from "#lib/components/TrailBackground.svelte";
@@ -161,7 +162,30 @@
   let lightingFrame: number | undefined;
   let lightingX = 0;
   let lightingY = 0;
+  let relighting = $state(false);
+  let brighter = $state(false);
+  const relightDuration = 3600;
+  let relightTimer: ReturnType<typeof setTimeout> | undefined;
   let onpointermove = $state<PointerEventHandler<Window> | null>(moveLightingFromPointer);
+
+  function onclick() {
+    if (relighting) return;
+    relighting = true;
+    relightTimer = setTimeout(() => {
+      relighting = false;
+      brighter = true;
+      relightTimer = undefined;
+    }, relightDuration);
+  }
+
+  function onpointerdown(event: PointerEvent) {
+    event.preventDefault();
+  }
+
+  onDestroy(() => {
+    clearTimeout(relightTimer);
+    if (lightingFrame !== undefined) cancelAnimationFrame(lightingFrame);
+  });
 
   function moveLighting(x: number, y: number) {
     lightingX = x;
@@ -240,12 +264,20 @@
   <span class={["tool-icon", i.icon]} aria-hidden="true"></span>
 {/snippet}
 
-<main bind:this={landing} class="landing">
+<main
+  bind:this={landing}
+  class={["landing", relighting && "is-relighting", brighter && "is-brighter"]}
+  style:--duration-relight={`${relightDuration}ms`}
+>
   <span id="new-tab-description" hidden>Opens in a new tab</span>
 
   <header>
-    <h1>Guidepost</h1>
-    <p>board game aids left here for the next player</p>
+    <h1><button class="wordmark" type="button" tabindex="-1" aria-disabled={relighting} {onpointerdown} {onclick}>Guidepost</button></h1>
+    <p>
+      <button class="wordmark" type="button" tabindex="-1" aria-disabled={relighting} {onpointerdown} {onclick}>
+        board game aids left here for the next player
+      </button>
+    </p>
   </header>
 
   <nav aria-label="Guidepost tools">
@@ -315,27 +347,43 @@
     />
   </ConfirmDialog>
 
-  <div class="glow" aria-hidden="true">
-    <span class="glow-source ambient"></span>
-    <span class="glow-source pulse"></span>
-    <TrailBackground />
-    <svg class="guidepost" viewBox="0 0 850 1100" focusable="false">
-      <defs>
-        <radialGradient id="lantern-glass" gradientUnits="userSpaceOnUse" cx="425" cy="504" r="78">
-          <stop class="lantern-core" offset="0%" />
-          <stop class="lantern-honey" offset="42%" />
-          <stop class="lantern-ember" offset="100%" />
-        </radialGradient>
-      </defs>
-      <image href={asset("logo/guidepost-min.svg")} width="850" height="1100" />
-      <path
-        class="lantern-glass"
-        fill="url(#lantern-glass)"
-        d="M360 469q0 22 8 36c5 9 3 8 11 11q24 9 40 27c8 9 12-3 25-13q41-46 22-69c-23 10-24-8-41-21l-35 20c-18 1-19 2-30 9 9-2 20-3 24-8l3 8c14 0 23-13 38-29 11 11 19 26 35 30l6-9c11 28-7 49-22 69l10-6c17-10 19-5 27-17 10-16 9-31 6-48q-15-1-24-9-3 10-7 7c-11-2-23-18-31-30-8 12-20 28-36 30l-2-7c-11 7-11 6-25 9z"
-      />
-    </svg>
-    <span class="glow-source flicker"></span>
-    <span class="glow-source candle"></span>
+  <div class="glow">
+    <div class="light-field light-output" aria-hidden="true">
+      <span class="glow-source ambient"></span>
+      <span class="glow-source pulse"></span>
+    </div>
+    <div aria-hidden="true"><TrailBackground /></div>
+    <button
+      class="guidepost"
+      type="button"
+      tabindex="-1"
+      aria-label="Extinguish the guidepost lantern"
+      aria-disabled={relighting}
+      {onpointerdown}
+      {onclick}
+    >
+      <svg viewBox="0 0 850 1100" aria-hidden="true" focusable="false">
+        <defs>
+          <radialGradient id="lantern-glass" gradientUnits="userSpaceOnUse" cx="425" cy="504" r="78">
+            <stop class="lantern-core" offset="0%" />
+            <stop class="lantern-honey" offset="42%" />
+            <stop class="lantern-ember" offset="100%" />
+          </radialGradient>
+        </defs>
+        <image href={asset("logo/guidepost-min.svg")} width="850" height="1100" />
+        <g class="light-output">
+          <path
+            class="lantern-glass"
+            fill="url(#lantern-glass)"
+            d="M360 469q0 22 8 36c5 9 3 8 11 11q24 9 40 27c8 9 12-3 25-13q41-46 22-69c-23 10-24-8-41-21l-35 20c-18 1-19 2-30 9 9-2 20-3 24-8l3 8c14 0 23-13 38-29 11 11 19 26 35 30l6-9c11 28-7 49-22 69l10-6c17-10 19-5 27-17 10-16 9-31 6-48q-15-1-24-9-3 10-7 7c-11-2-23-18-31-30-8 12-20 28-36 30l-2-7c-11 7-11 6-25 9z"
+          />
+        </g>
+      </svg>
+    </button>
+    <div class="light-field light-output" aria-hidden="true">
+      <span class="glow-source flicker"></span>
+      <span class="glow-source candle"></span>
+    </div>
   </div>
 </main>
 
@@ -369,6 +417,8 @@
     --duration-candle: 7s;
     --duration-flicker: 5s;
     --duration-pulse: 11s;
+    --brightness-relit: 1.45;
+    --brightness-extinguished: 0.18;
     --size-glow-ambient: max(84rem, 150vw);
     --size-glow-candle: clamp(16rem, 32vw, 26rem);
     --size-glow-flicker: clamp(18rem, 38vw, 32rem);
@@ -376,7 +426,7 @@
     --size-guidepost: clamp(23rem, 55vw, 38rem);
     --gradient-light-ambient:
       radial-gradient(circle at center, #fba15321 0%, transparent 36%),
-      radial-gradient(ellipse at center in oklch, #f16c3736 0%, #b7453024 31%, #6c282514 54%, transparent 76%);
+      radial-gradient(ellipse closest-side at center in oklch, #f16c3736 0%, #b7453024 44%, #6c282514 76%, transparent 100%);
     --gradient-light-candle: radial-gradient(
       circle at center in oklch,
       #ffe48552 0%,
@@ -387,10 +437,10 @@
     );
     --gradient-light-flicker:
       radial-gradient(circle at center in oklch, #fff0b56b 0%, #ffc34d4d 16%, transparent 42%),
-      radial-gradient(ellipse at center in oklch, #ff992e4a 0%, #f6542430 38%, #9a2a221a 60%, transparent 76%);
+      radial-gradient(ellipse closest-side at center in oklch, #ff992e4a 0%, #f6542430 54%, #9a2a221a 85%, transparent 100%);
     --gradient-light-pulse:
       radial-gradient(circle at center in oklch, #ffe4a647 0%, #ffb2512e 18%, transparent 42%),
-      radial-gradient(ellipse at center in oklch, #fb823b3b 0%, #d4403021 43%, transparent 75%);
+      radial-gradient(ellipse closest-side at center in oklch, #fb823b3b 0%, #d4403021 61%, transparent 100%);
     --gradient-page-sheen-vignette:
       linear-gradient(150deg, transparent 20%, #ffd6ad0f 50%, transparent 80%),
       radial-gradient(ellipse at center, transparent 70%, #fff0bd04 100%);
@@ -405,6 +455,8 @@
   }
 
   header {
+    position: relative;
+    z-index: 1;
     inline-size: fit-content;
     margin-inline-start: auto;
     padding-inline: var(--space-page);
@@ -420,13 +472,29 @@
     letter-spacing: var(--letter-spacing-tight);
   }
 
+  :is(.wordmark, .guidepost) {
+    padding: 0;
+    border: 0;
+    background: transparent;
+  }
+
+  .wordmark {
+    font: inherit;
+    letter-spacing: inherit;
+    text-shadow: inherit;
+  }
+
   p {
+    position: relative;
+    z-index: 1;
     contain: inline-size;
     margin-block-start: var(--offset-tagline);
     text-align: center;
   }
 
   nav {
+    position: relative;
+    z-index: 1;
     display: grid;
     max-inline-size: var(--width-nav);
     margin-inline-start: auto;
@@ -600,7 +668,7 @@
   }
 
   .glow {
-    z-index: var(--layer-backdrop);
+    z-index: 0;
     position: fixed;
     block-size: calc(100vh + 4rem);
     inset-block-end: -2rem;
@@ -618,9 +686,125 @@
 
   .guidepost {
     inline-size: var(--size-guidepost);
+    pointer-events: auto;
     transform-origin: var(--position-guidepost-orb-x) var(--position-guidepost-orb-y);
     translate: calc(0% - var(--position-guidepost-orb-x) + var(--shift-x)) calc(100% - var(--position-guidepost-orb-y) + var(--shift-y));
     rotate: -9deg;
+  }
+
+  svg {
+    display: block;
+    inline-size: 100%;
+  }
+
+  .light-field {
+    position: absolute;
+    inset: 0;
+  }
+
+  .light-output {
+    filter: brightness(1);
+  }
+
+  .is-brighter .light-output {
+    filter: brightness(var(--brightness-relit));
+  }
+
+  .is-relighting .light-output {
+    animation: relight var(--duration-relight) linear both;
+  }
+
+  .is-relighting :is(image, header) {
+    animation: guidepost-dim var(--duration-relight) linear both;
+  }
+
+  @keyframes relight {
+    0% {
+      opacity: 1;
+    }
+    9%,
+    50% {
+      opacity: 0;
+      filter: brightness(1);
+    }
+    58% {
+      opacity: 0.18;
+    }
+    62% {
+      opacity: 0.12;
+    }
+    70% {
+      opacity: 0.42;
+    }
+    74% {
+      opacity: 0.32;
+    }
+    82% {
+      opacity: 0.68;
+    }
+    85% {
+      opacity: 0.58;
+    }
+    92% {
+      opacity: 0.86;
+    }
+    100% {
+      opacity: 1;
+      filter: brightness(var(--brightness-relit));
+    }
+  }
+
+  @keyframes guidepost-dim {
+    0%,
+    100% {
+      filter: brightness(1);
+    }
+    9%,
+    50% {
+      filter: brightness(var(--brightness-extinguished));
+    }
+    58% {
+      filter: brightness(0.3);
+    }
+    62% {
+      filter: brightness(0.26);
+    }
+    70% {
+      filter: brightness(0.5);
+    }
+    74% {
+      filter: brightness(0.44);
+    }
+    82% {
+      filter: brightness(0.7);
+    }
+    85% {
+      filter: brightness(0.64);
+    }
+    92% {
+      filter: brightness(0.88);
+    }
+  }
+
+  @keyframes guidepost-dim-reduced {
+    0%,
+    50% {
+      filter: brightness(var(--brightness-extinguished));
+    }
+    100% {
+      filter: brightness(1);
+    }
+  }
+
+  @keyframes relight-reduced {
+    0%,
+    50% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+      filter: brightness(var(--brightness-relit));
+    }
   }
 
   .glow-source {
@@ -785,6 +969,12 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
+    .is-relighting .light-output {
+      animation-name: relight-reduced;
+    }
+    .is-relighting :is(image, header) {
+      animation-name: guidepost-dim-reduced;
+    }
     .glow {
       --shift-x: 0px;
       --shift-y: 0px;
