@@ -167,9 +167,7 @@
   }
 
   .icon {
-    display: inline-block;
-    inline-size: 2rem;
-    block-size: 2rem;
+    --size-icon: 2rem;
     margin-inline-start: auto;
     color: var(--accent);
   }
@@ -235,17 +233,6 @@
 
     dialog[open]::backdrop {
       background: transparent;
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    dialog,
-    dialog::backdrop {
-      transition: none;
-    }
-
-    .action {
-      transition: none;
     }
   }
 </style>

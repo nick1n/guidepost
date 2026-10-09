@@ -269,10 +269,8 @@
     }
   }
   .weapon-mark {
-    display: inline-block;
+    --size-icon: 5.5rem;
     position: absolute;
-    inline-size: 5.5rem;
-    block-size: 5.5rem;
     inset-block-start: -1rem;
     inset-inline-end: 1.25rem;
     color: var(--identity);
@@ -284,9 +282,8 @@
     z-index: 1;
   }
   .chevron {
+    --size-icon: 1rem;
     flex-shrink: 0;
-    inline-size: 1rem;
-    block-size: 1rem;
     color: var(--muted-foreground);
     transition: rotate var(--duration-fast);
   }
@@ -312,10 +309,8 @@
     align-items: center;
   }
   .title-icon {
-    display: inline-block;
+    --size-icon: 1.125rem;
     flex-shrink: 0;
-    inline-size: 1.125rem;
-    block-size: 1.125rem;
     translate: -0.25rem 0;
     color: color-mix(var(--identity) 65%, var(--foreground));
   }
@@ -514,10 +509,8 @@
     background: var(--panel);
   }
   .percent-icon {
-    display: inline-block;
+    --size-icon: 2.25rem;
     grid-area: 1 / 1;
-    inline-size: 2.25rem;
-    block-size: 2.25rem;
     color: var(--result-color);
     opacity: 0.18;
   }
@@ -778,11 +771,6 @@
 
     &:hover {
       background: color-mix(var(--identity) 40%, var(--background));
-    }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .chevron {
-      transition: none;
     }
   }
 </style>

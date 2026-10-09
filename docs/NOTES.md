@@ -1,16 +1,18 @@
 # Norm Survivors
-- Age Milestones (Hunt XP)
-Limit of 3 Fighting Arts
 
+- Age Milestones (Hunt XP)
+  Limit of 3 Fighting Arts
 
 # Arc Survivors
 
 ## Arc Attributes
+
 Lumi (⬣ hex)
 Systemic Pressure (S. Pressure) - minus amount to severe injury rolls
 Torment - minus amount to brain trauma rolls
 
 ## Philosophy - 1 knowledge
+
 - Name: string
 - Rank: number (even if achieved higher rank, can only adopt the next rank once per settlement development step)
 - Neurosis: string
@@ -18,6 +20,7 @@ Torment - minus amount to brain trauma rolls
 - Rank milestones (Hunt XP)
 
 ## Knowledges - up to 2
+
 - Name: string
 - Description: string
 - Rules: list
@@ -30,6 +33,7 @@ limit of 2 knowledges
 can not use fighting arts also means you can not use knowledges & philosophy
 
 ## Settlement
+
 - CC: number (brain icon)
 - CC rewards/milestones
 
@@ -37,10 +41,12 @@ Philosophies: list
 Knowledges: list/deck
 
 ### Hexagon icons
+
 - i-material-symbols:hexagon
 - i-material-symbols:hexagon-rounded
 
 ### Brain icons 🧠
+
 - i-game-icons:brain (used for insanity at the moment)
 - i-lucide:brain-cog (like the play on words)
 - i-game-icons:brain-dump
@@ -62,9 +68,10 @@ Knowledges: list/deck
 - i-tabler:brain
 - i-uil:brain
 
-
 # Wanderers
+
 They are Arc Survivors, plus:
 
 ## Attribute
+
 Disposition (❤︎ heart, i-material-symbols:favorite)

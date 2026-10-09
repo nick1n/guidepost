@@ -136,9 +136,4 @@
       color: var(--accent-foreground);
     }
   }
-  @media (prefers-reduced-motion: reduce) {
-    button {
-      transition: none;
-    }
-  }
 </style>

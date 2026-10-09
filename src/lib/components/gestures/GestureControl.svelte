@@ -677,19 +677,11 @@
     font-weight: var(--font-bold);
     font-variant-numeric: tabular-nums;
   }
-  .control-icon {
-    inline-size: var(--size-icon-control);
-    block-size: var(--size-icon-control);
-  }
-  .small-icon,
-  .tiny-icon {
-    display: inline-block;
-    inline-size: 1.125rem;
-    block-size: 1.125rem;
+  .small-icon {
+    --size-icon: 1.125rem;
   }
   .tiny-icon {
-    inline-size: 0.875rem;
-    block-size: 0.875rem;
+    --size-icon: 0.875rem;
   }
   .progress {
     position: absolute;

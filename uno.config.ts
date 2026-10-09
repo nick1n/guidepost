@@ -35,5 +35,13 @@ export default defineConfig({
     "i-material-symbols:close",
     "i-material-symbols:link-off",
   ],
-  presets: [presetIcons()],
+  presets: [
+    presetIcons({
+      extraProperties: {
+        display: "inline-block",
+        width: "var(--size-icon, 1em)",
+        height: "var(--size-icon, 1em)",
+      },
+    }),
+  ],
 });

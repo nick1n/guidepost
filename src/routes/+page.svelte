@@ -361,7 +361,7 @@
     --shift-hover: -0.5rem;
     --shift-x: 0px;
     --shift-y: 0px;
-    --size-icon: 1.875rem;
+    --size-icon-tool: 1.875rem;
     --space-page: round(clamp(1rem, 4vw, 3rem), 1px);
     --width-nav: 25rem;
 
@@ -533,6 +533,8 @@
   }
 
   .tool-title {
+    --size-external: 1em;
+
     grid-area: title;
     font-weight: var(--font-semibold);
     font-size: var(--text-xl);
@@ -540,10 +542,9 @@
   }
 
   .tool-icon {
+    --size-icon: var(--size-icon-tool);
     grid-area: icon;
     align-self: center;
-    inline-size: var(--size-icon);
-    block-size: var(--size-icon);
     translate: var(--shift-tool-icon, 0);
     transition: translate var(--duration-fast) var(--ease-standard);
   }
@@ -610,15 +611,15 @@
 
   :is(.guidepost, .glow-source) {
     position: absolute;
-    inset-block-end: calc(var(--position-glow-y) - var(--shift-y));
-    inset-inline-start: calc(var(--position-glow-x) + var(--shift-x));
-    translate: -50% 50%;
+    inset-block-end: var(--position-glow-y);
+    inset-inline-start: var(--position-glow-x);
+    translate: calc(-50% + var(--shift-x)) calc(50% + var(--shift-y));
   }
 
   .guidepost {
     inline-size: var(--size-guidepost);
     transform-origin: var(--position-guidepost-orb-x) var(--position-guidepost-orb-y);
-    translate: calc(0% - var(--position-guidepost-orb-x)) calc(100% - var(--position-guidepost-orb-y));
+    translate: calc(0% - var(--position-guidepost-orb-x) + var(--shift-x)) calc(100% - var(--position-guidepost-orb-y) + var(--shift-y));
     rotate: -9deg;
   }
 
@@ -784,14 +785,6 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    :is(.tool, .destination, .tool-icon) {
-      transition: none;
-    }
-
-    :is(a.tool, .destination)::after {
-      transition: none;
-    }
-
     .glow {
       --shift-x: 0px;
       --shift-y: 0px;

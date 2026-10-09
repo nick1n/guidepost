@@ -259,9 +259,7 @@
     margin-block-end: 3rem;
   }
   .small-icon {
-    display: inline-block;
-    inline-size: 1.125rem;
-    block-size: 1.125rem;
+    --size-icon: 1.125rem;
     flex: none;
   }
   .back {
@@ -313,8 +311,7 @@
     color: var(--muted-foreground);
   }
   .legend-icon {
-    inline-size: 1.5rem;
-    block-size: 1.5rem;
+    --size-icon: 1.5rem;
     color: var(--foreground);
   }
   .workbench {

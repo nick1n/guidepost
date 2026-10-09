@@ -683,8 +683,7 @@
     }
   }
   .action-arrow {
-    inline-size: 1rem;
-    block-size: 1rem;
+    --size-icon: 1rem;
   }
   .action-count {
     inline-size: 1.5rem;
@@ -704,8 +703,7 @@
     gap: 0.25rem;
   }
   .action-control {
-    inline-size: 1.5rem;
-    block-size: 1.5rem;
+    --size-icon: 1.5rem;
   }
   .resource-actions {
     display: grid;
@@ -734,8 +732,7 @@
     border-inline: 0;
   }
   .step-icon {
-    inline-size: 1rem;
-    block-size: 1rem;
+    --size-icon: 1rem;
   }
   .targets {
     padding-inline-start: 1rem;

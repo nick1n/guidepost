@@ -25,7 +25,7 @@
   --old-red: #e14011;
   --old-green: #4ae111;
   --old-blue: #11b2e1;
-  --new-red: #FF6F4B;
+  --new-red: #ff6f4b;
   --new-green: #3ec10d;
 
   --affinity-red: #ba0000;
@@ -65,33 +65,38 @@
   --duration-medium: 600ms;
   --duration-slow: 1s;
   --ease-standard: ease;
+  --transition-colors:
+    background-color var(--duration-fast) var(--ease-standard), color var(--duration-fast) var(--ease-standard),
+    border-color var(--duration-fast) var(--ease-standard);
   /* from https://open-props.style/#easing */
-  --ease-bounce: linear(0,
-      0.004,
-      0.016,
-      0.035,
-      0.063,
-      0.098,
-      0.141,
-      0.191,
-      0.25,
-      0.316,
-      0.391 36.8%,
-      0.563,
-      0.766,
-      1 58.8%,
-      0.946,
-      0.908 69.1%,
-      0.895,
-      0.885,
-      0.879,
-      0.878,
-      0.879,
-      0.885,
-      0.895,
-      0.908 89.7%,
-      0.946,
-      1);
+  --ease-bounce: linear(
+    0,
+    0.004,
+    0.016,
+    0.035,
+    0.063,
+    0.098,
+    0.141,
+    0.191,
+    0.25,
+    0.316,
+    0.391 36.8%,
+    0.563,
+    0.766,
+    1 58.8%,
+    0.946,
+    0.908 69.1%,
+    0.895,
+    0.885,
+    0.879,
+    0.878,
+    0.879,
+    0.885,
+    0.895,
+    0.908 89.7%,
+    0.946,
+    1
+  );
   --letter-spacing-tight: -0.03em;
   --line-height-none: 1;
   --line-height-snug: 1.25;
@@ -205,6 +210,16 @@
   --primary: #11b2e1;
   --ring: #11b2e1;
   --secondary-foreground: #fdfffe;
+}
+
+/* Theme transitions honor reduced motion; components own their animation and position changes. */
+@media (prefers-reduced-motion: reduce) {
+  :root,
+  .dark {
+    --duration-fast: 0s;
+    --duration-medium: 0s;
+    --duration-slow: 0s;
+  }
 }
 
 /* Recalculate mixes where the dashboard overrides their percentages. */
@@ -324,10 +339,12 @@ button {
   clip-path: inset(50%);
 }
 
+.control-icon {
+  --size-icon: var(--size-icon-control);
+}
+
 .external-icon {
-  display: inline-block;
-  inline-size: var(--size-external);
-  block-size: var(--size-external);
+  --size-icon: var(--size-external);
 }
 
 .hidden {
@@ -349,7 +366,7 @@ textarea {
   p {
     font-size: 0.75rem;
 
-    +p {
+    + p {
       margin-block-start: 0.25rem;
     }
   }

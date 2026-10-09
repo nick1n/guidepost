@@ -389,12 +389,16 @@
           {...events}
         >
           <span
-            class={["menu-icon", currentExpanded ? "i-material-symbols:unfold-less" : "i-material-symbols:unfold-more"]}
+            class={["menu-icon", "control-icon", currentExpanded ? "i-material-symbols:unfold-less" : "i-material-symbols:unfold-more"]}
             style:opacity={holding ? 0 : 1}
             aria-hidden="true"
           ></span>
           <span
-            class={["menu-icon", allExpanded ? "i-material-symbols:unfold-less-double" : "i-material-symbols:unfold-more-double"]}
+            class={[
+              "menu-icon",
+              "control-icon",
+              allExpanded ? "i-material-symbols:unfold-less-double" : "i-material-symbols:unfold-more-double",
+            ]}
             style:opacity={holding ? 1 : 0}
             aria-hidden="true"
           ></span>
@@ -407,12 +411,12 @@
       <span class="turn-label" aria-live="polite">{`Round ${round}: ` + (monsterTurn ? "Monster's Turn" : "Survivors' Turn")}</span>
       <span class="next-label">
         {monsterTurn ? "Survivors Next" : "Next Round"}
-        <span class="menu-icon i-material-symbols:arrow-forward" aria-hidden="true"></span>
+        <span class="menu-icon control-icon i-material-symbols:arrow-forward" aria-hidden="true"></span>
       </span>
     </button>
 
     <button class="icon-button" aria-label="Undo">
-      <span class="menu-icon i-material-symbols:undo" aria-hidden="true"></span>
+      <span class="menu-icon control-icon i-material-symbols:undo" aria-hidden="true"></span>
     </button>
 
     <button
@@ -422,7 +426,8 @@
       aria-controls={menuOpen ? "showdown-menu" : undefined}
       onclick={toggleMenu}
     >
-      <span class={["menu-icon", menuOpen ? "i-material-symbols:close" : "i-material-symbols:menu"]} aria-hidden="true"></span>
+      <span class={["menu-icon", "control-icon", menuOpen ? "i-material-symbols:close" : "i-material-symbols:menu"]} aria-hidden="true"
+      ></span>
     </button>
     {#if menuOpen}
       <div class="menu" id="showdown-menu" bind:this={menu}>
@@ -482,7 +487,11 @@
                   onclick={toggleFullscreen}
                 >
                   <span
-                    class={["menu-icon", fullscreen ? "i-material-symbols:fullscreen-exit" : "i-material-symbols:fullscreen"]}
+                    class={[
+                      "menu-icon",
+                      "control-icon",
+                      fullscreen ? "i-material-symbols:fullscreen-exit" : "i-material-symbols:fullscreen",
+                    ]}
                     aria-hidden="true"
                   ></span>
                   {fullscreenAvailable ? (fullscreen ? "Exit Fullscreen" : "Enter Fullscreen") : "Fullscreen unavailable"}
@@ -695,8 +704,7 @@
     gap: 0.25rem;
 
     .menu-icon {
-      inline-size: 1.25rem;
-      block-size: 1.25rem;
+      --size-icon: 1.25rem;
     }
   }
   .icon-button {
@@ -706,10 +714,6 @@
     min-block-size: var(--size-control);
     border-radius: var(--radius-control);
     background: var(--card);
-  }
-  .menu-icon {
-    inline-size: var(--size-icon-control);
-    block-size: var(--size-icon-control);
   }
   .sections-button {
     position: relative;
@@ -843,17 +847,15 @@
     color: var(--muted-foreground);
   }
   .key-icon {
-    inline-size: 1rem;
-    block-size: 1rem;
+    --size-icon: 1rem;
   }
   .back-option {
     justify-content: flex-start;
     gap: 0.375rem;
   }
   .back-icon {
+    --size-icon: 1rem;
     flex: none;
-    inline-size: 1rem;
-    block-size: 1rem;
   }
   .menu p {
     color: var(--muted-foreground);

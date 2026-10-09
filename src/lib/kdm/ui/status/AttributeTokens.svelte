@@ -151,8 +151,7 @@
     block-size: var(--size-control);
   }
   .close-icon {
-    inline-size: 1rem;
-    block-size: 1rem;
+    --size-icon: 1rem;
   }
   .counts {
     display: grid;

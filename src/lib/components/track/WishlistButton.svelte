@@ -37,8 +37,6 @@
   }
 
   .icon {
-    display: inline-block;
-    inline-size: var(--size-card-header);
-    block-size: var(--size-card-header);
+    --size-icon: var(--size-card-header);
   }
 </style>

@@ -196,8 +196,7 @@
     }
   }
   .step-icon {
-    inline-size: 1rem;
-    block-size: 1rem;
+    --size-icon: 1rem;
   }
   .readonly {
     block-size: 1rem;

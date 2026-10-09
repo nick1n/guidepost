@@ -145,9 +145,7 @@
   }
 
   :is(.back-icon, .heart-icon) {
-    display: inline-block;
-    inline-size: 1rem;
-    block-size: 1rem;
+    --size-icon: 1rem;
   }
 
   header {

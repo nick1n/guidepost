@@ -80,8 +80,7 @@
     color: color-mix(var(--identity) 55%, var(--foreground));
   }
   .chevron {
-    inline-size: 1rem;
-    block-size: 1rem;
+    --size-icon: 1rem;
     color: var(--muted-foreground);
     transition: rotate var(--duration-fast);
   }
@@ -159,11 +158,6 @@
 
     &:hover {
       background: color-mix(var(--identity) 40%, var(--background));
-    }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .chevron {
-      transition: none;
     }
   }
 </style>

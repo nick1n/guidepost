@@ -90,7 +90,7 @@
               {#each metaItems as item, index (`${index}-${item}`)}<span class="meta">{item}</span>{/each}
             </small>
           {/if}
-          <span class="chevron i-material-symbols:expand-more" aria-hidden="true"></span>
+          <span class="chevron control-icon i-material-symbols:expand-more" aria-hidden="true"></span>
         </button>
         {#if onadd || hasAction}
           <div class="section-actions">
@@ -137,10 +137,9 @@
     display: none;
   }
   :global(.signal) .section-icon {
+    --size-icon: 1rem;
     display: inline-block;
     flex: none;
-    inline-size: 1rem;
-    block-size: 1rem;
     color: var(--identity-ink);
   }
   .restriction {
@@ -151,9 +150,8 @@
     display: none;
   }
   .restriction-icon {
+    --size-icon: 1rem;
     display: block;
-    inline-size: 1rem;
-    block-size: 1rem;
   }
   :global(.signal) .restriction-mark {
     display: block;
@@ -195,11 +193,8 @@
     overflow-wrap: anywhere;
   }
   .chevron {
-    display: inline-block;
     grid-row: 1;
     grid-column: 2;
-    inline-size: var(--size-icon-control);
-    block-size: var(--size-icon-control);
     color: var(--muted-foreground);
     transition: rotate var(--duration-fast);
   }
@@ -247,12 +242,10 @@
     }
   }
   .add-icon {
-    inline-size: 1rem;
-    block-size: 1rem;
+    --size-icon: 1rem;
   }
   .with-pair .add-icon {
-    inline-size: 1.5rem;
-    block-size: 1.5rem;
+    --size-icon: 1.5rem;
   }
   .add :global(.action-icon) {
     font-size: 1.125rem;
@@ -301,10 +294,5 @@
   }
   :global(.signal) .content {
     padding-block: 0.25rem;
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .chevron {
-      transition: none;
-    }
   }
 </style>

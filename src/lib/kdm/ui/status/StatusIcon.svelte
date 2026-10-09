@@ -16,13 +16,10 @@
 
 <style>
   span {
-    display: inline-block;
+    --size-icon: var(--size-status-icon, 1rem);
     flex-shrink: 0;
-    inline-size: var(--size-status-icon, 1rem);
-    block-size: var(--size-status-icon, 1rem);
     &[data-context="control"] {
-      inline-size: var(--size-icon-control);
-      block-size: var(--size-icon-control);
+      --size-icon: var(--size-icon-control);
     }
     &[data-context="quick"] {
       color: var(--foreground);
@@ -30,6 +27,8 @@
   }
   .cease-icon {
     display: inline-grid;
+    inline-size: var(--size-icon);
+    block-size: var(--size-icon);
     rotate: 25deg;
   }
   .cease-symbol {

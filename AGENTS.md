@@ -73,9 +73,13 @@ Name tokens by purpose, with broad-to-specific grouping such as `--layer-content
 
 Use alpha hex (`#RRGGBBAA`) for fixed translucent colors. Reserve `color-mix()` for token-derived colors or blends; specify an interpolation space such as `in oklch` only when blending distinct colors benefits. Omit it for one-color/transparent mixes and gradients. Open Props may guide naming/scales; add the dependency only if a substantial portion is needed.
 
+Shared motion durations are disabled by the reduced-motion query in `src/app.css`. Avoid component queries that only repeat those duration resets. Keep component reduced-motion rules for transforms, custom animations, gesture feedback, and other behavior the shared durations do not cover.
+
 ### Icons
 
-Use Material Symbols through UnoCSS, for example `class="search-icon i-material-symbols:search"`. Give inline icons `display: inline-block` when dimensions must apply, explicit sizes, and an explicit text color on contrasting backgrounds. Follow the accessibility rules above.
+Use Material Symbols through UnoCSS, for example `class="search-icon i-material-symbols:search"`. The icon preset in `uno.config.ts` supplies `display: inline-block` and square dimensions from `--size-icon`, falling back to `1em`. Set `--size-icon` on the icon for a custom size instead of repeating display and dimension declarations. Use the shared `control-icon` and `external-icon` classes when their sizes fit. Keep local display overrides required by layout or visibility, and give icons an explicit text color on contrasting backgrounds. Follow the accessibility rules above.
+
+Keep `--size-icon` overrides on icon elements so the value does not unintentionally reach nested icons. This convention applies to UnoCSS icons; `KdIcon` uses font sizing, and icon containers still need their own layout dimensions.
 
 Safelist icon classes in `uno.config.ts` when extraction is unreliable. Verify production CSS if an icon works only in development.
 

@@ -1049,8 +1049,7 @@
     font-size: calc(2rem * var(--scale-control-content));
   }
   .brain-icon {
-    inline-size: calc(2.25rem * var(--scale-control-content));
-    block-size: calc(2.25rem * var(--scale-control-content));
+    --size-icon: calc(2.25rem * var(--scale-control-content));
     translate: 0 calc(-0.125rem * var(--scale-control-content));
     scale: -1 1;
   }

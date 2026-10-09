@@ -306,8 +306,7 @@
     }
   }
   .remove-icon {
-    inline-size: 1rem;
-    block-size: 1rem;
+    --size-icon: 1rem;
   }
   .remove-label {
     display: none;
@@ -446,10 +445,5 @@
   :global(.signal) .remove {
     border-radius: 0.25rem 1rem 0.25rem 1rem;
     background: color-mix(var(--identity) 12%, var(--background));
-  }
-  @media (prefers-reduced-motion: reduce) {
-    :global(.obsidian) .entry {
-      transition: none;
-    }
   }
 </style>

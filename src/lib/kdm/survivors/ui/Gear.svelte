@@ -316,11 +316,8 @@
   /* Keep drag enter/leave events on the target rather than its label and icon. */
   .target-label,
   .target-icon {
+    --size-icon: 1.25rem;
     pointer-events: none;
-  }
-  .target-icon {
-    inline-size: 1.25rem;
-    block-size: 1.25rem;
   }
   .slot {
     display: flex;
