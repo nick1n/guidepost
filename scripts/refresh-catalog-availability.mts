@@ -1,7 +1,8 @@
 import { readFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { parseArgs } from "node:util";
+import { Command } from "effect/cli";
+import { catalog, offline, runCommand, workflow } from "./catalog/cli.mts";
 import { publishFiles } from "./catalog/publication.mts";
 import { availabilityFromUrls } from "./catalog/availability.mts";
 import { organizeCatalog } from "./catalog/order.mts";
@@ -65,17 +66,14 @@ export async function refreshAvailability(
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  const { values } = parseArgs({ options: { catalog: { type: "string" }, offline: { type: "boolean" } } });
-  const controller = new AbortController();
-  const cancel = () => controller.abort();
-  process.once("SIGINT", cancel);
-  let result;
-  try {
-    result = await refreshAvailability({ ...values, signal: controller.signal });
-  } finally {
-    process.off("SIGINT", cancel);
-  }
-  console.log(`${result.products} products across ${result.pages} pages saved in ${result.folder}`);
-  console.log(`${result.available} available editions; ${result.changed} availability changes. Catalog: ${result.catalog}`);
-  console.log(`${result.unmatched.length} editions could not be matched by URL and variant; details: availability-refresh.json`);
+  runCommand(
+    Command.make("catalog:availability", { catalog, offline }, (values) =>
+      workflow(async (signal) => {
+        const result = await refreshAvailability({ ...values, signal });
+        console.log(`${result.products} products across ${result.pages} pages saved in ${result.folder}`);
+        console.log(`${result.available} available editions; ${result.changed} availability changes. Catalog: ${result.catalog}`);
+        console.log(`${result.unmatched.length} editions could not be matched by URL and variant; details: availability-refresh.json`);
+      }),
+    ),
+  );
 }

@@ -1,3 +1,5 @@
+import { Command } from "effect/cli";
+import { runCommand, workflow } from "./cli.mts";
 import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
@@ -159,14 +161,12 @@ export async function writeWorkbookMap(root = process.cwd(), options: { signal?:
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
-  const controller = new AbortController();
-  const cancel = () => controller.abort();
-  process.once("SIGINT", cancel);
-  let map;
-  try {
-    map = await writeWorkbookMap(process.cwd(), { signal: controller.signal });
-  } finally {
-    process.off("SIGINT", cancel);
-  }
-  console.log(`Mapped ${map.rows.length} workbook rows to catalog edition IDs.`);
+  runCommand(
+    Command.make("catalog:workbook", {}, () =>
+      workflow(async (signal) => {
+        const map = await writeWorkbookMap(process.cwd(), { signal });
+        console.log(`Mapped ${map.rows.length} workbook rows to catalog edition IDs.`);
+      }),
+    ),
+  );
 }

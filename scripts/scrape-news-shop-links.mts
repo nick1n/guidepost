@@ -1,10 +1,13 @@
+import { Effect, Schema } from "effect";
+import { FetchHttpClient, HttpClient } from "effect/http";
 import { createHash } from "node:crypto";
 import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import { setTimeout as sleep } from "node:timers/promises";
 import { format, resolveConfig } from "prettier";
 import { fileURLToPath } from "node:url";
-import { parseArgs } from "node:util";
+import { Command, Flag } from "effect/cli";
+import { runCommand, workflow } from "./catalog/cli.mts";
 import { Parser } from "htmlparser2";
 import { productUrl, shopLinkUrl } from "./catalog/shop.mts";
 
@@ -299,6 +302,21 @@ class HttpError extends Error {
   }
 }
 
+export class NewsRequestError extends Schema.TaggedError<NewsRequestError>()("NewsRequestError", { cause: Schema.Defect() }) {}
+export const downloadNewsPage = Effect.fn("News.downloadPage")((url: string) =>
+  HttpClient.get(url, { headers: { "User-Agent": "Guidepost-News-Link-Exporter/2.0", Accept: "text/html" } }).pipe(
+    Effect.flatMap((response) =>
+      response.status >= 200 && response.status < 300
+        ? response.text.pipe(Effect.map((html) => ({ status: response.status, html })))
+        : Effect.succeed({ status: response.status, html: "" }),
+    ),
+    Effect.timeout(40_000),
+    Effect.mapError((cause) => new NewsRequestError({ cause })),
+    Effect.provide(FetchHttpClient.layer),
+    Effect.provideService(FetchHttpClient.RequestInit, { redirect: "error" }),
+  ),
+);
+
 export class Downloader {
   requests = 0;
   private finished = 0;
@@ -319,18 +337,16 @@ export class Downloader {
     await sleep(Math.max(0, this.options.delay * 1_000 - (performance.now() - this.finished)), undefined, { signal: this.options.signal });
     this.requests++;
     try {
-      const signals = [AbortSignal.timeout(40_000), ...(this.options.signal ? [this.options.signal] : [])];
-      const response = await fetch(url, {
-        headers: { "User-Agent": "Guidepost-News-Link-Exporter/2.0", Accept: "text/html" },
-        signal: AbortSignal.any(signals),
-        redirect: "error",
-      });
-      if (!response.ok) throw new HttpError(response.status, url);
-      const html = await response.text();
+      const response = await Effect.runPromise(downloadNewsPage(url), { signal: this.options.signal });
+      if (response.status < 200 || response.status >= 300) throw new HttpError(response.status, url);
+      const html = response.html;
       pageData(html);
       await mkdir(this.options.cache, { recursive: true });
       await writeFile(path, html, "utf8");
       return html;
+    } catch (error) {
+      this.options.signal?.throwIfAborted();
+      throw error;
     } finally {
       this.finished = performance.now();
     }
@@ -400,29 +416,19 @@ export async function updateReport(
     posts.every((metadata) => report.posts.some((entry) => entry.postUrl === metadata.postUrl && entry.status === "read" && !entry.error));
 }
 
-async function main() {
-  const { values } = parseArgs({
-    options: {
-      output: { type: "string", default: "exports/kingdom-death-news" },
-      cache: { type: "string", default: ".cache/kingdom-death-news" },
-      delay: { type: "string", default: "2" },
-      help: { type: "boolean", short: "h" },
-      "refresh-posts": { type: "boolean", default: false },
-    },
-  });
-  if (values.help) {
-    console.log("node scripts/scrape-news-shop-links.mts [--delay 2] [--output directory] [--cache directory] [--refresh-posts]");
-    return;
-  }
+const newsFlags = {
+  output: Flag.String("output").pipe(Flag.withDefault("exports/kingdom-death-news")),
+  cache: Flag.String("cache").pipe(Flag.withDefault(".cache/kingdom-death-news")),
+  delay: Flag.String("delay").pipe(Flag.withDefault("2")),
+  "refresh-posts": Flag.Boolean("refresh-posts"),
+};
+async function main(values: Command.Command.Config.Infer<typeof newsFlags>, signal: AbortSignal) {
   const delay = Number(values.delay);
   if (!Number.isFinite(delay) || delay < 2) throw new Error("--delay must be a finite number of at least 2 seconds");
   // Validate before writing anything, so a damaged checkpoint cannot erase earlier results.
   const report = await loadReport(values.output);
   await recoverCachedHistory(report, values.cache);
-  const controller = new AbortController();
-  const stop = () => controller.abort();
-  process.once("SIGINT", stop);
-  const downloader = new Downloader({ cache: values.cache, delay, signal: controller.signal });
+  const downloader = new Downloader({ cache: values.cache, delay, signal });
   const checkpoint = async () => {
     report.requestsThisRun = downloader.requests;
     await saveReport(report, values.output);
@@ -441,11 +447,11 @@ async function main() {
       values["refresh-posts"],
     );
   } catch (error) {
+    if (signal.aborted) throw error;
     report.complete = false;
     report.errors.push(message(error));
     console.error(message(error));
   } finally {
-    process.removeListener("SIGINT", stop);
     report.finishedAt = new Date().toISOString();
     await checkpoint();
   }
@@ -456,8 +462,5 @@ async function main() {
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  await main().catch((error: unknown) => {
-    console.error(message(error));
-    process.exitCode = 1;
-  });
+  runCommand(Command.make("scrape:news", newsFlags, (values) => workflow((signal) => main(values, signal))));
 }

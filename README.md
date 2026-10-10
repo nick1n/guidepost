@@ -91,6 +91,12 @@ pnpm catalog:validate
 Applying a review writes the live catalog and local reports. Stale inputs are rejected; prepare a new review if its inputs change.
 Validation checks schemas, references, ordering, and local tag assignments without changing them.
 Shop requests are at least 35 seconds apart and cached for 24 hours. Use `--offline` for cached evidence or `--refresh` to fetch again.
+ShopClient uses Effect HTTP, validates product and cache data, and shares concurrent duplicate lookups. Its in-memory cache holds at most
+256 responses per client and expires them with the disk evidence; offline reads accept older evidence. HTTP failures remain cached on disk
+and requests are never automatically retried. Refresh bypasses completed cache entries while sharing an in-progress lookup.
+
+The update, availability, edition, workbook, news, and link-check commands use Effect CLI. Append `--help` to see their flags and defaults.
+Ctrl+C interrupts requests and pacing, then waits for publication or checkpoint cleanup before the command exits.
 
 Catalog review application, availability refresh, edition retrieval, and workbook-map generation share a publication module. It stages all outputs in unique
 adjacent temporary files, then rechecks captured inputs before each replacement. Completion reports publish last. Detected edits or

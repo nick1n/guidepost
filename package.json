@@ -31,13 +31,14 @@
   "dependencies": {
     "@unocss/reset": "^66.10.5",
     "dexie": "^4.4.6",
-    "effect": "^4.0.1"
+    "effect": "^4.0.2"
   },
   "devDependencies": {
-    "@effect/vitest": "^4.0.1",
+    "@effect/platform-node": "4.0.1",
+    "@effect/vitest": "^4.0.2",
     "@iconify-json/game-icons": "^1.2.4",
-    "@iconify-json/lucide": "^1.2.140",
-    "@iconify-json/material-symbols": "^1.2.94",
+    "@iconify-json/lucide": "^1.2.142",
+    "@iconify-json/material-symbols": "^1.2.95",
     "@sveltejs/adapter-static": "^4.0.0",
     "@sveltejs/kit": "^3.0.1",
     "@sveltejs/vite-plugin-svelte": "^7.3.1",
@@ -54,7 +55,7 @@
     "svelte-check": "^4.7.6",
     "typescript": "^6.0.3",
     "unocss": "^66.10.5",
-    "vite": "^8.3.3",
+    "vite": "^8.3.4",
     "vitest": "^5.0.3"
   },
   "imports": {

@@ -1,7 +1,8 @@
 import { readFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { parseArgs } from "node:util";
+import { Command } from "effect/cli";
+import { catalog, offline, refresh, runCommand, workflow } from "./catalog/cli.mts";
 import { publishFiles } from "./catalog/publication.mts";
 import { catalogTemp } from "./catalog/paths.mts";
 import { editionComparator, organizeCatalog } from "./catalog/order.mts";
@@ -113,16 +114,14 @@ export async function fillEditions(
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  const { values } = parseArgs({ options: { catalog: { type: "string" }, offline: { type: "boolean" }, refresh: { type: "boolean" } } });
-  const controller = new AbortController();
-  const cancel = () => controller.abort();
-  process.once("SIGINT", cancel);
-  try {
-    const report = await fillEditions({ ...values, signal: controller.signal });
-    console.log(
-      `${report.reachable.length} items updated; ${report.unreachable.length} not retrieved. See temp/kdm-catalog/reports/edition-retrieval.json`,
-    );
-  } finally {
-    process.off("SIGINT", cancel);
-  }
+  runCommand(
+    Command.make("catalog:editions", { catalog, offline, refresh }, (values) =>
+      workflow(async (signal) => {
+        const report = await fillEditions({ ...values, signal });
+        console.log(
+          `${report.reachable.length} items updated; ${report.unreachable.length} not retrieved. See temp/kdm-catalog/reports/edition-retrieval.json`,
+        );
+      }),
+    ),
+  );
 }

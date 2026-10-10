@@ -3,7 +3,8 @@ import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { parseArgs } from "node:util";
+import { Command, Flag } from "effect/cli";
+import { optionalString, offline, refresh, runCommand, workflow } from "./catalog/cli.mts";
 import { gzipSync } from "node:zlib";
 import { publishFiles } from "./catalog/publication.mts";
 import { keepUrl, loadReport, recoverCachedHistory, saveReport, type Report } from "./scrape-news-shop-links.mts";
@@ -131,36 +132,26 @@ export async function applyReview(
   return validation;
 }
 
-async function main(signal?: AbortSignal) {
-  signal?.throwIfAborted();
-  const { values } = parseArgs({
-    options: {
-      catalog: { type: "string", default: "static/kdm-catalog" },
-      news: { type: "string", default: "exports/kingdom-death-news" },
-      cache: { type: "string", default: ".cache/kdm-shop" },
-      mappings: { type: "string" },
-      review: { type: "string" },
-      date: { type: "string" },
-      delay: { type: "string", default: "35" },
-      refresh: { type: "boolean", default: false },
-      offline: { type: "boolean", default: false },
-      sim: { type: "boolean", default: false },
-      apply: { type: "boolean", default: false },
-      "apply-review": { type: "string" },
-      "tags-only": { type: "boolean", default: false },
-      "tags-schema": { type: "boolean", default: false },
-      help: { type: "boolean", short: "h" },
-    },
-  });
-  if (values.help) {
-    console.log(
-      "pnpm catalog:update [--date YYYY-MM-DD] [--sim] [--refresh] [--offline] [--delay 35] [--apply | --apply-review path] [--tags-only | --tags-schema]",
-    );
-    console.log(
-      "Stages a source-backed review by default. Unknown or ambiguous products require mappings. Shop reads are spaced at least 35 seconds apart.",
-    );
-    return;
-  }
+const updateFlags = {
+  catalog: Flag.String("catalog").pipe(Flag.withDefault("static/kdm-catalog")),
+  news: Flag.String("news").pipe(Flag.withDefault("exports/kingdom-death-news")),
+  cache: Flag.String("cache").pipe(Flag.withDefault(".cache/kdm-shop")),
+  mappings: optionalString("mappings"),
+  review: optionalString("review"),
+  date: optionalString("date"),
+  delay: Flag.String("delay").pipe(Flag.withDefault("35")),
+  refresh,
+  offline,
+  sim: Flag.Boolean("sim"),
+  apply: Flag.Boolean("apply"),
+  "apply-review": optionalString("apply-review"),
+  "tags-only": Flag.Boolean("tags-only"),
+  "tags-schema": Flag.Boolean("tags-schema"),
+};
+
+type UpdateFlags = Command.Command.Config.Infer<typeof updateFlags>;
+async function main(values: UpdateFlags, signal: AbortSignal) {
+  signal.throwIfAborted();
   const root = values.catalog;
   const newsPath = join(values.news, "news-shop-links.json");
   if (values["tags-schema"]) {
@@ -298,13 +289,9 @@ async function main(signal?: AbortSignal) {
   if (values.apply) console.log(await applyReview(review, root, newsPath, { signal }));
 }
 
+const updateCommand = Command.make("catalog:update", updateFlags, (values) => workflow((signal) => main(values, signal))).pipe(
+  Command.withDescription("Stage a source-backed catalog review. Shop reads are spaced at least 35 seconds apart."),
+);
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  const controller = new AbortController();
-  const cancel = () => controller.abort();
-  process.once("SIGINT", cancel);
-  try {
-    await main(controller.signal);
-  } finally {
-    process.off("SIGINT", cancel);
-  }
+  runCommand(updateCommand);
 }

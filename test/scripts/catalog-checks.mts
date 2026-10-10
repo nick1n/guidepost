@@ -6,6 +6,8 @@ import { dirname, join } from "node:path";
 import { createHash } from "node:crypto";
 import { gunzipSync } from "node:zlib";
 import { test } from "node:test";
+import { Effect } from "effect";
+import { FetchHttpClient } from "effect/http";
 import { applyAvailability, planUpdate as prepareUpdate, productExclusion, releaseGaps } from "#scripts/catalog/update.mts";
 import { resolveReleases } from "#scripts/catalog/releases.mts";
 import { catalogListing, productUrl, ShopClient, ShopError, shopProduct } from "#scripts/catalog/shop.mts";
@@ -819,17 +821,23 @@ test("product requests use the Ajax endpoint once and offline reads can still us
     available: true,
     variants: [{ ...product().variants[0]!, available: true }],
   };
-  const fetchMock = t.mock.method(globalThis, "fetch", async (url: Parameters<typeof fetch>[0]) => {
-    assert.equal(url, "https://shop.kingdomdeath.com/products/kds-rene.js");
+  const fetchMock = t.mock.fn<typeof globalThis.fetch>(async (url) => {
+    assert.equal(String(url), "https://shop.kingdomdeath.com/products/kds-rene.js");
     return new Response(JSON.stringify(raw), { headers: { "Content-Type": "application/json" } });
   });
   const client = new ShopClient({ cache });
-  const result = await client.product("/products/kds-rene.json");
+  const result = await Effect.runPromise(
+    client.productEffect("/products/kds-rene.json").pipe(Effect.provideService(FetchHttpClient.Fetch, fetchMock)),
+  );
   assert.equal(result.data.variants[0]?.price, 700);
   assert.equal(result.data.description, raw.description);
   assert.equal(result.data.available, true);
   assert.equal(result.data.variants[0]?.available, true);
-  assert.equal((await client.product("/products/kds-rene")).data.variants[0]?.price, 700);
+  assert.equal(
+    (await Effect.runPromise(client.productEffect("/products/kds-rene").pipe(Effect.provideService(FetchHttpClient.Fetch, fetchMock)))).data
+      .variants[0]?.price,
+    700,
+  );
   assert.equal(fetchMock.mock.callCount(), 1);
   const legacy = { ...product({ handle: "legacy-rene" }), variants: [{ ...product().variants[0]!, price: "7.00" }] };
   const url = "https://shop.kingdomdeath.com/products/legacy-rene.json";
@@ -1492,10 +1500,16 @@ test("offline reads reuse source evidence and aborted throttling never sends a r
   assert.equal(offline.requests.length, 0);
   assert.throws(() => new ShopClient({ delay: 2 }));
   await writeFile(join(cache, "last-request.json"), JSON.stringify({ startedAt: Date.now() }));
+  const fetchMock = t.mock.fn<typeof globalThis.fetch>(
+    async () => new Response(JSON.stringify(product()), { headers: { "Content-Type": "application/json" } }),
+  );
   const controller = new AbortController();
   controller.abort();
   const client = new ShopClient({ cache, refresh: true, signal: controller.signal });
-  await assert.rejects(client.get(url), /abort/i);
+  await assert.rejects(
+    Effect.runPromise(client.getEffect(url).pipe(Effect.provideService(FetchHttpClient.Fetch, fetchMock))),
+    /abort|interrupt/i,
+  );
   assert.equal(client.requests.length, 0);
 });
 
@@ -1522,15 +1536,15 @@ test("applying a stale review cannot overwrite newer catalog edits", async (t) =
 test("concurrent shop clients share cached results and refuse a second process lock", async (t) => {
   const cache = await mkdtemp(join(tmpdir(), "kdm-shop-queue-test-"));
   t.after(() => rm(cache, { recursive: true, force: true }));
-  const fetchMock = t.mock.method(
-    globalThis,
-    "fetch",
+  const fetchMock = t.mock.fn<typeof globalThis.fetch>(
     async () => new Response(JSON.stringify(product()), { headers: { "Content-Type": "application/json" } }),
   );
   const url = "https://shop.kingdomdeath.com/products/kds-rene.js";
   const first = new ShopClient({ cache });
   const second = new ShopClient({ cache });
-  const responses = await Promise.all([first.get(url), second.get(url)]);
+  const responses = await Promise.all(
+    [first, second].map((client) => Effect.runPromise(client.getEffect(url).pipe(Effect.provideService(FetchHttpClient.Fetch, fetchMock)))),
+  );
   assert.equal(fetchMock.mock.callCount(), 1);
   assert.deepEqual(responses[0], responses[1]);
   await writeFile(join(cache, "request.lock"), JSON.stringify({ pid: 123, acquiredAt: new Date().toISOString() }));
@@ -1541,10 +1555,16 @@ test("concurrent shop clients share cached results and refuse a second process l
 test("unavailable shop listings are cached so reruns do not repeat the request", async (t) => {
   const cache = await mkdtemp(join(tmpdir(), "kdm-shop-unavailable-test-"));
   t.after(() => rm(cache, { recursive: true, force: true }));
-  const fetchMock = t.mock.method(globalThis, "fetch", async () => new Response("Missing", { status: 404 }));
+  const fetchMock = t.mock.fn<typeof globalThis.fetch>(async () => new Response("Missing", { status: 404 }));
   const url = "https://shop.kingdomdeath.com/products/seasonal.js";
-  await assert.rejects(new ShopClient({ cache }).get(url), (error) => error instanceof ShopError && error.status === 404 && !error.cached);
-  await assert.rejects(new ShopClient({ cache }).get(url), (error) => error instanceof ShopError && error.status === 404 && error.cached);
+  await assert.rejects(
+    Effect.runPromise(new ShopClient({ cache }).getEffect(url).pipe(Effect.provideService(FetchHttpClient.Fetch, fetchMock))),
+    (error) => error instanceof ShopError && error.status === 404 && !error.cached,
+  );
+  await assert.rejects(
+    Effect.runPromise(new ShopClient({ cache }).getEffect(url).pipe(Effect.provideService(FetchHttpClient.Fetch, fetchMock))),
+    (error) => error instanceof ShopError && error.status === 404 && error.cached,
+  );
   assert.equal(fetchMock.mock.callCount(), 1);
 });
 
