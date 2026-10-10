@@ -25,13 +25,6 @@ export function formatPriceTotals(totals: Partial<Record<Currency, number>>) {
   return formatPrice(Math.round(usdCents));
 }
 
-export const STORE_BASE = "https://shop.kingdomdeath.com";
-
-export function storeUrl(path?: string) {
-  if (!path) return;
-  return path.startsWith("http") ? path : `${STORE_BASE}${path}`;
-}
-
 export function editionLabel(edition: Pick<Edition, "label" | "name">) {
   return edition.name ?? edition.label;
 }
@@ -42,14 +35,6 @@ export function editionMaterials(edition: Edition) {
 
 export function editionGameplay(item: Partial<Item>, edition: Edition) {
   return (Object.hasOwn(edition, "gameplay") ? edition.gameplay : item.gameplay) === true;
-}
-
-export function editionUrl(item: Partial<Item>, edition: Edition) {
-  return edition.url ?? item.url;
-}
-
-export function editionSize(item: Partial<Item>, edition: Edition) {
-  return edition.format === "digital" ? undefined : (edition.size ?? item.size);
 }
 
 export function catalogTags(item: Partial<Item>, category: string) {

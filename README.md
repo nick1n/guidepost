@@ -48,7 +48,8 @@ The full catalog loads only when opening collection. Collection links disable ho
 edition list directly and saves ownership by stable keys. The shared collection starts with an empty catalog; opening collection
 supplies the full catalog without resetting ownership or pending saves.
 The service worker defers the full catalog and collection HTML until collection is visited, then caches them for offline use,
-including reloads of collection URLs with search and filter parameters.
+including reloads of collection URLs with search and filter parameters. Font and gesture playground HTML and the legacy WOFF icon-font
+fallback are also cached after use. The WOFF2 font and shared app code remain precached.
 
 `scripts/catalog/releases.mts` resolves shop variants, curated release selectors, materials, and prices for update and retrieval workflows.
 Full availability refreshes use its conservative edition matching; incremental updates preserve editions that were not observed.
@@ -197,7 +198,8 @@ row, and product name, with an explicit edition ID when release alternatives are
 Source-row ownership propagates to explicitly related editions; copy numbers apply only to the selected edition.
 
 `exportWorkbook()` returns normalized rows for a future XLSX adapter. It rejects unmapped editions and separate values that a shared
-workbook row cannot represent. JSON backups remain the complete snapshot format. The workbook map loads only when a row workflow runs.
+workbook row cannot represent. JSON backups remain the complete snapshot format. The workbook map is fetched from its static JSON asset only
+when a row workflow runs, validated before use, and cached for later offline transfers.
 
 ## Known warnings
 

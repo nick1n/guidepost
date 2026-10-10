@@ -37,14 +37,30 @@ self.addEventListener("activate", (event) => {
     (async () => {
       const keys = await caches.keys();
       await Promise.all(keys.filter((key) => key !== cacheName).map((key) => caches.delete(key)));
-      // A direct first visit hydrates from embedded data before this worker controls its requests.
+      // Direct first visits happen before this worker controls requests, so retain their deferred HTML for offline reloads.
       const clients = await self.clients.matchAll({ type: "window", includeUncontrolled: true });
-      if (clients.some((client) => new URL(client.url).pathname === collectionPath)) {
-        const cache = await caches.open(cacheName);
-        await Promise.all([collectionPath, catalogPath].map((path) => cache.add(path).catch(() => {})));
-      }
+      const visitedPaths = new Set(clients.map((client) => new URL(client.url).pathname).filter((path) => deferredAssets.has(path)));
+      if (visitedPaths.has(collectionPath)) visitedPaths.add(catalogPath);
+      const cache = await caches.open(cacheName);
+      await Promise.all([...visitedPaths].map((path) => cache.add(path).catch(() => {})));
       await self.clients.claim();
     })(),
+  );
+});
+
+// Client-side navigation does not request page HTML; retain visited deferred pages for offline reloads.
+self.addEventListener("message", (event) => {
+  const path = event.data?.path;
+  if (event.data?.type !== "cache-page" || !deferredAssets.has(path)) return;
+  event.waitUntil(
+    caches.open(cacheName).then((cache) =>
+      cache
+        .match(path)
+        .then(async (cached) => {
+          if (!cached) await cache.add(path);
+        })
+        .catch(() => {}),
+    ),
   );
 });
 

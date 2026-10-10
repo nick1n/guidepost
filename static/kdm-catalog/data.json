@@ -790,7 +790,7 @@
       ]
     },
     "expansion-campaigns-of-death": {
-      "editions": [{ "id": "preorder", "label": "Preorder", "format": "physical", "materials": ["Plastic"], "prices": [4000, 25000], "releaseWindow": "2026-Q4" }],
+      "editions": [{ "id": "box", "label": "Preorder", "format": "physical", "materials": ["Plastic"], "prices": [4000, 25000], "releaseWindow": "2026-Q4" }],
       "gameplay": true,
       "includes": [
         { "item": "ancient-butcher", "editionId": "plastic" },
@@ -811,7 +811,7 @@
       "tags": ["gameplay", "2026", "upcoming", "expansion", "expansions-of-death-vol-2", "preorder", "campaigns-of-death", "campaign", "pot-wise-one"]
     },
     "expansion-dead-armor": {
-      "editions": [{ "id": "preorder", "label": "Preorder", "format": "physical", "materials": ["Plastic"], "prices": [2000, 2500], "releaseWindow": "2026-Q4" }],
+      "editions": [{ "id": "box", "label": "Preorder", "format": "physical", "materials": ["Plastic"], "prices": [2000, 2500], "releaseWindow": "2026-Q4" }],
       "gameplay": true,
       "kind": "expansion",
       "name": "Dead Armor Expansion",
@@ -819,22 +819,22 @@
       "tags": ["gameplay", "2026", "upcoming", "expansion", "expansions-of-death-vol-2", "preorder", "dead-armor"]
     },
     "expansion-honeycomb-weaver": {
-      "editions": [{ "id": "preorder", "label": "Preorder", "format": "physical", "materials": ["Plastic"], "prices": [5000, 7500], "releaseWindow": "2026-Q4" }],
+      "editions": [{ "id": "box", "label": "Preorder", "format": "physical", "materials": ["Plastic"], "prices": [5000, 7500], "releaseWindow": "2026-Q4" }],
       "gameplay": true,
-      "includes": [{ "item": "armor-kit-steel-wax", "editionId": "plastic", "parentEditionIds": ["preorder"] }],
+      "includes": [{ "item": "armor-kit-steel-wax", "editionId": "plastic", "parentEditionIds": ["box"] }],
       "kind": "expansion",
       "name": "Honeycomb Weaver Expansion",
       "tags": ["gameplay", "monster", "2026", "upcoming", "expansion", "expansions-of-death-vol-2", "preorder", "node-3-nemesis", "monster-honeycomb-weaver"]
     },
     "expansion-first-hero": {
-      "editions": [{ "id": "preorder", "label": "Preorder", "format": "physical", "materials": ["Plastic"], "prices": [3500, 7000], "releaseWindow": "2027" }],
+      "editions": [{ "id": "box", "label": "Preorder", "format": "physical", "materials": ["Plastic"], "prices": [3500, 7000], "releaseWindow": "2027" }],
       "gameplay": true,
       "kind": "expansion",
       "name": "First Hero Expansion",
       "tags": ["gameplay", "monster", "upcoming", "expansion", "expansions-of-death-vol-2", "2027", "preorder", "core-monster", "monster-first-hero", "first-hero"]
     },
     "expansion-nightmare-ram": {
-      "editions": [{ "id": "preorder", "label": "Preorder", "format": "physical", "materials": ["Plastic"], "prices": [4000, 8000], "releaseWindow": "2027" }],
+      "editions": [{ "id": "box", "label": "Preorder", "format": "physical", "materials": ["Plastic"], "prices": [4000, 8000], "releaseWindow": "2027" }],
       "gameplay": true,
       "includes": [{ "item": "nightmare-ram", "editionId": "plastic" }],
       "kind": "expansion",
@@ -842,18 +842,18 @@
       "tags": ["gameplay", "upcoming", "expansion", "expansions-of-death-vol-2", "2027", "preorder", "nightmare-ram"]
     },
     "expansion-oblivion-mosquito": {
-      "editions": [{ "id": "preorder", "label": "Preorder", "format": "physical", "materials": ["Plastic"], "prices": [5000, 9000], "releaseWindow": "2027" }],
+      "editions": [{ "id": "box", "label": "Preorder", "format": "physical", "materials": ["Plastic"], "prices": [5000, 9000], "releaseWindow": "2027" }],
       "gameplay": true,
       "includes": [
-        { "item": "oblivion-mosquito", "editionId": "plastic", "parentEditionIds": ["preorder"] },
-        { "item": "armor-kit-oblivion-mosquito", "editionId": "plastic", "parentEditionIds": ["preorder"] }
+        { "item": "oblivion-mosquito", "editionId": "plastic", "parentEditionIds": ["box"] },
+        { "item": "armor-kit-oblivion-mosquito", "editionId": "plastic", "parentEditionIds": ["box"] }
       ],
       "kind": "expansion",
       "name": "Oblivion Mosquito Expansion",
       "tags": ["gameplay", "monster", "upcoming", "expansion", "expansions-of-death-vol-2", "2027", "preorder", "node-2-quarry", "monster-oblivion-mosquito"]
     },
     "expansion-gryphon": {
-      "editions": [{ "id": "preorder", "label": "Preorder", "format": "physical", "materials": ["Plastic"], "prices": [7500, 15000], "releaseWindow": "2028" }],
+      "editions": [{ "id": "box", "label": "Preorder", "format": "physical", "materials": ["Plastic"], "prices": [7500, 15000], "releaseWindow": "2028" }],
       "gameplay": true,
       "includes": [{ "item": "gryphon", "editionId": "plastic" }],
       "kind": "expansion",
@@ -861,14 +861,14 @@
       "tags": ["gameplay", "upcoming", "expansion", "expansions-of-death-vol-2", "node-4-quarry", "preorder", "2028", "gryphon"]
     },
     "expansion-silver-city": {
-      "editions": [{ "id": "preorder", "label": "Preorder", "format": "physical", "materials": ["Plastic"], "prices": [6500, 10000], "releaseWindow": "2028" }],
+      "editions": [{ "id": "box", "label": "Preorder", "format": "physical", "materials": ["Plastic"], "prices": [6500, 10000], "releaseWindow": "2028" }],
       "gameplay": true,
       "kind": "expansion",
       "name": "Silver City Expansion",
       "tags": ["gameplay", "upcoming", "expansion", "expansions-of-death-vol-2", "preorder", "campaign", "2028", "silver-city"]
     },
     "expansion-inverted-mountain": {
-      "editions": [{ "id": "preorder", "label": "Preorder", "format": "physical", "materials": ["Plastic"], "prices": [5000, 8000], "releaseWindow": "2029" }],
+      "editions": [{ "id": "box", "label": "Preorder", "format": "physical", "materials": ["Plastic"], "prices": [5000, 8000], "releaseWindow": "2029" }],
       "gameplay": true,
       "includes": [
         { "item": "thrall", "editionId": "plastic" },
@@ -881,7 +881,7 @@
       "tags": ["gameplay", "upcoming", "expansion", "expansions-of-death-vol-2", "preorder", "2029", "inverted-mountain"]
     },
     "expansion-abyssal-woods": {
-      "editions": [{ "id": "preorder", "label": "Preorder", "format": "physical", "materials": ["Plastic"], "prices": [15000, 20000], "releaseWindow": "2030" }],
+      "editions": [{ "id": "box", "label": "Preorder", "format": "physical", "materials": ["Plastic"], "prices": [15000, 20000], "releaseWindow": "2030" }],
       "gameplay": true,
       "includes": [
         { "item": "disciple-of-the-witch-1", "editionId": "plastic" },
@@ -891,14 +891,14 @@
         { "item": "disciple-of-the-witch-5-6", "editionId": "plastic" },
         { "item": "flower-witch", "editionId": "plastic" },
         { "item": "goblin-guard", "editionId": "plastic" },
-        { "item": "goblin-dragon", "editionId": "plastic", "parentEditionIds": ["preorder"] }
+        { "item": "goblin-dragon", "editionId": "plastic", "parentEditionIds": ["box"] }
       ],
       "kind": "expansion",
       "name": "Abyssal Woods Expansion",
       "tags": ["gameplay", "upcoming", "expansion", "expansions-of-death-vol-2", "preorder", "2030", "abyssal-woods"]
     },
     "expansion-ivory-dragon": {
-      "editions": [{ "id": "preorder", "label": "Preorder", "format": "physical", "materials": ["Plastic"], "prices": [10000, 15000], "releaseWindow": "2030" }],
+      "editions": [{ "id": "box", "label": "Preorder", "format": "physical", "materials": ["Plastic"], "prices": [10000, 15000], "releaseWindow": "2030" }],
       "gameplay": true,
       "kind": "expansion",
       "name": "Ivory Dragon Expansion",
@@ -3543,8 +3543,8 @@
     "legendary-card-pack": {
       "announcements": ["2020-11-27", "2020-12-22", "2021-02-15", "2021-04-05", "2021-07-19", "2021-12-24", "2022-03-01", "2022-04-22", "2022-06-01", "2022-07-01", "2022-08-09", "2022-08-31", "2022-10-01", "2022-10-31", "2022-11-25"],
       "editions": [
-        { "id": "i", "label": "I", "available": true, "format": "physical", "handle": "legendary-card-pack-1-6-upgrade", "prices": [3000], "releaseDate": "2020-11-25" },
-        { "id": "ii", "label": "II", "format": "physical", "materials": ["Plastic"], "prices": [3000], "releaseWindow": "2026-Q4" }
+        { "id": "1", "label": "I", "available": true, "format": "physical", "handle": "legendary-card-pack-1-6-upgrade", "prices": [3000], "releaseDate": "2020-11-25" },
+        { "id": "2", "label": "II", "format": "physical", "materials": ["Plastic"], "prices": [3000], "releaseWindow": "2026-Q4" }
       ],
       "gameplay": true,
       "kind": "promo",
@@ -4481,14 +4481,14 @@
       "tags": ["plastic", "gameplay", "gear", "2025", "pattern", "resource", "sim", "hunt-event", "terrain", "knowledge", "gatherism", "philosophy", "philosophies-of-death"]
     },
     "philosophies-of-death-heliocenterism": {
-      "editions": [{ "id": "preorder", "label": "Preorder", "format": "physical", "materials": ["Plastic"], "prices": [6500], "releaseWindow": "2027" }],
+      "editions": [{ "id": "box", "label": "Preorder", "format": "physical", "materials": ["Plastic"], "prices": [6500], "releaseWindow": "2027" }],
       "gameplay": true,
       "kind": "box",
       "name": "Philosophies of Death: Heliocenterism",
       "tags": ["gameplay", "upcoming", "2027", "preorder", "philosophy", "philosophies-of-death", "heliocenterism"]
     },
     "philosophies-of-death-starbound": {
-      "editions": [{ "id": "preorder", "label": "Preorder", "format": "physical", "materials": ["Plastic"], "prices": [6500], "releaseWindow": "2027" }],
+      "editions": [{ "id": "box", "label": "Preorder", "format": "physical", "materials": ["Plastic"], "prices": [6500], "releaseWindow": "2027" }],
       "gameplay": true,
       "kind": "box",
       "name": "Philosophies of Death: Starbound",
@@ -6561,7 +6561,7 @@
       "tags": ["female", "generic", "knight", "2013", "relic-knight"]
     },
     "ultimate-core-terrain": {
-      "editions": [{ "id": "preorder", "label": "Preorder", "format": "physical", "materials": ["Plastic"], "prices": [10000], "releaseWindow": "2027" }],
+      "editions": [{ "id": "box", "label": "Preorder", "format": "physical", "materials": ["Plastic"], "prices": [10000], "releaseWindow": "2027" }],
       "kind": "terrain",
       "name": "Ultimate Core Terrain",
       "tags": ["core", "upcoming", "terrain", "2027", "preorder"]
@@ -7903,10 +7903,10 @@
       "accessoryType": "comic",
       "announcements": ["2025-08-29"],
       "editions": [
-        { "id": "pawel-zdanowski", "label": "Pawel Zdanowski", "format": "physical", "name": "original", "prices": [1300], "releaseDate": "2025-08-29" },
-        { "id": "wenjuinn-png", "label": "Wenjuinn Png", "format": "physical", "name": "grey cover", "prices": [1300], "releaseDate": "2025-08-29" },
-        { "id": "ein-lee", "label": "Ein Lee", "format": "physical", "name": "red cover", "prices": [1300], "releaseDate": "2025-08-29" },
-        { "id": "lokman-lam", "label": "Lokman Lam", "format": "physical", "name": "pink cover", "prices": [1300], "releaseDate": "2025-08-29" }
+        { "id": "original", "label": "Pawel Zdanowski", "format": "physical", "name": "original", "prices": [1300], "releaseDate": "2025-08-29" },
+        { "id": "grey", "label": "Wenjuinn Png", "format": "physical", "name": "grey cover", "prices": [1300], "releaseDate": "2025-08-29" },
+        { "id": "red", "label": "Ein Lee", "format": "physical", "name": "red cover", "prices": [1300], "releaseDate": "2025-08-29" },
+        { "id": "pink", "label": "Lokman Lam", "format": "physical", "name": "pink cover", "prices": [1300], "releaseDate": "2025-08-29" }
       ],
       "handle": "phobia-the-hunt",
       "kind": "accessory",
@@ -7917,9 +7917,9 @@
       "accessoryType": "comic",
       "announcements": ["2026-08-31"],
       "editions": [
-        { "id": "pawel-zdanowski", "label": "Pawel Zdanowski", "available": true, "format": "physical", "name": "original", "prices": [1300], "releaseDate": "2026-08-31" },
-        { "id": "ein-lee", "label": "Ein Lee", "available": true, "format": "physical", "name": "dark blue cover", "prices": [1300], "releaseDate": "2026-08-31" },
-        { "id": "lokman-lam", "label": "Lokman Lam", "available": true, "format": "physical", "name": "tan cover", "prices": [1300], "releaseDate": "2026-08-31" }
+        { "id": "original", "label": "Pawel Zdanowski", "available": true, "format": "physical", "name": "original", "prices": [1300], "releaseDate": "2026-08-31" },
+        { "id": "blue", "label": "Ein Lee", "available": true, "format": "physical", "name": "dark blue cover", "prices": [1300], "releaseDate": "2026-08-31" },
+        { "id": "tan", "label": "Lokman Lam", "available": true, "format": "physical", "name": "tan cover", "prices": [1300], "releaseDate": "2026-08-31" }
       ],
       "handle": "kingdom-death-comic-phobia-2-the-settlement",
       "kind": "accessory",

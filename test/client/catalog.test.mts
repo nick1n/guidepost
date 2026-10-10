@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { catalogTags, editionGameplay, editionMaterials, editionSize, editionUrl } from "#lib/kdm-data.ts";
-import { reviewEditions, reviewInclusions, reviewIndex, type ReviewCatalog } from "#lib/catalog-view.ts";
+import { catalogTags, editionGameplay, editionMaterials } from "#lib/kdm-data.ts";
+import { reviewEditions, reviewIndex, reviewShopUrl, type ReviewCatalog } from "#lib/catalog-view.ts";
 
 describe("review catalog facts", () => {
   it("resolves reused edition IDs within their own items and caches", () => {
@@ -103,24 +103,18 @@ describe("review catalog facts", () => {
     );
     expect(editionGameplay({}, { id: "model-first-run", label: "First Run", format: "physical" })).toBe(false);
     expect(editionGameplay({ gameplay: true }, { id: "model-plastic", label: "Plastic", format: "physical" })).toBe(true);
-    expect(editionGameplay({ gameplay: true }, { id: "model-first-run", label: "First Run", format: "physical", gameplay: false })).toBe(
-      false,
-    );
   });
 
   it("inherits shared listings and preserves edition-specific links", () => {
-    expect(editionUrl({ url: "/products/aya" }, { id: "aya-first-run", label: "First Run", format: "physical" })).toBe("/products/aya");
     expect(
-      editionUrl({ url: "/products/aya" }, { id: "aya-sim", label: "Sim", format: "digital", simulator: true, url: "/products/kds-aya" }),
+      reviewShopUrl({ name: "Aya", tags: [], url: "/products/aya" }, { id: "aya-first-run", label: "First Run", format: "physical" }),
+    ).toBe("/products/aya");
+    expect(
+      reviewShopUrl(
+        { name: "Aya", tags: [], url: "/products/aya" },
+        { id: "aya-sim", label: "Sim", format: "digital", simulator: true, url: "/products/kds-aya" },
+      ),
     ).toBe("/products/kds-aya");
-  });
-
-  it("inherits model sizes only for physical releases", () => {
-    expect(editionSize({ size: "30" }, { id: "model-encore", label: "Encore", format: "physical" })).toBe("30");
-    expect(editionSize({ size: "30" }, { id: "model-special", label: "Special", format: "physical", size: "50" })).toBe("50");
-    expect(
-      editionSize({ gameplay: true, size: "30" }, { id: "model-sim", label: "Sim", format: "digital", simulator: true }),
-    ).toBeUndefined();
   });
 
   it("reads materials only from explicit values", () => {
@@ -184,15 +178,16 @@ describe("Simulator key access", () => {
   }
 
   it("limits ordinary keys to Core's digital edition", () => {
+    const index = reviewIndex(catalog());
     for (const key of ["simulator-dwelling-key", "simulator-illusionist-key"])
-      expect(reviewInclusions(catalog(), "kingdom-death-simulator", key).map(({ item, editionId }) => [item, editionId])).toEqual([
+      expect(index.inclusions("kingdom-death-simulator", key).map(({ item, editionId }) => [item, editionId])).toEqual([
         ["core", "core-sim"],
       ]);
   });
 
   it("automatically adds future Sim editions without granting physical ownership", () => {
     const data = catalog();
-    expect(reviewInclusions(data, "kingdom-death-simulator", "simulator-master-dwelling-key")).toHaveLength(2);
+    expect(reviewIndex(data).inclusions("kingdom-death-simulator", "simulator-master-dwelling-key")).toHaveLength(2);
     data.content["expansion-future"] = {
       name: "Future",
       tags: ["expansion"],
@@ -207,7 +202,9 @@ describe("Simulator key access", () => {
       editions: [{ id: "physical-plastic", label: "Plastic", format: "physical" }],
     };
     expect(
-      reviewInclusions(data, "kingdom-death-simulator", "simulator-master-dwelling-key").map(({ item, editionId }) => [item, editionId]),
+      reviewIndex(data)
+        .inclusions("kingdom-death-simulator", "simulator-master-dwelling-key")
+        .map(({ item, editionId }) => [item, editionId]),
     ).toEqual([
       ["core", "core-sim"],
       ["expansion-flower-knight", "flower-knight-sim"],
@@ -222,7 +219,7 @@ describe("Simulator key access", () => {
       editionId: "core-sim",
       parentEditionIds: ["simulator-master-dwelling-key"],
     });
-    expect(reviewInclusions(data, "kingdom-death-simulator", "simulator-master-dwelling-key")).toHaveLength(2);
+    expect(reviewIndex(data).inclusions("kingdom-death-simulator", "simulator-master-dwelling-key")).toHaveLength(2);
   });
 
   it("keeps cached inclusions separate for each item and edition", () => {

@@ -6,8 +6,13 @@ import { Collection } from "#lib/state/collection.svelte.ts";
 import { CollectionError } from "#lib/state/collection-errors.ts";
 import { StoreError, type CollectionStore } from "#lib/state/stores.ts";
 import { collectionKey, type Catalog, type CollectionSnapshot } from "#lib/types/index.ts";
+import { vi } from "vitest";
+import { FetchHttpClient } from "effect/http";
 import catalogJson from "../../static/kdm-catalog/data.json";
 import workbookMap from "../../static/kdm-catalog/workbook-map.json";
+
+vi.mock("$app/paths", () => ({ asset: (path: string) => `https://guidepost.test/test-base/${path}` }));
+const workbookFetch: typeof globalThis.fetch = async () => Response.json(workbookMap);
 
 const data = catalogJson as Catalog;
 const core = collectionKey("core", "1.6");
@@ -143,7 +148,7 @@ it.effect("workbook preview is read-only and a validated import merges one batch
     yield* collection.importWorkbook(rows);
     expect(collection.state).toEqual({ [unrelated]: { owned: true }, ...preview });
     expect(f.writes).toBe(1);
-  }),
+  }).pipe(Effect.provideService(FetchHttpClient.Fetch, workbookFetch)),
 );
 
 it.effect("collection instances stay isolated and copy numbers use both physical limits", () =>
@@ -228,7 +233,7 @@ it.effect("workbook ownership uses bundle commands and cannot wish an owned edit
     expect(f.writes).toBe(1);
     yield* collection.importWorkbook([{ sheet: source.sheet, row: source.row, name: source.name, wished: true }]);
     expect(collection.getEdition(source.primary.contentId, source.primary.editionId).wished).toBe(false);
-  }),
+  }).pipe(Effect.provideService(FetchHttpClient.Fetch, workbookFetch)),
 );
 
 it.effect("bundle commands save one batch and expose collection totals and edition-specific coverage", () =>
@@ -363,7 +368,9 @@ for (const operation of ["initialize", "refresh"] as const) {
             }),
         });
         const action = operation === "initialize" ? collection.setStore(slow.api) : collection.refresh();
-        const first = yield* Effect.forkChild(Effect.exit(reportAction(action).pipe(Effect.provide(notifications))));
+        const first = yield* Effect.forkChild(
+          Effect.exit(reportAction(action).pipe(Effect.provide(notifications), Effect.provideService(FetchHttpClient.Fetch, fetch))),
+        );
         yield* Deferred.await(started);
         collection.setUser("new-user");
         const fast = store({ [dice]: { wished: true } });
@@ -588,28 +595,48 @@ it.effect("observer defects block edits without turning cancellation into a load
 );
 
 for (const operation of ["import", "export"] as const) {
-  it.effect(`a superseded workbook ${operation} cannot affect the next owner or report a stale failure`, () =>
-    Effect.gen(function* () {
-      const collection = new Collection(operation === "import" ? data : bundleCatalog());
-      collection.setUser("first-owner");
-      const first = store(operation === "export" ? { [collectionKey("model", "resin")]: { wished: true } } : {});
-      yield* collection.setStore(first.api);
-      const row = workbookMap.rows[0];
-      const action =
-        operation === "import"
-          ? collection.importWorkbook([{ sheet: row.sheet, row: row.row, name: row.name, owned: true }])
-          : collection.exportWorkbook();
-      const active = yield* Effect.forkChild(Effect.exit(action), { startImmediately: true });
-      collection.setUser("second-owner");
-      const second = store();
-      yield* collection.setStore(second.api);
-      const result = yield* Fiber.join(active);
-      expect(Exit.isFailure(result) && Cause.hasInterrupts(result.cause)).toBe(true);
-      expect(collection.state).toEqual({});
-      expect(first.writes).toBe(0);
-      expect(second.writes).toBe(0);
-      expect(collection.loadError).toBeUndefined();
-      expect(collection.saveError).toBeUndefined();
-    }),
-  );
+  for (const fails of [false, true]) {
+    it.effect(`a superseded workbook ${operation} download ${fails ? "failure" : "success"} cannot affect the next owner`, () =>
+      Effect.gen(function* () {
+        const collection = new Collection(data);
+        collection.setUser("first-owner");
+        const first = store();
+        yield* collection.setStore(first.api);
+        const started = yield* Deferred.make<void>();
+        const download = Promise.withResolvers<Response>();
+        const fetch = vi.fn<typeof globalThis.fetch>().mockImplementation(() => {
+          Effect.runSync(Deferred.succeed(started, undefined));
+          return download.promise;
+        });
+        const messages: string[] = [];
+        const notify = (message: string) =>
+          Effect.sync(() => {
+            messages.push(message);
+          });
+        const notifications = Layer.succeed(Notifications, { success: notify, error: notify });
+        const row = workbookMap.rows[0];
+        const action =
+          operation === "import"
+            ? collection.importWorkbook([{ sheet: row.sheet, row: row.row, name: row.name, owned: true }])
+            : collection.exportWorkbook();
+        const active = yield* Effect.forkChild(
+          Effect.exit(reportAction(action).pipe(Effect.provide(notifications), Effect.provideService(FetchHttpClient.Fetch, fetch))),
+        );
+        yield* Deferred.await(started);
+        collection.setUser("second-owner");
+        const second = store();
+        yield* collection.setStore(second.api);
+        if (fails) download.reject(new TypeError("Failed to fetch"));
+        else download.resolve(Response.json(workbookMap));
+        const result = yield* Fiber.join(active);
+        expect(Exit.isFailure(result) && Cause.hasInterrupts(result.cause)).toBe(true);
+        expect(collection.state).toEqual({});
+        expect(first.writes).toBe(0);
+        expect(second.writes).toBe(0);
+        expect(collection.loadError).toBeUndefined();
+        expect(collection.saveError).toBeUndefined();
+        expect(messages).toEqual([]);
+      }).pipe(Effect.provideService(FetchHttpClient.Fetch, workbookFetch)),
+    );
+  }
 }

@@ -262,7 +262,3 @@ export function reviewIndex(catalog: ReviewCatalog) {
     ownershipCoverage,
   };
 }
-
-export function reviewInclusions(catalog: ReviewCatalog, id: string, editionId: string) {
-  return reviewIndex(catalog).inclusions(id, editionId);
-}

@@ -1,4 +1,6 @@
+import { asset } from "$app/paths";
 import { Effect, Schema as S } from "effect";
+import { FetchHttpClient, HttpClient, HttpClientResponse } from "effect/http";
 import { reviewEditions, reviewEntries } from "#lib/catalog-view.ts";
 import {
   CollectionSnapshotSchema,
@@ -32,10 +34,12 @@ function invalid(operation: TransferError["operation"], message: string, referen
 const decodeMapping = Effect.fn("CollectionTransfer.decodeMapping")(function* (operation: TransferError["operation"], mapping?: unknown) {
   const input =
     mapping ??
-    (yield* Effect.tryPromise({
-      try: () => import("../../../static/kdm-catalog/workbook-map.json").then((module) => module.default),
-      catch: () => invalid(operation, "Workbook mapping could not be loaded."),
-    }));
+    (yield* HttpClient.get(asset("kdm-catalog/workbook-map.json")).pipe(
+      Effect.flatMap(HttpClientResponse.filterStatusOk),
+      Effect.flatMap((response) => response.json),
+      Effect.mapError(() => invalid(operation, "Workbook mapping could not be loaded.")),
+      Effect.provide(FetchHttpClient.layer),
+    ));
   const map = yield* S.decodeUnknownEffect(WorkbookMapSchema, { onExcessProperty: "error" })(input).pipe(
     Effect.mapError(() => invalid(operation, "Workbook mapping is invalid.")),
   );

@@ -129,6 +129,11 @@ the full catalog and collection HTML out of service-worker precaching; cache the
 
 This project uses Effect v4. Before changing Effect code, read `node_modules/effect/AGENTS.md` completely and follow relevant linked references. For uncovered APIs/behavior, inspect the installed source and types. Prefer version-matched guidance over examples from other releases. If unavailable, report it and consult official documentation matching the installed version; do not upgrade Effect just to obtain guidance.
 
+Use Effect `HttpClient` for new application HTTP requests and asset downloads, including small browser loaders. Use the installed
+`effect/http` exports with `FetchHttpClient.layer`, validate JSON with Schema, and map transport, status, and decoding failures to
+feature-owned errors. Inject HTTP services or `FetchHttpClient.Fetch` in tests instead of replacing global `fetch`. In SvelteKit load
+functions, inject the provided `event.fetch` through `FetchHttpClient.Fetch` to preserve framework behavior.
+
 Use feature-owned `Schema.TaggedError` classes and unions at action boundaries. Use named `Effect.fn` for significant effectful operations, preserving deferred execution and instance binding. Keep pure helpers and UI callbacks ordinary functions. Preserve interruption when handling broad causes; cancellation must not produce failure notifications. Library guidance does not override the state, persistence, and UI boundaries below.
 
 At action boundaries, inspect the full cause before extracting a typed error. Causes containing interruption remain interrupted, even if they also contain a typed failure. Causes containing defects log the full cause rather than hiding it behind an expected error message. Keep simple Effect operations direct; generator wrappers should express actual sequencing.

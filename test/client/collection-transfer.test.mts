@@ -1,10 +1,14 @@
 import assert from "node:assert/strict";
 import { it } from "@effect/vitest";
-import { Effect, Result } from "effect";
+import { Cause, Deferred, Effect, Exit, Fiber, Result } from "effect";
+import { vi } from "vitest";
+import { FetchHttpClient } from "effect/http";
 import workbookMap from "../../static/kdm-catalog/workbook-map.json";
 import catalogJson from "../../static/kdm-catalog/data.json";
 import { decodeBackup, encodeBackup, previewWorkbookRows, exportWorkbookRows, TransferError } from "#lib/state/collection-transfer.ts";
 import { collectionKey, type Catalog } from "#lib/types/index.ts";
+
+vi.mock("$app/paths", () => ({ asset: (path: string) => `https://guidepost.test/test-base/${path}` }));
 
 const data = catalogJson as Catalog;
 const mapped = workbookMap.rows[0];
@@ -40,9 +44,10 @@ it.effect("workbook rows round trip collection fields without labels or personal
     const entries = yield* previewWorkbookRows(
       [{ sheet: mapped.sheet, row: mapped.row, name: mapped.name, owned: true, copyNumber: 5000 }],
       data,
+      workbookMap,
     );
-    const rows = yield* exportWorkbookRows(entries, data);
-    assert.deepEqual(yield* previewWorkbookRows(rows, data), entries);
+    const rows = yield* exportWorkbookRows(entries, data, workbookMap);
+    assert.deepEqual(yield* previewWorkbookRows(rows, data, workbookMap), entries);
     assert.equal(rows[0].editionId, mapped.primary.editionId);
     assert.equal(rows[0].copyNumber, 5000);
     assert.ok(!Object.hasOwn(rows[0], "label"));
@@ -71,19 +76,23 @@ it.effect("rejects numbers above a known run size and exports without a workbook
     );
     const valid = { [key]: { copyNumber: 5000 } };
     assert.deepEqual(yield* decodeBackup(yield* encodeBackup(valid, catalog), catalog), valid);
-    assert.equal((yield* Effect.flip(exportWorkbookRows(valid, catalog))).reason, "unknown-reference");
+    assert.equal((yield* Effect.flip(exportWorkbookRows(valid, catalog, workbookMap))).reason, "unknown-reference");
   }),
 );
 
 it.effect("rejects duplicate workbook selections and conflicting related ownership", () =>
   Effect.gen(function* () {
     const row = { sheet: mapped.sheet, row: mapped.row, name: mapped.name, owned: true };
-    assert.equal((yield* Effect.flip(previewWorkbookRows([row, row], data))).reason, "invalid-data");
+    assert.equal((yield* Effect.flip(previewWorkbookRows([row, row], data, workbookMap))).reason, "invalid-data");
     const source = workbookMap.rows.find((row) => row.ownershipScope === "source-row" && row.related?.length)!;
-    const entries = yield* previewWorkbookRows([{ sheet: source.sheet, row: source.row, name: source.name, owned: true }], data);
+    const entries = yield* previewWorkbookRows(
+      [{ sheet: source.sheet, row: source.row, name: source.name, owned: true }],
+      data,
+      workbookMap,
+    );
     const key = collectionKey(source.related![0].contentId, source.related![0].editionId);
     const inconsistent = { ...entries, [key]: { owned: false } };
-    assert.equal((yield* Effect.flip(exportWorkbookRows(inconsistent, data))).reason, "invalid-data");
+    assert.equal((yield* Effect.flip(exportWorkbookRows(inconsistent, data, workbookMap))).reason, "invalid-data");
   }),
 );
 
@@ -99,7 +108,7 @@ it.effect("rejects collection keys missing from the current catalog", () =>
 it.effect("requires the workbook row name and exact release selection", () =>
   Effect.gen(function* () {
     const mismatch = yield* Effect.result(
-      previewWorkbookRows([{ sheet: mapped.sheet, row: mapped.row, name: "Changed name", owned: true }], data),
+      previewWorkbookRows([{ sheet: mapped.sheet, row: mapped.row, name: "Changed name", owned: true }], data, workbookMap),
     );
     assert.ok(Result.isFailure(mismatch));
     assert.ok(mismatch.failure instanceof TransferError && mismatch.failure.reason === "unknown-reference");
@@ -110,11 +119,11 @@ it.effect("requires the workbook row name and exact release selection", () =>
     assert.ok(ambiguous);
     const [column, alternatives] = Object.entries(ambiguous.releaseEditions ?? {}).find(([, targets]) => targets.length > 1)!;
     const row = { sheet: ambiguous.sheet, row: ambiguous.row, name: ambiguous.name, owned: true, releaseColumn: column };
-    const unresolved = yield* Effect.result(previewWorkbookRows([row], data));
+    const unresolved = yield* Effect.result(previewWorkbookRows([row], data, workbookMap));
     assert.ok(Result.isFailure(unresolved));
     assert.ok(unresolved.failure instanceof TransferError && unresolved.failure.reason === "ambiguous");
 
-    const selected = yield* previewWorkbookRows([{ ...row, editionId: alternatives[0].editionId }], data);
+    const selected = yield* previewWorkbookRows([{ ...row, editionId: alternatives[0].editionId }], data, workbookMap);
     assert.deepEqual(selected[collectionKey(alternatives[0].contentId, alternatives[0].editionId)], { owned: true, wished: false });
   }),
 );
@@ -126,6 +135,7 @@ it.effect("propagates source-row ownership to explicitly related editions", () =
     const snapshot = yield* previewWorkbookRows(
       [{ sheet: source.sheet, row: source.row, name: source.name, owned: true, copyNumber: 7 }],
       data,
+      workbookMap,
     );
     for (const target of [source.primary, ...(source.related ?? [])]) {
       assert.deepEqual(snapshot[collectionKey(target.contentId, target.editionId)], {
@@ -141,7 +151,7 @@ it.effect("rejects invalid workbook number cells", () =>
   Effect.gen(function* () {
     for (const copyNumber of ["7", 0, 10000, 1.5]) {
       const result = yield* Effect.result(
-        previewWorkbookRows([{ sheet: mapped.sheet, row: mapped.row, name: mapped.name, copyNumber }], data),
+        previewWorkbookRows([{ sheet: mapped.sheet, row: mapped.row, name: mapped.name, copyNumber }], data, workbookMap),
       );
       assert.ok(Result.isFailure(result));
       assert.ok(result.failure instanceof TransferError && result.failure.reason === "invalid-data");
@@ -217,3 +227,76 @@ it.effect("rejects malformed mappings at both workbook action interfaces", () =>
     }
   }),
 );
+
+it.effect("loads the workbook map from the deployment's asset path", () =>
+  Effect.gen(function* () {
+    const fetch = vi.fn<typeof globalThis.fetch>().mockImplementation(async () => Response.json(workbookMap));
+    assert.deepEqual(yield* previewWorkbookRows([], data).pipe(Effect.provideService(FetchHttpClient.Fetch, fetch)), {});
+    assert.equal(String(fetch.mock.calls[0][0]), "https://guidepost.test/test-base/kdm-catalog/workbook-map.json");
+    assert.ok(fetch.mock.calls[0][1]?.signal instanceof AbortSignal);
+  }),
+);
+
+for (const [failure, response] of [
+  ["HTTP failure", () => Promise.resolve(new Response("Missing", { status: 404 }))],
+  ["network failure", () => Promise.reject(new TypeError("Failed to fetch"))],
+  ["invalid JSON", () => Promise.resolve(new Response("not JSON"))],
+] as const) {
+  it.effect(`reports a typed workbook load error after ${failure}`, () =>
+    Effect.gen(function* () {
+      const fetch = vi.fn<typeof globalThis.fetch>().mockImplementation(response);
+      for (const action of [Effect.asVoid(previewWorkbookRows([], data)), Effect.asVoid(exportWorkbookRows({}, data))]) {
+        const error = yield* Effect.flip(action.pipe(Effect.provideService(FetchHttpClient.Fetch, fetch)));
+        assert.ok(error instanceof TransferError);
+        assert.equal(error.reason, "invalid-data");
+        assert.equal(error.message, "Workbook mapping could not be loaded.");
+      }
+    }),
+  );
+}
+
+it.effect("validates downloaded mapping data before preview or export", () =>
+  Effect.gen(function* () {
+    const fetch = vi.fn<typeof globalThis.fetch>().mockImplementation(async () => Response.json({ ...workbookMap, privateCells: [] }));
+    for (const action of [Effect.asVoid(previewWorkbookRows([], data)), Effect.asVoid(exportWorkbookRows({}, data))]) {
+      assert.equal(
+        (yield* Effect.flip(action.pipe(Effect.provideService(FetchHttpClient.Fetch, fetch)))).message,
+        "Workbook mapping is invalid.",
+      );
+    }
+  }),
+);
+
+for (const phase of ["request", "response body"] as const) {
+  it.effect(`aborts the workbook ${phase} when its transfer is interrupted`, () =>
+    Effect.gen(function* () {
+      const started = yield* Deferred.make<AbortSignal>();
+      const fetch = vi.fn<typeof globalThis.fetch>().mockImplementation((_, options) => {
+        const signal = options?.signal;
+        assert.ok(signal);
+        if (phase === "request") {
+          return new Promise((_, reject) => {
+            signal.addEventListener("abort", () => reject(signal.reason), { once: true });
+            Effect.runSync(Deferred.succeed(started, signal));
+          });
+        }
+        const body = new ReadableStream<Uint8Array>(
+          {
+            pull(controller) {
+              signal.addEventListener("abort", () => controller.error(signal.reason), { once: true });
+              Effect.runSync(Deferred.succeed(started, signal));
+            },
+          },
+          { highWaterMark: 0 },
+        );
+        return Promise.resolve(new Response(body));
+      });
+      const active = yield* Effect.forkChild(previewWorkbookRows([], data).pipe(Effect.provideService(FetchHttpClient.Fetch, fetch)));
+      const signal = yield* Deferred.await(started);
+      yield* Fiber.interrupt(active);
+      const result = yield* Fiber.await(active);
+      assert.ok(Exit.isFailure(result) && Cause.hasInterrupts(result.cause));
+      assert.equal(signal.aborted, true);
+    }),
+  );
+}
