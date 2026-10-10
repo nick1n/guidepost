@@ -15,3 +15,19 @@ is separate; a completed report follows the files it describes.
 
 A prepared catalog change set with input hashes and unresolved matches. Applying a review validates its inputs and proposed catalog
 before publication. Its archive retains the complete change set; the merge report records the applied summary.
+
+## Collection browsing
+
+The active catalog category, search, tags, and ownership filter, together with per-category batches and retained card results.
+`CollectionBrowsing` owns those transitions and URL restoration. The collection page owns browser focus, gestures, observation,
+and scrolling; `Collection` still owns collection commands and persistence.
+
+## Catalog release resolution
+
+Interpreting shop variants as catalog editions, including curated selectors, warehouse grouping, material and price evidence,
+and conservative matching for complete availability snapshots. The workflows retain their own publication and availability policies.
+
+## Collection session
+
+The mounted app's storage and monitoring lifetime. `CollectionSession` opens browser storage, retains it for load retries,
+and stops subscriptions before closing storage. The layout forwards reactive readiness; `Collection` owns state and commands.

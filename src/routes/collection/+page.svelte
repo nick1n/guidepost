@@ -1,17 +1,8 @@
 <script module lang="ts">
-  import { reviewGameplayFirst, type reviewEntries } from "#lib/catalog-view.ts";
-  const catalogBatchSize = 100;
+  import type { reviewEntries } from "#lib/catalog-view.ts";
 
-  const categories = [
-    { id: "content", label: "Content" },
-    { id: "accessories", label: "Accessories" },
-    { id: "bundles", label: "Bundles" },
-    { id: "homebrew", label: "Homebrew" },
-  ] as const;
-  type Category = (typeof categories)[number]["id"];
   type Entry = ReturnType<typeof reviewEntries>[number];
 
-  const searchUrlDelay = 250;
   const swipeFeedbackDuration = 900;
   function tagWeight(count: number, maximum: number) {
     const proportion = Math.log(Math.max(3, count) / 3) / Math.log(Math.max(4, maximum) / 3);
@@ -27,7 +18,8 @@
   import { innerHeight, scrollY } from "svelte/reactivity/window";
   import CollectionCard from "#lib/components/track/CollectionCard.svelte";
   import { swipe, type SwipeDirection } from "#lib/swipe.ts";
-  import { reviewEditions, reviewTags, reviewTagLabel } from "#lib/catalog-view.ts";
+  import { reviewTagLabel } from "#lib/catalog-view.ts";
+  import { CollectionBrowsing, browseCategories as categories } from "#lib/collection-browsing.svelte.ts";
   import { formatPriceTotals } from "#lib/kdm-data.ts";
   import { collectionActions } from "#lib/state/collection-actions.ts";
   import { getCollection } from "#lib/state/collection.svelte.ts";
@@ -39,12 +31,10 @@
   collection.setCatalog(untrack(() => data.catalog));
   const catalog = collection.catalog;
   const entries = catalog.entries;
-  const contentEntries = reviewGameplayFirst(catalog.byCategory.get("content") ?? []);
-  const contentPreview = contentEntries.slice(0, catalogBatchSize);
-
-  let category = $state<Category>("content");
-  let categoryResults = $state.raw<Partial<Record<Category, Entry[]>>>({ content: contentPreview });
-  let categoryLimits = $state<Partial<Record<Category, number>>>({});
+  const browsing = new CollectionBrowsing(catalog, (item, edition) => collection.getEdition(item, edition), {
+    current: () => page.shallow?.url ?? page.url,
+    replace: (url) => replaceState(url, page.state),
+  });
   let dragDistance = $state(0);
   let swipeReady = $state(false);
   let categoriesVisible = $state(true);
@@ -52,27 +42,27 @@
   let swipeFeedback = $state(false);
   let swipeFeedbackTimer: ReturnType<typeof setTimeout> | undefined;
   const showSwipeTabs = $derived((dragDistance !== 0 || swipeFeedback) && !categoriesVisible);
-  let query = $state("");
   let searchInput: HTMLInputElement | undefined;
 
   function onkeydown(event: KeyboardEvent) {
     if (event.defaultPrevented || event.isComposing || event.repeat || event.altKey) return;
     const target = event.target;
     const modified = event.ctrlKey || event.metaKey;
-    if (event.key === "Backspace" && !modified && !event.shiftKey && target === searchInput && !query && selectedTags.length) {
+    if (
+      event.key === "Backspace" &&
+      !modified &&
+      !event.shiftKey &&
+      target === searchInput &&
+      !browsing.query &&
+      browsing.selectedTags.length
+    ) {
       event.preventDefault();
-      selectedTags = selectedTags.slice(0, -1);
-      updateCatalogUrl();
+      browsing.removeLastTag();
       return;
     }
     if (event.key === "Enter" && !modified && !event.shiftKey && target === searchInput) {
-      const match =
-        tags.find(({ tag }) => tag.toLowerCase() === searchQuery) ??
-        tags.find(({ tag }) => reviewTagLabel(tag).toLowerCase() === searchQuery);
-      if (!match) return;
+      if (!browsing.acceptTagQuery()) return;
       event.preventDefault();
-      if (!selectedTags.includes(match.tag)) selectedTags = [...selectedTags, match.tag];
-      setQuery("");
       return;
     }
     if (event.key === "Escape" && !modified && !event.shiftKey && target === searchInput) {
@@ -89,35 +79,10 @@
     searchInput?.focus();
   }
 
-  let searchUrlTimer: ReturnType<typeof setTimeout> | undefined;
-  beforeNavigate(() => clearTimeout(searchUrlTimer));
+  beforeNavigate(() => browsing.cancelPendingUrl());
   afterNavigate(({ to }) => {
-    clearTimeout(searchUrlTimer);
-    const next = categories.find((option) => option.id === to?.url.searchParams.get("cat"))?.id ?? "content";
-    if (next !== category) setCategory(next);
-    query = to?.url.searchParams.get("q") ?? "";
-    const availableTags = catalog.tags.get(next) ?? [];
-    selectedTags = [...new Set(to?.url.searchParams.getAll("tag") ?? [])].filter((tag) => availableTags.some((value) => value.tag === tag));
+    if (to) browsing.restore(to.url);
   });
-
-  function updateCatalogUrl() {
-    clearTimeout(searchUrlTimer);
-    const url = new URL(page.url.href);
-    if (category === "content") url.searchParams.delete("cat");
-    else url.searchParams.set("cat", category);
-    if (query) url.searchParams.set("q", query);
-    else url.searchParams.delete("q");
-    url.searchParams.delete("tag");
-    for (const tag of selectedTags) url.searchParams.append("tag", tag);
-    if (url.href !== page.url.href) replaceState(url, page.state);
-  }
-
-  function setQuery(value: string) {
-    query = value;
-    clearTimeout(searchUrlTimer);
-    if (query) searchUrlTimer = setTimeout(updateCatalogUrl, searchUrlDelay);
-    else updateCatalogUrl();
-  }
   const showBackToTop = $derived((innerHeight.current ?? 0) > 0 && (scrollY.current ?? 0) >= (innerHeight.current ?? 0));
 
   function backToTop() {
@@ -125,14 +90,12 @@
   }
   let tagsOpen = $state(false);
   let allTagsOpen = $state(false);
-  let selectedTags = $state<string[]>([]);
-  let status = $state<"all" | "owned" | "wishlist">("all");
   const writable = $derived(collection.canWrite);
   let collapsed = $state<Record<string, boolean>>({});
   let rendered = $state<Record<string, boolean>>({});
   let cancelCardScroll: (() => void) | undefined;
   onDestroy(() => {
-    clearTimeout(searchUrlTimer);
+    browsing.cancelPendingUrl();
     clearTimeout(swipeFeedbackTimer);
     cancelCardScroll?.();
   });
@@ -237,44 +200,10 @@
     };
   }
 
-  const searchQuery = $derived(query.trim().toLowerCase());
-  const categoryEntries = $derived(category === "content" ? contentEntries : (catalog.byCategory.get(category) ?? []));
-  const tags = $derived(catalog.tags.get(category) ?? []);
-  const cloudTags = $derived(category === "content" ? (catalog.tagViews.get(category)?.cloud ?? []) : tags);
-  const allTags = $derived(catalog.tagViews.get(category)?.all ?? []);
-  const hasSearch = $derived(!!searchQuery || selectedTags.length > 0);
-  const catalogLimited = $derived(!hasSearch && status === "all");
-  const filtered = $derived.by(() => {
-    if (catalogLimited) return categoryEntries;
-    return categoryEntries.filter((item) => {
-      if (!selectedTags.every((tag) => item.tags.includes(tag))) return false;
-      if (searchQuery && !catalog.search.get(item.id)?.includes(searchQuery)) return false;
-      if (status === "owned" && !reviewEditions(item).some((edition) => collection.getEdition(item.id, edition.id).owned)) return false;
-      if (status === "wishlist" && !reviewEditions(item).some((edition) => collection.getEdition(item.id, edition.id).wished)) return false;
-      return true;
-    });
-  });
-  const visible = $derived(catalogLimited ? filtered.slice(0, categoryLimits[category] ?? catalogBatchSize) : filtered);
-  const nextCount = $derived(Math.min(catalogBatchSize, filtered.length - visible.length));
-
-  function showMoreItems() {
-    categoryLimits[category] = Math.min((categoryLimits[category] ?? catalogBatchSize) + catalogBatchSize, categoryEntries.length);
-  }
-
   const allCollapsed = $derived(entries.length > 0 && entries.every((item) => collapsed[item.id]));
-  const latestUnowned = $derived(
-    filtered.flatMap((item) => {
-      const edition = reviewEditions(item).at(-1);
-      return edition && edition.standalone !== false && !collection.getEdition(item.id, edition.id).owned ? [{ item, edition }] : [];
-    }),
-  );
-  const tagCounts = $derived.by(() => {
-    if (filtered === categoryEntries) return catalog.tagViews.get(category)?.counts ?? new Map<string, number>();
-    return new Map(reviewTags(filtered).map(({ tag, count }) => [tag, count]));
-  });
   function markLatestOwned() {
     if (!writable) return;
-    collectionActions.run(collection.setEditionsOwned(latestUnowned, true));
+    collectionActions.run(collection.setEditionsOwned(browsing.latestUnowned, true));
   }
   function refreshCollection() {
     if (!collection.hasStore) {
@@ -283,25 +212,11 @@
     }
     collectionActions.run(collection.refresh(), { success: false });
   }
-  function setCategory(next: Category) {
-    // Retain the outgoing results without rebuilding hidden cards when search is cleared.
-    categoryResults = {
-      ...categoryResults,
-      [category]: visible,
-      [next]: categoryResults[next] ?? (catalog.byCategory.get(next) ?? []).slice(0, categoryLimits[next] ?? catalogBatchSize),
-    };
-    category = next;
-    selectedTags = [];
-  }
-  function changeCategory(next: Category) {
-    setCategory(next);
-    setQuery("");
-  }
   function swipeCategory(direction: SwipeDirection) {
-    const index = categories.findIndex((option) => option.id === category);
+    const index = categories.findIndex((option) => option.id === browsing.category);
     const offset = direction === "left" ? 1 : -1;
     const next = categories[(index + offset + categories.length) % categories.length];
-    changeCategory(next.id);
+    browsing.changeCategory(next.id);
     if (!categoriesVisible) {
       clearTimeout(swipeFeedbackTimer);
       swipeFeedback = true;
@@ -331,18 +246,6 @@
       observer.disconnect();
       categoryBar = undefined;
     };
-  }
-  function toggleTag(tag: string) {
-    selectedTags = selectedTags.includes(tag) ? selectedTags.filter((value) => value !== tag) : [...selectedTags, tag];
-    updateCatalogUrl();
-  }
-  function clearSearch() {
-    selectedTags = [];
-    setQuery("");
-    status = "all";
-  }
-  function toggleStatus(next: "owned" | "wishlist") {
-    status = status === next ? "all" : next;
   }
 </script>
 
@@ -376,7 +279,7 @@
   {/if}
 
   <section class="stats" aria-label="Collection totals">
-    <button class="stat-owned" type="button" aria-pressed={status === "owned"} onclick={() => toggleStatus("owned")}>
+    <button class="stat-owned" type="button" aria-pressed={browsing.status === "owned"} onclick={() => browsing.toggleStatus("owned")}>
       <span class="stat-label"
         >Owned<span class="stat-icon control-icon i-material-symbols:inventory-2-outline" aria-hidden="true"></span></span
       >
@@ -385,7 +288,12 @@
     <div class="stat-value">
       <strong>{formatPriceTotals(collection.totals)}</strong>
     </div>
-    <button class="stat-wishlist" type="button" aria-pressed={status === "wishlist"} onclick={() => toggleStatus("wishlist")}>
+    <button
+      class="stat-wishlist"
+      type="button"
+      aria-pressed={browsing.status === "wishlist"}
+      onclick={() => browsing.toggleStatus("wishlist")}
+    >
       <span class="stat-label"
         ><span class="stat-icon control-icon i-material-symbols:favorite-outline" aria-hidden="true"></span>Wishlist</span
       >
@@ -401,18 +309,23 @@
   </nav>
 
   <div class="catalog-filters">
-    <div class={["search-controls", selectedTags.length > 0 && selectedTags.length <= 2 && "is-inline"]}>
+    <div class={["search-controls", browsing.selectedTags.length > 0 && browsing.selectedTags.length <= 2 && "is-inline"]}>
       <div class="search-heading">
         <label class="search" for="catalog-search">Search catalog</label>
-        {#if hasSearch}
-          <button class="search-command" type="button" onclick={markLatestOwned} disabled={!writable || !latestUnowned.length}>
+        {#if browsing.hasSearch}
+          <button class="search-command" type="button" onclick={markLatestOwned} disabled={!writable || !browsing.latestUnowned.length}>
             Mark latest editions owned
           </button>
         {/if}
-        <button class="search-command" type="button" onclick={clearSearch} disabled={!query && !selectedTags.length && status === "all"}>
+        <button
+          class="search-command"
+          type="button"
+          onclick={browsing.clearSearch}
+          disabled={!browsing.query && !browsing.selectedTags.length && browsing.status === "all"}
+        >
           Clear search
         </button>
-        <p class="results">{filtered.length} items</p>
+        <p class="results">{browsing.filtered.length} items</p>
       </div>
       <div class="search-row">
         <div class="search-field">
@@ -420,19 +333,24 @@
             id="catalog-search"
             type="search"
             bind:this={searchInput}
-            bind:value={() => query, setQuery}
+            bind:value={() => browsing.query, browsing.setQuery}
             aria-keyshortcuts="/ Control+k Meta+k"
             aria-describedby="search-shortcut"
             placeholder="Name, alias, or tag"
           />
-          <span id="search-shortcut" class={["shortcut", query && "is-hidden"]}>
+          <span id="search-shortcut" class={["shortcut", browsing.query && "is-hidden"]}>
             <span class="visually-hidden">Press </span><kbd>/</kbd><span class="visually-hidden"> to focus search</span>
           </span>
         </div>
-        {#if selectedTags.length}
+        {#if browsing.selectedTags.length}
           <section class="tag-filters" aria-label="Selected tags">
-            {#each selectedTags as tag (tag)}
-              <button class="active-tag" type="button" aria-label="Remove {reviewTagLabel(tag)} filter" onclick={() => toggleTag(tag)}>
+            {#each browsing.selectedTags as tag (tag)}
+              <button
+                class="active-tag"
+                type="button"
+                aria-label="Remove {reviewTagLabel(tag)} filter"
+                onclick={() => browsing.toggleTag(tag)}
+              >
                 {reviewTagLabel(tag)}<span class="remove-icon i-material-symbols:close" aria-hidden="true"></span>
               </button>
             {/each}
@@ -471,15 +389,15 @@
     </div>
     <div class="tag-body" id="tag-browser" hidden={!tagsOpen}>
       {#if tagsOpen}
-        {#if cloudTags.length}
+        {#if browsing.cloudTags.length}
           <fieldset class="tag-cloud">
             <legend class="visually-hidden">Filter by tags</legend>
-            {#each cloudTags as option (option.tag)}
-              {@render tagButton(option.tag, tagWeight(option.count, tags[0]?.count ?? 0))}
+            {#each browsing.cloudTags as option (option.tag)}
+              {@render tagButton(option.tag, tagWeight(option.count, browsing.tags[0]?.count ?? 0))}
             {/each}
           </fieldset>
         {/if}
-        {#if category === "content" && allTags.length}
+        {#if browsing.category === "content" && browsing.allTags.length}
           <details class="more-tags" bind:open={allTagsOpen}>
             <summary class="more-heading"
               >All tags<span class="more-chevron control-icon i-material-symbols:expand-more" aria-hidden="true"></span></summary
@@ -487,51 +405,51 @@
             {#if allTagsOpen}
               <fieldset class="tag-list">
                 <legend class="visually-hidden">All tags</legend>
-                {#each allTags as option (option.tag)}
+                {#each browsing.allTags as option (option.tag)}
                   {@render tagButton(option.tag)}
                 {/each}
               </fieldset>
             {/if}
           </details>
         {/if}
-        {#if !tags.length}<p>No tags are listed for this category.</p>{/if}
+        {#if !browsing.tags.length}<p>No tags are listed for this category.</p>{/if}
       {/if}
     </div>
   </div>
 
   <div class="catalog-viewport">
     <div class={["catalog-content", dragDistance !== 0 && "is-dragging"]} style:--drag-distance={`${dragDistance}px`}>
-      {#each categories as option (option.id)}
-        {#if categoryResults[option.id]}
-          {@const items = option.id === category ? visible : categoryResults[option.id]!}
-          <!-- Keep visited cards mounted so category changes preserve their controls and deferred bodies. -->
-          <div data-category={option.id} hidden={option.id !== category}>
-            {#if !items.length}
-              <p class="empty">No items match. Try another search, tag, category, or ownership filter.</p>
-            {:else}
-              <div class="cards">
-                {#each items as item, index (item.id)}
-                  <CollectionCard
-                    {item}
-                    ready={index < 6 || !!rendered[item.id]}
-                    collapsed={!!collapsed[item.id]}
-                    {selectedTags}
-                    observe={observeCard(item)}
-                    onToggle={() => toggleCard(item)}
-                    onHold={() => holdCard(item)}
-                    onTagClick={toggleTag}
-                  />
-                {/each}
+      {#each browsing.panels as option (option.id)}
+        {@const items = option.items}
+        <!-- Keep visited cards mounted so category changes preserve their controls and deferred bodies. -->
+        <div data-category={option.id} hidden={option.id !== browsing.category}>
+          {#if !items.length}
+            <p class="empty">No items match. Try another search, tag, category, or ownership filter.</p>
+          {:else}
+            <div class="cards">
+              {#each items as item, index (item.id)}
+                <CollectionCard
+                  {item}
+                  ready={index < 6 || !!rendered[item.id]}
+                  collapsed={!!collapsed[item.id]}
+                  selectedTags={browsing.selectedTags}
+                  observe={observeCard(item)}
+                  onToggle={() => toggleCard(item)}
+                  onHold={() => holdCard(item)}
+                  onTagClick={browsing.toggleTag}
+                />
+              {/each}
+            </div>
+            {#if option.id === browsing.category && items.length < browsing.filtered.length}
+              <div class="catalog-more">
+                <p>
+                  {browsing.category === "content" ? "Gameplay items first. " : ""}Showing {items.length} of {browsing.filtered.length} items.
+                </p>
+                <button class="show-more" type="button" onclick={browsing.showMoreItems}>Show {browsing.nextCount} more</button>
               </div>
-              {#if option.id === category && items.length < filtered.length}
-                <div class="catalog-more">
-                  <p>{category === "content" ? "Gameplay items first. " : ""}Showing {items.length} of {filtered.length} items.</p>
-                  <button class="show-more" type="button" onclick={showMoreItems}>Show {nextCount} more</button>
-                </div>
-              {/if}
             {/if}
-          </div>
-        {/if}
+          {/if}
+        </div>
       {/each}
     </div>
   </div>
@@ -562,22 +480,25 @@
 
 {#snippet categoryButtons()}
   {#each categories as option (option.id)}
-    <button class="category-tab" type="button" aria-pressed={category === option.id} onclick={() => changeCategory(option.id)}
-      >{option.label}</button
+    <button
+      class="category-tab"
+      type="button"
+      aria-pressed={browsing.category === option.id}
+      onclick={() => browsing.changeCategory(option.id)}>{option.label}</button
     >
   {/each}
   <span class="tab-highlight" aria-hidden="true"></span>
 {/snippet}
 
 {#snippet tagButton(tag: string, weight = 0)}
-  {@const selected = selectedTags.includes(tag)}
+  {@const selected = browsing.selectedTags.includes(tag)}
   <button
     class="cloud-tag"
     type="button"
     aria-pressed={selected}
-    disabled={!selected && !tagCounts.get(tag)}
+    disabled={!selected && !browsing.tagCounts.get(tag)}
     style:--tag-weight={weight}
-    onclick={() => toggleTag(tag)}>{reviewTagLabel(tag)}</button
+    onclick={() => browsing.toggleTag(tag)}>{reviewTagLabel(tag)}</button
   >
 {/snippet}
 

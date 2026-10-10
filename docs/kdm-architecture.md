@@ -38,11 +38,11 @@ snapshot reads; entry primary keys serve writes.
 
 Dexie loads after the browser mounts the app. A metadata `liveQuery` subscription reports stale snapshots through the store interface.
 `Collection` blocks edits and offers an explicit refresh without replacing its current state. Observations never authorize writing
-against a newer revision. The layout owns the subscription and closes it before the database connection on teardown. Transactional
-revision checks also reject competing writes before a notification arrives.
+against a newer revision. `CollectionSession` owns startup and monitoring in one Effect scope, stopping subscriptions before
+closing the database connection on teardown. Transactional revision checks also reject competing writes before a notification arrives.
 
-Observer failures block editing without discarding the current snapshot. The layout restarts monitoring after retry, keeping the
-subscription active during normal refreshes. Superseded command results and failures are interrupted before they reach notifications
+Observer failures block editing without discarding the current snapshot. The layout forwards collection readiness to the session,
+which restarts monitoring after retry and keeps the subscription active during normal refreshes. Superseded command results and failures are interrupted before they reach notifications
 or another owner's collection.
 
 The root layout provides one `Collection` per app instance through Svelte context. It owns commands, derived totals and coverage,

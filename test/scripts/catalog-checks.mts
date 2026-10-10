@@ -6,14 +6,8 @@ import { dirname, join } from "node:path";
 import { createHash } from "node:crypto";
 import { gunzipSync } from "node:zlib";
 import { test } from "node:test";
-import {
-  applyAvailability,
-  observedPrices,
-  planUpdate as prepareUpdate,
-  productExclusion,
-  releaseGaps,
-  variantLabel,
-} from "#scripts/catalog/update.mts";
+import { applyAvailability, planUpdate as prepareUpdate, productExclusion, releaseGaps } from "#scripts/catalog/update.mts";
+import { resolveReleases } from "#scripts/catalog/releases.mts";
 import { catalogListing, productUrl, ShopClient, ShopError, shopProduct } from "#scripts/catalog/shop.mts";
 import { applyReview } from "#scripts/update-catalog.mts";
 import { refreshAvailability } from "#scripts/refresh-catalog-availability.mts";
@@ -79,6 +73,18 @@ const product = (overrides: Partial<Product> = {}): Product => ({
   variants: [{ id: 10, title: "Rene", price: 700, compare_at_price: null, requires_shipping: false, sku: "Rene" }],
   ...overrides,
 });
+function releasePrices(variants: Product["variants"], previous: number[] = []) {
+  const item = { name: "Example", tags: [], editions: [{ id: "sim", label: "Sim", prices: previous }] };
+  return resolveReleases(item, product({ variants }), {
+    policy: "update",
+    mapping: {
+      category: "content",
+      itemId: "example",
+      variantEditions: Object.fromEntries(variants.map((variant) => [String(variant.id), "Sim"])),
+    },
+  }).releases[0]!.prices;
+}
+
 const source = (data: Product) => ({
   data,
   url: "https://shop.kingdomdeath.com/products/" + data.handle + ".js",
@@ -169,7 +175,15 @@ test("cached Death Pink and Second Run names match their distinct catalog editio
     listing.variants[1]!.available = true;
     availabilityFromUrls(catalog, [listing]);
     assert.deepEqual(catalog.content.model.editions![1], { label: label, prices: [3000], available: true });
-    if (label === "Bust: Second Run") assert.equal(variantLabel(listing.variants[1]!, "Bust: First Run"), "Bust: Second Run");
+    if (label === "Bust: Second Run")
+      assert.equal(
+        resolveReleases(
+          { name: "Bust", tags: [] },
+          { ...listing, variants: [listing.variants[1]!] },
+          { policy: "update", mapping: { category: "content", itemId: "bust", edition: "Bust: First Run" } },
+        ).releases[0]!.label,
+        "Bust: Second Run",
+      );
   }
 });
 
@@ -400,8 +414,20 @@ test("format mappings preserve release selectors and cannot remove standard game
     ],
   };
   const data = product({ handle: "morgan-bust", variants: [{ ...product().variants[0]!, requires_shipping: true, title: "Encore" }] });
-  assert.equal(variantLabel(data.variants[0]!, "Painters"), "Painters");
-  assert.equal(variantLabel(data.variants[0]!, "Bust: First Run"), "Bust: Encore");
+  assert.equal(
+    resolveReleases({ name: "Example", tags: [] }, data, {
+      policy: "update",
+      mapping: { category: "content", itemId: "example", edition: "Painters" },
+    }).releases[0]!.label,
+    "Painters",
+  );
+  assert.equal(
+    resolveReleases({ name: "Example", tags: [] }, data, {
+      policy: "update",
+      mapping: { category: "content", itemId: "example", edition: "Bust: First Run" },
+    }).releases[0]!.label,
+    "Bust: Encore",
+  );
   const review = planUpdate(
     catalog,
     [source(data)],
@@ -542,9 +568,9 @@ test("the digital core selects one key and excludes physical keys and multipacks
 });
 
 test("price corrections do not invent sales from an old MSRP or a reversed compare-at price", () => {
-  assert.deepEqual(observedPrices([product().variants[0]!], [1000]), [700]);
-  assert.deepEqual(observedPrices([{ ...product().variants[0]!, price: 9000, compare_at_price: 8000 }], [8000]), [9000]);
-  assert.deepEqual(observedPrices([{ ...product().variants[0]!, price: 6500, compare_at_price: 8000 }], [5000, 8000]), [5000, 6500, 8000]);
+  assert.deepEqual(releasePrices([product().variants[0]!], [1000]), [700]);
+  assert.deepEqual(releasePrices([{ ...product().variants[0]!, price: 9000, compare_at_price: 8000 }], [8000]), [9000]);
+  assert.deepEqual(releasePrices([{ ...product().variants[0]!, price: 6500, compare_at_price: 8000 }], [5000, 8000]), [5000, 6500, 8000]);
 });
 
 test("master tags replace existing and mapping tags without guessing or merging them", () => {
@@ -767,7 +793,7 @@ test("Shopify product JSON preserves metadata and converts decimal prices withou
   assert.equal(item.tags, raw.tags);
   assert.equal(item.variants[0]?.price, 7000);
   assert.equal(item.variants[0]?.compare_at_price, null);
-  assert.equal(observedPrices(item.variants)[0], 7000);
+  assert.equal(releasePrices(item.variants)[0], 7000);
   assert.equal(
     shopProduct({ ...raw, variants: [{ ...raw.variants[0], price: "7.25", compare_at_price: "9.00" }] }).variants[0]?.price,
     725,

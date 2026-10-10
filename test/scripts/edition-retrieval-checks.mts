@@ -3,7 +3,9 @@ import { mkdtemp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { test } from "node:test";
-import { fillEditions, productEditions } from "#scripts/fill-catalog-editions.mts";
+import { createHash } from "node:crypto";
+import { productEditions } from "#scripts/catalog/releases.mts";
+import { fillEditions } from "#scripts/fill-catalog-editions.mts";
 import { shopProduct } from "#scripts/catalog/shop.mts";
 
 const raw = {
@@ -100,6 +102,31 @@ test("retrieval refuses to overwrite edits made during product downloads", async
       /changed during retrieval/,
     );
     assert.equal(JSON.parse(await readFile(path, "utf8")).content.example.notes, "User edit");
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test("default retrieval client publishes editions from its offline Ajax cache", async () => {
+  const { root, path } = await fixture();
+  try {
+    const cache = join(root, "temp/kdm-catalog/shopify-products/edition-cache");
+    const url = "https://shop.kingdomdeath.com/products/example.js";
+    await mkdir(cache, { recursive: true });
+    await writeFile(
+      join(cache, createHash("sha256").update(url).digest("hex") + ".json"),
+      JSON.stringify({ url, checkedAt: "2020-01-01T00:00:00Z", data: raw }),
+    );
+    const report = await fillEditions({ catalog: path, offline: true });
+    assert.equal(report.complete, true);
+    assert.equal(report.applied, true);
+    assert.equal(report.reachable.length, 1);
+    assert.deepEqual(
+      JSON.parse(await readFile(path, "utf8")).content.example.editions.map((edition: { id: string }) => edition.id),
+      ["first-run", "encore"],
+    );
+    const mappings = JSON.parse(await readFile(join(root, "temp/kdm-catalog/shopify-products/kdm-shop-mappings.json"), "utf8"));
+    assert.deepEqual(mappings.example.variantEditions, { 11: "First Run", 12: "First Run", 13: "Encore" });
   } finally {
     await rm(root, { recursive: true, force: true });
   }

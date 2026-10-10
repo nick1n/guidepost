@@ -50,6 +50,9 @@ supplies the full catalog without resetting ownership or pending saves.
 The service worker defers the full catalog and collection HTML until collection is visited, then caches them for offline use,
 including reloads of collection URLs with search and filter parameters.
 
+`scripts/catalog/releases.mts` resolves shop variants, curated release selectors, materials, and prices for update and retrieval workflows.
+Full availability refreshes use its conservative edition matching; incremental updates preserve editions that were not observed.
+
 The [catalog guide](exports/kdm-catalog/README.md) covers data rules, mappings, and review decisions.
 Catalog commands maintain the files in `static/kdm-catalog/`. The previous catalog and its schema are archived locally as
 `temp/kdm-data.json` and `temp/kdm-data.schema.json`. Working files, caches, and reports under `temp/` are Git-ignored.
@@ -131,7 +134,7 @@ unmatched or ambiguous shop editions default to unavailable. Homebrew availabili
 Results go to `temp/kdm-catalog/reports/availability-refresh.json`.
 
 Edition retrieval groups warehouse choices under their release label and leaves failed listings unchanged.
-Requests are 33 seconds apart; responses stay cached until `--refresh`.
+Requests are at least 35 seconds apart; responses stay cached until `--refresh`.
 Results go to `temp/kdm-catalog/reports/edition-retrieval.json`.
 Both commands write the live catalog and refuse to overwrite catalog edits made during retrieval.
 
@@ -167,6 +170,10 @@ The root layout creates a `Collection` instance and provides it through Svelte c
 `DexieStore` owns persistence. `isSaving` reports pending writes. The injected `Notifications` service uses Effect logging;
 visible notifications are planned. Expected action failures log their typed error messages; unexpected defects log the full Effect
 cause. Cancellation does not produce a failure notification.
+
+[`CollectionSession`](src/lib/state/collection-session.ts) owns browser storage startup, monitoring, and teardown. The layout forwards
+collection readiness to the session and interrupts its lifetime on unmount. Shutdown waits for initialization and observer finalizers
+before closing storage; a failed snapshot load keeps the opened store available for retry.
 
 Monitoring stays active during refresh and restarts after an observer failure is retried. Observer failures block editing while
 preserving the current view. Database load failures offer a retry; a failed storage-module download offers a page reload.

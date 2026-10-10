@@ -6,6 +6,21 @@ See [README.md](README.md) for the project overview, setup, commands, catalog wo
 
 Never use em dashes or centered dots in user-facing output. Use commas, colons, semicolons, parentheses, bullets, or separate sentences.
 
+## Sub-agents
+
+When delegation is authorized, choose the model and reasoning effort for each task rather than inheriting the primary agent's settings:
+
+- Straightforward tasks with clear instructions, such as file inventories, small documentation edits, or mechanical changes: use
+  `gpt-6-luna` with `high` reasoning.
+- Medium-complexity tasks with bounded scope, such as focused reviews, isolated implementation, or tests for defined behavior: use
+  `gpt-6.1-sol` with `low` reasoning.
+- Complex or uncertain tasks, such as architecture decisions, concurrency, persistence, or subtle Effect behavior: keep them with the
+  primary agent or use `gpt-6.1-sol` with higher reasoning when delegation helps.
+
+Use only model IDs and reasoning levels exposed by the runtime. These are defaults; increase reasoning or change models when the task
+requires it, and briefly explain the exception. When model overrides require `fork_turns="none"`, provide a self-contained brief with
+the relevant files, constraints, and expected result. The primary agent owns integration and the required checks.
+
 ## Required skills
 
 - For creating, editing, reviewing, or debugging `.svelte`, `.svelte.ts`, or `.svelte.js` files, always use `svelte-code-writer` and `svelte-core-bestpractices`.
@@ -125,7 +140,7 @@ Collection -> OptimisticStore -> DexieStore (CollectionStore)
 - The root layout provides one `Collection` per app instance through Svelte context. `Collection` owns collection commands. `CollectionStore` in `src/lib/state/stores.ts` is the persistence interface implemented by `DexieStore` in `src/lib/state/dexie-store.ts`; data types live in `src/lib/types`.
 - `DexieStore` reads and writes complete snapshots scoped to one owner in IndexedDB. It applies changed rows and removals with the revision check and update in one transaction. The `ownerId` index serves snapshot reads; entry primary keys serve writes. Load Dexie only inside browser initialization. Metadata schema version 1 validates the stored shape and is not a migration. Keep storage details out of `Collection`.
 - `CollectionStore.changes` optionally reports stale snapshots. `DexieStore` uses metadata `liveQuery` subscriptions with Effect finalizers. `Collection.observeChanges()` blocks edits and offers explicit refresh without replacing optimistic state. Observations never advance the expected write revision; local saves must not report themselves as stale.
-- Observer failures set a load error and block edits while preserving the snapshot. The layout follows `Collection.canObserve`, keeps healthy monitoring active during refresh, and restarts failed monitoring only after a successful retry. Interrupt the subscription before closing Dexie. A storage-module download failure has no store to retry; offer a page reload.
+- Observer failures set a load error and block edits while preserving the snapshot. The layout forwards `Collection.canObserve` to `CollectionSession`, which owns startup, scoped monitoring, and teardown. Keep healthy monitoring active during refresh and restart failed monitoring only after a successful retry. Interrupt the subscription before closing Dexie. A storage-module download failure has no store to retry; offer a page reload.
 - Collection state stores `owned`, `wished`, and numeric `copyNumber` (integers 1 through 9999, bounded by a known run size) under stable content and edition IDs. Do not key saved entries by mutable edition labels.
 - `OptimisticStore` holds confirmed state plus pending field patches, serializes persistence, and removes failed patches without overwriting newer edits. Only persistence waits in the queue. Batch related updates in one `saveMany()` transaction.
 - Backups validate before replacing a snapshot; workbook imports validate normalized row identities and merge provided fields in one queued save. Exports wait for queued writes and use confirmed data. Keep XLSX controls deferred.

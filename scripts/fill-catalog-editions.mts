@@ -5,57 +5,12 @@ import { parseArgs } from "node:util";
 import { publishFiles } from "./catalog/publication.mts";
 import { catalogTemp } from "./catalog/paths.mts";
 import { editionComparator, organizeCatalog } from "./catalog/order.mts";
-import { editionId } from "./catalog/identity.mts";
 import { normalizeItem } from "./catalog/normalize.mts";
 import { productUrl, ShopClient, shopProduct } from "./catalog/shop.mts";
-import { normalized, variantLabel } from "./catalog/update.mts";
+import { normalized } from "./catalog/update.mts";
+import { productEditions } from "./catalog/releases.mts";
 import { validateCatalog } from "./catalog/validate.mts";
-import type { Catalog, Edition, Item, Mapping, Product } from "./catalog/types.mts";
-
-export function productEditions(item: Item, product: Product) {
-  if (!product.variants.length) throw new Error("Product has no variants");
-  const text = product.description.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ");
-  const material = /photoresin/i.test(text)
-    ? "Photoresin"
-    : /\bPVC\b/i.test(text)
-      ? "PVC"
-      : /hard plastic|plastic miniature/i.test(text)
-        ? "Plastic"
-        : /\bresin\b/i.test(text)
-          ? "Resin"
-          : undefined;
-  const fallback = material ?? "Box";
-  const editions = new Map<string, Edition>();
-  const selectors: Record<string, string> = {};
-  for (const variant of product.variants) {
-    const release = variantLabel(variant, fallback);
-    // Warehouse variants select shipping locations, not separate releases.
-    const label =
-      release === fallback &&
-      !/default title|warehouse|united states|united kingdom|australia|canada|\b(?:US|UK|EU|USA|HQ)\b/i.test(variant.title)
-        ? variant.title.trim() || fallback
-        : release;
-    selectors[String(variant.id)] = label;
-    const edition = editions.get(label) ?? {
-      id: editionId(label, [...editions.values()]),
-      label: label,
-      ...(item.releaseDate ? { releaseDate: item.releaseDate } : {}),
-    };
-    const prices = [
-      variant.price,
-      ...(variant.compare_at_price !== null && variant.compare_at_price > variant.price ? [variant.compare_at_price] : []),
-    ];
-    edition.prices = [...new Set([...(edition.prices ?? []), ...prices])].sort((a, b) => a - b);
-    if (variant.available === true) edition.available = true;
-    if (material && label !== "Sim" && material !== label && !/^Deathgrey|^Deathpink/.test(label)) edition.materials = [material];
-    if (label === "First Run") {
-      const run = text.match(/first run.{0,160}?(?:limited to|limit(?:ed)?(?: edition)? of)\s*([\d,]+)/i);
-      if (run) edition.runSize = Number(run[1]!.replaceAll(",", ""));
-    }
-    editions.set(label, edition);
-  }
-  return { editions: [...editions.values()], selectors };
-}
+import type { Catalog, Mapping } from "./catalog/types.mts";
 
 export async function fillEditions(
   options: { catalog?: string; offline?: boolean; refresh?: boolean; signal?: AbortSignal; client?: Pick<ShopClient, "get"> } = {},
@@ -77,8 +32,7 @@ export async function fillEditions(
   const news: { links: { itemName: string; shopUrl: string; date: string }[] } = JSON.parse(
     await readFile(resolve(root, "../../exports/kingdom-death-news/news-shop-links.json"), "utf8"),
   );
-  const client =
-    options.client ?? new ShopClient({ cache: join(temp, "shopify-products/edition-cache"), delay: 33, maxAgeMs: Infinity, ...options });
+  const client = options.client ?? new ShopClient({ cache: join(temp, "shopify-products/edition-cache"), maxAgeMs: Infinity, ...options });
   const targets = Object.entries(catalog.content).filter(([, item]) => !item.editions?.length);
   const report = {
     startedAt: new Date().toISOString(),

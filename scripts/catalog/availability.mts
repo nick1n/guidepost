@@ -1,5 +1,5 @@
 import { catalogListing, productUrl } from "./shop.mts";
-import { variantLabel } from "./update.mts";
+import { availabilityReleases } from "./releases.mts";
 import { categories, type Catalog, type Edition, type Product } from "./types.mts";
 
 function handle(url: string) {
@@ -8,51 +8,6 @@ function handle(url: string) {
   } catch {
     return undefined;
   }
-}
-
-const runLabels = ["First Run", "Second Run", "Deathgrey", "Deathgrey M2", "Deathpink", "Encore", "General"];
-
-function variantsFor(edition: Edition, product: Product, candidates: Edition[]) {
-  if (["Pawel Zdanowski", "Ein Lee", "Lokman Lam", "Wenjuinn Png"].includes(edition.label))
-    return product.variants.filter((variant) => variantLabel(variant, "") === edition.label);
-  if (["Dwelling Key", "Illusionist Key", "Master Dwelling Key"].includes(edition.label)) {
-    const physical = product.variants.filter((variant) => variant.requires_shipping);
-    const matches = (title: string) =>
-      edition.label === "Master Dwelling Key"
-        ? /master/i.test(title)
-        : edition.label === "Illusionist Key"
-          ? /illusionist/i.test(title)
-          : /dwelling/i.test(title) && !/master/i.test(title);
-    const named = physical.filter((variant) => matches(variant.title));
-    if (named.length) return named;
-    // A dedicated key listing can use warehouse-only variant labels.
-    return candidates.length === 1 && !physical.some((variant) => /master|illusionist|dwelling/i.test(variant.title)) ? physical : [];
-  }
-  const label = edition.label
-    .split(": ")
-    .at(-1)!
-    .replace(/ \(\d{4}\)$/, "");
-  const named = (variant: Product["variants"][number]) => variantLabel({ ...variant, requires_shipping: true }, "");
-  if (runLabels.includes(label)) {
-    if (candidates.length === 1 && product.variants.every((variant) => !named(variant))) return product.variants;
-    return product.variants.filter((variant) => named(variant) === label);
-  }
-  if (edition.label === "Sim") return product.variants.filter((variant) => !variant.requires_shipping);
-  if (candidates.length === 1) return product.variants;
-  // Warehouse-only options describe the whole listing. Use them only when one
-  // edition is compatible; a shared URL alone cannot distinguish two materials.
-  const generic = candidates.filter(
-    (candidate) =>
-      !runLabels.includes(
-        candidate.label
-          .split(": ")
-          .at(-1)!
-          .replace(/ \(\d{4}\)$/, ""),
-      ),
-  );
-  if (generic.length === 1) return product.variants.filter((variant) => !named(variant));
-  if (edition.label === "Plastic" && product.product_type === "whitebox") return product.variants.filter((variant) => !named(variant));
-  return [];
 }
 
 export function availabilityFromUrls(catalog: Catalog, products: Product[]) {
@@ -70,6 +25,12 @@ export function availabilityFromUrls(catalog: Catalog, products: Product[]) {
         const key = url ? handle(url) : undefined;
         if (key) groups.set(key, [...(groups.get(key) ?? []), edition]);
       }
+      const resolved = new Map(
+        [...groups].flatMap(([key, editions]) => {
+          const product = listings.get(key);
+          return product ? [...availabilityReleases(product, editions)] : [];
+        }),
+      );
       for (const edition of item.editions ?? []) {
         const previous = edition.available;
         delete edition.available;
@@ -88,7 +49,7 @@ export function availabilityFromUrls(catalog: Catalog, products: Product[]) {
             reason: url ? "No matching product handle" : "No URL",
           });
         } else {
-          const variants = variantsFor(edition, product, groups.get(key!)!);
+          const variants = resolved.get(edition)!;
           if (!variants.length) {
             unmatched.push({ category, itemId, edition: edition.label, url, reason: "No unambiguous matching variants" });
           } else {
