@@ -236,7 +236,7 @@
     </p>
   </aside>
   <footer>
-    <span>Guidepost / Gesture studies</span><a class="showdown-link" href={resolve("/showdown1")}
+    <span>Guidepost / Gesture studies</span><a class="showdown-link" href={resolve("/kdm/showdown1")}
       >Back to showdown<span class="small-icon i-material-symbols:arrow-forward" aria-hidden="true"></span></a
     >
   </footer>

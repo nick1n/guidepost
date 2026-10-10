@@ -1,4 +1,4 @@
-The live catalog combines the previous app catalog, collection workbook, and cached news. Its data and schema live in `static/kdm-catalog/`, and the collection page at `/collection/` uses its generated types. The previous catalog and schema are archived locally in `temp/kdm-data.json` and `temp/kdm-data.schema.json`.
+The live catalog combines the previous app catalog, collection workbook, and cached news. Its data and schema live in `static/kdm-catalog/`, and the collection page at `/kdm/collection/` uses its generated types. The previous catalog and schema are archived locally in `temp/kdm-data.json` and `temp/kdm-data.schema.json`.
 
 | File                                                                                                                    | Purpose                                     |
 | ----------------------------------------------------------------------------------------------------------------------- | ------------------------------------------- |

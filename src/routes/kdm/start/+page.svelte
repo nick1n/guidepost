@@ -11,9 +11,9 @@
 
   <nav aria-labelledby="showdown-previews">
     <h2 id="showdown-previews">Showdown design previews</h2>
-    <a href={resolve("/showdown1")}>Showdown draft 1</a>
-    <a href={resolve("/showdown2")}>Showdown draft 2</a>
-    <a href={resolve("/showdown3")}>Showdown draft 3</a>
+    <a href={resolve("/kdm/showdown1")}>Showdown draft 1</a>
+    <a href={resolve("/kdm/showdown2")}>Showdown draft 2</a>
+    <a href={resolve("/kdm/showdown3")}>Showdown draft 3</a>
   </nav>
 </main>
 

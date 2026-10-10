@@ -15,7 +15,7 @@ Planned gameplay uses an action history; collection tracking, campaign managemen
 | Preferences         | Account and device settings                                      | None                    |
 | Catalog             | Bundled, versioned reference data                                | None                    |
 
-The `/collection/` page saves owned, wished, and numeric `copyNumber` values locally. Copy numbers range from 1 to 9999, bounded by a
+The `/kdm/collection/` page saves owned, wished, and numeric `copyNumber` values locally. Copy numbers range from 1 to 9999, bounded by a
 known edition run size. Collection keys combine stable catalog content IDs and edition
 IDs. Edition IDs are permanent readable lowercase kebab-case strings, unique within their item. The compound content/edition key
 distinguishes different items that both have a `first-run` or `sim` edition. Assign an ID once and retain it when its `label`, `name`, or
@@ -51,7 +51,7 @@ logging. Bundle ownership commands continue to propagate to included editions.
 
 The root initializes `Collection` with an empty catalog. Quick Start directly imports generated `src/lib/gen/core-editions.json`,
 which contains only playable core edition IDs and labels in catalog order, excluding Resin, and checks and saves ownership by stable keys.
-Opening `/collection/` loads the full catalog
+Opening `/kdm/collection/` loads the full catalog
 through the route's load function and replaces the reference catalog without changing the owner's snapshot or pending saves.
 Catalog helpers receive their catalog explicitly; shared modules do not import the full data file. Collection links disable hover
 data preloading. The service worker caches the full catalog and collection HTML after a visit, rather than precaching them on startup.

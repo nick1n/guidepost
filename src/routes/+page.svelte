@@ -25,7 +25,7 @@
     items: NavigationItem[];
   };
 
-  const quickStartHref = resolve("/start");
+  const quickStartHref = resolve("/kdm/start");
   const coreId = "core";
   const latestCoreVersion = coreVersions.at(-1)?.id;
 
@@ -46,13 +46,13 @@
           title: "Collection",
           note: "Keep track of all your content",
           icon: "i-material-symbols:inventory-2-outline-sharp",
-          href: resolve("/collection"),
+          href: resolve("/kdm/collection"),
         },
         {
           title: "Hunt Events",
           note: "All 100 random hunt events",
           icon: "i-material-symbols:route-outline-sharp",
-          href: resolve("/hunt"),
+          href: resolve("/kdm/hunt"),
         },
         {
           title: "Reference Cards",
@@ -289,7 +289,7 @@
               target={i.href.startsWith("http") ? "_blank" : undefined}
               aria-describedby={i.href.startsWith("http") ? "new-tab-description" : undefined}
               onclick={i.requiresCore ? openQuickStart : undefined}
-              data-sveltekit-preload-data={i.href === resolve("/collection") ? false : undefined}
+              data-sveltekit-preload-data={i.href === resolve("/kdm/collection") ? false : undefined}
             >
               {@render toolContent(i)}
             </a>

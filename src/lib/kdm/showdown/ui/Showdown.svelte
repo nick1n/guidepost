@@ -13,9 +13,9 @@
   import { survivors } from "../fixtures";
 
   const designs = [
-    { name: "Obsidian", subtitle: "The Command Table", className: "obsidian", href: "/showdown1" },
-    { name: "Folio", subtitle: "The Survivor Chronicles", className: "folio", href: "/showdown2" },
-    { name: "Signal", subtitle: "The Combat Console", className: "signal", href: "/showdown3" },
+    { name: "Obsidian", subtitle: "The Command Table", className: "obsidian", href: "/kdm/showdown1" },
+    { name: "Folio", subtitle: "The Survivor Chronicles", className: "folio", href: "/kdm/showdown2" },
+    { name: "Signal", subtitle: "The Combat Console", className: "signal", href: "/kdm/showdown3" },
   ] as const;
 
   let { variant = 1 }: { variant?: number } = $props();

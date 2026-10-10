@@ -37,7 +37,7 @@ function fixture(count = 0) {
   };
   const catalog = reviewIndex(data);
   const states = new SvelteMap<string, EntryState>();
-  let url = new URL("https://example.test/collection?keep=yes#cards");
+  let url = new URL("https://example.test/kdm/collection?keep=yes#cards");
   const replace = vi.fn((next: URL) => {
     url = next;
   });
@@ -53,7 +53,7 @@ function fixture(count = 0) {
       return url;
     },
     navigate(search: string) {
-      url = new URL(`https://example.test/collection${search}`);
+      url = new URL(`https://example.test/kdm/collection${search}`);
       browsing.restore(url);
     },
   };

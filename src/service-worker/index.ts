@@ -14,7 +14,7 @@ const resolveManifestPath = resolve as (path: string) => string;
 const manifestAssets = [...immutable, ...assets, ...prerendered];
 const appAssets = manifestAssets.filter(({ path }) => !isDeferredAsset(path)).map(({ path }) => resolveManifestPath(path));
 const deferredAssets = new Set(manifestAssets.filter(({ path }) => isDeferredAsset(path)).map(({ path }) => resolveManifestPath(path)));
-const collectionPath = resolveManifestPath("collection/");
+const collectionPath = resolveManifestPath("kdm/collection/");
 const catalogPath = resolveManifestPath("kdm-catalog/data.json");
 
 self.addEventListener("install", (event) => {

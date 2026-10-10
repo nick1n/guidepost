@@ -163,7 +163,7 @@ Failures may reflect rate limits or HEAD rejection. Reachability does not indica
 
 ### Collection
 
-With the dev server running, open [/collection/](http://localhost:5173/collection/) for search, edition details, ownership, and wishlist controls.
+With the dev server running, open [/kdm/collection/](http://localhost:5173/kdm/collection/) for search, edition details, ownership, and wishlist controls.
 Catalog loading failures show a collection error page with retry and home controls. Offline failures explain that a connection is needed
 when the catalog is not available locally; retry preserves the collection URL and saved ownership.
 [`CollectionBrowsing`](src/lib/collection-browsing.svelte.ts) owns category, filter, batching, and URL transitions.
