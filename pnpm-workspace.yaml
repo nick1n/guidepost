@@ -1,3 +1,6 @@
 allowBuilds:
   esbuild: true
   msgpackr-extract: true
+
+# Keep installed files independent of shared-store Windows permissions.
+packageImportMethod: clone-or-copy
