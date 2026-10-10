@@ -2,13 +2,15 @@ import { Effect, Schema as S } from "effect";
 import { reviewEditions, reviewEntries } from "#lib/catalog-view.ts";
 import {
   CollectionSnapshotSchema,
-  EntryStateSchema,
   collectionKey,
   parseCollectionKey,
   type Catalog,
   type CollectionSnapshot,
   type EntryState,
 } from "#lib/types/index.ts";
+
+import { workbookLocator, WorkbookMapSchema, WorkbookRowsSchema, type WorkbookMap, type WorkbookRow } from "#lib/types/workbook.ts";
+export type { WorkbookMap, WorkbookRow } from "#lib/types/workbook.ts";
 
 export class TransferError extends S.TaggedError<TransferError>()("TransferError", {
   operation: S.Literals(["export", "import", "preview"]),
@@ -23,48 +25,6 @@ const BackupSchema = S.Struct({
 });
 const BackupJsonSchema = S.fromJsonString(BackupSchema);
 
-const TargetSchema = S.Struct({
-  category: S.String,
-  contentId: S.NonEmptyString,
-  editionId: S.NonEmptyString,
-  sourceEdition: S.optionalKey(S.String),
-});
-
-const MapRowSchema = S.Struct({
-  sheet: S.NonEmptyString,
-  row: S.Int,
-  name: S.NonEmptyString,
-  primary: TargetSchema,
-  related: S.optionalKey(S.Array(TargetSchema)),
-  ownershipScope: S.optionalKey(S.Literal("source-row")),
-  releaseEditions: S.optionalKey(
-    S.Struct({
-      M: S.optionalKey(S.Array(TargetSchema)),
-      N: S.optionalKey(S.Array(TargetSchema)),
-      O: S.optionalKey(S.Array(TargetSchema)),
-    }),
-  ),
-});
-
-const WorkbookMapSchema = S.Struct({
-  formatVersion: S.Literal(1),
-  rows: S.Array(MapRowSchema),
-});
-
-const WorkbookRowsSchema = S.Array(
-  S.Struct({
-    ...EntryStateSchema.fields,
-    sheet: S.NonEmptyString,
-    row: S.Int,
-    name: S.NonEmptyString,
-    releaseColumn: S.optionalKey(S.Literals(["M", "N", "O"])),
-    editionId: S.optionalKey(S.NonEmptyString),
-  }),
-);
-
-export type WorkbookRow = S.Schema.Type<typeof WorkbookRowsSchema>[number];
-export type WorkbookMap = S.Schema.Type<typeof WorkbookMapSchema>;
-
 function invalid(operation: TransferError["operation"], message: string, reference?: string) {
   return new TransferError({ operation, reason: "invalid-data", message, ...(reference === undefined ? {} : { reference }) });
 }
@@ -76,15 +36,9 @@ const decodeMapping = Effect.fn("CollectionTransfer.decodeMapping")(function* (o
       try: () => import("../../../static/kdm-catalog/workbook-map.json").then((module) => module.default),
       catch: () => invalid(operation, "Workbook mapping could not be loaded."),
     }));
-  const map = yield* S.decodeUnknownEffect(WorkbookMapSchema)(input).pipe(
+  const map = yield* S.decodeUnknownEffect(WorkbookMapSchema, { onExcessProperty: "error" })(input).pipe(
     Effect.mapError(() => invalid(operation, "Workbook mapping is invalid.")),
   );
-  const locators = new Set<string>();
-  for (const row of map.rows) {
-    const locator = JSON.stringify([row.sheet, row.row]);
-    if (locators.has(locator)) return yield* invalid(operation, `Workbook mapping repeats ${locator}.`, locator);
-    locators.add(locator);
-  }
   return map;
 });
 
@@ -157,12 +111,12 @@ const resolveWorkbookRows = Effect.fn("CollectionTransfer.resolveWorkbookRows")(
   map: WorkbookMap,
   operation: "preview" | "export",
 ) {
-  const byLocator = new Map(map.rows.map((row) => [JSON.stringify([row.sheet, row.row]), row]));
+  const byLocator = new Map(map.rows.map((row) => [workbookLocator(row), row]));
   const hasTarget = knownTarget(catalog);
   const entries: Record<string, EntryState> = {};
   const seenRows = new Set<string>();
   for (const row of rows) {
-    const locator = JSON.stringify([row.sheet, row.row]);
+    const locator = workbookLocator(row);
     const selection = JSON.stringify([row.sheet, row.row, row.releaseColumn ?? null]);
     if (seenRows.has(selection)) return yield* invalid(operation, `Workbook selection ${selection} appears more than once.`, locator);
     seenRows.add(selection);

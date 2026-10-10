@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
 import { test } from "node:test";
-import { buildWorkbookMap, validateWorkbookMap, type WorkbookImports } from "#scripts/catalog/workbook.mts";
+import { decodeWorkbookMap } from "#lib/types/workbook.ts";
+import { buildWorkbookMap, type WorkbookImports } from "#scripts/catalog/workbook.mts";
 import type { Catalog } from "#scripts/catalog/types.mts";
 
 const first = "first-run";
@@ -104,7 +104,6 @@ test("generated map cannot contain personal cells or comments", async () => {
   const serialized = JSON.stringify(map);
   for (const value of ["private note", "personal comment", "wish", "cells", "comments", "productCells"])
     assert.equal(serialized.includes(value), false);
-  const schema = JSON.parse(await readFile("static/kdm-catalog/workbook-map.schema.json", "utf8"));
-  assert.equal(validateWorkbookMap(map, schema), map);
-  assert.throws(() => validateWorkbookMap({ ...map, rows: [{ ...map.rows[0]!, cells: { I: true } }] }, schema));
+  assert.deepEqual(decodeWorkbookMap(map), map);
+  assert.throws(() => decodeWorkbookMap({ ...map, rows: [{ ...map.rows[0]!, cells: { I: true } }] }));
 });

@@ -1,8 +1,4 @@
 <script module lang="ts">
-  import type { reviewEntries } from "#lib/catalog-view.ts";
-
-  type Entry = ReturnType<typeof reviewEntries>[number];
-
   const swipeFeedbackDuration = 900;
   function tagWeight(count: number, maximum: number) {
     const proportion = Math.log(Math.max(3, count) / 3) / Math.log(Math.max(4, maximum) / 3);
@@ -14,12 +10,13 @@
   import { afterNavigate, beforeNavigate, replaceState } from "$app/navigation";
   import { resolve } from "$app/paths";
   import { page } from "$app/state";
-  import { onDestroy, tick, untrack } from "svelte";
+  import { onDestroy, untrack } from "svelte";
   import { innerHeight, scrollY } from "svelte/reactivity/window";
   import CollectionCard from "#lib/components/track/CollectionCard.svelte";
   import { swipe, type SwipeDirection } from "#lib/swipe.ts";
   import { reviewTagLabel } from "#lib/catalog-view.ts";
   import { CollectionBrowsing, browseCategories as categories } from "#lib/collection-browsing.svelte.ts";
+  import { CollectionCards } from "#lib/collection-cards.svelte.ts";
   import { formatPriceTotals } from "#lib/kdm-data.ts";
   import { collectionActions } from "#lib/state/collection-actions.ts";
   import { getCollection } from "#lib/state/collection.svelte.ts";
@@ -91,116 +88,12 @@
   let tagsOpen = $state(false);
   let allTagsOpen = $state(false);
   const writable = $derived(collection.canWrite);
-  let collapsed = $state<Record<string, boolean>>({});
-  let rendered = $state<Record<string, boolean>>({});
-  let cancelCardScroll: (() => void) | undefined;
+  const cards = new CollectionCards(entries);
   onDestroy(() => {
     browsing.cancelPendingUrl();
     clearTimeout(swipeFeedbackTimer);
-    cancelCardScroll?.();
+    cards.dispose();
   });
-  // Observer bookkeeping is nonreactive; rendered owns the state used by the template.
-  const nearby = new Set<string>();
-  const observedCards = new Map<HTMLElement, string>();
-  let cardObserver: IntersectionObserver | undefined;
-
-  function toggleCard(item: Entry) {
-    const collapse = !collapsed[item.id];
-    if (!collapse) rendered[item.id] = true;
-    collapsed[item.id] = collapse;
-  }
-
-  function toggleAllCards() {
-    const collapse = !allCollapsed;
-    for (const item of entries) {
-      if (!collapse && nearby.has(item.id)) rendered[item.id] = true;
-      collapsed[item.id] = collapse;
-    }
-    return collapse ? "All cards collapsed." : "All cards expanded.";
-  }
-
-  function holdCard(item: Entry) {
-    const card = document.getElementById(`card-body-${item.id}`)?.closest("article");
-    const top = card?.getBoundingClientRect().top;
-    const announcement = toggleAllCards();
-    if (!collapsed[item.id]) rendered[item.id] = true;
-    if (card && top !== undefined) void scrollToCard(card, top);
-    return announcement;
-  }
-
-  async function scrollToCard(card: HTMLElement, top: number) {
-    cancelCardScroll?.();
-    const controller = new AbortController();
-    const scrollStyle = document.documentElement.style;
-    const overflowAnchor = scrollStyle.overflowAnchor;
-    // Our correction owns scrolling while the card layout settles.
-    scrollStyle.overflowAnchor = "none";
-    let timer: ReturnType<typeof setTimeout> | undefined;
-    const started = performance.now();
-    let stableChecks = 0;
-    function cancel() {
-      controller.abort();
-      scrollStyle.overflowAnchor = overflowAnchor;
-      clearTimeout(timer);
-      if (cancelCardScroll === cancel) cancelCardScroll = undefined;
-    }
-    cancelCardScroll = cancel;
-    // Deferred bodies and content-visibility can change layout again after scrolling reveals cards.
-    // Keep the header anchored until those updates settle, yielding immediately to user input.
-    await tick();
-    if (controller.signal.aborted) return;
-    for (const event of ["wheel", "touchmove", "pointerdown", "keydown"]) {
-      window.addEventListener(event, cancel, { passive: true, signal: controller.signal });
-    }
-    function restorePosition() {
-      if (!card.isConnected || !card.getClientRects().length) return cancel();
-      const offset = card.getBoundingClientRect().top - top;
-      if (Math.abs(offset) > 1) {
-        stableChecks = 0;
-        window.scrollBy({
-          top: offset,
-          behavior: "instant",
-        });
-      } else stableChecks += 1;
-      if (stableChecks >= 6 || performance.now() - started >= 1000) cancel();
-      else timer = setTimeout(restorePosition, 16);
-    }
-    // Apply the first correction before the browser can paint the changed card layout.
-    restorePosition();
-  }
-
-  function observeCard(item: Entry) {
-    return (element: HTMLElement) => {
-      if (rendered[item.id]) return;
-      // One observer defers unopened card controls until they approach the viewport.
-      cardObserver ??= new IntersectionObserver(
-        (changes) => {
-          for (const change of changes) {
-            const id = observedCards.get(change.target as HTMLElement);
-            if (!id) continue;
-            if (change.isIntersecting) {
-              nearby.add(id);
-              if (!collapsed[id]) rendered[id] = true;
-            } else nearby.delete(id);
-          }
-        },
-        { rootMargin: "600px 0px" },
-      );
-      observedCards.set(element, item.id);
-      cardObserver.observe(element);
-      return () => {
-        cardObserver?.unobserve(element);
-        observedCards.delete(element);
-        nearby.delete(item.id);
-        if (!observedCards.size) {
-          cardObserver?.disconnect();
-          cardObserver = undefined;
-        }
-      };
-    };
-  }
-
-  const allCollapsed = $derived(entries.length > 0 && entries.every((item) => collapsed[item.id]));
   function markLatestOwned() {
     if (!writable) return;
     collectionActions.run(collection.setEditionsOwned(browsing.latestUnowned, true));
@@ -371,15 +264,15 @@
           <button
             class="collapse-all"
             type="button"
-            aria-label={allCollapsed ? "Expand all" : "Collapse all"}
+            aria-label={cards.allCollapsed ? "Expand all" : "Collapse all"}
             disabled={!entries.length}
-            onclick={toggleAllCards}
+            onclick={() => cards.toggleAll()}
           >
             <span
               class={[
                 "collapse-icon",
                 "control-icon",
-                allCollapsed ? "i-material-symbols:unfold-more-double" : "i-material-symbols:unfold-less-double",
+                cards.allCollapsed ? "i-material-symbols:unfold-more-double" : "i-material-symbols:unfold-less-double",
               ]}
               aria-hidden="true"
             ></span>
@@ -428,14 +321,15 @@
           {:else}
             <div class="cards">
               {#each items as item, index (item.id)}
+                {@const presentation = cards.state(item.id, index)}
                 <CollectionCard
                   {item}
-                  ready={index < 6 || !!rendered[item.id]}
-                  collapsed={!!collapsed[item.id]}
+                  ready={presentation.ready}
+                  collapsed={presentation.collapsed}
                   selectedTags={browsing.selectedTags}
-                  observe={observeCard(item)}
-                  onToggle={() => toggleCard(item)}
-                  onHold={() => holdCard(item)}
+                  observe={cards.observe(item.id)}
+                  onToggle={() => cards.toggle(item.id)}
+                  onHold={() => cards.toggleAll(item.id)}
                   onTagClick={browsing.toggleTag}
                 />
               {/each}

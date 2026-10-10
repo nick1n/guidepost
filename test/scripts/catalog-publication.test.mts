@@ -8,6 +8,7 @@ import { afterEach, expect, it, vi } from "vitest";
 import { publishFiles, PublicationError } from "#scripts/catalog/publication.mts";
 import { applyReview } from "#scripts/update-catalog.mts";
 import { refreshAvailability } from "#scripts/refresh-catalog-availability.mts";
+import { writeWorkbookMap } from "#scripts/catalog/workbook.mts";
 import { fillEditions } from "#scripts/fill-catalog-editions.mts";
 import { catalogTemp } from "#scripts/catalog/paths.mts";
 import { loadTags } from "#scripts/catalog/tags.mts";
@@ -368,5 +369,95 @@ it("edition retrieval preserves mappings created during final publication prepar
   const report = JSON.parse(await readFile(join(catalogTemp(folder), "reports/edition-retrieval.json"), "utf8"));
   expect(report.complete).toBe(false);
   expect(report.applied).toBe(false);
+  expect(await temporaryFiles(root)).toEqual([]);
+});
+
+async function workbookFixture(existing = true) {
+  const base = await catalogFixture();
+  const importsFolder = join(base.root, "temp/kdm-catalog/imports");
+  await mkdir(importsFolder, { recursive: true });
+  const targets = {
+    catalog: base.path,
+    imports: join(importsFolder, "kdm-import-records.json"),
+    importSchema: join(importsFolder, "kdm-import-records.schema.json"),
+    mapSchema: join(base.folder, "workbook-map.schema.json"),
+    map: join(base.folder, "workbook-map.json"),
+  };
+  await writeFile(
+    targets.imports,
+    JSON.stringify({
+      workbook: "Products.xlsx",
+      records: [{ sheet: "KDM Miniatures", row: 2, name: "Example", category: "content", itemId: "example", edition: "Resin" }],
+    }),
+  );
+  await writeFile(targets.importSchema, JSON.stringify({ type: "object", required: ["workbook", "records"] }));
+  await writeFile(targets.mapSchema, await readFile("static/kdm-catalog/workbook-map.schema.json"));
+  const map = {
+    $schema: "./workbook-map.schema.json",
+    formatVersion: 1,
+    source: { id: "kdm-collection-sheets", workbook: "Products.xlsx" },
+    rows: [
+      {
+        sheet: "KDM Miniatures",
+        row: 2,
+        name: "Example",
+        primary: { category: "content", contentId: "example", editionId: "resin", sourceEdition: "Resin" },
+      },
+    ],
+  };
+  const mapText = JSON.stringify(map);
+  if (existing) await writeFile(targets.map, mapText);
+  return { ...base, targets, map, mapText };
+}
+
+it("publishes a new workbook map and retains its permanent edition ID after a label changes", async () => {
+  const { root, targets, catalog, map } = await workbookFixture(false);
+  expect(await writeWorkbookMap(root)).toEqual(map);
+  catalog.content.example.editions![0].label = "Renamed resin";
+  await writeFile(targets.catalog, JSON.stringify(catalog));
+  expect(await writeWorkbookMap(root)).toEqual(map);
+  expect(JSON.parse(await readFile(targets.map, "utf8"))).toEqual(map);
+  expect(await temporaryFiles(root)).toEqual([]);
+});
+
+it.each(["catalog", "imports", "importSchema", "mapSchema", "map"] as const)(
+  "workbook generation preserves a late edit to %s",
+  async (input) => {
+    const { root, targets, mapText } = await workbookFixture();
+    vi.mocked(resolveConfig).mockImplementationOnce(async () => {
+      await writeFile(targets[input], "late user edit");
+      return null;
+    });
+    await expect(writeWorkbookMap(root)).rejects.toMatchObject({ published: [], pending: [targets.map] });
+    expect(await readFile(targets[input], "utf8")).toBe("late user edit");
+    if (input !== "map") expect(await readFile(targets.map, "utf8")).toBe(mapText);
+    expect(await temporaryFiles(root)).toEqual([]);
+  },
+);
+
+it("workbook generation preserves a map created during preparation", async () => {
+  const { root, targets } = await workbookFixture(false);
+  vi.mocked(resolveConfig).mockImplementationOnce(async () => {
+    await writeFile(targets.map, "new user map");
+    return null;
+  });
+  await expect(writeWorkbookMap(root)).rejects.toMatchObject({ published: [] });
+  expect(await readFile(targets.map, "utf8")).toBe("new user map");
+  expect(await temporaryFiles(root)).toEqual([]);
+});
+
+it("workbook cancellation and replacement failures leave the existing map intact", async () => {
+  const { root, targets, mapText } = await workbookFixture();
+  const controller = new AbortController();
+  vi.mocked(resolveConfig).mockImplementationOnce(async () => {
+    controller.abort();
+    return null;
+  });
+  await expect(writeWorkbookMap(root, { signal: controller.signal })).rejects.toMatchObject({ published: [] });
+  expect(await readFile(targets.map, "utf8")).toBe(mapText);
+  expect(await temporaryFiles(root)).toEqual([]);
+  vi.mocked(rename).mockRejectedValueOnce(new Error("Disk write failed"));
+  await expect(writeWorkbookMap(root)).rejects.toMatchObject({ published: [], pending: [targets.map] });
+  expect(await readFile(targets.map, "utf8")).toBe(mapText);
   expect(await temporaryFiles(root)).toEqual([]);
 });

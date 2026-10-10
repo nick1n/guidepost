@@ -109,9 +109,15 @@ Git-ignored import records. Sheet and row numbers are locators for that workbook
 identities and ambiguous release alternatives before import or export uses them. Do not put personal workbook cells in
 the map.
 
+`src/lib/types/workbook.ts` owns workbook mapping and normalized-row schemas and types. Tooling and collection transfers share them.
+Change that contract and run `pnpm generate:types` to refresh `static/kdm-catalog/workbook-map.schema.json`; do not edit the generated
+editor schema by hand. Workbook publication guards its captured catalog, import records, schemas, and previous map before replacement.
+
 Keep item fields alphabetical, edition fields starting with `id` then `label`, and inclusion-object fields starting with `item`; remaining fields are alphabetical. Use `orderItemFields`/`organizeCatalog` in `scripts/catalog/order.mts`. Preserve category/item ordering and edition/other array ordering. Inclusion `editionId` resolves on the child item; `parentEditionIds` resolves on the containing item. Edition IDs do not need global uniqueness. Reserve `item` and `bundle` for synthetic editions.
 
-Keep catalog-derived helpers in `src/lib/kdm-data.ts` or `src/lib/catalog-view.ts`, not duplicated in components.
+Keep catalog-derived helpers in `src/lib/kdm-data.ts` or `src/lib/catalog-view.ts`, not duplicated in components. `CollectionBrowsing`
+owns browsing and URL transitions; `CollectionCards` owns card collapse, deferred rendering, viewport observation, and held-card scroll
+anchoring. The collection page disposes card resources on unmount and owns focus, gestures, and navigation.
 
 Load the full catalog only through the collection route. The root layout initializes an empty catalog. Quick Start directly imports
 generated `src/lib/gen/core-editions.json`, containing only playable core editions' IDs and labels in catalog order, excluding Resin;

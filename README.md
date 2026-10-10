@@ -91,7 +91,7 @@ Applying a review writes the live catalog and local reports. Stale inputs are re
 Validation checks schemas, references, ordering, and local tag assignments without changing them.
 Shop requests are at least 35 seconds apart and cached for 24 hours. Use `--offline` for cached evidence or `--refresh` to fetch again.
 
-Catalog review application, availability refresh, and edition retrieval share a publication module. It stages all outputs in unique
+Catalog review application, availability refresh, edition retrieval, and workbook-map generation share a publication module. It stages all outputs in unique
 adjacent temporary files, then rechecks captured inputs before each replacement. Completion reports publish last. Detected edits or
 cancellation before the first replacement leave destination files unchanged; temporary files are cleaned up. Failures after a replacement
 list the published and pending paths, retaining the original error. Rerun from the current files after inspecting those paths.
@@ -144,7 +144,14 @@ Both commands write the live catalog and refuse to overwrite catalog edits made 
 [`workbook-map.json`](static/kdm-catalog/workbook-map.json). The map connects each source row and its release columns to stable catalog
 content and edition IDs. It contains product references only, with no owned, wished, copy-number, comment, or other personal cell values.
 Workbook sheet and row numbers locate this source snapshot; they are not permanent IDs. The command rejects changed row identities and
-unresolved references for review. Validated row workflows are implemented; `.xlsx` parsing, writing, and controls are deferred.
+unresolved references for review. Generation captures the catalog, import records, both workbook schemas, and previous map;
+a late edit to any of them prevents replacement. Ctrl+C cancels preparation and cleans temporary files.
+
+[`src/lib/types/workbook.ts`](src/lib/types/workbook.ts) defines the shared mapping and normalized-row contract used by tooling and collection
+transfers. `pnpm generate:types` generates the editor schema at `static/kdm-catalog/workbook-map.schema.json`; edit the shared contract
+instead of the generated schema. Runtime validation also rejects duplicate sheet/row locators, which JSON Schema cannot express.
+
+Validated row workflows are implemented; `.xlsx` parsing, writing, and controls are deferred.
 
 ### Live shop links
 
@@ -158,6 +165,10 @@ Failures may reflect rate limits or HEAD rejection. Reachability does not indica
 With the dev server running, open [/collection/](http://localhost:5173/collection/) for search, edition details, ownership, and wishlist controls.
 Catalog loading failures show a collection error page with retry and home controls. Offline failures explain that a connection is needed
 when the catalog is not available locally; retry preserves the collection URL and saved ownership.
+[`CollectionBrowsing`](src/lib/collection-browsing.svelte.ts) owns category, filter, batching, and URL transitions.
+[`CollectionCards`](src/lib/collection-cards.svelte.ts) owns collapse state, deferred bodies, viewport observation, and held-card scroll
+anchoring. The page disposes its observers and pending scroll corrections on unmount. Focus, category gestures, and navigation stay in the page.
+
 Collection entries save locally in IndexedDB through Dexie. Each entry is keyed by stable content and edition IDs and stores owned,
 wished, and numeric `copyNumber` values. Copy numbers are integers from 1 to 9999, limited further by a known edition run size.
 Blank inputs remove the copy number. Saves apply the current owner's snapshot atomically, writing only changed rows. A persisted revision rejects

@@ -3,11 +3,14 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { compileFromFile } from "json-schema-to-typescript";
 import { format, resolveConfig } from "prettier";
+import { Schema } from "effect";
+import { WorkbookMapSchema } from "../src/lib/types/workbook.ts";
 import { editionGameplay } from "../src/lib/kdm-data.ts";
 import type { Catalog } from "../src/lib/types/index.ts";
 
 export const schemaPath = fileURLToPath(new URL("../static/kdm-catalog/data.schema.json", import.meta.url));
 export const catalogPath = fileURLToPath(new URL("../static/kdm-catalog/data.json", import.meta.url));
+export const workbookSchemaPath = fileURLToPath(new URL("../static/kdm-catalog/workbook-map.schema.json", import.meta.url));
 const outputPath = fileURLToPath(new URL("../src/lib/types/gen/kdm-data.d.ts", import.meta.url));
 const corePath = fileURLToPath(new URL("../src/lib/gen/core-editions.json", import.meta.url));
 
@@ -32,8 +35,26 @@ export async function generateCoreEditions() {
   return true;
 }
 
+export async function generateWorkbookSchema() {
+  const document = Schema.toJsonSchemaDocument(WorkbookMapSchema, { onExcessProperty: "error" });
+  const output = await format(
+    JSON.stringify({ $schema: "https://json-schema.org/draft/2020-12/schema", ...document.schema, $defs: document.definitions }),
+    {
+      ...(await resolveConfig(workbookSchemaPath)),
+      parser: "json",
+    },
+  );
+  const previous = await readFile(workbookSchemaPath, "utf8").catch((error: NodeJS.ErrnoException) => {
+    if (error.code !== "ENOENT") throw error;
+  });
+  if (output === previous) return false;
+  await writeFile(workbookSchemaPath, output);
+  return true;
+}
+
 export async function generateTypes() {
   const coreChanged = await generateCoreEditions();
+  const workbookChanged = await generateWorkbookSchema();
   const output = await compileFromFile(schemaPath, {
     // Catalog validation checks array cardinality; consumers work with ordinary arrays.
     ignoreMinAndMaxItems: true,
@@ -43,7 +64,7 @@ export async function generateTypes() {
   const previous = await readFile(outputPath, "utf8").catch((error) => {
     if (error.code !== "ENOENT") throw error;
   });
-  if (output === previous) return coreChanged;
+  if (output === previous) return coreChanged || workbookChanged;
 
   await mkdir(dirname(outputPath), { recursive: true });
   await writeFile(outputPath, output);
