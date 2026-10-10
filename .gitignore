@@ -159,3 +159,4 @@ vite.config.ts.timestamp-*
 
 # Temporary local working files
 /temp/
+/%SystemDrive%/

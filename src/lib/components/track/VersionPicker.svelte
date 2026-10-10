@@ -1,10 +1,11 @@
 <script lang="ts">
   import type { Edition } from "#lib/types/index.ts";
+  import { editionLabel } from "#lib/kdm-data.ts";
 
   type Props = {
-    versions: Edition[];
+    versions: Pick<Edition, "id" | "label" | "name">[];
     value?: string[];
-    onselect: (v: string) => void;
+    onselect: (editionId: string) => void;
     groupLabel?: string;
     focusActive?: boolean;
   };
@@ -14,15 +15,15 @@
 
 <div role="group" aria-label={groupLabel}>
   <span>Version</span>
-  {#each versions as version (version.v)}
-    {@const active = value.includes(version.v)}
+  {#each versions as version (version.id)}
+    {@const active = value.includes(version.id)}
     <button
       type="button"
       aria-pressed={active}
       data-dialog-initial-focus={focusActive && active ? "true" : undefined}
-      onclick={() => onselect(version.v)}
+      onclick={() => onselect(version.id)}
     >
-      {version.v}
+      {editionLabel(version)}
     </button>
   {/each}
 </div>

@@ -10,7 +10,10 @@ const base = (process.env.BASE_PATH ?? "") as "" | `/${string}`;
 export default defineConfig({
   test: {
     environment: "node",
-    include: ["test/**/*.test.{ts,mts}"],
+    projects: [
+      { extends: true, test: { name: "client", include: ["test/client/**/*.test.{ts,mts}"] } },
+      { extends: true, test: { name: "scripts", include: ["test/scripts/**/*.test.{ts,mts}"] } },
+    ],
   },
   envPrefix: ["PUBLIC_"],
   plugins: [

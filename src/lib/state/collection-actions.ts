@@ -1,9 +1,10 @@
-import { Cause, Effect } from "effect";
+import { Cause, Effect, Result } from "effect";
 import type { NavigationError } from "#lib/navigation.ts";
 import type { CollectionError } from "./collection-errors.ts";
+import type { TransferError } from "./collection-transfer.ts";
 import { Notifications } from "./notifications.ts";
 
-type ActionError = CollectionError | NavigationError;
+type ActionError = CollectionError | NavigationError | TransferError;
 type ActionOptions = { success?: string | false };
 
 export const collectionActions = {
@@ -20,10 +21,11 @@ export const reportAction = Effect.fn("CollectionActions.report")(function* <A>(
   const { success = "Collection saved." } = options;
   return yield* effect.pipe(
     Effect.tap(() => (success === false ? Effect.void : notifications.success(success))),
-    Effect.catch((error) => notifications.error(error.message, error.cause)),
     Effect.catchCause((cause) => {
       // Cancellation is control flow, not a failed action to announce.
       if (Cause.hasInterrupts(cause)) return Effect.failCause(cause);
+      const error = Cause.findError(cause);
+      if (Result.isSuccess(error) && !Cause.hasDies(cause)) return notifications.error(error.success.message, error.success);
       return notifications.error("Something unexpected prevented that action. Please try again.", cause);
     }),
   );

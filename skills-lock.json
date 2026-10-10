@@ -1,17 +1,41 @@
 {
   "version": 1,
   "skills": {
+    "codebase-design": {
+      "source": "mattpocock/skills",
+      "sourceType": "github",
+      "skillPath": "skills/engineering/codebase-design/SKILL.md",
+      "computedHash": "b2888e4f4e8c0af3bfd557575a64b905c44e6248c3101d72077816882b3a92b9"
+    },
+    "dexiejs": {
+      "source": "devfirexyz/skills",
+      "sourceType": "github",
+      "skillPath": "dexiejs/SKILL.md",
+      "computedHash": "d39de76d7c29dba068d76dd17c1e168e0b04d9477d3daeb858bce8756f67e270"
+    },
     "effect": {
       "source": "kitlangton/skills",
       "sourceType": "github",
       "skillPath": "skills/effect/SKILL.md",
       "computedHash": "f4e0cfeee135a1569fc9e511c26d74fcd29d5ce03bc8066aea268fc87a88019e"
     },
+    "improve-codebase-architecture": {
+      "source": "mattpocock/skills",
+      "sourceType": "github",
+      "skillPath": "skills/engineering/improve-codebase-architecture/SKILL.md",
+      "computedHash": "ac2c94885f34ff8492dc12aa4543182f661f32ea1722b8d6b6c2c7045af33ae3"
+    },
     "pwa-development": {
       "source": "alinaqi/maggy",
       "sourceType": "github",
       "skillPath": "skills/pwa-development/SKILL.md",
       "computedHash": "356d9a26a8435778bb3bb906f5198814c48872ae87485ae97f4da3c10a0cfcc5"
+    },
+    "unocss": {
+      "source": "antfu/skills",
+      "sourceType": "github",
+      "skillPath": "skills/unocss/SKILL.md",
+      "computedHash": "923725d71da1ab6bdb3ad2cb6808dd09aa51a88236d3b4bd19c325d1b73a3cfb"
     },
     "unslop": {
       "source": "poteto/noodle",

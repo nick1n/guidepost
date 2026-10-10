@@ -1,6 +1,6 @@
 import { resolve } from "node:path";
 import type { Plugin } from "vite";
-import { generateTypes, schemaPath } from "./generate-types.mts";
+import { catalogPath, generateCoreEditions, generateTypes, schemaPath } from "./generate-types.mts";
 
 export function schemaTypes(): Plugin {
   let cleanup = () => {};
@@ -11,14 +11,21 @@ export function schemaTypes(): Plugin {
     configureServer(server) {
       let pending = Promise.resolve();
       let timer: ReturnType<typeof setTimeout>;
+      let schemaChanged = false;
 
       function onSchemaChange(file: string) {
-        if (resolve(file) !== schemaPath) return;
+        const path = resolve(file);
+        if (path !== schemaPath && path !== catalogPath) return;
+        schemaChanged ||= path === schemaPath;
         clearTimeout(timer);
         timer = setTimeout(() => {
+          const regenerateTypes = schemaChanged;
+          schemaChanged = false;
           pending = pending
             .then(async () => {
-              if (await generateTypes()) server.config.logger.info("[schema-types] Regenerated catalog types");
+              if (regenerateTypes) {
+                if (await generateTypes()) server.config.logger.info("[schema-types] Regenerated catalog types and core editions");
+              } else if (await generateCoreEditions()) server.config.logger.info("[schema-types] Regenerated core editions");
             })
             .catch((error) => {
               server.config.logger.error(`[schema-types] Generation failed: ${error instanceof Error ? error.message : String(error)}`);
@@ -26,7 +33,7 @@ export function schemaTypes(): Plugin {
         }, 75);
       }
 
-      server.watcher.add(schemaPath);
+      server.watcher.add([schemaPath, catalogPath]);
       server.watcher.on("change", onSchemaChange);
       server.watcher.on("add", onSchemaChange);
       cleanup = () => {

@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Kingdom Death combined review catalog",
-  "$comment": "tsType annotations include computed view labels and legacy gameplay values in generated types without relaxing stored-catalog validation.",
+  "$comment": "tsType annotations keep reviewed release labels open in generated types without relaxing stored-catalog validation.",
   "description": "Review export combining the app catalog, news product links, and collection workbook. IDs remain object keys. Monetary amounts use integer cents. Personal ownership is stored in imports/kdm-import-records.json.",
   "type": "object",
   "required": ["content", "included-only", "accessories", "bundles", "homebrew"],
@@ -21,18 +21,51 @@
       "required": ["name", "tags"],
       "additionalProperties": false,
       "properties": {
-        "name": { "type": "string", "minLength": 1 },
-        "releaseDate": {
-          "type": "string",
-          "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
-          "description": "Release date for an item without selectable editions, YYYY-MM-DD."
+        "accessoryType": { "enum": ["shirt", "dice", "other", "comic"] },
+        "aliases": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true, "minItems": 1 },
+        "announcements": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/announcement" },
+          "uniqueItems": true,
+          "description": "Unique news publication dates, sorted chronologically.",
+          "minItems": 1
         },
-        "releaseWindow": {
+        "colors": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "minItems": 1,
+          "description": "Color swatches in display order, paired by index with text labels when present."
+        },
+        "currency": { "enum": ["USD", "EUR"], "default": "USD" },
+        "description": { "type": "string", "description": "Item description.", "minLength": 1 },
+        "editions": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/edition" },
+          "uniqueItems": true,
+          "minItems": 1,
+          "description": "Selectable releases, ordered with Sim first and then chronologically by release date or release window; unknown dates last."
+        },
+        "gameplay": {
+          "const": true,
+          "description": "Gameplay is false by default. Store this field only when true; editions may override it."
+        },
+        "gameplayContent": {
           "type": "string",
           "minLength": 1,
-          "description": "Imprecise release date for an item without selectable editions, such as a year or a year-first quarter."
+          "description": "Gameplay content supplied with this item. Release differences, when known, are described here."
         },
-        "desc": { "type": "string", "description": "Item description.", "minLength": 1 },
+        "handle": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+          "description": "Shared Kingdom Death shop product handle. Applies to every edition; omit edition handles when present."
+        },
+        "includes": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/inclusion" },
+          "uniqueItems": true,
+          "description": "Known included items, optionally qualified by their editions/materials and the containing release. Partial list; unspecified editions are not automatically owned.",
+          "minItems": 1
+        },
         "kind": {
           "tsType": "string",
           "enum": [
@@ -52,24 +85,35 @@
           ],
           "description": "Product classification. The beta kind means all editions are Beta; box may contain mixed Beta and non-Beta editions or other boxed products. Bundles may omit kind."
         },
-        "gameplay": {
-          "tsType": "boolean | null",
-          "const": true,
-          "description": "Gameplay is false by default. Store this field only when true; editions may override it."
-        },
+        "name": { "type": "string", "minLength": 1 },
+        "notes": { "type": "string", "minLength": 1, "description": "Item history and release notes." },
         "price": {
           "type": "integer",
           "minimum": 0,
-          "description": "Item price in cents for products without editions. Products with editions use the edition's $ array."
+          "description": "Item price in cents for products without editions. Products with editions use the edition's prices array."
         },
-        "currency": { "enum": ["USD", "EUR"], "default": "USD" },
         "priceMinimum": { "type": "boolean", "default": false },
-        "editions": {
-          "type": "array",
-          "items": { "$ref": "#/$defs/edition" },
-          "uniqueItems": true,
-          "minItems": 1,
-          "description": "Selectable releases, ordered with Sim first and then chronologically by release date or release window; unknown dates last."
+        "releaseDate": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+          "description": "Release date for an item without selectable editions, YYYY-MM-DD."
+        },
+        "releaseWindow": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Imprecise release date for an item without selectable editions, such as a year or a year-first quarter."
+        },
+        "releaseYear": {
+          "type": "integer",
+          "minimum": 1900,
+          "maximum": 2100,
+          "description": "Explicitly supplied product release year. Shirt and dice years are stored here rather than in editions; unknown years are omitted."
+        },
+        "requires": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true, "minItems": 1 },
+        "size": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Default physical model size or scale (mm), retained as supplied text. Edition size overrides this value; Sim never inherits it. Omit unknown sizes."
         },
         "tags": {
           "type": "array",
@@ -78,79 +122,36 @@
           "minItems": 1,
           "description": "Reviewed descriptive tags from the master tag file."
         },
-        "requires": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true, "minItems": 1 },
-        "url": {
-          "type": "string",
-          "description": "External listing URL. Kingdom Death shop product listings use handle instead.",
-          "minLength": 1
-        },
-        "aliases": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true, "minItems": 1 },
-        "urls": {
-          "type": "array",
-          "items": { "type": "string", "minLength": 1 },
-          "uniqueItems": true,
-          "minItems": 1,
-          "description": "Additional product URLs for an item without editions."
-        },
-        "announcements": {
-          "type": "array",
-          "items": { "$ref": "#/$defs/announcement" },
-          "uniqueItems": true,
-          "description": "Unique news publication dates, sorted chronologically.",
-          "minItems": 1
-        },
-        "includes": {
-          "type": "array",
-          "items": { "$ref": "#/$defs/inclusion" },
-          "uniqueItems": true,
-          "description": "Known included items, optionally qualified by their editions/materials and the containing release. Partial list; unspecified editions are not automatically owned.",
-          "minItems": 1
-        },
-        "notes": { "type": "string", "minLength": 1, "description": "Item history and release notes." },
-        "size": {
-          "type": "string",
-          "minLength": 1,
-          "description": "Default physical model size or scale (mm), retained as supplied text. Edition size overrides this value; Sim never inherits it. Omit unknown sizes."
-        },
-        "gameplayContent": {
-          "type": "string",
-          "minLength": 1,
-          "description": "Gameplay content supplied with this item. Release differences, when known, are described here."
-        },
-        "accessoryType": { "enum": ["shirt", "dice", "other", "comic"] },
-        "colors": {
-          "type": "array",
-          "items": { "type": "string", "minLength": 1 },
-          "minItems": 1,
-          "description": "Color swatches in display order, paired by index with text labels when present."
-        },
         "text": {
           "type": "array",
           "items": { "type": "string", "minLength": 1 },
           "minItems": 1,
           "description": "Labels for color swatches in matching order. Repeated labels are allowed for distinct swatches."
         },
-        "releaseYear": {
-          "type": "integer",
-          "minimum": 1900,
-          "maximum": 2100,
-          "description": "Explicitly supplied product release year. Shirt and dice years are stored here rather than in editions; unknown years are omitted."
-        },
-        "handle": {
+        "url": {
           "type": "string",
-          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
-          "description": "Shared Kingdom Death shop product handle. Applies to every edition; omit edition handles when present."
+          "description": "External listing URL. Kingdom Death shop product listings use handle instead.",
+          "minLength": 1
+        },
+        "urls": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true,
+          "minItems": 1,
+          "description": "Additional product URLs for an item without editions."
         }
       }
     },
     "edition": {
       "type": "object",
-      "required": ["v"],
+      "required": ["id", "label", "format"],
       "additionalProperties": false,
       "properties": {
-        "v": {
+        "id": { "$ref": "#/$defs/editionId" },
+        "label": {
           "tsType": "string",
           "type": "string",
+          "minLength": 1,
           "description": "Selectable release label, such as First Run, Encore, Plastic, or Sim.",
           "enum": [
             "1.3",
@@ -210,7 +211,42 @@
             "White Resin"
           ]
         },
-        "$": {
+        "available": {
+          "type": "boolean",
+          "const": true,
+          "description": "Available in at least one matching cached shop variant. False by default; omit when unavailable or unknown."
+        },
+        "beta": { "type": "boolean", "const": true, "description": "Beta release. Omit for non-Beta editions." },
+        "expansion": { "type": "string", "description": "Workbook Expansion value.", "minLength": 1 },
+        "format": { "enum": ["physical", "digital"], "description": "Delivery format of this release." },
+        "gameplay": {
+          "type": "boolean",
+          "description": "Override of the item gameplay default (false when omitted). Store only when different from the item default."
+        },
+        "handle": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+          "description": "Kingdom Death shop product handle. Used only when the item has no shared handle."
+        },
+        "includesAllSim": {
+          "const": true,
+          "description": "Grants every current and future simulator edition. Resolve against editions marked simulator when reading the catalog; do not materialize a static list."
+        },
+        "limit": { "type": "boolean" },
+        "materials": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true,
+          "minItems": 1,
+          "description": "Known materials of this release. Omitted means the material is unspecified."
+        },
+        "name": {
+          "type": "string",
+          "description": "Release-specific name when it differs from the sculpt item name, such as Plastic Ramette.",
+          "minLength": 1
+        },
+        "numbered": { "const": true, "description": "The release is known to have individually numbered copies. Omit otherwise." },
+        "prices": {
           "type": "array",
           "items": {
             "type": "integer",
@@ -221,23 +257,10 @@
           "description": "Known sale amounts plus current MSRP in cents. Maximum is MSRP; the array makes no active-sale claim. Price evidence and estimates remain in the audit.",
           "minItems": 1
         },
-        "limit": { "type": "boolean" },
-        "r": {
+        "releaseDate": {
           "type": "string",
           "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
           "description": "Exact release date, YYYY-MM-DD. Derive its year from this value; use releaseWindow when only a year or an imprecise date is known."
-        },
-        "materials": {
-          "type": "array",
-          "items": { "type": "string", "minLength": 1 },
-          "uniqueItems": true,
-          "minItems": 1,
-          "description": "Materials of this release. First Run and Encore labels carry explicit materials. When omitted, infer a single material only for the exact labels Plastic, Resin, Photoresin, Deathgrey, Metal, and Deathpink; otherwise material is unspecified."
-        },
-        "size": {
-          "type": "string",
-          "description": "Physical release size override when it differs from the item default. Sim never has a model size. Omit unknown placeholders.",
-          "minLength": 1
         },
         "releaseWindow": {
           "type": "string",
@@ -249,41 +272,24 @@
           "minimum": 1,
           "description": "Known production or sale limit. Omit unknown counts; preserve supplied First Run and Encore counts. Do not infer counts from units sold."
         },
-        "expansion": { "type": "string", "description": "Workbook Expansion value.", "minLength": 1 },
-        "gameplay": {
-          "type": "boolean",
-          "tsType": "boolean | null",
-          "description": "Override of the item gameplay default (false when omitted). Store only when different from the item default."
-        },
-        "name": {
-          "type": "string",
-          "description": "Release-specific name when it differs from the sculpt item name, such as Plastic Ramette.",
-          "minLength": 1
-        },
-        "url": {
-          "type": "string",
-          "minLength": 1,
-          "description": "External listing URL. Kingdom Death shop product listings use handle instead."
-        },
-        "available": {
-          "type": "boolean",
+        "simulator": {
           "const": true,
-          "description": "Available in at least one matching cached shop variant. False by default; omit when unavailable or unknown."
+          "description": "This digital release is a Kingdom Death Simulator entitlement. Omit for other releases, including 3D Files."
+        },
+        "size": {
+          "type": "string",
+          "description": "Physical release size override when it differs from the item default. Sim never has a model size. Omit unknown placeholders.",
+          "minLength": 1
         },
         "standalone": {
           "type": "boolean",
           "const": false,
           "description": "False when confirmed to be available only as part of another product. Omit for standalone or unconfirmed releases. Collection views may hide these editions."
         },
-        "beta": { "type": "boolean", "const": true, "description": "Beta release. Omit for non-Beta editions." },
-        "includesAllSim": {
-          "const": true,
-          "description": "Grants every current and future Sim edition. Resolve against items with an edition labeled Sim when reading the catalog; do not materialize a static list."
-        },
-        "handle": {
+        "url": {
           "type": "string",
-          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
-          "description": "Kingdom Death shop product handle. Used only when the item has no shared handle."
+          "minLength": 1,
+          "description": "External listing URL. Kingdom Death shop product listings use handle instead."
         }
       }
     },
@@ -305,21 +311,20 @@
           "additionalProperties": false,
           "properties": {
             "item": { "type": "string", "minLength": 1 },
+            "editionId": {
+              "description": "Stable selected edition ID on the included child item. Use separate references for separate child editions, qualified by parentEditionIds when needed.",
+              "$ref": "#/$defs/editionId"
+            },
             "materials": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
-            "parentEditions": {
+            "parentEditionIds": {
               "type": "array",
               "minItems": 1,
               "uniqueItems": true,
-              "items": { "type": "string", "minLength": 1 },
-              "description": "Edition labels on the containing item for which this inclusion applies. Omitted means no edition restriction on the containing item; physical contents still require a physical release."
-            },
-            "edition": {
-              "type": "string",
-              "minLength": 1,
-              "description": "Selected edition label on the included child item, such as Plastic or Sim. Use separate references for separate child editions, qualified by parentEditions when needed."
+              "items": { "$ref": "#/$defs/editionId" },
+              "description": "Stable edition IDs on the containing item for which this inclusion applies. Omitted means no edition restriction on the containing item; physical contents still require a physical release."
             }
           },
-          "description": "Included item restricted to a child edition label or materials. Physical child editions require a physical containing edition; digital child editions require a digital containing edition. Optional parentEditions restricts membership to those containing editions. Never grant ownership of other editions."
+          "description": "Included item restricted to a child edition ID or materials. Physical child editions require a physical containing edition; digital child editions require a digital containing edition. Optional parentEditionIds restricts membership to those containing editions. Never grant ownership of other editions."
         }
       ]
     },
@@ -344,6 +349,11 @@
         "^(?!dice-)": { "properties": { "accessoryType": { "not": { "const": "dice" } } } },
         "^(?!shirt-)": { "properties": { "accessoryType": { "not": { "const": "shirt" } } } }
       }
+    },
+    "editionId": {
+      "type": "string",
+      "pattern": "^(?!(?:item|bundle)$)[a-z0-9]+(?:-[a-z0-9]+)*$",
+      "description": "Permanent readable release ID, unique within its item. Assign once; retain it when labels, names, or other facts change. The item and bundle IDs are reserved for synthetic editions."
     }
   }
 }

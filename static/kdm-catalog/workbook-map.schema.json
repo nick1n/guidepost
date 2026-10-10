@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "$schema": { "type": "string", "enum": ["./workbook-map.schema.json"] },
+    "formatVersion": { "type": "number", "enum": [1] },
+    "source": {
+      "type": "object",
+      "properties": { "id": { "type": "string", "enum": ["kdm-collection-sheets"] }, "workbook": { "type": "string", "minLength": 1 } },
+      "required": ["id", "workbook"],
+      "additionalProperties": false
+    },
+    "rows": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "sheet": { "type": "string", "enum": ["KDM Miniatures", "Shirt Catalog", "Dice Catalog"] },
+          "row": { "type": "integer", "minimum": 2 },
+          "name": { "type": "string", "minLength": 1 },
+          "primary": { "$ref": "#/$defs/target" },
+          "related": { "type": "array", "items": { "$ref": "#/$defs/target" }, "minItems": 1, "uniqueItems": true },
+          "ownershipScope": { "type": "string", "enum": ["source-row"] },
+          "releaseEditions": {
+            "type": "object",
+            "properties": {
+              "M": { "type": "array", "items": { "$ref": "#/$defs/target" }, "minItems": 1, "uniqueItems": true },
+              "N": { "type": "array", "items": { "$ref": "#/$defs/target" }, "minItems": 1, "uniqueItems": true },
+              "O": { "type": "array", "items": { "$ref": "#/$defs/target" }, "minItems": 1, "uniqueItems": true }
+            },
+            "additionalProperties": false,
+            "minProperties": 1
+          }
+        },
+        "required": ["sheet", "row", "name", "primary"],
+        "additionalProperties": false,
+        "allOf": [
+          { "if": { "required": ["related"] }, "then": { "required": ["ownershipScope"] } },
+          {
+            "if": { "properties": { "sheet": { "enum": ["Shirt Catalog", "Dice Catalog"] } }, "required": ["sheet"] },
+            "then": { "properties": { "primary": { "properties": { "editionId": { "const": "item" } } } } }
+          }
+        ]
+      }
+    }
+  },
+  "required": ["$schema", "formatVersion", "source", "rows"],
+  "additionalProperties": false,
+  "title": "KDM workbook to catalog edition mapping",
+  "description": "Product references for one workbook snapshot. Sheet and row locate a source record; they are not permanent IDs.",
+  "$defs": {
+    "target": {
+      "type": "object",
+      "properties": {
+        "category": { "type": "string", "enum": ["content", "accessories", "bundles", "included-only"] },
+        "contentId": { "type": "string", "minLength": 1 },
+        "editionId": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
+        "sourceEdition": { "type": "string", "minLength": 1 }
+      },
+      "required": ["category", "contentId", "editionId"],
+      "additionalProperties": false
+    }
+  }
+}

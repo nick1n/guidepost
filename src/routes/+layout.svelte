@@ -2,24 +2,30 @@
   import "@unocss/reset/tailwind-v4.css";
   import "../app.css";
   import { onMount } from "svelte";
-  import { Effect } from "effect";
-  import { BrowserStorage } from "#lib/state/browser-storage.ts";
-  import { collection } from "#lib/state/collection.svelte.ts";
+  import { afterNavigate } from "$app/navigation";
+  import { Effect, Fiber } from "effect";
+  import { Collection, setCollection } from "#lib/state/collection.svelte.ts";
   import { collectionActions } from "#lib/state/collection-actions.ts";
-  import { GuestStore } from "#lib/state/stores.ts";
+  import { CollectionSession } from "#lib/state/collection-session.ts";
 
   let { children } = $props();
+  const collection = setCollection(new Collection());
+  const session = new CollectionSession(collection);
+
+  afterNavigate(({ to }) => {
+    navigator.serviceWorker?.controller?.postMessage({ type: "cache-page", path: to?.url.pathname });
+  });
+
+  // Database monitoring must follow loads and retries started anywhere in the app.
+  $effect(() => {
+    session.monitor(collection.canObserve);
+  });
 
   onMount(() => {
-    const userId = "guest";
-    collection.setUser(userId);
-    collectionActions.run(
-      GuestStore.make(userId).pipe(
-        Effect.provide(BrowserStorage.layer),
-        Effect.flatMap((store) => collection.setStore(store)),
-      ),
-      { success: false },
-    );
+    const active = collectionActions.run(session.run("guest"), { success: false });
+    return () => {
+      Effect.runFork(Fiber.interrupt(active));
+    };
   });
 </script>
 

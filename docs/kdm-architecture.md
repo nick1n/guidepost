@@ -1,11 +1,11 @@
 # Local-first KDM architecture
 
-Status: proposed design. Dexie, Dexie Cloud, and the campaign services below are not yet installed or implemented.
+Status: local collection storage uses Dexie. Dexie Cloud and the campaign services below are proposed, not implemented.
 
 ## Scope and existing behavior
 
 Guidepost must support guest use and offline saves. Signed-in users must be able to synchronize across devices and share campaigns.
-Gameplay uses an action history; collection tracking, campaign management, and preferences use current records.
+Planned gameplay uses an action history; collection tracking, campaign management, and preferences use current records.
 
 | Area                | Data                                                             | Gameplay undo           |
 | ------------------- | ---------------------------------------------------------------- | ----------------------- |
@@ -15,17 +15,60 @@ Gameplay uses an action history; collection tracking, campaign management, and p
 | Preferences         | Account and device settings                                      | None                    |
 | Catalog             | Bundled, versioned reference data                                | None                    |
 
-The existing collection service saves complete snapshots through this path. The `/collection/` page currently keeps edition selections
-in memory; connecting it to this service and migrating old catalog IDs and version selections remain pending.
+The `/kdm/collection/` page saves owned, wished, and numeric `copyNumber` values locally. Copy numbers range from 1 to 9999, bounded by a
+known edition run size. Collection keys combine stable catalog content IDs and edition
+IDs. Edition IDs are permanent readable lowercase kebab-case strings, unique within their item. The compound content/edition key
+distinguishes different items that both have a `first-run` or `sim` edition. Assign an ID once and retain it when its `label`, `name`, or
+other facts change. A catalog edition's `label` can change without changing its collection entry. Items without explicit editions use the synthetic
+`item` ID, or `bundle` for bundles.
+
+The catalog retains category groups with item IDs as object keys and nested edition arrays. Item fields are alphabetical; edition
+fields start with `id`, then `label`, and inclusion-object fields start with `item`, followed by alphabetical fields. Property order is
+an authoring convention; it does not change the persisted collection snapshot or database schema.
 
 ```text
-ContentState -> OptimisticStore -> GuestStore -> BrowserStorage
+Collection -> OptimisticStore -> DexieStore (CollectionStore)
 ```
 
 [`OptimisticStore`](../src/lib/state/optimistic-store.ts) applies field patches immediately and serializes persistence.
-[`GuestStore`](../src/lib/state/stores.ts) implements `CollectionStore` through
-[`BrowserStorage`](../src/lib/state/browser-storage.ts). This queue has no durable undo history. A Dexie migration must preserve the
-`CollectionStore` boundary and migrate existing data explicitly.
+[`DexieStore`](../src/lib/state/dexie-store.ts) implements the [`CollectionStore`](../src/lib/state/stores.ts) interface. It saves
+complete snapshots for one owner, writing only changed rows and removing entries omitted from the next snapshot. The revision check,
+row changes, and metadata update share one IndexedDB transaction. Warm loads use read-only transactions. The `ownerId` index serves
+snapshot reads; entry primary keys serve writes.
+
+Dexie loads after the browser mounts the app. A metadata `liveQuery` subscription reports stale snapshots through the store interface.
+`Collection` blocks edits and offers an explicit refresh without replacing its current state. Observations never authorize writing
+against a newer revision. `CollectionSession` owns startup and monitoring in one Effect scope, stopping subscriptions before
+closing the database connection on teardown. Transactional revision checks also reject competing writes before a notification arrives.
+
+Observer failures block editing without discarding the current snapshot. The layout forwards collection readiness to the session,
+which restarts monitoring after retry and keeps the subscription active during normal refreshes. Superseded command results and failures are interrupted before they reach notifications
+or another owner's collection.
+
+The root layout provides one `Collection` per app instance through Svelte context. It owns commands, derived totals and coverage,
+load/save errors, and pending-write status. Components run commands through `collectionActions`; injected notifications use Effect
+logging. Bundle ownership commands continue to propagate to included editions.
+
+The root initializes `Collection` with an empty catalog. Quick Start directly imports generated `src/lib/gen/core-editions.json`,
+which contains only playable core edition IDs and labels in catalog order, excluding Resin, and checks and saves ownership by stable keys.
+Opening `/kdm/collection/` loads the full catalog
+through the route's load function and replaces the reference catalog without changing the owner's snapshot or pending saves.
+Catalog helpers receive their catalog explicitly; shared modules do not import the full data file. Collection links disable hover
+data preloading. The service worker caches the full catalog and collection HTML after a visit, rather than precaching them on startup.
+
+The action boundary handles the full Effect cause. Interruption remains control flow, including causes that also contain a typed
+failure, and produces no failure notification. Expected failures report their typed messages; defects report a generic message and
+log the full cause. A database load or monitoring failure offers retry; a failed storage-module download requires a page reload
+because no persistence adapter exists yet.
+
+Validated JSON backups replace the snapshot through the optimistic queue. Exports wait for preceding writes and copy confirmed data.
+Workbook workflows validate normalized rows against the product-only map, require explicit selections for ambiguous releases, and
+merge provided fields in one save. Workbook exports reject unmapped entries and shared-row values they cannot represent.
+The mapping loads on demand; XLSX adapters and controls remain future work.
+
+Collection metadata holds schema version 1 for validation. This unreleased schema has no old-data migrations, and the queue has no
+durable undo history. The metadata version is separate from Dexie's database version. After release, table/index changes need Dexie
+versioned upgrades; incompatible stored-record changes need an explicit compatibility or migration policy and preservation tests.
 
 ## Domain relationships
 
@@ -109,7 +152,7 @@ gameplay undo. Rewind must never restore an old access grant.
 
 Campaign setup derives available choices from the user's owned CollectionEntry records. The user selects specific items from that
 collection for the linked campaign. Store those choices as ContentSelection records with the campaign reference, source user and
-collection-entry reference, and selected catalog content ID, edition, and rules version. The same collection entry can supply content
+collection-entry reference, and selected catalog content ID, edition ID, and rules version. The same collection entry can supply content
 to multiple campaigns, each with its own selection.
 
 Available choices follow collection ownership; saved campaign selections persist independently of later collection edits or membership
@@ -125,8 +168,9 @@ of campaign sync. Neither requires action history or a collaborative real-time U
 
 ## Components and data flow
 
-Use Dexie for IndexedDB persistence, hosted Dexie Cloud for synchronization, Effect v4 for workflows and service dependencies, and
-Svelte for interaction and display. The browser connects directly to Dexie Cloud, so this design needs no custom application backend.
+Local collection persistence uses Dexie and IndexedDB. The proposed campaign design uses hosted Dexie Cloud for synchronization,
+Effect v4 for workflows and service dependencies, and Svelte for interaction and display. The browser would connect directly to Dexie
+Cloud, so this design needs no custom application backend.
 
 ```mermaid
 flowchart TD
@@ -328,8 +372,15 @@ Review existing registration before adding Dexie Cloud worker behavior.
 ## Tests and implementation sequence
 
 Use Vitest and the version-aligned `@effect/vitest` adapter. Existing
-[storage tests](../test/stores.test.mts) demonstrate injection. Memory layers allocate fresh state in `Layer.effect`, use atomic `Ref`
-updates, and match the Dexie contract. They need no browser, IndexedDB, Dexie import, credentials, or network.
+[Dexie storage tests](../test/client/dexie-store.test.mts) cover snapshot transactions and stale revisions;
+[optimistic store tests](../test/client/optimistic-store.test.mts) cover pending patches and rollback. Proposed campaign memory layers should
+allocate fresh state in `Layer.effect`, use atomic `Ref` updates, and match the Dexie contract. They need no browser, IndexedDB, Dexie
+import, credentials, or network.
+
+Current [collection tests](../test/client/collection.test.mts) also cover monitoring failures, retry readiness, changes during refresh, and
+owner changes during workbook operations. [Action tests](../test/client/collection-actions.test.mts) cover typed failures, mixed causes,
+defects, and cancellation; [transfer tests](../test/client/collection-transfer.test.mts) cover validated backups and workbook representation
+limits. Keep this coverage when simplifying Effect workflows.
 
 | Test layer                                           | Coverage                                                                                                                                                                      |
 | ---------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -348,12 +399,12 @@ Implementation order:
 
 1. Define versioned models, phase rules, dependencies, and undo semantics.
 2. Build pure rules, memory services, and transition/rewind tests.
-3. Add Dexie adapters and verify creation, persistence, reloads, and concurrency.
+3. Add campaign Dexie adapters and verify creation, persistence, reloads, and concurrency.
 4. Connect campaign management and phase UIs to services and history controls.
 5. Add optional auth and sync after defining adoption, permissions, and reconciliation.
 
 Validate two devices with normal year advancement, settlement crafting and rewind, hunt victory/resumption, hunt defeat, and settlement
-interruption/resumption. Include offline edits and a rejected write. Collection migration and preference sync can proceed independently.
+interruption/resumption. Include offline edits and a rejected write. Preference sync can proceed independently of campaign work.
 
 ## Open decisions
 

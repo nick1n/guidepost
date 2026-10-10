@@ -12,19 +12,31 @@ export function inheritEncoreDates(item: Item) {
   const editions = item.editions ?? [];
   for (const prefix of ["", "Painters: ", "Bust: "]) {
     const source =
-      editions.find((edition) => edition.v === prefix + "First Run" && edition.r) ??
-      editions.find((edition) => edition.v.startsWith(prefix + "Deathgrey") && edition.r);
+      editions.find((edition) => edition.label === prefix + "First Run" && edition.releaseDate) ??
+      editions.find((edition) => edition.label.startsWith(prefix + "Deathgrey") && edition.releaseDate);
     if (source) {
       // User-approved fallback for Encore releases without their own date or window.
-      for (const edition of editions) if (edition.v === prefix + "Encore" && !edition.r && !edition.releaseWindow) edition.r = source.r;
+      for (const edition of editions)
+        if (edition.label === prefix + "Encore" && !edition.releaseDate && !edition.releaseWindow) edition.releaseDate = source.releaseDate;
     }
   }
 }
 
 export function normalizeItem(item: Item) {
   for (const edition of item.editions ?? []) {
-    if (edition.v === "Deathgrey M2 Edition") edition.v = "Deathgrey M2";
+    if (edition.label === "Deathgrey M2 Edition") edition.label = "Deathgrey M2";
     if (edition.available !== true) delete edition.available;
+    edition.format ??= ["Sim", "3D Files"].includes(edition.label) ? "digital" : "physical";
+    if (edition.label === "Sim") edition.simulator = true;
+    if (!edition.materials && ["Plastic", "Resin", "Photoresin", "Deathgrey", "Metal", "PVC", "Deathpink"].includes(edition.label))
+      edition.materials = [edition.label];
+    if (
+      edition.runSize !== undefined ||
+      /\bfirst[\s-]+run\b|\bdeathgrey\b/i.test(
+        [edition.label, edition.name, ...(edition.name ? [edition.name] : (edition.materials ?? []))].join(" "),
+      )
+    )
+      edition.numbered = true;
   }
   // Accept legacy shop URLs at import boundaries, then store only the handle.
   for (const listing of [item, ...(item.editions ?? [])]) {
@@ -60,7 +72,7 @@ export function normalizeItem(item: Item) {
   for (const edition of item.editions ?? []) {
     if (typeof edition.gameplayContent === "string" && edition.gameplayContent.trim()) {
       const text = edition.gameplayContent.trim();
-      content.set(text, [...(content.get(text) ?? []), edition.v]);
+      content.set(text, [...(content.get(text) ?? []), edition.label]);
     }
     delete edition.gameplayContent;
   }

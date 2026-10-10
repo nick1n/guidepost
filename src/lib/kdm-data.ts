@@ -1,8 +1,4 @@
-import catalog from "../../static/kdm-catalog/data.json";
-import type { Catalog, Currency, Edition, Item } from "#lib/types/index.ts";
-
-export const data = catalog as Catalog;
-export const content = Object.entries(data.content).map(([id, item]) => ({ id, ...item }));
+import type { Currency, Edition, Item } from "#lib/types/index.ts";
 
 const priceFormatters = {
   USD: {
@@ -29,29 +25,16 @@ export function formatPriceTotals(totals: Partial<Record<Currency, number>>) {
   return formatPrice(Math.round(usdCents));
 }
 
-export const STORE_BASE = "https://shop.kingdomdeath.com";
-
-export function storeUrl(path?: string) {
-  if (!path) return;
-  return path.startsWith("http") ? path : `${STORE_BASE}${path}`;
+export function editionLabel(edition: Pick<Edition, "label" | "name">) {
+  return edition.name ?? edition.label;
 }
 
-const standardMaterials = new Set(["Plastic", "Resin", "Photoresin", "Deathgrey", "Metal", "PVC", "Deathpink"]);
-
 export function editionMaterials(edition: Edition) {
-  return edition.name ? [edition.name] : (edition.materials ?? (standardMaterials.has(edition.v) ? [edition.v] : []));
+  return edition.materials ?? [];
 }
 
 export function editionGameplay(item: Partial<Item>, edition: Edition) {
   return (Object.hasOwn(edition, "gameplay") ? edition.gameplay : item.gameplay) === true;
-}
-
-export function editionUrl(item: Partial<Item>, edition: Edition) {
-  return edition.url ?? item.url;
-}
-
-export function editionSize(item: Partial<Item>, edition: Edition) {
-  return edition.v === "Sim" ? undefined : (edition.size ?? item.size);
 }
 
 export function catalogTags(item: Partial<Item>, category: string) {

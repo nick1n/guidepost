@@ -1,4 +1,3 @@
-import { Parser } from "htmlparser2";
 import { isDeepStrictEqual } from "node:util";
 import {
   categories,
@@ -11,9 +10,11 @@ import {
   type Product,
   type Variant,
 } from "./types.mts";
+import { resolveReleases } from "./releases.mts";
 import { catalogListing, productUrl } from "./shop.mts";
 import { normalizeCatalog } from "./normalize.mts";
 import { organizeCatalog, editionComparator } from "./order.mts";
+import { editionId } from "./identity.mts";
 import { applyTags, type Tags } from "./tags.mts";
 
 export function normalized(value: string) {
@@ -34,67 +35,11 @@ export function releaseGaps(catalog: Catalog) {
     .filter(([, item]) => !item.editions?.length)
     .map(([itemId, item]) => ({ itemId, name: item.name }));
   const missingDates = Object.entries(catalog.content).flatMap(([itemId, item]) =>
-    (item.editions ?? []).filter((edition) => !edition.r && !edition.releaseWindow).map((edition) => ({ itemId, edition: edition.v })),
+    (item.editions ?? [])
+      .filter((edition) => !edition.releaseDate && !edition.releaseWindow)
+      .map((edition) => ({ itemId, edition: edition.label })),
   );
   return { missingEditions, missingDates };
-}
-
-export function contents(html: string) {
-  const rows: string[] = [];
-  let current: string[] | undefined;
-  new Parser({
-    onopentag(tag) {
-      if (tag === "li") current = [];
-    },
-    ontext(text) {
-      current?.push(text);
-    },
-    onclosetag(tag) {
-      if (tag === "li" && current) {
-        rows.push(current.join("").replace(/\s+/g, " ").trim());
-        current = undefined;
-      }
-    },
-  }).end(html);
-  return rows.filter(Boolean);
-}
-
-export function variantLabel(variant: Variant, fallback: string): string {
-  if (!variant.requires_shipping) return "Sim";
-  if (/^original cover$/i.test(variant.title)) return "Pawel Zdanowski";
-  const cover = variant.title.match(/^(Ein Lee|Lokman Lam|Wenjuinn Png) variant cover$/i);
-  if (cover) return ["Ein Lee", "Lokman Lam", "Wenjuinn Png"].find((name) => name.toLowerCase() === cover[1]!.toLowerCase())!;
-  const format = fallback.match(/^(Painters|Bust)(?:: (.+))?$/);
-  if (format) return format[2] ? `${format[1]}: ${variantLabel(variant, format[2])}` : format[1]!;
-  if (/first run/i.test(variant.title)) return "First Run";
-  if (/second run collectors edition/i.test(variant.title)) return "Second Run";
-  if (/encore/i.test(variant.title)) return "Encore";
-  if (/deathgrey.*m2/i.test(variant.title)) return "Deathgrey M2";
-  if (/deathgrey|death grey edition/i.test(variant.title)) return "Deathgrey";
-  if (/deathpink|death pink edition/i.test(variant.title)) return "Deathpink";
-  if (/general/i.test(variant.title)) return "General";
-  return fallback;
-}
-
-export function observedPrices(variants: Variant[], previous: number[] = []) {
-  // Only a prior multi-price array establishes sale amounts. A lone old MSRP is
-  // retained in the review diff, rather than recast as a sale after a price rise.
-  const maximum = Math.max(
-    ...variants.flatMap((v) => [v.price, ...(v.compare_at_price && v.compare_at_price > v.price ? [v.compare_at_price] : [])]),
-  );
-  const sales = previous.length > 1 ? previous.filter((value) => value < Math.max(...previous) && value < maximum) : [];
-  return [...new Set([...sales, ...variants.map((v) => v.price), maximum])].sort((a, b) => a - b);
-}
-
-function inferMaterials(product: Product, label: string) {
-  if (label === "Sim") return undefined;
-  if (/^Deathgrey/.test(label)) return ["Deathgrey"];
-  if (label === "Deathpink") return ["Deathpink"];
-  const rows = contents(product.description);
-  if (rows.some((row) => /photoresin.*miniature|miniature.*photoresin/i.test(row))) return ["Photoresin"];
-  if (rows.some((row) => /(?:hard )?plastic.*miniature|miniature.*(?:hard )?plastic/i.test(row))) return ["Plastic"];
-  if (rows.some((row) => /resin.*miniature|miniature.*resin/i.test(row))) return ["Resin"];
-  return undefined;
 }
 
 function match(catalog: Catalog, product: Product, mappings: Record<string, Mapping>) {
@@ -126,14 +71,14 @@ function match(catalog: Catalog, product: Product, mappings: Record<string, Mapp
       return false;
     }
   });
-  const format = edition?.[0]?.v.match(/^(Painters|Bust)(?::|$)/)?.[1];
-  const formatMatches = format && edition?.every((release) => release.v === format || release.v.startsWith(format + ": "));
+  const format = edition?.[0]?.label.match(/^(Painters|Bust)(?::|$)/)?.[1];
+  const formatMatches = format && edition?.every((release) => release.label === format || release.label.startsWith(format + ": "));
   const gameplay = formatMatches ? [...new Set(edition!.map((release) => release.gameplay ?? item.gameplay === true))] : [];
   return {
     mapping: {
       category,
       itemId,
-      ...(edition?.length === 1 || formatMatches ? { edition: edition![0]!.v } : {}),
+      ...(edition?.length === 1 || formatMatches ? { edition: edition![0]!.label } : {}),
       ...(gameplay.length === 1 ? { gameplay: gameplay[0] } : {}),
     },
     confidence: urlMatches ? "url" : "name",
@@ -153,24 +98,16 @@ export function applyAvailability(catalog: Catalog, products: Product[], mapping
     }
     const item = catalog[mapping.category][mapping.itemId];
     if (!item?.editions?.length) continue;
-    const standard = item.editions.filter((edition) => edition.v !== "Sim" && !/^(Painters|Bust)(?::|$)/.test(edition.v));
-    const fallback =
-      mapping.edition ??
-      (standard.length === 1 ? standard[0]!.v : undefined) ??
-      (product.product_type === "whitebox" && standard.some((edition) => edition.v === "Plastic") ? "Plastic" : undefined) ??
-      inferMaterials(product, "Plastic")?.[0] ??
-      "Box";
-    for (const variant of product.variants) {
-      if (mapping.variantIds && !mapping.variantIds.includes(variant.id)) continue;
-      if (typeof variant.available !== "boolean") continue;
-      const label = mapping.variantEditions?.[String(variant.id)] ?? variantLabel(variant, fallback);
-      const edition = item.editions.find((edition) => edition.v === label);
+    const { releases } = resolveReleases(item, product, { policy: "observe", mapping });
+    for (const { label, variants, edition } of releases) {
+      const availableVariants = variants.filter((variant) => typeof variant.available === "boolean");
+      if (!availableVariants.length) continue;
       if (!edition) {
-        if (variant.available) unresolved.push({ handle: product.handle, edition: label });
+        for (const variant of availableVariants) if (variant.available) unresolved.push({ handle: product.handle, edition: label });
         continue;
       }
       // An edition is available if any matching warehouse or product variant is available.
-      observed.set(edition, (observed.get(edition) ?? false) || variant.available);
+      observed.set(edition, (observed.get(edition) ?? false) || availableVariants.some((variant) => variant.available === true));
     }
   }
   for (const [edition, available] of observed) {
@@ -240,23 +177,17 @@ export function planUpdate(
         unresolved.push({ handle: product.handle, reason: "Existing physical alternatives require a curated edition mapping" });
         continue;
       }
-      item.editions = [{ v: "Box", url: item.url, ...(item.price !== undefined ? { $: [item.price] } : {}) }];
+      item.editions = [
+        { id: editionId("Box"), label: "Box", url: item.url, ...(item.price !== undefined ? { prices: [item.price] } : {}) },
+      ];
     }
-    const rows = contents(product.description);
-    const fallback =
-      mapping.edition ??
-      (digital ? "Sim" : (inferMaterials(product, "Plastic")?.[0] ?? (mapping.category === "accessories" ? "General" : "Box")));
-    const variantGroups = new Map<string, Variant[]>();
-    const selectedVariants = mapping.variantIds ? product.variants.filter((v) => mapping.variantIds!.includes(v.id)) : product.variants;
+    const resolved = resolveReleases(item, product, { policy: "update", mapping });
+    const selectedVariants = resolved.variants;
     if (!selectedVariants.length) {
       unresolved.push({ handle: product.handle, reason: "Mapped variants are absent from the current listing" });
       continue;
     }
     for (const variant of selectedVariants) {
-      const label = mapping.variantEditions?.[String(variant.id)] ?? variantLabel(variant, fallback);
-      const group = variantGroups.get(label) ?? [];
-      group.push(variant);
-      variantGroups.set(label, group);
       if (variant.compare_at_price !== null && variant.compare_at_price > 0 && variant.compare_at_price < variant.price)
         warnings.push(
           `${product.handle}: compare-at price ${variant.compare_at_price} is below price ${variant.price}; it is not treated as a sale.`,
@@ -272,29 +203,18 @@ export function planUpdate(
       item.editions ??= [];
       if (item.url) for (const edition of item.editions) edition.url ??= item.url;
       delete item.url;
-      for (const [label, variants] of variantGroups) {
-        let edition = item.editions.find((e) => e.v === label);
+      for (const { label, edition: existing, prices, materials } of resolved.releases) {
+        let edition = existing;
         if (!edition) {
-          edition = { v: label };
+          edition = { id: editionId(label, item.editions), label: label };
           item.editions.push(edition);
         }
-        edition.$ = observedPrices(variants, edition.$);
+        edition.prices = prices;
         delete edition.priceEstimated;
         if (!temporary && (!edition.url || mapping.replaceUrl)) edition.url = "/products/" + product.handle;
-        const material = /^Deathgrey|^Deathpink/.test(label)
-          ? inferMaterials(product, label)
-          : (mapping.materials ?? inferMaterials(product, label) ?? edition.materials);
-        if (label !== "Sim" && material) {
-          if (
-            material.length === 1 &&
-            material[0] === label &&
-            ["Plastic", "Resin", "Photoresin", "Deathgrey", "Metal", "PVC", "Deathpink"].includes(label)
-          )
-            delete edition.materials;
-          else edition.materials = material;
-        }
+        if (label !== "Sim" && materials) edition.materials = materials;
         if (mapping.releaseDate && (!mapping.edition || mapping.edition === label)) {
-          edition.r = mapping.releaseDate;
+          edition.releaseDate = mapping.releaseDate;
           delete edition.releaseWindow;
         }
         if (mapping.gameplay !== undefined) {
@@ -330,7 +250,7 @@ export function planUpdate(
       category: mapping.category,
       checkedAt: source.checkedAt,
       url: source.url,
-      contents: rows,
+      contents: resolved.contents,
       variants: product.variants,
       confidence: result.confidence,
     });
