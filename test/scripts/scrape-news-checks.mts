@@ -16,7 +16,7 @@ import {
   pageData,
   saveReport,
   updateReport,
-} from "#scripts/scrape-news-shop-links.mts";
+} from "#scripts/news/scrape-shop-links.mts";
 
 const news = "https://kingdomdeath.com/news";
 const shop = "https://shop.kingdomdeath.com/products/";
@@ -81,9 +81,9 @@ test("existing Python export migrates, filters rows and retains zero-link checkp
     { ...post, itemName: "Seed patterns", shopUrl: "https://shop.kingdomdeath.com/pages/seed-patterns" },
   ];
   await saveReport(report, output);
-  const legacy = JSON.parse(await readFile(join(output, "news-shop-links.json"), "utf8"));
+  const legacy = JSON.parse(await readFile(join(output, "shop-links.json"), "utf8"));
   legacy.links[0].nameSource = "link text";
-  await writeFile(join(output, "news-shop-links.json"), JSON.stringify(legacy));
+  await writeFile(join(output, "shop-links.json"), JSON.stringify(legacy));
   const migrated = await loadReport(output);
   assert.equal(migrated.removedLinksThisRun, 2);
   assert.equal(migrated.links.length, 1);
@@ -92,7 +92,7 @@ test("existing Python export migrates, filters rows and retains zero-link checkp
   assert.equal(migrated.posts[0]!.date, "2026-08-31");
   assert.ok(!("nameSource" in migrated.links[0]!));
   await saveReport(migrated, output);
-  assert.doesNotMatch(await readFile(join(output, "news-shop-links.csv"), "utf8"), /collections|seed-patterns/);
+  assert.doesNotMatch(await readFile(join(output, "shop-links.csv"), "utf8"), /collections|seed-patterns/);
 });
 
 test("repeat announcements survive while duplicate links within a post are removed", () => {
@@ -257,9 +257,9 @@ test("a failed refresh preserves successful contents, then an incremental run re
 test("malformed checkpoints are not silently replaced", async (t) => {
   const output = await mkdtemp(join(tmpdir(), "kdm-news-test-"));
   t.after(() => rm(output, { recursive: true, force: true }));
-  await writeFile(join(output, "news-shop-links.json"), "broken");
+  await writeFile(join(output, "shop-links.json"), "broken");
   await assert.rejects(loadReport(output));
-  assert.equal(await readFile(join(output, "news-shop-links.json"), "utf8"), "broken");
+  assert.equal(await readFile(join(output, "shop-links.json"), "utf8"), "broken");
 });
 
 test("index bypasses cache while articles reuse it, with delays between requests", async (t) => {

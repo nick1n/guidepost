@@ -8,7 +8,7 @@ import { Cause, Deferred, Effect, Exit, Fiber } from "effect";
 import { FetchHttpClient } from "effect/http";
 import { workflow } from "#scripts/catalog/cli.mts";
 import { checkListing } from "#scripts/check-shop-links.mts";
-import { downloadNewsPage } from "#scripts/scrape-news-shop-links.mts";
+import { downloadNewsPage } from "#scripts/news/scrape-shop-links.mts";
 
 it.effect("interruption waits for the promise workflow's cleanup", () =>
   Effect.gen(function* () {
@@ -73,7 +73,7 @@ it.effect(
         "scripts/refresh-catalog-availability.mts",
         "scripts/update-catalog.mts",
         "scripts/catalog/workbook.mts",
-        "scripts/scrape-news-shop-links.mts",
+        "scripts/news/scrape-shop-links.mts",
         "scripts/check-shop-links.mts",
       ]) {
         const output = yield* Effect.tryPromise(() => execute(process.execPath, [path, "--help"], { timeout: 10_000 }));
@@ -97,7 +97,10 @@ it.effect(
       for (const args of [["--unknown-flag"], ["--delay", "1", "--output", directory, "--cache", directory]]) {
         const exit = yield* Effect.exit(
           Effect.tryPromise(() =>
-            execute(process.execPath, [resolve("scripts/scrape-news-shop-links.mts"), ...args], { cwd: directory, timeout: 10_000 }),
+            execute(process.execPath, [resolve("scripts/news/scrape-shop-links.mts"), ...args], {
+              cwd: directory,
+              timeout: 10_000,
+            }),
           ),
         );
         expect(Exit.isFailure(exit)).toBe(true);

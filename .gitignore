@@ -160,3 +160,6 @@ vite.config.ts.timestamp-*
 # Temporary local working files
 /temp/
 /%SystemDrive%/
+
+# Generated news CSV
+/scripts/news/shop-links.csv

@@ -6,9 +6,9 @@ Run from the project root with Node.js 22.18 or newer, after installing the proj
 pnpm scrape:news
 ```
 
-The Node TypeScript entry point is `scripts/scrape-news-shop-links.mts`. You can also run it directly with `node scripts/scrape-news-shop-links.mts`.
+The Node TypeScript entry point is `scripts/news/scrape-shop-links.mts`. You can also run it directly with `node scripts/news/scrape-shop-links.mts`.
 
-Every run fetches a fresh index from <https://kingdomdeath.com/news> and compares post URLs with `news-shop-links.json` in the output directory. Successfully exported articles are skipped, including articles with zero retained links. Only new articles and previously failed articles are processed. Existing rows are preserved, except for the URL filtering described below. Changes to previously exported articles are not re-scraped.
+Every run fetches a fresh index from <https://kingdomdeath.com/news> and compares post URLs with `shop-links.json` in the output directory. Successfully exported articles are skipped, including articles with zero retained links. Only new articles and previously failed articles are processed. Existing rows are preserved, except for the URL filtering described below. Changes to previously exported articles are not re-scraped.
 
 It extracts links from article bodies, including newsletters and the Kickstarter content hosted on the news site. Website navigation is excluded. It never requests Kickstarter, product pages, images, or tracking redirects.
 
@@ -20,8 +20,8 @@ pnpm scrape:news --delay 5
 
 Results are saved after each post:
 
-- `exports/kingdom-death-news/news-shop-links.csv`: Post date, Post title, Post URL, Item name, Shop URL.
-- `exports/kingdom-death-news/news-shop-links.json`: the same rows and a coverage report including posts with no retained shop links or failed requests.
+- `scripts/news/shop-links.csv`: Post date, Post title, Post URL, Item name, Shop URL.
+- `scripts/news/shop-links.json`: the same rows and a coverage report including posts with no retained shop links or failed requests.
 
 Only direct `shop.kingdomdeath.com/products` URLs are retained. Shop-home, page, blog, and other non-product URLs are skipped. URLs containing `collections` anywhere, regardless of case, are also skipped, including product URLs nested under `/collections/.../products/...`. Each run applies these filters to the existing JSON and CSV exports and updates per-post link counts.
 
@@ -38,7 +38,7 @@ A successful run exits with code 0 and sets `complete` to `true`. That means eve
 Run the offline parser, export, cache, and request-delay checks with:
 
 ```powershell
-node --test test/scrape-news-checks.mts
+node --test test/scripts/scrape-news-checks.mts
 ```
 
 This replaces the Python scraper and the earlier Kickstarter browser-console scraper.

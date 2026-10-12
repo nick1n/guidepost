@@ -7,7 +7,7 @@ import { Command, Flag } from "effect/cli";
 import { optionalString, offline, refresh, runCommand, workflow } from "./catalog/cli.mts";
 import { gzipSync } from "node:zlib";
 import { publishFiles } from "./catalog/publication.mts";
-import { keepUrl, loadReport, recoverCachedHistory, saveReport, type Report } from "./scrape-news-shop-links.mts";
+import { keepUrl, loadReport, recoverCachedHistory, saveReport, type Report } from "./news/scrape-shop-links.mts";
 import { catalogListing, productUrl, ShopClient, ShopError, shopProduct, loadMappings } from "./catalog/shop.mts";
 import { planUpdate, productExclusion, releaseGaps } from "./catalog/update.mts";
 import { validateCatalog } from "./catalog/validate.mts";
@@ -134,7 +134,7 @@ export async function applyReview(
 
 const updateFlags = {
   catalog: Flag.String("catalog").pipe(Flag.withDefault("static/kdm-catalog")),
-  news: Flag.String("news").pipe(Flag.withDefault("exports/kingdom-death-news")),
+  news: Flag.String("news").pipe(Flag.withDefault("scripts/news")),
   cache: Flag.String("cache").pipe(Flag.withDefault(".cache/kdm-shop")),
   mappings: optionalString("mappings"),
   review: optionalString("review"),
@@ -153,7 +153,7 @@ type UpdateFlags = Command.Command.Config.Infer<typeof updateFlags>;
 async function main(values: UpdateFlags, signal: AbortSignal) {
   signal.throwIfAborted();
   const root = values.catalog;
-  const newsPath = join(values.news, "news-shop-links.json");
+  const newsPath = join(values.news, "shop-links.json");
   if (values["tags-schema"]) {
     const existing = await json(join(catalogTemp(root), "kdm-tags.schema.json"));
     const schema = tagSchema(existing.$defs.tag.enum);

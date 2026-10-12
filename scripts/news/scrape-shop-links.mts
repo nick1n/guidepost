@@ -7,9 +7,9 @@ import { setTimeout as sleep } from "node:timers/promises";
 import { format, resolveConfig } from "prettier";
 import { fileURLToPath } from "node:url";
 import { Command, Flag } from "effect/cli";
-import { runCommand, workflow } from "./catalog/cli.mts";
+import { runCommand, workflow } from "../catalog/cli.mts";
 import { Parser } from "htmlparser2";
-import { productUrl, shopLinkUrl } from "./catalog/shop.mts";
+import { productUrl, shopLinkUrl } from "../catalog/shop.mts";
 
 const newsUrl = "https://kingdomdeath.com/news";
 type Post = { date: string; title: string; postUrl: string };
@@ -184,12 +184,12 @@ export function newReport(): Report {
 export async function loadReport(output: string): Promise<Report> {
   let text: string;
   try {
-    text = await readFile(join(output, "news-shop-links.json"), "utf8");
+    text = await readFile(join(output, "shop-links.json"), "utf8");
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
     // A CSV alone cannot identify successfully processed posts with zero links.
     try {
-      await readFile(join(output, "news-shop-links.csv"));
+      await readFile(join(output, "shop-links.csv"));
     } catch (csvError) {
       if ((csvError as NodeJS.ErrnoException).code === "ENOENT") return newReport();
       throw csvError;
@@ -283,10 +283,10 @@ export async function saveReport(report: Report, output: string) {
   await mkdir(output, { recursive: true });
   for (const [name, text] of [
     [
-      "news-shop-links.json",
-      await format(JSON.stringify(report), { ...(await resolveConfig(join(output, "news-shop-links.json"))), parser: "json" }),
+      "shop-links.json",
+      await format(JSON.stringify(report), { ...(await resolveConfig(join(output, "shop-links.json"))), parser: "json" }),
     ],
-    ["news-shop-links.csv", csv(report)],
+    ["shop-links.csv", csv(report)],
   ] as const) {
     const target = join(output, name);
     await writeFile(target + ".tmp", text, "utf8");
@@ -417,7 +417,7 @@ export async function updateReport(
 }
 
 const newsFlags = {
-  output: Flag.String("output").pipe(Flag.withDefault("exports/kingdom-death-news")),
+  output: Flag.String("output").pipe(Flag.withDefault("scripts/news")),
   cache: Flag.String("cache").pipe(Flag.withDefault(".cache/kingdom-death-news")),
   delay: Flag.String("delay").pipe(Flag.withDefault("2")),
   "refresh-posts": Flag.Boolean("refresh-posts"),

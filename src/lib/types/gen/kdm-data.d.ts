@@ -2,7 +2,7 @@
 
 export type Content = Record<string, Item>;
 /**
- * News publication date, YYYY-MM-DD. Full post details remain in kingdom-death-news/news-shop-links.json.
+ * News publication date, YYYY-MM-DD. Full post details remain in scripts/news/shop-links.json.
  */
 export type Announcement = string;
 /**

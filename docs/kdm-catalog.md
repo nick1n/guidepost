@@ -6,7 +6,7 @@ The live catalog combines the previous app catalog, collection workbook, and cac
 | ----------------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
 | [Catalog](../static/kdm-catalog/data.json), [schema](../static/kdm-catalog/data.schema.json)                      | Product facts and relationships             |
 | [Workbook map](../static/kdm-catalog/workbook-map.json), [schema](../static/kdm-catalog/workbook-map.schema.json) | Source rows and catalog edition IDs         |
-| [News export](../exports/kingdom-death-news/news-shop-links.json)                                                 | Cached announcement dates and product links |
+| [News export](../scripts/news/shop-links.json)                                                                    | Cached announcement dates and product links |
 
 The Git-ignored `temp/kdm-catalog/kdm-tags.json` and `temp/kdm-catalog/kdm-tags.schema.json` files are optional personal review tools. Apply your edits with `pnpm catalog:tags --apply` before deleting both files. Without the local assignments, updates and validation use the tags saved in `data.json`. Edit local tags in `temp/kdm-catalog/kdm-tags.json`. Allowed values live in `temp/kdm-catalog/kdm-tags.schema.json` under `$defs.tag.enum`. VS Code provides tag-value completions and flags misspellings, empty arrays, and duplicates. The schema accepts any item key; merging checks missing and unknown IDs. While local assignments are present, stored catalog tags come exactly from that file, ordering catalog tags by popularity across all catalog items, with alphabetical ties. The master tag file keeps each item?s tags alphabetical.
 

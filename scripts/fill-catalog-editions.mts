@@ -31,7 +31,7 @@ export async function fillEditions(
   const schemaPath = join(root, "data.schema.json");
   const schemaText = await readFile(schemaPath, "utf8");
   const news: { links: { itemName: string; shopUrl: string; date: string }[] } = JSON.parse(
-    await readFile(resolve(root, "../../exports/kingdom-death-news/news-shop-links.json"), "utf8"),
+    await readFile(resolve(root, "../../scripts/news/shop-links.json"), "utf8"),
   );
   const client = options.client ?? new ShopClient({ cache: join(temp, "shopify-products/edition-cache"), maxAgeMs: Infinity, ...options });
   const targets = Object.entries(catalog.content).filter(([, item]) => !item.editions?.length);

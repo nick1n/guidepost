@@ -271,7 +271,7 @@ async function catalogFixture(editions = true) {
   const original = JSON.stringify(catalog);
   await writeFile(path, original);
   await writeFile(join(folder, "data.schema.json"), await readFile("static/kdm-catalog/data.schema.json"));
-  const newsPath = join(root, "exports/kingdom-death-news/news-shop-links.json");
+  const newsPath = join(root, "scripts/news/shop-links.json");
   await mkdir(dirname(newsPath), { recursive: true });
   await writeFile(newsPath, '{"links":[]}');
   return { root, folder, path, catalog, original, newsPath };

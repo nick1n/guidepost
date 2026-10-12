@@ -80,7 +80,7 @@ pnpm scrape:news
 pnpm catalog:update --sim
 ```
 
-The scraper updates news exports; the updater stages changes without changing the catalog. Inspect
+The scraper in `scripts/news/` updates the JSON and CSV news exports alongside the script; the updater stages changes without changing the catalog. Inspect
 `temp/kdm-catalog/reports/kdm-update-review.json`, resolve unknown or ambiguous products, then apply it:
 
 ```bash

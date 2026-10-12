@@ -37,7 +37,7 @@ async function fixture() {
   const root = await mkdtemp(join(tmpdir(), "edition-retrieval-"));
   const folder = join(root, "static/kdm-catalog");
   await mkdir(folder, { recursive: true });
-  await mkdir(join(root, "exports/kingdom-death-news"), { recursive: true });
+  await mkdir(join(root, "scripts/news"), { recursive: true });
   const path = join(folder, "data.json");
   await writeFile(
     path,
@@ -50,7 +50,7 @@ async function fixture() {
     }),
   );
   await writeFile(join(folder, "data.schema.json"), await readFile("static/kdm-catalog/data.schema.json"));
-  await writeFile(join(root, "exports/kingdom-death-news/news-shop-links.json"), JSON.stringify({ links: [] }));
+  await writeFile(join(root, "scripts/news/shop-links.json"), JSON.stringify({ links: [] }));
   return { root, path };
 }
 
