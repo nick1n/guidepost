@@ -1,10 +1,12 @@
+# KDM catalog guide
+
 The live catalog combines the previous app catalog, collection workbook, and cached news. Its data and schema live in `static/kdm-catalog/`, and the collection page at `/kdm/collection/` uses its generated types. The previous catalog and schema are archived locally in `temp/kdm-data.json` and `temp/kdm-data.schema.json`.
 
-| File                                                                                                                    | Purpose                                     |
-| ----------------------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
-| [Catalog](../../static/kdm-catalog/data.json), [schema](../../static/kdm-catalog/data.schema.json)                      | Product facts and relationships             |
-| [Workbook map](../../static/kdm-catalog/workbook-map.json), [schema](../../static/kdm-catalog/workbook-map.schema.json) | Source rows and catalog edition IDs         |
-| [News export](../kingdom-death-news/news-shop-links.json)                                                               | Cached announcement dates and product links |
+| File                                                                                                              | Purpose                                     |
+| ----------------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
+| [Catalog](../static/kdm-catalog/data.json), [schema](../static/kdm-catalog/data.schema.json)                      | Product facts and relationships             |
+| [Workbook map](../static/kdm-catalog/workbook-map.json), [schema](../static/kdm-catalog/workbook-map.schema.json) | Source rows and catalog edition IDs         |
+| [News export](../exports/kingdom-death-news/news-shop-links.json)                                                 | Cached announcement dates and product links |
 
 The Git-ignored `temp/kdm-catalog/kdm-tags.json` and `temp/kdm-catalog/kdm-tags.schema.json` files are optional personal review tools. Apply your edits with `pnpm catalog:tags --apply` before deleting both files. Without the local assignments, updates and validation use the tags saved in `data.json`. Edit local tags in `temp/kdm-catalog/kdm-tags.json`. Allowed values live in `temp/kdm-catalog/kdm-tags.schema.json` under `$defs.tag.enum`. VS Code provides tag-value completions and flags misspellings, empty arrays, and duplicates. The schema accepts any item key; merging checks missing and unknown IDs. While local assignments are present, stored catalog tags come exactly from that file, ordering catalog tags by popularity across all catalog items, with alphabetical ties. The master tag file keeps each item?s tags alphabetical.
 
@@ -74,7 +76,7 @@ Use `pnpm catalog:availability --offline` to apply the saved pages without downl
 
 ## Item notes and review decisions
 
-Item `notes` are shown to collectors. Keep product contents, sculpt differences, packaging, production history, and useful release details there. Keep date fallbacks, source comparisons, matching decisions, and instructions for maintaining the catalog in this README or the local reports. Do not put messages to a reviewer or explanations of the merge process in item notes.
+Item `notes` are shown to collectors. Keep product contents, sculpt differences, packaging, production history, and useful release details there. Keep date fallbacks, source comparisons, matching decisions, and instructions for maintaining the catalog in this guide or the local reports. Do not put messages to a reviewer or explanations of the merge process in item notes.
 
 The following review decisions were moved out of item notes. Cached publication dates can describe a restock rather than the original release. Earlier known dates take precedence; the established creation-date fallback applies when the shop creation year is at least one year earlier than its publication year.
 

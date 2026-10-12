@@ -54,7 +54,7 @@ fallback are also cached after use. The WOFF2 font and shared app code remain pr
 `scripts/catalog/releases.mts` resolves shop variants, curated release selectors, materials, and prices for update and retrieval workflows.
 Full availability refreshes use its conservative edition matching; incremental updates preserve editions that were not observed.
 
-The [catalog guide](exports/kdm-catalog/README.md) covers data rules, mappings, and review decisions.
+The [catalog guide](docs/kdm-catalog.md) covers data rules, mappings, and review decisions.
 Catalog commands maintain the files in `static/kdm-catalog/`. The previous catalog and its schema are archived locally as
 `temp/kdm-data.json` and `temp/kdm-data.schema.json`. Working files, caches, and reports under `temp/` are Git-ignored.
 Keep a copy of the archived catalog, local tags, or mappings before clearing that folder.

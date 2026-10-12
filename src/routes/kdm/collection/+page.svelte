@@ -595,7 +595,7 @@
   .category-tab {
     flex: 1 0 auto;
     min-block-size: 2.75rem;
-    padding: 0.4rem 0.25rem;
+    padding: 0.375rem 0.25rem;
     border-radius: calc(var(--radius-control) - 0.25rem);
     color: var(--muted-foreground);
     font-size: var(--text-sm);
@@ -678,7 +678,7 @@
   .stat-label {
     display: flex;
     align-items: center;
-    gap: 0.4rem;
+    gap: 0.375rem;
     color: var(--muted-foreground);
     font-size: var(--text-sm);
   }
@@ -776,7 +776,7 @@
   }
   .tag-heading {
     padding: 0.5rem;
-    gap: 0.4rem;
+    gap: 0.375rem;
   }
   .more-heading {
     justify-content: space-between;
@@ -834,7 +834,7 @@
   .tag-cloud,
   .tag-list {
     min-inline-size: 0;
-    padding: 0.4rem;
+    padding: 0.375rem;
   }
   .tag-cloud {
     justify-content: center;
@@ -871,8 +871,8 @@
     align-items: center;
     max-inline-size: 100%;
     min-block-size: 2.75rem;
-    padding: 0.4rem 0.65rem;
-    gap: 0.4rem;
+    padding: 0.375rem 0.625rem;
+    gap: 0.375rem;
     border: var(--border-width) solid color-mix(in oklch, var(--accent) 40%, transparent);
     border-radius: var(--radius-control);
     background: color-mix(in oklch, var(--accent) 10%, var(--panel));

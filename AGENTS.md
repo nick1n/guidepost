@@ -100,7 +100,7 @@ Safelist icon classes in `uno.config.ts` when extraction is unreliable. Verify p
 
 ## Catalog
 
-`static/kdm-catalog/data.json` is the live app's source of truth. Data is grouped by category and IDs are object keys; do not add `id` fields to objects. Update `static/kdm-catalog/data.schema.json` when the shape changes and regenerate types as described in [README.md](README.md#catalog).
+`static/kdm-catalog/data.json` is the live app's source of truth. Data is grouped by category and item IDs are object keys; do not add `id` fields to items. Update `static/kdm-catalog/data.schema.json` when the shape changes and regenerate types as described in [README.md](README.md#catalog).
 
 Explicit editions require permanent readable lowercase kebab-case `id` values, unique within their item. Assign IDs once; never regenerate them when `label`, `name`, or other facts change, and never reuse retired IDs for different releases. Creation tooling in `scripts/catalog/identity.mts` rejects collisions for review. Keep `label` as a mutable display label and do not use it as collection identity. Items
 without explicit editions use synthetic `item` IDs, or `bundle` for bundles. The product-only
@@ -113,7 +113,7 @@ the map.
 Change that contract and run `pnpm generate:types` to refresh `static/kdm-catalog/workbook-map.schema.json`; do not edit the generated
 editor schema by hand. Workbook publication guards its captured catalog, import records, schemas, and previous map before replacement.
 
-Keep item fields alphabetical, edition fields starting with `id` then `label`, and inclusion-object fields starting with `item`; remaining fields are alphabetical. Use `orderItemFields`/`organizeCatalog` in `scripts/catalog/order.mts`. Preserve category/item ordering and edition/other array ordering. Inclusion `editionId` resolves on the child item; `parentEditionIds` resolves on the containing item. Edition IDs do not need global uniqueness. Reserve `item` and `bundle` for synthetic editions.
+Keep item fields alphabetical, edition fields starting with `id` then `label`, and inclusion-object fields starting with `item`; remaining fields are alphabetical. Use `orderItemFields`/`organizeCatalog` in `scripts/catalog/order.mts`. Preserve category/item ordering and edition/other array ordering. Keep `includes` on parents: `editionId` resolves on the child item and `parentEditionIds` on the containing item. Derive reverse membership.
 
 Keep catalog-derived helpers in `src/lib/kdm-data.ts` or `src/lib/catalog-view.ts`, not duplicated in components. `CollectionBrowsing`
 owns browsing and URL transitions; `CollectionCards` owns card collapse, deferred rendering, viewport observation, and held-card scroll
@@ -124,6 +124,51 @@ generated `src/lib/gen/core-editions.json`, containing only playable core editio
 `pnpm generate:types` refreshes it from the live catalog. Catalog helpers receive data explicitly. Switching to
 the full catalog must preserve the owner's snapshot and pending writes. Disable collection-link hover data preloading and keep
 the full catalog and collection HTML out of service-worker precaching; cache them after collection is visited.
+
+### Catalog workflow and decisions
+
+Read [the catalog guide](docs/kdm-catalog.md) for product-specific decisions and [README.md](README.md#catalog)
+for commands and the current collection route.
+Preserve direct owner edits and reviewed facts.
+
+- Research cached news and `temp/kdm-catalog/shopify-products/products-page-N.json` before requesting the shop.
+  Prefer product `.js` JSON; its prices are cents, while paginated product prices are dollars. Space shop requests at least
+  35 seconds apart. Temporary mappings, imports, reports, and archives are Git-ignored.
+- Local `temp/kdm-catalog/kdm-tags.json` supplies exact reviewed tags when present; sync it after direct tag edits.
+  Catalog tags sort by global item frequency, highest first, with alphabetical ties. Master tag arrays stay alphabetical,
+  and item key ordering matches the catalog. The tag schema validates vocabulary, not every item ID.
+- `catalog:tags` stages changes; `catalog:tags --apply` applies them and syncs the master file. `catalog:update` stages
+  broader changes and rejects stale reviews. `catalog:availability` changes only edition availability, refreshes caches,
+  and preserves homebrew flags. `--offline` uses caches. Failed downloads or concurrent edits must not overwrite catalog data.
+
+### Catalog data rules
+
+- Matching models, busts, and painter's scale releases share an item with distinct editions; similar names alone are not
+  sufficient to merge. Named boxed collections are sets. Models packaged with gameplay use `kind: "box"`;
+  all-Beta items use `kind: "beta"`, and mixed Beta/non-Beta items use `kind: "box"`. Preserve reviewed kinds, including
+  core, expansion, set, vignette, and armor-kit. Sculpt prototypes do not imply Beta gameplay.
+- Gameplay defaults to false; store item `gameplay` only when true and edition overrides only when different.
+  Beta belongs on editions as `beta: true`, without beta ID prefixes. Item badges aggregate all editions.
+  Bundle gameplay respects included editions and their overrides.
+- Edition prices are integer cents in `prices` arrays (recorded sales plus current MSRP, maximum is MSRP). Missing is unknown;
+  `[0]` is a known zero price. Included Plastic components use `[0]` and `standalone: false`, preserving sold resin/Naked
+  editions. All-non-standalone items belong in included-only; mixed items stay in content.
+- Exact release dates use edition `releaseDate`; windows use `releaseWindow`, quarters as `YYYY Qn`. Earlier documented releases
+  take precedence over restock dates. Undated Encore without a window inherits First Run or Deathgrey.
+  Future Box releases use `Preorder` and Plastic material; items with any future release retain `upcoming`.
+- Use the schema's edition-label enum. Label changes preserve edition IDs; update label-based local mappings when needed.
+  Do not automatically create an item for each miniature in a box; add child items only for separately cataloged products or reviewed
+  included components. Master Dwelling Key dynamically grants all Sim editions.
+- Content sorts core, expansions by release, then other items by ID. Other categories sort by ID. Editions sort Sim first,
+  then release chronology. Keep aliases deduplicated without case/punctuation differences. Product notes are user-facing;
+  maintenance assumptions belong in the catalog guide. Keep previously excluded products excluded.
+- Shop links use `handle`: an item handle applies to all editions; otherwise each edition needs its own. External links
+  retain `url`. Keep old handle mappings when replacing listings, using `replaceUrl: true` only on the new mapping.
+  Handles identify listings; pricing and availability still require variant matching.
+- Availability defaults to false and is omitted unless true. The `kings-coins` Prize edition (shop handle `kings-coin-prize`)
+  is explicitly unavailable despite Shopify stock. Do not generalize that exception. Homebrew uses `3D Files` editions with `available: true`.
+- Preserve reviewed monster role/family tags on models, expansions, and matching pinups; do not guess unconfirmed roles.
+  Shirts and dice keep `monster-...` tags but omit `monster`. Tyrant retains both Dragon King and Tyrant family tags.
 
 ## Effect
 
@@ -181,6 +226,7 @@ Run commands from the project root. Preserve unrelated user changes; do not rese
 1. Run `pnpm check` before finishing.
 2. Run `pnpm format:check` or format touched files with project Prettier (140-character width and Svelte plugin).
 3. Run `pnpm test:run` after Effect workflow or persistence changes (`pnpm test` is watch mode).
-4. Run `pnpm build` for build, service-worker, UnoCSS, or routing changes. After UnoCSS/SvelteKit dependency or integration changes, verify pages link to an existing global stylesheet, safelisted icons have CSS rules, and generated HTML has no `%unocss-svelte-scoped.global%` placeholders.
+4. Run `pnpm catalog:validate` for catalog edits and `pnpm test:catalog` for catalog script changes.
+5. Run `pnpm build` for build, service-worker, UnoCSS, or routing changes. After UnoCSS/SvelteKit dependency or integration changes, verify pages link to an existing global stylesheet, safelisted icons have CSS rules, and generated HTML has no `%unocss-svelte-scoped.global%` placeholders.
 
 The [documented warnings](README.md#known-warnings) are safe to ignore. Preserve the UnoCSS integration and `corner-shape` enhancement rather than changing them solely to silence those warnings. Investigate other warnings separately.

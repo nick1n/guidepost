@@ -473,7 +473,7 @@
   }
   :global(.folio) .more {
     font-size: 1rem;
-    font-family: var(--font-editorial);
+    font-family: var(--font-serif);
 
     &::before,
     &::after {
@@ -758,7 +758,7 @@
   :global(.folio) h2 {
     font-weight: var(--font-normal);
     font-size: 2.375rem;
-    font-family: var(--font-editorial);
+    font-family: var(--font-serif);
   }
   :global(.signal) header {
     border-radius: var(--radius-control);

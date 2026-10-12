@@ -369,11 +369,11 @@
     color: var(--foreground);
     font-weight: var(--font-normal);
     font-size: 1rem;
-    font-family: var(--font-editorial);
+    font-family: var(--font-serif);
   }
   :global(.folio) .description {
     font-size: var(--text-sm);
-    font-family: var(--font-editorial);
+    font-family: var(--font-serif);
   }
   :global(.folio) .remove {
     align-self: start;

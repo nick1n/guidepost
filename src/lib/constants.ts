@@ -10,6 +10,7 @@ export const DURATION_HOLD = 600;
 
 export const KD_ICONS = {
   activation: "q",
+  affinity: "_",
   armor: "M",
   "armor-0": "*",
   "armor-1": "!",
@@ -121,7 +122,6 @@ export const KD_ICONS = {
   "roll-black-lantern": "\u00e3",
   "roll-plus": "A",
   "roll-x": "b",
-  square: "_",
   star: "l",
   story: "s",
   swords: "n",

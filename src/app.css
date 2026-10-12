@@ -2,16 +2,70 @@
 .dark {
   color-scheme: dark;
 
+  /* Rectangular tetradic palette: red/blue and green/purple are complementary OKLCH hues.
+   * 1 is lightest, 9 darkest; each scale uses the same lightness levels.
+   * Chroma tapers toward both ends; hex comments are rounded sRGB approximations.
+   * Closest matches use OKLab distance within each color family. */
+  --red-1: oklch(95% 0.02 35); /* #fceae6 */
+  --red-2: oklch(84% 0.08 35); /* #fab8a8 */
+  --red-3: oklch(71% 0.15 35); /* #f07b5e */
+  --red-4: oklch(61% 0.2 35); /* #e1441a - primary; closest to: color-red */
+  --red-5: oklch(52% 0.17 35); /* #b63613 */
+  --red-6: oklch(40% 0.13 35); /* #7f230b */
+  --red-7: oklch(29% 0.1 35); /* #521001 */
+  --red-8: oklch(24% 0.08 35); /* #3d0b02 */
+  --red-9: oklch(20% 0.07 35); /* #2f0500 */
+
+  --green-1: oklch(95% 0.06 136); /* #ddf8d1 */
+  --green-2: oklch(84% 0.19 136); /* #8ee55e; closest to: color-green */
+  --green-3: oklch(71% 0.21 136); /* #5dbd05 - primary; closest to: new-green */
+  --green-4: oklch(61% 0.18 136); /* #4b9a04 */
+  --green-5: oklch(52% 0.15 136); /* #3c7b0a */
+  --green-6: oklch(40% 0.11 136); /* #29540c */
+  --green-7: oklch(29% 0.08 136); /* #173404 */
+  --green-8: oklch(24% 0.07 136); /* #0e2601 */
+  --green-9: oklch(20% 0.05 136); /* #0b1b03 */
+
+  --blue-1: oklch(95% 0.03 215); /* #d9f4fb */
+  --blue-2: oklch(84% 0.08 215); /* #8cd8eb */
+  --blue-3: oklch(71% 0.13 215); /* #00b5d4 - primary; closest to: color-blue */
+  --blue-4: oklch(61% 0.11 215); /* #0093ac */
+  --blue-5: oklch(52% 0.1 215); /* #00778d */
+  --blue-6: oklch(40% 0.08 215); /* #005262 */
+  --blue-7: oklch(29% 0.06 215); /* #00323e */
+  --blue-8: oklch(24% 0.05 215); /* #00252e */
+  --blue-9: oklch(20% 0.04 215); /* #001a21 */
+
+  --purple-1: oklch(95% 0.03 316); /* #f7e9fc */
+  --purple-2: oklch(84% 0.1 316); /* #e4b7f7 */
+  --purple-3: oklch(71% 0.18 316); /* #cc79ec */
+  --purple-4: oklch(61% 0.24 316); /* #b841e1 */
+  --purple-5: oklch(52% 0.25 316); /* #9d0bc6; closest to: color-purple */
+  --purple-6: oklch(40% 0.19 316); /* #6d088a */
+  --purple-7: oklch(29% 0.14 316); /* #450158 */
+  --purple-8: oklch(24% 0.11 316); /* #320441 */
+  --purple-9: oklch(20% 0.09 316); /* #250330 */
+
+  --white: #fff;
+  --grey-1: oklch(95% 0 0); /* #eeeeee */
+  --grey-2: oklch(84% 0 0); /* #cacaca */
+  --grey-3: oklch(71% 0 0); /* #a1a1a1 */
+  --grey-4: oklch(61% 0 0); /* #838383 */
+  --grey-5: oklch(52% 0 0); /* #696969 */
+  --grey-6: oklch(40% 0 0); /* #484848 */
+  --grey-7: oklch(29% 0 0); /* #2b2b2b */
+  --grey-8: oklch(24% 0 0); /* #1f1f1f */
+  --grey-9: oklch(20% 0 0); /* #161616 */
+
   /* Active vars */
-  --background: #151515;
-  --color-trail: #8a6038;
+  --background: var(--grey-9);
   --foreground: #fdfffe;
 
-  --card: #2b2b2b;
+  --card: var(--grey-7);
   --muted-foreground: #a29c9a;
 
-  --panel: #1e1e1e;
-  --border: #1e1e1e;
+  --panel: var(--grey-8);
+  --border: var(--grey-8);
   --color-divider: color-mix(var(--foreground) 15%, transparent);
 
   --accent: var(--accent-blue);
@@ -22,30 +76,24 @@
 
   --beta: var(--accent-blue);
 
-  --old-red: #e14011;
-  --old-green: #4ae111;
-  --old-blue: #11b2e1;
-  --new-red: #ff6f4b;
-  --new-green: #3ec10d;
+  --color-red: var(--red-4);
+  --color-green: var(--green-3);
+  --color-blue: var(--blue-3);
+  --color-purple: var(--purple-4);
 
-  --affinity-red: #ba0000;
-  --affinity-green: #279515;
-  --affinity-blue: #1067b4;
-
-  --accent-red: var(--old-red);
-  --accent-green: var(--new-green);
-  --accent-blue: var(--old-blue);
-  --accent-purple: #a811e1;
+  --accent-red: var(--color-red);
+  --accent-green: var(--color-green);
+  --accent-blue: var(--color-blue);
 
   --contrast: #000;
   --contrast-foreground: #fff;
   --color-gear: radial-gradient(circle, #fffc, #dddc);
 
-  --font-sans: "Inter", system-ui, sans-serif;
-  --font-display: "Archivo", "Inter", sans-serif;
-  --font-editorial: Georgia, serif;
+  --font-sans: "Roboto", Arial, Helvetica, sans-serif;
+  --font-display: "Archivo", "Arial Narrow", Arial, Helvetica, sans-serif;
+  --font-serif: Georgia, serif;
 
-  --font-normal: 500;
+  --font-normal: 400;
   --font-bold: 700;
   --font-semibold: 700;
   --text-card-title: 1.5rem;
@@ -153,6 +201,11 @@
   --mix-attr-bg: 50%;
   --mix-attr-fg: 70%;
 
+  /* affinity colors */
+  --affinity-red: #ba0000;
+  --affinity-green: #279515;
+  --affinity-blue: #1067b4;
+
   /* Card Colors */
   --mon-resource-background: #d5a421;
   --mon-resource-border: #f9f7f2;
@@ -190,7 +243,7 @@
   --seed-blue: #379cdc;
   --seed-grey: #94838b;
   --seed-red: #9a094b;
-  --seed-black: #1e1e1e;
+  --seed-black: var(--grey-7);
   --seed-item: #353230;
   --seed-yellow: #bd930c;
 
@@ -201,7 +254,7 @@
   /* Currently unused vars */
   --beta-foreground: #fdfffe;
   --card-foreground: #fdfffe;
-  --input: #1e1e1e;
+  --input: var(--grey-7);
   --muted: #2b2b2b;
   --panel-foreground: #fdfffe;
   --popover-foreground: #fdfffe;
@@ -226,8 +279,8 @@
 :root,
 .dark,
 .showdown {
-  --color-bleeding-bg: color-mix(in oklch, var(--bleeding-background), black var(--mix-attr-bg));
-  --color-priority-bg: color-mix(in oklch, var(--priority-background), black var(--mix-attr-bg));
+  --color-bleeding-bg: color-mix(in oklch, var(--bleeding-background), #000 var(--mix-attr-bg));
+  --color-priority-bg: color-mix(in oklch, var(--priority-background), #000 var(--mix-attr-bg));
 }
 
 /* Field colors are inherited by inputs and token controls. */
@@ -239,19 +292,19 @@
 
 .field-accuracy {
   --field-border: var(--accuracy-border);
-  --field-bg: color-mix(in oklch, var(--accuracy-background), black var(--mix-attr-bg));
+  --field-bg: color-mix(in oklch, var(--accuracy-background), #000 var(--mix-attr-bg));
   --field-fg: var(--foreground);
 }
 
 .field-damage {
   --field-border: var(--damage-border);
-  --field-bg: color-mix(in oklch, var(--damage-background), black var(--mix-attr-bg));
+  --field-bg: color-mix(in oklch, var(--damage-background), #000 var(--mix-attr-bg));
   --field-fg: var(--foreground);
 }
 
 .field-evasion {
   --field-border: var(--evasion-border);
-  --field-bg: color-mix(in oklch, var(--evasion-background), black var(--mix-attr-bg));
+  --field-bg: color-mix(in oklch, var(--evasion-background), #000 var(--mix-attr-bg));
   --field-fg: var(--foreground);
 }
 
@@ -263,49 +316,50 @@
 
 .field-luck {
   --field-border: var(--luck-border);
-  --field-bg: color-mix(in oklch, var(--luck-background), black var(--mix-attr-bg));
+  --field-bg: color-mix(in oklch, var(--luck-background), #000 var(--mix-attr-bg));
   --field-fg: var(--foreground);
 }
 
 .field-movement {
   --field-border: var(--movement-border);
-  --field-bg: color-mix(in oklch, var(--movement-background), black var(--mix-attr-bg));
+  --field-bg: color-mix(in oklch, var(--movement-background), #000 var(--mix-attr-bg));
   --field-fg: var(--foreground);
 }
 
 .field-s-pressure {
   --field-border: var(--s-pressure-border);
-  --field-bg: color-mix(in oklch, var(--s-pressure-background), black var(--mix-attr-bg));
+  --field-bg: color-mix(in oklch, var(--s-pressure-background), #000 var(--mix-attr-bg));
   --field-fg: var(--foreground);
 }
 
 .field-speed {
   --field-border: var(--speed-border);
-  --field-bg: color-mix(in oklch, var(--speed-background), black var(--mix-attr-bg));
+  --field-bg: color-mix(in oklch, var(--speed-background), #000 var(--mix-attr-bg));
   --field-fg: var(--foreground);
 }
 
 .field-strength {
   --field-border: var(--strength-border);
-  --field-bg: color-mix(in oklch, var(--strength-background), black var(--mix-attr-bg));
+  --field-bg: color-mix(in oklch, var(--strength-background), #000 var(--mix-attr-bg));
   --field-fg: var(--foreground);
 }
 
 .field-torment {
   --field-border: var(--torment-border);
-  --field-bg: color-mix(in oklch, var(--torment-background), black var(--mix-attr-bg));
+  --field-bg: color-mix(in oklch, var(--torment-background), #000 var(--mix-attr-bg));
   --field-fg: var(--foreground);
 }
 
 .field-toughness {
   --field-border: var(--toughness-border);
-  --field-bg: color-mix(in oklch, var(--toughness-background), black var(--mix-attr-bg));
+  --field-bg: color-mix(in oklch, var(--toughness-background), #000 var(--mix-attr-bg));
   --field-fg: var(--foreground);
 }
 
 * {
   border-color: var(--border);
   user-select: none;
+  /* text-box: trim-both cap alphabetic; */
 }
 
 html:has(.scrollbar-stable) {

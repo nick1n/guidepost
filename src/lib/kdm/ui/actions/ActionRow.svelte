@@ -141,11 +141,11 @@
   :global(.folio) strong {
     font-weight: var(--font-normal);
     font-size: var(--text-md);
-    font-family: var(--font-editorial);
+    font-family: var(--font-serif);
   }
   :global(.folio) .description {
     border-block-start: 3px double color-mix(var(--identity) 35%, transparent);
-    font-family: var(--font-editorial);
+    font-family: var(--font-serif);
   }
   :global(.signal) .row {
     border-radius: 1rem 0.25rem 1rem 0.25rem;

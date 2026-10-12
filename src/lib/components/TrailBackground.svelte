@@ -186,6 +186,8 @@
 
 <style>
   svg {
+    --color-trail: #8a6038;
+
     position: absolute;
     inset: 0;
     inline-size: 100%;

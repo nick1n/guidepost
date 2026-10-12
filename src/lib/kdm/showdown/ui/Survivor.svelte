@@ -858,7 +858,7 @@
   }
   :global(.folio) .more {
     font-size: 1rem;
-    font-family: var(--font-editorial);
+    font-family: var(--font-serif);
 
     &::before,
     &::after {
@@ -985,11 +985,11 @@
     --counter-radius: 0;
     --counter-bg: transparent;
     --counter-weight: var(--font-normal);
-    --counter-font: var(--font-editorial);
+    --counter-font: var(--font-serif);
     padding-inline-start: 0.75rem;
   }
   :global(.folio) .survival label {
-    font-family: var(--font-editorial);
+    font-family: var(--font-serif);
   }
   :global(.signal) .survival {
     --counter-radius: 0.75rem 0.25rem 0.75rem 0.25rem;
@@ -1249,7 +1249,7 @@
   :global(.folio) h2 {
     font-weight: var(--font-normal);
     font-size: 2.25rem;
-    font-family: var(--font-editorial);
+    font-family: var(--font-serif);
   }
   :global(.signal) .identity {
     --signal-threat: none;

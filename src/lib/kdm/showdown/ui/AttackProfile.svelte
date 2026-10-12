@@ -542,7 +542,7 @@
     padding-block: 0.25rem;
     gap: 0.375rem;
     border-block: 3px double color-mix(var(--identity) 35%, transparent);
-    font-family: var(--font-editorial);
+    font-family: var(--font-serif);
   }
   .folio-heading {
     display: flex;
@@ -732,7 +732,7 @@
   :global(.folio) strong {
     font-weight: var(--font-normal);
     font-size: var(--text-md);
-    font-family: var(--font-editorial);
+    font-family: var(--font-serif);
   }
   :global(.folio) .keyword-line {
     padding-block-start: 0.25rem;
@@ -741,7 +741,7 @@
   :global(.folio) .keyword-label,
   :global(.folio) .keyword {
     font-size: var(--text-sm);
-    font-family: var(--font-editorial);
+    font-family: var(--font-serif);
   }
   :global(.folio) .keyword {
     color: color-mix(var(--identity) 45%, var(--foreground));

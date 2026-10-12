@@ -89,7 +89,7 @@
     padding: clamp(1.5rem, 5vw, 3rem);
     border: var(--border-width) solid var(--color-divider);
     border-radius: var(--radius-card);
-    background: radial-gradient(ellipse at top left, color-mix(var(--color-trail) 16%, transparent), transparent 65%), var(--panel);
+    background: radial-gradient(ellipse at top left, color-mix(var(--red-4) 16%, transparent), transparent 65%), var(--panel);
   }
 
   .status-icon {

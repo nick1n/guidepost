@@ -24,7 +24,7 @@
   };
 
   function release(edition: ReviewEdition) {
-    return edition.releaseDate ?? edition.releaseWindow ?? "Date unknown";
+    return edition.releaseDate ?? edition.releaseWindow ?? "date unknown";
   }
 </script>
 
@@ -230,8 +230,8 @@
         {onTagClick}
         --tag-gap="0.25rem"
         --tag-margin="0"
-        --tag-rail-padding="0.2rem"
-        --tag-padding="0.2rem 0.4rem"
+        --tag-rail-padding="0.25rem"
+        --tag-padding="0.25rem 0.375rem"
         --tag-color="var(--muted-foreground)"
         --tag-font-size="var(--text-sm)"
       />
@@ -345,6 +345,7 @@
       </span>
       <small class="edition-date">{release(edition)}</small>
     </button>
+    {@render shopLink(edition)}
     {#if gameplay}
       <span
         class={["gameplay-icon", "i-material-symbols:sports-esports", edition.beta && "beta"]}
@@ -352,7 +353,6 @@
         aria-hidden="true"
       ></span>
     {/if}
-    {@render shopLink(edition)}
     <div class="edition-price">
       {#if edition.standalone === false}
         <small>Included only</small>
@@ -504,7 +504,7 @@
   }
   .ownership-label {
     display: inline-block;
-    padding: 0.2rem 0.45rem;
+    padding: 0.25rem 0.5rem;
     border: var(--border-width) solid var(--accent);
     border-radius: var(--radius-control);
     background: var(--accent);
@@ -551,10 +551,10 @@
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 0.4rem;
+    gap: 0.375rem;
   }
   .badge {
-    padding: 0.2rem 0.45rem;
+    padding: 0.25rem 0.5rem;
     border: var(--border-width) solid var(--color-divider);
     border-radius: var(--radius-control);
     font-size: var(--text-sm);
@@ -571,6 +571,7 @@
     &.beta {
       border-color: var(--accent);
       color: var(--accent);
+      border-radius: 0;
     }
 
     &.gameplay {
@@ -580,7 +581,7 @@
   }
   .shop {
     display: inline-flex;
-    grid-column: 4;
+    grid-column: 3;
     align-items: center;
     justify-self: center;
     padding-inline: 0.25rem;
@@ -689,7 +690,7 @@
     --size-icon: 1.25rem;
   }
   .gameplay-icon {
-    grid-column: 3;
+    grid-column: 4;
     justify-self: center;
     color: var(--accent-green);
     &.beta {
