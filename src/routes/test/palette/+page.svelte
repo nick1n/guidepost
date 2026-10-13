@@ -1,8 +1,13 @@
 <script lang="ts">
+  import { browser } from "$app/env";
+  import { goto } from "$app/navigation";
   import { resolve } from "$app/paths";
+  import { page } from "$app/state";
   import { blueReferences, defaultBlueHue, exportCss, lightnessLevels, makePalette, matchReferences, type Shade } from "./palette.ts";
 
-  let blueHue = $state(defaultBlueHue);
+  const hueRange = { min: 225, max: 300 };
+  // Static prerendering has no query string; the browser reads the current URL.
+  let blueHue = $derived(browser ? normalizeHue((page.shallow?.url ?? page.url).searchParams.get("hue")) : defaultBlueHue);
   let surface = $state("dark");
   let selected = $state({ family: "blue", level: 3 });
   const surfaces = [
@@ -19,6 +24,20 @@
   let red = $derived(palette.rows[2].shades[4]);
   let chosen = $derived(palette.rows.find((row) => row.family === selected.family)?.shades[selected.level] ?? blue);
   let matches = $derived(matchReferences(palette.rows[0].shades));
+
+  function normalizeHue(value: string | number | null | undefined) {
+    if (value == null || (typeof value === "string" && !value.trim())) return defaultBlueHue;
+    const hue = Number(value);
+    return Number.isFinite(hue) ? Math.min(hueRange.max, Math.max(hueRange.min, Math.round(hue))) : defaultBlueHue;
+  }
+
+  function setBlueHue(value: number | undefined) {
+    const hue = normalizeHue(value);
+    const url = new URL((page.shallow?.url ?? page.url).href);
+    if (hue === defaultBlueHue) url.searchParams.delete("hue");
+    else url.searchParams.set("hue", String(hue));
+    void goto(url, { shallow: true, replace: true, reset: false, state: page.state });
+  }
 
   function selectShade(shade: Shade) {
     selected = { family: shade.family, level: shade.level };
@@ -39,8 +58,8 @@
   <div class="controls">
     <label class="hue-control" for="blue-hue">
       <span>Blue hue <output for="blue-hue">{blueHue}°</output></span>
-      <input id="blue-hue" type="range" min="225" max="300" step="1" bind:value={blueHue} />
-      <span class="range-labels"><span>More cyan / 225°</span><span>More violet / 300°</span></span>
+      <input id="blue-hue" type="range" min={hueRange.min} max={hueRange.max} step="1" bind:value={() => blueHue, setBlueHue} />
+      <span class="range-labels"><span>More cyan / {hueRange.min}°</span><span>More violet / {hueRange.max}°</span></span>
     </label>
     <div class="options">
       <fieldset>
@@ -55,7 +74,7 @@
               {option.name}
             </button>
           {/each}
-          <button class="option" onclick={() => (blueHue = defaultBlueHue)}>Reset hue</button>
+          <button class="option" onclick={() => setBlueHue(defaultBlueHue)}>Reset hue</button>
         </div>
       </fieldset>
     </div>
