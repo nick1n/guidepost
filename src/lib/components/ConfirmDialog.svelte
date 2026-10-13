@@ -117,9 +117,9 @@
     margin: auto;
     padding: 0;
     border: var(--border-width) solid var(--accent);
-    background: var(--popover);
+    background: var(--card);
     box-shadow: 0 1.5rem 4rem #0009;
-    color: var(--popover-foreground);
+    color: var(--foreground);
     opacity: 0;
     transition:
       opacity var(--duration-fast) var(--ease-standard),

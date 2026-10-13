@@ -1,0 +1,189 @@
+import themeCss from "../../../app.css?raw";
+
+type Color = { lightness: number; chroma: number; hue: number };
+
+const referenceValues = [
+  ["cost-bg", "#1c4970"],
+  ["border", "#335571"],
+  ["bg-bottom", "#3c84d4"],
+  ["bg-top", "#64b3f2"],
+  ["pattern", "#13acfd"],
+  ["alert", "#5ecefc"],
+  ["shadow", "#2e5a6d"],
+  ["banner", "#66c4e8"],
+  ["beta", "#61c3fd"],
+] as const;
+
+// Ten evenly spaced OKLCH lightness levels, numbered 0 through 9.
+export const lightnessLevels = [95, 87, 79, 71, 63, 55, 47, 39, 31, 23];
+
+const chromaLevels = {
+  blue: [0.02, 0.06, 0.11, 0.16, 0.16, 0.14, 0.12, 0.09, 0.06, 0.03],
+  green: [0.03, 0.07, 0.12, 0.17, 0.21, 0.2, 0.17, 0.14, 0.1, 0.06],
+  red: [0.02, 0.05, 0.09, 0.13, 0.17, 0.2, 0.17, 0.14, 0.1, 0.06],
+};
+
+type Family = keyof typeof chromaLevels;
+
+function linearRgb({ lightness: L, chroma: C, hue }: Color) {
+  const a = C * Math.cos((hue * Math.PI) / 180);
+  const b = C * Math.sin((hue * Math.PI) / 180);
+  const l = (L + 0.3963377774 * a + 0.2158037573 * b) ** 3;
+  const m = (L - 0.1055613458 * a - 0.0638541728 * b) ** 3;
+  const s = (L - 0.0894841775 * a - 1.291485548 * b) ** 3;
+  return [
+    4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s,
+    -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s,
+    -0.0041960863 * l - 0.7034186147 * m + 1.707614701 * s,
+  ];
+}
+
+function fromHex(hex: string): Color {
+  const [r, g, b] = [1, 3, 5].map((offset) => {
+    const value = Number.parseInt(hex.slice(offset, offset + 2), 16) / 255;
+    return value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
+  });
+  const l = Math.cbrt(0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b);
+  const m = Math.cbrt(0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b);
+  const s = Math.cbrt(0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b);
+  const a = 1.9779984951 * l - 2.428592205 * m + 0.4505937099 * s;
+  const axisB = 0.0259040371 * l + 0.7827717662 * m - 0.808675766 * s;
+  return {
+    lightness: 0.2104542553 * l + 0.793617785 * m - 0.0040720468 * s,
+    chroma: Math.hypot(a, axisB),
+    hue: normalizeHue((Math.atan2(axisB, a) * 180) / Math.PI),
+  };
+}
+
+function normalizeHue(hue: number) {
+  return ((hue % 360) + 360) % 360;
+}
+
+export const blueReferences = referenceValues.map(([name, hex]) => ({ name, hex, ...fromHex(hex) }));
+
+// With each reference's L and C fixed, squared OKLab distance weights hue error by C squared.
+const hueVector = blueReferences.reduce(
+  (sum, color) => ({
+    x: sum.x + color.chroma ** 2 * Math.cos((color.hue * Math.PI) / 180),
+    y: sum.y + color.chroma ** 2 * Math.sin((color.hue * Math.PI) / 180),
+  }),
+  { x: 0, y: 0 },
+);
+export const defaultBlueHue = Math.round(normalizeHue((Math.atan2(hueVector.y, hueVector.x) * 180) / Math.PI));
+
+function luminance(rgb: number[]) {
+  return 0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2];
+}
+
+function themeColor(token: string) {
+  const definition = themeCss.match(new RegExp("--" + token + ":\\s*oklch\\(([^)]+)\\)"))?.[1];
+  if (!definition) throw new Error("Missing OKLCH theme color: " + token);
+  const [L, C, H] = definition.trim().split(/\s+/);
+  const color = {
+    lightness: Number.parseFloat(L) / (L.endsWith("%") ? 100 : 1),
+    chroma: Number.parseFloat(C),
+    hue: Number.parseFloat(H),
+  };
+  return { css: "var(--" + token + ")", luminance: luminance(linearRgb(color)) };
+}
+
+// Read the same theme declarations as the rendered samples so contrast stays in sync.
+const textColors = { light: themeColor("grey-0"), dark: themeColor("grey-9") };
+
+function contrast(left: number, right: number) {
+  return (Math.max(left, right) + 0.05) / (Math.min(left, right) + 0.05);
+}
+
+function makeShade(family: Family, level: number, hue: number) {
+  const lightness = lightnessLevels[level] / 100;
+  let low = 0;
+  let high = chromaLevels[family][level];
+  // Reduce only chroma to fit sRGB, preserving the requested hue and lightness.
+  for (let attempt = 0; attempt < 32; attempt += 1) {
+    const chroma = (low + high) / 2;
+    if (linearRgb({ lightness, chroma, hue }).every((value) => value >= 0 && value <= 1)) low = chroma;
+    else high = chroma;
+  }
+  const chroma = Math.floor((low + 1e-9) * 100) / 100;
+  const rgb = linearRgb({ lightness, chroma, hue });
+  const hex =
+    "#" +
+    rgb
+      .map((value) => {
+        const encoded = value <= 0.0031308 ? value * 12.92 : 1.055 * value ** (1 / 2.4) - 0.055;
+        return Math.round(Math.max(0, Math.min(1, encoded)) * 255)
+          .toString(16)
+          .padStart(2, "0");
+      })
+      .join("");
+  const shadeLuminance = luminance(rgb);
+  const lightContrast = contrast(shadeLuminance, textColors.light.luminance);
+  const darkContrast = contrast(shadeLuminance, textColors.dark.luminance);
+  return {
+    family,
+    level,
+    lightness,
+    chroma,
+    hue,
+    hex,
+    css: "oklch(" + Math.round(lightness * 100) + "% " + chroma + " " + hue + ")",
+    lightContrast,
+    darkContrast,
+    text: lightContrast > darkContrast ? textColors.light.css : textColors.dark.css,
+  };
+}
+
+export type Shade = ReturnType<typeof makeShade>;
+
+function makeRow(family: Family, hue: number) {
+  return {
+    family,
+    name: family[0].toUpperCase() + family.slice(1),
+    hue: normalizeHue(hue),
+    shades: lightnessLevels.map((_, index) => makeShade(family, index, normalizeHue(hue))),
+  };
+}
+
+export function makePalette(blueHue: number) {
+  return {
+    id: "triadic",
+    name: "Triadic",
+    rows: [makeRow("blue", blueHue), makeRow("green", blueHue - 120), makeRow("red", blueHue - 240)],
+  };
+}
+
+export type Palette = ReturnType<typeof makePalette>;
+
+function distance(left: Color, right: Color) {
+  const a = (color: Color) => color.chroma * Math.cos((color.hue * Math.PI) / 180);
+  const b = (color: Color) => color.chroma * Math.sin((color.hue * Math.PI) / 180);
+  return Math.sqrt((left.lightness - right.lightness) ** 2 + (a(left) - a(right)) ** 2 + (b(left) - b(right)) ** 2);
+}
+
+export function matchReferences(shades: Shade[]) {
+  return blueReferences.map((reference) => ({
+    reference,
+    nearest: shades
+      .map((shade) => ({
+        shade,
+        lightnessDifference: (shade.lightness - reference.lightness) * 100,
+        difference: distance(reference, shade) * 100,
+      }))
+      .sort((left, right) => left.difference - right.difference)
+      .slice(0, 2),
+  }));
+}
+
+export function exportCss(palette: Palette) {
+  return (
+    ":root {\n" +
+    palette.rows
+      .map((row) =>
+        row.shades.map((shade) => "  --" + row.family + "-" + shade.level + ": " + shade.css + "; /* " + shade.hex + " */").join("\n"),
+      )
+      .join("\n\n") +
+    "\n\n  /* Exact reference colors for roles that need the original blue. */\n" +
+    blueReferences.map((reference) => "  --blue-" + reference.name + ": " + reference.hex + ";").join("\n") +
+    "\n}"
+  );
+}

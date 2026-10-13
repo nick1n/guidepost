@@ -56,6 +56,8 @@ Hide non-focusable decorative icons and effects with `aria-hidden="true"`. Never
 
 ## Styling
 
+Avoid decorative eyebrow labels and filler text. Keep interface copy concise, retaining only labels, instructions, and explanations that help users act or interpret results.
+
 Never use all-uppercase text in interface designs. Use sentence case for headings, labels, buttons, and navigation; do not apply `text-transform: uppercase` or manually capitalize entire words for visual emphasis.
 
 Use component-scoped `<style>` blocks for layout, spacing, typography, and interaction. Keep UnoCSS for icons; do not add Tailwind-style layout utilities, Tailwind, `clsx`, `tailwind-merge`, or `cn`. Migrate existing utility-heavy components incrementally when touched.
