@@ -123,7 +123,7 @@
               {:else}
                 {item.category === "bundles" ? "bundle" : (item.kind ?? "Item")}
                 {#if editions.length > 1}
-                  &nbsp;/ {editions.length} versions
+                  / {editions.length} versions
                 {/if}
               {/if}
             </span>
@@ -680,6 +680,9 @@
     align-items: baseline;
     gap: 0.125rem 0.5rem;
     overflow-wrap: anywhere;
+  }
+  .edition-material {
+    text-transform: lowercase;
   }
   .edition-date {
     font-size: clamp(var(--text-xs), 3.75cqi, var(--text-sm));

@@ -243,7 +243,8 @@ export class ShopClient {
     function* (this: ShopClient, url: string) {
       let response = yield* this.cached(url);
       if (!response) {
-        if (this.options.offline) return yield* new ShopRequestError({ url, message: "No cached shop response: " + url });
+        if (this.options.offline)
+          return yield* new ShopRequestError({ url, message: "No cached shop response: " + url + "; rerun with --online to download it." });
         response = yield* serialized(
           this.directory,
           Effect.gen({ self: this }, function* () {

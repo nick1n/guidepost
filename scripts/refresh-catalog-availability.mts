@@ -2,7 +2,7 @@ import { readFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { Command } from "effect/cli";
-import { catalog, offline, runCommand, workflow } from "./catalog/cli.mts";
+import { catalog, offline, online, offlineMode, runCommand, workflow } from "./catalog/cli.mts";
 import { publishFiles } from "./catalog/publication.mts";
 import { availabilityFromUrls } from "./catalog/availability.mts";
 import { organizeCatalog } from "./catalog/order.mts";
@@ -25,7 +25,13 @@ export async function refreshAvailability(
     options.signal?.throwIfAborted();
     if (page > 100) throw new Error("Shop pagination exceeded 100 pages; catalog availability was not changed.");
     const raw = options.offline
-      ? JSON.parse(await readFile(join(folder, `products-page-${page}.json`), "utf8"))
+      ? JSON.parse(
+          await readFile(join(folder, `products-page-${page}.json`), "utf8").catch((error: NodeJS.ErrnoException) => {
+            if (error.code === "ENOENT")
+              throw new Error(`No saved shop page ${page}; run pnpm catalog:availability --online to download it.`);
+            throw error;
+          }),
+        )
       : (await client.get(`https://shop.kingdomdeath.com/products.json?limit=250&page=${page}`)).data;
     if (!raw || typeof raw !== "object" || !Array.isArray((raw as { products?: unknown }).products))
       throw new Error(`Invalid products page ${page}; catalog availability was not changed.`);
@@ -67,9 +73,9 @@ export async function refreshAvailability(
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   runCommand(
-    Command.make("catalog:availability", { catalog, offline }, (values) =>
+    Command.make("catalog:availability", { catalog, offline, online }, (values) =>
       workflow(async (signal) => {
-        const result = await refreshAvailability({ ...values, signal });
+        const result = await refreshAvailability({ ...values, offline: offlineMode(values), signal });
         console.log(`${result.products} products across ${result.pages} pages saved in ${result.folder}`);
         console.log(`${result.available} available editions; ${result.changed} availability changes. Catalog: ${result.catalog}`);
         console.log(`${result.unmatched.length} editions could not be matched by URL and variant; details: availability-refresh.json`);

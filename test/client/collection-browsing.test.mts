@@ -65,6 +65,22 @@ afterEach(() => {
 });
 
 describe("collection browsing", () => {
+  it("keeps commands bound when Svelte invokes them as callbacks", () => {
+    vi.useFakeTimers();
+    const { browsing } = fixture(205);
+    const { setQuery, toggleTag, showMoreItems, clearSearch } = browsing;
+    setQuery("model");
+    showMoreItems();
+    expect(browsing.visible).toHaveLength(200);
+    toggleTag("model");
+    expect(browsing.filtered).toHaveLength(205);
+    expect(browsing.visible).toHaveLength(100);
+    clearSearch();
+    expect(browsing.query).toBe("");
+    expect(browsing.selectedTags).toEqual([]);
+    expect(browsing.visible).toHaveLength(100);
+  });
+
   it("starts with a gameplay-first batch and caps the final batch without exposing included-only items", () => {
     const { browsing } = fixture(205);
     expect(browsing.category).toBe("content");
@@ -87,7 +103,9 @@ describe("collection browsing", () => {
     const { browsing } = fixture(205);
     browsing.showMoreItems();
     browsing.setQuery("model");
-    expect(browsing.visible.length).toBeGreaterThan(200);
+    expect(browsing.visible).toHaveLength(100);
+    browsing.showMoreItems();
+    expect(browsing.visible).toHaveLength(200);
     const outgoing = browsing.visible;
     browsing.changeCategory("accessories");
     expect(browsing.panels.find((panel) => panel.id === "content")?.items).toEqual(outgoing);
@@ -102,11 +120,68 @@ describe("collection browsing", () => {
     expect(browsing.query).toBe("");
     expect(browsing.visible).toHaveLength(200);
     browsing.toggleTag("model");
-    expect(browsing.visible).toHaveLength(205);
+    expect(browsing.visible).toHaveLength(100);
     browsing.clearSearch();
     expect(browsing.visible).toHaveLength(200);
     browsing.changeCategory("accessories");
     expect(browsing.visible).toHaveLength(200);
+  });
+
+  it("batches broad searches while keeping counts and bulk ownership targets across all matches", () => {
+    vi.useFakeTimers();
+    const { browsing } = fixture(205);
+    browsing.setQuery("model");
+    expect(browsing.filtered).toHaveLength(207);
+    expect(browsing.visible).toHaveLength(100);
+    expect(browsing.tagCounts.get("model")).toBe(205);
+    expect(browsing.latestUnowned).toHaveLength(206);
+    expect(browsing.nextCount).toBe(100);
+    browsing.showMoreItems();
+    expect(browsing.visible).toHaveLength(200);
+    expect(browsing.nextCount).toBe(7);
+    browsing.showMoreItems();
+    expect(browsing.visible).toEqual(browsing.filtered);
+    expect(browsing.nextCount).toBe(0);
+    browsing.setQuery(" MODEL ");
+    expect(browsing.visible).toHaveLength(207);
+    browsing.setQuery("accessory");
+    expect(browsing.visible).toEqual([]);
+    expect(browsing.nextCount).toBe(0);
+    browsing.setQuery("model");
+    expect(browsing.visible).toHaveLength(100);
+    browsing.clearSearch();
+    expect(browsing.visible).toHaveLength(100);
+  });
+
+  it("resets filtered batches for tag, status, and URL changes without losing reactive ownership", () => {
+    const f = fixture(205);
+    f.browsing.toggleTag("model");
+    f.browsing.showMoreItems();
+    expect(f.browsing.visible).toHaveLength(200);
+    f.browsing.toggleTag("armor-kit");
+    expect(f.browsing.visible).toEqual([]);
+    f.browsing.removeLastTag();
+    expect(f.browsing.visible).toHaveLength(100);
+    for (let i = 0; i < 205; i++) f.states.set(`model-${i}/item`, { owned: true, wished: true });
+    f.browsing.toggleStatus("owned");
+    expect(f.browsing.filtered).toHaveLength(205);
+    f.browsing.showMoreItems();
+    expect(f.browsing.visible).toHaveLength(200);
+    f.browsing.toggleStatus("wishlist");
+    expect(f.browsing.visible).toHaveLength(100);
+    f.states.set("model-0/item", { owned: true });
+    expect(f.browsing.filtered).toHaveLength(204);
+    expect(f.browsing.visible.some((item) => item.id === "model-0")).toBe(false);
+    f.browsing.showMoreItems();
+    f.browsing.changeCategory("content");
+    expect(f.browsing.selectedTags).toEqual([]);
+    expect(f.browsing.status).toBe("wishlist");
+    expect(f.browsing.visible).toHaveLength(100);
+    f.browsing.showMoreItems();
+    f.navigate("?tag=model");
+    expect(f.browsing.visible).toHaveLength(100);
+    f.browsing.clearSearch();
+    expect(f.browsing.visible).toHaveLength(100);
   });
 
   it("restores URL filters in the destination category, deduplicating and rejecting unavailable tags without writing", () => {

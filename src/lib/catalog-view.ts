@@ -5,7 +5,10 @@ import { collectionKey } from "#lib/types/collection.ts";
 export type ReviewEdition = Edition;
 export type ReviewItem = Item;
 export type ReviewCatalog = Catalog;
-export type EditionSelection = { item: ReturnType<typeof reviewEntries>[number]; edition: ReviewEdition };
+export type CatalogEntry = ReturnType<typeof reviewEntries>[number];
+export type CatalogIndex = ReturnType<typeof reviewIndex>;
+export type EditionSelection = { item: CatalogEntry; edition: ReviewEdition };
+type Inclusion = Exclude<NonNullable<ReviewItem["includes"]>[number], string>;
 type Owner = { parentId: string; parentEditionId: string; parent: string; parentEdition: string; editionId?: string };
 
 export function reviewTagLabel(tag: string) {
@@ -17,10 +20,16 @@ export function reviewEntries(catalog: ReviewCatalog) {
   return Object.entries(categories).flatMap(([category, items]) => Object.entries(items).map(([id, item]) => ({ ...item, id, category })));
 }
 
-export function reviewTags(items: readonly Pick<ReviewItem, "tags">[]) {
+export function reviewTagCounts(items: readonly Pick<ReviewItem, "tags">[]) {
   const counts = new Map<string, number>();
   for (const item of items) for (const tag of new Set(item.tags)) counts.set(tag, (counts.get(tag) ?? 0) + 1);
-  return [...counts].map(([tag, count]) => ({ tag, count })).sort((a, b) => b.count - a.count || a.tag.localeCompare(b.tag, "en"));
+  return counts;
+}
+
+export function reviewTags(items: readonly Pick<ReviewItem, "tags">[]) {
+  return [...reviewTagCounts(items)]
+    .map(([tag, count]) => ({ tag, count }))
+    .sort((a, b) => b.count - a.count || a.tag.localeCompare(b.tag, "en"));
 }
 
 export function reviewShopUrl(item: ReviewItem, edition: ReviewEdition) {
@@ -51,11 +60,14 @@ export function reviewNumberedEditions(item: ReviewItem) {
   return reviewEditions(item).filter((edition) => edition.numbered === true);
 }
 
-export function reviewGameplayFirst(items: ReturnType<typeof reviewEntries>) {
-  const gameplay = new Set(
-    items.filter((item) => reviewEditions(item).some((edition) => editionGameplay(item, edition))).map((item) => item.id),
-  );
-  return items.toSorted((a, b) => Number(gameplay.has(b.id)) - Number(gameplay.has(a.id)));
+export function reviewGameplayFirst(items: readonly CatalogEntry[]) {
+  const gameplay: CatalogEntry[] = [];
+  const models: CatalogEntry[] = [];
+  for (const item of items) {
+    if (reviewEditions(item).some((edition) => editionGameplay(item, edition))) gameplay.push(item);
+    else models.push(item);
+  }
+  return [...gameplay, ...models];
 }
 
 export function reviewBadges(item: ReviewItem) {
@@ -64,6 +76,18 @@ export function reviewBadges(item: ReviewItem) {
     gameplay: editions.some((edition) => editionGameplay(item, edition) && (!edition.beta || edition.gameplay === true)),
     beta: editions.some((edition) => edition.beta),
   };
+}
+
+function matchingEditions(item: CatalogEntry, reference: Inclusion, parent: ReviewEdition | undefined) {
+  const editions = reviewEditions(item);
+  if (reference.editionId) return editions.filter((edition) => edition.id === reference.editionId);
+  const { materials } = reference;
+  if (materials?.length) return editions.filter((edition) => materials.every((material) => editionMaterials(edition).includes(material)));
+  const edition =
+    editions.find((edition) => edition.format === parent?.format && !!edition.simulator === !!parent?.simulator) ??
+    editions.find((edition) => edition.format === "physical") ??
+    editions[0];
+  return edition ? [edition] : [];
 }
 
 // Rebuild this index when the catalog changes; cached results belong to that snapshot.
@@ -89,13 +113,19 @@ export function reviewIndex(catalog: ReviewCatalog) {
     ]),
   );
   const byId = new Map(entries.map((item) => [item.id, item]));
-  const sim = entries.filter((item) => item.editions?.some((edition) => edition.simulator === true));
   const search = new Map(
     entries.map((item) => [
       item.id,
       [item.name, item.id, ...(item.aliases ?? []), ...item.tags, ...item.tags.map(reviewTagLabel)].join(" ").toLowerCase(),
     ]),
   );
+
+  return { entries, byId, byCategory, tags, tagViews, search, ...indexRelationships(entries, byId) };
+}
+
+/** Relationship resolution and its caches share the lifetime of one catalog index. */
+function indexRelationships(entries: readonly CatalogEntry[], byId: ReadonlyMap<string, CatalogEntry>) {
+  const sim = entries.filter((item) => item.editions?.some((edition) => edition.simulator === true));
 
   function findInclusions(id: string, editionId: string) {
     const item = byId.get(id);
@@ -129,44 +159,30 @@ export function reviewIndex(catalog: ReviewCatalog) {
     return included;
   }
 
-  const cache = new Map<string, ReturnType<typeof findInclusions>>();
+  const inclusionCache = new Map<string, ReturnType<typeof findInclusions>>();
   function inclusions(id: string, editionId: string) {
     const key = collectionKey(id, editionId);
-    let included = cache.get(key);
+    let included = inclusionCache.get(key);
     if (!included) {
       included = findInclusions(id, editionId);
-      cache.set(key, included);
+      inclusionCache.set(key, included);
     }
     return included;
   }
 
-  type Included = { item: (typeof entries)[number]; edition: ReviewEdition };
-  const includedCache = new Map<string, Included[]>();
+  const includedCache = new Map<string, EditionSelection[]>();
   function includedEditions(id: string, editionId: string, includeNested = true) {
     const cacheKey = JSON.stringify([id, editionId, includeNested]);
     const cached = includedCache.get(cacheKey);
     if (cached) return cached;
-    const included: Included[] = [];
+    const included: EditionSelection[] = [];
     const visited = new Set([collectionKey(id, editionId)]);
     function visit(parentId: string, parentEditionId: string) {
       const parentEdition = byId.get(parentId)?.editions?.find((release) => release.id === parentEditionId);
       for (const reference of inclusions(parentId, parentEditionId)) {
         const item = byId.get(reference.item);
         if (!item) continue;
-        const editions = reviewEditions(item);
-        const matches = reference.editionId
-          ? editions.filter((release) => release.id === reference.editionId)
-          : reference.materials?.length
-            ? editions.filter((release) => reference.materials!.every((material) => editionMaterials(release).includes(material)))
-            : [
-                editions.find(
-                  (release) => release.format === parentEdition?.format && !!release.simulator === !!parentEdition?.simulator,
-                ) ??
-                  editions.find((release) => release.format === "physical") ??
-                  editions[0],
-              ];
-        for (const release of matches) {
-          if (!release) continue;
+        for (const release of matchingEditions(item, reference, parentEdition)) {
           const key = collectionKey(item.id, release.id);
           if (visited.has(key)) continue;
           visited.add(key);
@@ -249,12 +265,6 @@ export function reviewIndex(catalog: ReviewCatalog) {
   }
 
   return {
-    entries,
-    byId,
-    byCategory,
-    tags,
-    tagViews,
-    search,
     inclusions,
     includedEditions,
     bundlePricing,

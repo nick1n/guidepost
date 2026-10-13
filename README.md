@@ -76,8 +76,8 @@ changing the established item, edition, or other array ordering.
 ### Prepare an update
 
 ```bash
-pnpm scrape:news
-pnpm catalog:update --sim
+pnpm scrape:news --online
+pnpm catalog:update --sim --online
 ```
 
 The scraper in `scripts/news/` updates the JSON and CSV news exports alongside the script; the updater stages changes without changing the catalog. Inspect
@@ -90,7 +90,9 @@ pnpm catalog:validate
 
 Applying a review writes the live catalog and local reports. Stale inputs are rejected; prepare a new review if its inputs change.
 Validation checks schemas, references, ordering, and local tag assignments without changing them.
-Shop requests are at least 35 seconds apart and cached for 24 hours. Use `--offline` for cached evidence or `--refresh` to fetch again.
+Catalog and news commands use saved evidence by default and never download missing cache entries. Add `--online` to allow internet requests.
+`--offline` remains an explicit spelling of the default and cannot be combined with `--online`.
+Shop requests are at least 35 seconds apart and cached for 24 hours. Use `--online --refresh` to fetch again.
 ShopClient uses Effect HTTP, validates product and cache data, and shares concurrent duplicate lookups. Its in-memory cache holds at most
 256 responses per client and expires them with the disk evidence; offline reads accept older evidence. HTTP failures remain cached on disk
 and requests are never automatically retried. Refresh bypasses completed cache entries while sharing an in-progress lookup.
@@ -129,19 +131,19 @@ Use `upcoming` while any edition is awaiting release, even if other editions are
 
 ### Refresh availability or fill editions
 
-| Command                               | Effect                                                    |
-| ------------------------------------- | --------------------------------------------------------- |
-| `pnpm catalog:availability`           | Fetch shop pages and replace catalog availability         |
-| `pnpm catalog:availability --offline` | Apply saved shop pages without requests                   |
-| `pnpm catalog:editions`               | Fill content items missing editions from Shopify variants |
-| `pnpm catalog:editions --offline`     | Fill missing editions using cached responses              |
+| Command                              | Effect                                            |
+| ------------------------------------ | ------------------------------------------------- |
+| `pnpm catalog:availability`          | Apply saved shop pages without requests           |
+| `pnpm catalog:availability --online` | Fetch shop pages and replace catalog availability |
+| `pnpm catalog:editions`              | Fill missing editions using cached responses      |
+| `pnpm catalog:editions --online`     | Fetch Shopify variants to fill missing editions   |
 
 Availability matching uses shop handles or URLs and release variants. A matching warehouse in stock makes an edition available;
 unmatched or ambiguous shop editions default to unavailable. Homebrew availability is preserved.
 Results go to `temp/kdm-catalog/reports/availability-refresh.json`.
 
 Edition retrieval groups warehouse choices under their release label and leaves failed listings unchanged.
-Requests are at least 35 seconds apart; responses stay cached until `--refresh`.
+With `--online`, requests are at least 35 seconds apart; responses stay cached until `--online --refresh`.
 Results go to `temp/kdm-catalog/reports/edition-retrieval.json`.
 Both commands write the live catalog and refuse to overwrite catalog edits made during retrieval.
 
@@ -162,7 +164,8 @@ Validated row workflows are implemented; `.xlsx` parsing, writing, and controls 
 
 ### Live shop links
 
-`pnpm check:shop-links` checks item and edition listings in the live catalog, resolving shop handles and external URLs.
+`pnpm check:shop-links` displays the saved link-check summary without requests.
+Use `pnpm check:shop-links --online` to check item and edition listings in the live catalog, resolving shop handles and external URLs.
 It writes `temp/kdm-catalog/reports/shop-links.json`, leaving catalog facts unchanged.
 It uses HEAD requests with redirects and a 10-second timeout: `true` for HTTP 2xx, `false` for errors, and `null` for missing URLs.
 Failures may reflect rate limits or HEAD rejection. Reachability does not indicate stock.

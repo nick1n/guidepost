@@ -1,8 +1,42 @@
 import { describe, expect, it } from "vitest";
 import { catalogTags, editionGameplay, editionMaterials } from "#lib/kdm-data.ts";
-import { reviewEditions, reviewIndex, reviewShopUrl, type ReviewCatalog } from "#lib/catalog-view.ts";
+import { reviewEditions, reviewEntries, reviewGameplayFirst, reviewIndex, reviewShopUrl, type ReviewCatalog } from "#lib/catalog-view.ts";
 
 describe("review catalog facts", () => {
+  it("groups gameplay first while preserving item order, references, and edition overrides", () => {
+    const data: ReviewCatalog = {
+      content: {
+        model: { name: "Model", tags: [] },
+        core: { name: "Core", gameplay: true, tags: [] },
+        display: {
+          name: "Display",
+          gameplay: true,
+          tags: [],
+          editions: [{ id: "resin", label: "Resin", format: "physical", gameplay: false }],
+        },
+        mixed: {
+          name: "Mixed",
+          tags: [],
+          editions: [
+            { id: "resin", label: "Resin", format: "physical" },
+            { id: "plastic", label: "Plastic", format: "physical", gameplay: true },
+          ],
+        },
+        other: { name: "Other model", tags: [] },
+      },
+      accessories: {},
+      bundles: {},
+      homebrew: {},
+      "included-only": {},
+    };
+    const entries = reviewEntries(data);
+    const ordered = reviewGameplayFirst(entries);
+    expect(ordered.map((item) => item.id)).toEqual(["core", "mixed", "model", "display", "other"]);
+    expect(entries.map((item) => item.id)).toEqual(["model", "core", "display", "mixed", "other"]);
+    expect(ordered[0]).toBe(entries[1]);
+    expect(ordered[2]).toBe(entries[0]);
+  });
+
   it("resolves reused edition IDs within their own items and caches", () => {
     const data: ReviewCatalog = {
       content: {
@@ -284,6 +318,22 @@ describe("Simulator key access", () => {
       ["expansion-flower-knight", "flower-knight-1-6"],
     ]);
     expect(direct()).toEqual([["core", "core-sim"]]);
+  });
+
+  it("uses explicit editions before format matching and falls back to a physical edition", () => {
+    const data = catalog();
+    data.content.core.includes = [{ item: "expansion-flower-knight", editionId: "flower-knight-1-6" }];
+    expect(
+      reviewIndex(data)
+        .includedEditions("core", "core-sim")
+        .map(({ edition }) => edition.id),
+    ).toEqual(["flower-knight-1-6"]);
+    data.content.core.includes = ["expansion-flower-knight"];
+    const index = reviewIndex(data);
+    expect(index.includedEditions("core", "core-sim").map(({ edition }) => edition.id)).toEqual(["flower-knight-sim"]);
+    expect(index.includedEditions("core", "unknown").map(({ edition }) => edition.id)).toEqual(["flower-knight-1-6"]);
+    data.content.core.includes = [{ item: "expansion-flower-knight", editionId: "unknown" }];
+    expect(reviewIndex(data).includedEditions("core", "core-sim")).toEqual([]);
   });
 
   it("refreshes cached search text and inclusions when the catalog index is rebuilt", () => {

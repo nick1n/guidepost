@@ -4,7 +4,7 @@ import { readFile } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { Command, Flag } from "effect/cli";
-import { optionalString, offline, refresh, runCommand, workflow } from "./catalog/cli.mts";
+import { optionalString, offline, online, offlineMode, refresh, runCommand, workflow } from "./catalog/cli.mts";
 import { gzipSync } from "node:zlib";
 import { publishFiles } from "./catalog/publication.mts";
 import { keepUrl, loadReport, recoverCachedHistory, saveReport, type Report } from "./news/scrape-shop-links.mts";
@@ -142,16 +142,18 @@ const updateFlags = {
   delay: Flag.String("delay").pipe(Flag.withDefault("35")),
   refresh,
   offline,
-  sim: Flag.Boolean("sim"),
-  apply: Flag.Boolean("apply"),
+  online,
+  sim: Flag.Boolean("sim").pipe(Flag.withDefault(false)),
+  apply: Flag.Boolean("apply").pipe(Flag.withDefault(false)),
   "apply-review": optionalString("apply-review"),
-  "tags-only": Flag.Boolean("tags-only"),
-  "tags-schema": Flag.Boolean("tags-schema"),
+  "tags-only": Flag.Boolean("tags-only").pipe(Flag.withDefault(false)),
+  "tags-schema": Flag.Boolean("tags-schema").pipe(Flag.withDefault(false)),
 };
 
 type UpdateFlags = Command.Command.Config.Infer<typeof updateFlags>;
 async function main(values: UpdateFlags, signal: AbortSignal) {
   signal.throwIfAborted();
+  const offline = offlineMode(values);
   const root = values.catalog;
   const newsPath = join(values.news, "shop-links.json");
   if (values["tags-schema"]) {
@@ -208,7 +210,7 @@ async function main(values: UpdateFlags, signal: AbortSignal) {
     cache: values.cache,
     delay: Number(values.delay),
     refresh: values.refresh,
-    offline: values.offline,
+    offline,
     signal,
   });
   const evidence: Evidence[] = [];
@@ -290,7 +292,9 @@ async function main(values: UpdateFlags, signal: AbortSignal) {
 }
 
 const updateCommand = Command.make("catalog:update", updateFlags, (values) => workflow((signal) => main(values, signal))).pipe(
-  Command.withDescription("Stage a source-backed catalog review. Shop reads are spaced at least 35 seconds apart."),
+  Command.withDescription(
+    "Stage a source-backed catalog review. Uses saved evidence by default; --online allows shop reads, spaced at least 35 seconds apart.",
+  ),
 );
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   runCommand(updateCommand);

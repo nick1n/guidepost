@@ -7,7 +7,7 @@ import { setTimeout as sleep } from "node:timers/promises";
 import { format, resolveConfig } from "prettier";
 import { fileURLToPath } from "node:url";
 import { Command, Flag } from "effect/cli";
-import { runCommand, workflow } from "../catalog/cli.mts";
+import { offline, online, offlineMode, runCommand, workflow } from "../catalog/cli.mts";
 import { Parser } from "htmlparser2";
 import { productUrl, shopLinkUrl } from "../catalog/shop.mts";
 
@@ -320,20 +320,21 @@ export const downloadNewsPage = Effect.fn("News.downloadPage")((url: string) =>
 export class Downloader {
   requests = 0;
   private finished = 0;
-  constructor(options: { cache: string; delay: number; signal?: AbortSignal }) {
+  constructor(options: { cache: string; delay: number; offline?: boolean; signal?: AbortSignal }) {
     this.options = options;
   }
-  private options: { cache: string; delay: number; signal?: AbortSignal };
+  private options: { cache: string; delay: number; offline?: boolean; signal?: AbortSignal };
 
   async get(url: string, cached = true) {
     const path = join(this.options.cache, createHash("sha256").update(url).digest("hex") + ".html");
-    if (cached) {
+    if (cached || this.options.offline) {
       try {
         return await readFile(path, "utf8");
       } catch (error) {
         if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
       }
     }
+    if (this.options.offline) throw new Error("No cached news page: " + url + "; run pnpm scrape:news --online to download it.");
     await sleep(Math.max(0, this.options.delay * 1_000 - (performance.now() - this.finished)), undefined, { signal: this.options.signal });
     this.requests++;
     try {
@@ -417,18 +418,21 @@ export async function updateReport(
 }
 
 const newsFlags = {
+  offline,
+  online,
   output: Flag.String("output").pipe(Flag.withDefault("scripts/news")),
   cache: Flag.String("cache").pipe(Flag.withDefault(".cache/kingdom-death-news")),
   delay: Flag.String("delay").pipe(Flag.withDefault("2")),
-  "refresh-posts": Flag.Boolean("refresh-posts"),
+  "refresh-posts": Flag.Boolean("refresh-posts").pipe(Flag.withDefault(false)),
 };
 async function main(values: Command.Command.Config.Infer<typeof newsFlags>, signal: AbortSignal) {
+  const offline = offlineMode(values);
   const delay = Number(values.delay);
   if (!Number.isFinite(delay) || delay < 2) throw new Error("--delay must be a finite number of at least 2 seconds");
   // Validate before writing anything, so a damaged checkpoint cannot erase earlier results.
   const report = await loadReport(values.output);
   await recoverCachedHistory(report, values.cache);
-  const downloader = new Downloader({ cache: values.cache, delay, signal });
+  const downloader = new Downloader({ cache: values.cache, delay, offline, signal });
   const checkpoint = async () => {
     report.requestsThisRun = downloader.requests;
     await saveReport(report, values.output);

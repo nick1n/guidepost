@@ -1,7 +1,7 @@
 import { Effect, Schema } from "effect";
 import { FetchHttpClient, HttpClient } from "effect/http";
 import { Command } from "effect/cli";
-import { runCommand, workflow } from "./catalog/cli.mts";
+import { offline, online, offlineMode, runCommand, workflow } from "./catalog/cli.mts";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { setTimeout as sleep } from "node:timers/promises";
@@ -20,10 +20,29 @@ export const checkListing = Effect.fn("CatalogLinks.checkListing")((url: URL) =>
     Effect.provideService(FetchHttpClient.RequestInit, { redirect: "follow" }),
   ),
 );
-export async function checkShopLinks(signal: AbortSignal) {
+export async function checkShopLinks(signal: AbortSignal, options: { offline?: boolean } = {}) {
   const catalogPath = fileURLToPath(new URL("../static/kdm-catalog/data.json", import.meta.url));
-  const catalog: Catalog = JSON.parse(await readFile(catalogPath, "utf8"));
   const reportPath = join(catalogTemp(dirname(catalogPath)), "reports/shop-links.json");
+  signal.throwIfAborted();
+  if (options.offline) {
+    const text = await readFile(reportPath, "utf8").catch((error: NodeJS.ErrnoException) => {
+      if (error.code === "ENOENT") throw new Error("No saved link-check report; run pnpm check:shop-links --online to create one.");
+      throw error;
+    });
+    const report = Schema.decodeUnknownSync(
+      Schema.Struct({
+        checkedAt: Schema.String,
+        reachable: Schema.Number,
+        unreachable: Schema.Number,
+        missing: Schema.Number,
+      }),
+    )(JSON.parse(text));
+    console.log(
+      `Saved link check (${report.checkedAt}): ${report.reachable} reachable, ${report.unreachable} unreachable, ${report.missing} without URLs. Report: ${reportPath}`,
+    );
+    return;
+  }
+  const catalog: Catalog = JSON.parse(await readFile(catalogPath, "utf8"));
   const listings: { category: string; itemId: string; edition?: string; url?: string; reachable: boolean | null }[] = [];
   const results = new Map<string, boolean>();
   let reachable = 0;
@@ -76,5 +95,9 @@ export async function checkShopLinks(signal: AbortSignal) {
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  runCommand(Command.make("check:shop-links", {}, () => workflow(checkShopLinks)));
+  runCommand(
+    Command.make("check:shop-links", { offline, online }, (values) =>
+      workflow((signal) => checkShopLinks(signal, { offline: offlineMode(values) })),
+    ),
+  );
 }

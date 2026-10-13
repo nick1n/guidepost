@@ -1,4 +1,11 @@
-import { reviewEditions, reviewGameplayFirst, reviewTagLabel, reviewTags, type reviewIndex } from "#lib/catalog-view.ts";
+import {
+  reviewEditions,
+  reviewGameplayFirst,
+  reviewTagCounts,
+  reviewTagLabel,
+  type CatalogEntry,
+  type CatalogIndex,
+} from "#lib/catalog-view.ts";
 import type { EntryState } from "#lib/types/index.ts";
 
 export const browseCategories = [
@@ -9,8 +16,6 @@ export const browseCategories = [
 ] as const;
 
 type Category = (typeof browseCategories)[number]["id"];
-type Catalog = ReturnType<typeof reviewIndex>;
-type Entry = Catalog["entries"][number];
 type Status = "all" | "owned" | "wishlist";
 type EditionReader = (item: string, edition: string) => Pick<EntryState, "owned" | "wished">;
 type BrowseUrl = { href: string; searchParams: Pick<URLSearchParams, "get" | "getAll"> };
@@ -18,21 +23,25 @@ type Navigation = { current: () => BrowseUrl; replace: (url: URL) => void };
 const batchSize = 100;
 const searchUrlDelay = 250;
 
-/** Owns browsing transitions; the page supplies navigation and reactive edition reads, never persistence. */
+/**
+ * Owns browsing transitions; the page supplies navigation and reactive edition reads, never persistence.
+ * Arrow fields retain this when passed to Svelte or timers; other operations use ordinary methods.
+ */
 export class CollectionBrowsing {
-  #catalog: Catalog;
+  #catalog: CatalogIndex;
   #getEdition: EditionReader;
   #navigation: Navigation;
-  #content: Entry[];
+  #content: CatalogEntry[];
   #category = $state<Category>("content");
   #query = $state("");
   #selectedTags = $state.raw<string[]>([]);
   #status = $state<Status>("all");
   #limits = $state<Partial<Record<Category, number>>>({});
-  #retained = $state.raw<Partial<Record<Category, Entry[]>>>({});
+  #resultLimit = $state(batchSize);
+  #retained = $state.raw<Partial<Record<Category, CatalogEntry[]>>>({});
   #urlTimer: ReturnType<typeof setTimeout> | undefined;
 
-  constructor(catalog: Catalog, getEdition: EditionReader, navigation: Navigation) {
+  constructor(catalog: CatalogIndex, getEdition: EditionReader, navigation: Navigation) {
     this.#catalog = catalog;
     this.#getEdition = getEdition;
     this.#navigation = navigation;
@@ -61,19 +70,25 @@ export class CollectionBrowsing {
   #cloudTags = $derived.by(() => (this.#category === "content" ? (this.#catalog.tagViews.get(this.#category)?.cloud ?? []) : this.#tags));
   #allTags = $derived.by(() => this.#catalog.tagViews.get(this.#category)?.all ?? []);
   #hasSearch = $derived(!!this.#searchQuery || this.#selectedTags.length > 0);
-  #limited = $derived(!this.#hasSearch && this.#status === "all");
+  #unfiltered = $derived(!this.#hasSearch && this.#status === "all");
+  // Tag candidates remain stable while the text query changes.
+  #tagged = $derived.by(() =>
+    this.#selectedTags.length
+      ? this.#categoryEntries.filter((item) => this.#selectedTags.every((tag) => item.tags.includes(tag)))
+      : this.#categoryEntries,
+  );
   #filtered = $derived.by(() => {
-    if (this.#limited) return this.#categoryEntries;
-    return this.#categoryEntries.filter((item) => {
-      if (!this.#selectedTags.every((tag) => item.tags.includes(tag))) return false;
-      if (this.#searchQuery && !this.#catalog.search.get(item.id)?.includes(this.#searchQuery)) return false;
-      if (this.#status === "owned" && !reviewEditions(item).some((edition) => this.#getEdition(item.id, edition.id).owned)) return false;
-      if (this.#status === "wishlist" && !reviewEditions(item).some((edition) => this.#getEdition(item.id, edition.id).wished))
-        return false;
-      return true;
+    const query = this.#searchQuery;
+    const status = this.#status;
+    if (!query && status === "all") return this.#tagged;
+    const field = status === "owned" ? "owned" : status === "wishlist" ? "wished" : undefined;
+    return this.#tagged.filter((item) => {
+      if (query && !this.#catalog.search.get(item.id)?.includes(query)) return false;
+      return !field || reviewEditions(item).some((edition) => this.#getEdition(item.id, edition.id)[field]);
     });
   });
-  #visible = $derived(this.#limited ? this.#filtered.slice(0, this.#limits[this.#category] ?? batchSize) : this.#filtered);
+  #limit = $derived(this.#unfiltered ? (this.#limits[this.#category] ?? batchSize) : this.#resultLimit);
+  #visible = $derived(this.#filtered.slice(0, this.#limit));
   #latestUnowned = $derived(
     this.#filtered.flatMap((item) => {
       const edition = reviewEditions(item).at(-1);
@@ -82,7 +97,7 @@ export class CollectionBrowsing {
   );
   #tagCounts = $derived.by(() => {
     if (this.#filtered === this.#categoryEntries) return this.#catalog.tagViews.get(this.#category)?.counts ?? new Map<string, number>();
-    return new Map(reviewTags(this.#filtered).map(({ tag, count }) => [tag, count]));
+    return reviewTagCounts(this.#filtered);
   });
   #panels = $derived(
     browseCategories.flatMap((option) => {
@@ -124,19 +139,19 @@ export class CollectionBrowsing {
   }
 
   /** Restore navigation without writing back or letting a pending search overwrite the destination. */
-  restore = (url: BrowseUrl) => {
+  restore(url: BrowseUrl) {
     this.cancelPendingUrl();
     const category = browseCategories.find(({ id }) => id === url.searchParams.get("cat"))?.id ?? "content";
     this.#setCategory(category);
     this.#query = url.searchParams.get("q") ?? "";
     const tags = this.#catalog.tags.get(category) ?? [];
-    this.#selectedTags = [...new Set(url.searchParams.getAll("tag"))].filter((tag) => tags.some((value) => value.tag === tag));
-  };
+    this.#setTags([...new Set(url.searchParams.getAll("tag"))].filter((tag) => tags.some((value) => value.tag === tag)));
+  }
 
-  cancelPendingUrl = () => {
+  cancelPendingUrl() {
     clearTimeout(this.#urlTimer);
     this.#urlTimer = undefined;
-  };
+  }
 
   #writeUrl = () => {
     this.cancelPendingUrl();
@@ -151,7 +166,13 @@ export class CollectionBrowsing {
     if (url.href !== current.href) this.#navigation.replace(url);
   };
 
+  #setTags(tags: string[]) {
+    this.#selectedTags = tags;
+    this.#resultLimit = batchSize;
+  }
+
   setQuery = (value: string) => {
+    if (value.trim().toLowerCase() !== this.#searchQuery) this.#resultLimit = batchSize;
     this.#query = value;
     this.cancelPendingUrl();
     if (value) this.#urlTimer = setTimeout(this.#writeUrl, searchUrlDelay);
@@ -167,49 +188,52 @@ export class CollectionBrowsing {
       [next]: this.#retained[next] ?? (this.#catalog.byCategory.get(next) ?? []).slice(0, this.#limits[next] ?? batchSize),
     };
     this.#category = next;
-    this.#selectedTags = [];
   }
 
-  changeCategory = (next: Category) => {
+  changeCategory(next: Category) {
     this.#setCategory(next);
-    this.#selectedTags = [];
+    this.#setTags([]);
     this.setQuery("");
-  };
+  }
 
   toggleTag = (tag: string) => {
     if (!this.#tags.some((value) => value.tag === tag)) return;
-    this.#selectedTags = this.#selectedTags.includes(tag)
-      ? this.#selectedTags.filter((value) => value !== tag)
-      : [...this.#selectedTags, tag];
+    this.#setTags(this.#selectedTags.includes(tag) ? this.#selectedTags.filter((value) => value !== tag) : [...this.#selectedTags, tag]);
     this.#writeUrl();
   };
 
-  removeLastTag = () => {
-    this.#selectedTags = this.#selectedTags.slice(0, -1);
+  removeLastTag() {
+    this.#setTags(this.#selectedTags.slice(0, -1));
     this.#writeUrl();
-  };
+  }
 
-  acceptTagQuery = () => {
+  acceptTagQuery() {
     const match =
       this.#tags.find(({ tag }) => tag.toLowerCase() === this.#searchQuery) ??
       this.#tags.find(({ tag }) => reviewTagLabel(tag).toLowerCase() === this.#searchQuery);
     if (!match) return false;
-    if (!this.#selectedTags.includes(match.tag)) this.#selectedTags = [...this.#selectedTags, match.tag];
+    if (!this.#selectedTags.includes(match.tag)) this.#setTags([...this.#selectedTags, match.tag]);
     this.setQuery("");
     return true;
-  };
+  }
 
   clearSearch = () => {
-    this.#selectedTags = [];
+    this.#setTags([]);
     this.#status = "all";
     this.setQuery("");
   };
 
-  toggleStatus = (next: Exclude<Status, "all">) => {
+  toggleStatus(next: Exclude<Status, "all">) {
     this.#status = this.#status === next ? "all" : next;
-  };
+    this.#resultLimit = batchSize;
+  }
 
   showMoreItems = () => {
-    this.#limits[this.#category] = Math.min((this.#limits[this.#category] ?? batchSize) + batchSize, this.#categoryEntries.length);
+    const limit = Math.min(this.#limit + batchSize, this.#filtered.length);
+    if (this.#unfiltered) {
+      this.#limits[this.#category] = limit;
+    } else {
+      this.#resultLimit = limit;
+    }
   };
 }

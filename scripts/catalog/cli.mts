@@ -3,9 +3,19 @@ import { Effect, Option, Schema } from "effect";
 import { Command, Flag } from "effect/cli";
 
 export const optionalString = (name: string) => Flag.String(name).pipe(Flag.optional, Flag.map(Option.getOrUndefined));
-export const offline = Flag.Boolean("offline");
-export const refresh = Flag.Boolean("refresh");
+export const offline = Flag.Boolean("offline").pipe(
+  Flag.withDefault(false),
+  Flag.withDescription("Use saved evidence without internet access (the default)."),
+);
+export const online = Flag.Boolean("online").pipe(Flag.withDefault(false), Flag.withDescription("Allow internet requests."));
+export const refresh = Flag.Boolean("refresh").pipe(Flag.withDefault(false));
 export const catalog = optionalString("catalog");
+
+export function offlineMode(values: { online: boolean; offline: boolean; refresh?: boolean }) {
+  if (values.online && values.offline) throw new Error("Choose either --online or --offline.");
+  if (values.refresh && !values.online) throw new Error("--refresh requires --online; commands use saved evidence by default.");
+  return !values.online;
+}
 
 export class CommandError extends Schema.TaggedError<CommandError>()("CatalogCommandError", {
   cause: Schema.Defect(),
