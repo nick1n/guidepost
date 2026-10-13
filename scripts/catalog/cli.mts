@@ -7,14 +7,12 @@ export const offline = Flag.Boolean("offline").pipe(
   Flag.withDefault(false),
   Flag.withDescription("Use saved evidence without internet access (the default)."),
 );
-export const online = Flag.Boolean("online").pipe(Flag.withDefault(false), Flag.withDescription("Allow internet requests."));
-export const refresh = Flag.Boolean("refresh").pipe(Flag.withDefault(false));
+export const fetch = Flag.Boolean("fetch").pipe(Flag.withDefault(false), Flag.withDescription("Download fresh data and update the cache."));
 export const catalog = optionalString("catalog");
 
-export function offlineMode(values: { online: boolean; offline: boolean; refresh?: boolean }) {
-  if (values.online && values.offline) throw new Error("Choose either --online or --offline.");
-  if (values.refresh && !values.online) throw new Error("--refresh requires --online; commands use saved evidence by default.");
-  return !values.online;
+export function offlineMode(values: { fetch: boolean; offline: boolean }) {
+  if (values.fetch && values.offline) throw new Error("Choose either --fetch or --offline.");
+  return !values.fetch;
 }
 
 export class CommandError extends Schema.TaggedError<CommandError>()("CatalogCommandError", {

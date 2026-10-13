@@ -4,7 +4,7 @@ import { readFile } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { Command, Flag } from "effect/cli";
-import { optionalString, offline, online, offlineMode, refresh, runCommand, workflow } from "./catalog/cli.mts";
+import { optionalString, offline, fetch, offlineMode, runCommand, workflow } from "./catalog/cli.mts";
 import { gzipSync } from "node:zlib";
 import { publishFiles } from "./catalog/publication.mts";
 import { keepUrl, loadReport, recoverCachedHistory, saveReport, type Report } from "./news/scrape-shop-links.mts";
@@ -140,9 +140,8 @@ const updateFlags = {
   review: optionalString("review"),
   date: optionalString("date"),
   delay: Flag.String("delay").pipe(Flag.withDefault("35")),
-  refresh,
   offline,
-  online,
+  fetch,
   sim: Flag.Boolean("sim").pipe(Flag.withDefault(false)),
   apply: Flag.Boolean("apply").pipe(Flag.withDefault(false)),
   "apply-review": optionalString("apply-review"),
@@ -209,7 +208,7 @@ async function main(values: UpdateFlags, signal: AbortSignal) {
   const client = new ShopClient({
     cache: values.cache,
     delay: Number(values.delay),
-    refresh: values.refresh,
+    refresh: values.fetch,
     offline,
     signal,
   });
@@ -293,7 +292,7 @@ async function main(values: UpdateFlags, signal: AbortSignal) {
 
 const updateCommand = Command.make("catalog:update", updateFlags, (values) => workflow((signal) => main(values, signal))).pipe(
   Command.withDescription(
-    "Stage a source-backed catalog review. Uses saved evidence by default; --online allows shop reads, spaced at least 35 seconds apart.",
+    "Stage a source-backed catalog review. Uses saved evidence by default; --fetch downloads fresh shop data, spaced at least 35 seconds apart.",
   ),
 );
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

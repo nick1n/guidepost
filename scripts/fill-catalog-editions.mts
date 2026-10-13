@@ -2,7 +2,7 @@ import { readFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { Command } from "effect/cli";
-import { catalog, offline, online, offlineMode, refresh, runCommand, workflow } from "./catalog/cli.mts";
+import { catalog, offline, fetch, offlineMode, runCommand, workflow } from "./catalog/cli.mts";
 import { publishFiles } from "./catalog/publication.mts";
 import { catalogTemp } from "./catalog/paths.mts";
 import { editionComparator, organizeCatalog } from "./catalog/order.mts";
@@ -115,9 +115,9 @@ export async function fillEditions(
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   runCommand(
-    Command.make("catalog:editions", { catalog, offline, online, refresh }, (values) =>
+    Command.make("catalog:editions", { catalog, offline, fetch }, (values) =>
       workflow(async (signal) => {
-        const report = await fillEditions({ ...values, offline: offlineMode(values), signal });
+        const report = await fillEditions({ ...values, offline: offlineMode(values), refresh: values.fetch, signal });
         console.log(
           `${report.reachable.length} items updated; ${report.unreachable.length} not retrieved. See temp/kdm-catalog/reports/edition-retrieval.json`,
         );

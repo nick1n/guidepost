@@ -100,6 +100,13 @@ Keep `--size-icon` overrides on icon elements so the value does not unintentiona
 
 Safelist icon classes in `uno.config.ts` when extraction is unreliable. Verify production CSS if an icon works only in development.
 
+## Scripts
+
+New and updated scripts must be offline by default. Use local files and cached data without making network requests.
+Require an explicit `--fetch` flag to download fresh data and update caches. Missing or stale caches must never trigger
+automatic downloads; report missing data with an actionable message explaining how to rerun with `--fetch`.
+Apply this rule to every network path, including retries and fallback loaders.
+
 ## Catalog
 
 `static/kdm-catalog/data.json` is the live app's source of truth. Data is grouped by category and item IDs are object keys; do not add `id` fields to items. Update `static/kdm-catalog/data.schema.json` when the shape changes and regenerate types as described in [README.md](README.md#catalog).

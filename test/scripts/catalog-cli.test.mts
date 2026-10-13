@@ -80,7 +80,11 @@ it.effect(
         const output = yield* Effect.tryPromise(() => execute(process.execPath, [path, "--help"], { timeout: 10_000 }));
         expect(output.stdout).toContain("USAGE");
         expect(output.stdout).toContain("--help, -h");
-        if (path !== "scripts/catalog/workbook.mts") expect(output.stdout).toContain("--online");
+        if (path !== "scripts/catalog/workbook.mts") {
+          expect(output.stdout).toContain("--fetch");
+          expect(output.stdout).not.toContain("--online");
+          expect(output.stdout).not.toMatch(/--refresh(?:\s|$)/);
+        }
         expect(output.stderr).toBe("");
       }
     }),
@@ -96,7 +100,7 @@ it.effect(
         (path) => Effect.promise(() => rm(path, { recursive: true, force: true })),
       );
       const execute = promisify(execFile);
-      for (const args of [["--unknown-flag"], ["--delay", "1", "--output", directory, "--cache", directory]]) {
+      for (const args of [["--unknown-flag"], ["--online"], ["--refresh"], ["--delay", "1", "--output", directory, "--cache", directory]]) {
         const exit = yield* Effect.exit(
           Effect.tryPromise(() =>
             execute(process.execPath, [resolve("scripts/news/scrape-shop-links.mts"), ...args], {
@@ -182,13 +186,11 @@ it.effect(
   { timeout: 20_000 },
 );
 
-it("internet access requires online mode, and refresh cannot enable it implicitly", () => {
-  expect(offlineMode({ online: false, offline: false })).toBe(true);
-  expect(offlineMode({ online: false, offline: true })).toBe(true);
-  expect(offlineMode({ online: true, offline: false })).toBe(false);
-  expect(offlineMode({ online: true, offline: false, refresh: true })).toBe(false);
-  expect(() => offlineMode({ online: true, offline: true })).toThrow("Choose either --online or --offline");
-  expect(() => offlineMode({ online: false, offline: false, refresh: true })).toThrow("--refresh requires --online");
+it("fresh downloads require fetch mode", () => {
+  expect(offlineMode({ fetch: false, offline: false })).toBe(true);
+  expect(offlineMode({ fetch: false, offline: true })).toBe(true);
+  expect(offlineMode({ fetch: true, offline: false })).toBe(false);
+  expect(() => offlineMode({ fetch: true, offline: true })).toThrow("Choose either --fetch or --offline");
 });
 
 it.effect(
@@ -229,7 +231,7 @@ it.effect(
         ),
       );
       expect(failed).toContain("No cached news page");
-      expect(failed).toContain("--online");
+      expect(failed).toContain("--fetch");
       const report = JSON.parse(yield* Effect.promise(() => readFile(join(output, "shop-links.json"), "utf8")));
       expect(report.requestsThisRun).toBe(0);
       expect(report.links).toHaveLength(1);
@@ -283,14 +285,14 @@ it.effect(
         ),
       );
       expect(failure).toContain("No saved shop page 1");
-      expect(failure).toContain("--online");
+      expect(failure).toContain("--fetch");
       expect(yield* Effect.promise(() => readFile(catalog, "utf8"))).toBe(baseline);
     }).pipe(Effect.scoped),
   { timeout: 20_000 },
 );
 
 it.effect(
-  "catalog updates do not download uncached products unless online mode is selected",
+  "catalog updates do not download uncached products unless fetch mode is selected",
   () =>
     Effect.gen(function* () {
       const directory = yield* Effect.acquireRelease(
@@ -339,7 +341,7 @@ it.effect(
         ),
       );
       expect(output).toContain("No cached shop response");
-      expect(output).toContain("--online");
+      expect(output).toContain("--fetch");
       expect(yield* Effect.promise(() => readFile(join(catalog, "data.json"), "utf8"))).toBe(baseline);
       expect(yield* Effect.promise(() => readdir(directory))).not.toContain("review.json");
     }).pipe(Effect.scoped),

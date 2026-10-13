@@ -1,7 +1,7 @@
 import { Effect, Schema } from "effect";
 import { FetchHttpClient, HttpClient } from "effect/http";
 import { Command } from "effect/cli";
-import { offline, online, offlineMode, runCommand, workflow } from "./catalog/cli.mts";
+import { offline, fetch, offlineMode, runCommand, workflow } from "./catalog/cli.mts";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { setTimeout as sleep } from "node:timers/promises";
@@ -26,7 +26,7 @@ export async function checkShopLinks(signal: AbortSignal, options: { offline?: b
   signal.throwIfAborted();
   if (options.offline) {
     const text = await readFile(reportPath, "utf8").catch((error: NodeJS.ErrnoException) => {
-      if (error.code === "ENOENT") throw new Error("No saved link-check report; run pnpm check:shop-links --online to create one.");
+      if (error.code === "ENOENT") throw new Error("No saved link-check report; run pnpm check:shop-links --fetch to create one.");
       throw error;
     });
     const report = Schema.decodeUnknownSync(
@@ -96,7 +96,7 @@ export async function checkShopLinks(signal: AbortSignal, options: { offline?: b
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   runCommand(
-    Command.make("check:shop-links", { offline, online }, (values) =>
+    Command.make("check:shop-links", { offline, fetch }, (values) =>
       workflow((signal) => checkShopLinks(signal, { offline: offlineMode(values) })),
     ),
   );

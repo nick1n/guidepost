@@ -21,13 +21,13 @@ The first command prepares a review with catalog tags ordered by popularity; the
 For news updates:
 
 ```bash
-pnpm scrape:news --online
-pnpm catalog:update --sim --online
+pnpm scrape:news --fetch
+pnpm catalog:update --sim --fetch
 pnpm catalog:update --apply-review temp/kdm-catalog/reports/kdm-update-review.json
 pnpm catalog:validate
 ```
 
-Reports and archives stay local in the Git-ignored `temp/kdm-catalog/reports/` folder. The updater creates a new merge report when none exists. Updates stage a review by default. Unknown products require curated mappings and reviewed tags. Catalog and news commands use cached evidence by default; missing caches never trigger downloads. Add `--online` to allow internet requests. Use `--date YYYY-MM-DD` for another cached article and `--online --refresh` to refresh shop responses. `--offline` remains supported and cannot be combined with `--online`. Shop requests start at least 35 seconds apart, reuse responses for 24 hours, and have no automatic retries. A 404/410 preserves existing facts; other failures stop preparation. Applying a stale review is rejected if the catalog, schemas, news, or master tags changed.
+Reports and archives stay local in the Git-ignored `temp/kdm-catalog/reports/` folder. The updater creates a new merge report when none exists. Updates stage a review by default. Unknown products require curated mappings and reviewed tags. Catalog and news commands use cached evidence by default; missing caches never trigger downloads. Add `--fetch` to download fresh data and update the cache. Use `--date YYYY-MM-DD` for another cached article and `--fetch` to refresh shop responses. `--offline` remains supported and cannot be combined with `--fetch`. Shop requests start at least 35 seconds apart, reuse responses for 24 hours, and have no automatic retries. A 404/410 preserves existing facts; other failures stop preparation. Applying a stale review is rejected if the catalog, schemas, news, or master tags changed.
 
 The news scraper collects announcement links. The catalog updater reads each product's `.js` endpoint, preserving the complete response in the cache, including availability and other storefront metadata. Product prices already use integer cents. Sim collection listings use `products.json`, whose dollar prices convert to cents during normalization. Source tags remain evidence; catalog tags still come from the reviewed master file. Offline updates prefer `.js` caches and can reuse existing `.json` product caches without requesting the shop.
 
@@ -70,7 +70,7 @@ The Git-ignored `temp/kdm-catalog/imports/` folder contains temporary workbook d
 
 All optional working files live under the workspace's `temp/kdm-catalog/` folder, covered by the single `/temp/` ignore rule. Store product snapshots and mappings share `shopify-products/`. Maintained catalog data and its schema live in `static/kdm-catalog/`. Custom catalog paths follow the same `static/kdm-catalog/` and `temp/` workspace layout.
 
-Refresh shop availability independently with `pnpm catalog:availability --online`. It downloads `/products.json?limit=250&page=N`, at least 35 seconds between requests, into `temp/kdm-catalog/shopify-products/products-page-N.json`. After every page succeeds, it updates only edition `available` fields in this catalog. Each `edition.url ?? item.url` must resolve to the product handle; names and optional mappings are not used. Named release variants distinguish First Run, Encore, and format-qualified runs. Any matching warehouse with `available: true` makes that edition available; unmatched or ambiguous editions omit the field. Details go to `temp/kdm-catalog/reports/availability-refresh.json`.
+Refresh shop availability independently with `pnpm catalog:availability --fetch`. It downloads `/products.json?limit=250&page=N`, at least 35 seconds between requests, into `temp/kdm-catalog/shopify-products/products-page-N.json`. After every page succeeds, it updates only edition `available` fields in this catalog. Each `edition.url ?? item.url` must resolve to the product handle; names and optional mappings are not used. Named release variants distinguish First Run, Encore, and format-qualified runs. Any matching warehouse with `available: true` makes that edition available; unmatched or ambiguous editions omit the field. Details go to `temp/kdm-catalog/reports/availability-refresh.json`.
 
 Use `pnpm catalog:availability` (or `pnpm catalog:availability --offline`) to apply the saved pages without downloading, or `--catalog path/to/static/kdm-catalog/data.json` to select a different catalog. Failed downloads leave the named snapshots and catalog unchanged. Catalog edits made during the refresh prevent the catalog write.
 

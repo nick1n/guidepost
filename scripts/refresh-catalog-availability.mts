@@ -2,7 +2,7 @@ import { readFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { Command } from "effect/cli";
-import { catalog, offline, online, offlineMode, runCommand, workflow } from "./catalog/cli.mts";
+import { catalog, offline, fetch, offlineMode, runCommand, workflow } from "./catalog/cli.mts";
 import { publishFiles } from "./catalog/publication.mts";
 import { availabilityFromUrls } from "./catalog/availability.mts";
 import { organizeCatalog } from "./catalog/order.mts";
@@ -28,7 +28,7 @@ export async function refreshAvailability(
       ? JSON.parse(
           await readFile(join(folder, `products-page-${page}.json`), "utf8").catch((error: NodeJS.ErrnoException) => {
             if (error.code === "ENOENT")
-              throw new Error(`No saved shop page ${page}; run pnpm catalog:availability --online to download it.`);
+              throw new Error(`No saved shop page ${page}; run pnpm catalog:availability --fetch to download it.`);
             throw error;
           }),
         )
@@ -73,7 +73,7 @@ export async function refreshAvailability(
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   runCommand(
-    Command.make("catalog:availability", { catalog, offline, online }, (values) =>
+    Command.make("catalog:availability", { catalog, offline, fetch }, (values) =>
       workflow(async (signal) => {
         const result = await refreshAvailability({ ...values, offline: offlineMode(values), signal });
         console.log(`${result.products} products across ${result.pages} pages saved in ${result.folder}`);

@@ -7,7 +7,7 @@ import { setTimeout as sleep } from "node:timers/promises";
 import { format, resolveConfig } from "prettier";
 import { fileURLToPath } from "node:url";
 import { Command, Flag } from "effect/cli";
-import { offline, online, offlineMode, runCommand, workflow } from "../catalog/cli.mts";
+import { offline, fetch, offlineMode, runCommand, workflow } from "../catalog/cli.mts";
 import { Parser } from "htmlparser2";
 import { productUrl, shopLinkUrl } from "../catalog/shop.mts";
 
@@ -334,7 +334,7 @@ export class Downloader {
         if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
       }
     }
-    if (this.options.offline) throw new Error("No cached news page: " + url + "; run pnpm scrape:news --online to download it.");
+    if (this.options.offline) throw new Error("No cached news page: " + url + "; run pnpm scrape:news --fetch to download it.");
     await sleep(Math.max(0, this.options.delay * 1_000 - (performance.now() - this.finished)), undefined, { signal: this.options.signal });
     this.requests++;
     try {
@@ -419,7 +419,7 @@ export async function updateReport(
 
 const newsFlags = {
   offline,
-  online,
+  fetch,
   output: Flag.String("output").pipe(Flag.withDefault("scripts/news")),
   cache: Flag.String("cache").pipe(Flag.withDefault(".cache/kingdom-death-news")),
   delay: Flag.String("delay").pipe(Flag.withDefault("2")),
@@ -445,10 +445,10 @@ async function main(values: Command.Command.Config.Infer<typeof newsFlags>, sign
       index,
       (url, cached) => {
         console.log(`Reading ${url}`);
-        return downloader.get(url, cached);
+        return downloader.get(url, values.fetch ? false : cached);
       },
       checkpoint,
-      values["refresh-posts"],
+      values.fetch || values["refresh-posts"],
     );
   } catch (error) {
     if (signal.aborted) throw error;
