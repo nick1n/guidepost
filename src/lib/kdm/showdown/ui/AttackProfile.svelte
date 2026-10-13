@@ -358,6 +358,8 @@
     }
   }
   .attack-stat {
+    --stat-color: color-mix(in oklch, var(--stat-background) 85%, white);
+
     display: grid;
     align-content: start;
     justify-items: center;
@@ -372,13 +374,13 @@
     }
   }
   .stat-label {
-    color: var(--field-fg, var(--muted-foreground));
+    color: var(--stat-color, var(--muted-foreground));
     font-size: var(--text-xs);
     line-height: var(--line-height-none);
     white-space: nowrap;
   }
   .stat-value {
-    color: var(--field-fg, var(--foreground));
+    color: var(--foreground);
     font-weight: var(--font-bold);
     line-height: var(--line-height-none);
   }
@@ -732,6 +734,19 @@
   :global(.signal) .profile {
     border-radius: 1rem 0.25rem 1rem 0.25rem;
     background: color-mix(var(--identity) 16%, var(--background));
+  }
+  :global(.obsidian) :is(.stats, .static-stats) {
+    gap: 0;
+  }
+  :global(.obsidian) .attack-stat {
+    --stat-color: var(--field-fg);
+
+    padding-block: 0.125rem;
+    border-radius: 0;
+    background: var(--field-bg, transparent);
+  }
+  :global(.obsidian) .stat-value {
+    color: var(--field-fg, var(--foreground));
   }
   :global(.signal) .keyword-line {
     align-items: start;
