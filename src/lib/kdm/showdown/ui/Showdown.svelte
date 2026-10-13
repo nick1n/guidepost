@@ -1,4 +1,5 @@
 <script lang="ts">
+  import "../../ui/stats.css";
   import { resolve } from "$app/paths";
   import { onMount, tick } from "svelte";
   import HoldRipple from "#lib/components/gestures/HoldRipple.svelte";
@@ -91,8 +92,9 @@
   >([]);
   let currentExpanded = $derived(dashboards[active]?.areSectionsOpen() ?? false);
   let allExpanded = $derived(dashboards.length > 0 && dashboards.every((dashboard) => dashboard.areSectionsOpen()));
-  let foregroundMix = $state(70);
-  let backgroundMix = $state(50);
+  let borderLightness = $state(72);
+  let foregroundLightness = $state(95);
+  let backgroundLightness = $state(38);
   let brightenZachary = $state(false);
   const colorId = $props.id();
   let density = $state<Density>("default");
@@ -297,8 +299,9 @@
   class={["showdown", design.className]}
   data-density={density}
   data-snap={snap}
-  style:--mix-attr-fg={`${foregroundMix}%`}
-  style:--mix-attr-bg={`${backgroundMix}%`}
+  style:--stat-border-lightness={`${borderLightness}%`}
+  style:--stat-foreground-lightness={`${foregroundLightness}%`}
+  style:--stat-background-lightness={`${backgroundLightness}%`}
 >
   <h1 class="visually-hidden">{design.name} Showdown</h1>
   <div class="workspace" bind:this={rail} {onscroll} {@attach dragScroll}>
@@ -526,13 +529,17 @@
             </fieldset>
             <fieldset>
               <legend>Attribute and token colors</legend>
-              <label class="hidden" for={`${colorId}-foreground`}>
-                Foreground lightening <output for={`${colorId}-foreground`}>{foregroundMix}%</output>
-                <input id={`${colorId}-foreground`} type="range" min="0" max="100" step="1" bind:value={foregroundMix} />
+              <label for={`${colorId}-border`}>
+                Border lightness <output for={`${colorId}-border`}>{borderLightness}%</output>
+                <input id={`${colorId}-border`} type="range" min="0" max="100" step="1" bind:value={borderLightness} />
+              </label>
+              <label for={`${colorId}-foreground`}>
+                Foreground lightness <output for={`${colorId}-foreground`}>{foregroundLightness}%</output>
+                <input id={`${colorId}-foreground`} type="range" min="0" max="100" step="1" bind:value={foregroundLightness} />
               </label>
               <label for={`${colorId}-background`}>
-                Background darkening <output for={`${colorId}-background`}>{backgroundMix}%</output>
-                <input id={`${colorId}-background`} type="range" min="0" max="100" step="1" bind:value={backgroundMix} />
+                Background lightness <output for={`${colorId}-background`}>{backgroundLightness}%</output>
+                <input id={`${colorId}-background`} type="range" min="0" max="100" step="1" bind:value={backgroundLightness} />
               </label>
             </fieldset>
             <fieldset>

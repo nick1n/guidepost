@@ -121,7 +121,7 @@
       </span>
       <span class={["stats", marked && "mark-foreground"]}>
         {#each stats as stat (stat.label)}
-          <span class={["stat", stat.divider && "divided"]} data-stat={stat.label}>
+          <span class={["attack-stat", stat.divider && "divided"]} data-stat={stat.label}>
             <span class="stat-label">{stat.label}</span>
             <span class="stat-value">{stat.value}</span>
           </span>
@@ -135,7 +135,7 @@
     </div>
     <dl class={["static-stats", onspend && "with-spend"]}>
       {#each stats as stat (stat.label)}
-        <div class={["stat", stat.divider && "divided"]}>
+        <div class={["attack-stat", stat.divider && "divided"]} data-stat={stat.label}>
           <dt class="stat-label">{stat.label}</dt>
           <dd class="stat-value">{stat.value}</dd>
         </div>
@@ -357,28 +357,11 @@
       grid-column: 1;
     }
   }
-  .stat {
+  .attack-stat {
     display: grid;
     align-content: start;
     justify-items: center;
     min-inline-size: 0;
-
-    &[data-stat="Spd"] {
-      --stat-color: color-mix(in oklch, var(--speed-background) 85%, white);
-    }
-
-    &[data-stat="Acc"] {
-      --stat-color: color-mix(in oklch, var(--accuracy-background) 85%, white);
-    }
-
-    &[data-stat="Wnd"] {
-      --stat-color: color-mix(in oklch, var(--strength-background) 85%, white);
-    }
-
-    &[data-stat="Perf"],
-    &[data-stat="Crit"] {
-      --stat-color: color-mix(in oklch, var(--luck-background) 85%, white);
-    }
 
     &.divided {
       padding-inline-start: 0.125rem;
@@ -389,13 +372,13 @@
     }
   }
   .stat-label {
-    color: var(--stat-color, var(--muted-foreground));
+    color: var(--field-fg, var(--muted-foreground));
     font-size: var(--text-xs);
     line-height: var(--line-height-none);
     white-space: nowrap;
   }
   .stat-value {
-    color: var(--foreground);
+    color: var(--field-fg, var(--foreground));
     font-weight: var(--font-bold);
     line-height: var(--line-height-none);
   }

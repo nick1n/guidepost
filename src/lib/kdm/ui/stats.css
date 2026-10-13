@@ -1,0 +1,110 @@
+/* Stat palettes stay on their controls; only lightness settings are inherited from the dashboard. */
+.showdown {
+  --stat-border-lightness: 72%;
+  --stat-background-lightness: 38%;
+  --stat-foreground-lightness: 95%;
+}
+
+:where(
+  .field-bleeding,
+  .field-priority,
+  .field-accuracy,
+  .field-damage,
+  .field-evasion,
+  .field-life,
+  .field-luck,
+  .field-movement,
+  .field-s-pressure,
+  .field-speed,
+  .field-strength,
+  .field-torment,
+  .field-toughness,
+  .attack-stat
+) {
+  --field-border: oklch(from var(--stat-border) var(--stat-border-lightness) c h);
+  --field-bg: oklch(from var(--stat-background) var(--stat-background-lightness) c h);
+  --field-fg: oklch(from var(--stat-foreground) var(--stat-foreground-lightness) c h);
+}
+
+.field-bleeding {
+  --stat-background: #cdb8a4;
+  --stat-border: #b87365;
+  --stat-foreground: var(--foreground);
+}
+
+.field-priority {
+  --stat-background: #6fa9d5;
+  --stat-border: #e3deb2;
+  --stat-foreground: var(--foreground);
+}
+
+.field-accuracy,
+.attack-stat:is([data-stat="Acc"], [data-stat="Accuracy"]) {
+  --stat-background: #f1ee33;
+  --stat-border: #928570;
+  --stat-foreground: #ddd9cc;
+}
+
+.field-damage,
+.attack-stat:is([data-stat="Dmg"], [data-stat="Damage"]) {
+  --stat-background: #8dc7c7;
+  --stat-border: #d65667;
+  --stat-foreground: #776b73;
+}
+
+.field-evasion {
+  --stat-background: #8fa2a8;
+  --stat-border: #9fb8b2;
+  --stat-foreground: #e9e8c2;
+}
+
+.field-life {
+  --stat-background: #100f0d;
+  --stat-border: #666;
+  --stat-foreground: #5ecefc;
+}
+
+.field-luck,
+.attack-stat:is([data-stat="Perf"], [data-stat="Crit"]) {
+  --stat-background: #908585;
+  --stat-border: #c7bd9e;
+  --stat-foreground: #cdbf95;
+}
+
+.field-movement {
+  --stat-background: #9a5092;
+  --stat-border: #a59b83;
+  --stat-foreground: #f9f3d2;
+}
+
+.field-s-pressure {
+  --stat-background: #d4c676;
+  --stat-border: #9d7967;
+  --stat-foreground: #b8a785;
+}
+
+.field-speed,
+.attack-stat:is([data-stat="Spd"], [data-stat="Speed"]) {
+  --stat-background: #9cc085;
+  --stat-border: #caba83;
+  --stat-foreground: #c2beaa;
+}
+
+.field-strength,
+.attack-stat:is([data-stat="Wnd"], [data-stat="Strength"]) {
+  --stat-background: #d95e4f;
+  --stat-border: #e9e3a6;
+  --stat-foreground: #b7b3aa;
+}
+
+.field-torment {
+  --stat-background: #a67b68;
+  --stat-border: #c7c681;
+  --stat-foreground: #c9c4af;
+}
+
+.field-toughness {
+  --stat-background: #e4d7a7;
+  --stat-border: #7db66c;
+  --stat-foreground: #665567;
+}

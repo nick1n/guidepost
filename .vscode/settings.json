@@ -281,5 +281,10 @@
   },
   "[css]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
-  }
+  },
+  "inlineFold.regex": "\\blinear\\(([^()\\r\\n]{40,})\\)",
+  "inlineFold.regexFlags": "g",
+  "inlineFold.regexGroup": 1,
+  "inlineFold.supportedLanguages": ["css", "svelte"],
+  "inlineFold.autoFoldOnOpen": true
 }

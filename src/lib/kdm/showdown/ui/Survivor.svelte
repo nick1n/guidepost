@@ -315,7 +315,11 @@
 {/snippet}
 
 {#snippet priorityButton()}
-  <button class={["priority", sheet.priority && "active"]} aria-pressed={sheet.priority} onclick={() => (sheet.priority = !sheet.priority)}>
+  <button
+    class={["field-priority", sheet.priority && "active"]}
+    aria-pressed={sheet.priority}
+    onclick={() => (sheet.priority = !sheet.priority)}
+  >
     <StatusIcon icon="priority" active={sheet.priority} />
     Priority Target
   </button>
@@ -1449,16 +1453,16 @@
     border: 0;
     background: color-mix(var(--identity) 16%, var(--background));
   }
-  .priority {
+  .field-priority {
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 0.375rem 0.5rem;
     gap: 0.25rem;
-    border: var(--border-width) solid var(--priority-border);
+    border: var(--border-width) solid var(--field-border);
     border-radius: 9999px;
-    background: var(--color-priority-bg);
-    color: var(--foreground);
+    background: var(--field-bg);
+    color: var(--field-fg);
     font-size: var(--text-md);
     opacity: 0.5;
     &.active {
