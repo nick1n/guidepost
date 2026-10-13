@@ -8,8 +8,8 @@ import { StoreError, type CollectionStore } from "#lib/state/stores.ts";
 import { collectionKey, type Catalog, type CollectionSnapshot } from "#lib/types/index.ts";
 import { vi } from "vitest";
 import { FetchHttpClient } from "effect/http";
-import catalogJson from "../../static/kdm-catalog/data.json";
-import workbookMap from "../../static/kdm-catalog/workbook-map.json";
+import catalogJson from "#catalog/data.json";
+import workbookMap from "#catalog/workbook-map.json";
 
 vi.mock("$app/paths", () => ({ asset: (path: string) => `https://guidepost.test/test-base/${path}` }));
 const workbookFetch: typeof globalThis.fetch = async () => Response.json(workbookMap);

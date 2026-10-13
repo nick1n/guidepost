@@ -5,14 +5,14 @@ The Kingdom Death: Monster tools include a product catalog and a first-story sho
 
 ## Getting started
 
-Run these commands from the project root:
+Run from the project root:
 
 ```bash
 pnpm install
 pnpm dev
 ```
 
-On Windows, if `pnpm` is missing, install the pinned version with `npm.cmd install --global pnpm@12.6.0`, then run the commands above.
+On Windows, if `pnpm` is missing, install the pinned version with `npm.cmd install --global pnpm@12.6.0`.
 
 | Command                 | Purpose                            |
 | ----------------------- | ---------------------------------- |
@@ -24,54 +24,34 @@ On Windows, if `pnpm` is missing, install the pinned version with `npm.cmd insta
 | `pnpm catalog:workbook` | Regenerate workbook row mappings   |
 | `pnpm build`            | Build the static site              |
 | `pnpm preview`          | Serve the production build locally |
-| `pnpm format`           | Format project files in place      |
+| `pnpm format`           | Format project files               |
 | `pnpm format:check`     | Check formatting                   |
 
-See [AGENTS.md](AGENTS.md) for coding conventions and required checks. The
-[KDM architecture](docs/kdm-architecture.md) describes current collection storage and planned campaign and offline sync work.
+See [AGENTS.md](AGENTS.md) for coding conventions and required checks, and the
+[KDM architecture](docs/kdm-architecture.md) for collection storage and planned campaign and sync work.
 
-Client-facing tests live in `test/client/`; build and catalog script tests live in `test/scripts/`.
-Script tests import tooling through the package's `#scripts/*` alias, with the source extension included.
-`pnpm test` watches both Vitest projects. Script checks named `*-checks.mts` use Node's test runner through `pnpm test:scripts`.
+Tests live in `test/client/` and `test/scripts/`. Tests import tooling through `#scripts/*` and catalog JSON through `#catalog/*`, including file extensions.
+`pnpm test` watches both Vitest projects; `pnpm test:scripts` also runs `*-checks.mts` with Node's test runner.
 
 ## Catalog
 
-The live app reads [static/kdm-catalog/data.json](static/kdm-catalog/data.json). Its
-[schema](static/kdm-catalog/data.schema.json) generates `src/lib/types/gen/kdm-data.d.ts`.
-After changing the schema, run `pnpm generate:types`. Development, checks, and builds also regenerate types;
-the dev server watches schema changes. The same command generates `src/lib/gen/core-editions.json` for landing-page Quick Start,
-containing only playable core editions' IDs and labels in catalog order, excluding Resin from Quick Start.
-The dev server also watches catalog changes.
-Do not edit generated files by hand.
+The live app reads [static/kdm-catalog/data.json](static/kdm-catalog/data.json).
+Its [schema](static/kdm-catalog/data.schema.json) generates `src/lib/types/gen/kdm-data.d.ts`.
+Run `pnpm generate:types` after schema changes. It also generates `src/lib/gen/core-editions.json` for Quick Start,
+with playable core edition IDs and labels in catalog order, excluding Resin. Development, checks, and builds regenerate these files;
+the dev server watches schema and catalog changes. Do not edit generated files.
 
-The full catalog loads only when opening collection. Collection links disable hover data preloading. Quick Start imports the generated
-edition list directly and saves ownership by stable keys. The shared collection starts with an empty catalog; opening collection
-supplies the full catalog without resetting ownership or pending saves.
-The service worker defers the full catalog and collection HTML until collection is visited, then caches them for offline use,
-including reloads of collection URLs with search and filter parameters. Font and gesture playground HTML and the legacy WOFF icon-font
-fallback are also cached after use. The WOFF2 font and shared app code remain precached.
+The full catalog loads through the collection route. Quick Start imports the smaller edition list and saves ownership by stable keys.
+Opening collection preserves ownership and pending saves. The service worker caches the catalog and collection HTML after a visit,
+including filtered collection URLs. Font and gesture playground HTML and the legacy WOFF fallback also cache after use;
+WOFF2 and shared app code are precached.
 
-`scripts/catalog/releases.mts` resolves shop variants, curated release selectors, materials, and prices for update and retrieval workflows.
-Full availability refreshes use its conservative edition matching; incremental updates preserve editions that were not observed.
+The [catalog guide](docs/kdm-catalog.md) covers identity, data rules, mappings, and reviewed product decisions.
+Item IDs are object keys; explicit editions have permanent IDs independent of mutable labels.
+Edition-less items use synthetic `item` IDs, or `bundle` for bundles. Review new shop labels before adding editions.
 
-The [catalog guide](docs/kdm-catalog.md) covers data rules, mappings, and review decisions.
-Catalog commands maintain the files in `static/kdm-catalog/`. The previous catalog and its schema are archived locally as
-`temp/kdm-data.json` and `temp/kdm-data.schema.json`. Working files, caches, and reports under `temp/` are Git-ignored.
-Keep a copy of the archived catalog, local tags, or mappings before clearing that folder.
-
-Catalog item IDs are object keys. Explicit editions have permanent readable `id` values, unique within each item, such as `first-run`,
-`resin`, or `1-6`; their display labels (`label`) can change without changing
-collection identity. Items without explicit editions use a synthetic `item` edition, or `bundle` for bundles.
-The JSON schema restricts nonempty labels to its enum; TypeScript uses strings. `name` can override the displayed label.
-Keep IDs when renaming labels. IDs use lowercase kebab-case; `item` and `bundle` are reserved for synthetic editions. Creation tooling
-suggests an ID from the initial label and rejects collisions for review. It never regenerates an existing ID.
-Inclusion selectors use `editionId` on the child item and `parentEditionIds` on the containing item; update any local shop mappings that use labels.
-Edition `format`, `simulator`, `numbered`, and `materials` facts determine behavior independently of display labels.
-Dates, prices, and descriptions use `releaseDate`, `prices`, and `description`.
-Review newly discovered shop labels before applying an update so a renamed release is not added as a separate edition.
-Item fields are alphabetical. Edition fields start with `id`, then `label`; inclusion-object fields start with `item`.
-Remaining fields are alphabetical. Catalog write commands preserve this property order without
-changing the established item, edition, or other array ordering.
+Working files, caches, and reports under `temp/` are Git-ignored. The previous catalog and schema are archived as
+`temp/kdm-data.json` and `temp/kdm-data.schema.json`. Back up archives, local tags, and mappings before clearing that folder.
 
 ### Prepare an update
 
@@ -80,143 +60,111 @@ pnpm scrape:news --fetch
 pnpm catalog:update --sim --fetch
 ```
 
-The scraper in `scripts/news/` updates the JSON and CSV news exports alongside the script; the updater stages changes without changing the catalog. Inspect
-`temp/kdm-catalog/reports/kdm-update-review.json`, resolve unknown or ambiguous products, then apply it:
+The scraper updates news JSON and CSV exports; the updater stages a review. Inspect
+`temp/kdm-catalog/reports/kdm-update-review.json` and resolve unknown or ambiguous products before applying it:
 
 ```bash
 pnpm catalog:update --apply-review temp/kdm-catalog/reports/kdm-update-review.json
 pnpm catalog:validate
 ```
 
-Applying a review writes the live catalog and local reports. Stale inputs are rejected; prepare a new review if its inputs change.
-Validation checks schemas, references, ordering, and local tag assignments without changing them.
-Catalog and news commands use saved evidence by default and never download missing cache entries. Add `--fetch` to download fresh data and update the cache.
-`--offline` remains an explicit spelling of the default and cannot be combined with `--fetch`.
-`--fetch` replaces the old `--online` and `--refresh` flags. News fetching downloads the index and all listed articles again;
-`--refresh-posts` without `--fetch` reprocesses saved articles.
-Shop requests are at least 35 seconds apart and cached for 24 hours. `--fetch` bypasses saved responses.
-ShopClient uses Effect HTTP, validates product and cache data, and shares concurrent duplicate lookups. Its in-memory cache holds at most
-256 responses per client and expires them with the disk evidence; offline reads accept older evidence. HTTP failures remain cached on disk
-and requests are never automatically retried. Fetching bypasses completed cache entries while sharing an in-progress lookup.
+Applying writes the live catalog and reports. Changed inputs invalidate the review; prepare a new one.
+Validation checks schemas, references, ordering, and local tag assignments without modifying them.
 
-The update, availability, edition, workbook, news, and link-check commands use Effect CLI. Append `--help` to see their flags and defaults.
-Ctrl+C interrupts requests and pacing, then waits for publication or checkpoint cleanup before the command exits.
+Catalog and news commands use cached evidence by default, including stale caches, and never download missing entries.
+Add `--fetch` to download fresh data; `--offline` explicitly selects the default and cannot accompany `--fetch`.
+News fetching refreshes the index and all articles; `--refresh-posts` reprocesses saved articles without downloading.
+Shop requests start at least 35 seconds apart. Responses, including HTTP failures, are cached for 24 hours, with no automatic retries;
+`--fetch` bypasses completed caches and shares in-progress duplicate lookups.
+Append `--help` to a command for its flags. Ctrl+C interrupts requests and waits for publication or checkpoint cleanup.
 
-Catalog review application, availability refresh, edition retrieval, and workbook-map generation share a publication module. It stages all outputs in unique
-adjacent temporary files, then rechecks captured inputs before each replacement. Completion reports publish last. Detected edits or
-cancellation before the first replacement leave destination files unchanged; temporary files are cleaned up. Failures after a replacement
-list the published and pending paths, retaining the original error. Rerun from the current files after inspecting those paths.
-Each replacement applies to one file. Publication across several files is not transactional, and an external edit between a baseline
-check and replacement can still race with the command. Edition retrieval still saves incomplete progress checkpoints while fetching;
-final publication marks them complete after the mappings and catalog publish.
+Catalog, availability, edition, and workbook publication recheck captured inputs before replacing each file and publish completion reports last.
+Cancellation or detected edits before the first replacement leave destinations unchanged. Multi-file publication is not transactional,
+and external edits can still race between a check and replacement. After a partial failure, inspect the reported published and pending paths
+before rerunning. Edition retrieval checkpoints remain incomplete until final publication.
 
 ### Edit tags
 
-When present, `temp/kdm-catalog/kdm-tags.json` supplies the exact tag assignments for each item. Keep all category groups and
-item IDs, with at least one tag per item. Allowed values live in `temp/kdm-catalog/kdm-tags.schema.json` under `$defs.tag.enum`.
-Add new vocabulary there before using it; `pnpm catalog:tags-schema` refreshes the schema while preserving that vocabulary.
+Optional `temp/kdm-catalog/kdm-tags.json` supplies exact reviewed assignments. Keep every category and item ID, with at least one tag per item.
+Vocabulary lives in `temp/kdm-catalog/kdm-tags.schema.json` under `$defs.tag.enum`;
+`pnpm catalog:tags-schema` refreshes the schema while preserving vocabulary.
 
 ```bash
 pnpm catalog:tags
-# Inspect the staged review, then apply it:
+# Inspect the review, then apply:
 pnpm catalog:update --apply-review temp/kdm-catalog/reports/kdm-update-review.json
 pnpm catalog:validate
 ```
 
-Tag-only updates make no shop requests. `pnpm catalog:tags --apply` prepares and applies assignments immediately.
-These commands replace tag arrays. Without the optional local tag files, edit tags directly in the review catalog.
-Apply pending assignments before deleting the local files.
-
-Year tags such as `"2018"` use the earliest known physical release year, with documented or Sim dates as fallbacks.
-Planned release windows can supply a year; restock announcements do not establish an original release.
-Use `upcoming` while any edition is awaiting release, even if other editions are already out.
+Tag updates make no shop requests and replace tag arrays. `pnpm catalog:tags --apply` stages and applies immediately, syncing the local master file.
+Without local tag files, edit the review catalog. Apply pending assignments before deleting local files.
+Catalog tags sort by frequency, with alphabetical ties; master tag arrays stay alphabetical.
 
 ### Refresh availability or fill editions
 
-| Command                             | Effect                                            |
-| ----------------------------------- | ------------------------------------------------- |
-| `pnpm catalog:availability`         | Apply saved shop pages without requests           |
-| `pnpm catalog:availability --fetch` | Fetch shop pages and replace catalog availability |
-| `pnpm catalog:editions`             | Fill missing editions using cached responses      |
-| `pnpm catalog:editions --fetch`     | Fetch Shopify variants to fill missing editions   |
+| Command                             | Effect                                  |
+| ----------------------------------- | --------------------------------------- |
+| `pnpm catalog:availability`         | Apply saved shop pages                  |
+| `pnpm catalog:availability --fetch` | Fetch pages and replace availability    |
+| `pnpm catalog:editions`             | Fill missing editions from caches       |
+| `pnpm catalog:editions --fetch`     | Fetch variants to fill missing editions |
 
-Availability matching uses shop handles or URLs and release variants. A matching warehouse in stock makes an edition available;
-unmatched or ambiguous shop editions default to unavailable. Homebrew availability is preserved.
-Results go to `temp/kdm-catalog/reports/availability-refresh.json`.
-
-Edition retrieval groups warehouse choices under their release label and leaves failed listings unchanged.
-With `--fetch`, requests are at least 35 seconds apart and replace cached responses.
-Results go to `temp/kdm-catalog/reports/edition-retrieval.json`.
-Both commands write the live catalog and refuse to overwrite catalog edits made during retrieval.
+Availability resolves shop listings and release variants conservatively: a matching warehouse in stock makes an edition available;
+unmatched or ambiguous editions are unavailable. Homebrew availability is preserved.
+Edition retrieval groups warehouses by release and leaves failed listings unchanged.
+Both commands reject concurrent catalog edits and write reports to `temp/kdm-catalog/reports/` as
+`availability-refresh.json` and `edition-retrieval.json`.
 
 ### Workbook map
 
-`pnpm catalog:workbook` reads the local `temp/kdm-catalog/imports/kdm-import-records.json` and current catalog, then writes
-[`workbook-map.json`](static/kdm-catalog/workbook-map.json). The map connects each source row and its release columns to stable catalog
-content and edition IDs. It contains product references only, with no owned, wished, copy-number, comment, or other personal cell values.
-Workbook sheet and row numbers locate this source snapshot; they are not permanent IDs. The command rejects changed row identities and
-unresolved references for review. Generation captures the catalog, import records, both workbook schemas, and previous map;
-a late edit to any of them prevents replacement. Ctrl+C cancels preparation and cleans temporary files.
+`pnpm catalog:workbook` reads local `temp/kdm-catalog/imports/kdm-import-records.json` and the catalog, then writes
+[workbook-map.json](static/kdm-catalog/workbook-map.json). It maps source rows and release columns to stable catalog IDs,
+with no ownership, wishlist, copy-number, comment, or other personal cell values. Sheet and row numbers locate the workbook snapshot;
+they are not permanent IDs. Changed row identities and unresolved references require review.
+Publication guards the catalog, import records, workbook schemas, and previous map against late edits.
 
-[`src/lib/types/workbook.ts`](src/lib/types/workbook.ts) defines the shared mapping and normalized-row contract used by tooling and collection
-transfers. `pnpm generate:types` generates the editor schema at `static/kdm-catalog/workbook-map.schema.json`; edit the shared contract
-instead of the generated schema. Runtime validation also rejects duplicate sheet/row locators, which JSON Schema cannot express.
-
-Validated row workflows are implemented; `.xlsx` parsing, writing, and controls are deferred.
+[src/lib/types/workbook.ts](src/lib/types/workbook.ts) owns the mapping and normalized-row contract.
+`pnpm generate:types` derives `static/kdm-catalog/workbook-map.schema.json`; edit the contract instead of the generated schema.
+Runtime validation also rejects duplicate sheet/row locators. Normalized-row workflows exist; XLSX parsing, writing, and controls are deferred.
 
 ### Live shop links
 
-`pnpm check:shop-links` displays the saved link-check summary without requests.
-Use `pnpm check:shop-links --fetch` to check item and edition listings in the live catalog, resolving shop handles and external URLs.
-It writes `temp/kdm-catalog/reports/shop-links.json`, leaving catalog facts unchanged.
-It uses HEAD requests with redirects and a 10-second timeout: `true` for HTTP 2xx, `false` for errors, and `null` for missing URLs.
-Failures may reflect rate limits or HEAD rejection. Reachability does not indicate stock.
+`pnpm check:shop-links` displays the saved summary. Add `--fetch` to check catalog listings and write
+`temp/kdm-catalog/reports/shop-links.json` without changing catalog facts.
+HEAD requests follow redirects with a 10-second timeout: `true` means HTTP 2xx, `false` means an error, and `null` means no URL.
+Rate limits or HEAD rejection can cause failures; reachability does not indicate stock.
 
 ### Collection
 
-With the dev server running, open [/kdm/collection/](http://localhost:5173/kdm/collection/) for search, edition details, ownership, and wishlist controls.
-Catalog loading failures show a collection error page with retry and home controls. Offline failures explain that a connection is needed
-when the catalog is not available locally; retry preserves the collection URL and saved ownership.
-[`CollectionBrowsing`](src/lib/collection-browsing.svelte.ts) owns category, filter, batching, and URL transitions.
-[`CollectionCards`](src/lib/collection-cards.svelte.ts) owns collapse state, deferred bodies, viewport observation, and held-card scroll
-anchoring. The page disposes its observers and pending scroll corrections on unmount. Focus, category gestures, and navigation stay in the page.
+Open [/kdm/collection/](http://localhost:5173/kdm/collection/) for search, edition details, ownership, and wishlist controls.
+Catalog-load errors offer retry and home controls; retry preserves the URL and saved ownership.
+Offline use requires a previously cached catalog.
 
-Collection entries save locally in IndexedDB through Dexie. Each entry is keyed by stable content and edition IDs and stores owned,
-wished, and numeric `copyNumber` values. Copy numbers are integers from 1 to 9999, limited further by a known edition run size.
-Blank inputs remove the copy number. Saves apply the current owner's snapshot atomically, writing only changed rows. A persisted revision rejects
-writes from a stale tab. Open tabs observe revision changes and offer a refresh before further edits; they retain their current view
-until you refresh. Dexie loads only after the browser mounts the app.
-The schema version on collection metadata validates the stored format. It does not migrate older browser data.
+Entries save locally in IndexedDB through Dexie, keyed by stable content and edition IDs.
+They store owned, wished, and numeric `copyNumber` values. Copy numbers are integers from 1 to 9999, bounded by a known run size;
+a blank input removes the value. Saves write changed rows atomically. Stale tabs block editing and offer refresh while preserving their view.
+Load and monitoring failures offer retry; a storage-module download failure requires reload.
 
-The root layout creates a `Collection` instance and provides it through Svelte context. Components call its commands through
-`collectionActions.run()`. `Collection` owns reactive state, `OptimisticStore` owns pending patches and confirmed snapshots, and
-`DexieStore` owns persistence. `isSaving` reports pending writes. The injected `Notifications` service uses Effect logging;
-visible notifications are planned. Expected action failures log their typed error messages; unexpected defects log the full Effect
-cause. Cancellation does not produce a failure notification.
+`Collection`, `OptimisticStore`, and `DexieStore` own commands, pending patches, and persistence.
+[CollectionSession](src/lib/state/collection-session.ts) owns storage startup, monitoring, and teardown.
+[CollectionBrowsing](src/lib/collection-browsing.svelte.ts) owns browsing and URL transitions;
+[CollectionCards](src/lib/collection-cards.svelte.ts) owns collapse, deferred rendering, observation, and scroll anchoring.
+See the [architecture guide](docs/kdm-architecture.md#scope-and-existing-behavior) for lifecycle and error handling.
 
-[`CollectionSession`](src/lib/state/collection-session.ts) owns browser storage startup, monitoring, and teardown. The layout forwards
-collection readiness to the session and interrupts its lifetime on unmount. Shutdown waits for initialization and observer finalizers
-before closing storage; a failed snapshot load keeps the opened store available for retry.
+`Collection.exportBackup()` waits for queued saves and exports confirmed data.
+`restoreBackup(json)` validates and replaces the snapshot in one queued save, with rollback on failure.
+`previewWorkbook(rows)` validates without writing; `importWorkbook(rows)` validates again and merges provided fields in one save.
+Rows require sheet, row, product name, and an explicit edition ID for ambiguous releases. Ownership propagates to related editions;
+copy numbers apply only to the selected edition. Invalid numeric cells fail validation.
 
-Monitoring stays active during refresh and restarts after an observer failure is retried. Observer failures block editing while
-preserving the current view. Database load failures offer a retry; a failed storage-module download offers a page reload.
-Commands discard superseded results and failures, including workbook validation interrupted by an owner change.
-
-`Collection.exportBackup()` produces a versioned JSON backup after queued saves settle. `restoreBackup(json)` validates the entire
-backup and replaces the snapshot in one queued save, with rollback on failure. `previewWorkbook(rows)` validates normalized product
-rows without writing; `importWorkbook(rows)` validates again and merges their provided fields in one save. Rows identify the sheet,
-row, and product name, with an explicit edition ID when release alternatives are ambiguous. Invalid numeric cells cause typed errors.
-Source-row ownership propagates to explicitly related editions; copy numbers apply only to the selected edition.
-
-`exportWorkbook()` returns normalized rows for a future XLSX adapter. It rejects unmapped editions and separate values that a shared
-workbook row cannot represent. JSON backups remain the complete snapshot format. The workbook map is fetched from its static JSON asset only
-when a row workflow runs, validated before use, and cached for later offline transfers.
+`exportWorkbook()` returns normalized rows, rejecting unmapped editions and values a shared row cannot represent.
+JSON backups preserve the complete snapshot. The workbook map loads and validates on demand, then caches for offline transfers.
 
 ## Known warnings
 
 - UnoCSS may warn that `unocss:svelte-scoped:global-styles` uses the unsupported `transformIndexHtml` hook.
-  The current SvelteKit integration uses `transform` and `renderChunk`; this warning is safe to ignore.
-  After integration upgrades, rebuild and verify the global stylesheet, safelisted icons, and absence of
+  The integration uses `transform` and `renderChunk`; this warning is safe to ignore.
+  After integration upgrades, verify the global stylesheet, safelisted icons, and absence of
   `%unocss-svelte-scoped.global%` placeholders in generated HTML.
 - The CSS validator may report `Unknown property: 'corner-shape'` in `AttackProfile.svelte`.
   Supporting browsers use `corner-shape: squircle`; others keep the `border-radius` fallback.
