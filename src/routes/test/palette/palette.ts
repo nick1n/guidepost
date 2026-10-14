@@ -1,6 +1,7 @@
 import themeCss from "../../../app.css?raw";
 
 type Color = { lightness: number; chroma: number; hue: number };
+type Reference = Color & { name: string; hex: string };
 
 const referenceValues = [
   ["cost-bg", "#1c4970"],
@@ -14,6 +15,22 @@ const referenceValues = [
   ["beta", "#61c3fd"],
 ] as const;
 
+const greenReferenceValues = [
+  ["cost-bg", "#336428"],
+  ["border", "#44683c"],
+  ["bg-bottom", "#418a38"],
+  ["bg-top", "#5a9f46"],
+] as const;
+
+const redReferenceValues = [
+  ["bg-bottom", "#992f2c"],
+  ["bg-top", "#f76b5d"],
+  ["back", "#6d3828"],
+  ["sfa-back", "#601714"],
+  ["sfa-fore", "#d14941"],
+  ["fa-fore", "#ff411b"],
+] as const;
+
 // Ten evenly spaced OKLCH lightness levels, numbered 0 through 9.
 export const lightnessLevels = [95, 87, 79, 71, 63, 55, 47, 39, 31, 23];
 
@@ -21,6 +38,8 @@ const chromaLevels = {
   blue: [0.02, 0.06, 0.11, 0.16, 0.16, 0.14, 0.12, 0.09, 0.06, 0.03],
   green: [0.03, 0.07, 0.12, 0.17, 0.21, 0.2, 0.17, 0.14, 0.1, 0.06],
   red: [0.02, 0.05, 0.09, 0.13, 0.17, 0.2, 0.17, 0.14, 0.1, 0.06],
+  // Fit the six red references at a shared 30° hue, preserving the lightness steps.
+  // red: [0.02, 0.05, 0.09, 0.175, 0.23, 0.173, 0.142, 0.079, 0.105, 0.06],
 };
 
 type Family = keyof typeof chromaLevels;
@@ -60,16 +79,11 @@ function normalizeHue(hue: number) {
 }
 
 export const blueReferences = referenceValues.map(([name, hex]) => ({ name, hex, ...fromHex(hex) }));
+export const greenReferences = greenReferenceValues.map(([name, hex]) => ({ name, hex, ...fromHex(hex) }));
+export const redReferences = redReferenceValues.map(([name, hex]) => ({ name, hex, ...fromHex(hex) }));
 
-// With each reference's L and C fixed, squared OKLab distance weights hue error by C squared.
-const hueVector = blueReferences.reduce(
-  (sum, color) => ({
-    x: sum.x + color.chroma ** 2 * Math.cos((color.hue * Math.PI) / 180),
-    y: sum.y + color.chroma ** 2 * Math.sin((color.hue * Math.PI) / 180),
-  }),
-  { x: 0, y: 0 },
-);
-export const defaultBlueHue = Math.round(normalizeHue((Math.atan2(hueVector.y, hueVector.x) * 180) / Math.PI));
+// Blue 270° gives red 30°, minimizing the six red references' combined squared OKLab distance.
+export const defaultBlueHue = 267;
 
 function luminance(rgb: number[]) {
   return 0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2];
@@ -104,7 +118,8 @@ function makeShade(family: Family, level: number, hue: number) {
     if (linearRgb({ lightness, chroma, hue }).every((value) => value >= 0 && value <= 1)) low = chroma;
     else high = chroma;
   }
-  const chroma = Math.floor((low + 1e-9) * 100) / 100;
+  const precision = family === "red" ? 1000 : 100;
+  const chroma = Math.floor((low + 1e-9) * precision) / precision;
   const rgb = linearRgb({ lightness, chroma, hue });
   const hex =
     "#" +
@@ -160,8 +175,8 @@ function distance(left: Color, right: Color) {
   return Math.sqrt((left.lightness - right.lightness) ** 2 + (a(left) - a(right)) ** 2 + (b(left) - b(right)) ** 2);
 }
 
-export function matchReferences(shades: Shade[]) {
-  return blueReferences.map((reference) => ({
+export function matchReferences(shades: Shade[], references: Reference[] = blueReferences) {
+  return references.map((reference) => ({
     reference,
     nearest: shades
       .map((shade) => ({
@@ -175,15 +190,27 @@ export function matchReferences(shades: Shade[]) {
 }
 
 export function exportCss(palette: Palette) {
+  const references = { blue: blueReferences, green: greenReferences, red: redReferences };
+  const matches = palette.rows.flatMap((row) => matchReferences(row.shades, references[row.family]));
   return (
     ":root {\n" +
     palette.rows
       .map((row) =>
-        row.shades.map((shade) => "  --" + row.family + "-" + shade.level + ": " + shade.css + "; /* " + shade.hex + " */").join("\n"),
+        row.shades
+          .map((shade) => {
+            const references = matches.filter((match) => match.nearest[0].shade === shade).map((match) => match.reference.name);
+            const comment = shade.hex + (references.length ? "; closest to: " + references.join(", ") : "");
+            return "  --" + row.family + "-" + shade.level + ": " + shade.css + "; /* " + comment + " */";
+          })
+          .join("\n"),
       )
       .join("\n\n") +
     "\n\n  /* Exact reference colors for roles that need the original blue. */\n" +
     blueReferences.map((reference) => "  --blue-" + reference.name + ": " + reference.hex + ";").join("\n") +
+    "\n\n  /* Exact reference colors for roles that need the original green. */\n" +
+    greenReferences.map((reference) => "  --green-" + reference.name + ": " + reference.hex + ";").join("\n") +
+    "\n\n  /* Exact reference colors for roles that need the original red. */\n" +
+    redReferences.map((reference) => "  --red-" + reference.name + ": " + reference.hex + ";").join("\n") +
     "\n}"
   );
 }
