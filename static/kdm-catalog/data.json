@@ -102,8 +102,9 @@
         { "item": "intimacy-couple", "editionId": "plastic", "parentEditionIds": ["1-5", "1-6"] },
         { "item": "old-survivor-joe", "editionId": "plastic", "parentEditionIds": ["1-5", "1-6"] },
         { "item": "young-survivor-rachel", "editionId": "plastic", "parentEditionIds": ["1-5", "1-6"] },
-        { "item": "kingdom-death-monster-rulebook", "editionId": "1-5", "parentEditionIds": ["1-5"] },
-        { "item": "kingdom-death-monster-rulebook", "editionId": "1-6", "parentEditionIds": ["1-6"] }
+        { "item": "kingdom-death-monster-rulebook", "editionId": "1-5-included", "parentEditionIds": ["1-5"] },
+        { "item": "kingdom-death-monster-rulebook", "editionId": "1-6-included", "parentEditionIds": ["1-6"] },
+        { "item": "kingdom-death-monster-rulebook", "editionId": "1-3-included", "parentEditionIds": ["1-3", "resin"] }
       ],
       "kind": "core",
       "name": "Kingdom Death: Monster",
@@ -1104,7 +1105,7 @@
     "armor-kit-cycloid-scale": {
       "aliases": ["Cycloid Scale Armor Kit, Sunstalker Armor Kit"],
       "editions": [
-        { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2016-02-16", "standalone": false },
+        { "id": "plastic", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2016-02-16" },
         { "id": "naked", "label": "Naked", "expansion": "Sunstalker", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseDate": "2021-11-26" }
       ],
       "kind": "armor-kit",
@@ -1116,7 +1117,7 @@
       "aliases": ["Naked Dragon King Armor Kit"],
       "editions": [
         { "id": "naked", "label": "Naked", "available": true, "expansion": "Dragon King", "format": "physical", "handle": "naked-dragon-king-armor-kit", "materials": ["Plastic"], "prices": [2500, 3000], "releaseDate": "2015-11-23" },
-        { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2016-02-16", "standalone": false }
+        { "id": "plastic", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2016-02-16" }
       ],
       "kind": "armor-kit",
       "name": "Dragon King Armor Kit",
@@ -1128,7 +1129,7 @@
       "aliases": ["Naked Gorm Armor Kit", "Gorm Armor Kit"],
       "editions": [
         { "id": "naked", "label": "Naked", "available": true, "expansion": "Gorm", "format": "physical", "handle": "naked-gorm-armor-kit", "materials": ["Plastic"], "prices": [2500, 3000], "releaseDate": "2015-11-23" },
-        { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2016-02-16", "standalone": false }
+        { "id": "plastic", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2016-02-16" }
       ],
       "kind": "armor-kit",
       "name": "Gorment Armor Kit",
@@ -1138,7 +1139,7 @@
     },
     "armor-kit-green-knight": {
       "editions": [
-        { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2016-02-16", "standalone": false },
+        { "id": "plastic", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2016-02-16" },
         { "id": "naked", "label": "Naked", "expansion": "Green Knight Armor", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseDate": "2016-09-17" }
       ],
       "kind": "armor-kit",
@@ -1150,7 +1151,7 @@
       "aliases": ["Naked Lantern Armor Kit"],
       "editions": [
         { "id": "naked", "label": "Naked", "format": "physical", "handle": "lantern-armor-kit", "materials": ["Plastic"], "prices": [2500, 3000], "releaseDate": "2015-09-03" },
-        { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2015-09-15", "standalone": false }
+        { "id": "plastic", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2015-09-15" }
       ],
       "kind": "armor-kit",
       "name": "Lantern Armor Kit",
@@ -1162,7 +1163,7 @@
       "aliases": ["Naked Leather Armor Kit"],
       "editions": [
         { "id": "naked", "label": "Naked", "format": "physical", "handle": "leather-armor-kit", "materials": ["Plastic"], "prices": [2500, 3000], "releaseDate": "2015-09-03" },
-        { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2015-09-15", "standalone": false }
+        { "id": "plastic", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2015-09-15" }
       ],
       "kind": "armor-kit",
       "name": "Leather Armor Kit",
@@ -1173,7 +1174,7 @@
     "armor-kit-phoenix": {
       "editions": [
         { "id": "naked", "label": "Naked", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseDate": "2015-09-03" },
-        { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2015-09-15", "standalone": false }
+        { "id": "plastic", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2015-09-15" }
       ],
       "kind": "armor-kit",
       "name": "Phoenix Armor Kit",
@@ -1183,7 +1184,7 @@
     "armor-kit-rawhide": {
       "editions": [
         { "id": "naked", "label": "Naked", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseDate": "2015-09-03" },
-        { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2015-09-15", "standalone": false }
+        { "id": "plastic", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2015-09-15" }
       ],
       "kind": "armor-kit",
       "name": "Rawhide Armor Kit",
@@ -1194,7 +1195,7 @@
       "aliases": ["Naked Screaming Armor Kit"],
       "editions": [
         { "id": "naked", "label": "Naked", "format": "physical", "handle": "screaming-fur-armor-kit", "materials": ["Plastic"], "prices": [2500, 3000], "releaseDate": "2015-09-03" },
-        { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2015-09-15", "standalone": false }
+        { "id": "plastic", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2015-09-15" }
       ],
       "kind": "armor-kit",
       "name": "Screaming Armor Kit",
@@ -1206,7 +1207,7 @@
       "aliases": ["Naked Spider Silk Armor Kit"],
       "editions": [
         { "id": "naked", "label": "Naked", "expansion": "Spidicules", "format": "physical", "handle": "naked-spider-silk-armor-kit", "materials": ["Plastic"], "prices": [2500, 3000], "releaseDate": "2015-11-23" },
-        { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2016-02-16", "standalone": false }
+        { "id": "plastic", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2016-02-16" }
       ],
       "kind": "armor-kit",
       "name": "Spider Silk Armor Kit",
@@ -1217,7 +1218,7 @@
     "armor-kit-unarmored": {
       "editions": [
         { "id": "naked", "label": "Naked", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseDate": "2015-09-03" },
-        { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2015-09-15", "standalone": false }
+        { "id": "plastic", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2015-09-15" }
       ],
       "kind": "armor-kit",
       "name": "Unarmored Armor Kit",
@@ -1227,7 +1228,7 @@
     "armor-kit-white-lion": {
       "editions": [
         { "id": "naked", "label": "Naked", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseDate": "2015-09-03" },
-        { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2015-09-15", "standalone": false }
+        { "id": "plastic", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2015-09-15" }
       ],
       "kind": "armor-kit",
       "name": "White Lion Armor Kit",
@@ -1430,7 +1431,7 @@
       "announcements": ["2024-11-29"],
       "editions": [
         { "id": "first-run", "label": "First Run", "expansion": "Black Knight", "format": "physical", "materials": ["Resin"], "numbered": true, "prices": [4000], "releaseDate": "2016-02-14", "runSize": 950, "size": "50" },
-        { "id": "plastic", "label": "Plastic", "expansion": "Black Knight", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2024-04-02", "standalone": false }
+        { "id": "plastic", "label": "Plastic", "expansion": "Black Knight", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2024-04-02" }
       ],
       "kind": "model",
       "name": "Black Knight",
@@ -1569,7 +1570,7 @@
       "announcements": ["2023-08-28"],
       "editions": [
         { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Resin"], "numbered": true, "prices": [2500], "releaseDate": "2011-10-31", "runSize": 250, "size": "50" },
-        { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2015-09-15", "standalone": false },
+        { "id": "plastic", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2015-09-15" },
         { "id": "bust-first-run", "label": "Bust: First Run", "format": "physical", "handle": "butcher-bust", "materials": ["Photoresin"], "numbered": true, "prices": [40000], "releaseDate": "2023-08-28", "runSize": 21, "size": "120" },
         { "id": "bust-second-run", "label": "Bust: Second Run", "format": "physical", "handle": "butcher-bust", "materials": ["Photoresin"], "prices": [40000], "releaseDate": "2023-08-28", "size": "120" }
       ],
@@ -2422,7 +2423,7 @@
       "editions": [
         { "id": "first-run", "label": "First Run", "expansion": "Dung Beetle Knight", "format": "physical", "materials": ["Resin"], "numbered": true, "prices": [5000], "releaseDate": "2013-08-21", "runSize": 450, "size": "50" },
         { "id": "encore", "label": "Encore", "expansion": "Dung Beetle Knight", "format": "physical", "materials": ["Resin"], "prices": [5000], "releaseDate": "2013-08-21", "size": "50" },
-        { "id": "plastic", "label": "Plastic", "expansion": "Dung Beetle Knight", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2016-02-16", "standalone": false }
+        { "id": "plastic", "label": "Plastic", "expansion": "Dung Beetle Knight", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2016-02-16" }
       ],
       "kind": "model",
       "name": "Dung Beetle Knight",
@@ -2684,7 +2685,7 @@
       "editions": [
         { "id": "first-run", "label": "First Run", "expansion": "Flower Knight", "format": "physical", "materials": ["Resin"], "numbered": true, "prices": [3000], "releaseDate": "2011-12-10", "runSize": 200, "size": "30" },
         { "id": "encore", "label": "Encore", "expansion": "Flower Knight", "format": "physical", "materials": ["Resin"], "prices": [3000], "releaseDate": "2011-12-10", "size": "30" },
-        { "id": "plastic", "label": "Plastic", "expansion": "Flower Knight", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2016-02-16", "standalone": false },
+        { "id": "plastic", "label": "Plastic", "expansion": "Flower Knight", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2016-02-16" },
         { "id": "bust", "label": "Bust", "available": true, "format": "physical", "handle": "flower-knight-bust", "prices": [25000], "releaseDate": "2025-08-29" }
       ],
       "kind": "model",
@@ -2737,7 +2738,7 @@
       "aliases": ["Frogdog (Resin)"],
       "editions": [
         { "id": "first-run", "label": "First Run", "expansion": "Frogdog", "format": "physical", "materials": ["Resin"], "numbered": true, "prices": [11500], "releaseDate": "2015-10-31", "runSize": 115, "size": "50" },
-        { "id": "plastic", "label": "Plastic", "expansion": "Frogdog", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2024-07-26", "standalone": false }
+        { "id": "plastic", "label": "Plastic", "expansion": "Frogdog", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2024-07-26" }
       ],
       "kind": "model",
       "name": "Frogdog",
@@ -2856,7 +2857,7 @@
       "editions": [
         { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Resin"], "numbered": true, "prices": [3000], "releaseDate": "2014-04-28", "runSize": 500, "size": "50" },
         { "id": "encore", "label": "Encore", "format": "physical", "materials": ["Resin"], "prices": [3000], "releaseDate": "2014-04-28", "size": "50" },
-        { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2017-10-13", "standalone": false },
+        { "id": "plastic", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2017-10-13" },
         { "id": "bust", "label": "Bust", "format": "physical", "handle": "gold-smoke-knight-bust", "materials": ["Photoresin"], "numbered": true, "prices": [30000], "releaseDate": "2024-09-30", "runSize": 200, "size": "120" }
       ],
       "kind": "model",
@@ -2893,7 +2894,7 @@
       "aliases": ["Gorm (Resin)"],
       "editions": [
         { "id": "first-run", "label": "First Run", "expansion": "Gorm", "format": "physical", "materials": ["Resin"], "numbered": true, "prices": [5000], "releaseDate": "2010-05-24", "runSize": 100, "size": "50" },
-        { "id": "plastic", "label": "Plastic", "expansion": "Gorm", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2016-02-16", "standalone": false }
+        { "id": "plastic", "label": "Plastic", "expansion": "Gorm", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2016-02-16" }
       ],
       "kind": "model",
       "name": "Gorm",
@@ -3001,7 +3002,7 @@
       "aliases": ["Gryphon (Resin)"],
       "editions": [
         { "id": "first-run", "label": "First Run", "expansion": "Gryphon", "format": "physical", "materials": ["Resin"], "numbered": true, "prices": [17500], "releaseDate": "2016-04-18", "runSize": 100, "size": "135" },
-        { "id": "plastic", "label": "Plastic", "expansion": "Gryphon", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseWindow": "2028", "standalone": false }
+        { "id": "plastic", "label": "Plastic", "expansion": "Gryphon", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseWindow": "2028" }
       ],
       "kind": "model",
       "name": "Gryphon",
@@ -3416,7 +3417,7 @@
       "editions": [
         { "id": "first-run", "label": "First Run", "expansion": "Gambler's Chest", "format": "physical", "materials": ["Resin"], "numbered": true, "prices": [7000], "releaseDate": "2014-07-01", "runSize": 125, "size": "100" },
         { "id": "encore", "label": "Encore", "expansion": "Gambler's Chest", "format": "physical", "materials": ["Resin"], "prices": [7000], "releaseDate": "2014-07-01", "size": "100" },
-        { "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24", "standalone": false }
+        { "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24" }
       ],
       "kind": "model",
       "name": "King",
@@ -3456,7 +3457,7 @@
       "editions": [
         { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Resin"], "numbered": true, "prices": [2400], "releaseDate": "2011-08-11", "runSize": 250, "size": "30 & 50" },
         { "id": "encore", "label": "Encore", "format": "physical", "materials": ["Resin"], "prices": [2400], "releaseDate": "2011-08-11", "size": "30 & 50" },
-        { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2015-09-15", "standalone": false }
+        { "id": "plastic", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2015-09-15" }
       ],
       "kind": "model",
       "name": "King's Man",
@@ -3734,7 +3735,7 @@
       "editions": [
         { "id": "first-run", "label": "First Run", "expansion": "Lion Knight", "format": "physical", "materials": ["Resin"], "numbered": true, "prices": [6500], "releaseDate": "2012-01-30", "runSize": 200, "size": "60" },
         { "id": "encore", "label": "Encore", "expansion": "Lion Knight", "format": "physical", "materials": ["Resin"], "prices": [6500], "releaseDate": "2012-01-30", "size": "60" },
-        { "id": "plastic", "label": "Plastic", "expansion": "Lion Knight", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2016-02-16", "standalone": false }
+        { "id": "plastic", "label": "Plastic", "expansion": "Lion Knight", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2016-02-16" }
       ],
       "kind": "model",
       "name": "Lion Knight 2nd",
@@ -3890,7 +3891,7 @@
       "editions": [
         { "id": "first-run", "label": "First Run", "expansion": "Manhunter", "format": "physical", "materials": ["Resin"], "numbered": true, "prices": [2500], "releaseDate": "2009-10-27", "runSize": 100, "size": "30" },
         { "id": "encore", "label": "Encore", "expansion": "Manhunter", "format": "physical", "materials": ["Resin"], "prices": [2500], "releaseDate": "2009-10-27", "size": "30" },
-        { "id": "plastic", "label": "Plastic", "expansion": "Manhunter", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2016-02-16", "standalone": false }
+        { "id": "plastic", "label": "Plastic", "expansion": "Manhunter", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2016-02-16" }
       ],
       "kind": "model",
       "name": "Manhunter",
@@ -4021,7 +4022,7 @@
       "editions": [
         { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Resin"], "numbered": true, "prices": [2500], "releaseDate": "2012-01-30", "runSize": 200, "size": "30" },
         { "id": "encore", "label": "Encore", "format": "physical", "materials": ["Resin"], "prices": [2500], "releaseDate": "2012-01-30", "size": "30" },
-        { "id": "early-variant", "label": "Early Variant", "format": "physical", "materials": ["Resin"], "prices": [0], "releaseDate": "2013-11-29", "size": "30", "standalone": false },
+        { "id": "early-variant", "label": "Early Variant", "format": "physical", "includedOnly": true, "materials": ["Resin"], "prices": [0], "releaseDate": "2013-11-29", "size": "30" },
         { "id": "painters", "label": "Painters", "available": true, "format": "physical", "handle": "mother-painters-scale", "prices": [6700], "releaseDate": "2026-04-01" }
       ],
       "kind": "model",
@@ -4159,7 +4160,7 @@
       "editions": [
         { "id": "first-run", "label": "First Run", "expansion": "Nightmare Ram", "format": "physical", "materials": ["Resin"], "numbered": true, "prices": [4000], "releaseDate": "2014-08-07", "runSize": 500, "size": "50" },
         { "id": "encore", "label": "Encore", "format": "physical", "handle": "naked-nightmare-ram", "materials": ["Resin"], "prices": [3400], "releaseDate": "2019-11-29", "size": "50" },
-        { "id": "plastic", "label": "Plastic", "expansion": "Nightmare Ram", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseWindow": "2027", "standalone": false }
+        { "id": "plastic", "label": "Plastic", "expansion": "Nightmare Ram", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseWindow": "2027" }
       ],
       "kind": "model",
       "name": "Nightmare Ram",
@@ -4444,7 +4445,7 @@
         { "id": "first-run", "label": "First Run", "expansion": "Pariah", "format": "physical", "materials": ["Resin"], "numbered": true, "prices": [4000], "releaseDate": "2016-06-17", "runSize": 500, "size": "50" },
         { "id": "encore", "label": "Encore", "expansion": "Pariah", "format": "physical", "materials": ["Resin"], "prices": [4000], "releaseDate": "2016-06-17", "size": "50" },
         { "id": "bust", "label": "Bust", "format": "physical", "handle": "pariah-bust", "materials": ["Photoresin"], "numbered": true, "prices": [7500], "releaseDate": "2024-05-31", "runSize": 250, "size": "120" },
-        { "id": "plastic", "label": "Plastic", "expansion": "Pariah", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2025-09-30", "standalone": false }
+        { "id": "plastic", "label": "Plastic", "expansion": "Pariah", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2025-09-30" }
       ],
       "kind": "model",
       "name": "Pariah",
@@ -4563,7 +4564,7 @@
       "editions": [
         { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Resin"], "numbered": true, "prices": [15000], "releaseDate": "2015-09-03", "runSize": 250, "size": "100" },
         { "id": "encore", "label": "Encore", "format": "physical", "materials": ["Resin"], "prices": [15000], "releaseDate": "2015-09-03", "size": "100" },
-        { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2015-09-15", "standalone": false }
+        { "id": "plastic", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2015-09-15" }
       ],
       "kind": "model",
       "name": "Phoenix",
@@ -4601,7 +4602,7 @@
       "editions": [
         { "id": "first-run", "label": "First Run", "format": "physical", "gameplay": false, "materials": ["Resin"], "numbered": true, "prices": [2500], "releaseDate": "2011-12-10", "runSize": 150 },
         { "id": "encore", "label": "Encore", "format": "physical", "gameplay": false, "materials": ["Resin"], "prices": [2500], "releaseDate": "2011-12-10" },
-        { "id": "naked", "label": "Naked", "format": "physical", "gameplay": false, "materials": ["Plastic"], "prices": [2500], "releaseDate": "2017-11-24", "standalone": false },
+        { "id": "naked", "label": "Naked", "format": "physical", "gameplay": false, "includedOnly": true, "materials": ["Plastic"], "prices": [2500], "releaseDate": "2017-11-24" },
         { "id": "plastic", "label": "Plastic", "available": true, "format": "physical", "handle": "forge-priest-1", "materials": ["Plastic"], "prices": [3400], "releaseDate": "2026-04-01" }
       ],
       "gameplay": true,
@@ -5540,7 +5541,7 @@
       "editions": [
         { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Resin"], "numbered": true, "prices": [2500], "releaseDate": "2013-07-12", "runSize": 450 },
         { "id": "encore", "label": "Encore", "format": "physical", "materials": ["Resin"], "prices": [2500], "releaseDate": "2013-07-12" },
-        { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2025-08-29", "standalone": false }
+        { "id": "plastic", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2025-08-29" }
       ],
       "kind": "model",
       "name": "Savior - 20 Years",
@@ -5553,7 +5554,7 @@
       "editions": [
         { "id": "first-run", "label": "First Run", "format": "physical", "handle": "savior-40-years", "materials": ["Resin"], "numbered": true, "prices": [3000], "releaseDate": "2013-07-12", "runSize": 450 },
         { "id": "encore", "label": "Encore", "format": "physical", "handle": "savior-40-years", "materials": ["Resin"], "prices": [3000], "releaseDate": "2013-07-12" },
-        { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2025-08-29", "standalone": false }
+        { "id": "plastic", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2025-08-29" }
       ],
       "kind": "model",
       "name": "Savior - 40 Years",
@@ -5564,7 +5565,7 @@
       "editions": [
         { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Resin"], "numbered": true, "prices": [2500], "releaseDate": "2013-07-12", "runSize": 450 },
         { "id": "encore", "label": "Encore", "format": "physical", "materials": ["Resin"], "prices": [2500], "releaseDate": "2013-07-12" },
-        { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2025-08-29", "standalone": false }
+        { "id": "plastic", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2025-08-29" }
       ],
       "kind": "model",
       "name": "Savior - 80 Years",
@@ -5707,7 +5708,7 @@
       "aliases": ["Screaming Antelope (Resin)"],
       "editions": [
         { "id": "resin", "label": "Resin", "format": "physical", "materials": ["Resin"], "prices": [0], "releaseDate": "2015-09-03", "size": "50" },
-        { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2015-09-15", "standalone": false }
+        { "id": "plastic", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2015-09-15" }
       ],
       "kind": "model",
       "name": "Screaming Antelope",
@@ -6168,7 +6169,7 @@
       "editions": [
         { "id": "first-run", "label": "First Run", "expansion": "Slenderman", "format": "physical", "materials": ["Resin"], "numbered": true, "prices": [3000], "releaseDate": "2014-03-11", "runSize": 500, "size": "30" },
         { "id": "encore", "label": "Encore", "expansion": "Slenderman", "format": "physical", "materials": ["Resin"], "prices": [3000], "releaseDate": "2014-03-11", "size": "30" },
-        { "id": "plastic", "label": "Plastic", "expansion": "Slenderman", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2016-02-16", "standalone": false }
+        { "id": "plastic", "label": "Plastic", "expansion": "Slenderman", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2016-02-16" }
       ],
       "kind": "model",
       "name": "Slenderman",
@@ -6380,7 +6381,7 @@
       "editions": [
         { "id": "first-run", "label": "First Run", "expansion": "Sunstalker", "format": "physical", "materials": ["Resin"], "numbered": true, "prices": [15000], "releaseDate": "2014-08-07", "runSize": 125, "size": "135" },
         { "id": "encore", "label": "Encore", "expansion": "Sunstalker", "format": "physical", "materials": ["Resin"], "prices": [15000], "releaseDate": "2014-08-07", "size": "135" },
-        { "id": "plastic", "label": "Plastic", "expansion": "Sunstalker", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2016-02-16", "standalone": false }
+        { "id": "plastic", "label": "Plastic", "expansion": "Sunstalker", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2016-02-16" }
       ],
       "kind": "model",
       "name": "Sunstalker Adult",
@@ -6499,7 +6500,7 @@
       "editions": [
         { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Resin"], "numbered": true, "prices": [2400], "releaseDate": "2012-08-18", "runSize": 450, "size": "50" },
         { "id": "encore", "label": "Encore", "format": "physical", "materials": ["Resin"], "prices": [2400], "releaseDate": "2012-08-18", "size": "50" },
-        { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2015-09-15", "standalone": false }
+        { "id": "plastic", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2015-09-15" }
       ],
       "kind": "model",
       "name": "The Hand",
@@ -6531,7 +6532,7 @@
       "editions": [
         { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Resin"], "numbered": true, "prices": [3500], "releaseDate": "2015-09-03", "runSize": 500, "size": "50" },
         { "id": "encore", "label": "Encore", "format": "physical", "materials": ["Resin"], "prices": [3500], "releaseDate": "2015-09-03", "size": "50" },
-        { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2015-09-15", "standalone": false }
+        { "id": "plastic", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2015-09-15" }
       ],
       "kind": "model",
       "name": "The Watcher",
@@ -6937,7 +6938,7 @@
       "aliases": ["White Lion / Holy Lion", "White Lion / Holy Lion (Resin)", "Holy Lion"],
       "editions": [
         { "id": "resin", "label": "Resin", "format": "physical", "materials": ["Resin"], "prices": [2500], "releaseDate": "2010-05-14", "size": "50" },
-        { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2015-09-15", "standalone": false }
+        { "id": "plastic", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2015-09-15" }
       ],
       "kind": "model",
       "name": "White Lion",
@@ -7136,14 +7137,14 @@
   },
   "included-only": {
     "ancient-butcher": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Campaigns of Death", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseWindow": "2026 Q4", "standalone": false }],
+      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Campaigns of Death", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseWindow": "2026 Q4" }],
       "kind": "model",
       "name": "Ancient Butcher",
       "size": "100",
       "tags": ["plastic", "2026", "upcoming", "campaigns-of-death"]
     },
     "anna-the-gourmet-hunter": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24", "standalone": false }],
+      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24" }],
       "kind": "model",
       "name": "Anna the Gourmet Hunter",
       "notes": "Gambler's Chest Promo Miniature.",
@@ -7152,8 +7153,8 @@
     },
     "armor-kit-crimson": {
       "editions": [
-        { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24", "standalone": false },
-        { "id": "naked", "label": "Naked", "expansion": "Gambler's Chest", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24", "standalone": false }
+        { "id": "plastic", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24" },
+        { "id": "naked", "label": "Naked", "expansion": "Gambler's Chest", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24" }
       ],
       "kind": "armor-kit",
       "name": "Crimson Armor Kit",
@@ -7163,8 +7164,8 @@
     },
     "armor-kit-dark-flower": {
       "editions": [
-        { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseWindow": "2026 Q4", "standalone": false },
-        { "id": "naked", "label": "Naked", "expansion": "Campaigns of Death", "format": "physical", "materials": ["Plastic"], "prices": [3000], "releaseWindow": "2026 Q4", "standalone": false }
+        { "id": "plastic", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseWindow": "2026 Q4" },
+        { "id": "naked", "label": "Naked", "expansion": "Campaigns of Death", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [3000], "releaseWindow": "2026 Q4" }
       ],
       "kind": "armor-kit",
       "name": "Dark Flower Armor Set",
@@ -7173,8 +7174,8 @@
     },
     "armor-kit-deathking": {
       "editions": [
-        { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24", "standalone": false },
-        { "id": "naked", "label": "Naked", "expansion": "Gambler's Chest", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24", "standalone": false }
+        { "id": "plastic", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24" },
+        { "id": "naked", "label": "Naked", "expansion": "Gambler's Chest", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24" }
       ],
       "kind": "armor-kit",
       "name": "Deathking Armor Kit",
@@ -7184,8 +7185,8 @@
     },
     "armor-kit-oblivion-mosquito": {
       "editions": [
-        { "id": "naked", "label": "Naked", "format": "physical", "materials": ["Plastic"], "prices": [3000], "releaseDate": "2023-11-24", "standalone": false },
-        { "id": "plastic", "label": "Plastic", "expansion": "Oblivion Mosquito", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseWindow": "2027", "standalone": false }
+        { "id": "naked", "label": "Naked", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [3000], "releaseDate": "2023-11-24" },
+        { "id": "plastic", "label": "Plastic", "expansion": "Oblivion Mosquito", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseWindow": "2027" }
       ],
       "kind": "armor-kit",
       "name": "Oblivion Mosquito Armor Kit",
@@ -7193,8 +7194,8 @@
     },
     "armor-kit-singing": {
       "editions": [
-        { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24", "standalone": false },
-        { "id": "naked", "label": "Naked", "expansion": "Gambler's Chest", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24", "standalone": false }
+        { "id": "plastic", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24" },
+        { "id": "naked", "label": "Naked", "expansion": "Gambler's Chest", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24" }
       ],
       "kind": "armor-kit",
       "name": "Singing Armor Kit",
@@ -7204,8 +7205,8 @@
     },
     "armor-kit-skyking": {
       "editions": [
-        { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseWindow": "2026 Q4", "standalone": false },
-        { "id": "naked", "label": "Naked", "expansion": "Campaigns of Death", "format": "physical", "materials": ["Plastic"], "prices": [3000], "releaseWindow": "2026 Q4", "standalone": false }
+        { "id": "plastic", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseWindow": "2026 Q4" },
+        { "id": "naked", "label": "Naked", "expansion": "Campaigns of Death", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [3000], "releaseWindow": "2026 Q4" }
       ],
       "kind": "armor-kit",
       "name": "Skyking Armor Set",
@@ -7214,15 +7215,15 @@
     },
     "armor-kit-steel-wax": {
       "editions": [
-        { "id": "naked", "label": "Naked", "format": "physical", "materials": ["Plastic"], "prices": [3000], "releaseDate": "2024-11-29", "standalone": false },
-        { "id": "plastic", "label": "Plastic", "expansion": "Honeycomb Weaver", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseWindow": "2026", "standalone": false }
+        { "id": "naked", "label": "Naked", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [3000], "releaseDate": "2024-11-29" },
+        { "id": "plastic", "label": "Plastic", "expansion": "Honeycomb Weaver", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseWindow": "2026" }
       ],
       "kind": "armor-kit",
       "name": "Steel Wax Armor Kit",
       "tags": ["plastic", "2024", "2026", "upcoming", "naked", "armor", "armor-kit"]
     },
     "atnas-the-child-eater": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24", "standalone": false }],
+      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24" }],
       "kind": "model",
       "name": "Atnas the Child Eater",
       "notes": "Gambler's Chest Nemesis Miniature.",
@@ -7230,7 +7231,7 @@
       "tags": ["plastic", "2023", "gamblers-chest", "node-2-nemesis"]
     },
     "axerman-family-child": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24", "standalone": false }],
+      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24" }],
       "kind": "model",
       "name": "Axerman Family - Child",
       "notes": "Gambler's Chest Promo Miniature.",
@@ -7238,7 +7239,7 @@
       "tags": ["female", "plastic", "generic", "2023", "gamblers-chest", "axerman-family"]
     },
     "axerman-family-father": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24", "standalone": false }],
+      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24" }],
       "kind": "model",
       "name": "Axerman Family - Father",
       "notes": "Gambler's Chest Promo Miniature.",
@@ -7246,7 +7247,7 @@
       "tags": ["plastic", "generic", "male", "2023", "gamblers-chest", "axerman-family"]
     },
     "axerman-family-mother": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24", "standalone": false }],
+      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24" }],
       "kind": "model",
       "name": "Axerman Family - Mother",
       "notes": "Gambler's Chest Promo Miniature.",
@@ -7254,7 +7255,7 @@
       "tags": ["female", "plastic", "generic", "2023", "gamblers-chest", "axerman-family"]
     },
     "beast-hunter-armor": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24", "standalone": false }],
+      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24" }],
       "kind": "model",
       "name": "Beast Hunter Armor",
       "notes": "Gambler's Chest Narrative Miniature.",
@@ -7262,7 +7263,7 @@
       "tags": ["female", "plastic", "generic", "2023", "gamblers-chest", "armor"]
     },
     "bone-eater": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24", "standalone": false }],
+      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24" }],
       "kind": "model",
       "name": "Bone Eater",
       "notes": "Gambler's Chest Narrative Miniature.",
@@ -7270,7 +7271,7 @@
       "tags": ["plastic", "monster", "2023", "gamblers-chest", "monster-bone-eaters", "encounter-monster"]
     },
     "bone-eaters-5-miniatures": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24", "standalone": false }],
+      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24" }],
       "kind": "model",
       "name": "Bone Eaters (5 miniatures)",
       "notes": "Gambler's Chest Encounter System Miniatures.",
@@ -7278,7 +7279,7 @@
       "tags": ["plastic", "monster", "2023", "gamblers-chest", "monster-bone-eaters", "encounter-monster"]
     },
     "bowmaster-of-deadrock": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24", "standalone": false }],
+      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24" }],
       "kind": "model",
       "name": "Bowmaster of Deadrock",
       "notes": "Gambler's Chest Promo Miniature.",
@@ -7286,7 +7287,7 @@
       "tags": ["female", "plastic", "generic", "2023", "gamblers-chest"]
     },
     "bright-knives": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24", "standalone": false }],
+      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24" }],
       "kind": "model",
       "name": "Bright Knives",
       "notes": "Gambler's Chest Promo Miniature.",
@@ -7294,7 +7295,7 @@
       "tags": ["female", "plastic", "generic", "2023", "gamblers-chest"]
     },
     "champion-of-the-goblin": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24", "standalone": false }],
+      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24" }],
       "kind": "model",
       "name": "Champion of the Goblin",
       "notes": "Gambler's Chest Narrative Miniature.",
@@ -7302,7 +7303,7 @@
       "tags": ["female", "plastic", "generic", "2023", "gamblers-chest", "champion"]
     },
     "clever-strategist": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24", "standalone": false }],
+      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24" }],
       "kind": "model",
       "name": "Clever Strategist",
       "notes": "Gambler's Chest Narrative Miniature.",
@@ -7310,7 +7311,7 @@
       "tags": ["female", "plastic", "generic", "2023", "gamblers-chest"]
     },
     "cockroach-queen": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24", "standalone": false }],
+      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24" }],
       "kind": "model",
       "name": "Cockroach Queen",
       "notes": "Gambler's Chest Narrative Miniature.",
@@ -7318,7 +7319,7 @@
       "tags": ["female", "plastic", "2023", "gamblers-chest"]
     },
     "crimson-crocodile": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24", "standalone": false }],
+      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24" }],
       "kind": "model",
       "name": "Crimson Crocodile",
       "notes": "Gambler's Chest Quarry Miniature.",
@@ -7326,7 +7327,7 @@
       "tags": ["plastic", "2023", "gamblers-chest", "node-1-quarry"]
     },
     "cursed-spear": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24", "standalone": false }],
+      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24" }],
       "kind": "model",
       "name": "Cursed Spear",
       "notes": "Gambler's Chest Narrative Miniature.",
@@ -7334,7 +7335,7 @@
       "tags": ["female", "plastic", "generic", "2023", "gamblers-chest"]
     },
     "dark-eye": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24", "standalone": false }],
+      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24" }],
       "kind": "model",
       "name": "Dark Eye",
       "notes": "Gambler's Chest Narrative Miniature.",
@@ -7342,28 +7343,28 @@
       "tags": ["female", "plastic", "generic", "2023", "gamblers-chest"]
     },
     "dragon-king": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Dragon King", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2016-02-16", "standalone": false }],
+      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Dragon King", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2016-02-16" }],
       "kind": "model",
       "name": "Dragon King",
       "size": "135",
       "tags": ["plastic", "monster", "2016", "2021", "monster-dragon-king", "pot-star", "node-3-quarry"]
     },
     "dragon-king-tyrant": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Dragon King", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2016-02-16", "standalone": false }],
+      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Dragon King", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2016-02-16" }],
       "kind": "model",
       "name": "Dragon King (Tyrant)",
       "size": "50",
       "tags": ["plastic", "monster", "2016", "2021", "monster-dragon-king", "node-1-nemesis", "monster-tyrant", "pot-stars"]
     },
     "dung-beetle-baron-and-baron-ball": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Campaigns of Death", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseWindow": "2026 Q4", "standalone": false }],
+      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Campaigns of Death", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseWindow": "2026 Q4" }],
       "kind": "model",
       "name": "Dung Beetle Baron and Baron Ball",
       "size": "50",
       "tags": ["plastic", "2026", "upcoming", "campaigns-of-death"]
     },
     "dung-beetle-knight-armor": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Dung Beetle Knight", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2021-11-26", "standalone": false }],
+      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Dung Beetle Knight", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2021-11-26" }],
       "kind": "model",
       "name": "Dung Beetle Knight Armor",
       "size": "30",
@@ -7371,15 +7372,15 @@
     },
     "goblin-dragon": {
       "editions": [
-        { "id": "naked", "label": "Naked", "format": "physical", "materials": ["Plastic"], "prices": [7500], "releaseDate": "2023-11-24", "standalone": false },
-        { "id": "plastic", "label": "Plastic", "expansion": "Abyssal Woods", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseWindow": "2030", "standalone": false }
+        { "id": "naked", "label": "Naked", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [7500], "releaseDate": "2023-11-24" },
+        { "id": "plastic", "label": "Plastic", "expansion": "Abyssal Woods", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseWindow": "2030" }
       ],
       "kind": "model",
       "name": "Goblin Dragon",
       "tags": ["plastic", "monster", "2023", "upcoming", "naked", "2030", "abyssal-woods"]
     },
     "godhand": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24", "standalone": false }],
+      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24" }],
       "kind": "model",
       "name": "Godhand",
       "notes": "The Gambler's Chest finale monster miniature.",
@@ -7387,7 +7388,7 @@
       "tags": ["plastic", "monster", "2023", "gamblers-chest", "finale-monster", "monster-godhand"]
     },
     "great-game-hunter-early-variant": {
-      "editions": [{ "id": "resin", "label": "Resin", "format": "physical", "materials": ["Resin"], "prices": [0], "releaseDate": "2013-11-29", "standalone": false }],
+      "editions": [{ "id": "resin", "label": "Resin", "format": "physical", "includedOnly": true, "materials": ["Resin"], "prices": [0], "releaseDate": "2013-11-29" }],
       "kind": "model",
       "name": "Great Game Hunter (early variant)",
       "notes": "An early Resin sculpt released only in the 2013 Black Friday Grab Bags of Death.",
@@ -7395,7 +7396,7 @@
       "tags": ["female", "generic", "resin", "variant", "2013", "great-game-hunter"]
     },
     "herb-gatherer": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24", "standalone": false }],
+      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24" }],
       "kind": "model",
       "name": "Herb Gatherer",
       "notes": "Gambler's Chest Narrative Miniature.",
@@ -7403,7 +7404,7 @@
       "tags": ["female", "plastic", "generic", "2023", "gamblers-chest"]
     },
     "honorable-berserker": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24", "standalone": false }],
+      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24" }],
       "kind": "model",
       "name": "Honorable Berserker",
       "notes": "Gambler's Chest Narrative Miniature.",
@@ -7411,7 +7412,7 @@
       "tags": ["female", "plastic", "generic", "2023", "gamblers-chest"]
     },
     "imitation-butcher": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24", "standalone": false }],
+      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24" }],
       "kind": "model",
       "name": "Imitation Butcher",
       "notes": "Gambler's Chest Narrative Miniature.",
@@ -7419,35 +7420,35 @@
       "tags": ["female", "plastic", "generic", "2023", "gamblers-chest"]
     },
     "intimacy-couple": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2017-10-13", "standalone": false }],
+      "editions": [{ "id": "plastic", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2017-10-13" }],
       "kind": "model",
       "name": "Intimacy Couple",
       "size": "30",
       "tags": ["female", "plastic", "generic", "core", "2017", "intimacy-couple"]
     },
     "lion-god": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Lion God", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2016-02-16", "standalone": false }],
+      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Lion God", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2016-02-16" }],
       "kind": "model",
       "name": "Lion God",
       "size": "50",
       "tags": ["plastic", "monster", "2016", "2021", "node-4-quarry", "monster-lion-god"]
     },
     "lonely-lady": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Lonely Tree", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2021-11-26", "standalone": false }],
+      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Lonely Tree", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2021-11-26" }],
       "kind": "model",
       "name": "Lonely Lady",
       "size": "30",
       "tags": ["female", "plastic", "generic", "monster", "2021", "monster-lonely-tree"]
     },
     "lonely-tree": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Lonely Tree", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2016-02-16", "standalone": false }],
+      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Lonely Tree", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2016-02-16" }],
       "kind": "model",
       "name": "Lonely Tree",
       "size": "100",
       "tags": ["plastic", "monster", "2016", "2021", "monster-lonely-tree"]
     },
     "mad-and-mighty-striker": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24", "standalone": false }],
+      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24" }],
       "kind": "model",
       "name": "Mad & Mighty Striker",
       "notes": "Gambler's Chest Narrative Miniature.",
@@ -7455,7 +7456,7 @@
       "tags": ["female", "plastic", "generic", "2023", "gamblers-chest"]
     },
     "magma-masochist": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24", "standalone": false }],
+      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24" }],
       "kind": "model",
       "name": "Magma Masochist",
       "notes": "Gambler's Chest Narrative Miniature.",
@@ -7464,7 +7465,7 @@
     },
     "murder-victim": {
       "aliases": ["Murder Victim, Dead Survivor", "Dead Survivor"],
-      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24", "standalone": false }],
+      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24" }],
       "kind": "model",
       "name": "Murder Victim",
       "notes": "Gambler's Chest Narrative Miniature.",
@@ -7472,7 +7473,7 @@
       "tags": ["female", "plastic", "generic", "2023", "gamblers-chest"]
     },
     "nightmare-adam": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24", "standalone": false }],
+      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24" }],
       "kind": "model",
       "name": "Nightmare Adam",
       "notes": "Gambler's Chest Promo Miniature.",
@@ -7481,15 +7482,15 @@
     },
     "oblivion-mosquito": {
       "editions": [
-        { "id": "naked", "label": "Naked", "format": "physical", "materials": ["Plastic"], "prices": [7500], "releaseDate": "2024-11-29", "standalone": false },
-        { "id": "plastic", "label": "Plastic", "expansion": "Oblivion Mosquito", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseWindow": "2027", "standalone": false }
+        { "id": "naked", "label": "Naked", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [7500], "releaseDate": "2024-11-29" },
+        { "id": "plastic", "label": "Plastic", "expansion": "Oblivion Mosquito", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseWindow": "2027" }
       ],
       "kind": "model",
       "name": "Oblivion Mosquito",
       "tags": ["plastic", "monster", "2024", "upcoming", "naked", "2027", "node-2-quarry", "monster-oblivion-mosquito"]
     },
     "old-survivor-joe": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2017-10-13", "standalone": false }],
+      "editions": [{ "id": "plastic", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2017-10-13" }],
       "kind": "model",
       "name": "Old Survivor Joe",
       "notes": "Included with Core 1.5 and 1.6. Core 1.5 began shipping to backers on October 13, 2017.",
@@ -7497,7 +7498,7 @@
       "tags": ["female", "plastic", "core", "survivor", "2017", "joe"]
     },
     "order-knight-early-variant": {
-      "editions": [{ "id": "resin", "label": "Resin", "format": "physical", "materials": ["Resin"], "prices": [0], "releaseDate": "2013-11-29", "standalone": false }],
+      "editions": [{ "id": "resin", "label": "Resin", "format": "physical", "includedOnly": true, "materials": ["Resin"], "prices": [0], "releaseDate": "2013-11-29" }],
       "kind": "model",
       "name": "Order Knight (early variant)",
       "notes": "An early Resin sculpt released only in the 2013 Black Friday Grab Bags of Death.",
@@ -7505,35 +7506,35 @@
       "tags": ["female", "generic", "resin", "knight", "variant", "2013", "order-knight"]
     },
     "parasite-queen": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Screaming God", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2026-07-31", "standalone": false }],
+      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Screaming God", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2026-07-31" }],
       "kind": "model",
       "name": "Parasite Queen",
       "notes": "A Plastic monster miniature included with the Screaming God Expansion.",
       "tags": ["plastic", "monster", "2026", "core-monster", "finale-monster", "monster-parasite-queen"]
     },
     "people-of-the-stars": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Dragon King", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2021-11-26", "standalone": false }],
+      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Dragon King", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2021-11-26" }],
       "kind": "model",
       "name": "People of the Stars",
       "size": "30",
       "tags": ["female", "plastic", "generic", "monster", "2021", "monster-dragon-king", "pot-star"]
     },
     "people-of-the-stars-intimacy-couple": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Campaigns of Death", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseWindow": "2026 Q4", "standalone": false }],
+      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Campaigns of Death", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseWindow": "2026 Q4" }],
       "kind": "model",
       "name": "People of the Stars Intimacy Couple",
       "size": "30",
       "tags": ["female", "plastic", "generic", "2026", "upcoming", "campaigns-of-death", "pot-star", "intimacy-couple"]
     },
     "people-of-the-sun-intimacy-couple": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Campaigns of Death", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseWindow": "2026 Q4", "standalone": false }],
+      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Campaigns of Death", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseWindow": "2026 Q4" }],
       "kind": "model",
       "name": "People of the Sun Intimacy Couple",
       "size": "30",
       "tags": ["female", "plastic", "generic", "2026", "upcoming", "pot-sun", "campaigns-of-death", "intimacy-couple"]
     },
     "pinup-upside-survivor": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2020-12-12", "standalone": false }],
+      "editions": [{ "id": "plastic", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2020-12-12" }],
       "kind": "model",
       "name": "Pinup Upside Survivor",
       "notes": "Bonus Miniature.",
@@ -7541,7 +7542,7 @@
       "tags": ["female", "plastic", "generic", "survivor", "pinup", "2020"]
     },
     "popular-guy": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24", "standalone": false }],
+      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24" }],
       "kind": "model",
       "name": "Popular Guy",
       "notes": "Gambler's Chest Narrative Miniature.",
@@ -7549,7 +7550,7 @@
       "tags": ["plastic", "generic", "male", "2023", "gamblers-chest"]
     },
     "relic-knight-early-variant": {
-      "editions": [{ "id": "resin", "label": "Resin", "format": "physical", "materials": ["Resin"], "prices": [0], "releaseDate": "2013-11-29", "standalone": false }],
+      "editions": [{ "id": "resin", "label": "Resin", "format": "physical", "includedOnly": true, "materials": ["Resin"], "prices": [0], "releaseDate": "2013-11-29" }],
       "kind": "model",
       "name": "Relic Knight (early variant)",
       "notes": "An early Resin sculpt released only in the 2013 Black Friday Grab Bags of Death.",
@@ -7557,7 +7558,7 @@
       "tags": ["female", "generic", "resin", "knight", "variant", "2013", "relic-knight"]
     },
     "romantic-adventurer": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24", "standalone": false }],
+      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24" }],
       "kind": "model",
       "name": "Romantic Adventurer",
       "notes": "Gambler's Chest Narrative Miniature.",
@@ -7566,7 +7567,7 @@
     },
     "romantic-leyline-walker": {
       "aliases": ["Leyline Walker, Romantic Leyline Walker"],
-      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24", "standalone": false }],
+      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24" }],
       "kind": "model",
       "name": "Romantic Leyline Walker",
       "notes": "Gambler's Chest Narrative Miniature.",
@@ -7574,7 +7575,7 @@
       "tags": ["female", "plastic", "generic", "2023", "gamblers-chest"]
     },
     "savior-male-early-variant": {
-      "editions": [{ "id": "resin", "label": "Resin", "format": "physical", "materials": ["Resin"], "prices": [0], "releaseDate": "2013-11-29", "standalone": false }],
+      "editions": [{ "id": "resin", "label": "Resin", "format": "physical", "includedOnly": true, "materials": ["Resin"], "prices": [0], "releaseDate": "2013-11-29" }],
       "kind": "model",
       "name": "Savior Male (early variant)",
       "notes": "An early Resin sculpt released only in the 2013 Black Friday Grab Bags of Death.",
@@ -7582,7 +7583,7 @@
       "tags": ["generic", "male", "resin", "variant", "2013", "savior"]
     },
     "sci-fi-aya-the-survivor": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24", "standalone": false }],
+      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24" }],
       "gameplay": true,
       "gameplayContent": "Pattern -015",
       "kind": "box",
@@ -7592,7 +7593,7 @@
       "tags": ["female", "plastic", "gameplay", "2023", "survivor", "gamblers-chest", "pattern", "aya", "sci-fi"]
     },
     "scout-of-death-female": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24", "standalone": false }],
+      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24" }],
       "kind": "model",
       "name": "Scout of Death (Female)",
       "notes": "Gambler's Chest Scout System Miniature.",
@@ -7600,7 +7601,7 @@
       "tags": ["female", "plastic", "generic", "2023", "gamblers-chest", "scout"]
     },
     "scout-of-death-male": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24", "standalone": false }],
+      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24" }],
       "kind": "model",
       "name": "Scout of Death (Male)",
       "notes": "Gambler's Chest Scout System Miniature.",
@@ -7608,14 +7609,14 @@
       "tags": ["plastic", "generic", "male", "2023", "gamblers-chest", "scout"]
     },
     "screaming-god": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Screaming God", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2026-07-31", "standalone": false }],
+      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Screaming God", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2026-07-31" }],
       "kind": "model",
       "name": "Screaming God",
       "notes": "A Plastic monster miniature included with the Screaming God Expansion.",
       "tags": ["plastic", "monster", "2026", "node-4-quarry", "monster-screaming-god"]
     },
     "screaming-hoarder": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24", "standalone": false }],
+      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24" }],
       "kind": "model",
       "name": "Screaming Hoarder",
       "notes": "Gambler's Chest Narrative Miniature.",
@@ -7623,7 +7624,7 @@
       "tags": ["female", "plastic", "generic", "2023", "gamblers-chest"]
     },
     "shadow-stalker": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24", "standalone": false }],
+      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24" }],
       "kind": "model",
       "name": "Shadow Stalker",
       "notes": "Gambler's Chest Narrative Miniature.",
@@ -7631,21 +7632,21 @@
       "tags": ["female", "plastic", "generic", "2023", "gamblers-chest"]
     },
     "silence-female": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2017-11-24", "standalone": false }],
+      "editions": [{ "id": "plastic", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2017-11-24" }],
       "kind": "model",
       "name": "Silence Female",
       "size": "30",
       "tags": ["female", "plastic", "generic", "2017"]
     },
     "silence-male": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2017-11-24", "standalone": false }],
+      "editions": [{ "id": "plastic", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2017-11-24" }],
       "kind": "model",
       "name": "Silence Male",
       "size": "30",
       "tags": ["plastic", "generic", "male", "2017"]
     },
     "smog-singers-3-miniatures": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24", "standalone": false }],
+      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24" }],
       "kind": "model",
       "name": "Smog Singers (3 miniatures)",
       "notes": "Gambler's Chest Quarry Miniatures.",
@@ -7653,14 +7654,14 @@
       "tags": ["plastic", "2023", "gamblers-chest", "node-2-quarry"]
     },
     "spidicules": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Spidicules", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2016-02-16", "standalone": false }],
+      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Spidicules", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2016-02-16" }],
       "kind": "model",
       "name": "Spidicules",
       "size": "100",
       "tags": ["plastic", "monster", "2016", "2021", "node-2-quarry", "monster-spidicules"]
     },
     "sprinter-armor": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24", "standalone": false }],
+      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24" }],
       "kind": "model",
       "name": "Sprinter Armor",
       "notes": "Gambler's Chest Narrative Miniature.",
@@ -7669,7 +7670,7 @@
     },
     "swordmaster-of-deadrock": {
       "aliases": ["Swordmaster of Deadrock, Bloody Sword of Deadrock", "Bloody Sword of Deadrock"],
-      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24", "standalone": false }],
+      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24" }],
       "kind": "model",
       "name": "Swordmaster of Deadrock",
       "notes": "Gambler's Chest Promo Miniature.",
@@ -7678,7 +7679,7 @@
     },
     "the-blessed-one": {
       "aliases": ["Blessed One, The"],
-      "editions": [{ "id": "resin", "label": "Resin", "format": "physical", "materials": ["Resin"], "prices": [0], "releaseWindow": "2015", "standalone": false }],
+      "editions": [{ "id": "resin", "label": "Resin", "format": "physical", "includedOnly": true, "materials": ["Resin"], "prices": [0], "releaseWindow": "2015" }],
       "kind": "box",
       "name": "The Blessed One",
       "notes": "Only included in the 2015 Black Friday Black Grab Bag of Death.",
@@ -7686,7 +7687,7 @@
     },
     "the-gambler": {
       "aliases": ["Gambler, The"],
-      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24", "standalone": false }],
+      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24" }],
       "kind": "model",
       "name": "The Gambler",
       "notes": "Gambler's Chest Core Miniature.",
@@ -7695,7 +7696,7 @@
     },
     "the-last-axeman-standing": {
       "aliases": ["Last Axeman, The Last Axeman Standing"],
-      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24", "standalone": false }],
+      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24" }],
       "kind": "model",
       "name": "The Last Axeman Standing",
       "notes": "Gambler's Chest Narrative Miniature.",
@@ -7703,7 +7704,7 @@
       "tags": ["female", "plastic", "generic", "2023", "gamblers-chest"]
     },
     "tough-guy": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24", "standalone": false }],
+      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24" }],
       "kind": "model",
       "name": "Tough Guy",
       "notes": "Gambler's Chest Narrative Miniature.",
@@ -7711,21 +7712,21 @@
       "tags": ["plastic", "generic", "male", "2023", "gamblers-chest"]
     },
     "twilight-cloak": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2019-11-29", "standalone": false }],
+      "editions": [{ "id": "plastic", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2019-11-29" }],
       "kind": "model",
       "name": "Twilight Cloak",
       "size": "30",
       "tags": ["female", "plastic", "generic", "2019"]
     },
     "verdant-lord": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Campaigns of Death", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseWindow": "2026 Q4", "standalone": false }],
+      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Campaigns of Death", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseWindow": "2026 Q4" }],
       "kind": "model",
       "name": "Verdant Lord",
       "size": "50",
       "tags": ["plastic", "2026", "upcoming", "campaigns-of-death"]
     },
     "vocal-spidicules": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Campaigns of Death", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseWindow": "2026 Q4", "standalone": false }],
+      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Campaigns of Death", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseWindow": "2026 Q4" }],
       "kind": "model",
       "name": "Vocal Spidicules",
       "size": "50",
@@ -7733,7 +7734,7 @@
     },
     "wanderer-luck": {
       "aliases": ["Luck the Wanderer"],
-      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24", "standalone": false }],
+      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24" }],
       "kind": "model",
       "name": "Wanderer - Luck",
       "notes": "Gambler's Chest Wanderer System Miniature.",
@@ -7741,7 +7742,7 @@
       "tags": ["female", "plastic", "2023", "gamblers-chest", "wanderer", "luck"]
     },
     "white-fang": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24", "standalone": false }],
+      "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24" }],
       "kind": "model",
       "name": "White Fang",
       "notes": "Gambler's Chest Narrative Miniature.",
@@ -7749,7 +7750,7 @@
       "tags": ["female", "plastic", "generic", "2023", "gamblers-chest"]
     },
     "young-survivor-rachel": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [0], "releaseDate": "2017-10-13", "standalone": false }],
+      "editions": [{ "id": "plastic", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2017-10-13" }],
       "kind": "model",
       "name": "Young Survivor Rachel",
       "notes": "Included with Core 1.5 and 1.6. Core 1.5 began shipping to backers on October 13, 2017.",
@@ -7942,12 +7943,15 @@
     "kingdom-death-monster-rulebook": {
       "accessoryType": "other",
       "editions": [
+        { "id": "1-3-included", "label": "1.3", "format": "physical", "includedOnly": true, "prices": [0], "releaseDate": "2015-09-15" },
         { "id": "1-5", "label": "1.5", "format": "physical", "prices": [4000], "releaseDate": "2017-10-13" },
-        { "id": "1-6", "label": "1.6", "format": "physical", "handle": "kingdom-death-monster-1-6-rulebook", "prices": [4000], "releaseDate": "2021-11-26" }
+        { "id": "1-5-included", "label": "1.5", "format": "physical", "includedOnly": true, "prices": [0], "releaseDate": "2017-10-13" },
+        { "id": "1-6", "label": "1.6", "format": "physical", "handle": "kingdom-death-monster-1-6-rulebook", "prices": [4000], "releaseDate": "2021-11-26" },
+        { "id": "1-6-included", "label": "1.6", "format": "physical", "includedOnly": true, "prices": [0], "releaseDate": "2021-11-26" }
       ],
       "kind": "accessory",
       "name": "Monster Core Game Rulebook",
-      "notes": "The physical rulebook included with Core 1.6, also sold separately for $40.",
+      "notes": "Core 1.3 and Resin boxes include the 1.3 rulebook. Core 1.5 and 1.6 include their matching rulebooks, which are also sold separately. Included copies have no separate component price.",
       "tags": ["gameplay", "core", "2021", "2017", "hunt-event", "rulebook"]
     },
     "kings-coins": {

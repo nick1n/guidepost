@@ -47,7 +47,8 @@ Known Encore dates stay unchanged.
 
 Current data rules:
 
-- `included-only` contains items whose editions are all explicitly marked `standalone: false`. Mixed items stay in `content`, retaining that flag on their included-only editions. Parent `includes` references remain valid across categories.
+- `included-only` contains items whose editions are all explicitly marked `includedOnly: true`. Mixed items retain their existing category and that flag on included-only editions. Parent `includes` references remain valid across categories.
+- Edition labels describe the release and may repeat. Use `includedOnly: true` for included-only copies rather than adding "Included" to the label; the UI derives that distinction. Set the flag only for confirmed included-only editions and omit it otherwise. Keep separate permanent IDs and `[0]` component prices when included copies are tracked separately from standalone releases. Shop matching excludes included-only editions. Workbook regeneration retains mapped IDs; a new legacy label reference prefers a unique standalone edition, otherwise requires an unambiguous included edition.
 
 - Content IDs are object keys. Explicit edition IDs are permanent lowercase kebab-case, unique within their item. Keep IDs when labels
   or facts change; never reuse retired IDs. Creation tooling suggests initial IDs and rejects collisions. Reserve `item` and `bundle`
@@ -126,7 +127,7 @@ creation year is at least one year earlier than publication year.
 | `vignette-of-death-collection`          | Regional listings map to the same 2025 bundle. Its contents are fixed to the three physical vignettes released at that time; future vignettes and Sim editions are not added automatically.                                                                                                             |
 | `set-promos-of-death`                   | Tentative 2027 release uses `releaseWindow`, not an exact date.                                                                                                                                                                                                                                         |
 
-Armor-kit Naked editions retain the former standalone edition's price and date. Included Plastic editions use `[0]`, are marked `standalone: false`, and follow the earliest applicable physical Core or expansion release. A parent with only a future release window passes that window to the included edition. `[0]` represents no separate component price, not a free standalone shop product. The blanket Naked-edition rule also covers included-only kits; those labels do not establish that a standalone product was sold.
+Armor-kit Naked editions retain the former standalone edition's price and date. Included Plastic editions use `[0]`, are marked `includedOnly: true`, and follow the earliest applicable physical Core or expansion release. A parent with only a future release window passes that window to the included edition. `[0]` represents no separate component price, not a free standalone shop product. The blanket Naked-edition rule also covers included-only kits; those labels do not establish that a standalone product was sold.
 
 Included Plastic monster editions follow the same zero-price and parent-date convention. Resin, Encore, Bust, and other standalone releases retain their own prices and dates. Physical Core and official expansion editions use Plastic materials, except Core's Resin edition; Sim editions have no physical material.
 
@@ -136,9 +137,11 @@ The Ultimate Starting Survivor Set - Finale Edition uses the cached `products-pa
 
 The regular Ultimate Starting Survivor Set follows the cached `lantern-year-29-bundle` listing: Core 1.6, Gambler's Chest, Frogdog, Black Knight, Flower Knight, Sunstalker, Dragon King, Slenderman, Lonely Tree, Dung Beetle Knight, Gorm, Lion Knight, White Gigalion, and Killennium Butcher. Green Knight Armor Expansion retains reviewed `kind: "box"`.
 
-The Oblivion Mosquito monster and Oblivion Mosquito Armor Kit have separate included Plastic editions for the expansion's 2027 release window. These editions use `[0]` for no separate component price and `standalone: false`. Their earlier Naked editions keep their own prices and dates.
+The Oblivion Mosquito monster and Oblivion Mosquito Armor Kit have separate included Plastic editions for the expansion's 2027 release window. These editions use `[0]` for no separate component price and `includedOnly: true`. Their earlier Naked editions keep their own prices and dates.
 
-Goblin Dragon is confirmed by the catalog owner as part of Abyssal Woods. Its included Plastic edition follows the expansion's 2030 release window; the Naked edition retains its 2023 date and price. Steel Wax Armor Kit is confirmed by the catalog owner as part of Honeycomb Weaver. Its included Plastic edition follows the expansion's 2026 release window and uses [0] with standalone: false; the Naked edition retains its 2024 date and $30 price.
+Goblin Dragon is confirmed by the catalog owner as part of Abyssal Woods. Its included Plastic edition follows the expansion's 2030 release window; the Naked edition retains its 2023 date and price. Steel Wax Armor Kit is confirmed by the catalog owner as part of Honeycomb Weaver. Its included Plastic edition follows the expansion's 2026 release window and uses [0] with includedOnly: true; the Naked edition retains its 2024 date and $30 price.
+
+Core 1.3 and Resin boxes include the same 1.3 rulebook and share its `1-3-included` edition reference. The former `resin-included` rulebook ID is retired and must not be reused.
 
 ## Shop handles
 

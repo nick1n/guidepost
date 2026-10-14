@@ -64,6 +64,7 @@ function match(catalog: Catalog, product: Product, mappings: Record<string, Mapp
   if (matches.length !== 1) return { confidence: matches.length ? "ambiguous" : "unmatched", candidates: matches.map((x) => x.itemId) };
   const { category, itemId, item, urlMatches } = matches[0]!;
   const edition = item.editions?.filter((e) => {
+    if (e.includedOnly) return false;
     try {
       const url = catalogListing(item, e);
       return !!url && productUrl(url) === listing;

@@ -33,6 +33,7 @@ export function reviewTags(items: readonly Pick<ReviewItem, "tags">[]) {
 }
 
 export function reviewShopUrl(item: ReviewItem, edition: ReviewEdition) {
+  if (edition.includedOnly) return;
   const handle = item.handle ?? edition.handle;
   return handle ? "https://shop.kingdomdeath.com/products/" + handle : (edition.url ?? item.url);
 }

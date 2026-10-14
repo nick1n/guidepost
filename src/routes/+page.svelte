@@ -261,7 +261,7 @@
 {#snippet toolContent(i: NavigationItem)}
   <span class="tool-title">
     {i.title}
-    {#if i.href?.startsWith("http")}
+    {#if i.href?.startsWith("http") || i.destinations}
       <span class="external-icon i-material-symbols:arrow-outward" aria-hidden="true"></span>
     {/if}
   </span>
@@ -309,7 +309,6 @@
                     aria-describedby="new-tab-description"
                   >
                     {destination.label}
-                    <span class="external-icon i-material-symbols:arrow-outward" aria-hidden="true"></span>
                   </a>
                 {/each}
               </span>
@@ -417,7 +416,6 @@
     --shift-y: 0px;
     --size-icon-tool: 1.875rem;
     --space-page: round(clamp(1rem, 4vw, 3rem), 1px);
-    --width-nav: 25rem;
 
     --duration-ambient: 43s;
     --duration-candle: 7s;
@@ -502,7 +500,8 @@
     position: relative;
     z-index: 1;
     display: grid;
-    max-inline-size: var(--width-nav);
+    inline-size: fit-content;
+    max-inline-size: 100%;
     margin-inline-start: auto;
     margin-block: 1rem;
     padding: 1rem;

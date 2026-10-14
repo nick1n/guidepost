@@ -92,7 +92,7 @@ export class CollectionBrowsing {
   #latestUnowned = $derived(
     this.#filtered.flatMap((item) => {
       const edition = reviewEditions(item).at(-1);
-      return edition && edition.standalone !== false && !this.#getEdition(item.id, edition.id).owned ? [{ item, edition }] : [];
+      return edition && !edition.includedOnly && !this.#getEdition(item.id, edition.id).owned ? [{ item, edition }] : [];
     }),
   );
   #tagCounts = $derived.by(() => {

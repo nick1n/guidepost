@@ -6,48 +6,38 @@
    * 1 is lightest, 9 darkest; each scale uses the same lightness levels.
    * Chroma tapers toward both ends; hex comments are rounded sRGB approximations.
    * Closest matches use OKLab distance within each color family. */
-  --red-0: oklch(95% 0.02 27); /* #fceae7 */
-  --red-1: oklch(87% 0.05 27); /* #f4c8c3 */
-  --red-2: oklch(79% 0.09 27); /* #efa49b */
-  --red-3: oklch(71% 0.13 27); /* #e77f75; closest to: bg-top */
-  --red-4: oklch(63% 0.17 27); /* #dd574e; closest to: sfa-fore, fa-fore */
-  --red-5: oklch(55% 0.2 27); /* #cc2827 */
-  --red-6: oklch(47% 0.17 27); /* #a51f1e; closest to: bg-bottom */
-  --red-7: oklch(39% 0.14 27); /* #801616; closest to: back */
-  --red-8: oklch(31% 0.1 27); /* #581412; closest to: sfa-back */
-  --red-9: oklch(23% 0.06 27); /* #340f0d */
+  --red-0: oklch(95% 0.02 16); /* #fce9ea */
+  --red-1: oklch(87% 0.05 16); /* #f4c8c9 */
+  --red-2: oklch(79% 0.09 16); /* #efa3a7 */
+  --red-3: oklch(71% 0.13 16); /* #e77d86; closest to: bg-top */
+  --red-4: oklch(63% 0.17 16); /* #dc5465; closest to: sfa-fore, fa-fore */
+  --red-5: oklch(55% 0.2 16); /* #cb2348 */
+  --red-6: oklch(47% 0.17 16); /* #a41b39; closest to: bg-bottom */
+  --red-7: oklch(39% 0.14 16); /* #7f142a; closest to: back */
+  --red-8: oklch(31% 0.1 16); /* #58131e; closest to: sfa-back */
+  --red-9: oklch(23% 0.06 16); /* #340f13 */
 
-  --green-0: oklch(95% 0.03 147); /* #e2f4e3 */
-  --green-1: oklch(87% 0.07 147); /* #b7e1ba */
-  --green-2: oklch(79% 0.12 147); /* #85d08d */
-  --green-3: oklch(71% 0.17 147); /* #49bd5e */
-  --green-4: oklch(63% 0.18 147); /* #18a440; closest to: bg-top */
-  --green-5: oklch(55% 0.16 147); /* #0b8932; closest to: bg-bottom */
-  --green-6: oklch(47% 0.13 147); /* #146d2a; closest to: cost-bg, border */
-  --green-7: oklch(39% 0.11 147); /* #09541d */
-  --green-8: oklch(31% 0.09 147); /* #023c11 */
-  --green-9: oklch(23% 0.06 147); /* #05240a */
+  --green-0: oklch(95% 0.03 136); /* #e6f3e0 */
+  --green-1: oklch(87% 0.07 136); /* #c0dfb2 */
+  --green-2: oklch(79% 0.12 136); /* #97cc7e */
+  --green-3: oklch(71% 0.17 136); /* #6db842 */
+  --green-4: oklch(63% 0.18 136); /* #51a015; closest to: bg-top */
+  --green-5: oklch(55% 0.16 136); /* #418509; closest to: bg-bottom */
+  --green-6: oklch(47% 0.13 136); /* #356a11; closest to: cost-bg, border */
+  --green-7: oklch(39% 0.11 136); /* #275108 */
+  --green-8: oklch(31% 0.09 136); /* #193a02 */
+  --green-9: oklch(23% 0.06 136); /* #0f2304 */
 
-  --blue-0: oklch(95% 0.02 267); /* #e8eefc */
-  --blue-1: oklch(87% 0.06 267); /* #c2d4fd */
-  --blue-2: oklch(79% 0.1 267); /* #9eb9fc; closest to: bg-top, alert, banner, beta */
-  --blue-3: oklch(71% 0.15 267); /* #779cff; closest to: pattern */
-  --blue-4: oklch(63% 0.16 267); /* #5d82e9; closest to: bg-bottom */
-  --blue-5: oklch(55% 0.14 267); /* #4d6cc3 */
-  --blue-6: oklch(47% 0.12 267); /* #3c569e */
-  --blue-7: oklch(39% 0.09 267); /* #2f4275; closest to: cost-bg, border, shadow */
-  --blue-8: oklch(31% 0.06 267); /* #232f4f */
-  --blue-9: oklch(23% 0.03 267); /* #171c2b */
-
-  --purple-1: oklch(95% 0.03 316); /* #f7e9fc */
-  --purple-2: oklch(84% 0.1 316); /* #e4b7f7 */
-  --purple-3: oklch(71% 0.18 316); /* #cc79ec */
-  --purple-4: oklch(61% 0.24 316); /* #b841e1 */
-  --purple-5: oklch(52% 0.25 316); /* #9d0bc6; closest to: color-purple */
-  --purple-6: oklch(40% 0.19 316); /* #6d088a */
-  --purple-7: oklch(29% 0.14 316); /* #450158 */
-  --purple-8: oklch(24% 0.11 316); /* #320441 */
-  --purple-9: oklch(20% 0.09 316); /* #250330 */
+  --blue-0: oklch(95% 0.02 256); /* #e6effc */
+  --blue-1: oklch(87% 0.06 256); /* #bbd7fc */
+  --blue-2: oklch(79% 0.1 256); /* #90bdfa; closest to: alert, banner, beta */
+  --blue-3: oklch(71% 0.15 256); /* #5ea3fd; closest to: bg-top, pattern */
+  --blue-4: oklch(63% 0.16 256); /* #4089e7; closest to: bg-bottom */
+  --blue-5: oklch(55% 0.14 256); /* #3371c1 */
+  --blue-6: oklch(47% 0.12 256); /* #275b9c */
+  --blue-7: oklch(39% 0.09 256); /* #214574; closest to: cost-bg, border, shadow */
+  --blue-8: oklch(31% 0.06 256); /* #1b314e */
+  --blue-9: oklch(23% 0.03 256); /* #131d2b */
 
   --grey-0: oklch(98% 0 0); /* #f8f8f8 */
   --grey-1: oklch(95% 0 0); /* #eeeeee */
@@ -82,7 +72,6 @@
   --color-red: var(--red-4);
   --color-green: var(--green-3);
   --color-blue: var(--blue-3);
-  --color-purple: var(--purple-4);
 
   --accent-red: var(--color-red);
   --accent-green: var(--color-green);

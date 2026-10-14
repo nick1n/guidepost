@@ -48,9 +48,9 @@
   let feedback = $state<OwnershipKind>();
   let feedbackTimer: ReturnType<typeof setTimeout> | undefined;
   onDestroy(() => clearTimeout(feedbackTimer));
-  const editions = $derived(reviewEditions(item));
+  const editions = $derived(reviewEditions(item).filter((edition) => !edition.includedOnly || selection(edition).owned));
   const selected = $derived(
-    editions.find((edition) => edition.id === inspected) ?? editions.findLast((edition) => edition.standalone !== false) ?? editions.at(-1),
+    editions.find((edition) => edition.id === inspected) ?? editions.findLast((edition) => !edition.includedOnly) ?? editions.at(-1),
   );
   const badges = $derived(reviewBadges(item));
   const numberedEditions = $derived(reviewNumberedEditions(item).filter((edition) => selection(edition).owned));
@@ -73,7 +73,7 @@
   function holdOwnership() {
     if (!writable) return "Collection changes are unavailable until your collection is loaded.";
     const owned = !hasOwned;
-    const targets = editions.filter((edition) => (owned ? edition.standalone !== false : selection(edition).owned));
+    const targets = editions.filter((edition) => (owned ? !edition.includedOnly : selection(edition).owned));
     collectionActions.run(
       collection.setEditionsOwned(
         targets.map((edition) => ({ item, edition })),
@@ -88,18 +88,18 @@
     else inspected = edition.id;
   }
   function toggleOwned(edition: ReviewEdition) {
-    if (!writable || edition.standalone === false) return;
+    if (!writable || edition.includedOnly) return;
     clearTimeout(feedbackTimer);
     feedback = undefined;
     collectionActions.run(collection.setEditionsOwned([{ item, edition }], !selection(edition).owned));
     inspected = edition.id;
   }
   function toggleWish(edition: ReviewEdition) {
-    if (!writable || edition.standalone === false) return;
+    if (!writable || edition.includedOnly) return;
     collectionActions.run(collection.toggleWish(collectionKey(item.id, edition.id)));
   }
   function updateCopyNumber(edition: ReviewEdition, input: HTMLInputElement) {
-    if (!writable || edition.standalone === false) return;
+    if (!writable || edition.includedOnly) return;
     const copyNumber = input.value === "" && !input.validity.badInput ? undefined : input.valueAsNumber;
     collectionActions.run(collection.setCopyNumber(collectionKey(item.id, edition.id), copyNumber), { success: false });
   }
@@ -145,7 +145,7 @@
           type="button"
           aria-label="Owned editions of {item.name}"
           aria-pressed={hasOwned}
-          disabled={!writable || (!hasOwned && (!selected || selected.standalone === false))}
+          disabled={!writable || (!hasOwned && (!selected || selected.includedOnly))}
           {...events}
         >
           {@render paint()}
@@ -204,7 +204,7 @@
                   type="number"
                   min="1"
                   max={Math.min(numberedEdition.runSize ?? copyNumberMaximum, copyNumberMaximum)}
-                  disabled={!writable || numberedEdition.standalone === false}
+                  disabled={!writable || numberedEdition.includedOnly}
                   value={value.copyNumber ?? ""}
                   oninput={(event) => updateCopyNumber(numberedEdition, event.currentTarget)}
                   placeholder="13"
@@ -261,7 +261,7 @@
     <p class="included-note">
       Covered by your {references.map((parent) => `${parent.parent} (${parent.parentEdition})`).join(", ")}.
     </p>
-  {:else if edition.standalone === false}
+  {:else if edition.includedOnly}
     <p class="included-note">This edition is tracked through the item it comes with.</p>
   {/if}
   {#if item.includes?.length || edition.includesAllSim}
@@ -317,14 +317,16 @@
   {@const value = selection(edition)}
   {@const gameplay = editionGameplay(item, edition)}
   {@const price = reviewPrice(item, edition)}
-  {@const detail = edition.format === "digital" ? "Digital" : editionMaterials(edition).join(", ")}
+  {@const detail = [...new Set([edition.name, ...(edition.format === "digital" ? ["Digital"] : editionMaterials(edition))])]
+    .filter((part) => part && part !== edition.label)
+    .join(", ")}
   <div class={["edition", active && "inspected"]}>
     <label class="own">
       <input
         type="checkbox"
         aria-label="Own {item.name}, {editionLabel(edition)}"
         checked={!!value.owned}
-        disabled={!writable || edition.standalone === false}
+        disabled={!writable || edition.includedOnly}
         onchange={() => toggleOwned(edition)}
       />
     </label>
@@ -340,8 +342,8 @@
       onclick={() => selectEdition(edition)}
     >
       <span class="edition-name">
-        <strong class="edition-title">{editionLabel(edition)}</strong>
-        {#if detail && detail !== editionLabel(edition)}<span class="edition-material">{detail}</span>{/if}
+        <strong class="edition-title">{edition.label}</strong>
+        {#if detail}<span class="edition-meta">{detail}</span>{/if}
       </span>
       <small class="edition-date">{release(edition)}</small>
     </button>
@@ -354,7 +356,7 @@
       ></span>
     {/if}
     <div class="edition-price">
-      {#if edition.standalone === false}
+      {#if edition.includedOnly}
         <small>Included only</small>
       {:else}
         {price === undefined ? "Unknown" : formatPrice(price, item.currency)}
@@ -365,7 +367,7 @@
       type="button"
       aria-pressed={!!value.wished}
       aria-label="Wishlist {item.name}, {editionLabel(edition)}"
-      disabled={!writable || !!value.owned || edition.standalone === false}
+      disabled={!writable || !!value.owned || edition.includedOnly}
       onclick={() => toggleWish(edition)}
     >
       <span class={["wish-icon", value.wished ? "i-material-symbols:favorite" : "i-material-symbols:favorite-outline"]} aria-hidden="true"
@@ -381,7 +383,7 @@
   }
   .caption,
   .card-meta,
-  .edition-material,
+  .edition-meta,
   .run,
   .copy,
   .included-note,
@@ -593,10 +595,6 @@
       --accent: var(--accent-red);
     }
   }
-  .external-icon {
-    --size-icon: 1em;
-    color: var(--accent);
-  }
   .editions {
     display: grid;
     grid-template-columns: max-content minmax(0, 1fr) max-content max-content auto max-content;
@@ -681,7 +679,7 @@
     gap: 0.125rem 0.5rem;
     overflow-wrap: anywhere;
   }
-  .edition-material {
+  .edition-meta {
     text-transform: lowercase;
   }
   .edition-date {
@@ -834,7 +832,7 @@
       grid-template-columns: minmax(0, max-content) minmax(0, max-content);
     }
     .edition-title,
-    .edition-material {
+    .edition-meta {
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;

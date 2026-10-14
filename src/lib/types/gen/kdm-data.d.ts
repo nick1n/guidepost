@@ -151,7 +151,7 @@ export interface Item {
 export interface Edition {
   id: EditionId;
   /**
-   * Selectable release label, such as First Run, Encore, Plastic, or Sim.
+   * Display label, such as First Run, Encore, Plastic, or Sim. Labels may repeat; the edition ID supplies identity and includedOnly supplies inclusion status.
    */
   label: string;
   /**
@@ -178,6 +178,10 @@ export interface Edition {
    * Kingdom Death shop product handle. Used only when the item has no shared handle.
    */
   handle?: string;
+  /**
+   * True when this edition is available only as part of another product. Omit for other or unconfirmed releases. Collection views may hide these editions.
+   */
+  includedOnly?: true;
   /**
    * Grants every current and future simulator edition. Resolve against editions marked simulator when reading the catalog; do not materialize a static list.
    */
@@ -225,10 +229,6 @@ export interface Edition {
    * Physical release size override when it differs from the item default. Sim never has a model size. Omit unknown placeholders.
    */
   size?: string;
-  /**
-   * False when confirmed to be available only as part of another product. Omit for standalone or unconfirmed releases. Collection views may hide these editions.
-   */
-  standalone?: false;
   /**
    * External listing URL. Kingdom Death shop product listings use handle instead.
    */

@@ -1,5 +1,5 @@
 import { Parser } from "htmlparser2";
-import { editionId } from "./identity.mts";
+import { editionByLabel, editionId } from "./identity.mts";
 import type { Edition, Item, Mapping, Product, Variant } from "./types.mts";
 
 function contents(html: string) {
@@ -123,7 +123,8 @@ export function resolveReleases(item: Item, product: Product, options: ReleaseOp
         : /\bresin\b/i.test(text)
           ? "Resin"
           : undefined;
-  const standard = (item.editions ?? []).filter((edition) => !edition.simulator && !/^(Painters|Bust)(?::|$)/.test(edition.label));
+  const editions = (item.editions ?? []).filter((edition) => !edition.includedOnly);
+  const standard = editions.filter((edition) => !edition.simulator && !/^(Painters|Bust)(?::|$)/.test(edition.label));
   let fallback = retrievedMaterial ?? "Box";
   if (policy !== "retrieve") {
     if (mapping?.edition !== undefined) fallback = mapping.edition;
@@ -157,7 +158,7 @@ export function resolveReleases(item: Item, product: Product, options: ReleaseOp
     groups.set(label, variants);
   }
   const releases = [...groups].map(([label, variants]) => {
-    const edition = item.editions?.find((edition) => edition.label === label);
+    const edition = editionByLabel(editions, label);
     const materials =
       policy === "retrieve"
         ? retrievedMaterial && label !== "Sim" && retrievedMaterial !== label && !/^Deathgrey|^Deathpink/.test(label)
@@ -173,7 +174,8 @@ export function resolveReleases(item: Item, product: Product, options: ReleaseOp
 
 /** Match a complete availability snapshot conservatively, rejecting ambiguous shared listings. */
 export function availabilityReleases(product: Product, editions: Edition[]) {
-  return new Map(editions.map((edition) => [edition, variantsFor(edition, product, editions)]));
+  const candidates = editions.filter((edition) => !edition.includedOnly);
+  return new Map(editions.map((edition) => [edition, edition.includedOnly ? [] : variantsFor(edition, product, candidates)]));
 }
 
 /** Build missing editions, assigning permanent IDs only at creation. */

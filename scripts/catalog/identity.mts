@@ -14,6 +14,12 @@ export function editionId(label: string, editions: readonly Pick<Edition, "id">[
   return id;
 }
 
+export function editionByLabel(editions: readonly Edition[], label: string) {
+  const matches = editions.filter((edition) => edition.label === label);
+  if (matches.length > 1) throw new Error(`Ambiguous edition label: ${label}; select a permanent edition ID`);
+  return matches[0];
+}
+
 const families = [
   "frozen-survivor",
   "indomitable-survivor",

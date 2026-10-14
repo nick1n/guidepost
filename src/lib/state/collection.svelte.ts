@@ -65,7 +65,7 @@ export class Collection {
         .map((edition) => ({ item, edition })),
     ),
   );
-  readonly ownedCount = $derived(this.owned.filter(({ edition }) => edition.standalone !== false).length);
+  readonly ownedCount = $derived(this.owned.filter(({ edition }) => !edition.includedOnly).length);
   readonly wishlistCount = $derived(
     this.catalog.entries.reduce(
       (total, item) => total + reviewEditions(item).filter((edition) => this.getEdition(item.id, edition.id).wished).length,

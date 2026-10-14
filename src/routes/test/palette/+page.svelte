@@ -613,6 +613,7 @@
     font-size: var(--text-md);
   }
   pre {
+    user-select: text;
     max-block-size: 24rem;
     margin-block-start: 0.75rem;
     padding: 1rem;

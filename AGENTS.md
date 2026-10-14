@@ -157,8 +157,8 @@ Preserve direct owner edits and reviewed facts.
   Beta belongs on editions as `beta: true`, without beta ID prefixes. Item badges aggregate all editions.
   Bundle gameplay respects included editions and their overrides.
 - Edition prices are integer cents in `prices` arrays (recorded sales plus current MSRP, maximum is MSRP). Missing is unknown;
-  `[0]` is a known zero price. Included Plastic components use `[0]` and `standalone: false`, preserving sold resin/Naked
-  editions. All-non-standalone items belong in included-only; mixed items stay in content.
+  `[0]` is a known zero price. Included Plastic components use `[0]` and `includedOnly: true`, preserving sold resin/Naked
+  editions. Items whose editions are all included-only belong in included-only; mixed items stay in content.
 - Exact release dates use edition `releaseDate`; windows use `releaseWindow`, quarters as `YYYY Qn`. Earlier documented releases
   take precedence over restock dates. Undated Encore without a window inherits First Run or Deathgrey.
   Future Box releases use `Preorder` and Plastic material; items with any future release retain `upcoming`.

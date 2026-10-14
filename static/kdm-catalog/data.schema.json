@@ -152,7 +152,7 @@
           "tsType": "string",
           "type": "string",
           "minLength": 1,
-          "description": "Selectable release label, such as First Run, Encore, Plastic, or Sim.",
+          "description": "Display label, such as First Run, Encore, Plastic, or Sim. Labels may repeat; the edition ID supplies identity and includedOnly supplies inclusion status.",
           "enum": [
             "1.3",
             "1.5",
@@ -228,6 +228,11 @@
           "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
           "description": "Kingdom Death shop product handle. Used only when the item has no shared handle."
         },
+        "includedOnly": {
+          "type": "boolean",
+          "const": true,
+          "description": "True when this edition is available only as part of another product. Omit for other or unconfirmed releases. Collection views may hide these editions."
+        },
         "includesAllSim": {
           "const": true,
           "description": "Grants every current and future simulator edition. Resolve against editions marked simulator when reading the catalog; do not materialize a static list."
@@ -280,11 +285,6 @@
           "type": "string",
           "description": "Physical release size override when it differs from the item default. Sim never has a model size. Omit unknown placeholders.",
           "minLength": 1
-        },
-        "standalone": {
-          "type": "boolean",
-          "const": false,
-          "description": "False when confirmed to be available only as part of another product. Omit for standalone or unconfirmed releases. Collection views may hide these editions."
         },
         "url": {
           "type": "string",

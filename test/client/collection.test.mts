@@ -26,7 +26,7 @@ function bundleCatalog(): Catalog {
         name: "Model",
         tags: [],
         editions: [
-          { id: "plastic", label: "Plastic", format: "physical", standalone: false, prices: [0] },
+          { id: "plastic", label: "Plastic", format: "physical", includedOnly: true, prices: [0] },
           { id: "resin", label: "Resin", format: "physical", prices: [1250] },
         ],
       },

@@ -14,6 +14,7 @@ import {
 import { publishFiles } from "./publication.mts";
 export type { WorkbookMap, WorkbookMappingRow as WorkbookRow, WorkbookTarget } from "../../src/lib/types/workbook.ts";
 import type { Catalog } from "./types.mts";
+import { editionByLabel } from "./identity.mts";
 
 type SourceRef = { category: WorkbookTarget["category"]; itemId: string; edition?: string };
 type ImportRow = SourceRef & {
@@ -53,15 +54,20 @@ export function buildWorkbookMap(imports: WorkbookImports, catalog: Catalog, pre
         if (former && former.editionId !== editionId) throw new Error(`Workbook edition changed at ${key} ${slot}; review required`);
         return { category: ref.category, contentId: ref.itemId, editionId };
       }
-      let edition = editions.find((candidate) => candidate.label === ref.edition);
+      const matches = editions.filter((candidate) => candidate.label === ref.edition);
+      let edition;
       if (former) {
         const retained = editions.find((candidate) => candidate.id === former.editionId);
         if (!retained) throw new Error(`Mapped edition disappeared at ${key} ${slot}: ${former.editionId}`);
         if (former.sourceEdition !== ref.edition && retained.label !== ref.edition)
           throw new Error(`Workbook edition reference changed at ${key} ${slot}; review required`);
-        if (edition && edition.id !== retained.id)
+        if (matches.length && !matches.includes(retained))
           throw new Error(`Workbook edition now resolves to another ID at ${key} ${slot}; review required`);
         edition = retained;
+      } else {
+        // Legacy workbook labels describe standalone products unless only included releases exist.
+        const otherEditions = matches.filter((candidate) => !candidate.includedOnly);
+        edition = editionByLabel(otherEditions.length ? otherEditions : matches, ref.edition);
       }
       if (!edition?.id) throw new Error(`Unknown workbook edition at ${key} ${slot}: ${ref.itemId}/${ref.edition}`);
       return { category: ref.category, contentId: ref.itemId, editionId: edition.id, sourceEdition: ref.edition };

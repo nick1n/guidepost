@@ -23,7 +23,7 @@ export async function validateCatalog(catalog: Catalog, schemaPath = "static/kdm
   const items = new Map<string, Catalog["content"][string]>();
   for (const category of categories)
     for (const [id, item] of Object.entries(catalog[category])) {
-      const includedOnly = !!item.editions?.length && item.editions.every((edition) => edition.standalone === false);
+      const includedOnly = !!item.editions?.length && item.editions.every((edition) => edition.includedOnly);
       if (category === "included-only" && !includedOnly)
         throw new Error("Included-only item has a standalone or unconfirmed edition: " + id);
       if (category === "content" && includedOnly) throw new Error("Move included-only item to included-only: " + id);
@@ -34,10 +34,9 @@ export async function validateCatalog(catalog: Catalog, schemaPath = "static/kdm
       const normalized = structuredClone(item);
       normalizeItem(normalized);
       if (JSON.stringify(normalized) !== JSON.stringify(item)) throw new Error("Untrimmed catalog facts or URLs: " + id);
-      const labels = (item.editions ?? []).map((edition) => edition.label);
-      if (new Set(labels).size !== labels.length) throw new Error("Duplicate edition label: " + id);
       if (item.editions?.some((edition) => edition.simulator) && !item.editions[0]?.simulator) throw new Error("Sim must be first: " + id);
-      if (labels.some((label, index) => label !== item.editions!.toSorted(editionComparator(item, id))[index]!.label))
+      const sorted = item.editions?.toSorted(editionComparator(item, id));
+      if (item.editions?.some((edition, index) => edition.id !== sorted![index]!.id))
         throw new Error("Editions are out of release order: " + id);
       const editionIds = new Set<string>();
       for (const edition of item.editions ?? []) {

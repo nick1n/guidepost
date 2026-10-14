@@ -11,13 +11,14 @@ export function catalogUrl(value: string) {
 export function inheritEncoreDates(item: Item) {
   const editions = item.editions ?? [];
   for (const prefix of ["", "Painters: ", "Bust: "]) {
-    const source =
-      editions.find((edition) => edition.label === prefix + "First Run" && edition.releaseDate) ??
-      editions.find((edition) => edition.label.startsWith(prefix + "Deathgrey") && edition.releaseDate);
-    if (source) {
-      // User-approved fallback for Encore releases without their own date or window.
-      for (const edition of editions)
-        if (edition.label === prefix + "Encore" && !edition.releaseDate && !edition.releaseWindow) edition.releaseDate = source.releaseDate;
+    for (const encore of editions) {
+      if (encore.label !== prefix + "Encore" || encore.releaseDate || encore.releaseWindow) continue;
+      const candidates = editions.filter((edition) => edition.includedOnly === encore.includedOnly);
+      const source =
+        candidates.find((edition) => edition.label === prefix + "First Run" && edition.releaseDate) ??
+        candidates.find((edition) => edition.label.startsWith(prefix + "Deathgrey") && edition.releaseDate);
+      // User-approved fallback stays within the same standalone or included release type.
+      if (source) encore.releaseDate = source.releaseDate;
     }
   }
 }
@@ -28,7 +29,12 @@ export function normalizeItem(item: Item) {
     if (edition.available !== true) delete edition.available;
     edition.format ??= ["Sim", "3D Files"].includes(edition.label) ? "digital" : "physical";
     if (edition.label === "Sim") edition.simulator = true;
-    if (!edition.materials && ["Plastic", "Resin", "Photoresin", "Deathgrey", "Metal", "PVC", "Deathpink"].includes(edition.label))
+    if (
+      !edition.materials &&
+      item.kind !== "accessory" &&
+      !item.accessoryType &&
+      ["Plastic", "Resin", "Photoresin", "Deathgrey", "Metal", "PVC", "Deathpink"].includes(edition.label)
+    )
       edition.materials = [edition.label];
     if (
       edition.runSize !== undefined ||

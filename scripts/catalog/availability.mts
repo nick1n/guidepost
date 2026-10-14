@@ -21,6 +21,7 @@ export function availabilityFromUrls(catalog: Catalog, products: Product[]) {
       if (category === "homebrew") continue;
       const groups = new Map<string, Edition[]>();
       for (const edition of item.editions ?? []) {
+        if (edition.includedOnly) continue;
         const url = catalogListing(item, edition);
         const key = url ? handle(url) : undefined;
         if (key) groups.set(key, [...(groups.get(key) ?? []), edition]);
@@ -34,6 +35,10 @@ export function availabilityFromUrls(catalog: Catalog, products: Product[]) {
       for (const edition of item.editions ?? []) {
         const previous = edition.available;
         delete edition.available;
+        if (edition.includedOnly) {
+          if (previous !== edition.available) changed++;
+          continue;
+        }
         const url = catalogListing(item, edition);
         const key = url ? handle(url) : undefined;
         const product = key ? listings.get(key) : undefined;

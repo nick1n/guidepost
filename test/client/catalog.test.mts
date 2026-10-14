@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { catalogTags, editionGameplay, editionMaterials } from "#lib/kdm-data.ts";
+import { collectionKey } from "#lib/types/collection.ts";
+import { catalogTags, editionGameplay, editionLabel, editionMaterials } from "#lib/kdm-data.ts";
 import { reviewEditions, reviewEntries, reviewGameplayFirst, reviewIndex, reviewShopUrl, type ReviewCatalog } from "#lib/catalog-view.ts";
 
 describe("review catalog facts", () => {
@@ -350,5 +351,39 @@ describe("Simulator key access", () => {
     expect(after.inclusions("kingdom-death-simulator", "simulator-master-dwelling-key")).toHaveLength(3);
     expect(after.search.get("expansion-future")).toContain("future knight expansion-future tomorrow monster-lion lion");
     expect(before.inclusions("kingdom-death-simulator", "simulator-master-dwelling-key")).toHaveLength(2);
+  });
+});
+
+describe("included edition display and identity", () => {
+  it("uses plain edition labels while resolving ownership by permanent edition ID", () => {
+    const included = { id: "1-6-included", label: "1.6", format: "physical" as const, includedOnly: true as const };
+    const standalone = { id: "1-6", label: "1.6", format: "physical" as const };
+    const data: ReviewCatalog = {
+      content: {
+        core: {
+          name: "Core",
+          tags: [],
+          editions: [standalone],
+          includes: [{ item: "rulebook", editionId: included.id, parentEditionIds: [standalone.id] }],
+        },
+      },
+      accessories: { rulebook: { name: "Rulebook", tags: [], handle: "rulebook", editions: [included, standalone] } },
+      "included-only": {},
+      bundles: {},
+      homebrew: {},
+    };
+    const index = reviewIndex(data);
+    const core = index.byId.get("core")!;
+    expect(editionLabel(standalone)).toBe("1.6");
+    expect(editionLabel(included)).toBe("1.6");
+    const named = { ...included, name: "Alternate cover" };
+    expect(editionLabel(named)).toBe("1.6");
+    expect(index.inclusions("core", "1-6")[0]!.editionLabel).toBe("1.6");
+    expect(index.ownershipKeys([{ item: core, edition: standalone }])).toEqual([
+      collectionKey("core", standalone.id),
+      collectionKey("rulebook", included.id),
+    ]);
+    expect(reviewShopUrl(data.accessories.rulebook, included)).toBeUndefined();
+    expect(reviewShopUrl(data.accessories.rulebook, standalone)).toBe("https://shop.kingdomdeath.com/products/rulebook");
   });
 });

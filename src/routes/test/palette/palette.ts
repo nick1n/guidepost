@@ -83,7 +83,7 @@ export const greenReferences = greenReferenceValues.map(([name, hex]) => ({ name
 export const redReferences = redReferenceValues.map(([name, hex]) => ({ name, hex, ...fromHex(hex) }));
 
 // Blue 270° gives red 30°, minimizing the six red references' combined squared OKLab distance.
-export const defaultBlueHue = 267;
+export const defaultBlueHue = 256;
 
 function luminance(rgb: number[]) {
   return 0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2];
@@ -190,11 +190,13 @@ export function matchReferences(shades: Shade[], references: Reference[] = blueR
 }
 
 export function exportCss(palette: Palette) {
-  const references = { blue: blueReferences, green: greenReferences, red: redReferences };
-  const matches = palette.rows.flatMap((row) => matchReferences(row.shades, references[row.family]));
+  const families: Family[] = ["red", "green", "blue"];
+  const rows = palette.rows.toSorted((left, right) => families.indexOf(left.family) - families.indexOf(right.family));
+  const references = { red: redReferences, green: greenReferences, blue: blueReferences };
+  const matches = rows.flatMap((row) => matchReferences(row.shades, references[row.family]));
   return (
     ":root {\n" +
-    palette.rows
+    rows
       .map((row) =>
         row.shades
           .map((shade) => {
@@ -205,12 +207,15 @@ export function exportCss(palette: Palette) {
           .join("\n"),
       )
       .join("\n\n") +
-    "\n\n  /* Exact reference colors for roles that need the original blue. */\n" +
-    blueReferences.map((reference) => "  --blue-" + reference.name + ": " + reference.hex + ";").join("\n") +
-    "\n\n  /* Exact reference colors for roles that need the original green. */\n" +
-    greenReferences.map((reference) => "  --green-" + reference.name + ": " + reference.hex + ";").join("\n") +
-    "\n\n  /* Exact reference colors for roles that need the original red. */\n" +
-    redReferences.map((reference) => "  --red-" + reference.name + ": " + reference.hex + ";").join("\n") +
+    families
+      .map(
+        (family) =>
+          "\n\n  /* Exact reference colors for roles that need the original " +
+          family +
+          ". */\n" +
+          references[family].map((reference) => "  --" + family + "-" + reference.name + ": " + reference.hex + ";").join("\n"),
+      )
+      .join("") +
     "\n}"
   );
 }

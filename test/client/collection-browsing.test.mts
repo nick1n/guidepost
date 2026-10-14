@@ -22,7 +22,7 @@ function fixture(count = 0) {
         tags: ["armor-kit"],
         editions: [
           { id: "old", label: "Original", format: "physical" },
-          { id: "included", label: "Included", format: "physical", standalone: false },
+          { id: "included", label: "Included", format: "physical", includedOnly: true },
         ],
       },
       ...Object.fromEntries(Array.from({ length: count }, (_, i) => [`model-${i}`, { name: `Model ${i}`, tags: ["model"] }])),

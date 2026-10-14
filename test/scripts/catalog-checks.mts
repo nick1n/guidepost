@@ -1587,7 +1587,7 @@ test("included-only items retain parent references and reviewed tags across cate
     name: "Joe",
     kind: "model",
     tags: ["generic"],
-    editions: [{ id: "plastic", label: "Plastic", format: "physical", materials: ["Plastic"], standalone: false }],
+    editions: [{ id: "plastic", label: "Plastic", format: "physical", materials: ["Plastic"], includedOnly: true }],
   };
   organizeCatalog(catalog);
   assert.equal((await validateCatalog(catalog, schemaPath)).items, 2);
@@ -1595,7 +1595,7 @@ test("included-only items retain parent references and reviewed tags across cate
   tags["included-only"].joe = ["generic"];
   assert.deepEqual(organizeTags(catalog, tags)["included-only"].joe, ["generic"]);
   applyTags(catalog, tags);
-  delete catalog["included-only"].joe.editions![0]!.standalone;
+  delete catalog["included-only"].joe.editions![0]!.includedOnly;
   await assert.rejects(validateCatalog(catalog, schemaPath), /Included-only item has a standalone or unconfirmed edition/);
 });
 
