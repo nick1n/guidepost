@@ -243,6 +243,25 @@ describe("review catalog facts", () => {
     expect(data.shopUpdated).toBe("2026-10-06");
   });
 
+  it("iterates only known categories in the catalog display order", () => {
+    const data: ReviewCatalog & { futureMetadata: { importedAt: string } } = {
+      content: { model: { name: "Model", tags: [] } },
+      bundles: { set: { name: "Set", tags: [] } },
+      homebrew: { custom: { name: "Custom", tags: [] } },
+      "included-only": { component: { name: "Component", tags: [] } },
+      accessories: { shirt: { name: "Shirt", tags: [] } },
+      shopUpdated: "2026-10-06",
+      futureMetadata: { importedAt: "2026-10-06T00:00:00Z" },
+    };
+    expect(reviewEntries(data).map(({ id, category }) => [id, category])).toEqual([
+      ["model", "content"],
+      ["set", "bundles"],
+      ["custom", "homebrew"],
+      ["component", "included-only"],
+      ["shirt", "accessories"],
+    ]);
+  });
+
   it("restores material families and models-only bundle filters", () => {
     const item: Parameters<typeof catalogTags>[0] = {
       tags: ["naked"],

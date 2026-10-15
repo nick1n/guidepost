@@ -1,5 +1,5 @@
 import { editionGameplay, editionLabel, editionMaterials } from "./kdm-data.ts";
-import type { Catalog, Edition, Item } from "#lib/types/index.ts";
+import { catalogCategories, type Catalog, type Edition, type Item } from "#lib/types/index.ts";
 import { collectionKey } from "#lib/types/collection.ts";
 
 export type ReviewEdition = Edition;
@@ -16,8 +16,7 @@ export function reviewTagLabel(tag: string) {
 }
 
 export function reviewEntries(catalog: ReviewCatalog) {
-  const { $schema, shopUpdated, ...categories } = catalog;
-  return Object.entries(categories).flatMap(([category, items]) => Object.entries(items).map(([id, item]) => ({ ...item, id, category })));
+  return catalogCategories.flatMap((category) => Object.entries(catalog[category]).map(([id, item]) => ({ ...item, id, category })));
 }
 
 export function reviewTagCounts(items: readonly Pick<ReviewItem, "tags">[]) {

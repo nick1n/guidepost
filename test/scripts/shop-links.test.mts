@@ -1,6 +1,6 @@
 import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 import { expect, it } from "vitest";
 import { checkShopLinks } from "#scripts/check-shop-links.mts";
 
@@ -52,7 +52,11 @@ it("paces each host, keeps stock dates, and refreshes completed fetch runs", asy
         return { status: 200, ok: true };
       },
     };
-    await checkShopLinks(new AbortController().signal, { catalog, offline: false }, dependencies);
+    await checkShopLinks(
+      new AbortController().signal,
+      { catalog, cache: join(dirname(catalog), "shop-cache"), offline: false },
+      dependencies,
+    );
     expect(requests.map(({ time: instant }) => instant - requests[0].time)).toEqual([0, 0, 1000, 35000]);
     expect(JSON.parse(await readFile(catalog, "utf8")).shopUpdated).toBe("2025-01-01");
     expect(JSON.parse(await readFile(checkpoint, "utf8")).complete).toBe(true);
@@ -66,7 +70,11 @@ it("paces each host, keeps stock dates, and refreshes completed fetch runs", asy
         },
       },
     );
-    await checkShopLinks(new AbortController().signal, { catalog, offline: false }, dependencies);
+    await checkShopLinks(
+      new AbortController().signal,
+      { catalog, cache: join(dirname(catalog), "shop-cache"), offline: false },
+      dependencies,
+    );
     expect(requests).toHaveLength(8);
   });
 });
@@ -80,7 +88,7 @@ it("retains checkpoints on cancellation and resumes recent requests with shop pa
     await expect(
       checkShopLinks(
         controller.signal,
-        { catalog, offline: false },
+        { catalog, cache: join(dirname(catalog), "shop-cache"), offline: false },
         {
           now: () => time,
           wait: async (delay) => {
@@ -88,19 +96,22 @@ it("retains checkpoints on cancellation and resumes recent requests with shop pa
           },
           check: async () => {
             calls++;
-            controller.abort();
+            if (calls === 2) {
+              controller.abort();
+              throw new Error("interrupted");
+            }
             return { status: 200, ok: true };
           },
         },
       ),
     ).rejects.toThrow();
-    expect(calls).toBe(1);
+    expect(calls).toBe(2);
     expect(await readFile(catalog, "utf8")).toBe(baseline);
     expect(Object.keys(JSON.parse(await readFile(checkpoint, "utf8")).results)).toHaveLength(1);
     const requests: number[] = [];
     await checkShopLinks(
       new AbortController().signal,
-      { catalog, offline: false },
+      { catalog, cache: join(dirname(catalog), "shop-cache"), offline: false },
       {
         now: () => time,
         wait: async (delay) => {
@@ -133,7 +144,7 @@ it("expires stale checkpoint rows and preserves checkpoints on publication confl
     await expect(
       checkShopLinks(
         new AbortController().signal,
-        { catalog, offline: false },
+        { catalog, cache: join(dirname(catalog), "shop-cache"), offline: false },
         {
           now: () => time,
           wait: async () => {},
@@ -161,7 +172,7 @@ it("paces resumed requests after cancellation during an unfinished HEAD", async 
     await expect(
       checkShopLinks(
         controller.signal,
-        { catalog, offline: false },
+        { catalog, cache: join(dirname(catalog), "shop-cache"), offline: false },
         {
           now: () => time,
           check: async () => {
@@ -177,7 +188,7 @@ it("paces resumed requests after cancellation during an unfinished HEAD", async 
     const requests: number[] = [];
     await checkShopLinks(
       new AbortController().signal,
-      { catalog, offline: false },
+      { catalog, cache: join(dirname(catalog), "shop-cache"), offline: false },
       {
         now: () => time,
         wait: async (delay) => {
@@ -190,5 +201,77 @@ it("paces resumed requests after cancellation during an unfinished HEAD", async 
       },
     );
     expect(requests[0] - start).toBe(35000);
+  });
+});
+
+it("rejects a simultaneous checker before requests or checkpoint writes and releases its lock", async () => {
+  await fixture(async (catalog, checkpoint) => {
+    let entered!: () => void;
+    let release!: () => void;
+    const ready = new Promise<void>((resolve) => {
+      entered = resolve;
+    });
+    const pending = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    const controller = new AbortController();
+    const first = checkShopLinks(
+      controller.signal,
+      { catalog, cache: join(dirname(catalog), "shop-cache"), offline: false },
+      {
+        check: async () => {
+          entered();
+          await pending;
+          controller.abort();
+          throw new Error("interrupted");
+        },
+      },
+    );
+    await ready;
+    const before = await readFile(checkpoint, "utf8");
+    let requests = 0;
+    await expect(
+      checkShopLinks(
+        new AbortController().signal,
+        { catalog, offline: false },
+        {
+          check: async () => {
+            requests++;
+            return { status: 200, ok: true };
+          },
+        },
+      ),
+    ).rejects.toThrow("Another link checker holds");
+    expect(requests).toBe(0);
+    expect(await readFile(checkpoint, "utf8")).toBe(before);
+    release();
+    await expect(first).rejects.toThrow();
+    await expect(readFile(join(dirname(checkpoint), "shop-links.lock"))).rejects.toMatchObject({ code: "ENOENT" });
+  });
+});
+
+it("a product updater lock stops link checking without recording a missing listing", async () => {
+  await fixture(async (catalog, checkpoint) => {
+    const cache = join(dirname(catalog), "shop-cache");
+    await mkdir(cache, { recursive: true });
+    await writeFile(join(cache, "request.lock"), "another updater");
+    const baseline = await readFile(catalog, "utf8");
+    let requests = 0;
+    await expect(
+      checkShopLinks(
+        new AbortController().signal,
+        { catalog, cache, offline: false },
+        {
+          check: async () => {
+            requests++;
+            return { status: 200, ok: true };
+          },
+        },
+      ),
+    ).rejects.toThrow("Another shop updater holds");
+    expect(requests).toBe(0);
+    expect(await readFile(catalog, "utf8")).toBe(baseline);
+    expect(JSON.parse(await readFile(checkpoint, "utf8")).results).toEqual({});
+    await expect(readFile(join(dirname(checkpoint), "shop-links.lock"))).rejects.toMatchObject({ code: "ENOENT" });
   });
 });

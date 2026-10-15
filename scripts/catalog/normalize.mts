@@ -1,4 +1,4 @@
-import { syncStockTag } from "./tags.mts";
+import { recordAvailability, recordStock, invalidateListingEvidence, syncStockTag } from "./stock.mts";
 import { catalogListing, productUrl, shopLinkUrl } from "./shop.mts";
 import { categories, type Catalog, type Item } from "./types.mts";
 
@@ -40,14 +40,13 @@ export function listingSnapshot(item: Item) {
 
 export function clearChangedListings(item: Item, before: ReturnType<typeof listingSnapshot>) {
   const after = listingSnapshot(item);
-  if (before.item !== after.item || item.editions?.length) delete item.shop;
+  if (before.item !== after.item || item.editions?.length) recordStock(item, undefined);
   for (const edition of item.editions ?? [])
     if (
       before.editions.has(edition.id ?? edition.label) &&
       before.editions.get(edition.id ?? edition.label) !== after.editions.get(edition.id ?? edition.label)
     ) {
-      delete edition.shop;
-      delete edition.available;
+      invalidateListingEvidence(edition);
     }
   syncStockTag(item);
 }
@@ -56,7 +55,7 @@ export function normalizeItem(item: Item) {
   const listings = listingSnapshot(item);
   for (const edition of item.editions ?? []) {
     if (edition.label === "Deathgrey M2 Edition") edition.label = "Deathgrey M2";
-    if (edition.available !== true) delete edition.available;
+    recordAvailability(edition, edition.available === true);
     edition.format ??= ["Sim", "3D Files"].includes(edition.label) ? "digital" : "physical";
     if (edition.label === "Sim") edition.simulator = true;
     if (

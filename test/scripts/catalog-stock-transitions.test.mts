@@ -1,3 +1,4 @@
+import { recordStock } from "#scripts/catalog/stock.mts";
 import { expect, test } from "vitest";
 import { applyAvailability, planUpdate } from "#scripts/catalog/update.mts";
 import { clearChangedListings, listingSnapshot, normalizeItem } from "#scripts/catalog/normalize.mts";
@@ -129,4 +130,19 @@ test("partial warehouse evidence cannot assert that the current listing is sold 
   applyAvailability(data, [listing]);
   expect(edition.shop).toBe("in-stock");
   expect(data.content.example!.tags).toEqual(["in-stock", "model"]);
+});
+
+test("recording stock reports independent changes and makes availability policy explicit", () => {
+  const target: Parameters<typeof recordStock>[0] = {
+    available: true,
+    shop: "in-stock",
+  };
+  expect(recordStock(target, "out-of-stock")).toEqual({ shopChanged: true, availableChanged: false });
+  expect(target.available).toBe(true);
+  expect(recordStock(target, "out-of-stock", "replace")).toEqual({ shopChanged: false, availableChanged: true });
+  expect(target.available).toBeUndefined();
+  expect(recordStock(target, undefined, "replace")).toEqual({ shopChanged: true, availableChanged: false });
+  expect(target.shop).toBeUndefined();
+  expect(recordStock(target, "in-stock", "replace")).toEqual({ shopChanged: true, availableChanged: true });
+  expect(recordStock(target, "in-stock", "replace")).toEqual({ shopChanged: false, availableChanged: false });
 });

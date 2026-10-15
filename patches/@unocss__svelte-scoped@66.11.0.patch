@@ -1,0 +1,60 @@
+diff --git a/dist/vite.mjs b/dist/vite.mjs
+index 214ebb1..4ff8104 100644
+--- a/dist/vite.mjs
++++ b/dist/vite.mjs
+@@ -2327,12 +2327,16 @@ function GlobalStylesPlugin(ctx, injectReset) {
+ 	let viteConfig;
+ 	let unoCssFileReferenceId;
+ 	let unoCssGlobalFileName;
+-	return {
++	const plugin = {
+ 		name: "unocss:svelte-scoped:global-styles",
+-		async configResolved(_viteConfig) {
+-			viteConfig = _viteConfig;
+-			await ctx.ready;
+-			isSvelteKit = viteConfig.plugins.some((p) => p.name.includes("sveltekit"));
++		configResolved: {
++			order: "pre",
++			async handler(_viteConfig) {
++				viteConfig = _viteConfig;
++				isSvelteKit = viteConfig.plugins.some((p) => p.name.includes("sveltekit"));
++				if (isSvelteKit) delete plugin.transformIndexHtml;
++				await ctx.ready;
++			}
+ 		},
+ 		configureServer: (server) => {
+ 			checkTransformPageChunkHook(server, isSvelteKit);
+@@ -2347,7 +2351,9 @@ function GlobalStylesPlugin(ctx, injectReset) {
+ 				if (id.includes("hooks") && id.includes("server") && code.includes("unocss_svelte_scoped_global_styles")) this.warn(`[unocss] You are probably using an outdated setup for your sveltekit app. The server hook to handle an unocss styles placeholder is no longer needed.`);
+ 				if (viteConfig.command === "serve" && code.includes("%unocss-svelte-scoped.global%")) {
+ 					const tag = `<link href=\\"${viteConfig.base ?? "/"}${GLOBAL_STYLES_CSS_FILE_NAME}\\" rel=\\"stylesheet\\" data-title=\\"${DEV_GLOBAL_STYLES_DATA_TITLE}\\" />`;
+-					return { code: code.replace(PLACEHOLDER_USER_SETS_IN_INDEX_HTML, tag) };
++					const s = new MagicString(code);
++					s.replace(PLACEHOLDER_USER_SETS_IN_INDEX_HTML, tag);
++					return { code: s.toString(), map: s.generateMap({ hires: true, source: id }) };
+ 				}
+ 			}
+ 		},
+@@ -2364,10 +2370,12 @@ function GlobalStylesPlugin(ctx, injectReset) {
+ 		renderStart() {
+ 			unoCssGlobalFileName = this.getFileName(unoCssFileReferenceId);
+ 		},
+-		renderChunk(code) {
++		renderChunk(code, chunk) {
+ 			if (isSvelteKit && code.includes("%unocss-svelte-scoped.global%")) {
+ 				const tag = `<link href=\\"" + assets + "/${unoCssGlobalFileName}\\" rel=\\"stylesheet\\" />`;
+-				return code.replace(PLACEHOLDER_USER_SETS_IN_INDEX_HTML, tag);
++				const s = new MagicString(code);
++				s.replace(PLACEHOLDER_USER_SETS_IN_INDEX_HTML, tag);
++				return { code: s.toString(), map: s.generateMap({ hires: true, source: chunk.fileName }) };
+ 			}
+ 		},
+ 		async transformIndexHtml(html) {
+@@ -2377,6 +2385,7 @@ function GlobalStylesPlugin(ctx, injectReset) {
+ 			}
+ 		}
+ 	};
++	return plugin;
+ }
+ //#endregion
+ //#region ../../virtual-shared/integration/src/hash.ts

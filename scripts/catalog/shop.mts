@@ -112,6 +112,68 @@ const requestState = Schema.Struct({
   startedAt: Schema.Int.check(Schema.isGreaterThanOrEqualTo(0), Schema.isLessThanOrEqualTo(Number.MAX_SAFE_INTEGER)),
 });
 
+/** One network gate for product downloads and HEAD checks sharing a cache directory. */
+export const withShopRequest = Effect.fn("Shop.request")(function* <A, E, R>(
+  url: string,
+  request: (startedAt: number) => Effect.Effect<A, E, R>,
+  options: { cache?: string; delay?: number } = {},
+) {
+  const directory = resolve(options.cache ?? ".cache/kdm-shop");
+  const delay = options.delay ?? 35;
+  if (!Number.isFinite(delay) || delay < 35)
+    return yield* new ShopRequestError({ url, message: "Shop requests require at least 35 seconds between starts" });
+  return yield* serialized(
+    "request:" + directory,
+    Effect.scoped(
+      Effect.gen(function* () {
+        yield* file(url, "Could not create the shop cache", () => mkdir(directory, { recursive: true }));
+        const lockPath = join(directory, "request.lock");
+        const lock = yield* Effect.acquireRelease(
+          file(url, "Could not acquire the shop request lock", () => open(lockPath, "wx")).pipe(
+            Effect.mapError((error) =>
+              error.cause instanceof Error && "code" in error.cause && error.cause.code === "EEXIST"
+                ? new ShopRequestError({
+                    url,
+                    message: "Another shop updater holds " + lockPath + "; wait for it to finish before retrying.",
+                    cause: error.cause,
+                  })
+                : error,
+            ),
+          ),
+          (lock) =>
+            file(url, "Could not close the shop request lock", () => lock.close()).pipe(
+              Effect.ensuring(file(url, "Could not remove the shop request lock", () => unlink(lockPath)).pipe(Effect.orDie)),
+              Effect.orDie,
+            ),
+        );
+        const acquiredAt = yield* Clock.currentTimeMillis;
+        yield* file(url, "Could not record the shop request lock", () =>
+          lock.writeFile(JSON.stringify({ pid: process.pid, acquiredAt: new Date(acquiredAt).toISOString() }) + "\n"),
+        );
+        const statePath = join(directory, "last-request.json");
+        const stateText = yield* file(url, "Could not read shop request timing", () => readFile(statePath, "utf8")).pipe(
+          Effect.catchIf(
+            (error) => missing(error.cause),
+            () => Effect.succeed(undefined),
+          ),
+        );
+        if (stateText !== undefined) {
+          const state = yield* Effect.try({
+            try: () => Schema.decodeUnknownSync(requestState)(JSON.parse(stateText)),
+            catch: (cause) => new ShopRequestError({ url, message: "Invalid shop request timing", cause }),
+          });
+          const now = yield* Clock.currentTimeMillis;
+          yield* Effect.sleep(Math.max(0, state.startedAt + delay * 1000 - now));
+        }
+        const startedAt = yield* Clock.currentTimeMillis;
+        yield* file(url, "Could not record shop request timing", () => writeFile(statePath, JSON.stringify({ startedAt }) + "\n"));
+
+        return yield* request(startedAt);
+      }),
+    ),
+  );
+});
+
 type Options = { cache?: string; delay?: number; refresh?: boolean; signal?: AbortSignal; offline?: boolean; maxAgeMs?: number };
 type CachedResponse = { response: ShopResponse; timeToLive: number };
 
@@ -161,80 +223,42 @@ export class ShopClient {
 
   private download = Effect.fn("ShopClient.download")(
     function* (this: ShopClient, url: string) {
-      yield* file(url, "Could not create the shop cache", () => mkdir(this.directory, { recursive: true }));
-      const lockPath = join(this.directory, "request.lock");
-      return yield* Effect.scoped(
-        Effect.gen({ self: this }, function* () {
-          const lock = yield* Effect.acquireRelease(
-            file(url, "Could not acquire the shop request lock", () => open(lockPath, "wx")).pipe(
-              Effect.mapError((error) =>
-                error.cause instanceof Error && "code" in error.cause && error.cause.code === "EEXIST"
-                  ? new ShopRequestError({
-                      url,
-                      message: "Another shop updater holds " + lockPath + "; wait for it to finish before retrying.",
-                      cause: error.cause,
-                    })
-                  : error,
-              ),
-            ),
-            (lock) =>
-              file(url, "Could not close the shop request lock", () => lock.close()).pipe(
-                Effect.ensuring(file(url, "Could not remove the shop request lock", () => unlink(lockPath)).pipe(Effect.orDie)),
-                Effect.orDie,
-              ),
-          );
-          const acquiredAt = yield* Clock.currentTimeMillis;
-          yield* file(url, "Could not record the shop request lock", () =>
-            lock.writeFile(JSON.stringify({ pid: process.pid, acquiredAt: new Date(acquiredAt).toISOString() }) + "\n"),
-          );
-          const statePath = join(this.directory, "last-request.json");
-          const stateText = yield* file(url, "Could not read shop request timing", () => readFile(statePath, "utf8")).pipe(
-            Effect.catchIf(
-              (error) => missing(error.cause),
-              () => Effect.succeed(undefined),
-            ),
-          );
-          if (stateText !== undefined) {
-            const state = yield* Effect.try({
-              try: () => Schema.decodeUnknownSync(requestState)(JSON.parse(stateText)),
-              catch: (cause) => new ShopRequestError({ url, message: "Invalid shop request timing", cause }),
-            });
-            const now = yield* Clock.currentTimeMillis;
-            yield* Effect.sleep(Math.max(0, state.startedAt + (this.options.delay ?? 35) * 1000 - now));
-          }
-          const startedAt = yield* Clock.currentTimeMillis;
-          yield* file(url, "Could not record shop request timing", () => writeFile(statePath, JSON.stringify({ startedAt }) + "\n"));
-          const request: { url: string; startedAt: string; status?: number } = { url, startedAt: new Date(startedAt).toISOString() };
-          this.requests.push(request);
-          return yield* Effect.gen({ self: this }, function* () {
-            const response = yield* HttpClient.get(url, {
-              headers: { "User-Agent": "Guidepost-Catalog-Updater/1.0", Accept: "application/json" },
-            });
-            request.status = response.status;
-            const checkedAt = new Date(yield* Clock.currentTimeMillis).toISOString();
-            if (response.status < 200 || response.status >= 300) {
-              yield* file(url, "Could not save the shop failure response", () =>
-                writeFile(cacheFile(this.directory, url), JSON.stringify({ url, checkedAt, status: response.status }) + "\n"),
+      return yield* withShopRequest(
+        url,
+        (startedAt) =>
+          Effect.gen({ self: this }, function* () {
+            const request: { url: string; startedAt: string; status?: number } = { url, startedAt: new Date(startedAt).toISOString() };
+            this.requests.push(request);
+            return yield* Effect.gen({ self: this }, function* () {
+              const response = yield* HttpClient.get(url, {
+                headers: { "User-Agent": "Guidepost-Catalog-Updater/1.0", Accept: "application/json" },
+              });
+              request.status = response.status;
+              const checkedAt = new Date(yield* Clock.currentTimeMillis).toISOString();
+              if (response.status < 200 || response.status >= 300) {
+                yield* file(url, "Could not save the shop failure response", () =>
+                  writeFile(cacheFile(this.directory, url), JSON.stringify({ url, checkedAt, status: response.status }) + "\n"),
+                );
+                return yield* new ShopError(response.status, url);
+              }
+              const data = yield* response.json;
+              const result = yield* Schema.decodeUnknownEffect(ShopResponse)({ url, checkedAt, data });
+              yield* file(url, "Could not save the shop response", () =>
+                writeFile(cacheFile(this.directory, url), JSON.stringify(result, null, 2) + "\n"),
               );
-              return yield* new ShopError(response.status, url);
-            }
-            const data = yield* response.json;
-            const result = yield* Schema.decodeUnknownEffect(ShopResponse)({ url, checkedAt, data });
-            yield* file(url, "Could not save the shop response", () =>
-              writeFile(cacheFile(this.directory, url), JSON.stringify(result, null, 2) + "\n"),
+              return result;
+            }).pipe(
+              Effect.timeout("40 seconds"),
+              Effect.mapError((cause) =>
+                cause instanceof ShopError || cause instanceof ShopRequestError
+                  ? cause
+                  : new ShopRequestError({ url, message: "Shop request failed: " + url, cause }),
+              ),
+              Effect.provide(FetchHttpClient.layer),
+              Effect.provideService(FetchHttpClient.RequestInit, { redirect: "error" }),
             );
-            return result;
-          }).pipe(
-            Effect.timeout("40 seconds"),
-            Effect.mapError((cause) =>
-              cause instanceof ShopError || cause instanceof ShopRequestError
-                ? cause
-                : new ShopRequestError({ url, message: "Shop request failed: " + url, cause }),
-            ),
-            Effect.provide(FetchHttpClient.layer),
-            Effect.provideService(FetchHttpClient.RequestInit, { redirect: "error" }),
-          );
-        }),
+          }),
+        { cache: this.directory, delay: this.options.delay },
       );
     }.bind(this),
   );
@@ -246,7 +270,7 @@ export class ShopClient {
         if (this.options.offline)
           return yield* new ShopRequestError({ url, message: "No cached shop response: " + url + "; rerun with --fetch to download it." });
         response = yield* serialized(
-          this.directory,
+          "cache:" + this.directory,
           Effect.gen({ self: this }, function* () {
             return (yield* this.cached(url)) ?? (yield* this.download(url));
           }),

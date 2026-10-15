@@ -1,3 +1,4 @@
+import { recordAvailability, recordStock } from "./stock.mts";
 import { isDeepStrictEqual } from "node:util";
 import {
   categories,
@@ -122,11 +123,8 @@ export function applyAvailability(catalog: Catalog, products: Product[], mapping
       }
     }
   }
-  for (const [edition, available] of observed) {
-    if (available) edition.available = true;
-    else delete edition.available;
-  }
-  for (const [edition, available] of stock) edition.shop = available ? "in-stock" : "out-of-stock";
+  for (const [edition, available] of observed) recordAvailability(edition, available);
+  for (const [edition, available] of stock) recordStock(edition, available ? "in-stock" : "out-of-stock");
   sortCatalogTags(catalog);
   return { checkedEditions: observed.size, availableEditions: [...observed.values()].filter(Boolean).length, unresolved };
 }

@@ -1,3 +1,4 @@
+import { recordStock, type StockState } from "./stock.mts";
 import { sortCatalogTags } from "./tags.mts";
 import { catalogListing, productUrl } from "./shop.mts";
 import { availabilityReleases } from "./releases.mts";
@@ -15,18 +16,10 @@ export function availabilityFromUrls(catalog: Catalog, products: Product[], shop
   const listings = new Map(products.map((product) => [product.handle, product]));
   const unmatched: { category: string; itemId: string; edition: string; url?: string; reason: string }[] = [];
   let shopChanged = 0;
-  function observe(target: Item | Edition, url?: string, state: "in-stock" | "out-of-stock" | "missing" = "missing") {
-    if (!url) {
-      if (target.shop) {
-        delete target.shop;
-        shopChanged++;
-      }
-      return;
-    }
-    const previous = target.shop;
-    if (previous === state) return;
-    target.shop = state;
-    shopChanged++;
+  function observe(target: Item | Edition, url?: string, state: StockState = "missing", availability: "preserve" | "replace" = "preserve") {
+    const result = recordStock(target, url ? state : undefined, availability);
+    if (result.shopChanged) shopChanged++;
+    if (result.availableChanged) changed++;
   }
   const stock = (variants: Product["variants"]) =>
     variants.length && variants.every((variant) => typeof variant.available === "boolean")
@@ -62,11 +55,8 @@ export function availabilityFromUrls(catalog: Catalog, products: Product[], shop
         }),
       );
       for (const edition of item.editions ?? []) {
-        const previous = edition.available;
-        delete edition.available;
         if (edition.includedOnly) {
-          observe(edition);
-          if (previous !== edition.available) changed++;
+          observe(edition, undefined, "missing", "replace");
           continue;
         }
         const url = catalogListing(item, edition);
@@ -93,13 +83,11 @@ export function availabilityFromUrls(catalog: Catalog, products: Product[], shop
           } else {
             checked++;
             if (state === "in-stock") {
-              edition.available = true;
               available++;
             }
           }
         }
-        observe(edition, url, state);
-        if (previous !== edition.available) changed++;
+        observe(edition, url, state, "replace");
       }
     }
   }

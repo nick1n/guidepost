@@ -4,25 +4,13 @@ import { join } from "node:path";
 import { Ajv2020 } from "ajv/dist/2020.js";
 import { categories, type Catalog, type Category, type Mapping } from "./types.mts";
 
+import { syncStockTag } from "./stock.mts";
+export { syncStockTag } from "./stock.mts";
+
 export type Tags = Record<Category, Record<string, string[]>>;
 
 type StockItem = { tags: string[]; editions?: { shop?: string }[] };
 type StockCatalog = Record<Category, Record<string, StockItem>>;
-
-export function syncStockTag(item: StockItem) {
-  const inStock = item.editions?.some((edition) => edition.shop === "in-stock");
-  let retained = false;
-  const tags = item.tags.filter((tag) => {
-    if (tag !== "in-stock") return true;
-    if (!inStock || retained) return false;
-    retained = true;
-    return true;
-  });
-  if (inStock && !retained) tags.push("in-stock");
-  const changed = tags.length !== item.tags.length || tags.some((tag, index) => tag !== item.tags[index]);
-  if (changed) item.tags = tags;
-  return changed;
-}
 
 export function sortCatalogTags(catalog: StockCatalog) {
   const stockChanged = new Set<StockItem>();

@@ -66,6 +66,8 @@ Current data rules:
   shop stock states; historical mappings can still supply availability without asserting stock for a replacement listing.
   The `in-stock` tag is derived from edition shop states and removed when none remain in stock.
   Tag updates use existing shop states and do not call `catalog:update`; catalog updates recalculate the tag after updating the data.
+  `scripts/catalog/stock.mts` owns stock, availability, link-health, and listing-invalidation operations. Tag sorting and validation
+  share its stock predicate; workflow code chooses whether a stock observation also replaces availability.
 - Prices are integer cents. Edition `prices` arrays contain recorded sale amounts and current MSRP, with the maximum representing MSRP. Missing prices are unknown; `[0]` is a known zero price. Lunar Aya's Sim price remains the user-authorized $7 estimate, documented in the report.
 - Shared shop handles live on the item; resolve external URLs with `edition.url ?? item.url`. Omit variant selectors and temporary
   preorder URLs. Physical sizes may inherit the item default; Sim has no model size.

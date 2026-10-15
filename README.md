@@ -132,7 +132,10 @@ Runtime validation also rejects duplicate sheet/row locators. Normalized-row wor
 `pnpm check:shop-links` displays the saved summary. Add `--fetch` to check catalog listings and write
 `temp/kdm-catalog/reports/shop-links.json` and update catalog link states.
 HEAD requests follow redirects with a 10-second timeout. Requests to the shop start at least 35 seconds apart;
-other hosts use 1-second spacing. Run one link checker per catalog at a time.
+other hosts use 1-second spacing. Shop downloads and link checks share `.cache/kdm-shop/request.lock` and the persisted
+request start time, preventing overlapping requests across commands. Use `--cache path` to select the same custom cache for both.
+A second process using that cache stops with a lock error; rerun after the first command finishes.
+A separate `temp/kdm-catalog/reports/shop-links.lock` prevents competing checkers from overwriting progress and releases on completion or cancellation.
 Each request checkpoints progress in `temp/kdm-catalog/reports/shop-links-checkpoint.json`. Rerunning with `--fetch`
 resumes an incomplete run using results less than 24 hours old. A completed run starts fresh on the next `--fetch`.
 Failures mark listings missing, including rate limits or HEAD rejection. Successful checks preserve known stock states
@@ -166,10 +169,11 @@ JSON backups preserve the complete snapshot. The workbook map loads and validate
 
 ## Known warnings
 
-- UnoCSS may warn that `unocss:svelte-scoped:global-styles` uses the unsupported `transformIndexHtml` hook.
-  The integration uses `transform` and `renderChunk`; this warning is safe to ignore.
-  After integration upgrades, verify the global stylesheet, safelisted icons, and absence of
-  `%unocss-svelte-scoped.global%` placeholders in generated HTML.
+The pnpm patch for `@unocss/svelte-scoped` preserves source maps when inserting the global stylesheet link and unregisters
+its unused `transformIndexHtml` hook in SvelteKit. Standalone Vite retains that hook. When updating UnoCSS, remove the patch
+only after verifying upstream handles both source maps and hook registration. After integration upgrades, verify the global
+stylesheet, safelisted icons, and absence of `%unocss-svelte-scoped.global%` placeholders in generated HTML.
+
 - The CSS validator may report `Unknown property: 'corner-shape'` in `AttackProfile.svelte`.
   Supporting browsers use `corner-shape: squircle`; others keep the `border-radius` fallback.
 

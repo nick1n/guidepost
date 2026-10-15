@@ -4,3 +4,6 @@ allowBuilds:
 
 # Keep installed files independent of shared-store Windows permissions.
 packageImportMethod: clone-or-copy
+
+patchedDependencies:
+  "@unocss/svelte-scoped@66.11.0": patches/@unocss__svelte-scoped@66.11.0.patch
