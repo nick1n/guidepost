@@ -130,9 +130,9 @@ Runtime validation also rejects duplicate sheet/row locators. Normalized-row wor
 ### Live shop links
 
 `pnpm check:shop-links` displays the saved summary. Add `--fetch` to check catalog listings and write
-`temp/kdm-catalog/reports/shop-links.json` without changing catalog facts.
-HEAD requests follow redirects with a 10-second timeout: `true` means HTTP 2xx, `false` means an error, and `null` means no URL.
-Rate limits or HEAD rejection can cause failures; reachability does not indicate stock.
+`temp/kdm-catalog/reports/shop-links.json` and refresh catalog shop states and date.
+HEAD requests follow redirects with a 10-second timeout and 35-second spacing.
+Failures mark listings missing, including rate limits or HEAD rejection. Reachability does not indicate stock.
 
 ### Collection
 

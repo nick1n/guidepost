@@ -9,6 +9,10 @@ export type Announcement = string;
  * Permanent readable release ID, unique within its item. Assign once; retain it when labels, names, or other facts change. The item and bundle IDs are reserved for synthetic editions.
  */
 export type EditionId = string;
+/**
+ * Cached shop state for this listing. Clear it when the listing handle or external URL changes.
+ */
+export type Shop = "in-stock" | "out-of-stock" | "missing";
 export type Inclusion =
   | string
   | {
@@ -35,6 +39,10 @@ export type Accessories = Record<string, Item>;
  */
 export interface KingdomDeathCombinedReviewCatalog {
   $schema?: string;
+  /**
+   * Date of the latest completed shop refresh, YYYY-MM-DD.
+   */
+  shopUpdated?: string;
   content: Content;
   bundles: Items;
   homebrew: Content;
@@ -121,12 +129,13 @@ export interface Item {
    * @minItems 1
    */
   requires?: string[];
+  shop?: Shop;
   /**
    * Default physical model size or scale (mm), retained as supplied text. Edition size overrides this value; Sim never inherits it. Omit unknown sizes.
    */
   size?: string;
   /**
-   * Reviewed descriptive tags from the master tag file.
+   * Reviewed tags plus in-stock when at least one edition has shop: in-stock. The in-stock tag is removed when no editions remain in stock.
    *
    * @minItems 1
    */
@@ -221,6 +230,7 @@ export interface Edition {
    * Known production or sale limit. Omit unknown counts; preserve supplied First Run and Encore counts. Do not infer counts from units sold.
    */
   runSize?: number;
+  shop?: Shop;
   /**
    * This digital release is a Kingdom Death Simulator entitlement. Omit for other releases, including 3D Files.
    */

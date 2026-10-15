@@ -6,13 +6,39 @@ import { categories, type Catalog, type Category, type Mapping } from "./types.m
 
 export type Tags = Record<Category, Record<string, string[]>>;
 
-export function sortCatalogTags(catalog: Catalog) {
+type StockItem = { tags: string[]; editions?: { shop?: string }[] };
+type StockCatalog = Record<Category, Record<string, StockItem>>;
+
+export function syncStockTag(item: StockItem) {
+  const inStock = item.editions?.some((edition) => edition.shop === "in-stock");
+  let retained = false;
+  const tags = item.tags.filter((tag) => {
+    if (tag !== "in-stock") return true;
+    if (!inStock || retained) return false;
+    retained = true;
+    return true;
+  });
+  if (inStock && !retained) tags.push("in-stock");
+  const changed = tags.length !== item.tags.length || tags.some((tag, index) => tag !== item.tags[index]);
+  if (changed) item.tags = tags;
+  return changed;
+}
+
+export function syncStockTags(catalog: StockCatalog) {
+  let changed = 0;
+  for (const category of categories) for (const item of Object.values(catalog[category])) if (syncStockTag(item)) changed++;
+  return changed;
+}
+
+export function sortCatalogTags(catalog: StockCatalog) {
+  const changed = syncStockTags(catalog);
   const counts = new Map<string, number>();
   for (const category of categories)
     for (const item of Object.values(catalog[category])) for (const tag of new Set(item.tags)) counts.set(tag, (counts.get(tag) ?? 0) + 1);
   for (const category of categories)
     for (const item of Object.values(catalog[category]))
       item.tags.sort((a, b) => counts.get(b)! - counts.get(a)! || (a < b ? -1 : a > b ? 1 : 0));
+  return changed;
 }
 
 export function organizeTags(catalog: Catalog, tags: Tags) {
@@ -101,7 +127,7 @@ export function tagSchema(vocabulary: string[]) {
     },
     $defs: {
       group: { type: "object", additionalProperties: { $ref: "#/$defs/tagList" } },
-      tag: { type: "string", pattern: "^[a-z0-9]+(?:[.-][a-z0-9]+)*$", enum: vocabulary },
+      tag: { type: "string", pattern: "^[a-z0-9]+(?:[.-][a-z0-9]+)*$", enum: [...new Set([...vocabulary, "in-stock"])].sort() },
       tagList: { type: "array", minItems: 1, uniqueItems: true, items: { $ref: "#/$defs/tag" } },
     },
   };

@@ -16,7 +16,7 @@ export type Item = Omit<Schema.Item, "kind" | "accessoryType" | "editions"> & {
 };
 export const categories = ["content", "included-only", "accessories", "bundles", "homebrew"] as const;
 export type Category = (typeof categories)[number];
-export type Catalog = Record<Category, Record<string, Item>> & { $schema?: string };
+export type Catalog = Record<Category, Record<string, Item>> & { $schema?: string; shopUpdated?: string };
 export type Variant = {
   [field: string]: unknown;
   id: number;

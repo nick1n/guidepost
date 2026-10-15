@@ -1,6 +1,7 @@
+import { sortCatalogTags } from "./tags.mts";
 import { catalogListing, productUrl } from "./shop.mts";
 import { availabilityReleases } from "./releases.mts";
-import { categories, type Catalog, type Edition, type Product } from "./types.mts";
+import { categories, type Catalog, type Edition, type Item, type Product } from "./types.mts";
 
 function handle(url: string) {
   try {
@@ -10,15 +11,43 @@ function handle(url: string) {
   }
 }
 
-export function availabilityFromUrls(catalog: Catalog, products: Product[]) {
+export function availabilityFromUrls(catalog: Catalog, products: Product[], shopUpdated = new Date().toISOString().slice(0, 10)) {
   const listings = new Map(products.map((product) => [product.handle, product]));
   const unmatched: { category: string; itemId: string; edition: string; url?: string; reason: string }[] = [];
+  let shopChanged = 0;
+  function observe(target: Item | Edition, url?: string, state: "in-stock" | "out-of-stock" | "missing" = "missing") {
+    if (!url) {
+      if (target.shop) {
+        delete target.shop;
+        shopChanged++;
+      }
+      return;
+    }
+    const previous = target.shop;
+    if (previous === state) return;
+    target.shop = state;
+    shopChanged++;
+  }
+  const stock = (variants: Product["variants"]) =>
+    variants.length && variants.every((variant) => typeof variant.available === "boolean")
+      ? variants.some((variant) => variant.available === true)
+        ? "in-stock"
+        : "out-of-stock"
+      : "missing";
   let checked = 0;
   let available = 0;
   let changed = 0;
   for (const category of categories) {
     for (const [itemId, item] of Object.entries(catalog[category])) {
       if (category === "homebrew") continue;
+      if (!item.editions?.length) {
+        const url = catalogListing(item);
+        const key = url ? handle(url) : undefined;
+        const product = key ? listings.get(key) : undefined;
+        observe(item, url, product ? stock(product.variants) : "missing");
+        continue;
+      }
+      observe(item);
       const groups = new Map<string, Edition[]>();
       for (const edition of item.editions ?? []) {
         if (edition.includedOnly) continue;
@@ -36,15 +65,18 @@ export function availabilityFromUrls(catalog: Catalog, products: Product[]) {
         const previous = edition.available;
         delete edition.available;
         if (edition.includedOnly) {
+          observe(edition);
           if (previous !== edition.available) changed++;
           continue;
         }
         const url = catalogListing(item, edition);
         const key = url ? handle(url) : undefined;
         const product = key ? listings.get(key) : undefined;
+        let state: "in-stock" | "out-of-stock" | "missing" = "missing";
         // Promotional prize fulfillment is not a purchasable listing, despite Shopify stock availability.
         if (key === "kings-coin-prize") {
           checked++;
+          state = "out-of-stock";
         } else if (!product) {
           unmatched.push({
             category,
@@ -54,20 +86,24 @@ export function availabilityFromUrls(catalog: Catalog, products: Product[]) {
             reason: url ? "No matching product handle" : "No URL",
           });
         } else {
-          const variants = resolved.get(edition)!;
-          if (!variants.length) {
+          const variants = resolved.get(edition) ?? [];
+          state = stock(variants);
+          if (state === "missing") {
             unmatched.push({ category, itemId, edition: edition.label, url, reason: "No unambiguous matching variants" });
           } else {
             checked++;
-            if (variants.some((variant) => variant.available === true)) {
+            if (state === "in-stock") {
               edition.available = true;
               available++;
             }
           }
         }
+        observe(edition, url, state);
         if (previous !== edition.available) changed++;
       }
     }
   }
-  return { checked, available, changed, unmatched };
+  const tagsChanged = sortCatalogTags(catalog);
+  catalog.shopUpdated = shopUpdated.slice(0, 10);
+  return { checked, available, changed, shopChanged, tagsChanged, unmatched };
 }

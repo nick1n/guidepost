@@ -12,10 +12,10 @@ import {
 } from "./types.mts";
 import { resolveReleases } from "./releases.mts";
 import { catalogListing, productUrl } from "./shop.mts";
-import { normalizeCatalog } from "./normalize.mts";
+import { clearChangedListings, listingSnapshot, normalizeCatalog } from "./normalize.mts";
 import { organizeCatalog, editionComparator } from "./order.mts";
 import { editionId } from "./identity.mts";
-import { applyTags, type Tags } from "./tags.mts";
+import { applyTags, sortCatalogTags, type Tags } from "./tags.mts";
 
 export function normalized(value: string) {
   return value
@@ -112,9 +112,11 @@ export function applyAvailability(catalog: Catalog, products: Product[], mapping
     }
   }
   for (const [edition, available] of observed) {
+    delete edition.shop;
     if (available) edition.available = true;
     else delete edition.available;
   }
+  sortCatalogTags(catalog);
   return { checkedEditions: observed.size, availableEditions: [...observed.values()].filter(Boolean).length, unresolved };
 }
 
@@ -256,6 +258,11 @@ export function planUpdate(
       confidence: result.confidence,
     });
   }
+  for (const category of categories)
+    for (const [id, item] of Object.entries(catalog[category])) {
+      const previous = before[category][id];
+      if (previous) clearChangedListings(item, listingSnapshot(previous));
+    }
   applyAvailability(
     catalog,
     evidence.map((source) => source.data),

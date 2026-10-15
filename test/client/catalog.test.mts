@@ -1,7 +1,15 @@
 import { describe, expect, it } from "vitest";
 import { collectionKey } from "#lib/types/collection.ts";
 import { catalogTags, editionGameplay, editionLabel, editionMaterials } from "#lib/kdm-data.ts";
-import { reviewEditions, reviewEntries, reviewGameplayFirst, reviewIndex, reviewShopUrl, type ReviewCatalog } from "#lib/catalog-view.ts";
+import {
+  reviewEditions,
+  reviewEntries,
+  reviewGameplayFirst,
+  reviewIndex,
+  reviewShopLink,
+  reviewShopUrl,
+  type ReviewCatalog,
+} from "#lib/catalog-view.ts";
 
 describe("review catalog facts", () => {
   it("groups gameplay first while preserving item order, references, and edition overrides", () => {
@@ -160,6 +168,78 @@ describe("review catalog facts", () => {
       "Metal",
     ]);
     expect(editionMaterials({ id: "model-sim", label: "Sim", format: "digital", simulator: true })).toEqual([]);
+  });
+
+  it("distinguishes shop states while deriving URLs from handles", () => {
+    const item = { name: "Model", tags: [], handle: "model" };
+    const edition: Parameters<typeof reviewShopLink>[1] = { id: "plastic", label: "Plastic", format: "physical" };
+    const url = "https://shop.kingdomdeath.com/products/model";
+    expect(reviewShopLink(item, edition)?.state).toBe("missing");
+    edition.available = true;
+    expect(reviewShopLink(item, edition)?.state).toBe("in-stock");
+    for (const state of ["in-stock", "out-of-stock", "missing"] as const) {
+      edition.shop = state;
+      expect(reviewShopLink(item, edition)).toEqual({ state, url });
+    }
+    delete edition.available;
+    expect(reviewShopLink({ ...item, handle: "new-model" }, edition)).toEqual({
+      url: "https://shop.kingdomdeath.com/products/new-model",
+      state: "missing",
+    });
+    expect(reviewShopLink({ name: "No link", tags: [] }, edition)).toBeUndefined();
+    edition.includedOnly = true;
+    expect(reviewShopLink(item, edition)).toBeUndefined();
+  });
+
+  it("keeps item-level shop evidence after indexing synthetic editions", () => {
+    const data: ReviewCatalog = {
+      content: {},
+      accessories: {},
+      homebrew: {},
+      "included-only": {},
+      bundles: {
+        set: {
+          name: "Set",
+          tags: [],
+          handle: "set",
+          shop: "out-of-stock",
+        },
+      },
+    };
+    const item = reviewIndex(data).byId.get("set")!;
+    expect(reviewShopLink(item, reviewEditions(item)[0])).toEqual({
+      url: "https://shop.kingdomdeath.com/products/set",
+      state: "out-of-stock",
+    });
+    expect(data.bundles.set.editions).toBeUndefined();
+  });
+
+  it("keeps shared shop metadata out of catalog categories and indexes", () => {
+    const data: ReviewCatalog = {
+      shopUpdated: "2026-10-06",
+      content: {
+        model: {
+          name: "Model",
+          tags: [],
+          handle: "model",
+          editions: [
+            {
+              id: "plastic",
+              label: "Plastic",
+              format: "physical",
+              shop: "out-of-stock",
+            },
+          ],
+        },
+      },
+      accessories: {},
+      homebrew: {},
+      "included-only": {},
+      bundles: {},
+    };
+    expect(reviewEntries(data).map(({ id, category }) => ({ id, category }))).toEqual([{ id: "model", category: "content" }]);
+    expect([...reviewIndex(data).byCategory.keys()]).toEqual(["content"]);
+    expect(data.shopUpdated).toBe("2026-10-06");
   });
 
   it("restores material families and models-only bundle filters", () => {

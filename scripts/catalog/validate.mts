@@ -23,6 +23,9 @@ export async function validateCatalog(catalog: Catalog, schemaPath = "static/kdm
   const items = new Map<string, Catalog["content"][string]>();
   for (const category of categories)
     for (const [id, item] of Object.entries(catalog[category])) {
+      const inStock = item.editions?.some((edition) => edition.shop === "in-stock") ?? false;
+      if (item.tags.includes("in-stock") !== inStock)
+        throw new Error("Derived in-stock tag must match explicit edition shop states: " + category + "/" + id);
       const includedOnly = !!item.editions?.length && item.editions.every((edition) => edition.includedOnly);
       if (category === "included-only" && !includedOnly)
         throw new Error("Included-only item has a standalone or unconfirmed edition: " + id);

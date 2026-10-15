@@ -1,4 +1,4 @@
-import { editionGameplay, editionLabel, editionMaterials } from "./kdm-data";
+import { editionGameplay, editionLabel, editionMaterials } from "./kdm-data.ts";
 import type { Catalog, Edition, Item } from "#lib/types/index.ts";
 import { collectionKey } from "#lib/types/collection.ts";
 
@@ -16,7 +16,7 @@ export function reviewTagLabel(tag: string) {
 }
 
 export function reviewEntries(catalog: ReviewCatalog) {
-  const { $schema, ...categories } = catalog;
+  const { $schema, shopUpdated, ...categories } = catalog;
   return Object.entries(categories).flatMap(([category, items]) => Object.entries(items).map(([id, item]) => ({ ...item, id, category })));
 }
 
@@ -36,6 +36,17 @@ export function reviewShopUrl(item: ReviewItem, edition: ReviewEdition) {
   if (edition.includedOnly) return;
   const handle = item.handle ?? edition.handle;
   return handle ? "https://shop.kingdomdeath.com/products/" + handle : (edition.url ?? item.url);
+}
+
+export function reviewShopLink(item: ReviewItem, edition: ReviewEdition) {
+  const url = reviewShopUrl(item, edition);
+  if (!url) return;
+
+  const state =
+    edition.shop ??
+    (["item", "bundle"].includes(edition.id) ? item.shop : undefined) ??
+    (edition.available === true ? "in-stock" : "missing");
+  return { url, state };
 }
 
 export function reviewPrice(item: ReviewItem, edition: ReviewEdition) {

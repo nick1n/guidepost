@@ -6,7 +6,7 @@ import { catalog, offline, fetch, offlineMode, runCommand, workflow } from "./ca
 import { publishFiles } from "./catalog/publication.mts";
 import { catalogTemp } from "./catalog/paths.mts";
 import { editionComparator, organizeCatalog } from "./catalog/order.mts";
-import { normalizeItem } from "./catalog/normalize.mts";
+import { clearChangedListings, listingSnapshot, normalizeItem } from "./catalog/normalize.mts";
 import { productUrl, ShopClient, shopProduct } from "./catalog/shop.mts";
 import { normalized } from "./catalog/update.mts";
 import { productEditions } from "./catalog/releases.mts";
@@ -59,6 +59,7 @@ export async function fillEditions(
       const response = await client.get(url);
       const product = shopProduct(response.data, "ajax");
       if (product.handle !== productUrl(listing).split("/").at(-1)) throw new Error("Response handle does not match listing");
+      const listings = listingSnapshot(item);
       const result = productEditions(item, product);
       item.editions = result.editions.sort(editionComparator(item, itemId));
       item.handle = product.handle;
@@ -67,6 +68,7 @@ export async function fillEditions(
       delete item.price;
       delete item.priceMinimum;
       normalizeItem(item);
+      clearChangedListings(item, listings);
       mappings[product.handle] = { ...mappings[product.handle], category: "content", itemId, variantEditions: result.selectors };
       report.reachable.push({ itemId, url, editions: item.editions.map((e) => e.label) });
       console.log(`${report.reachable.length + report.unreachable.length}/${targets.length}: ${itemId}, ${item.editions.length} editions`);

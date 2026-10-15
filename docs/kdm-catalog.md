@@ -60,6 +60,10 @@ Current data rules:
   Senior Death High Allister and Thief Variant remain separate.
 - Gameplay defaults to false. Item `gameplay` appears only when true; editions store an override only when different. `gameplayContent` and notes belong on the item. Alternative names use `aliases`; `alt` is removed.
 - Edition availability defaults to false. Store `available: true` only when at least one matching shop variant or warehouse is available. Updates refresh known availability; responses without availability evidence preserve the existing value. This reflects the cached shop snapshot, not a live stock check.
+- `shop` stores `in-stock`, `out-of-stock`, or `missing` on editions, or on items without editions. Shared `shopUpdated` is a `YYYY-MM-DD` refresh date.
+  Clear the affected `shop` field after manually changing its handle or external URL.
+  The `in-stock` tag is derived from edition shop states and removed when none remain in stock.
+  Tag updates use existing shop states and do not call `catalog:update`; catalog updates recalculate the tag after updating the data.
 - Prices are integer cents. Edition `prices` arrays contain recorded sale amounts and current MSRP, with the maximum representing MSRP. Missing prices are unknown; `[0]` is a known zero price. Lunar Aya's Sim price remains the user-authorized $7 estimate, documented in the report.
 - Shared shop handles live on the item; resolve external URLs with `edition.url ?? item.url`. Omit variant selectors and temporary
   preorder URLs. Physical sizes may inherit the item default; Sim has no model size.
@@ -94,12 +98,13 @@ Custom catalog paths use the same `static/kdm-catalog/` and `temp/` layout.
 ## Availability refresh
 
 `pnpm catalog:availability --fetch` downloads `/products.json?limit=250&page=N` into
-`temp/kdm-catalog/shopify-products/products-page-N.json`, at least 35 seconds apart. After all pages succeed, it updates only edition
-`available` fields. Handles or legacy URLs identify listings; names and optional mappings are unused.
+`temp/kdm-catalog/shopify-products/products-page-N.json`, at least 35 seconds apart. After all pages succeed, it updates edition
+`available` fields, `shop` states, and the shared `shopUpdated` date. Handles or legacy URLs identify listings; names and optional mappings are unused.
 Release variants distinguish First Run, Encore, and format-qualified runs. Any matching warehouse in stock makes an edition available;
 unmatched or ambiguous editions omit the field. Details go to `temp/kdm-catalog/reports/availability-refresh.json`.
 
-Without `--fetch`, the command applies saved pages. `--catalog path/to/static/kdm-catalog/data.json` selects another catalog.
+Without `--fetch`, the command applies saved pages and uses their oldest modification date for `shopUpdated`.
+`--catalog path/to/static/kdm-catalog/data.json` selects another catalog.
 Failed downloads preserve snapshots and catalog; concurrent catalog edits prevent publication.
 
 ## Item notes and review decisions

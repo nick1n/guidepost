@@ -193,7 +193,7 @@ export class CollectionBrowsing {
   changeCategory(next: Category) {
     this.#setCategory(next);
     this.#setTags([]);
-    this.setQuery("");
+    this.#writeUrl();
   }
 
   toggleTag = (tag: string) => {

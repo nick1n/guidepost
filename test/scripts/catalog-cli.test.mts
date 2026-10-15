@@ -8,7 +8,8 @@ import { expect, it } from "@effect/vitest";
 import { Cause, Deferred, Effect, Exit, Fiber } from "effect";
 import { FetchHttpClient } from "effect/http";
 import { offlineMode, workflow } from "#scripts/catalog/cli.mts";
-import { checkListing } from "#scripts/check-shop-links.mts";
+import type { Item, Edition } from "#lib/types/index.ts";
+import { checkListing, recordShopLink } from "#scripts/check-shop-links.mts";
 import { downloadNewsPage } from "#scripts/news/scrape-shop-links.mts";
 
 it.effect("interruption waits for the promise workflow's cleanup", () =>
@@ -277,6 +278,8 @@ it.effect(
       );
       expect(report.offline).toBe(true);
       expect(report.products).toBe(1);
+      const refreshed = yield* Effect.promise(() => readFile(catalog, "utf8"));
+      expect(JSON.parse(refreshed)).toEqual({ ...JSON.parse(baseline), shopUpdated: report.checkedAt.slice(0, 10) });
       yield* Effect.promise(() => rm(join(folder, "products-page-1.json")));
       const failure = yield* Effect.promise(() =>
         execute(process.execPath, args, { cwd: directory, timeout: 10_000 }).then(
@@ -286,7 +289,7 @@ it.effect(
       );
       expect(failure).toContain("No saved shop page 1");
       expect(failure).toContain("--fetch");
-      expect(yield* Effect.promise(() => readFile(catalog, "utf8"))).toBe(baseline);
+      expect(yield* Effect.promise(() => readFile(catalog, "utf8"))).toBe(refreshed);
     }).pipe(Effect.scoped),
   { timeout: 20_000 },
 );
@@ -347,3 +350,81 @@ it.effect(
     }).pipe(Effect.scoped),
   { timeout: 20_000 },
 );
+
+it.effect("link checks report successful and failed HTTP statuses", () =>
+  Effect.gen(function* () {
+    for (const status of [200, 204, 404, 410, 301, 403, 429, 503]) {
+      const fetch: typeof globalThis.fetch = async () => new Response(null, { status });
+      const result = yield* checkListing(new URL("https://example.com")).pipe(Effect.provideService(FetchHttpClient.Fetch, fetch));
+      expect(result).toEqual({ status, ok: status >= 200 && status < 300 });
+    }
+    const fetch: typeof globalThis.fetch = async () => {
+      throw new Error("offline");
+    };
+    const result = yield* Effect.result(
+      checkListing(new URL("https://example.com")).pipe(Effect.provideService(FetchHttpClient.Fetch, fetch)),
+    );
+    expect(result).toMatchObject({ _tag: "Failure", failure: { _tag: "LinkRequestError" } });
+  }),
+);
+
+it.effect("link request interruption aborts transport without a failure result", () =>
+  Effect.gen(function* () {
+    const entered = yield* Deferred.make<void>();
+    let aborted = false;
+    const fetch: typeof globalThis.fetch = (_input, init) =>
+      new Promise((_resolve, reject) => {
+        init?.signal?.addEventListener(
+          "abort",
+          () => {
+            aborted = true;
+            reject(new Error("aborted"));
+          },
+          { once: true },
+        );
+        Effect.runSync(Deferred.succeed(entered, undefined));
+      });
+    const fiber = yield* checkListing(new URL("https://example.com")).pipe(
+      Effect.provideService(FetchHttpClient.Fetch, fetch),
+      Effect.forkChild,
+    );
+    yield* Deferred.await(entered);
+    yield* Fiber.interrupt(fiber);
+    const exit = yield* Fiber.await(fiber);
+    expect(aborted).toBe(true);
+    expect(Exit.isFailure(exit) && Cause.hasInterrupts(exit.cause)).toBe(true);
+  }),
+);
+
+it("link checks preserve stock facts and clear recovered failures", () => {
+  const url = "https://example.com/product";
+  const edition: Edition = {
+    id: "original",
+    label: "Original",
+    format: "physical",
+    available: true,
+    shop: "out-of-stock",
+  };
+  const item: Item = { name: "Example", tags: [], editions: [edition] };
+  recordShopLink(item, edition, true);
+  expect(edition.shop).toEqual("out-of-stock");
+  expect(edition.available).toBe(true);
+  recordShopLink(item, edition, false);
+  expect(edition.shop).toEqual("missing");
+  expect(edition.available).toBe(true);
+  recordShopLink(item, edition, false);
+  expect(edition.shop).toBe("missing");
+  recordShopLink(item, edition, true);
+  expect(edition.shop).toBeUndefined();
+  delete edition.available;
+  recordShopLink(item, edition, false);
+  expect(edition.shop).toEqual("missing");
+  const unknown: Edition = { id: "item", label: "Item", format: "physical" };
+  const synthetic: Item = { name: "Synthetic", tags: [], url };
+  recordShopLink(synthetic, unknown, true);
+  expect(synthetic.shop).toBeUndefined();
+  recordShopLink(synthetic, unknown, false);
+  expect(synthetic.shop).toEqual("missing");
+  expect(synthetic.editions).toBeUndefined();
+  expect(unknown.shop).toBeUndefined();
+});

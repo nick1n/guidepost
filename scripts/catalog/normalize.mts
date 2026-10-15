@@ -1,4 +1,5 @@
-import { productUrl, shopLinkUrl } from "./shop.mts";
+import { syncStockTag } from "./tags.mts";
+import { catalogListing, productUrl, shopLinkUrl } from "./shop.mts";
 import { categories, type Catalog, type Item } from "./types.mts";
 
 export function catalogUrl(value: string) {
@@ -23,7 +24,30 @@ export function inheritEncoreDates(item: Item) {
   }
 }
 
+// Capture resolved listings before a writer changes handles or external URLs.
+export function listingSnapshot(item: Item) {
+  const listing = (edition?: NonNullable<Item["editions"]>[number]) => {
+    const url = catalogListing(item, edition);
+    if (!url) return undefined;
+    try {
+      return productUrl(url);
+    } catch {
+      return new URL(url, "https://shop.kingdomdeath.com").href;
+    }
+  };
+  return { item: listing(), editions: new Map((item.editions ?? []).map((edition) => [edition.id ?? edition.label, listing(edition)])) };
+}
+
+export function clearChangedListings(item: Item, before: ReturnType<typeof listingSnapshot>) {
+  const after = listingSnapshot(item);
+  if (before.item !== after.item || item.editions?.length) delete item.shop;
+  for (const edition of item.editions ?? [])
+    if (before.editions.get(edition.id ?? edition.label) !== after.editions.get(edition.id ?? edition.label)) delete edition.shop;
+  syncStockTag(item);
+}
+
 export function normalizeItem(item: Item) {
+  const listings = listingSnapshot(item);
   for (const edition of item.editions ?? []) {
     if (edition.label === "Deathgrey M2 Edition") edition.label = "Deathgrey M2";
     if (edition.available !== true) delete edition.available;
@@ -109,6 +133,7 @@ export function normalizeItem(item: Item) {
     for (const edition of item.editions) edition.url ??= item.url;
     delete item.url;
   }
+  clearChangedListings(item, listings);
 }
 
 export function normalizeCatalog(catalog: Catalog) {

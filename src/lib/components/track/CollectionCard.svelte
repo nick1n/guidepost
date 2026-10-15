@@ -11,6 +11,11 @@
   };
   type OwnershipKind = keyof typeof ownershipMessages;
   const ownershipFeedbackDuration = 5000;
+  const shopStates = {
+    "in-stock": { icon: "i-material-symbols:open-in-new", description: "In stock" },
+    "out-of-stock": { icon: "i-material-symbols:do-not-disturb-on", description: "Out of stock" },
+    missing: { icon: "i-material-symbols:link-off", description: "Listing missing" },
+  };
 
   type Props = {
     item: Entry;
@@ -31,7 +36,7 @@
 <script lang="ts">
   import TagRail from "#lib/components/track/TagRail.svelte";
   import HoldRipple from "#lib/components/gestures/HoldRipple.svelte";
-  import { reviewShopUrl, reviewEditions, reviewNumberedEditions, reviewPrice, reviewTagLabel, reviewBadges } from "#lib/catalog-view.ts";
+  import { reviewShopLink, reviewEditions, reviewNumberedEditions, reviewPrice, reviewTagLabel, reviewBadges } from "#lib/catalog-view.ts";
   import { editionGameplay, editionLabel, editionMaterials, formatPrice } from "#lib/kdm-data.ts";
   import { onDestroy } from "svelte";
   import { getCollection } from "#lib/state/collection.svelte.ts";
@@ -297,20 +302,17 @@
 {/snippet}
 
 {#snippet shopLink(edition: ReviewEdition)}
-  {@const url = reviewShopUrl(item, edition)}
-  {@const unavailable = edition.available !== true}
-  {#if url}
-    <a class={["shop", unavailable && "unavailable"]} href={url} target="_blank" rel="noreferrer">
-      Shop<span
-        class={["external-icon", unavailable ? "i-material-symbols:link-off" : "i-material-symbols:arrow-outward"]}
-        aria-hidden="true"
-      ></span>
-      <span class="visually-hidden">
-        {item.name}, {editionLabel(edition)}
-        {unavailable ? ", unavailable" : ""}
-      </span>
+  {@const shop = reviewShopLink(item, edition)}
+  {#if shop && shop.url}
+    <a class="shop" data-state={shop.state} href={shop.url} target="_blank" rel="noreferrer" title={shopStates[shop.state].description}>
+      {@render shopLabel(edition, shop.state)}
     </a>
   {/if}
+{/snippet}
+
+{#snippet shopLabel(edition: ReviewEdition, state: keyof typeof shopStates)}
+  Shop<span class={["external-icon", shopStates[state].icon]} aria-hidden="true"></span>
+  <span class="visually-hidden">{item.name}, {editionLabel(edition)}, {shopStates[state].description}</span>
 {/snippet}
 
 {#snippet editionRow(edition: ReviewEdition, active: boolean)}
@@ -582,6 +584,8 @@
     }
   }
   .shop {
+    --accent: var(--accent-blue);
+
     display: inline-flex;
     grid-column: 3;
     align-items: center;
@@ -591,8 +595,12 @@
     font-size: var(--text-md);
     line-height: var(--size-edition-control);
     white-space: nowrap;
-    &.unavailable {
-      --accent: var(--accent-red);
+    &[data-state="out-of-stock"] {
+      --accent: var(--muted-foreground);
+    }
+
+    &[data-state="missing"] {
+      --accent: var(--red-3);
     }
   }
   .editions {
@@ -808,7 +816,7 @@
         color: color-mix(in oklch, var(--accent-red) 75%, var(--foreground));
       }
     }
-    .shop:hover {
+    .shop[href]:hover {
       color: var(--accent);
       text-decoration: underline;
       text-underline-offset: 0.2em;

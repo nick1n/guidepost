@@ -1,5 +1,6 @@
 <script module lang="ts">
   const swipeFeedbackDuration = 900;
+  const updateDate = new Intl.DateTimeFormat("en-US", { dateStyle: "medium", timeZone: "UTC" });
   function tagWeight(count: number, maximum: number) {
     const proportion = Math.log(Math.max(3, count) / 3) / Math.log(Math.max(4, maximum) / 3);
     return Math.expm1(2 * proportion) / Math.expm1(2);
@@ -28,6 +29,7 @@
   collection.setCatalog(untrack(() => data.catalog));
   const catalog = collection.catalog;
   const entries = catalog.entries;
+  const shopUpdated = $derived(data.catalog.shopUpdated);
   const browsing = new CollectionBrowsing(catalog, (item, edition) => collection.getEdition(item, edition), {
     current: () => page.shallow?.url ?? page.url,
     replace: (url) => replaceState(url, page.state),
@@ -347,7 +349,12 @@
       {/each}
     </div>
   </div>
-  <footer>Your collection is saved on this device and remains available offline.</footer>
+  <footer>
+    <p>Your collection is saved on this device and remains available offline.</p>
+    {#if shopUpdated}
+      <p>Latest shop update: <time datetime={shopUpdated}>{updateDate.format(new Date(shopUpdated))}</time>.</p>
+    {/if}
+  </footer>
   <div
     class={["swipe-previous", dragDistance > 0 && "is-visible"]}
     data-ready={swipeReady}
@@ -934,6 +941,8 @@
     text-align: center;
   }
   footer {
+    display: grid;
+    gap: 0.25rem;
     margin-block-start: 1rem;
     font-size: var(--text-sm);
     text-align: center;

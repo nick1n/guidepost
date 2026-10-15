@@ -110,6 +110,9 @@ describe("collection browsing", () => {
     browsing.changeCategory("accessories");
     expect(browsing.panels.find((panel) => panel.id === "content")?.items).toEqual(outgoing);
     expect(browsing.panels.find((panel) => panel.id === "content")?.items[0]).toBe(outgoing[0]);
+    expect(browsing.query).toBe("model");
+    expect(browsing.visible).toEqual([]);
+    browsing.clearSearch();
     expect(browsing.visible).toHaveLength(100);
     browsing.showMoreItems();
     const accessories = browsing.visible;
@@ -307,12 +310,30 @@ describe("collection browsing", () => {
     expect(f.replace).toHaveBeenCalledTimes(1);
     f.browsing.changeCategory("accessories");
     expect(f.url.searchParams.get("cat")).toBe("accessories");
-    expect(f.url.searchParams.has("q")).toBe(false);
+    expect(f.url.searchParams.get("q")).toBe("Tomorrow");
     expect(f.url.searchParams.has("tag")).toBe(false);
     expect(f.url.searchParams.get("keep")).toBe("yes");
     expect(f.url.hash).toBe("#cards");
     f.browsing.changeCategory("accessories");
     f.browsing.toggleTag("monster-lion");
+    expect(f.replace).toHaveBeenCalledTimes(2);
+  });
+
+  it("preserves a pending search across category changes and filters each destination immediately", () => {
+    vi.useFakeTimers();
+    const f = fixture();
+    f.browsing.setQuery(" Dice ");
+    f.browsing.changeCategory("accessories");
+    expect(f.browsing.query).toBe(" Dice ");
+    expect(f.browsing.filtered.map((item) => item.id)).toEqual(["dice"]);
+    expect(f.url.searchParams.get("q")).toBe(" Dice ");
+    expect(f.url.searchParams.get("cat")).toBe("accessories");
+    f.browsing.changeCategory("content");
+    expect(f.browsing.query).toBe(" Dice ");
+    expect(f.browsing.filtered).toEqual([]);
+    expect(f.url.searchParams.get("q")).toBe(" Dice ");
+    expect(f.url.searchParams.has("cat")).toBe(false);
+    vi.runAllTimers();
     expect(f.replace).toHaveBeenCalledTimes(2);
   });
 

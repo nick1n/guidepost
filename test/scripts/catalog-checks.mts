@@ -1,6 +1,6 @@
 import { catalogTemp } from "#scripts/catalog/paths.mts";
 import assert from "node:assert/strict";
-import { mkdtemp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import { mkdtemp, mkdir, readFile, rm, utimes, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { createHash } from "node:crypto";
@@ -15,7 +15,7 @@ import { applyReview } from "#scripts/update-catalog.mts";
 import { refreshAvailability } from "#scripts/refresh-catalog-availability.mts";
 import { availabilityFromUrls } from "#scripts/catalog/availability.mts";
 import { categories, type Catalog, type Product } from "#scripts/catalog/types.mts";
-import { normalizeItem } from "#scripts/catalog/normalize.mts";
+import { clearChangedListings, listingSnapshot, normalizeItem } from "#scripts/catalog/normalize.mts";
 import { organizeCatalog, compareEditions, orderItemFields } from "#scripts/catalog/order.mts";
 import { validateCatalog } from "#scripts/catalog/validate.mts";
 import { applyTags, loadTags, tagSchema, organizeTags, type Tags } from "#scripts/catalog/tags.mts";
@@ -37,7 +37,7 @@ test("deleted local tag files fall back to saved catalog assignments", async (t)
   const master = await loadTags(root);
   assert.equal(master.local, false);
   assert.deepEqual(master.tags.content.aya, ["aya", "female"]);
-  assert.deepEqual(JSON.parse(master.schemaText).$defs.tag.enum, ["aya", "female"]);
+  assert.deepEqual(JSON.parse(master.schemaText).$defs.tag.enum, ["aya", "female", "in-stock"]);
   applyTags(catalog, master.tags);
   assert.deepEqual(catalog.content.aya.tags, ["aya", "female"]);
   await assert.rejects(readFile(join(catalogTemp(root), "kdm-tags.json")), { code: "ENOENT" });
@@ -150,7 +150,10 @@ test("spaced Death Grey shop variants match Deathgrey during availability refres
   assert.equal(catalog.content.aya.editions![1]!.available, undefined);
   listing.variants[1]!.available = true;
   availabilityFromUrls(catalog, [listing]);
-  assert.deepEqual(catalog.content.aya.editions![1], { label: "Deathgrey", prices: [3500], available: true });
+  assert.deepEqual(
+    { ...catalog.content.aya.editions![1], shop: undefined },
+    { shop: undefined, label: "Deathgrey", prices: [3500], available: true },
+  );
 });
 
 test("cached Death Pink and Second Run names match their distinct catalog editions during availability refresh", () => {
@@ -176,7 +179,10 @@ test("cached Death Pink and Second Run names match their distinct catalog editio
     assert.equal(catalog.content.model.editions![1]!.available, undefined);
     listing.variants[1]!.available = true;
     availabilityFromUrls(catalog, [listing]);
-    assert.deepEqual(catalog.content.model.editions![1], { label: label, prices: [3000], available: true });
+    assert.deepEqual(
+      { ...catalog.content.model.editions![1], shop: undefined },
+      { shop: undefined, label: label, prices: [3000], available: true },
+    );
     if (label === "Bust: Second Run")
       assert.equal(
         resolveReleases(
@@ -241,7 +247,7 @@ test("URL availability uses handles and release variants without name matching",
   assert.equal(catalog.content.unlinked.editions?.[0]?.available, undefined);
 });
 
-test("availability refresh downloads all pages, preserves raw snapshots, and changes only availability", async (t) => {
+test("availability refresh downloads all pages, preserves raw snapshots, and changes availability and shop evidence", async (t) => {
   const root = await mkdtemp(join(tmpdir(), "kdm-availability-"));
   t.after(() => rm(root, { recursive: true, force: true }));
   const path = join(root, "static/kdm-catalog/data.json");
@@ -282,12 +288,22 @@ test("availability refresh downloads all pages, preserves raw snapshots, and cha
   assert.equal(result.pages, 2);
   assert.equal(result.available, 1);
   const saved = JSON.parse(await readFile(path, "utf8"));
+  assert.equal(saved.content.aya.editions[0].shop, "in-stock");
+  assert.match(saved.shopUpdated, /^\d{4}-\d{2}-\d{2}$/);
+  assert.deepEqual(saved.content.aya.editions[0].shop, "in-stock");
+  Reflect.deleteProperty(saved, "shopUpdated");
+  Reflect.deleteProperty(saved.content.aya.editions[0], "shop");
   assert.deepEqual(saved.content.aya.editions[0], { ...catalog.content.aya.editions![0], available: true });
   Reflect.deleteProperty(saved.content.aya.editions[0], "available");
+  assert.deepEqual(saved.content.aya.tags, ["aya", "in-stock"]);
+  saved.content.aya.tags = saved.content.aya.tags.filter((tag: string) => tag !== "in-stock");
   assert.deepEqual(saved, catalog);
   const page = JSON.parse(await readFile(join(result.folder, "products-page-1.json"), "utf8"));
   assert.equal(page.products[0].variants[0].price, "7.00");
+  const cachedAt = new Date("2020-01-02T03:04:05Z");
+  for (let n = 1; n <= 2; n++) await utimes(join(result.folder, `products-page-${n}.json`), cachedAt, cachedAt);
   assert.equal((await refreshAvailability({ catalog: path, offline: true })).changed, 0);
+  assert.equal(JSON.parse(await readFile(path, "utf8")).shopUpdated, "2020-01-02");
 });
 
 test("a failed pagination request cannot clear availability or replace named snapshots", async (t) => {
@@ -1692,4 +1708,116 @@ test("King's Coin prize stays unavailable despite Shopify stock availability", (
   assert.equal(result.available, 1);
   assert.equal(result.changed, 2);
   assert.equal(availabilityFromUrls(catalog, listings).changed, 0);
+});
+
+test("stock evidence distinguishes sold out, unknown matches, and synthetic listings", () => {
+  const catalog = empty();
+  const checkedAt = "2026-10-01";
+  catalog.content.model = {
+    name: "Model",
+    tags: ["model"],
+    editions: [
+      { label: "Sim", handle: "sold-out" },
+      { label: "Sim", handle: "absent" },
+      { label: "Sim", handle: "unknown" },
+      { label: "Sim" },
+      { label: "Plastic", handle: "sold-out", includedOnly: true, shop: "in-stock" },
+    ],
+  };
+  catalog.bundles.example = { name: "Bundle", tags: ["bundle"], handle: "bundle" };
+  catalog.accessories.example = { name: "Accessory", tags: ["accessory"] };
+  catalog.homebrew.example = {
+    name: "Files",
+    tags: ["homebrew"],
+    url: "https://example.com",
+    editions: [{ label: "3D Files", available: true }],
+  };
+  const listings = [
+    product({ handle: "sold-out", variants: [{ ...product().variants[0]!, available: false }] }),
+    product({ handle: "unknown" }),
+    product({
+      handle: "bundle",
+      variants: [
+        { ...product().variants[0]!, available: false },
+        { ...product().variants[0]!, id: 11, available: true },
+      ],
+    }),
+  ];
+  const result = availabilityFromUrls(catalog, listings, checkedAt);
+  assert.deepEqual(
+    catalog.content.model.editions!.map((edition) => edition.shop),
+    ["out-of-stock", "missing", "missing", undefined, undefined],
+  );
+  assert.deepEqual(catalog.content.model.editions![0]!.shop, "out-of-stock");
+  assert.equal(catalog.shopUpdated, checkedAt);
+  assert.equal(catalog.bundles.example.shop, "in-stock");
+  assert.equal(catalog.bundles.example.editions, undefined);
+  assert.equal(catalog.accessories.example.shop, undefined);
+  assert.equal(catalog.homebrew.example.editions![0]!.available, true);
+  assert.equal(catalog.homebrew.example.editions![0]!.shop, undefined);
+  assert.equal(result.changed, 0);
+  assert.equal(result.shopChanged, 5);
+  assert.equal(availabilityFromUrls(catalog, listings, checkedAt).shopChanged, 0);
+  assert.equal(catalog.shopUpdated, checkedAt);
+  const restored = product({ handle: "absent", variants: [{ ...product().variants[0]!, available: true }] });
+  availabilityFromUrls(catalog, [...listings, restored], "2026-10-04T00:00:00.000Z");
+  assert.equal(catalog.content.model.editions![1]!.shop, "in-stock");
+  assert.ok(catalog.content.model.tags.includes("in-stock"));
+  availabilityFromUrls(catalog, listings, checkedAt);
+  assert.equal(catalog.content.model.editions![1]!.shop, "missing");
+  assert.ok(!catalog.content.model.tags.includes("in-stock"));
+  assert.ok(!catalog.bundles.example.tags.includes("in-stock"));
+  delete catalog.bundles.example.handle;
+  assert.equal(availabilityFromUrls(catalog, listings, checkedAt).shopChanged, 1);
+  assert.equal(catalog.bundles.example.shop, undefined);
+});
+
+test("broader availability evidence invalidates earlier stock observations", () => {
+  for (const state of ["in-stock", "out-of-stock", "missing"] as const) {
+    for (const available of [false, true]) {
+      const catalog = empty();
+      catalog.content.rene = {
+        name: "Rene",
+        tags: ["rene", "in-stock"],
+        editions: [
+          {
+            label: "Sim",
+            available: true,
+            shop: state,
+          },
+        ],
+      };
+      const listing = product({ variants: [{ ...product().variants[0]!, available }] });
+      const result = applyAvailability(catalog, [listing], { "kds-rene": { category: "content", itemId: "rene", edition: "Sim" } });
+      assert.equal(result.checkedEditions, 1);
+      assert.equal(result.availableEditions, available ? 1 : 0);
+      assert.equal(catalog.content.rene.editions![0]!.available, available || undefined);
+      assert.equal(catalog.content.rene.editions![0]!.shop, undefined);
+      assert.deepEqual(catalog.content.rene.tags, ["rene"]);
+    }
+  }
+});
+
+test("listing writers clear changed observations and retain equivalent normalized listings", () => {
+  const item = {
+    name: "Example",
+    tags: [],
+    handle: "original",
+    editions: [
+      { id: "plastic", label: "Plastic", shop: "in-stock" as const },
+      { id: "resin", label: "Resin", shop: "out-of-stock" as const },
+    ],
+  };
+  normalizeItem(item);
+  assert.equal(item.editions[0]!.shop, "in-stock");
+  const before = listingSnapshot(item);
+  item.handle = "replacement";
+  clearChangedListings(item, before);
+  assert.equal(item.editions[0]!.shop, undefined);
+  assert.equal(item.editions[1]!.shop, undefined);
+  const external = { name: "Files", tags: [], url: "https://example.com/old", shop: "missing" as const };
+  const previous = listingSnapshot(external);
+  external.url = "https://example.com/new";
+  clearChangedListings(external, previous);
+  assert.equal(external.shop, undefined);
 });

@@ -1,6 +1,8 @@
+import { sortCatalogTags } from "./tags.mts";
 import { categories, type Catalog, type Edition, type Item } from "./types.mts";
+import type { Catalog as AppCatalog, Item as AppItem } from "#lib/types/index.ts";
 
-export function releaseDate(edition: Edition): number[] {
+export function releaseDate(edition: Pick<Edition, "releaseDate" | "releaseWindow">): number[] {
   if (edition.releaseDate) return edition.releaseDate.split("-").map(Number);
   const window = edition.releaseWindow ?? "";
   const year = window.match(/\b(19\d{2}|20\d{2})\b/);
@@ -53,7 +55,7 @@ export function compareEditions(a: Edition, b: Edition) {
   );
 }
 
-function itemDate(item: Item) {
+function itemDate(item: Item | AppItem) {
   const physical = (item.editions ?? []).filter((edition) => !edition.simulator);
   const dates = (physical.length ? physical : (item.editions ?? [])).map(releaseDate).sort(compareDates);
   if (dates[0]?.[0] !== undefined && dates[0][0] !== Infinity) return dates[0]!;
@@ -75,18 +77,19 @@ function orderFields(record: object, first: readonly string[] = []) {
   Object.assign(record, Object.fromEntries(entries));
 }
 
-export function orderItemFields(item: Item) {
+export function orderItemFields<T extends Item | AppItem>(item: T) {
   for (const edition of item.editions ?? []) orderFields(edition, ["id", "label"]);
   for (const inclusion of item.includes ?? []) if (typeof inclusion !== "string") orderFields(inclusion, ["item"]);
   orderFields(item);
   return item;
 }
 
-export function organizeCatalog(catalog: Catalog) {
+export function organizeCatalog<T extends Catalog | AppCatalog>(catalog: T) {
+  sortCatalogTags(catalog);
   for (const category of categories) {
     const entries = Object.entries(catalog[category]);
     for (const [, item] of entries) orderItemFields(item);
-    const rank = (item: Item) => (category === "content" ? (item.kind === "core" ? 0 : item.kind === "expansion" ? 1 : 2) : 2);
+    const rank = (item: Item | AppItem) => (category === "content" ? (item.kind === "core" ? 0 : item.kind === "expansion" ? 1 : 2) : 2);
     // Keep core and expansions first; alphabetize all remaining items by ID.
     entries.sort(([leftId, left], [rightId, right]) => {
       const a = rank(left);
