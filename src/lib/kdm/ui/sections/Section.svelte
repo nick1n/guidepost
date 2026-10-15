@@ -161,7 +161,7 @@
     display: none;
   }
   .section {
-    border-block-end: 2px solid color-mix(var(--identity) 45%, transparent);
+    border-block-end: 2px solid var(--identity-7);
   }
   .section-header {
     position: relative;

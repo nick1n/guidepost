@@ -111,7 +111,7 @@
 
   button {
     flex-shrink: 0;
-    border-radius: var(--radius-control);
+    border-radius: 99px;
     padding: var(--tag-padding, 0.25rem 0.5rem);
     background: var(--panel);
     color: var(--tag-color, var(--foreground));

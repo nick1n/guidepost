@@ -301,7 +301,7 @@
     color: var(--muted-foreground);
 
     &:hover {
-      background: color-mix(var(--accent-red) 12%, transparent);
+      background: var(--red-9);
       color: var(--accent-red);
     }
   }
@@ -350,10 +350,10 @@
   :global(.folio) ul {
     margin-inline: -0.25rem;
     gap: 0;
-    border-block-start: 3px double color-mix(var(--identity) 35%, transparent);
+    border-block-start: 3px double var(--identity-7);
   }
   :global(.folio) li {
-    border-block-end: 1px solid color-mix(var(--identity) 25%, transparent);
+    border-block-end: 1px solid var(--identity-8);
   }
   :global(.folio) .entry {
     padding: 0.625rem 0.375rem;

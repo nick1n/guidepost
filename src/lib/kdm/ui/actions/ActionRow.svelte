@@ -62,7 +62,7 @@
     text-align: start;
 
     &:hover {
-      background: color-mix(var(--identity) 10%, transparent);
+      background: var(--identity-9);
     }
 
     &:focus-visible {
@@ -144,12 +144,15 @@
     font-family: var(--font-serif);
   }
   :global(.folio) .description {
-    border-block-start: 3px double color-mix(var(--identity) 35%, transparent);
+    border-block-start: 3px double var(--identity-7);
     font-family: var(--font-serif);
   }
   :global(.signal) .row {
     border-radius: 1rem 0.25rem 1rem 0.25rem;
     background: var(--identity-9);
+  }
+  :global(.signal) .read:hover {
+    background: var(--identity-8);
   }
   :global(.signal) .spend:not(:disabled) {
     --color-action-cost: var(--foreground);

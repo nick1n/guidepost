@@ -261,7 +261,7 @@
     }
 
     &:hover {
-      background: color-mix(var(--identity) 10%, transparent);
+      background: var(--identity-9);
     }
 
     &:focus-visible {
@@ -538,7 +538,7 @@
     display: grid;
     padding-block: 0.25rem;
     gap: 0.375rem;
-    border-block: 3px double color-mix(var(--identity) 35%, transparent);
+    border-block: 3px double var(--identity-7);
     font-family: var(--font-serif);
   }
   .folio-heading {
@@ -626,7 +626,7 @@
     display: grid;
     padding: 0.5rem;
     gap: 0.5rem;
-    border: 1px solid color-mix(var(--identity) 55%, transparent);
+    border: 1px solid var(--identity-7);
     border-radius: 1rem 0.25rem 1rem 0.25rem;
     background: radial-gradient(circle at 50% 0, color-mix(var(--identity) 18%, transparent), transparent 70%), var(--background);
   }
@@ -733,7 +733,7 @@
   }
   :global(.folio) .keyword-line {
     padding-block-start: 0.25rem;
-    border-block-start: 3px double color-mix(var(--identity) 35%, transparent);
+    border-block-start: 3px double var(--identity-7);
   }
   :global(.folio) .keyword-label,
   :global(.folio) .keyword {
@@ -746,6 +746,9 @@
   :global(.signal) .profile {
     border-radius: 1rem 0.25rem 1rem 0.25rem;
     background: var(--identity-9);
+  }
+  :global(.signal) .read:hover {
+    background: var(--identity-8);
   }
   :global(.obsidian) :is(.stats, .static-stats) {
     gap: 0;
@@ -763,7 +766,7 @@
   :global(.signal) .keyword-line {
     align-items: start;
     padding: 0.375rem;
-    border: 1px solid color-mix(var(--identity) 45%, transparent);
+    border: 1px solid var(--identity-7);
     border-radius: 0.75rem 0.125rem 0.75rem 0.125rem;
     background: var(--identity-10);
   }
@@ -772,7 +775,7 @@
   }
   :global(.signal) .keyword {
     padding-block-end: 0.125rem;
-    border-block-end: 1px solid color-mix(var(--identity) 50%, transparent);
+    border-block-end: 1px solid var(--identity-7);
   }
   :global(.signal) .spend:not(:disabled) {
     --color-action-cost: var(--foreground);

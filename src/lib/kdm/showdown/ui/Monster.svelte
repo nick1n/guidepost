@@ -435,7 +435,7 @@
     &::before,
     &::after {
       flex: 1;
-      border-block-start: 1px solid color-mix(var(--identity) 45%, transparent);
+      border-block-start: 1px solid var(--identity-7);
       content: "";
     }
 
@@ -477,7 +477,7 @@
 
     &::before,
     &::after {
-      border-block-start: 3px double color-mix(var(--identity) 45%, transparent);
+      border-block-start: 3px double var(--identity-7);
     }
   }
   :global(.folio) .more-label {
@@ -489,7 +489,7 @@
   :global(.signal) .more {
     &::before,
     &::after {
-      border-block-start: 3px dotted color-mix(var(--identity) 65%, transparent);
+      border-block-start: 3px dotted var(--identity-6);
     }
 
     &:where(button):hover .more-label {
