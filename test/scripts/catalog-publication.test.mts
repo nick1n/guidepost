@@ -343,6 +343,7 @@ it("availability refresh preserves an edit made while preparing its publication"
   await expect(
     refreshAvailability({
       catalog: path,
+      offline: false,
       client: { get: async (url) => ({ url, checkedAt: "2026-10-09", data: { products: [product] } }) },
     }),
   ).rejects.toMatchObject({ published: [] });

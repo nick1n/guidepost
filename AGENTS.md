@@ -144,8 +144,11 @@ Preserve direct owner edits and reviewed facts.
   Catalog tags sort by global item frequency, highest first, with alphabetical ties. Master tag arrays stay alphabetical,
   and item key ordering matches the catalog. The tag schema validates vocabulary, not every item ID.
 - `catalog:tags` stages changes; `catalog:tags --apply` applies them and syncs the master file. `catalog:update` stages
-  broader changes and rejects stale reviews. `catalog:availability` changes only edition availability, refreshes caches,
-  and preserves homebrew flags. `--offline` uses caches. Failed downloads or concurrent edits must not overwrite catalog data.
+  broader changes and rejects stale reviews. `catalog:availability` owns stock and availability, using only
+  `https://shop.kingdomdeath.com/products.json?limit=250&page=1` and `page=2`. By default it reads the saved
+  `products-page-1.json` and `products-page-2.json`; `--fetch` retrieves exactly those two pages and refreshes their caches.
+  Never use individual product responses, caches, or HEAD checks for stock or availability. Metadata imports preserve existing
+  stock on unchanged listings; refresh availability after adding editions. Link checks write reports only. Preserve homebrew flags. `--offline` uses caches. Failed downloads or concurrent edits must not overwrite catalog data.
 
 ### Catalog data rules
 

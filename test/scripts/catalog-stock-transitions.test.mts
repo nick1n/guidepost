@@ -1,8 +1,8 @@
 import { recordStock } from "#scripts/catalog/stock.mts";
 import { expect, test } from "vitest";
-import { applyAvailability, planUpdate } from "#scripts/catalog/update.mts";
+import { planUpdate } from "#scripts/catalog/update.mts";
 import { clearChangedListings, listingSnapshot, normalizeItem } from "#scripts/catalog/normalize.mts";
-import type { Catalog, Product, Variant } from "#scripts/catalog/types.mts";
+import type { Catalog, Product } from "#scripts/catalog/types.mts";
 
 function catalog(): Catalog {
   return {
@@ -31,41 +31,6 @@ function product(handle: string, available: boolean): Product {
   };
 }
 
-test("current listing stock transitions preserve the derived stock tag", () => {
-  const data = catalog();
-  const edition = data.content.example!.editions![0]!;
-  for (const available of [false, true, false]) {
-    applyAvailability(data, [product("current", available)]);
-    expect(edition.shop).toBe(available ? "in-stock" : "out-of-stock");
-    expect(edition.available).toBe(available || undefined);
-    expect(data.content.example!.tags.includes("in-stock")).toBe(available);
-  }
-});
-
-test("historical mappings preserve availability semantics without asserting current stock", () => {
-  for (const stock of [undefined, "in-stock", "out-of-stock", "missing"] as const) {
-    const data = catalog();
-    data.content.example!.editions![0]!.shop = stock;
-    const mappings = { old: { category: "content" as const, itemId: "example", edition: "Resin" } };
-    applyAvailability(data, [product("old", true)], mappings);
-    expect(data.content.example!.editions![0]!.available).toBe(true);
-    expect(data.content.example!.editions![0]!.shop).toBe(stock);
-    expect(data.content.example!.tags.includes("in-stock")).toBe(stock === "in-stock");
-  }
-});
-
-test("historical evidence cannot override current listing stock in either order", () => {
-  for (const listings of [
-    [product("old", true), product("current", false)],
-    [product("current", false), product("old", true)],
-  ]) {
-    const data = catalog();
-    applyAvailability(data, listings, { old: { category: "content", itemId: "example", edition: "Resin" } });
-    expect(data.content.example!.editions![0]!.shop).toBe("out-of-stock");
-    expect(data.content.example!.tags).toEqual(["model"]);
-  }
-});
-
 test("listing replacement clears both availability and stock while equivalent normalization retains them", () => {
   const item = catalog().content.example!;
   item.url = "/products/current?variant=1";
@@ -81,7 +46,7 @@ test("listing replacement clears both availability and stock while equivalent no
   expect(item.tags).toEqual(["model"]);
 });
 
-test("reviewed replacement uses new listing stock despite retained historical mapping", () => {
+test("reviewed listing replacement invalidates stock without trusting individual availability", () => {
   const before = catalog();
   const evidence = [product("old", true), product("replacement", false)].map((data) => ({
     data,
@@ -99,7 +64,8 @@ test("reviewed replacement uses new listing stock despite retained historical ma
     { content: { example: ["model"] }, accessories: {}, bundles: {}, homebrew: {}, "included-only": {} },
   );
   expect(result.catalog.content.example!.handle).toBe("replacement");
-  expect(result.catalog.content.example!.editions![0]!.shop).toBe("out-of-stock");
+  expect(result.catalog.content.example!.editions![0]!.shop).toBeUndefined();
+  expect(result.catalog.content.example!.editions![0]!.available).toBeUndefined();
   expect(result.catalog.content.example!.tags).toEqual(["model"]);
 });
 
@@ -115,23 +81,6 @@ test("new edition identities retain freshly observed evidence when a writer assi
   expect(item.tags).toContain("in-stock");
 });
 
-test("partial warehouse evidence cannot assert that the current listing is sold out", () => {
-  const data = catalog();
-  const edition = data.content.example!.editions![0]!;
-  edition.shop = "missing";
-  const listing = product("current", false);
-  const unknown: Variant = { ...listing.variants[0]!, id: 2 };
-  delete unknown.available;
-  listing.variants.push(unknown);
-  applyAvailability(data, [listing]);
-  expect(edition.shop).toBe("missing");
-  expect(data.content.example!.tags).toEqual(["model"]);
-  unknown.available = true;
-  applyAvailability(data, [listing]);
-  expect(edition.shop).toBe("in-stock");
-  expect(data.content.example!.tags).toEqual(["in-stock", "model"]);
-});
-
 test("recording stock reports independent changes and makes availability policy explicit", () => {
   const target: Parameters<typeof recordStock>[0] = {
     available: true,
@@ -145,4 +94,47 @@ test("recording stock reports independent changes and makes availability policy 
   expect(target.shop).toBeUndefined();
   expect(recordStock(target, "in-stock", "replace")).toEqual({ shopChanged: true, availableChanged: true });
   expect(recordStock(target, "in-stock", "replace")).toEqual({ shopChanged: false, availableChanged: false });
+});
+
+test("individual product metadata preserves snapshot availability and stock for unchanged listings", () => {
+  for (const available of [false, true]) {
+    for (const state of [undefined, "in-stock", "out-of-stock", "missing"] as const) {
+      const before = catalog();
+      const edition = before.content.example!.editions![0]!;
+      edition.shop = state;
+      if (state !== "in-stock") delete edition.available;
+      const data = product("current", available);
+      data.variants[0]!.price = 4500;
+      const result = planUpdate(
+        before,
+        [{ data, checkedAt: "2026-10-13T00:00:00Z", url: "https://shop.kingdomdeath.com/products/current.js" }],
+        { current: { category: "content", itemId: "example", edition: "Resin" } },
+        [],
+        { content: { example: ["model"] }, accessories: {}, bundles: {}, homebrew: {}, "included-only": {} },
+      );
+      const updated = result.catalog.content.example!.editions![0]!;
+      expect(updated.shop).toBe(state);
+      expect(updated.available).toBe(edition.available);
+      expect(updated.prices).toEqual([4500]);
+    }
+  }
+});
+
+test("metadata importing creates releases without deriving availability from their individual variants", () => {
+  for (const available of [false, true]) {
+    const before = catalog();
+    const data = product("current", available);
+    data.variants.push({ ...data.variants[0]!, id: 2, title: "Encore" });
+    const result = planUpdate(
+      before,
+      [{ data, checkedAt: "2026-10-13T00:00:00Z", url: "https://shop.kingdomdeath.com/products/current.js" }],
+      { current: { category: "content", itemId: "example", edition: "Resin" } },
+      [],
+      { content: { example: ["model"] }, accessories: {}, bundles: {}, homebrew: {}, "included-only": {} },
+    );
+    const created = result.catalog.content.example!.editions!.find((edition) => edition.label === "Encore");
+    expect(created?.prices).toEqual([3000]);
+    expect(created).not.toHaveProperty("available");
+    expect(created).not.toHaveProperty("shop");
+  }
 });

@@ -8,12 +8,10 @@ import { setTimeout as sleep } from "node:timers/promises";
 import { fileURLToPath } from "node:url";
 import { reviewEditions, reviewShopUrl } from "#lib/catalog-view.ts";
 import { publishFiles } from "./catalog/publication.mts";
-import { organizeCatalog } from "./catalog/order.mts";
 import { categories } from "./catalog/types.mts";
-import type { Catalog, Edition, Item } from "#lib/types/index.ts";
+import type { Catalog } from "#lib/types/index.ts";
 import { catalogTemp } from "./catalog/paths.mts";
 import { withShopRequest } from "./catalog/shop.mts";
-import { recordLinkHealth } from "./catalog/stock.mts";
 import { formatLockConflict } from "./catalog/locks.mts";
 
 export class LinkRequestError extends Schema.TaggedError<LinkRequestError>()("LinkRequestError", { cause: Schema.Defect() }) {}
@@ -29,10 +27,6 @@ export const checkListing = Effect.fn("CatalogLinks.checkListing")((url: URL) =>
     Effect.provideService(FetchHttpClient.RequestInit, { redirect: "follow" }),
   ),
 );
-export function recordShopLink(item: Item, edition: Edition, reachable: boolean) {
-  recordLinkHealth(item.editions?.length ? edition : item, reachable);
-}
-
 const LinkResult = Schema.Struct({ checkedAt: Schema.String, status: Schema.NullOr(Schema.Number), ok: Schema.Boolean });
 const LinkCheckpoint = Schema.Struct({
   complete: Schema.Boolean,
@@ -117,7 +111,7 @@ export async function checkShopLinks(
       const host = new URL(listing).hostname;
       if (host !== "shop.kingdomdeath.com") starts.set(host, Math.max(starts.get(host) ?? 0, Date.parse(result.checkedAt)));
     }
-    // Checkpoints survive cancellation and catalog publication conflicts.
+    // Checkpoints survive cancellation and catalog edits that invalidate the final report.
     const saveCheckpoint = () =>
       publishFiles([{ path: checkpointPath, json: { complete: false, starts: Object.fromEntries(starts), results: checkpointResults } }]);
     await saveCheckpoint();
@@ -203,7 +197,6 @@ export async function checkShopLinks(
           }
           const response = results.get(key);
           if (!response) throw new Error(`Missing link result for ${key}`);
-          recordShopLink(item, edition, response.ok);
           listings.push({
             category,
             itemId,
@@ -222,7 +215,6 @@ export async function checkShopLinks(
     const checkedAt = new Date(now()).toISOString();
     await publishFiles(
       [
-        { path: catalogPath, json: organizeCatalog(catalog) },
         { path: reportPath, json: { checkedAt, reachable, unreachable, missing, listings } },
         { path: checkpointPath, json: { complete: true, starts: Object.fromEntries(starts), results: checkpointResults } },
       ],

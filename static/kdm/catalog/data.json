@@ -1,6 +1,6 @@
 {
   "$schema": "./data.schema.json",
-  "shopUpdated": "2026-10-06",
+  "shopUpdated": "2026-10-15",
   "content": {
     "core": {
       "aliases": ["Collector's Resin Edition Kingdom Death Core 1.0", "Monster 1.5 Core Game", "Kingdom Death Monster 1.5", "Monster 1.6 Core Game", "Kingdom Death Monster 1.6", "KINGDOM DEATH"],
@@ -4333,7 +4333,7 @@
       "announcements": ["2026-09-30"],
       "editions": [
         { "id": "painters-first-run", "label": "Painters: First Run", "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [7000], "releaseDate": "2026-09-30", "shop": "out-of-stock" },
-        { "id": "painters-encore", "label": "Painters: Encore", "format": "physical", "materials": ["Photoresin"], "prices": [7000], "releaseDate": "2026-09-30" }
+        { "id": "painters-encore", "label": "Painters: Encore", "format": "physical", "materials": ["Photoresin"], "prices": [7000], "releaseDate": "2026-09-30", "shop": "out-of-stock" }
       ],
       "handle": "life-model-simone-painters-scale",
       "kind": "model",
@@ -4343,13 +4343,13 @@
     "painters-scale-death-high-portraitist-snow": {
       "announcements": ["2026-09-30"],
       "editions": [
-        { "id": "painters-first-run", "label": "Painters: First Run", "available": true, "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [7000], "releaseDate": "2026-09-30", "shop": "in-stock" },
+        { "id": "painters-first-run", "label": "Painters: First Run", "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [7000], "releaseDate": "2026-09-30", "shop": "out-of-stock" },
         { "id": "painters-encore", "label": "Painters: Encore", "format": "physical", "materials": ["Photoresin"], "prices": [7000], "releaseDate": "2026-09-30", "shop": "out-of-stock" }
       ],
       "handle": "death-high-portraitist-snow-painters-scale",
       "kind": "model",
       "name": "Death High - Portraitist Snow - Painter's Scale",
-      "tags": ["female", "in-stock", "photoresin", "2026", "painters-scale", "death-high", "snow"]
+      "tags": ["female", "photoresin", "2026", "painters-scale", "death-high", "snow"]
     },
     "painters-scale-death-high-satan-twins": {
       "aliases": ["Painters Scale Death High Satan Twins"],
@@ -4403,7 +4403,7 @@
     },
     "painters-scale-kingslayer-twilight-knight": {
       "announcements": ["2024-01-31"],
-      "editions": [{ "id": "painters", "label": "Painters", "format": "physical", "materials": ["Photoresin"], "prices": [6000], "releaseDate": "2024-01-31", "shop": "out-of-stock" }],
+      "editions": [{ "id": "painters", "label": "Painters", "format": "physical", "materials": ["Photoresin"], "prices": [6000], "releaseDate": "2024-01-31", "shop": "missing" }],
       "handle": "kingslayer-twilight-knight",
       "kind": "model",
       "name": "Kingslayer Twilight Knight - Painter's Scale",
@@ -7847,7 +7847,7 @@
       "size": "mini",
       "tags": ["photoresin", "knight", "2025"]
     },
-    "dice-1-0": { "accessoryType": "dice", "kind": "accessory", "name": "1.0 Death Dice", "price": 2000, "tags": ["core", "dice"] },
+    "dice-1-0": { "accessoryType": "dice", "kind": "accessory", "name": "1.0 Death Dice", "price": 2000, "tags": ["core", "dice", "black", "white"] },
     "dice-black-and-red": {
       "accessoryType": "dice",
       "announcements": ["2025-08-29"],
@@ -7858,7 +7858,7 @@
       "price": 2000,
       "releaseDate": "2025-08-29",
       "shop": "out-of-stock",
-      "tags": ["2025", "dice", "red", "black"],
+      "tags": ["2025", "dice", "black", "red"],
       "text": ["Black", "Red"]
     },
     "dice-black-friday": {
@@ -7871,7 +7871,7 @@
       "price": 2000,
       "releaseDate": "2019-11-29",
       "shop": "missing",
-      "tags": ["2019", "promo", "dice", "black-friday"],
+      "tags": ["2019", "promo", "dice", "black", "black-friday", "grey"],
       "text": ["Grey", "Black"]
     },
     "dice-black-out": {
@@ -7884,7 +7884,7 @@
       "price": 2000,
       "releaseDate": "2023-11-24",
       "shop": "missing",
-      "tags": ["2023", "dice", "black-out"],
+      "tags": ["2023", "dice", "black", "black-out"],
       "text": ["Black", "Black"]
     },
     "dice-classic": {
@@ -7897,7 +7897,7 @@
       "price": 2000,
       "releaseDate": "2017-03-06",
       "shop": "in-stock",
-      "tags": ["2017", "dice", "classic"],
+      "tags": ["2017", "dice", "black", "white", "classic"],
       "text": ["White Resin", "Black"]
     },
     "dice-easter": {
@@ -7909,7 +7909,7 @@
       "price": 2000,
       "releaseDate": "2019-04-22",
       "shop": "missing",
-      "tags": ["seasonal", "2019", "dice", "easter"]
+      "tags": ["seasonal", "2019", "dice", "easter", "green", "pink"]
     },
     "dice-fall": {
       "accessoryType": "dice",
@@ -7920,10 +7920,10 @@
       "price": 2000,
       "releaseDate": "2017-09-11",
       "shop": "in-stock",
-      "tags": ["seasonal", "2017", "dice", "fall"],
+      "tags": ["seasonal", "2017", "dice", "apricot", "brown", "fall"],
       "urls": ["/products/summer-death-dice"]
     },
-    "dice-gold-smoke-knight": { "accessoryType": "dice", "colors": ["#c9a227", "#151313"], "kind": "accessory", "name": "Gold Smoke Knight Dice", "price": 2000, "tags": ["knight", "dice", "monster-gold-smoke-knight"], "text": ["Gold", "Black"] },
+    "dice-gold-smoke-knight": { "accessoryType": "dice", "colors": ["#c9a227", "#151313"], "kind": "accessory", "name": "Gold Smoke Knight Dice", "price": 2000, "tags": ["knight", "dice", "black", "monster-gold-smoke-knight", "gold"], "text": ["Gold", "Black"] },
     "dice-golden-bat": {
       "accessoryType": "dice",
       "announcements": ["2024-08-29"],
@@ -7933,7 +7933,7 @@
       "price": 2000,
       "releaseDate": "2024-07-24",
       "shop": "in-stock",
-      "tags": ["2024", "dice", "monster-golden-bat"]
+      "tags": ["2024", "dice", "black", "gold", "monster-golden-bat"]
     },
     "dice-halloween": {
       "accessoryType": "dice",
@@ -7945,7 +7945,7 @@
       "price": 2000,
       "releaseDate": "2019-10-31",
       "shop": "missing",
-      "tags": ["seasonal", "2019", "dice", "halloween"]
+      "tags": ["seasonal", "2019", "dice", "halloween", "orange", "purple"]
     },
     "dice-holiday": {
       "accessoryType": "dice",
@@ -7956,7 +7956,7 @@
       "price": 2000,
       "releaseDate": "2018-12-25",
       "shop": "missing",
-      "tags": ["seasonal", "2018", "dice"]
+      "tags": ["seasonal", "2018", "dice", "white", "gold"]
     },
     "dice-parasite-queen": {
       "accessoryType": "dice",
@@ -7969,7 +7969,7 @@
       "price": 2000,
       "releaseDate": "2026-08-31",
       "shop": "in-stock",
-      "tags": ["female", "2026", "dice", "monster-parasite-queen"],
+      "tags": ["female", "2026", "dice", "monster-parasite-queen", "bruise", "flesh"],
       "text": ["Flesh", "Bruise"]
     },
     "dice-spring": {
@@ -7981,9 +7981,9 @@
       "price": 2000,
       "releaseDate": "2019-03-27",
       "shop": "missing",
-      "tags": ["seasonal", "2019", "dice", "spring"]
+      "tags": ["seasonal", "2019", "dice", "green", "pale", "spring"]
     },
-    "dice-squire": { "accessoryType": "dice", "announcements": ["2024-04-02"], "handle": "squire-dice", "kind": "accessory", "name": "Squire Death Dice", "price": 2000, "releaseDate": "2023-11-16", "shop": "in-stock", "tags": ["2023", "dice", "squire"] },
+    "dice-squire": { "accessoryType": "dice", "announcements": ["2024-04-02"], "handle": "squire-dice", "kind": "accessory", "name": "Squire Death Dice", "price": 2000, "releaseDate": "2023-11-16", "shop": "in-stock", "tags": ["2023", "dice", "squire", "silver", "teal"] },
     "dice-summer": {
       "accessoryType": "dice",
       "announcements": ["2019-07-02", "2019-08-16", "2020-06-24", "2020-07-17", "2020-08-28", "2021-07-19", "2022-06-01", "2022-07-01", "2022-08-09", "2022-10-01", "2023-06-12", "2023-07-11", "2023-07-13", "2023-08-28", "2024-07-03", "2025-06-30", "2026-06-30", "2026-08-31"],
@@ -7993,7 +7993,7 @@
       "price": 2000,
       "releaseDate": "2019-07-02",
       "shop": "missing",
-      "tags": ["seasonal", "2019", "dice", "summer"]
+      "tags": ["seasonal", "2019", "dice", "summer", "pink", "yellow"]
     },
     "dice-sunstalker": {
       "accessoryType": "dice",
@@ -8003,7 +8003,7 @@
       "name": "Sunstalker Light & Shadow Dice",
       "price": 12000,
       "releaseDate": "2026-08-31",
-      "tags": ["2026", "dice", "monster-sunstalker", "light-and-shadow"],
+      "tags": ["2026", "dice", "monster-sunstalker", "yellow", "foil", "light-and-shadow"],
       "text": ["Yellow", "Foil"]
     },
     "dice-valentines-day": {
@@ -8016,7 +8016,7 @@
       "price": 2000,
       "releaseDate": "2019-02-14",
       "shop": "missing",
-      "tags": ["seasonal", "2019", "dice", "valentine"]
+      "tags": ["seasonal", "2019", "dice", "valentine", "blush", "rose"]
     },
     "dice-winter": {
       "accessoryType": "dice",
@@ -8027,7 +8027,7 @@
       "price": 2000,
       "releaseDate": "2018-12-25",
       "shop": "missing",
-      "tags": ["seasonal", "2018", "dice", "winter"]
+      "tags": ["seasonal", "2018", "dice", "white", "winter", "blue"]
     },
     "founders-stone-momento": {
       "accessoryType": "other",

@@ -18,16 +18,16 @@ export async function refreshAvailability(
   const original = await readFile(path, "utf8");
   const catalog: Catalog = JSON.parse(original);
   const previousShopUpdated = catalog.shopUpdated;
+  const offline = options.offline !== false;
   const folder = join(catalogTemp(dirname(path)), "shopify-products");
   const client = options.client ?? new ShopClient({ refresh: true, signal: options.signal });
   const pages: { products: unknown[] }[] = [];
   const products: Product[] = [];
   const cacheTimes: number[] = [];
-  for (let page = 1; ; page++) {
+  for (const page of [1, 2]) {
     options.signal?.throwIfAborted();
-    if (page > 100) throw new Error("Shop pagination exceeded 100 pages; catalog availability was not changed.");
     const cachePath = join(folder, `products-page-${page}.json`);
-    const raw = options.offline
+    const raw = offline
       ? JSON.parse(
           await readFile(cachePath, "utf8").catch((error: NodeJS.ErrnoException) => {
             if (error.code === "ENOENT")
@@ -38,7 +38,7 @@ export async function refreshAvailability(
       : (await client.get(`https://shop.kingdomdeath.com/products.json?limit=250&page=${page}`)).data;
     if (!raw || typeof raw !== "object" || !Array.isArray((raw as { products?: unknown }).products))
       throw new Error(`Invalid products page ${page}; catalog availability was not changed.`);
-    if (options.offline) cacheTimes.push((await stat(cachePath)).mtimeMs);
+    if (offline) cacheTimes.push((await stat(cachePath)).mtimeMs);
     const response = raw as { products: unknown[] };
     const normalized = response.products.map((value) => shopProduct(value, "json"));
     if (
@@ -47,15 +47,16 @@ export async function refreshAvailability(
       throw new Error(`Missing variant availability on page ${page}; catalog availability was not changed.`);
     pages.push(response);
     products.push(...normalized);
-    if (response.products.length < 250) break;
+    if (response.products.length > 250 || (page === 2 && response.products.length === 250))
+      throw new Error("Shop snapshot exceeds two pages; catalog availability was not changed.");
   }
   if (!products.length) throw new Error("Shop returned no products; catalog availability was not changed.");
-  const checkedAt = new Date(options.offline ? Math.min(...cacheTimes) : Date.now()).toISOString();
+  const checkedAt = new Date(offline ? Math.min(...cacheTimes) : Date.now()).toISOString();
   const result = availabilityFromUrls(catalog, products, checkedAt.slice(0, 10));
   const reportPath = join(catalogTemp(dirname(path)), "reports/availability-refresh.json");
   await publishFiles(
     [
-      ...(options.offline ? [] : pages.map((page, index) => ({ path: join(folder, `products-page-${index + 1}.json`), json: page }))),
+      ...(offline ? [] : pages.map((page, index) => ({ path: join(folder, `products-page-${index + 1}.json`), json: page }))),
       ...(result.changed || result.shopChanged || result.tagsChanged || catalog.shopUpdated !== previousShopUpdated
         ? [{ path, json: organizeCatalog(catalog) }]
         : []),
@@ -63,7 +64,7 @@ export async function refreshAvailability(
         path: reportPath,
         json: {
           checkedAt,
-          offline: options.offline === true,
+          offline,
           pages: pages.length,
           products: products.length,
           ...result,

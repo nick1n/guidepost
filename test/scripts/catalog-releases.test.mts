@@ -62,3 +62,21 @@ test("observed availability uses known standard editions while update creation u
   expect(proposed.edition).toBeUndefined();
   expect(edition.id).toBe("original-box");
 });
+
+test("retrieved individual product editions contain metadata without snapshot stock or availability", () => {
+  for (const available of [false, true]) {
+    const result = productEditions(
+      { name: "Example", tags: [] },
+      listing([variant(1, "First Run / US Warehouse", { available }), variant(2, "Encore", { available })], {
+        description: "Photoresin miniature.",
+      }),
+    );
+    expect(result.editions.map((edition) => edition.label)).toEqual(["First Run", "Encore"]);
+    for (const edition of result.editions) {
+      expect(edition).not.toHaveProperty("available");
+      expect(edition).not.toHaveProperty("shop");
+      expect(edition.prices).toEqual([3000]);
+      expect(edition.materials).toEqual(["Photoresin"]);
+    }
+  }
+});

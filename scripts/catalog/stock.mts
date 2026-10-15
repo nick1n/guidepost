@@ -4,7 +4,7 @@ type Target = Pick<Edition, "shop" | "available">;
 type StockItem = { tags: string[]; editions?: { shop?: string }[] };
 export type StockState = NonNullable<Edition["shop"]>;
 
-// Historical mapping evidence can update availability without checking the current listing.
+// Omit false availability rather than persisting it.
 export function recordAvailability(target: Target, available: boolean) {
   const previous = target.available;
   if (available) target.available = true;
@@ -18,12 +18,6 @@ export function recordStock(target: Target, state: StockState | undefined, avail
   else target.shop = state;
   const availableChanged = availability === "replace" && recordAvailability(target, state === "in-stock");
   return { shopChanged, availableChanged };
-}
-
-export function recordLinkHealth(target: Target, reachable: boolean) {
-  if (!reachable) return recordStock(target, "missing").shopChanged;
-  // Reachability clears link failures without claiming to check stock.
-  return target.shop === "missing" ? recordStock(target, undefined).shopChanged : false;
 }
 
 export function invalidateListingEvidence(target: Target) {

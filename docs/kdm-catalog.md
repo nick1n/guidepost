@@ -41,6 +41,11 @@ Changes to catalog, schemas, news, or master tags invalidate a review.
 The news scraper collects announcement links. Product `.js` caches retain complete storefront responses, with prices in cents;
 Sim `products.json` prices are dollars and normalize to cents. Source tags are evidence, not reviewed assignments.
 Offline updates prefer `.js` caches and also accept existing `.json` product caches.
+Stock and availability use only the complete two-page shop snapshot: `products.json?limit=250&page=1` and `page=2`.
+`catalog:availability` reads the saved `products-page-1.json` and `products-page-2.json` by default.
+With `--fetch`, it downloads exactly those two pages and publishes their caches only after both succeed.
+Individual product responses and HEAD checks never supply stock or availability.
+Run `catalog:availability` after importing new editions to assign snapshot stock.
 
 Reviewed fallback: undated Encore without a release window inherits First Run's date, or Deathgrey's if First Run has none.
 Known Encore dates stay unchanged.
@@ -59,13 +64,13 @@ Current data rules:
   Morgan's bust belongs to Morgan the Savior; White Speaker painter's scale belongs to White Speaker Koshka (formerly White Speaker).
   Senior Death High Allister and Thief Variant remain separate.
 - Gameplay defaults to false. Item `gameplay` appears only when true; editions store an override only when different. `gameplayContent` and notes belong on the item. Alternative names use `aliases`; `alt` is removed.
-- Edition availability defaults to false. Store `available: true` only when at least one matching shop variant or warehouse is available. Updates refresh known availability; responses without availability evidence preserve the existing value. This reflects the cached shop snapshot, not a live stock check.
+- Edition availability defaults to false. Store `available: true` only when at least one matching variant or warehouse in the two-page shop snapshot is available. Metadata imports preserve existing stock and availability when the listing is unchanged; new editions wait for `catalog:availability`.
 - `shop` stores `in-stock`, `out-of-stock`, or `missing` on editions, or on items without editions. Shared `shopUpdated` is a `YYYY-MM-DD` refresh date.
   Clear the affected `shop` and edition `available` fields after manually changing its handle or external URL.
-  Missing shop evidence displays as stock unknown, independently of `available`. Current-listing variant evidence updates
-  shop stock states; historical mappings can still supply availability without asserting stock for a replacement listing.
+  Missing shop evidence displays as stock unknown, independently of `available`. Only current-listing variants in the two-page snapshot
+  update stock states and availability. Historical mappings and individual product responses cannot override that snapshot.
   The `in-stock` tag is derived from edition shop states and removed when none remain in stock.
-  Tag updates use existing shop states and do not call `catalog:update`; catalog updates recalculate the tag after updating the data.
+  Tag and metadata updates use existing shop states; `catalog:availability` updates them from the snapshot.
   `scripts/catalog/stock.mts` owns stock, availability, link-health, and listing-invalidation operations. Tag sorting and validation
   share its stock predicate; workflow code chooses whether a stock observation also replaces availability.
 - Prices are integer cents. Edition `prices` arrays contain recorded sale amounts and current MSRP, with the maximum representing MSRP. Missing prices are unknown; `[0]` is a known zero price. Lunar Aya's Sim price remains the user-authorized $7 estimate, documented in the report.

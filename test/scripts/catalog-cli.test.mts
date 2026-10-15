@@ -8,9 +8,8 @@ import { expect, it } from "@effect/vitest";
 import { Cause, Deferred, Effect, Exit, Fiber } from "effect";
 import { FetchHttpClient } from "effect/http";
 import { offlineMode, workflow } from "#scripts/catalog/cli.mts";
-import type { Item, Edition } from "#lib/types/index.ts";
-import { reviewShopLink } from "#lib/catalog-view.ts";
-import { checkListing, recordShopLink } from "#scripts/check-shop-links.mts";
+import { checkListing } from "#scripts/check-shop-links.mts";
+import { refreshAvailability } from "#scripts/refresh-catalog-availability.mts";
 import { downloadNewsPage } from "#scripts/news/scrape-shop-links.mts";
 
 it.effect("interruption waits for the promise workflow's cleanup", () =>
@@ -268,6 +267,7 @@ it.effect(
             ],
           }),
         );
+        await writeFile(join(folder, "products-page-2.json"), JSON.stringify({ products: [] }));
       });
       const baseline = yield* Effect.promise(() => readFile(catalog, "utf8"));
       const execute = promisify(execFile);
@@ -397,37 +397,56 @@ it.effect("link request interruption aborts transport without a failure result",
   }),
 );
 
-it("link checks preserve stock facts and clear recovered failures", () => {
-  const url = "https://example.com/product";
-  const edition: Edition = {
-    id: "original",
-    label: "Original",
-    format: "physical",
-    available: true,
-    shop: "out-of-stock",
-  };
-  const item: Item = { name: "Example", tags: [], editions: [edition] };
-  recordShopLink(item, edition, true);
-  expect(edition.shop).toEqual("out-of-stock");
-  expect(edition.available).toBe(true);
-  recordShopLink(item, edition, false);
-  expect(edition.shop).toEqual("missing");
-  expect(edition.available).toBe(true);
-  recordShopLink(item, edition, false);
-  expect(edition.shop).toBe("missing");
-  recordShopLink(item, edition, true);
-  expect(edition.shop).toBeUndefined();
-  expect(reviewShopLink({ ...item, url }, edition)?.state).toBe("unknown");
-  delete edition.available;
-  recordShopLink(item, edition, false);
-  expect(edition.shop).toEqual("missing");
-  const unknown: Edition = { id: "item", label: "Item", format: "physical" };
-  const synthetic: Item = { name: "Synthetic", tags: [], url };
-  recordShopLink(synthetic, unknown, true);
-  expect(synthetic.shop).toBeUndefined();
-  expect(reviewShopLink(synthetic, unknown)?.state).toBe("unknown");
-  recordShopLink(synthetic, unknown, false);
-  expect(synthetic.shop).toEqual("missing");
-  expect(synthetic.editions).toBeUndefined();
-  expect(unknown.shop).toBeUndefined();
-});
+it.effect("explicit fetch mode refreshes availability from exactly two product snapshot URLs", () =>
+  Effect.gen(function* () {
+    const directory = yield* Effect.acquireRelease(
+      Effect.promise(() => mkdtemp(join(tmpdir(), "guidepost-fetch-availability-"))),
+      (path) => Effect.promise(() => rm(path, { recursive: true, force: true })),
+    );
+    const catalog = join(directory, "static/kdm/catalog/data.json");
+    yield* Effect.promise(async () => {
+      await mkdir(join(directory, "static/kdm/catalog"), { recursive: true });
+      await writeFile(catalog, JSON.stringify({ content: {}, "included-only": {}, bundles: {}, accessories: {}, homebrew: {} }));
+    });
+    const urls: string[] = [];
+    const pages = [
+      {
+        products: [
+          {
+            id: 1,
+            title: "Example",
+            handle: "example",
+            variants: [{ id: 11, title: "Default Title", requires_shipping: true, price: "10.00", available: true }],
+          },
+        ],
+      },
+      { products: [] },
+    ];
+    const result = yield* Effect.promise(() =>
+      refreshAvailability({
+        catalog,
+        offline: offlineMode({ fetch: true, offline: false }),
+        client: {
+          get: async (url) => {
+            const page = pages[urls.length];
+            urls.push(url);
+            if (!page) throw new Error("Unexpected request: " + url);
+            return { url, checkedAt: "2026-01-01T00:00:00.000Z", data: page };
+          },
+        },
+      }),
+    );
+    expect(urls).toEqual([
+      "https://shop.kingdomdeath.com/products.json?limit=250&page=1",
+      "https://shop.kingdomdeath.com/products.json?limit=250&page=2",
+    ]);
+    expect(result.pages).toBe(2);
+    expect(result.products).toBe(1);
+    for (const [index, page] of pages.entries()) {
+      const saved = yield* Effect.promise(() =>
+        readFile(join(directory, "temp/kdm-catalog/shopify-products/products-page-" + (index + 1) + ".json"), "utf8"),
+      );
+      expect(JSON.parse(saved)).toEqual(page);
+    }
+  }).pipe(Effect.scoped),
+);

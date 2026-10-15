@@ -184,13 +184,12 @@ export function productEditions(item: Item, product: Product) {
   const result = resolveReleases(item, product, { policy: "retrieve" });
   const editions: Edition[] = [];
   for (const release of result.releases) {
-    const { label, variants, prices, materials } = release;
+    const { label, prices, materials } = release;
     const edition: Edition = {
       id: editionId(label, editions),
       label,
       ...(item.releaseDate ? { releaseDate: item.releaseDate } : {}),
       prices,
-      ...(variants.some((variant) => variant.available === true) ? { available: true } : {}),
       ...(materials ? { materials } : {}),
     };
     if (label === "First Run") {

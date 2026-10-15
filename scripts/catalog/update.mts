@@ -1,22 +1,11 @@
-import { recordAvailability, recordStock } from "./stock.mts";
 import { isDeepStrictEqual } from "node:util";
-import {
-  categories,
-  type Catalog,
-  type Category,
-  type Edition,
-  type Evidence,
-  type Item,
-  type Mapping,
-  type Product,
-  type Variant,
-} from "./types.mts";
+import { categories, type Catalog, type Category, type Evidence, type Item, type Mapping, type Product, type Variant } from "./types.mts";
 import { resolveReleases } from "./releases.mts";
 import { catalogListing, productUrl } from "./shop.mts";
 import { clearChangedListings, listingSnapshot, normalizeCatalog } from "./normalize.mts";
 import { organizeCatalog, editionComparator } from "./order.mts";
 import { editionId } from "./identity.mts";
-import { applyTags, sortCatalogTags, type Tags } from "./tags.mts";
+import { applyTags, type Tags } from "./tags.mts";
 
 export function normalized(value: string) {
   return value
@@ -85,48 +74,6 @@ function match(catalog: Catalog, product: Product, mappings: Record<string, Mapp
     },
     confidence: urlMatches ? "url" : "name",
   };
-}
-
-export function applyAvailability(catalog: Catalog, products: Product[], mappings: Record<string, Mapping> = {}) {
-  const observed = new Map<Edition, boolean>();
-  const stock = new Map<Edition, boolean>();
-  const unresolved: { handle: string; edition?: string }[] = [];
-  for (const product of products) {
-    if (/pre-?order/i.test(product.handle) || productExclusion(product.handle, product.title)) continue;
-    const result = match(catalog, product, mappings);
-    const mapping = result.mapping;
-    if (!mapping) {
-      if (product.variants.some((variant) => variant.available === true)) unresolved.push({ handle: product.handle });
-      continue;
-    }
-    const item = catalog[mapping.category][mapping.itemId];
-    if (!item?.editions?.length) continue;
-    const { releases } = resolveReleases(item, product, { policy: "observe", mapping });
-    for (const { label, variants, edition } of releases) {
-      const availableVariants = variants.filter((variant) => typeof variant.available === "boolean");
-      if (!availableVariants.length) continue;
-      if (!edition) {
-        for (const variant of availableVariants) if (variant.available) unresolved.push({ handle: product.handle, edition: label });
-        continue;
-      }
-      // Availability retains historical mapping behavior; stock describes only the current listing.
-      const available = availableVariants.some((variant) => variant.available === true);
-      observed.set(edition, (observed.get(edition) ?? false) || available);
-      if (!available && availableVariants.length !== variants.length) continue;
-      const listing = catalogListing(item, edition);
-      if (!listing) continue;
-      try {
-        if (productUrl(listing) === productUrl("/products/" + product.handle))
-          stock.set(edition, (stock.get(edition) ?? false) || available);
-      } catch {
-        // External listings cannot be confirmed by Shopify evidence.
-      }
-    }
-  }
-  for (const [edition, available] of observed) recordAvailability(edition, available);
-  for (const [edition, available] of stock) recordStock(edition, available ? "in-stock" : "out-of-stock");
-  sortCatalogTags(catalog);
-  return { checkedEditions: observed.size, availableEditions: [...observed.values()].filter(Boolean).length, unresolved };
 }
 
 export function planUpdate(
@@ -272,11 +219,6 @@ export function planUpdate(
       const previous = before[category][id];
       if (previous) clearChangedListings(item, listingSnapshot(previous));
     }
-  applyAvailability(
-    catalog,
-    evidence.map((source) => source.data),
-    mappings,
-  );
   normalizeCatalog(catalog);
   for (const category of categories)
     for (const [id, item] of Object.entries(catalog[category])) item.editions?.sort(editionComparator(item, id));

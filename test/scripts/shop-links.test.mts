@@ -326,3 +326,40 @@ it.each(["legacy-start", "completion"])("shared request timing ignores %s checkp
     });
   });
 });
+
+it.each([200, 404, 503])("HEAD status %s writes link reports without changing any catalog bytes", async (status) => {
+  await fixture(async (catalog, checkpoint, report) => {
+    const data = JSON.parse(await readFile(catalog, "utf8"));
+    data.content.a.shop = "in-stock";
+    data.content.a.available = true;
+    data.content.a.tags = ["in-stock"];
+    data.content.b.shop = "missing";
+    data.content.b.available = true;
+    data.content.c.shop = "out-of-stock";
+    data.content.c.editions = [
+      { id: "plastic", label: "Original", format: "physical", shop: "in-stock", available: true },
+      { id: "resin", label: "Encore", format: "physical", shop: "out-of-stock" },
+    ];
+    await writeFile(catalog, JSON.stringify(data, null, "\t") + "\n\n");
+    const baseline = await readFile(catalog);
+    let time = Date.parse("2026-01-01T00:00:00Z");
+    await checkShopLinks(
+      new AbortController().signal,
+      { catalog, cache: join(dirname(catalog), "shop-cache"), offline: false },
+      {
+        now: () => time,
+        wait: async (delay) => {
+          time += delay;
+        },
+        check: async () => ({ status, ok: status === 200 }),
+      },
+    );
+    expect(await readFile(catalog)).toEqual(baseline);
+    const saved = JSON.parse(await readFile(report, "utf8"));
+    expect(saved.listings).toHaveLength(5);
+    expect(
+      saved.listings.every((row: { status: number; reachable: boolean }) => row.status === status && row.reachable === (status === 200)),
+    ).toBe(true);
+    expect(JSON.parse(await readFile(checkpoint, "utf8")).complete).toBe(true);
+  });
+});

@@ -8,7 +8,7 @@ import { gunzipSync } from "node:zlib";
 import { test } from "node:test";
 import { Effect } from "effect";
 import { FetchHttpClient } from "effect/http";
-import { applyAvailability, planUpdate as prepareUpdate, productExclusion, releaseGaps } from "#scripts/catalog/update.mts";
+import { planUpdate as prepareUpdate, productExclusion, releaseGaps } from "#scripts/catalog/update.mts";
 import { resolveReleases } from "#scripts/catalog/releases.mts";
 import { catalogListing, productUrl, ShopClient, ShopError, shopProduct } from "#scripts/catalog/shop.mts";
 import { applyReview } from "#scripts/update-catalog.mts";
@@ -267,6 +267,7 @@ test("availability refresh downloads all pages, preserves raw snapshots, and cha
   const calls: string[] = [];
   const result = await refreshAvailability({
     catalog: path,
+    offline: false,
     client: {
       async get(url: string) {
         calls.push(url);
@@ -323,6 +324,7 @@ test("a failed pagination request cannot clear availability or replace named sna
   await assert.rejects(
     refreshAvailability({
       catalog: path,
+      offline: false,
       client: {
         async get(url: string) {
           if (++calls === 2) throw new Error("Shop unavailable");
@@ -343,63 +345,6 @@ test("a failed pagination request cannot clear availability or replace named sna
   );
   assert.equal(await readFile(path, "utf8"), original);
   assert.equal(await readFile(join(folder, "products-page-1.json"), "utf8"), "old snapshot");
-});
-
-test("availability aggregates warehouses and listings without changing release facts", () => {
-  const catalog = empty();
-  catalog.content.aya = {
-    name: "Aya",
-    tags: ["aya"],
-    editions: [
-      { label: "First Run", prices: [3000], releaseDate: "2020-01-01" },
-      { label: "Encore", available: true },
-    ],
-  };
-  const variant = product().variants[0]!;
-  const listings = [
-    product({
-      handle: "aya",
-      title: "Aya",
-      variants: [
-        { ...variant, id: 1, requires_shipping: true, title: "USA - First Run", available: false },
-        { ...variant, id: 2, requires_shipping: true, title: "UK - First Run", available: true },
-        { ...variant, id: 3, requires_shipping: true, title: "Encore", available: false },
-      ],
-    }),
-    product({
-      handle: "aya-other",
-      title: "Aya",
-      variants: [{ ...variant, requires_shipping: true, title: "First Run", available: false }],
-    }),
-  ];
-  applyAvailability(catalog, listings);
-  assert.deepEqual(catalog.content.aya.editions, [
-    { label: "First Run", prices: [3000], releaseDate: "2020-01-01", available: true },
-    { label: "Encore" },
-  ]);
-});
-
-test("availability respects mapped variants and format editions while unknown evidence preserves facts", () => {
-  const catalog = empty();
-  catalog.content.aya = { name: "Aya", tags: ["aya"], editions: [{ label: "Plastic", available: true }, { label: "Painters" }] };
-  const data = product({
-    handle: "aya-painters",
-    variants: [
-      { ...product().variants[0]!, id: 1, requires_shipping: true, title: "USA", available: true },
-      { ...product().variants[0]!, id: 2, requires_shipping: true, title: "UK", available: false },
-    ],
-  });
-  const mapping = { "aya-painters": { category: "content" as const, itemId: "aya", edition: "Painters", variantIds: [2] } };
-  applyAvailability(catalog, [data], mapping);
-  assert.equal(catalog.content.aya.editions?.[1]?.available, undefined);
-  mapping["aya-painters"].variantIds = [1, 2];
-  applyAvailability(catalog, [data], mapping);
-  assert.equal(catalog.content.aya.editions?.[1]?.available, true);
-  applyAvailability(catalog, [product({ title: "Aya" })]);
-  assert.equal(catalog.content.aya.editions?.[0]?.available, true);
-  const item = { name: "Aya", tags: ["aya"], editions: [{ label: "Encore", available: false }] } as unknown as Catalog["content"][string];
-  normalizeItem(item);
-  assert.equal(Object.hasOwn(item.editions![0]!, "available"), false);
 });
 
 test("editions use release chronology, with Sim first and unknown dates last", () => {
@@ -1770,33 +1715,6 @@ test("stock evidence distinguishes sold out, unknown matches, and synthetic list
   delete catalog.bundles.example.handle;
   assert.equal(availabilityFromUrls(catalog, listings, checkedAt).shopChanged, 1);
   assert.equal(catalog.bundles.example.shop, undefined);
-});
-
-test("current listing availability evidence replaces earlier stock observations", () => {
-  for (const state of ["in-stock", "out-of-stock", "missing"] as const) {
-    for (const available of [false, true]) {
-      const catalog = empty();
-      catalog.content.rene = {
-        name: "Rene",
-        handle: "kds-rene",
-        tags: ["rene", "in-stock"],
-        editions: [
-          {
-            label: "Sim",
-            available: true,
-            shop: state,
-          },
-        ],
-      };
-      const listing = product({ variants: [{ ...product().variants[0]!, available }] });
-      const result = applyAvailability(catalog, [listing], { "kds-rene": { category: "content", itemId: "rene", edition: "Sim" } });
-      assert.equal(result.checkedEditions, 1);
-      assert.equal(result.availableEditions, available ? 1 : 0);
-      assert.equal(catalog.content.rene.editions![0]!.available, available || undefined);
-      assert.equal(catalog.content.rene.editions![0]!.shop, available ? "in-stock" : "out-of-stock");
-      assert.deepEqual(catalog.content.rene.tags, available ? ["in-stock", "rene"] : ["rene"]);
-    }
-  }
 });
 
 test("listing writers clear changed observations and retain equivalent normalized listings", () => {

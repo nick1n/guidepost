@@ -28,7 +28,8 @@ test("edition retrieval groups warehouses, preserves Ajax cents, and keeps relea
   assert.notEqual(result.editions[0]!.id, result.editions[1]!.id);
   assert.deepEqual(result.editions[0]?.prices, [3000, 3200, 4000]);
   assert.equal(result.editions[0]?.runSize, 500);
-  assert.equal(result.editions[0]?.available, true);
+  assert.equal(result.editions[0]?.available, undefined);
+  assert.equal(result.editions[0]?.shop, undefined);
   assert.equal(result.editions[1]?.available, undefined);
   assert.equal(result.editions[1]?.releaseDate, "2025-01-01");
 });

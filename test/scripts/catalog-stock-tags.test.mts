@@ -118,6 +118,8 @@ test("offline refresh publishes tag-only repairs when cached stock and date are 
     );
     const date = new Date("2026-10-01T00:00:00Z");
     await utimes(page, date, date);
+    await writeFile(join(folder, "products-page-2.json"), JSON.stringify({ products: [] }));
+    await utimes(join(folder, "products-page-2.json"), date, date);
     const data = catalog();
     data.shopUpdated = "2026-10-01";
     data.content.example = {
@@ -165,6 +167,8 @@ test("offline refresh publishes sort-only tag repairs when cached stock and date
     );
     const date = new Date("2026-10-01T00:00:00Z");
     await utimes(page, date, date);
+    await writeFile(join(folder, "products-page-2.json"), JSON.stringify({ products: [] }));
+    await utimes(join(folder, "products-page-2.json"), date, date);
     const data = catalog();
     data.shopUpdated = "2026-10-01";
     data.content.example = {
