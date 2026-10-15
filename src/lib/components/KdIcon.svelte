@@ -30,8 +30,8 @@
       font-style: normal;
       font-weight: 400;
       src:
-        url("/fonts/kd-icons-v1.woff2") format("woff2"),
-        url("/fonts/kd-icons-v1.woff") format("woff");
+        url("/kdm/fonts/kd-icons-v1.woff2") format("woff2"),
+        url("/kdm/fonts/kd-icons-v1.woff") format("woff");
       font-family: "KD Icons";
       font-display: block;
       -webkit-font-smoothing: antialiased;

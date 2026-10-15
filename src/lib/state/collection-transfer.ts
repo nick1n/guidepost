@@ -34,7 +34,7 @@ function invalid(operation: TransferError["operation"], message: string, referen
 const decodeMapping = Effect.fn("CollectionTransfer.decodeMapping")(function* (operation: TransferError["operation"], mapping?: unknown) {
   const input =
     mapping ??
-    (yield* HttpClient.get(asset("kdm-catalog/workbook-map.json")).pipe(
+    (yield* HttpClient.get(asset("kdm/catalog/workbook-map.json")).pipe(
       Effect.flatMap(HttpClientResponse.filterStatusOk),
       Effect.flatMap((response) => response.json),
       Effect.mapError(() => invalid(operation, "Workbook mapping could not be loaded.")),

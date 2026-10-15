@@ -2,7 +2,7 @@
 
 ## Catalog
 
-Products and editions in `static/kdm-catalog/data.json`. Stable item and edition IDs identify collection entries; display labels can change.
+Products and editions in `static/kdm/catalog/data.json`. Stable item and edition IDs identify collection entries; display labels can change.
 
 ## Catalog publication
 

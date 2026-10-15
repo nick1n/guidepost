@@ -94,7 +94,7 @@ test("validation rejects missing and spurious derived stock tags", async () => {
 test("offline refresh publishes tag-only repairs when cached stock and date are unchanged", async () => {
   const workspace = await mkdtemp(join(tmpdir(), "kdm-stock-repair-"));
   try {
-    const directory = join(workspace, "static/kdm-catalog");
+    const directory = join(workspace, "static/kdm/catalog");
     const path = join(directory, "data.json");
     const folder = join(catalogTemp(directory), "shopify-products");
     await mkdir(directory, { recursive: true });
@@ -141,7 +141,7 @@ test("offline refresh publishes tag-only repairs when cached stock and date are 
 test("offline refresh publishes sort-only tag repairs when cached stock and date are unchanged", async () => {
   const workspace = await mkdtemp(join(tmpdir(), "kdm-stock-sort-repair-"));
   try {
-    const directory = join(workspace, "static/kdm-catalog");
+    const directory = join(workspace, "static/kdm/catalog");
     const path = join(directory, "data.json");
     const folder = join(catalogTemp(directory), "shopify-products");
     await mkdir(folder, { recursive: true });

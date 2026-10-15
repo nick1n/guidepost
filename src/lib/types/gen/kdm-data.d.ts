@@ -1,4 +1,4 @@
-/* Generated from static/kdm-catalog/data.schema.json. Do not edit. Run pnpm generate:types to regenerate. */
+/* Generated from static/kdm/catalog/data.schema.json. Do not edit. Run pnpm generate:types to regenerate. */
 
 export type Content = Record<string, Item>;
 /**

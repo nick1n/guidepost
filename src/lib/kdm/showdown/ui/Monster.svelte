@@ -400,7 +400,7 @@
             aria-label={`Illustrative 22 by 16 showdown board. Blue tiles are exactly ${setupDistance} spaces from the White Lion.`}
           >
             <rect width="220" height="160" fill="var(--card)" opacity=".25" />
-            <image href="/img/showdown-board.webp" width="220" height="160" preserveAspectRatio="none" opacity=".2" />
+            <image href="/kdm/img/showdown-board.webp" width="220" height="160" preserveAspectRatio="none" opacity=".2" />
             <g class="setup-tiles">
               {#each setupTiles as tile (`${tile.column}-${tile.row}`)}
                 <rect x={tile.column * board.tile} y={tile.row * board.tile} width={board.tile} height={board.tile} />

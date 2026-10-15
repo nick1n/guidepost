@@ -8,9 +8,9 @@ import { WorkbookMapSchema } from "../src/lib/types/workbook.ts";
 import { editionGameplay } from "../src/lib/kdm-data.ts";
 import type { Catalog } from "../src/lib/types/index.ts";
 
-export const schemaPath = fileURLToPath(new URL("../static/kdm-catalog/data.schema.json", import.meta.url));
-export const catalogPath = fileURLToPath(new URL("../static/kdm-catalog/data.json", import.meta.url));
-export const workbookSchemaPath = fileURLToPath(new URL("../static/kdm-catalog/workbook-map.schema.json", import.meta.url));
+export const schemaPath = fileURLToPath(new URL("../static/kdm/catalog/data.schema.json", import.meta.url));
+export const catalogPath = fileURLToPath(new URL("../static/kdm/catalog/data.json", import.meta.url));
+export const workbookSchemaPath = fileURLToPath(new URL("../static/kdm/catalog/workbook-map.schema.json", import.meta.url));
 const outputPath = fileURLToPath(new URL("../src/lib/types/gen/kdm-data.d.ts", import.meta.url));
 const corePath = fileURLToPath(new URL("../src/lib/gen/core-editions.json", import.meta.url));
 
@@ -59,7 +59,7 @@ export async function generateTypes() {
     // Catalog validation checks array cardinality; consumers work with ordinary arrays.
     ignoreMinAndMaxItems: true,
     style: (await resolveConfig(outputPath)) ?? {},
-    bannerComment: "/* Generated from static/kdm-catalog/data.schema.json. Do not edit. Run pnpm generate:types to regenerate. */",
+    bannerComment: "/* Generated from static/kdm/catalog/data.schema.json. Do not edit. Run pnpm generate:types to regenerate. */",
   });
   const previous = await readFile(outputPath, "utf8").catch((error) => {
     if (error.code !== "ENOENT") throw error;

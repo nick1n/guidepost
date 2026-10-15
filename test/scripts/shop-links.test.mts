@@ -9,9 +9,9 @@ import { checkShopLinks } from "#scripts/check-shop-links.mts";
 
 async function fixture(run: (catalog: string, checkpoint: string, report: string) => Promise<void>) {
   const directory = await mkdtemp(join(tmpdir(), "guidepost-links-"));
-  const catalog = join(directory, "static/kdm-catalog/data.json");
+  const catalog = join(directory, "static/kdm/catalog/data.json");
   const reports = join(directory, "temp/kdm-catalog/reports");
-  await mkdir(join(directory, "static/kdm-catalog"), { recursive: true });
+  await mkdir(join(directory, "static/kdm/catalog"), { recursive: true });
   await mkdir(reports, { recursive: true });
   await writeFile(
     catalog,
@@ -107,7 +107,9 @@ it("retains checkpoints on cancellation and resumes recent requests with shop pa
     ).rejects.toThrow();
     expect(calls).toBe(2);
     expect(await readFile(catalog, "utf8")).toBe(baseline);
-    expect(Object.keys(JSON.parse(await readFile(checkpoint, "utf8")).results)).toHaveLength(1);
+    const interrupted = JSON.parse(await readFile(checkpoint, "utf8"));
+    expect(Object.keys(interrupted.results)).toHaveLength(1);
+    expect(interrupted.starts).toEqual({ "example.com": time });
     const requests: number[] = [];
     await checkShopLinks(
       new AbortController().signal,
@@ -184,7 +186,8 @@ it("paces resumed requests after cancellation during an unfinished HEAD", async 
     ).rejects.toThrow();
     const saved = JSON.parse(await readFile(checkpoint, "utf8"));
     expect(saved.results).toEqual({});
-    expect(saved.starts["shop.kingdomdeath.com"]).toBe(start);
+    expect(saved.starts["shop.kingdomdeath.com"]).toBeUndefined();
+    expect(JSON.parse(await readFile(join(dirname(catalog), "shop-cache/last-request.json"), "utf8"))).toEqual({ startedAt: start });
     const requests: number[] = [];
     await checkShopLinks(
       new AbortController().signal,
@@ -229,6 +232,11 @@ it("rejects a simultaneous checker before requests or checkpoint writes and rele
     );
     await ready;
     const before = await readFile(checkpoint, "utf8");
+    const lockPath = join(dirname(checkpoint), "shop-links.lock");
+    const lockBefore = await readFile(lockPath, "utf8");
+    const metadata = JSON.parse(lockBefore);
+    expect(metadata.pid).toBe(process.pid);
+    expect(Number.isFinite(Date.parse(metadata.acquiredAt))).toBe(true);
     let requests = 0;
     await expect(
       checkShopLinks(
@@ -241,8 +249,9 @@ it("rejects a simultaneous checker before requests or checkpoint writes and rele
           },
         },
       ),
-    ).rejects.toThrow("Another link checker holds");
+    ).rejects.toThrow("Recorded PID: " + process.pid);
     expect(requests).toBe(0);
+    expect(await readFile(lockPath, "utf8")).toBe(lockBefore);
     expect(await readFile(checkpoint, "utf8")).toBe(before);
     release();
     await expect(first).rejects.toThrow();
@@ -268,10 +277,52 @@ it("a product updater lock stops link checking without recording a missing listi
           },
         },
       ),
-    ).rejects.toThrow("Another shop updater holds");
+    ).rejects.toThrow("Existing shop request lock");
     expect(requests).toBe(0);
     expect(await readFile(catalog, "utf8")).toBe(baseline);
     expect(JSON.parse(await readFile(checkpoint, "utf8")).results).toEqual({});
     await expect(readFile(join(dirname(checkpoint), "shop-links.lock"))).rejects.toMatchObject({ code: "ENOENT" });
+  });
+});
+
+it.each(["legacy-start", "completion"])("shared request timing ignores %s checkpoint evidence", async (source) => {
+  await fixture(async (catalog, checkpoint) => {
+    const start = Date.parse("2026-01-01T00:00:00Z");
+    let time = start + 10_000;
+    const cache = join(dirname(catalog), "shop-cache");
+    await mkdir(cache, { recursive: true });
+    await writeFile(join(cache, "last-request.json"), JSON.stringify({ startedAt: start }));
+    await writeFile(
+      checkpoint,
+      JSON.stringify({
+        complete: false,
+        starts: { "shop.kingdomdeath.com": source === "legacy-start" ? start + 1_000_000 : start - 100_000 },
+        results:
+          source === "completion"
+            ? {
+                "https://shop.kingdomdeath.com/products/a": { checkedAt: new Date(time).toISOString(), status: 200, ok: true },
+              }
+            : {},
+      }),
+    );
+    const shopRequests: number[] = [];
+    await checkShopLinks(
+      new AbortController().signal,
+      { catalog, cache, offline: false },
+      {
+        now: () => time,
+        wait: async (delay) => {
+          time += delay;
+        },
+        check: async (url) => {
+          if (url.hostname === "shop.kingdomdeath.com") shopRequests.push(time);
+          return { status: 200, ok: true };
+        },
+      },
+    );
+    expect(shopRequests[0] - start).toBe(35_000);
+    expect(JSON.parse(await readFile(checkpoint, "utf8")).starts).toEqual({
+      "example.com": source === "completion" ? start + 11_000 : start + 36_000,
+    });
   });
 });

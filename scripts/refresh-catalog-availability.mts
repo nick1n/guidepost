@@ -14,7 +14,7 @@ export async function refreshAvailability(
   options: { catalog?: string; offline?: boolean; signal?: AbortSignal; client?: Pick<ShopClient, "get"> } = {},
 ) {
   options.signal?.throwIfAborted();
-  const path = resolve(options.catalog ?? "static/kdm-catalog/data.json");
+  const path = resolve(options.catalog ?? "static/kdm/catalog/data.json");
   const original = await readFile(path, "utf8");
   const catalog: Catalog = JSON.parse(original);
   const previousShopUpdated = catalog.shopUpdated;

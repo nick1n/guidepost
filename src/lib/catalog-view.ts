@@ -51,13 +51,20 @@ export function reviewPrice(item: ReviewItem, edition: ReviewEdition) {
 }
 
 export function reviewEditions(item: ReviewItem & { category?: string }): ReviewEdition[] {
-  // Items without catalog editions get one trackable edition named for their category.
+  // Items without catalog editions get one trackable edition named for their category or accessory type.
   return item.editions?.length
     ? item.editions
     : [
         {
           id: item.category === "bundles" ? "bundle" : "item",
-          label: item.category === "bundles" ? "Bundle" : "Item",
+          label:
+            item.category === "bundles"
+              ? "Bundle"
+              : item.accessoryType === "dice"
+                ? "Dice"
+                : item.accessoryType === "shirt"
+                  ? "Shirt"
+                  : "Item",
           format: "physical",
           releaseDate: item.releaseDate,
           releaseWindow: item.releaseWindow,

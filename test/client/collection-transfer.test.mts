@@ -232,7 +232,7 @@ it.effect("loads the workbook map from the deployment's asset path", () =>
   Effect.gen(function* () {
     const fetch = vi.fn<typeof globalThis.fetch>().mockImplementation(async () => Response.json(workbookMap));
     assert.deepEqual(yield* previewWorkbookRows([], data).pipe(Effect.provideService(FetchHttpClient.Fetch, fetch)), {});
-    assert.equal(String(fetch.mock.calls[0][0]), "https://guidepost.test/test-base/kdm-catalog/workbook-map.json");
+    assert.equal(String(fetch.mock.calls[0][0]), "https://guidepost.test/test-base/kdm/catalog/workbook-map.json");
     assert.ok(fetch.mock.calls[0][1]?.signal instanceof AbortSignal);
   }),
 );

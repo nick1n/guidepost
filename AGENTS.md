@@ -106,17 +106,17 @@ Never download automatically for missing or stale caches; report missing data wi
 
 ## Catalog
 
-`static/kdm-catalog/data.json` is the live app's source of truth. Data is grouped by category and item IDs are object keys; do not add `id` fields to items. Update `static/kdm-catalog/data.schema.json` when the shape changes and regenerate types as described in [README.md](README.md#catalog).
+`static/kdm/catalog/data.json` is the live app's source of truth. Data is grouped by category and item IDs are object keys; do not add `id` fields to items. Update `static/kdm/catalog/data.schema.json` when the shape changes and regenerate types as described in [README.md](README.md#catalog).
 
 Explicit editions require permanent readable lowercase kebab-case `id` values, unique within their item. Assign IDs once; retain them when facts change and never reuse retired IDs. Creation tooling in `scripts/catalog/identity.mts` rejects collisions for review. `label` is mutable display text, never collection identity. Items
 without explicit editions use synthetic `item` IDs, or `bundle` for bundles. The product-only
-`static/kdm-catalog/workbook-map.json` connects local workbook rows to these IDs; regenerate it with `pnpm catalog:workbook` from the
+`static/kdm/catalog/workbook-map.json` connects local workbook rows to these IDs; regenerate it with `pnpm catalog:workbook` from the
 Git-ignored import records. Sheet and row numbers are locators for that workbook snapshot, not permanent IDs. Review changed row
 identities and ambiguous release alternatives before import or export uses them. Do not put personal workbook cells in
 the map.
 
 `src/lib/types/workbook.ts` owns workbook mapping and normalized-row schemas and types. Tooling and collection transfers share them.
-Change that contract and run `pnpm generate:types` to refresh `static/kdm-catalog/workbook-map.schema.json`; do not edit the generated
+Change that contract and run `pnpm generate:types` to refresh `static/kdm/catalog/workbook-map.schema.json`; do not edit the generated
 editor schema by hand. Workbook publication guards its captured catalog, import records, schemas, and previous map before replacement.
 
 Keep item fields alphabetical, edition fields starting with `id` then `label`, and inclusion-object fields starting with `item`; remaining fields are alphabetical. Use `orderItemFields`/`organizeCatalog` in `scripts/catalog/order.mts`. Preserve category/item ordering and edition/other array ordering. Keep `includes` on parents: `editionId` resolves on the child item and `parentEditionIds` on the containing item. Derive reverse membership.

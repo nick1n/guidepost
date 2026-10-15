@@ -3,7 +3,7 @@ import Ajv2020 from "ajv/dist/2020.js";
 import { expect, it } from "vitest";
 import { decodeWorkbookMap } from "#lib/types/workbook.ts";
 
-const schema = JSON.parse(await readFile("static/kdm-catalog/workbook-map.schema.json", "utf8"));
+const schema = JSON.parse(await readFile("static/kdm/catalog/workbook-map.schema.json", "utf8"));
 const validate = new Ajv2020({ strict: false, allErrors: true }).compile(schema);
 const target = { category: "content", contentId: "hero", editionId: "first-run" };
 const row = { sheet: "KDM Miniatures", row: 2, name: "Hero", primary: target };
@@ -14,7 +14,7 @@ const metadata = {
 };
 
 it("accepts the published mapping in both tooling and editor validation", async () => {
-  const map = JSON.parse(await readFile("static/kdm-catalog/workbook-map.json", "utf8"));
+  const map = JSON.parse(await readFile("static/kdm/catalog/workbook-map.json", "utf8"));
   expect(validate(map), JSON.stringify(validate.errors)).toBe(true);
   expect(decodeWorkbookMap(map)).toEqual(map);
 });

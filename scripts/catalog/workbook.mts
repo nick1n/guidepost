@@ -121,7 +121,7 @@ export function buildWorkbookMap(imports: WorkbookImports, catalog: Catalog, pre
 
 export async function writeWorkbookMap(root = process.cwd(), options: { signal?: AbortSignal } = {}) {
   options.signal?.throwIfAborted();
-  const catalogRoot = resolve(root, "static/kdm-catalog");
+  const catalogRoot = resolve(root, "static/kdm/catalog");
   const mapPath = resolve(catalogRoot, "workbook-map.json");
   const importsPath = resolve(root, "temp/kdm-catalog/imports/kdm-import-records.json");
   const importsSchemaPath = resolve(root, "temp/kdm-catalog/imports/kdm-import-records.schema.json");

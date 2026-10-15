@@ -14,6 +14,7 @@ import type { Catalog, Edition, Item } from "#lib/types/index.ts";
 import { catalogTemp } from "./catalog/paths.mts";
 import { withShopRequest } from "./catalog/shop.mts";
 import { recordLinkHealth } from "./catalog/stock.mts";
+import { formatLockConflict } from "./catalog/locks.mts";
 
 export class LinkRequestError extends Schema.TaggedError<LinkRequestError>()("LinkRequestError", { cause: Schema.Defect() }) {}
 export const checkListing = Effect.fn("CatalogLinks.checkListing")((url: URL) =>
@@ -55,7 +56,7 @@ export async function checkShopLinks(
   const check = dependencies.check ?? ((url, signal) => Effect.runPromise(checkListing(url), { signal }));
   const catalogPath = options.catalog
     ? resolve(options.catalog)
-    : fileURLToPath(new URL("../static/kdm-catalog/data.json", import.meta.url));
+    : fileURLToPath(new URL("../static/kdm/catalog/data.json", import.meta.url));
   const reportPath = join(catalogTemp(dirname(catalogPath)), "reports/shop-links.json");
   const checkpointPath = join(dirname(reportPath), "shop-links-checkpoint.json");
   signal.throwIfAborted();
@@ -79,13 +80,12 @@ export async function checkShopLinks(
   }
   await mkdir(dirname(reportPath), { recursive: true });
   const lockPath = join(dirname(reportPath), "shop-links.lock");
-  const lock = await open(lockPath, "wx").catch((cause: NodeJS.ErrnoException) => {
-    if (cause.code === "EEXIST")
-      throw new Error("Another link checker holds " + lockPath + "; wait for it to finish before retrying.", { cause });
+  const lock = await open(lockPath, "wx").catch(async (cause: NodeJS.ErrnoException) => {
+    if (cause.code === "EEXIST") throw new Error(await formatLockConflict(lockPath, "link checker"), { cause });
     throw cause;
   });
   try {
-    await lock.writeFile(JSON.stringify({ pid: process.pid }) + "\n");
+    await lock.writeFile(JSON.stringify({ pid: process.pid, acquiredAt: new Date(now()).toISOString() }) + "\n");
     signal.throwIfAborted();
     const baseline = await readFile(catalogPath, "utf8");
     const catalog: Catalog = JSON.parse(baseline);
@@ -112,10 +112,10 @@ export async function checkShopLinks(
     });
     type Result = typeof LinkResult.Type;
     const checkpointResults: Record<string, Result> = Object.fromEntries(resumed);
-    const starts = new Map<string, number>(Object.entries(checkpoint?.starts ?? {}));
+    const starts = new Map<string, number>(Object.entries(checkpoint?.starts ?? {}).filter(([host]) => host !== "shop.kingdomdeath.com"));
     for (const [listing, result] of resumed) {
       const host = new URL(listing).hostname;
-      starts.set(host, Math.max(starts.get(host) ?? 0, Date.parse(result.checkedAt)));
+      if (host !== "shop.kingdomdeath.com") starts.set(host, Math.max(starts.get(host) ?? 0, Date.parse(result.checkedAt)));
     }
     // Checkpoints survive cancellation and catalog publication conflicts.
     const saveCheckpoint = () =>
@@ -135,6 +135,19 @@ export async function checkShopLinks(
     let reachable = 0;
     let unreachable = 0;
     let missing = 0;
+    const clock = Effect.runSync(Clock.clockWith(Effect.succeed));
+    const requestClock =
+      dependencies.now || dependencies.wait
+        ? {
+            currentTimeNanos: clock.currentTimeNanos,
+            currentTimeNanosUnsafe: () => clock.currentTimeNanosUnsafe(),
+            monotonicTimeNanos: clock.monotonicTimeNanos,
+            monotonicTimeNanosUnsafe: () => clock.monotonicTimeNanosUnsafe(),
+            currentTimeMillis: Effect.sync(now),
+            currentTimeMillisUnsafe: now,
+            sleep: (duration: Duration.Duration) => Effect.promise((signal) => wait(Duration.toMillis(duration), signal)),
+          }
+        : clock;
     for (const category of categories) {
       signal.throwIfAborted();
       for (const [itemId, item] of Object.entries(catalog[category])) {
@@ -156,12 +169,14 @@ export async function checkShopLinks(
           const url = new URL(listing, "https://shop.kingdomdeath.com");
           const key = url.href;
           if (!results.has(key)) {
-            const spacing = url.hostname === "shop.kingdomdeath.com" ? 35_000 : 1_000;
-            const delay = (starts.get(url.hostname) ?? -Infinity) + spacing - now();
-            if (delay > 0) await wait(delay, signal);
-            signal.throwIfAborted();
-            starts.set(url.hostname, now());
-            await saveCheckpoint();
+            const shop = url.hostname === "shop.kingdomdeath.com";
+            if (!shop) {
+              const delay = (starts.get(url.hostname) ?? -Infinity) + 1_000 - now();
+              if (delay > 0) await wait(delay, signal);
+              signal.throwIfAborted();
+              starts.set(url.hostname, now());
+              await saveCheckpoint();
+            }
             signal.throwIfAborted();
             const perform = async (): Promise<Result> => {
               try {
@@ -174,22 +189,14 @@ export async function checkShopLinks(
                 return { status: null, ok: false, checkedAt: new Date(now()).toISOString() };
               }
             };
-            let request = withShopRequest(url.href, () => Effect.promise(perform), { cache: options.cache });
-            if (dependencies.now || dependencies.wait) {
-              const clock = Effect.runSync(Clock.clockWith(Effect.succeed));
-              request = request.pipe(
-                Effect.provideService(Clock.Clock, {
-                  currentTimeNanos: clock.currentTimeNanos,
-                  currentTimeNanosUnsafe: () => clock.currentTimeNanosUnsafe(),
-                  monotonicTimeNanos: clock.monotonicTimeNanos,
-                  monotonicTimeNanosUnsafe: () => clock.monotonicTimeNanosUnsafe(),
-                  currentTimeMillis: Effect.sync(now),
-                  currentTimeMillisUnsafe: now,
-                  sleep: (duration) => Effect.promise((signal) => wait(Duration.toMillis(duration), signal)),
-                }),
-              );
-            }
-            const response = url.hostname === "shop.kingdomdeath.com" ? await Effect.runPromise(request, { signal }) : await perform();
+            const response = shop
+              ? await Effect.runPromise(
+                  withShopRequest(url.href, () => Effect.promise(perform), { cache: options.cache }).pipe(
+                    Effect.provideService(Clock.Clock, requestClock),
+                  ),
+                  { signal },
+                )
+              : await perform();
             results.set(key, response);
             checkpointResults[key] = response;
             await saveCheckpoint();

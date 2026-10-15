@@ -12,7 +12,8 @@ pnpm install
 pnpm dev
 ```
 
-On Windows, if `pnpm` is missing, install the pinned version with `npm.cmd install --global pnpm@12.6.0`.
+On Windows, if `pnpm` is missing, install the pnpm 12 bootstrap with `npm.cmd install --global pnpm@12`.
+The `packageManager` field in `package.json` pins the exact pnpm version used by this project.
 
 | Command                 | Purpose                            |
 | ----------------------- | ---------------------------------- |
@@ -35,8 +36,8 @@ Tests live in `test/client/` and `test/scripts/`. Tests import tooling through `
 
 ## Catalog
 
-The live app reads [static/kdm-catalog/data.json](static/kdm-catalog/data.json).
-Its [schema](static/kdm-catalog/data.schema.json) generates `src/lib/types/gen/kdm-data.d.ts`.
+The live app reads [static/kdm/catalog/data.json](static/kdm/catalog/data.json).
+Its [schema](static/kdm/catalog/data.schema.json) generates `src/lib/types/gen/kdm-data.d.ts`.
 Run `pnpm generate:types` after schema changes. It also generates `src/lib/gen/core-editions.json` for Quick Start,
 with playable core edition IDs and labels in catalog order, excluding Resin. Development, checks, and builds regenerate these files;
 the dev server watches schema and catalog changes. Do not edit generated files.
@@ -118,13 +119,13 @@ Both commands reject concurrent catalog edits and write reports to `temp/kdm-cat
 ### Workbook map
 
 `pnpm catalog:workbook` reads local `temp/kdm-catalog/imports/kdm-import-records.json` and the catalog, then writes
-[workbook-map.json](static/kdm-catalog/workbook-map.json). It maps source rows and release columns to stable catalog IDs,
+[workbook-map.json](static/kdm/catalog/workbook-map.json). It maps source rows and release columns to stable catalog IDs,
 with no ownership, wishlist, copy-number, comment, or other personal cell values. Sheet and row numbers locate the workbook snapshot;
 they are not permanent IDs. Changed row identities and unresolved references require review.
 Publication guards the catalog, import records, workbook schemas, and previous map against late edits.
 
 [src/lib/types/workbook.ts](src/lib/types/workbook.ts) owns the mapping and normalized-row contract.
-`pnpm generate:types` derives `static/kdm-catalog/workbook-map.schema.json`; edit the contract instead of the generated schema.
+`pnpm generate:types` derives `static/kdm/catalog/workbook-map.schema.json`; edit the contract instead of the generated schema.
 Runtime validation also rejects duplicate sheet/row locators. Normalized-row workflows exist; XLSX parsing, writing, and controls are deferred.
 
 ### Live shop links
@@ -136,6 +137,10 @@ other hosts use 1-second spacing. Shop downloads and link checks share `.cache/k
 request start time, preventing overlapping requests across commands. Use `--cache path` to select the same custom cache for both.
 A second process using that cache stops with a lock error; rerun after the first command finishes.
 A separate `temp/kdm-catalog/reports/shop-links.lock` prevents competing checkers from overwriting progress and releases on completion or cancellation.
+Lock errors include the recorded PID and acquisition time when available. Normal cancellation cleans up locks; a crash or forced termination may leave one behind.
+Before removing a lock manually, confirm its recorded process has exited in Task Manager or with `Get-Process -Id <pid>`, and identify the command that owned it.
+Remove only the lock named in the error, either `.cache/kdm-shop/request.lock` or `temp/kdm-catalog/reports/shop-links.lock`.
+Keep `last-request.json`, `shop-links-checkpoint.json`, and cached responses; they preserve request timing and resumable progress.
 Each request checkpoints progress in `temp/kdm-catalog/reports/shop-links-checkpoint.json`. Rerunning with `--fetch`
 resumes an incomplete run using results less than 24 hours old. A completed run starts fresh on the next `--fetch`.
 Failures mark listings missing, including rate limits or HEAD rejection. Successful checks preserve known stock states

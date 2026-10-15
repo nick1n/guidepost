@@ -1,12 +1,12 @@
 # KDM catalog guide
 
-The catalog combines the previous app catalog, workbook, and cached news. Data and schema live in `static/kdm-catalog/`;
+The catalog combines the previous app catalog, workbook, and cached news. Data and schema live in `static/kdm/catalog/`;
 archives live in `temp/kdm-data.json` and `temp/kdm-data.schema.json`. See [README](../README.md#catalog) for commands.
 
 | File                                                                                                              | Purpose                                     |
 | ----------------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
-| [Catalog](../static/kdm-catalog/data.json), [schema](../static/kdm-catalog/data.schema.json)                      | Product facts and relationships             |
-| [Workbook map](../static/kdm-catalog/workbook-map.json), [schema](../static/kdm-catalog/workbook-map.schema.json) | Source rows and catalog edition IDs         |
+| [Catalog](../static/kdm/catalog/data.json), [schema](../static/kdm/catalog/data.schema.json)                      | Product facts and relationships             |
+| [Workbook map](../static/kdm/catalog/workbook-map.json), [schema](../static/kdm/catalog/workbook-map.schema.json) | Source rows and catalog edition IDs         |
 | [News export](../scripts/news/shop-links.json)                                                                    | Cached announcement dates and product links |
 
 Optional, Git-ignored `temp/kdm-catalog/kdm-tags.json` supplies exact reviewed assignments; otherwise updates use catalog tags.
@@ -85,7 +85,7 @@ The schema retains ID-pattern rules and basic field validation without condition
 The original workbook remains in `temp/kdm-catalog/imports/KDM Collection Sheets.xlsx`.
 Never infer ownership from ambiguous material or run choices.
 
-Run `pnpm catalog:workbook` to regenerate `static/kdm-catalog/workbook-map.json` from the local
+Run `pnpm catalog:workbook` to regenerate `static/kdm/catalog/workbook-map.json` from the local
 `temp/kdm-catalog/imports/kdm-import-records.json` and live catalog. The 705 mapped rows retain their sheet, row, and product name as
 source anchors, plus primary, related, and release-column references to stable edition IDs. M, N, and O alternatives remain separate;
 general personal values stay scoped to the source row. The map contains product references only, never owned, wished, copy, comment,
@@ -97,7 +97,7 @@ that a shared row cannot represent. JSON backups preserve a complete collection 
 Validation checks optional import records and their schema when present. Keep records and the workbook to regenerate or verify the map.
 Shop mappings are optional; unresolved products stay in review. An explicit `--mappings` path must exist.
 Working files live under Git-ignored `temp/kdm-catalog/`, with product snapshots and mappings in `shopify-products/`.
-Custom catalog paths use the same `static/kdm-catalog/` and `temp/` layout.
+Custom catalog paths use the same `static/kdm/catalog/` and `temp/` layout.
 
 ## Availability refresh
 
@@ -108,7 +108,7 @@ Release variants distinguish First Run, Encore, and format-qualified runs. Any m
 unmatched or ambiguous editions omit the field. Details go to `temp/kdm-catalog/reports/availability-refresh.json`.
 
 Without `--fetch`, the command applies saved pages and uses their oldest modification date for `shopUpdated`.
-`--catalog path/to/static/kdm-catalog/data.json` selects another catalog.
+`--catalog path/to/static/kdm/catalog/data.json` selects another catalog.
 Failed downloads preserve snapshots and catalog; concurrent catalog edits prevent publication.
 
 ## Item notes and review decisions

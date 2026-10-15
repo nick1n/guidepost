@@ -138,7 +138,9 @@ it.effect("refuses a held filesystem lock before invoking the request or changin
       ),
     );
     expect(error).toMatchObject({ _tag: "ShopRequestError", url });
-    expect(error.message).toContain("Another shop updater holds");
+    expect(error.message).toContain("Existing shop request lock:");
+    expect(error.message).toContain("Only after confirming this lock is abandoned");
+    expect(error.message).toContain("Recorded PID and acquisition time are unavailable");
     expect(called).toBe(false);
     expect(JSON.parse(yield* state(cache))).toEqual({ startedAt: now });
     expect(yield* Effect.promise(() => readFile(join(cache, "request.lock"), "utf8"))).toBe("another process");

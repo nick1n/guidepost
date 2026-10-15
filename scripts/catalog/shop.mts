@@ -1,4 +1,5 @@
 import { catalogTemp } from "./paths.mts";
+import { formatLockConflict } from "./locks.mts";
 import { createHash } from "node:crypto";
 import { access, mkdir, open, readFile, unlink, writeFile } from "node:fs/promises";
 import { join, resolve } from "node:path";
@@ -130,14 +131,12 @@ export const withShopRequest = Effect.fn("Shop.request")(function* <A, E, R>(
         const lockPath = join(directory, "request.lock");
         const lock = yield* Effect.acquireRelease(
           file(url, "Could not acquire the shop request lock", () => open(lockPath, "wx")).pipe(
-            Effect.mapError((error) =>
-              error.cause instanceof Error && "code" in error.cause && error.cause.code === "EEXIST"
-                ? new ShopRequestError({
-                    url,
-                    message: "Another shop updater holds " + lockPath + "; wait for it to finish before retrying.",
-                    cause: error.cause,
-                  })
-                : error,
+            Effect.catchIf(
+              (error) => error.cause instanceof Error && "code" in error.cause && error.cause.code === "EEXIST",
+              (error) =>
+                Effect.promise(() => formatLockConflict(lockPath, "shop request")).pipe(
+                  Effect.flatMap((message) => Effect.fail(new ShopRequestError({ url, message, cause: error.cause }))),
+                ),
             ),
           ),
           (lock) =>

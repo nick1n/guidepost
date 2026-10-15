@@ -126,13 +126,13 @@ it.effect(
         Effect.promise(() => mkdtemp(join(tmpdir(), "guidepost-tags-cli-"))),
         (path) => Effect.promise(() => rm(path, { recursive: true, force: true })),
       );
-      const catalog = join(directory, "static/kdm-catalog");
+      const catalog = join(directory, "static/kdm/catalog");
       const news = join(directory, "news");
       const review = join(directory, "review.json");
       yield* Effect.promise(async () => {
         await mkdir(catalog, { recursive: true });
         await mkdir(news);
-        for (const name of ["data.json", "data.schema.json"]) await copyFile(resolve("static/kdm-catalog", name), join(catalog, name));
+        for (const name of ["data.json", "data.schema.json"]) await copyFile(resolve("static/kdm/catalog", name), join(catalog, name));
         await writeFile(join(news, "shop-links.json"), "{}");
       });
       const baseline = yield* Effect.promise(() => readFile(join(catalog, "data.json"), "utf8"));
@@ -249,10 +249,10 @@ it.effect(
         Effect.promise(() => mkdtemp(join(tmpdir(), "guidepost-offline-availability-"))),
         (path) => Effect.promise(() => rm(path, { recursive: true, force: true })),
       );
-      const catalog = join(directory, "static/kdm-catalog/data.json");
+      const catalog = join(directory, "static/kdm/catalog/data.json");
       const folder = join(directory, "temp/kdm-catalog/shopify-products");
       yield* Effect.promise(async () => {
-        await mkdir(join(directory, "static/kdm-catalog"), { recursive: true });
+        await mkdir(join(directory, "static/kdm/catalog"), { recursive: true });
         await mkdir(folder, { recursive: true });
         await writeFile(catalog, JSON.stringify({ content: {}, "included-only": {}, bundles: {}, accessories: {}, homebrew: {} }));
         await writeFile(
@@ -303,14 +303,14 @@ it.effect(
         Effect.promise(() => mkdtemp(join(tmpdir(), "guidepost-offline-update-"))),
         (path) => Effect.promise(() => rm(path, { recursive: true, force: true })),
       );
-      const catalog = join(directory, "static/kdm-catalog");
+      const catalog = join(directory, "static/kdm/catalog");
       const news = join(directory, "news");
       const review = join(directory, "review.json");
       const metadata = { date: "2025-01-01", title: "Example", postUrl: "https://kingdomdeath.com/news/example" };
       yield* Effect.promise(async () => {
         await mkdir(catalog, { recursive: true });
         await mkdir(news);
-        for (const name of ["data.json", "data.schema.json"]) await copyFile(resolve("static/kdm-catalog", name), join(catalog, name));
+        for (const name of ["data.json", "data.schema.json"]) await copyFile(resolve("static/kdm/catalog", name), join(catalog, name));
         await writeFile(
           join(news, "shop-links.json"),
           JSON.stringify({

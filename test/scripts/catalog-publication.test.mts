@@ -250,7 +250,7 @@ it("rejects duplicate resolved destinations before preparing output", async () =
 
 async function catalogFixture(editions = true) {
   const { root } = await fixture();
-  const folder = join(root, "static/kdm-catalog");
+  const folder = join(root, "static/kdm/catalog");
   await mkdir(folder, { recursive: true });
   const path = join(folder, "data.json");
   const catalog = {
@@ -270,7 +270,7 @@ async function catalogFixture(editions = true) {
   };
   const original = JSON.stringify(catalog);
   await writeFile(path, original);
-  await writeFile(join(folder, "data.schema.json"), await readFile("static/kdm-catalog/data.schema.json"));
+  await writeFile(join(folder, "data.schema.json"), await readFile("static/kdm/catalog/data.schema.json"));
   const newsPath = join(root, "scripts/news/shop-links.json");
   await mkdir(dirname(newsPath), { recursive: true });
   await writeFile(newsPath, '{"links":[]}');
@@ -391,7 +391,7 @@ async function workbookFixture(existing = true) {
     }),
   );
   await writeFile(targets.importSchema, JSON.stringify({ type: "object", required: ["workbook", "records"] }));
-  await writeFile(targets.mapSchema, await readFile("static/kdm-catalog/workbook-map.schema.json"));
+  await writeFile(targets.mapSchema, await readFile("static/kdm/catalog/workbook-map.schema.json"));
   const map = {
     $schema: "./workbook-map.schema.json",
     formatVersion: 1,

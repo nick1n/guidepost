@@ -12,7 +12,7 @@ import { loadTags, checkTags } from "./tags.mts";
 import { prefixedId } from "./identity.mts";
 import { loadMappings } from "./shop.mts";
 
-export async function validateCatalog(catalog: Catalog, schemaPath = "static/kdm-catalog/data.schema.json") {
+export async function validateCatalog(catalog: Catalog, schemaPath = "static/kdm/catalog/data.schema.json") {
   const schema = JSON.parse(await readFile(schemaPath, "utf8"));
   const ajv = new Ajv2020({ strict: false, allErrors: true });
   const check = ajv.compile(schema);
@@ -117,7 +117,7 @@ export async function validateCatalog(catalog: Catalog, schemaPath = "static/kdm
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  const path = process.argv[2] ?? "static/kdm-catalog/data.json";
+  const path = process.argv[2] ?? "static/kdm/catalog/data.json";
   const catalog = JSON.parse(await readFile(path, "utf8"));
   const master = await loadTags(dirname(path));
   const mappings = await loadMappings(dirname(path));

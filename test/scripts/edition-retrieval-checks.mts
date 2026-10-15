@@ -35,7 +35,7 @@ test("edition retrieval groups warehouses, preserves Ajax cents, and keeps relea
 
 async function fixture() {
   const root = await mkdtemp(join(tmpdir(), "edition-retrieval-"));
-  const folder = join(root, "static/kdm-catalog");
+  const folder = join(root, "static/kdm/catalog");
   await mkdir(folder, { recursive: true });
   await mkdir(join(root, "scripts/news"), { recursive: true });
   const path = join(folder, "data.json");
@@ -49,7 +49,7 @@ async function fixture() {
       "included-only": {},
     }),
   );
-  await writeFile(join(folder, "data.schema.json"), await readFile("static/kdm-catalog/data.schema.json"));
+  await writeFile(join(folder, "data.schema.json"), await readFile("static/kdm/catalog/data.schema.json"));
   await writeFile(join(root, "scripts/news/shop-links.json"), JSON.stringify({ links: [] }));
   return { root, path };
 }

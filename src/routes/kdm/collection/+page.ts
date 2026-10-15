@@ -6,7 +6,7 @@ import type { PageLoad } from "./$types";
 export const load: PageLoad = async ({ fetch }) => {
   const message = "The catalog could not be loaded. Please try again.";
   try {
-    const response = await fetch(asset("kdm-catalog/data.json"));
+    const response = await fetch(asset("kdm/catalog/data.json"));
     if (!response.ok) error(503, message);
     // This is the bundled catalog, validated by catalog:validate rather than a user import.
     const catalog: Catalog = await response.json();

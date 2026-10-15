@@ -133,7 +133,7 @@ export async function applyReview(
 }
 
 const updateFlags = {
-  catalog: Flag.String("catalog").pipe(Flag.withDefault("static/kdm-catalog")),
+  catalog: Flag.String("catalog").pipe(Flag.withDefault("static/kdm/catalog")),
   news: Flag.String("news").pipe(Flag.withDefault("scripts/news")),
   cache: Flag.String("cache").pipe(Flag.withDefault(".cache/kdm-shop")),
   mappings: optionalString("mappings"),

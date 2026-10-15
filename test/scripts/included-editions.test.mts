@@ -55,10 +55,10 @@ const imports: WorkbookImports = {
 test("duplicate labels retain ID-based references, uniqueness checks, and chronological validation", async () => {
   const workspace = await mkdtemp(join(tmpdir(), "kdm-included-editions-"));
   try {
-    const root = join(workspace, "static/kdm-catalog");
+    const root = join(workspace, "static/kdm/catalog");
     await mkdir(root, { recursive: true });
     const schemaPath = join(root, "data.schema.json");
-    await writeFile(schemaPath, await readFile("static/kdm-catalog/data.schema.json", "utf8"));
+    await writeFile(schemaPath, await readFile("static/kdm/catalog/data.schema.json", "utf8"));
     const data = catalog();
     expect((await validateCatalog(data, schemaPath)).editions).toBe(3);
     const unconfirmed = structuredClone(data);

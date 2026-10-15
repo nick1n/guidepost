@@ -11,7 +11,7 @@ it("loads the catalog through the deployment's asset path", async () => {
   const catalog = { content: {}, "included-only": {}, accessories: {}, bundles: {}, homebrew: {} };
   const fetch = vi.fn<typeof globalThis.fetch>().mockResolvedValue(Response.json(catalog));
   expect(await load(event(fetch))).toEqual({ catalog });
-  expect(fetch).toHaveBeenCalledWith("/test-base/kdm-catalog/data.json");
+  expect(fetch).toHaveBeenCalledWith("/test-base/kdm/catalog/data.json");
 });
 
 it.each([
