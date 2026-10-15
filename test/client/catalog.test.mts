@@ -174,17 +174,18 @@ describe("review catalog facts", () => {
     const item = { name: "Model", tags: [], handle: "model" };
     const edition: Parameters<typeof reviewShopLink>[1] = { id: "plastic", label: "Plastic", format: "physical" };
     const url = "https://shop.kingdomdeath.com/products/model";
-    expect(reviewShopLink(item, edition)?.state).toBe("missing");
+    expect(reviewShopLink(item, edition)?.state).toBe("unknown");
     edition.available = true;
-    expect(reviewShopLink(item, edition)?.state).toBe("in-stock");
+    expect(reviewShopLink(item, edition)?.state).toBe("unknown");
     for (const state of ["in-stock", "out-of-stock", "missing"] as const) {
       edition.shop = state;
       expect(reviewShopLink(item, edition)).toEqual({ state, url });
     }
     delete edition.available;
+    delete edition.shop;
     expect(reviewShopLink({ ...item, handle: "new-model" }, edition)).toEqual({
       url: "https://shop.kingdomdeath.com/products/new-model",
-      state: "missing",
+      state: "unknown",
     });
     expect(reviewShopLink({ name: "No link", tags: [] }, edition)).toBeUndefined();
     edition.includedOnly = true;

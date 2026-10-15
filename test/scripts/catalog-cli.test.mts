@@ -9,6 +9,7 @@ import { Cause, Deferred, Effect, Exit, Fiber } from "effect";
 import { FetchHttpClient } from "effect/http";
 import { offlineMode, workflow } from "#scripts/catalog/cli.mts";
 import type { Item, Edition } from "#lib/types/index.ts";
+import { reviewShopLink } from "#lib/catalog-view.ts";
 import { checkListing, recordShopLink } from "#scripts/check-shop-links.mts";
 import { downloadNewsPage } from "#scripts/news/scrape-shop-links.mts";
 
@@ -416,6 +417,7 @@ it("link checks preserve stock facts and clear recovered failures", () => {
   expect(edition.shop).toBe("missing");
   recordShopLink(item, edition, true);
   expect(edition.shop).toBeUndefined();
+  expect(reviewShopLink({ ...item, url }, edition)?.state).toBe("unknown");
   delete edition.available;
   recordShopLink(item, edition, false);
   expect(edition.shop).toEqual("missing");
@@ -423,6 +425,7 @@ it("link checks preserve stock facts and clear recovered failures", () => {
   const synthetic: Item = { name: "Synthetic", tags: [], url };
   recordShopLink(synthetic, unknown, true);
   expect(synthetic.shop).toBeUndefined();
+  expect(reviewShopLink(synthetic, unknown)?.state).toBe("unknown");
   recordShopLink(synthetic, unknown, false);
   expect(synthetic.shop).toEqual("missing");
   expect(synthetic.editions).toBeUndefined();

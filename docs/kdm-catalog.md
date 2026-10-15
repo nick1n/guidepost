@@ -61,7 +61,9 @@ Current data rules:
 - Gameplay defaults to false. Item `gameplay` appears only when true; editions store an override only when different. `gameplayContent` and notes belong on the item. Alternative names use `aliases`; `alt` is removed.
 - Edition availability defaults to false. Store `available: true` only when at least one matching shop variant or warehouse is available. Updates refresh known availability; responses without availability evidence preserve the existing value. This reflects the cached shop snapshot, not a live stock check.
 - `shop` stores `in-stock`, `out-of-stock`, or `missing` on editions, or on items without editions. Shared `shopUpdated` is a `YYYY-MM-DD` refresh date.
-  Clear the affected `shop` field after manually changing its handle or external URL.
+  Clear the affected `shop` and edition `available` fields after manually changing its handle or external URL.
+  Missing shop evidence displays as stock unknown, independently of `available`. Current-listing variant evidence updates
+  shop stock states; historical mappings can still supply availability without asserting stock for a replacement listing.
   The `in-stock` tag is derived from edition shop states and removed when none remain in stock.
   Tag updates use existing shop states and do not call `catalog:update`; catalog updates recalculate the tag after updating the data.
 - Prices are integer cents. Edition `prices` arrays contain recorded sale amounts and current MSRP, with the maximum representing MSRP. Missing prices are unknown; `[0]` is a known zero price. Lunar Aya's Sim price remains the user-authorized $7 estimate, documented in the report.

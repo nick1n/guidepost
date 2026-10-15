@@ -17,6 +17,7 @@ export async function refreshAvailability(
   const path = resolve(options.catalog ?? "static/kdm-catalog/data.json");
   const original = await readFile(path, "utf8");
   const catalog: Catalog = JSON.parse(original);
+  const previousShopUpdated = catalog.shopUpdated;
   const folder = join(catalogTemp(dirname(path)), "shopify-products");
   const client = options.client ?? new ShopClient({ refresh: true, signal: options.signal });
   const pages: { products: unknown[] }[] = [];
@@ -55,7 +56,7 @@ export async function refreshAvailability(
   await publishFiles(
     [
       ...(options.offline ? [] : pages.map((page, index) => ({ path: join(folder, `products-page-${index + 1}.json`), json: page }))),
-      ...(result.changed || result.shopChanged || result.tagsChanged || catalog.shopUpdated !== JSON.parse(original).shopUpdated
+      ...(result.changed || result.shopChanged || result.tagsChanged || catalog.shopUpdated !== previousShopUpdated
         ? [{ path, json: organizeCatalog(catalog) }]
         : []),
       {

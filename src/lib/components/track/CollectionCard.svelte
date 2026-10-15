@@ -15,6 +15,7 @@
     "in-stock": { icon: "i-material-symbols:open-in-new", description: "In stock" },
     "out-of-stock": { icon: "i-material-symbols:do-not-disturb-on", description: "Out of stock" },
     missing: { icon: "i-material-symbols:link-off", description: "Listing missing" },
+    unknown: { icon: "i-material-symbols:open-in-new", description: "Stock unknown" },
   };
 
   type Props = {
@@ -303,16 +304,12 @@
 
 {#snippet shopLink(edition: ReviewEdition)}
   {@const shop = reviewShopLink(item, edition)}
-  {#if shop && shop.url}
+  {#if shop}
     <a class="shop" data-state={shop.state} href={shop.url} target="_blank" rel="noreferrer" title={shopStates[shop.state].description}>
-      {@render shopLabel(edition, shop.state)}
+      Shop<span class={["external-icon", shopStates[shop.state].icon]} aria-hidden="true"></span>
+      <span class="visually-hidden">{item.name}, {editionLabel(edition)}, {shopStates[shop.state].description}</span>
     </a>
   {/if}
-{/snippet}
-
-{#snippet shopLabel(edition: ReviewEdition, state: keyof typeof shopStates)}
-  Shop<span class={["external-icon", shopStates[state].icon]} aria-hidden="true"></span>
-  <span class="visually-hidden">{item.name}, {editionLabel(edition)}, {shopStates[state].description}</span>
 {/snippet}
 
 {#snippet editionRow(edition: ReviewEdition, active: boolean)}
@@ -595,7 +592,7 @@
     font-size: var(--text-md);
     line-height: var(--size-edition-control);
     white-space: nowrap;
-    &[data-state="out-of-stock"] {
+    &:is([data-state="out-of-stock"], [data-state="unknown"]) {
       --accent: var(--muted-foreground);
     }
 
@@ -816,7 +813,7 @@
         color: color-mix(in oklch, var(--accent-red) 75%, var(--foreground));
       }
     }
-    .shop[href]:hover {
+    .shop:hover {
       color: var(--accent);
       text-decoration: underline;
       text-underline-offset: 0.2em;

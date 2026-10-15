@@ -42,10 +42,8 @@ export function reviewShopLink(item: ReviewItem, edition: ReviewEdition) {
   const url = reviewShopUrl(item, edition);
   if (!url) return;
 
-  const state =
-    edition.shop ??
-    (["item", "bundle"].includes(edition.id) ? item.shop : undefined) ??
-    (edition.available === true ? "in-stock" : "missing");
+  const state: NonNullable<ReviewEdition["shop"]> | "unknown" =
+    edition.shop ?? (["item", "bundle"].includes(edition.id) ? item.shop : undefined) ?? "unknown";
   return { url, state };
 }
 

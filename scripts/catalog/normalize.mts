@@ -42,7 +42,13 @@ export function clearChangedListings(item: Item, before: ReturnType<typeof listi
   const after = listingSnapshot(item);
   if (before.item !== after.item || item.editions?.length) delete item.shop;
   for (const edition of item.editions ?? [])
-    if (before.editions.get(edition.id ?? edition.label) !== after.editions.get(edition.id ?? edition.label)) delete edition.shop;
+    if (
+      before.editions.has(edition.id ?? edition.label) &&
+      before.editions.get(edition.id ?? edition.label) !== after.editions.get(edition.id ?? edition.label)
+    ) {
+      delete edition.shop;
+      delete edition.available;
+    }
   syncStockTag(item);
 }
 

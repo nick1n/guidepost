@@ -88,6 +88,7 @@ function match(catalog: Catalog, product: Product, mappings: Record<string, Mapp
 
 export function applyAvailability(catalog: Catalog, products: Product[], mappings: Record<string, Mapping> = {}) {
   const observed = new Map<Edition, boolean>();
+  const stock = new Map<Edition, boolean>();
   const unresolved: { handle: string; edition?: string }[] = [];
   for (const product of products) {
     if (/pre-?order/i.test(product.handle) || productExclusion(product.handle, product.title)) continue;
@@ -107,15 +108,25 @@ export function applyAvailability(catalog: Catalog, products: Product[], mapping
         for (const variant of availableVariants) if (variant.available) unresolved.push({ handle: product.handle, edition: label });
         continue;
       }
-      // An edition is available if any matching warehouse or product variant is available.
-      observed.set(edition, (observed.get(edition) ?? false) || availableVariants.some((variant) => variant.available === true));
+      // Availability retains historical mapping behavior; stock describes only the current listing.
+      const available = availableVariants.some((variant) => variant.available === true);
+      observed.set(edition, (observed.get(edition) ?? false) || available);
+      if (!available && availableVariants.length !== variants.length) continue;
+      const listing = catalogListing(item, edition);
+      if (!listing) continue;
+      try {
+        if (productUrl(listing) === productUrl("/products/" + product.handle))
+          stock.set(edition, (stock.get(edition) ?? false) || available);
+      } catch {
+        // External listings cannot be confirmed by Shopify evidence.
+      }
     }
   }
   for (const [edition, available] of observed) {
-    delete edition.shop;
     if (available) edition.available = true;
     else delete edition.available;
   }
+  for (const [edition, available] of stock) edition.shop = available ? "in-stock" : "out-of-stock";
   sortCatalogTags(catalog);
   return { checkedEditions: observed.size, availableEditions: [...observed.values()].filter(Boolean).length, unresolved };
 }

@@ -1772,12 +1772,13 @@ test("stock evidence distinguishes sold out, unknown matches, and synthetic list
   assert.equal(catalog.bundles.example.shop, undefined);
 });
 
-test("broader availability evidence invalidates earlier stock observations", () => {
+test("current listing availability evidence replaces earlier stock observations", () => {
   for (const state of ["in-stock", "out-of-stock", "missing"] as const) {
     for (const available of [false, true]) {
       const catalog = empty();
       catalog.content.rene = {
         name: "Rene",
+        handle: "kds-rene",
         tags: ["rene", "in-stock"],
         editions: [
           {
@@ -1792,8 +1793,8 @@ test("broader availability evidence invalidates earlier stock observations", () 
       assert.equal(result.checkedEditions, 1);
       assert.equal(result.availableEditions, available ? 1 : 0);
       assert.equal(catalog.content.rene.editions![0]!.available, available || undefined);
-      assert.equal(catalog.content.rene.editions![0]!.shop, undefined);
-      assert.deepEqual(catalog.content.rene.tags, ["rene"]);
+      assert.equal(catalog.content.rene.editions![0]!.shop, available ? "in-stock" : "out-of-stock");
+      assert.deepEqual(catalog.content.rene.tags, available ? ["in-stock", "rene"] : ["rene"]);
     }
   }
 });

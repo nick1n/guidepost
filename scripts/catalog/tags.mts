@@ -24,20 +24,32 @@ export function syncStockTag(item: StockItem) {
   return changed;
 }
 
-export function syncStockTags(catalog: StockCatalog) {
-  let changed = 0;
-  for (const category of categories) for (const item of Object.values(catalog[category])) if (syncStockTag(item)) changed++;
-  return changed;
-}
-
 export function sortCatalogTags(catalog: StockCatalog) {
-  const changed = syncStockTags(catalog);
+  const stockChanged = new Set<StockItem>();
   const counts = new Map<string, number>();
-  for (const category of categories)
-    for (const item of Object.values(catalog[category])) for (const tag of new Set(item.tags)) counts.set(tag, (counts.get(tag) ?? 0) + 1);
-  for (const category of categories)
-    for (const item of Object.values(catalog[category]))
-      item.tags.sort((a, b) => counts.get(b)! - counts.get(a)! || (a < b ? -1 : a > b ? 1 : 0));
+  for (const category of categories) {
+    for (const item of Object.values(catalog[category])) {
+      if (syncStockTag(item)) stockChanged.add(item);
+      for (const tag of new Set(item.tags)) counts.set(tag, (counts.get(tag) ?? 0) + 1);
+    }
+  }
+  const compare = (a: string, b: string) => counts.get(b)! - counts.get(a)! || (a < b ? -1 : a > b ? 1 : 0);
+  let changed = stockChanged.size;
+  for (const category of categories) {
+    for (const item of Object.values(catalog[category])) {
+      let sorted = true;
+      for (let index = 1; index < item.tags.length; index++) {
+        if (compare(item.tags[index - 1]!, item.tags[index]!) > 0) {
+          sorted = false;
+          break;
+        }
+      }
+      if (!sorted) {
+        item.tags.sort(compare);
+        if (!stockChanged.has(item)) changed++;
+      }
+    }
+  }
   return changed;
 }
 

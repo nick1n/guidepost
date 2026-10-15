@@ -16,7 +16,7 @@
         "type": "object",
         "properties": {
           "sheet": { "type": "string", "enum": ["KDM Miniatures", "Shirt Catalog", "Dice Catalog"] },
-          "row": { "type": "integer", "minimum": 2 },
+          "row": { "type": "integer", "minimum": 2, "maximum": 9007199254740991 },
           "name": { "type": "string", "minLength": 1 },
           "primary": { "$ref": "#/$defs/target" },
           "related": { "type": "array", "items": { "$ref": "#/$defs/target" }, "minItems": 1, "uniqueItems": true },

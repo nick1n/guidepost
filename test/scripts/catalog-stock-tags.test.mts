@@ -137,3 +137,50 @@ test("offline refresh publishes tag-only repairs when cached stock and date are 
     await rm(workspace, { recursive: true, force: true });
   }
 });
+
+test("offline refresh publishes sort-only tag repairs when cached stock and date are unchanged", async () => {
+  const workspace = await mkdtemp(join(tmpdir(), "kdm-stock-sort-repair-"));
+  try {
+    const directory = join(workspace, "static/kdm-catalog");
+    const path = join(directory, "data.json");
+    const folder = join(catalogTemp(directory), "shopify-products");
+    await mkdir(folder, { recursive: true });
+    await mkdir(directory, { recursive: true });
+    const page = join(folder, "products-page-1.json");
+    await writeFile(
+      page,
+      JSON.stringify({
+        products: [
+          {
+            id: 1,
+            title: "Example",
+            handle: "example",
+            description: "",
+            variants: [
+              { id: 1, title: "Resin", price: "30.00", compare_at_price: null, requires_shipping: true, sku: "", available: true },
+            ],
+          },
+        ],
+      }),
+    );
+    const date = new Date("2026-10-01T00:00:00Z");
+    await utimes(page, date, date);
+    const data = catalog();
+    data.shopUpdated = "2026-10-01";
+    data.content.example = {
+      name: "Example",
+      tags: ["model", "in-stock"],
+      handle: "example",
+      editions: [{ label: "Resin", available: true, shop: "in-stock" }],
+    };
+    await writeFile(path, JSON.stringify(data));
+    const result = await refreshAvailability({ catalog: path, offline: true });
+    expect(result.changed).toBe(0);
+    expect(result.shopChanged).toBe(0);
+    expect(result.tagsChanged).toBe(1);
+    expect(JSON.parse(await readFile(path, "utf8")).content.example.tags).toEqual(["in-stock", "model"]);
+    expect((await refreshAvailability({ catalog: path, offline: true })).tagsChanged).toBe(0);
+  } finally {
+    await rm(workspace, { recursive: true, force: true });
+  }
+});
