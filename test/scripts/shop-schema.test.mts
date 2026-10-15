@@ -2,7 +2,16 @@ import { describe, expect, it } from "vitest";
 import { decodeShopCache, decodeShopProduct, ShopDecodeError } from "#scripts/catalog/shop-schema.mts";
 
 const variant = { id: 2, title: "Default", requires_shipping: true, price: "12.50", compare_at_price: "", extra: "retained" };
-const product = { id: 1, title: "Product", handle: "product", variants: [variant], vendor: "Kingdom Death" };
+const product = {
+  id: 1,
+  title: "Product",
+  handle: "product",
+  variants: [variant],
+  vendor: "Kingdom Death",
+  published_at: "2026-09-30T12:00:00Z",
+  tags: "Beta, Snow",
+  images: [{ src: "https://example.com/snow.png" }],
+};
 const envelope = { url: "https://shop.kingdomdeath.com/products/product.json", checkedAt: "2026-10-10T00:00:00.000Z" };
 
 describe("shop product schema", () => {
@@ -12,6 +21,12 @@ describe("shop product schema", () => {
       body_html: "Body",
       description: "Body",
       variants: [{ ...variant, sku: "", price: 1250, compare_at_price: null }],
+    });
+    expect(
+      decodeShopProduct({ ...product, variants: [{ ...variant, price: "7.25", compare_at_price: "9.00" }] }).variants[0],
+    ).toMatchObject({
+      price: 725,
+      compare_at_price: 900,
     });
   });
   it("normalizes Ajax cents and uses description when body_html is null", () => {
@@ -26,12 +41,16 @@ describe("shop product schema", () => {
   it("accepts a null envelope product as a direct payload and defaults descriptions", () => {
     expect(decodeShopProduct({ ...product, product: null }).description).toBe("");
   });
-  it.each([null, [], { ...product, variants: [{}] }, { ...product, description: 12 }, { ...product, id: Infinity }])(
-    "rejects malformed product %j",
-    (value) => {
-      expect(() => decodeShopProduct(value)).toThrow(ShopDecodeError);
-    },
-  );
+  it.each([
+    null,
+    [],
+    { ...product, variants: [{}] },
+    { ...product, variants: [{ ...variant, requires_shipping: undefined }] },
+    { ...product, description: 12 },
+    { ...product, id: Infinity },
+  ])("rejects malformed product %j", (value) => {
+    expect(() => decodeShopProduct(value)).toThrow(ShopDecodeError);
+  });
   it.each(["-1", "1.234", "", "NaN", Number.MAX_SAFE_INTEGER])("rejects invalid JSON prices %j", (price) => {
     expect(() => decodeShopProduct({ ...product, variants: [{ ...variant, price }] })).toThrow(ShopDecodeError);
   });

@@ -796,7 +796,7 @@
     button:not(:disabled, .wish, .edition-label, .badge):hover,
     summary:hover,
     .edition:hover {
-      background: color-mix(in oklch, var(--accent) 14%, var(--panel));
+      background: var(--blue-8);
       color: var(--accent);
     }
     input[type="number"]:not(:disabled):hover {
@@ -807,10 +807,10 @@
       color: var(--accent);
     }
     .wish:not(:disabled):hover {
-      background: color-mix(in oklch, var(--accent-red) 24%, var(--panel));
+      background: var(--red-8);
       & .wish-icon {
         scale: 1.12;
-        color: color-mix(in oklch, var(--accent-red) 75%, var(--foreground));
+        color: var(--red-3);
       }
     }
     .shop:hover {

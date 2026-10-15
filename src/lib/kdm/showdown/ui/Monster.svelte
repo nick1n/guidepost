@@ -429,7 +429,7 @@
     inline-size: 100%;
     min-block-size: var(--size-control);
     gap: 0.625rem;
-    color: color-mix(var(--identity) 55%, var(--foreground));
+    color: var(--identity-3);
     font-size: var(--text-sm);
 
     &::before,
@@ -610,7 +610,7 @@
     font-size: var(--text-md);
     &.active {
       border-color: var(--color-divider);
-      background: color-mix(var(--identity) 14%, var(--panel));
+      background: var(--identity-10);
       color: var(--foreground);
     }
   }
@@ -670,12 +670,12 @@
     padding: 0.5rem;
     gap: 0.375rem;
     border-radius: var(--radius-control);
-    background: color-mix(var(--identity) 20%, var(--panel));
+    background: var(--identity-9);
     font-size: var(--text-sm);
     text-align: start;
 
     &.active {
-      background: color-mix(var(--identity) 38%, var(--panel));
+      background: var(--identity-8);
     }
 
     &.wide {
@@ -712,7 +712,7 @@
     gap: 0.25rem 0.5rem;
   }
   .resource-actions .action.drawn {
-    background: color-mix(var(--identity) 38%, var(--panel));
+    background: var(--identity-8);
   }
   .resource-stepper {
     display: flex;

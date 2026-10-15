@@ -104,6 +104,9 @@ it.effect("sends fixed headers and refuses redirects, then preserves disk HTTP n
     expect(first).toMatchObject({ status: 503, url, cached: false });
     const second = yield* Effect.flip(get(url).pipe(Effect.provideService(FetchHttpClient.Fetch, fetch)));
     expect(second).toMatchObject({ status: 503, url, cached: true });
+    const fresh = new ShopClient({ cache });
+    const persisted = yield* Effect.flip(fresh.getEffect(url).pipe(Effect.provideService(FetchHttpClient.Fetch, fetch)));
+    expect(persisted).toMatchObject({ status: 503, url, cached: true });
     expect(requests).toHaveLength(1);
     expect(requests[0].redirect).toBe("error");
     const headers = new Headers(requests[0].headers);

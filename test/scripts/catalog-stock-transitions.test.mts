@@ -33,6 +33,7 @@ function product(handle: string, available: boolean): Product {
 
 test("listing replacement clears both availability and stock while equivalent normalization retains them", () => {
   const item = catalog().content.example!;
+  item.editions!.push({ id: "plastic", label: "Plastic", shop: "out-of-stock" });
   item.url = "/products/current?variant=1";
   delete item.handle;
   normalizeItem(item);
@@ -43,7 +44,13 @@ test("listing replacement clears both availability and stock while equivalent no
   clearChangedListings(item, before);
   expect(item.editions![0]!.available).toBeUndefined();
   expect(item.editions![0]!.shop).toBeUndefined();
+  expect(item.editions![1]!.shop).toBeUndefined();
   expect(item.tags).toEqual(["model"]);
+  const external = { name: "Files", tags: [], url: "https://example.com/old", shop: "missing" as const };
+  const previous = listingSnapshot(external);
+  external.url = "https://example.com/new";
+  clearChangedListings(external, previous);
+  expect(external.shop).toBeUndefined();
 });
 
 test("reviewed listing replacement invalidates stock without trusting individual availability", () => {

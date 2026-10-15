@@ -189,7 +189,7 @@
     inline-size: var(--size-control);
     block-size: var(--size-control);
     border-radius: var(--radius-control);
-    background: color-mix(var(--identity) 15%, var(--panel));
+    background: var(--identity-9);
     &:disabled {
       background: transparent;
       color: var(--muted-foreground);

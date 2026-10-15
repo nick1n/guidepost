@@ -271,16 +271,16 @@
     min-inline-size: 0;
     padding: 0.5rem 0.625rem;
     gap: 0.125rem;
-    background: color-mix(var(--identity) 10%, var(--panel));
+    background: var(--identity-10);
     text-align: start;
     overflow-wrap: anywhere;
 
     &:hover {
-      background: color-mix(var(--identity) 18%, var(--panel));
+      background: var(--identity-9);
     }
   }
   .name {
-    color: color-mix(var(--identity) 55%, var(--foreground));
+    color: var(--identity-3);
   }
   .description {
     color: var(--muted-foreground);
@@ -362,7 +362,7 @@
     background: transparent;
 
     &:is(:hover, :focus-visible) {
-      background: color-mix(var(--identity) 9%, var(--panel));
+      background: var(--identity-10);
     }
   }
   :global(.folio) .name {
@@ -433,10 +433,10 @@
 
   :global(.signal) .entry {
     border-radius: 1rem 0.25rem 1rem 0.25rem;
-    background: color-mix(var(--identity) 16%, var(--background));
+    background: var(--identity-9);
 
     &:hover {
-      background: color-mix(var(--identity) 26%, var(--background));
+      background: var(--identity-8);
     }
   }
   :global(.signal) .name {
@@ -444,6 +444,10 @@
   }
   :global(.signal) .remove {
     border-radius: 0.25rem 1rem 0.25rem 1rem;
-    background: color-mix(var(--identity) 12%, var(--background));
+    background: var(--identity-10);
+
+    &:is(:hover, :focus-visible) {
+      background: var(--identity-9);
+    }
   }
 </style>

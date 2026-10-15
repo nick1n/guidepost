@@ -141,7 +141,7 @@
     { name: "White Lion", color: "var(--color-monster)", ink: "var(--contrast)" },
     ...survivors.map((person) =>
       person.name === "Zachary" && brightenZachary
-        ? { ...person, color: `color-mix(in oklch, ${person.color} 75%, var(--foreground))`, ink: "var(--contrast)" }
+        ? { ...person, color: `color-mix(in oklch, ${person.color} 80%, oklch(from var(--foreground) l 0 none))`, ink: "var(--contrast)" }
         : person,
     ),
   ]);
@@ -192,7 +192,7 @@
     panel.getAnimations().forEach((animation) => animation.cancel());
     panel.animate(
       [
-        { backgroundColor: `color-mix(in srgb, ${roster[index].color} 48%, var(--background))` },
+        { backgroundColor: getComputedStyle(panel).getPropertyValue("--identity-7") },
         { backgroundColor: getComputedStyle(panel).backgroundColor },
       ],
       { duration: reduced ? 0 : 800, easing: "ease-out" },
@@ -566,6 +566,24 @@
 </main>
 
 <style>
+  /* Each identity owns its scale: 0 is lightest, 5 is the original color, and 10 is darkest.
+   * Define it on both owners so inherited shades resolve against their own --identity. */
+  .dashboard,
+  .roster-button {
+    --identity-light: oklch(from var(--foreground) l 0 none);
+    --identity-dark: oklch(from var(--background) l 0 none);
+    --identity-0: color-mix(in oklch, var(--identity) 10%, var(--identity-light));
+    --identity-1: color-mix(in oklch, var(--identity) 20%, var(--identity-light));
+    --identity-2: color-mix(in oklch, var(--identity) 40%, var(--identity-light));
+    --identity-3: color-mix(in oklch, var(--identity) 60%, var(--identity-light));
+    --identity-4: color-mix(in oklch, var(--identity) 80%, var(--identity-light));
+    --identity-5: var(--identity);
+    --identity-6: color-mix(in oklch, var(--identity) 75%, var(--identity-dark));
+    --identity-7: color-mix(in oklch, var(--identity) 52%, var(--identity-dark));
+    --identity-8: color-mix(in oklch, var(--identity) 34%, var(--identity-dark));
+    --identity-9: color-mix(in oklch, var(--identity) 20%, var(--identity-dark));
+    --identity-10: color-mix(in oklch, var(--identity) 10%, var(--identity-dark));
+  }
   .showdown {
     --color-monster: #bda17b;
     --feedback-brightness: 1.12;
@@ -621,7 +639,7 @@
     padding-block: 0.375rem;
     overflow: hidden scroll;
     border-inline-end: 1px solid var(--color-divider);
-    background: color-mix(var(--identity) 9%, var(--background));
+    background: var(--identity-10);
     scrollbar-color: var(--identity) transparent;
     scrollbar-gutter: stable both-edges;
     scrollbar-width: thin;
@@ -629,9 +647,6 @@
       outline: 2px solid var(--accent);
       outline-offset: -2px;
     }
-  }
-  .monster-panel {
-    background: linear-gradient(color-mix(var(--color-monster) 5%, var(--background)), var(--background));
   }
   footer {
     display: grid;
@@ -658,7 +673,7 @@
     overflow: hidden;
     border: 2px solid transparent;
     border-radius: var(--radius-control);
-    background: color-mix(var(--identity) 10%, var(--background));
+    background: var(--identity-10);
     font-size: var(--text-xs);
     line-height: 0.875rem;
     white-space: nowrap;
@@ -823,7 +838,7 @@
     &[aria-pressed="true"],
     &[aria-current="page"] {
       border-color: var(--accent);
-      background: color-mix(var(--accent) 24%, var(--card));
+      background: var(--blue-7);
       color: var(--foreground);
     }
   }
@@ -911,15 +926,11 @@
     }
   }
   .folio .dashboard {
-    border: 1px solid var(--color-divider);
-    border-radius: var(--radius-control);
-    background: color-mix(var(--identity) 16%, var(--background));
+    border: 0;
+    border-radius: 0;
   }
   .folio .advance {
     background: var(--color-monster);
-  }
-  .signal .dashboard {
-    background: color-mix(var(--identity) 28%, var(--background));
   }
   .signal .advance {
     background: var(--accent);

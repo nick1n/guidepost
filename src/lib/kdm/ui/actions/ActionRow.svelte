@@ -77,7 +77,7 @@
     font-size: var(--text-sm);
   }
   strong {
-    color: color-mix(var(--identity) 55%, var(--foreground));
+    color: var(--identity-3);
   }
   .chevron {
     --size-icon: 1rem;
@@ -98,10 +98,10 @@
   }
   .spend {
     padding-inline: 0.5rem;
-    background: color-mix(var(--identity) 14%, var(--panel));
+    background: var(--identity-10);
 
     &:hover:not(:disabled) {
-      background: color-mix(var(--identity) 25%, var(--panel));
+      background: var(--identity-9);
     }
 
     &:focus-visible {
@@ -133,7 +133,7 @@
     }
   }
   :global(.obsidian) .row {
-    background: color-mix(var(--identity) 4%, var(--panel));
+    background: var(--identity-10);
   }
   :global(.folio) .row {
     border-radius: 0.25rem;
@@ -149,15 +149,15 @@
   }
   :global(.signal) .row {
     border-radius: 1rem 0.25rem 1rem 0.25rem;
-    background: color-mix(var(--identity) 16%, var(--background));
+    background: var(--identity-9);
   }
   :global(.signal) .spend:not(:disabled) {
     --color-action-cost: var(--foreground);
 
-    background: color-mix(var(--identity) 30%, var(--background));
+    background: var(--identity-8);
 
     &:hover {
-      background: color-mix(var(--identity) 40%, var(--background));
+      background: var(--identity-7);
     }
   }
 </style>

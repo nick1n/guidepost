@@ -287,6 +287,8 @@
   }
   .target {
     --color-target: var(--accent);
+    --target-8: var(--blue-8);
+    --target-9: var(--blue-9);
 
     display: flex;
     flex-direction: column;
@@ -302,6 +304,8 @@
 
     &[data-action="archive"] {
       --color-target: var(--accent-red);
+      --target-8: var(--red-8);
+      --target-9: var(--red-9);
     }
     &:disabled {
       opacity: 0.45;
@@ -309,7 +313,7 @@
     }
     &.active {
       border-color: var(--color-target);
-      background: color-mix(var(--color-target) 20%, var(--panel));
+      background: var(--target-8);
       color: var(--foreground);
     }
   }
@@ -410,11 +414,11 @@
   @media (hover: hover) {
     .target:enabled:hover:not(.active) {
       border-color: color-mix(var(--color-target) 40%, var(--color-divider));
-      background: color-mix(var(--color-target) 8%, var(--panel));
+      background: var(--target-9);
       color: var(--foreground);
     }
     .slot:hover:not([data-drop-target]) {
-      box-shadow: inset 0 0 0 var(--border-width) color-mix(var(--identity) 45%, var(--foreground));
+      box-shadow: inset 0 0 0 var(--border-width) var(--identity-2);
     }
     .slot[draggable="false"]:hover {
       background: color-mix(var(--identity) 14%, transparent);

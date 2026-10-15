@@ -603,6 +603,7 @@
     --text-control: var(--text-lg);
     --radius-gesture: 0.5rem;
     --color-gesture: var(--accent);
+    --gesture-fill: var(--blue-7);
     --duration-preview: 1800ms;
     position: relative;
     max-inline-size: 320px;
@@ -659,14 +660,14 @@
       border-color: var(--color-gesture);
     }
     &:active {
-      background: color-mix(var(--color-gesture) 12%, var(--card));
+      background: var(--gesture-fill);
     }
     &[data-ready="true"] {
       color: var(--color-gesture);
       border-color: var(--color-gesture);
     }
     &[aria-pressed="true"] {
-      background: color-mix(var(--color-gesture) 15%, var(--card));
+      background: var(--gesture-fill);
     }
     &.numeric {
       touch-action: none;
@@ -909,7 +910,7 @@
     &:hover,
     &[data-selected="true"] {
       border-color: var(--color-gesture);
-      background: color-mix(var(--color-gesture) 15%, var(--card));
+      background: var(--gesture-fill);
     }
   }
   .menu[data-preview="true"] {
@@ -982,6 +983,7 @@
   }
   .example[data-variant="plain"] {
     --color-gesture: var(--foreground);
+    --gesture-fill: var(--grey-7);
     --radius-gesture: 0.5rem;
   }
   .example[data-size="compact"] {
@@ -1003,9 +1005,11 @@
   }
   .example[data-variant="corner"] {
     --color-gesture: var(--accent-purple);
+    --gesture-fill: var(--grey-7);
   }
   .example[data-variant="rails"] {
     --color-gesture: var(--accent-green);
+    --gesture-fill: var(--green-7);
     --opacity-rail: 0.65;
   }
   .example[data-variant="compass"] {
@@ -1013,17 +1017,20 @@
   }
   .example[data-variant="orbit"] {
     --color-gesture: var(--secondary);
+    --gesture-fill: var(--grey-7);
     --radius-gesture: 50%;
     --opacity-progress: 1;
   }
   .example[data-variant="grip"] {
     --color-gesture: var(--accent-purple);
+    --gesture-fill: var(--grey-7);
     --opacity-rail: 0.4;
   }
   .example[data-variant="reveal"] {
     --color-gesture: var(--accent-green);
-    --background-control: color-mix(var(--color-gesture) 10%, var(--panel));
-    --border-control: color-mix(var(--color-gesture) 35%, var(--card));
+    --gesture-fill: var(--green-7);
+    --background-control: var(--green-10);
+    --border-control: var(--green-6);
     --opacity-cue-press: 1;
   }
   .example[data-variant="perimeter"] {
@@ -1031,13 +1038,16 @@
   }
   .example[data-variant="track"] {
     --color-gesture: var(--accent-green);
+    --gesture-fill: var(--green-7);
     --radius-gesture: 50%;
   }
   .example[data-variant="fan"] {
     --color-gesture: var(--accent-purple);
+    --gesture-fill: var(--grey-7);
   }
   .example[data-variant="courier"] {
     --color-gesture: var(--secondary);
+    --gesture-fill: var(--grey-7);
     --radius-gesture: 0.5rem;
   }
   @keyframes hold-fill {

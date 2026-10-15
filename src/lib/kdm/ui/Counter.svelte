@@ -131,10 +131,10 @@
     position: relative;
     inline-size: var(--counter-inline);
     block-size: var(--counter-block);
-    border: var(--counter-border, var(--border-width) solid var(--field-border, color-mix(var(--identity) 60%, var(--panel))));
+    border: var(--counter-border, var(--border-width) solid var(--field-border, var(--identity-7)));
     border-radius: var(--counter-radius, var(--radius-control));
-    background: var(--counter-bg, var(--field-bg, color-mix(var(--identity) 18%, var(--panel))));
-    color: var(--counter-fg, var(--field-fg, color-mix(var(--identity) 55%, var(--foreground))));
+    background: var(--counter-bg, var(--field-bg, var(--identity-9)));
+    color: var(--counter-fg, var(--field-fg, var(--identity-3)));
     font-weight: var(--counter-weight, var(--font-bold));
     font-size: var(--counter-text);
     font-family: var(--counter-font, var(--font-sans));
@@ -184,7 +184,7 @@
     position: absolute;
     place-items: center;
     inset: 0;
-    color: color-mix(var(--identity) 42%, var(--foreground));
+    color: var(--identity-2);
     opacity: 0.2;
     pointer-events: none;
   }

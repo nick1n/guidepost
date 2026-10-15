@@ -3,8 +3,8 @@
   color-scheme: dark;
 
   /* Triadic palette: red, green, and blue are 120 degrees apart in OKLCH; purple is a separate accent.
-   * 1 is lightest, 9 darkest; each scale uses the same lightness levels.
-   * Chroma tapers toward both ends; hex comments are rounded sRGB approximations.
+   * 0 is lightest; all scales end at 10 and stop at 20% lightness.
+   * Dark lightness and chroma steps taper toward the floor; hex comments are rounded sRGB approximations.
    * Closest matches use OKLab distance within each color family. */
   --red-0: oklch(95% 0.02 16); /* #fce9ea */
   --red-1: oklch(87% 0.05 16); /* #f4c8c9 */
@@ -12,10 +12,11 @@
   --red-3: oklch(71% 0.13 16); /* #e77d86; closest to: bg-top */
   --red-4: oklch(63% 0.17 16); /* #dc5465; closest to: sfa-fore, fa-fore */
   --red-5: oklch(55% 0.2 16); /* #cb2348 */
-  --red-6: oklch(47% 0.17 16); /* #a41b39; closest to: bg-bottom */
-  --red-7: oklch(39% 0.14 16); /* #7f142a; closest to: back */
-  --red-8: oklch(31% 0.1 16); /* #58131e; closest to: sfa-back */
-  --red-9: oklch(23% 0.06 16); /* #340f13 */
+  --red-6: oklch(45% 0.16 16); /* #9a1c36; closest to: bg-bottom */
+  --red-7: oklch(36% 0.12 16); /* #6e1727; closest to: back, sfa-back */
+  --red-8: oklch(29% 0.08 16); /* #4b171d */
+  --red-9: oklch(24% 0.05 16); /* #331417 */
+  --red-10: oklch(20% 0.03 16); /* #221011 */
 
   --green-0: oklch(95% 0.03 136); /* #e6f3e0 */
   --green-1: oklch(87% 0.07 136); /* #c0dfb2 */
@@ -23,10 +24,11 @@
   --green-3: oklch(71% 0.17 136); /* #6db842 */
   --green-4: oklch(63% 0.18 136); /* #51a015; closest to: bg-top */
   --green-5: oklch(55% 0.16 136); /* #418509; closest to: bg-bottom */
-  --green-6: oklch(47% 0.13 136); /* #356a11; closest to: cost-bg, border */
-  --green-7: oklch(39% 0.11 136); /* #275108 */
-  --green-8: oklch(31% 0.09 136); /* #193a02 */
-  --green-9: oklch(23% 0.06 136); /* #0f2304 */
+  --green-6: oklch(45% 0.12 136); /* #336314; closest to: cost-bg, border */
+  --green-7: oklch(36% 0.09 136); /* #254711 */
+  --green-8: oklch(29% 0.06 136); /* #1d3212 */
+  --green-9: oklch(24% 0.04 136); /* #162410 */
+  --green-10: oklch(20% 0.03 136); /* #10190b */
 
   --blue-0: oklch(95% 0.02 256); /* #e6effc */
   --blue-1: oklch(87% 0.06 256); /* #bbd7fc */
@@ -34,10 +36,11 @@
   --blue-3: oklch(71% 0.15 256); /* #5ea3fd; closest to: bg-top, pattern */
   --blue-4: oklch(63% 0.16 256); /* #4089e7; closest to: bg-bottom */
   --blue-5: oklch(55% 0.14 256); /* #3371c1 */
-  --blue-6: oklch(47% 0.12 256); /* #275b9c */
-  --blue-7: oklch(39% 0.09 256); /* #214574; closest to: cost-bg, border, shadow */
-  --blue-8: oklch(31% 0.06 256); /* #1b314e */
-  --blue-9: oklch(23% 0.03 256); /* #131d2b */
+  --blue-6: oklch(45% 0.11 256); /* #275591; closest to: border, shadow */
+  --blue-7: oklch(36% 0.08 256); /* #1e3d66; closest to: cost-bg */
+  --blue-8: oklch(29% 0.05 256); /* #1a2c44 */
+  --blue-9: oklch(24% 0.03 256); /* #16202d */
+  --blue-10: oklch(20% 0.02 256); /* #10161f */
 
   --grey-0: oklch(98% 0 0); /* #f8f8f8 */
   --grey-1: oklch(95% 0 0); /* #eeeeee */
@@ -45,20 +48,21 @@
   --grey-3: oklch(71% 0 0); /* #a1a1a1 */
   --grey-4: oklch(61% 0 0); /* #838383 */
   --grey-5: oklch(52% 0 0); /* #696969 */
-  --grey-6: oklch(40% 0 0); /* #484848 */
-  --grey-7: oklch(29% 0 0); /* #2b2b2b */
-  --grey-8: oklch(24% 0 0); /* #1f1f1f */
-  --grey-9: oklch(20% 0 0); /* #161616 */
+  --grey-6: oklch(46% 0 0); /* #585858 */
+  --grey-7: oklch(40% 0 0); /* #484848 */
+  --grey-8: oklch(29% 0 0); /* #2b2b2b */
+  --grey-9: oklch(24% 0 0); /* #1f1f1f */
+  --grey-10: oklch(20% 0 0); /* #161616 */
 
   /* Active vars */
-  --background: var(--grey-9);
+  --background: var(--grey-10);
   --foreground: var(--grey-0);
 
-  --card: var(--grey-7);
+  --card: var(--grey-8);
   --muted-foreground: #a29c9a;
 
-  --panel: var(--grey-8);
-  --border: var(--grey-8);
+  --panel: var(--grey-9);
+  --border: var(--grey-9);
   --color-divider: color-mix(var(--foreground) 15%, transparent);
 
   --accent: var(--accent-blue);
@@ -76,6 +80,7 @@
   --accent-red: var(--color-red);
   --accent-green: var(--color-green);
   --accent-blue: var(--color-blue);
+  --accent-purple: var(--disorder-foreground);
 
   --contrast: #000;
   --contrast-foreground: #fff;
@@ -83,7 +88,7 @@
 
   --font-sans: "Roboto", Arial, Helvetica, sans-serif;
   --font-display: "Archivo", "Arial Narrow", Arial, Helvetica, sans-serif;
-  --font-serif: Georgia, serif;
+  --font-serif: "Roboto", Arial, Helvetica, sans-serif, Georgia, serif;
 
   --font-normal: 400;
   --font-bold: 700;
@@ -164,7 +169,7 @@
   --seed-blue: #379cdc;
   --seed-grey: #94838b;
   --seed-red: #9a094b;
-  --seed-black: var(--grey-7);
+  --seed-black: var(--grey-8);
   --seed-item: #353230;
   --seed-yellow: #bd930c;
 

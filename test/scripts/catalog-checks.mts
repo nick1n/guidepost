@@ -2,7 +2,7 @@ import { catalogTemp } from "#scripts/catalog/paths.mts";
 import assert from "node:assert/strict";
 import { mkdtemp, mkdir, readFile, rm, utimes, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { dirname, join } from "node:path";
+import { join } from "node:path";
 import { createHash } from "node:crypto";
 import { gunzipSync } from "node:zlib";
 import { test } from "node:test";
@@ -10,12 +10,12 @@ import { Effect } from "effect";
 import { FetchHttpClient } from "effect/http";
 import { planUpdate as prepareUpdate, productExclusion, releaseGaps } from "#scripts/catalog/update.mts";
 import { resolveReleases } from "#scripts/catalog/releases.mts";
-import { catalogListing, productUrl, ShopClient, ShopError, shopProduct } from "#scripts/catalog/shop.mts";
+import { catalogListing, productUrl, ShopClient, shopProduct } from "#scripts/catalog/shop.mts";
 import { applyReview } from "#scripts/update-catalog.mts";
 import { refreshAvailability } from "#scripts/refresh-catalog-availability.mts";
 import { availabilityFromUrls } from "#scripts/catalog/availability.mts";
 import { categories, type Catalog, type Product } from "#scripts/catalog/types.mts";
-import { clearChangedListings, listingSnapshot, normalizeItem } from "#scripts/catalog/normalize.mts";
+import { normalizeItem } from "#scripts/catalog/normalize.mts";
 import { organizeCatalog, compareEditions, orderItemFields } from "#scripts/catalog/order.mts";
 import { validateCatalog } from "#scripts/catalog/validate.mts";
 import { applyTags, loadTags, tagSchema, organizeTags, type Tags } from "#scripts/catalog/tags.mts";
@@ -305,46 +305,6 @@ test("availability refresh downloads all pages, preserves raw snapshots, and cha
   for (let n = 1; n <= 2; n++) await utimes(join(result.folder, `products-page-${n}.json`), cachedAt, cachedAt);
   assert.equal((await refreshAvailability({ catalog: path, offline: true })).changed, 0);
   assert.equal(JSON.parse(await readFile(path, "utf8")).shopUpdated, "2020-01-02");
-});
-
-test("a failed pagination request cannot clear availability or replace named snapshots", async (t) => {
-  const root = await mkdtemp(join(tmpdir(), "kdm-availability-failure-"));
-  t.after(() => rm(root, { recursive: true, force: true }));
-  const path = join(root, "static/kdm/catalog/data.json");
-  const folder = join(root, "temp/kdm-catalog/shopify-products");
-  await mkdir(dirname(path), { recursive: true });
-  await mkdir(folder, { recursive: true });
-  const original = JSON.stringify({
-    ...empty(),
-    content: { aya: { name: "Aya", tags: ["aya"], editions: [{ label: "Plastic", available: true }] } },
-  });
-  await writeFile(path, original);
-  await writeFile(join(folder, "products-page-1.json"), "old snapshot");
-  let calls = 0;
-  await assert.rejects(
-    refreshAvailability({
-      catalog: path,
-      offline: false,
-      client: {
-        async get(url: string) {
-          if (++calls === 2) throw new Error("Shop unavailable");
-          return {
-            url,
-            checkedAt: "2026-10-03",
-            data: {
-              products: Array.from({ length: 250 }, () => ({
-                ...product(),
-                variants: [{ ...product().variants[0]!, price: "7.00", available: false }],
-              })),
-            },
-          };
-        },
-      },
-    }),
-    /Shop unavailable/,
-  );
-  assert.equal(await readFile(path, "utf8"), original);
-  assert.equal(await readFile(join(folder, "products-page-1.json"), "utf8"), "old snapshot");
 });
 
 test("editions use release chronology, with Sim first and unknown dates last", () => {
@@ -738,41 +698,6 @@ test("collection product links resolve to direct listings, while collection inde
   assert.throws(() => productUrl("https://shop.kingdomdeath.com.evil.example/products/aya"));
 });
 
-test("Shopify product JSON preserves metadata and converts decimal prices without inventing compare-at prices", () => {
-  const raw = {
-    id: 1,
-    title: "Snow",
-    handle: "snow",
-    body_html: "<ul><li>Photoresin miniature</li></ul>",
-    published_at: "2026-09-30T12:00:00Z",
-    tags: "Beta, Snow",
-    images: [{ src: "https://example.com/snow.png" }],
-    variants: [{ id: 10, title: "First Run", requires_shipping: true, price: "70.00", compare_at_price: "", inventory_quantity: 100 }],
-  };
-  const item = shopProduct({ product: raw });
-  assert.equal(item.description, raw.body_html);
-  assert.equal(item.published_at, raw.published_at);
-  assert.deepEqual(item.images, raw.images);
-  assert.equal(item.tags, raw.tags);
-  assert.equal(item.variants[0]?.price, 7000);
-  assert.equal(item.variants[0]?.compare_at_price, null);
-  assert.equal(releasePrices(item.variants)[0], 7000);
-  assert.equal(
-    shopProduct({ ...raw, variants: [{ ...raw.variants[0], price: "7.25", compare_at_price: "9.00" }] }).variants[0]?.price,
-    725,
-  );
-  assert.equal(
-    shopProduct({ ...raw, variants: [{ ...raw.variants[0], price: "7.25", compare_at_price: "9.00" }] }).variants[0]?.compare_at_price,
-    900,
-  );
-  assert.equal(shopProduct(product(), "ajax").variants[0]?.price, 700);
-  assert.throws(() => shopProduct({ ...raw, variants: [{ ...raw.variants[0], price: "" }] }), /Invalid shop price/);
-  assert.throws(
-    () => shopProduct({ ...raw, variants: [{ ...raw.variants[0], requires_shipping: undefined }] }),
-    /Invalid shop product variant/,
-  );
-});
-
 test("product requests use the Ajax endpoint once and offline reads can still use JSON caches", async (t) => {
   const cache = await mkdtemp(join(tmpdir(), "kdm-product-js-"));
   t.after(() => rm(cache, { recursive: true, force: true }));
@@ -1046,34 +971,14 @@ test("applying a review persists ordering even when no item facts changed", asyn
   await mkdir(join(catalogTemp(root), "imports"));
   await mkdir(join(catalogTemp(root), "reports"));
   const before = empty();
-  before.content.neko = {
-    name: "Neko",
+  const item = (name: string, tags: string[], releaseDate: string) => ({
+    name,
     kind: "model",
-    tags: ["death-high", "neko"],
-    editions: [
-      {
-        id: "plastic",
-        label: "Plastic",
-        releaseDate: "2020-01-01",
-        format: "physical",
-        materials: ["Plastic"],
-      },
-    ],
-  };
-  before.content.aya = {
-    name: "Aya",
-    kind: "model",
-    tags: ["aya"],
-    editions: [
-      {
-        id: "plastic",
-        label: "Plastic",
-        releaseDate: "2019-01-01",
-        format: "physical",
-        materials: ["Plastic"],
-      },
-    ],
-  };
+    tags,
+    editions: [{ id: "plastic", label: "Plastic", releaseDate, format: "physical" as const, materials: ["Plastic"] }],
+  });
+  before.content.neko = item("Neko", ["death-high", "neko"], "2020-01-01");
+  before.content.aya = item("Aya", ["aya"], "2019-01-01");
   const tags = tagFile({ aya: ["aya"], neko: ["neko", "death-high"] });
   const schema = await readFile("static/kdm/catalog/data.schema.json", "utf8");
   const files = {
@@ -1113,35 +1018,19 @@ test("applying a review persists ordering even when no item facts changed", asyn
 test("accessories and homebrew sort alphabetically by ID without changing item facts", () => {
   const catalog = empty();
   catalog.accessories = {
-    "late-shirt": { name: "Late Shirt", accessoryType: "shirt", tags: ["late"], releaseYear: 2024 },
-    "unknown-dice": { name: "Unknown Dice", accessoryType: "dice", tags: ["unknown"], announcements: ["2000-01-01"] },
-    "other-accessory": { name: "Other Accessory", accessoryType: "other", tags: ["other"], releaseYear: 2010 },
-    "early-shirt": { name: "Early Shirt", accessoryType: "shirt", tags: ["early"], releaseYear: 2016 },
-    "dated-dice": { name: "Dated Dice", accessoryType: "dice", tags: ["dated"], releaseYear: 2020 },
+    "z-shirt": { name: "A Shirt", accessoryType: "shirt", tags: ["shirt"], releaseYear: 2010 },
+    "m-dice": { name: "Z Dice", accessoryType: "dice", tags: ["dice"], announcements: ["2000-01-01"] },
+    "a-other": { name: "Other", accessoryType: "other", tags: ["other"], releaseYear: 2024 },
   };
   catalog.homebrew = {
-    "craft-of-death-terrain": { name: "Terrain", kind: "terrain", tags: ["craft-of-death"] },
-    "revampedgame-terrain": { name: "Terrain", kind: "terrain", tags: ["revampedgame"], releaseYear: 2010 },
-    "revampedgame-z-model": { name: "Z Model", kind: "model", tags: ["revampedgame"] },
-    "craft-of-death-base": { name: "Base", kind: "base", tags: ["craft-of-death"] },
-    "expansion-revampedgame-rosine": { name: "Rosine", kind: "expansion", tags: ["revampedgame"] },
-    "revampedgame-a-model": { name: "A Model", kind: "model", tags: ["revampedgame"] },
-    "revampedgame-dated-model": { name: "Dated Model", kind: "model", tags: ["revampedgame"], releaseYear: 2022 },
-    "raitenjuro-perfect-lantern": { name: "Perfect Lantern", kind: "terrain", tags: ["raitenjuro"] },
+    "z-terrain": { name: "A Terrain", kind: "terrain", tags: ["first-author"], releaseYear: 2010 },
+    "m-expansion": { name: "Expansion", kind: "expansion", tags: ["second-author"] },
+    "a-model": { name: "Z Model", kind: "model", tags: ["second-author"], releaseYear: 2024 },
   };
   const before = structuredClone(catalog);
   organizeCatalog(catalog);
-  assert.deepEqual(Object.keys(catalog.accessories), ["dated-dice", "early-shirt", "late-shirt", "other-accessory", "unknown-dice"]);
-  assert.deepEqual(Object.keys(catalog.homebrew), [
-    "craft-of-death-base",
-    "craft-of-death-terrain",
-    "expansion-revampedgame-rosine",
-    "raitenjuro-perfect-lantern",
-    "revampedgame-a-model",
-    "revampedgame-dated-model",
-    "revampedgame-terrain",
-    "revampedgame-z-model",
-  ]);
+  assert.deepEqual(Object.keys(catalog.accessories), ["a-other", "m-dice", "z-shirt"]);
+  assert.deepEqual(Object.keys(catalog.homebrew), ["a-model", "m-expansion", "z-terrain"]);
   assert.deepEqual(catalog, before);
   const ordered = JSON.stringify(catalog);
   organizeCatalog(catalog);
@@ -1150,46 +1039,19 @@ test("accessories and homebrew sort alphabetically by ID without changing item f
 
 test("sets, vignettes, armor kits and naked models sort alphabetically by ID in the catalog and master tags", () => {
   const catalog = empty();
-  catalog.content = {
-    "armor-kit-late": {
-      name: "Late Armor Kit",
-      kind: "armor-kit",
-      tags: ["armor"],
-      editions: [{ label: "Plastic", releaseDate: "2020-01-01" }],
-    },
-    "pinup-naked-late": {
-      name: "Naked Late Pinup",
-      kind: "naked",
-      tags: ["naked", "pinup"],
-      editions: [{ label: "Plastic", releaseDate: "2022-01-01" }],
-    },
-    "set-death-high-late": {
-      name: "Death High - Late Set",
-      kind: "set",
-      tags: ["death-high"],
-      editions: [{ label: "Plastic", releaseDate: "2023-01-01" }],
-    },
-    "armor-kit-early": {
-      name: "Early Armor Kit",
-      kind: "armor-kit",
-      tags: ["armor"],
-      editions: [{ label: "Plastic", releaseDate: "2015-01-01" }],
-    },
-    "set-pinups-early": { name: "Pinups Early", kind: "set", tags: ["pinup"], editions: [{ label: "Plastic", releaseDate: "2014-01-01" }] },
-    "naked-early": { name: "Naked Early", kind: "naked", tags: ["naked"], editions: [{ label: "Plastic", releaseDate: "2016-01-01" }] },
-    "vignette-of-death-white-gigalion": {
-      name: "Vignette of Death: White Gigalion",
-      kind: "vignette",
-      tags: ["monster-white-lion"],
-      editions: [{ label: "Plastic", releaseDate: "2019-08-16" }],
-    },
-    "vignette-of-death-screaming-nukealope": {
-      name: "Vignette of Death: Screaming Nukealope",
-      kind: "vignette",
-      tags: ["monster-screaming-nukealope"],
-      editions: [{ label: "Box", releaseDate: "2025-10-31" }],
-    },
-  };
+  const releases = [
+    ["armor-kit-late", "armor-kit", "2020-01-01"],
+    ["pinup-naked-late", "naked", "2022-01-01"],
+    ["set-late", "set", "2023-01-01"],
+    ["armor-kit-early", "armor-kit", "2015-01-01"],
+    ["set-early", "set", "2014-01-01"],
+    ["naked-early", "naked", "2016-01-01"],
+    ["vignette-late", "vignette", "2019-08-16"],
+    ["vignette-early", "vignette", "2025-10-31"],
+  ] as const;
+  for (const [id, kind, releaseDate] of releases) {
+    catalog.content[id] = { name: id, kind, tags: [kind], editions: [{ label: "Plastic", releaseDate }] };
+  }
   const assignments = tagFile(Object.fromEntries(Object.entries(catalog.content).map(([id, item]) => [id, item.tags])));
   organizeCatalog(catalog);
   const expected = [
@@ -1197,10 +1059,10 @@ test("sets, vignettes, armor kits and naked models sort alphabetically by ID in 
     "armor-kit-late",
     "naked-early",
     "pinup-naked-late",
-    "set-death-high-late",
-    "set-pinups-early",
-    "vignette-of-death-screaming-nukealope",
-    "vignette-of-death-white-gigalion",
+    "set-early",
+    "set-late",
+    "vignette-early",
+    "vignette-late",
   ];
   assert.deepEqual(Object.keys(catalog.content), expected);
   const master = organizeTags(catalog, assignments);
@@ -1301,7 +1163,7 @@ test("shop updates preserve permanent IDs and reject a new release that would re
   assert.equal(catalog.content.rene!.editions!.length, 1);
 });
 
-test("schema checks ID prefixes and field types without conditional branches", async () => {
+test("schema checks ID prefixes and field types", async () => {
   const catalog = empty();
   catalog.content.aya = { name: "Set", kind: "set", tags: ["survivor"] };
   await assert.rejects(validateCatalog(catalog), /Catalog schema errors/);
@@ -1309,7 +1171,6 @@ test("schema checks ID prefixes and field types without conditional branches", a
   catalog.accessories["old-dice-id"] = { name: "Dice", kind: "accessory", accessoryType: "dice", tags: ["dice"] };
   await assert.rejects(validateCatalog(catalog), /Catalog schema errors/);
   const schema = JSON.parse(await readFile("static/kdm/catalog/data.schema.json", "utf8"));
-  assert.ok(!/"(?:if|then|else|allOf)"\s*:/.test(JSON.stringify(schema)));
   const { Ajv2020 } = await import("ajv/dist/2020.js");
   const check = new Ajv2020({ strict: false }).compile(schema);
   const simple = empty();
@@ -1513,22 +1374,6 @@ test("concurrent shop clients share cached results and refuse a second process l
   assert.equal(fetchMock.mock.callCount(), 1);
 });
 
-test("unavailable shop listings are cached so reruns do not repeat the request", async (t) => {
-  const cache = await mkdtemp(join(tmpdir(), "kdm-shop-unavailable-test-"));
-  t.after(() => rm(cache, { recursive: true, force: true }));
-  const fetchMock = t.mock.fn<typeof globalThis.fetch>(async () => new Response("Missing", { status: 404 }));
-  const url = "https://shop.kingdomdeath.com/products/seasonal.js";
-  await assert.rejects(
-    Effect.runPromise(new ShopClient({ cache }).getEffect(url).pipe(Effect.provideService(FetchHttpClient.Fetch, fetchMock))),
-    (error) => error instanceof ShopError && error.status === 404 && !error.cached,
-  );
-  await assert.rejects(
-    Effect.runPromise(new ShopClient({ cache }).getEffect(url).pipe(Effect.provideService(FetchHttpClient.Fetch, fetchMock))),
-    (error) => error instanceof ShopError && error.status === 404 && error.cached,
-  );
-  assert.equal(fetchMock.mock.callCount(), 1);
-});
-
 test("included-only items retain parent references and reviewed tags across categories", async (t) => {
   const workspace = await mkdtemp(join(tmpdir(), "kdm-included-only-"));
   const root = join(workspace, "static/kdm/catalog");
@@ -1715,28 +1560,4 @@ test("stock evidence distinguishes sold out, unknown matches, and synthetic list
   delete catalog.bundles.example.handle;
   assert.equal(availabilityFromUrls(catalog, listings, checkedAt).shopChanged, 1);
   assert.equal(catalog.bundles.example.shop, undefined);
-});
-
-test("listing writers clear changed observations and retain equivalent normalized listings", () => {
-  const item = {
-    name: "Example",
-    tags: [],
-    handle: "original",
-    editions: [
-      { id: "plastic", label: "Plastic", shop: "in-stock" as const },
-      { id: "resin", label: "Resin", shop: "out-of-stock" as const },
-    ],
-  };
-  normalizeItem(item);
-  assert.equal(item.editions[0]!.shop, "in-stock");
-  const before = listingSnapshot(item);
-  item.handle = "replacement";
-  clearChangedListings(item, before);
-  assert.equal(item.editions[0]!.shop, undefined);
-  assert.equal(item.editions[1]!.shop, undefined);
-  const external = { name: "Files", tags: [], url: "https://example.com/old", shop: "missing" as const };
-  const previous = listingSnapshot(external);
-  external.url = "https://example.com/new";
-  clearChangedListings(external, previous);
-  assert.equal(external.shop, undefined);
 });

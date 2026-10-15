@@ -24,7 +24,7 @@ it.each([
   { name: "partial JSON", text: '{"pid":1234,', expected: ["Recorded PID and acquisition time are unavailable"] },
   { name: "empty lock", text: "", expected: ["Recorded PID and acquisition time are unavailable"] },
   { name: "wrong shape", text: "null", expected: ["Recorded PID and acquisition time are unavailable"] },
-])("explains recovery for $name without changing the lock", async ({ text, expected }) => {
+])("reports $name without changing the lock", async ({ text, expected }) => {
   const directory = await mkdtemp(join(tmpdir(), "guidepost-lock-message-"));
   const path = join(directory, "request.lock");
   try {
@@ -32,10 +32,6 @@ it.each([
     const message = await formatLockConflict(path, "shop request");
     expect(message).toContain("Existing shop request lock: " + path);
     for (const fragment of expected) expect(message).toContain(fragment);
-    expect(message).toContain("process and command are still active");
-    expect(message).toContain("PIDs can be reused");
-    expect(message).toContain("Only after confirming this lock is abandoned, delete only this lock file");
-    expect(message).toContain("Keep timing and checkpoint files");
     expect(await readFile(path, "utf8")).toBe(text);
   } finally {
     await rm(directory, { recursive: true, force: true });
@@ -50,7 +46,10 @@ it("retains actionable conflict guidance when metadata cannot be read", async ()
     const message = await formatLockConflict(path, "shop request");
     expect(message).toContain("Existing shop request lock: " + path);
     expect(message).toContain("Recorded PID and acquisition time are unavailable");
-    expect(message).toContain("Only after confirming this lock is abandoned");
+    expect(message).toContain("process and command are still active");
+    expect(message).toContain("PIDs can be reused");
+    expect(message).toContain("Only after confirming this lock is abandoned, delete only this lock file");
+    expect(message).toContain("Keep timing and checkpoint files");
     await mkdir(join(path, "still-present"));
   } finally {
     await rm(directory, { recursive: true, force: true });

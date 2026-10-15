@@ -83,24 +83,31 @@
   <section class="study" aria-labelledby={palette.id + "-title"}>
     <div class="section-heading">
       <h2 id={palette.id + "-title"}>{palette.name}</h2>
-      <span>{palette.rows.map((row) => row.hue + "°").join(" / ")}</span>
+      <span
+        >{palette.rows
+          .filter((row) => row.family !== "grey")
+          .map((row) => row.hue + "°")
+          .join(" / ")}</span
+      >
     </div>
 
     <div class={["matrix", surface === "light" && "paper"]}>
       <table>
-        <caption class="visually-hidden">{palette.name} palette, levels 0 through 9 from light to dark</caption>
+        <caption class="visually-hidden">{palette.name} and grey palette from light to dark. All scales have levels 0 through 10.</caption>
         <thead>
           <tr>
             <th scope="col">Color</th>
             {#each lightnessLevels as lightness, index (lightness)}
-              <th scope="col">{index}<small>{lightness}%</small></th>
+              <th scope="col">{index}</th>
             {/each}
           </tr>
         </thead>
         <tbody>
           {#each palette.rows as row (row.family)}
             <tr>
-              <th scope="row">{row.name}<small>{row.hue}°</small></th>
+              <th scope="row"
+                >{row.name}{#if row.family !== "grey"}<small>{row.hue}°</small>{/if}</th
+              >
               {#each row.shades as shade (shade.level)}
                 <td>
                   <button
@@ -114,6 +121,7 @@
                     <span aria-hidden="true">{selected.family === row.family && selected.level === shade.level ? "✓" : ""}</span>
                   </button>
                   <code>{shade.hex}</code>
+                  <small class="lightness">{Math.round(shade.lightness * 100)}%</small>
                 </td>
               {/each}
             </tr>
@@ -259,7 +267,7 @@
 <style>
   main {
     --lab-light: var(--grey-0);
-    --lab-dark: var(--grey-9);
+    --lab-dark: var(--grey-10);
     max-inline-size: 82rem;
     margin-inline: auto;
     padding: clamp(1rem, 4vw, 3rem);
@@ -446,6 +454,9 @@
     margin-block-start: 0.5rem;
     text-align: center;
     font-size: 0.6rem;
+  }
+  .lightness {
+    text-align: center;
   }
   .swatch {
     display: grid;

@@ -101,16 +101,15 @@ it.effect(
         (path) => Effect.promise(() => rm(path, { recursive: true, force: true })),
       );
       const execute = promisify(execFile);
-      for (const args of [["--unknown-flag"], ["--online"], ["--refresh"], ["--delay", "1", "--output", directory, "--cache", directory]]) {
-        const exit = yield* Effect.exit(
-          Effect.tryPromise(() =>
-            execute(process.execPath, [resolve("scripts/news/scrape-shop-links.mts"), ...args], {
-              cwd: directory,
-              timeout: 10_000,
-            }),
+      for (const args of [["--unknown-flag"], ["--delay", "1", "--output", directory, "--cache", directory]]) {
+        const output = yield* Effect.promise(() =>
+          execute(process.execPath, [resolve("scripts/news/scrape-shop-links.mts"), ...args], { cwd: directory, timeout: 10_000 }).then(
+            () => ({ failed: false, text: "" }),
+            (error: Error & { stdout: string; stderr: string }) => ({ failed: true, text: error.stdout + error.stderr }),
           ),
         );
-        expect(Exit.isFailure(exit)).toBe(true);
+        expect(output.failed).toBe(true);
+        if (args[0] === "--delay") expect(output.text).toContain("--delay must be a finite number of at least 2 seconds");
         expect(yield* Effect.promise(() => readdir(directory))).toEqual([]);
       }
     }).pipe(Effect.scoped),
@@ -157,7 +156,7 @@ it.effect(
 );
 
 it.effect(
-  "entry points accept omitted switches before reporting missing inputs or invalid values",
+  "entry points accept omitted switches before reporting missing inputs",
   () =>
     Effect.gen(function* () {
       const directory = yield* Effect.acquireRelease(
@@ -170,7 +169,6 @@ it.effect(
         ["scripts/refresh-catalog-availability.mts", ["--catalog", join(directory, "missing.json")], "ENOENT"],
         ["scripts/update-catalog.mts", ["--catalog", join(directory, "missing")], "ENOENT"],
         ["scripts/catalog/workbook.mts", [], "ENOENT"],
-        ["scripts/news/scrape-shop-links.mts", ["--delay", "1"], "--delay must be a finite number of at least 2 seconds"],
       ] as const) {
         const output = yield* Effect.promise(() =>
           execute(process.execPath, [resolve(path), ...args], { cwd: directory, timeout: 10_000 }).then(

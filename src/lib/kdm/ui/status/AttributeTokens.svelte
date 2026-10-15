@@ -119,10 +119,10 @@
     line-height: 1rem;
   }
   .positive {
-    color: color-mix(var(--accent-green) 40%, var(--foreground));
+    color: var(--green-1);
   }
   .negative {
-    color: color-mix(var(--accent-red) 40%, var(--foreground));
+    color: var(--red-1);
   }
   .empty {
     opacity: 0;
@@ -131,7 +131,7 @@
     margin-block-start: 0.375rem;
     padding: 0 0.5rem 0.5rem;
     border-radius: var(--radius-control);
-    background: color-mix(var(--identity) 15%, var(--panel));
+    background: var(--identity-9);
   }
   .editor-heading {
     display: flex;

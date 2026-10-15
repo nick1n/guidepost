@@ -299,7 +299,7 @@
     background: var(--panel);
   }
   strong {
-    color: color-mix(var(--identity) 55%, var(--foreground));
+    color: var(--identity-3);
     font-weight: var(--font-bold);
     font-size: var(--text-sm);
     line-height: var(--line-height-snug);
@@ -312,7 +312,7 @@
     --size-icon: 1.125rem;
     flex-shrink: 0;
     translate: -0.25rem 0;
-    color: color-mix(var(--identity) 65%, var(--foreground));
+    color: var(--identity-3);
   }
   .spend {
     display: grid;
@@ -321,14 +321,14 @@
     place-items: center;
     min-block-size: var(--size-control);
     padding-inline: 0.5rem;
-    background: color-mix(var(--identity) 14%, var(--panel));
+    background: var(--identity-10);
 
     &.with-attack {
       grid-row: 1;
     }
 
     &:hover:not(:disabled) {
-      background: color-mix(var(--identity) 25%, var(--panel));
+      background: var(--identity-9);
     }
 
     &:focus-visible {
@@ -358,7 +358,7 @@
     }
   }
   .attack-stat {
-    --stat-color: color-mix(in oklch, var(--stat-background) 85%, white);
+    --stat-color: var(--grey-2);
 
     display: grid;
     align-content: start;
@@ -372,6 +372,18 @@
       corner-shape: squircle;
       box-shadow: -0.25rem 0 0.375rem -0.25rem var(--color-divider);
     }
+  }
+  .attack-stat:is([data-stat="Spd"], [data-stat="Speed"]) {
+    --stat-color: var(--green-2);
+  }
+  .attack-stat:is([data-stat="Acc"], [data-stat="Accuracy"]) {
+    --stat-color: var(--grey-1);
+  }
+  .attack-stat:is([data-stat="Perf"], [data-stat="Crit"]) {
+    --stat-color: var(--grey-3);
+  }
+  .attack-stat:is([data-stat="Wnd"], [data-stat="Strength"]) {
+    --stat-color: var(--red-3);
   }
   .stat-label {
     color: var(--stat-color, var(--muted-foreground));
@@ -534,7 +546,7 @@
     align-items: baseline;
     justify-content: space-between;
     gap: 0.5rem;
-    color: color-mix(var(--identity) 55%, var(--foreground));
+    color: var(--identity-3);
     font-size: var(--text-md);
     letter-spacing: 0.04em;
   }
@@ -568,10 +580,10 @@
     block-size: 100%;
   }
   .none {
-    background: color-mix(var(--muted-foreground) 40%, var(--panel));
+    background: var(--grey-7);
   }
   .one {
-    background: color-mix(var(--result-color, var(--identity)) 45%, var(--foreground));
+    background: color-mix(in oklch, var(--result-color, var(--identity)) 40%, var(--identity-light));
   }
   .many {
     background: var(--result-color, var(--identity));
@@ -702,14 +714,14 @@
     border-block-start: 2px solid var(--color-divider);
   }
   :global(.obsidian) .profile {
-    background: color-mix(var(--identity) 4%, var(--panel));
+    background: var(--identity-10);
   }
   :global(.obsidian) .keyword-label {
-    color: color-mix(var(--identity) 45%, var(--foreground));
+    color: var(--identity-2);
   }
   :global(.obsidian) .keyword {
     padding-inline-start: 0.25rem;
-    border-inline-start: 2px solid color-mix(var(--identity) 55%, var(--foreground));
+    border-inline-start: 2px solid var(--identity-3);
   }
   :global(.folio) .profile {
     border-radius: 0.25rem;
@@ -729,11 +741,11 @@
     font-family: var(--font-serif);
   }
   :global(.folio) .keyword {
-    color: color-mix(var(--identity) 45%, var(--foreground));
+    color: var(--identity-2);
   }
   :global(.signal) .profile {
     border-radius: 1rem 0.25rem 1rem 0.25rem;
-    background: color-mix(var(--identity) 16%, var(--background));
+    background: var(--identity-9);
   }
   :global(.obsidian) :is(.stats, .static-stats) {
     gap: 0;
@@ -753,10 +765,10 @@
     padding: 0.375rem;
     border: 1px solid color-mix(var(--identity) 45%, transparent);
     border-radius: 0.75rem 0.125rem 0.75rem 0.125rem;
-    background: color-mix(var(--identity) 10%, var(--background));
+    background: var(--identity-10);
   }
   :global(.signal) .keyword-label {
-    color: color-mix(var(--identity) 65%, var(--foreground));
+    color: var(--identity-3);
   }
   :global(.signal) .keyword {
     padding-block-end: 0.125rem;
@@ -765,10 +777,10 @@
   :global(.signal) .spend:not(:disabled) {
     --color-action-cost: var(--foreground);
 
-    background: color-mix(var(--identity) 30%, var(--background));
+    background: var(--identity-8);
 
     &:hover {
-      background: color-mix(var(--identity) 40%, var(--background));
+      background: var(--identity-7);
     }
   }
 </style>

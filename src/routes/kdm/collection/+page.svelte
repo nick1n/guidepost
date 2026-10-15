@@ -667,14 +667,16 @@
   .stats button {
     text-align: start;
     &[aria-pressed="true"] {
-      background: color-mix(in oklch, var(--stat-accent) 12%, var(--panel));
+      background: var(--stat-tint);
     }
   }
   .stat-owned {
     --stat-accent: var(--accent-blue);
+    --stat-tint: var(--blue-10);
   }
   .stat-wishlist {
     --stat-accent: var(--accent-red);
+    --stat-tint: var(--red-10);
     justify-items: end;
   }
   .stat-value {
@@ -869,7 +871,7 @@
       color var(--duration-fast) var(--ease-standard);
 
     &[aria-pressed="true"] {
-      background: color-mix(in oklch, var(--accent) 14%, var(--panel));
+      background: var(--blue-10);
       color: var(--accent);
     }
   }
@@ -882,7 +884,7 @@
     gap: 0.375rem;
     border: var(--border-width) solid color-mix(in oklch, var(--accent) 40%, transparent);
     border-radius: var(--radius-control);
-    background: color-mix(in oklch, var(--accent) 10%, var(--panel));
+    background: var(--blue-10);
     color: var(--accent);
     font-size: var(--text-sm);
     overflow-wrap: anywhere;
@@ -960,7 +962,7 @@
   @media (hover: hover) {
     button:not(:disabled, .cloud-tag, .search-command):hover,
     summary:hover {
-      background: color-mix(in oklch, var(--accent) 14%, var(--panel));
+      background: var(--blue-8);
       color: var(--accent);
     }
     .search-command:not(:disabled):hover {
@@ -982,7 +984,7 @@
     .cloud-tag:not(:disabled):hover {
       z-index: 1;
       scale: 1.25;
-      background: color-mix(in oklch, var(--accent) 14%, var(--panel));
+      background: var(--blue-8);
       box-shadow: 0 0.5rem 1rem color-mix(in oklch, var(--contrast) 25%, transparent);
       color: var(--accent);
     }

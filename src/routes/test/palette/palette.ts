@@ -31,18 +31,19 @@ const redReferenceValues = [
   ["fa-fore", "#ff411b"],
 ] as const;
 
-// Ten evenly spaced OKLCH lightness levels, numbered 0 through 9.
-export const lightnessLevels = [95, 87, 79, 71, 63, 55, 47, 39, 31, 23];
+// Taper the dark-end steps toward the 20% lightness floor.
+export const lightnessLevels = [95, 87, 79, 71, 63, 55, 45, 36, 29, 24, 20];
 
 const chromaLevels = {
-  blue: [0.02, 0.06, 0.11, 0.16, 0.16, 0.14, 0.12, 0.09, 0.06, 0.03],
-  green: [0.03, 0.07, 0.12, 0.17, 0.21, 0.2, 0.17, 0.14, 0.1, 0.06],
-  red: [0.02, 0.05, 0.09, 0.13, 0.17, 0.2, 0.17, 0.14, 0.1, 0.06],
+  blue: [0.02, 0.06, 0.11, 0.16, 0.16, 0.14, 0.11, 0.08, 0.05, 0.03, 0.02],
+  green: [0.03, 0.07, 0.12, 0.17, 0.21, 0.2, 0.12, 0.09, 0.06, 0.04, 0.03],
+  red: [0.02, 0.05, 0.09, 0.13, 0.17, 0.2, 0.16, 0.12, 0.08, 0.05, 0.03],
   // Fit the six red references at a shared 30° hue, preserving the lightness steps.
   // red: [0.02, 0.05, 0.09, 0.175, 0.23, 0.173, 0.142, 0.079, 0.105, 0.06],
 };
 
-type Family = keyof typeof chromaLevels;
+type ColorFamily = keyof typeof chromaLevels;
+type Family = ColorFamily | "grey";
 
 function linearRgb({ lightness: L, chroma: C, hue }: Color) {
   const a = C * Math.cos((hue * Math.PI) / 180);
@@ -98,17 +99,17 @@ function themeColor(token: string) {
     chroma: Number.parseFloat(C),
     hue: Number.parseFloat(H),
   };
-  return { css: "var(--" + token + ")", luminance: luminance(linearRgb(color)) };
+  return { ...color, css: "var(--" + token + ")", luminance: luminance(linearRgb(color)) };
 }
 
 // Read the same theme declarations as the rendered samples so contrast stays in sync.
-const textColors = { light: themeColor("grey-0"), dark: themeColor("grey-9") };
+const textColors = { light: themeColor("grey-0"), dark: themeColor("grey-10") };
 
 function contrast(left: number, right: number) {
   return (Math.max(left, right) + 0.05) / (Math.min(left, right) + 0.05);
 }
 
-function makeShade(family: Family, level: number, hue: number) {
+function makeShade(family: ColorFamily, level: number, hue: number) {
   const lightness = lightnessLevels[level] / 100;
   let low = 0;
   let high = chromaLevels[family][level];
@@ -120,6 +121,10 @@ function makeShade(family: Family, level: number, hue: number) {
   }
   const precision = family === "red" ? 1000 : 100;
   const chroma = Math.floor((low + 1e-9) * precision) / precision;
+  return describeShade(family, level, { lightness, chroma, hue });
+}
+
+function describeShade(family: Family, level: number, { lightness, chroma, hue }: Color) {
   const rgb = linearRgb({ lightness, chroma, hue });
   const hex =
     "#" +
@@ -148,9 +153,9 @@ function makeShade(family: Family, level: number, hue: number) {
   };
 }
 
-export type Shade = ReturnType<typeof makeShade>;
+export type Shade = ReturnType<typeof describeShade>;
 
-function makeRow(family: Family, hue: number) {
+function makeRow(family: ColorFamily, hue: number) {
   return {
     family,
     name: family[0].toUpperCase() + family.slice(1),
@@ -163,7 +168,17 @@ export function makePalette(blueHue: number) {
   return {
     id: "triadic",
     name: "Triadic",
-    rows: [makeRow("blue", blueHue), makeRow("green", blueHue - 120), makeRow("red", blueHue - 240)],
+    rows: [
+      makeRow("blue", blueHue),
+      makeRow("green", blueHue - 120),
+      makeRow("red", blueHue - 240),
+      {
+        family: "grey" as const,
+        name: "Grey",
+        hue: 0,
+        shades: Array.from({ length: lightnessLevels.length }, (_, level) => describeShade("grey", level, themeColor("grey-" + level))),
+      },
+    ],
   };
 }
 
@@ -190,9 +205,9 @@ export function matchReferences(shades: Shade[], references: Reference[] = blueR
 }
 
 export function exportCss(palette: Palette) {
-  const families: Family[] = ["red", "green", "blue"];
+  const families: Family[] = ["red", "green", "blue", "grey"];
   const rows = palette.rows.toSorted((left, right) => families.indexOf(left.family) - families.indexOf(right.family));
-  const references = { red: redReferences, green: greenReferences, blue: blueReferences };
+  const references = { red: redReferences, green: greenReferences, blue: blueReferences, grey: [] };
   const matches = rows.flatMap((row) => matchReferences(row.shades, references[row.family]));
   return (
     ":root {\n" +
@@ -208,6 +223,7 @@ export function exportCss(palette: Palette) {
       )
       .join("\n\n") +
     families
+      .filter((family) => references[family].length)
       .map(
         (family) =>
           "\n\n  /* Exact reference colors for roles that need the original " +

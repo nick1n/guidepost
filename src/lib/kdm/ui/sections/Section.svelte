@@ -177,7 +177,7 @@
     padding: 0.25rem 0.375rem;
     user-select: none;
     -webkit-touch-callout: none;
-    color: color-mix(var(--identity) 55%, var(--foreground));
+    color: var(--identity-3);
     text-align: start;
   }
   small {
@@ -254,7 +254,7 @@
     margin-block: 0.25rem;
     border: 0;
     border-radius: var(--radius-control);
-    background: color-mix(var(--identity) 10%, var(--panel));
+    background: var(--identity-10);
   }
   :global(.folio) .toggle {
     padding-inline: 0.625rem;
@@ -270,7 +270,7 @@
     padding: 0 0.25rem 0.25rem;
     border: 0;
     border-radius: 1.25rem 0.5rem 1.25rem 0.5rem;
-    background: color-mix(var(--identity) 12%, var(--background));
+    background: var(--identity-10);
   }
   :global(.signal) .toggle {
     padding-inline: 0.625rem;

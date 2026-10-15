@@ -72,8 +72,6 @@ test("retrieval writes editions and mappings while failed listings retain their 
     assert.equal(success.reachable.length, 1);
     const item = JSON.parse(await readFile(path, "utf8")).content.example;
     assert.equal(item.releaseDate, undefined);
-    assert.equal(item.editions.length, 2);
-    assert.equal(new Set(item.editions.map((edition: { id: string }) => edition.id)).size, 2);
     assert.deepEqual(
       item.editions.map((edition: { id: string }) => edition.id),
       ["first-run", "encore"],

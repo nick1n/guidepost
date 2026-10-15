@@ -153,7 +153,7 @@
     transition: background-color var(--duration-fast) var(--ease-standard);
 
     &:hover {
-      background: color-mix(var(--accent) 85%, var(--foreground));
+      background: var(--blue-2);
     }
 
     &:disabled {

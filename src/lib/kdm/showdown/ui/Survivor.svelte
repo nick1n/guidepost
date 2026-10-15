@@ -832,7 +832,7 @@
     inline-size: 100%;
     min-block-size: var(--size-control);
     gap: 0.625rem;
-    color: color-mix(var(--identity) 55%, var(--foreground));
+    color: var(--identity-3);
     font-size: var(--text-sm);
 
     &::before,
@@ -1023,20 +1023,26 @@
   }
   .affinity-red {
     --affinity-color: var(--accent-red);
+    --affinity-border: var(--red-6);
+    --affinity-background: var(--red-8);
   }
   .affinity-green {
     --affinity-color: var(--accent-green);
+    --affinity-border: var(--green-5);
+    --affinity-background: var(--green-8);
   }
   .affinity-blue {
     --affinity-color: var(--accent-blue);
+    --affinity-border: var(--blue-5);
+    --affinity-background: var(--blue-8);
   }
   .affinity-label {
     color: var(--affinity-color);
   }
   .stat:is(.affinity-red, .affinity-green, .affinity-blue) {
     --field-fg: var(--affinity-color);
-    --field-border: color-mix(var(--affinity-color) 60%, var(--panel));
-    --field-bg: color-mix(var(--affinity-color) 18%, var(--panel));
+    --field-border: var(--affinity-border);
+    --field-bg: var(--affinity-background);
   }
   .armor {
     row-gap: 0.625rem;
@@ -1165,7 +1171,7 @@
   }
   @media (hover: hover) {
     .condition:enabled:hover {
-      box-shadow: inset 0 0 0 var(--border-width) color-mix(var(--identity) 45%, var(--foreground));
+      box-shadow: inset 0 0 0 var(--border-width) var(--identity-2);
     }
   }
   h3 {
@@ -1174,7 +1180,7 @@
     justify-content: space-between;
     margin-block: 0.75rem 0.375rem;
     gap: 0.25rem;
-    color: color-mix(var(--identity) 55%, var(--foreground));
+    color: var(--identity-3);
     font-size: var(--text-sm);
   }
   h3 small {
@@ -1278,7 +1284,7 @@
     background-image:
       var(--signal-dead), var(--signal-retired), var(--signal-knocked), var(--signal-blind), var(--signal-controller),
       var(--signal-priority), var(--signal-acted), var(--signal-threat);
-    background-color: color-mix(in srgb, var(--identity) 52%, var(--background));
+    background-color: var(--identity-7);
     color: var(--foreground);
 
     &::before {
@@ -1443,7 +1449,7 @@
   }
   :global(.signal) .condition {
     border: 0;
-    background: color-mix(var(--identity) 16%, var(--background));
+    background: var(--identity-9);
     &.active {
       background: var(--identity);
       color: var(--identity-ink);
@@ -1451,7 +1457,7 @@
   }
   :global(.signal) .survival-action {
     border: 0;
-    background: color-mix(var(--identity) 16%, var(--background));
+    background: var(--identity-9);
   }
   .field-priority {
     display: flex;
