@@ -25,6 +25,29 @@ function fixturePath(root: string, path: string) {
   return join(/^(kdm-tags|imports\/|reports\/)/.test(path) ? catalogTemp(root) : root, path);
 }
 
+test("equivalent editions reject missing, self, chained, and incompatible references", async () => {
+  const catalog = empty();
+  catalog.content.aya = {
+    name: "Aya",
+    kind: "model",
+    tags: ["female"],
+    editions: [
+      { id: "sold", label: "Original", format: "physical" },
+      { id: "included", label: "Encore", format: "physical", equivalentTo: "missing" },
+    ],
+  };
+  const [sold, included] = catalog.content.aya.editions!;
+  await assert.rejects(validateCatalog(catalog), /Invalid equivalent edition/);
+  included!.equivalentTo = "included";
+  await assert.rejects(validateCatalog(catalog), /Invalid equivalent edition/);
+  included!.equivalentTo = "sold";
+  sold!.equivalentTo = "included";
+  await assert.rejects(validateCatalog(catalog), /Invalid equivalent edition/);
+  delete sold!.equivalentTo;
+  included!.format = "digital";
+  await assert.rejects(validateCatalog(catalog), /Incompatible equivalent edition/);
+});
+
 test("deleted local tag files fall back to saved catalog assignments", async (t) => {
   const workspace = await mkdtemp(join(tmpdir(), "kdm-catalog-tags-"));
   const root = join(workspace, "static/kdm/catalog");

@@ -76,6 +76,21 @@ export function reviewNumberedEditions(item: ReviewItem) {
   return reviewEditions(item).filter((edition) => edition.numbered === true);
 }
 
+export function reviewEquivalentEditions(item: ReviewItem, edition: ReviewEdition) {
+  const canonical = edition.equivalentTo ?? edition.id;
+  return reviewEditions(item).filter((release) => (release.equivalentTo ?? release.id) === canonical);
+}
+
+export function reviewEditionReleased(edition: ReviewEdition, today = new Date().toISOString().slice(0, 10)) {
+  if (edition.label === "Preorder") return false;
+  if (edition.releaseDate) return edition.releaseDate <= today;
+  const window = edition.releaseWindow?.match(/^(\d{4})(?:[ -]Q([1-4]))?$/);
+  if (!window) return false;
+  // An imprecise window confirms a past release only once the entire window has elapsed.
+  const year = today.slice(0, 4);
+  return window[1]! < year || (window[1] === year && !!window[2] && Number(window[2]) * 3 < Number(today.slice(5, 7)));
+}
+
 export function reviewGameplayFirst(items: readonly CatalogEntry[]) {
   const gameplay: CatalogEntry[] = [];
   const models: CatalogEntry[] = [];
@@ -214,20 +229,21 @@ function indexRelationships(entries: readonly CatalogEntry[], byId: ReadonlyMap<
 
   type Pricing = { total: number; missing: number; savings: number | undefined; percent: number | undefined };
   const pricingCache = new Map<string, Pricing>();
-  function bundlePricing(id: string, editionId: string) {
+  function bundlePricing(id: string, editionId: string, ownedItems?: ReadonlySet<string>) {
     const item = byId.get(id);
     if (item?.category !== "bundles" || !inclusions(id, editionId).length) return;
     const cacheKey = collectionKey(id, editionId);
-    const cached = pricingCache.get(cacheKey);
+    const cached = !ownedItems?.size && pricingCache.get(cacheKey);
     if (cached) return cached;
     const release = reviewEditions(item).find((release) => release.id === editionId);
     if (!release) return;
     const price = reviewPrice(item, release);
     let total = 0;
     let missing = 0;
-    const children = includedEditions(id, editionId, false);
+    const children = includedEditions(id, editionId, false).filter((child) => !ownedItems?.has(child.item.id));
     for (const reference of inclusions(id, editionId))
       if (
+        !ownedItems?.has(reference.item) &&
         !children.some(
           (child) =>
             child.item.id === reference.item &&
@@ -248,7 +264,7 @@ function indexRelationships(entries: readonly CatalogEntry[], byId: ReadonlyMap<
       savings,
       percent: savings !== undefined && total > 0 ? Math.round((savings / total) * 100) : undefined,
     };
-    pricingCache.set(cacheKey, pricing);
+    if (!ownedItems?.size) pricingCache.set(cacheKey, pricing);
     return pricing;
   }
 

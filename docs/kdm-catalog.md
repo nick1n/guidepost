@@ -157,6 +157,12 @@ Goblin Dragon is confirmed by the catalog owner as part of Abyssal Woods. Its in
 
 Core 1.3 and Resin boxes include the same 1.3 rulebook and share its `1-3-included` edition reference. The former `resin-included` rulebook ID is retired and must not be reused.
 
+The boxed 1.5 and 1.6 rulebooks declare `equivalentTo` references to the corresponding standalone rulebook IDs.
+Either copy satisfies that version's inclusion for completeness and missing-item filtering. Edition IDs, packaging,
+prices, and saved purchase records stay separate. Equivalence is explicit, never inferred from matching labels,
+and does not make 1.5, 1.6, or Sim interchangeable. The reference stays within one item and points directly to a
+canonical edition without its own `equivalentTo`.
+
 ## Shop handles
 
 Kingdom Death product listings use `handle`, matching the cached Shopify product handle. Build shop links as

@@ -928,7 +928,7 @@
   @media (width >= 46rem) {
     .landing {
       --position-glow-x: clamp(10rem, 20%, 20rem);
-      --position-glow-y: 18rem;
+      --position-glow-y: clamp(12rem, 36vh, 18rem);
     }
 
     header {

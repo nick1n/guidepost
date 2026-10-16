@@ -1,17 +1,78 @@
 import { describe, expect, it } from "vitest";
 import { collectionKey } from "#lib/types/collection.ts";
+import catalog from "#catalog/data.json";
 import { catalogTags, editionGameplay, editionLabel, editionMaterials } from "#lib/kdm-data.ts";
 import {
   reviewEditions,
+  reviewEquivalentEditions,
+  reviewEditionReleased,
   reviewEntries,
   reviewGameplayFirst,
   reviewIndex,
   reviewShopLink,
   reviewShopUrl,
   type ReviewCatalog,
+  type ReviewItem,
 } from "#lib/catalog-view.ts";
 
 describe("review catalog facts", () => {
+  it("completes Core 1.6 from Core 1.5 plus a standalone 1.6 rulebook without granting Sim or a second box", () => {
+    const index = reviewIndex(catalog as ReviewCatalog);
+    const core = index.byId.get("core")!;
+    const original = core.editions!.find((edition) => edition.id === "1-5")!;
+    const owned = new Set(index.ownershipKeys([{ item: core, edition: original }]));
+    const complete = (editionId: string) => {
+      const children = index.includedEditions(core.id, editionId, false);
+      return (
+        children.filter((child) =>
+          reviewEquivalentEditions(child.item, child.edition).some((edition) => owned.has(collectionKey(child.item.id, edition.id))),
+        ).length === children.length
+      );
+    };
+    expect(complete("1-5")).toBe(true);
+    expect(complete("1-6")).toBe(false);
+    owned.add(collectionKey("kingdom-death-monster-rulebook", "1-6"));
+    expect(complete("1-5")).toBe(true);
+    expect(complete("1-6")).toBe(true);
+    expect(owned.has(collectionKey("core", "1-6"))).toBe(false);
+    expect(owned.has(collectionKey("core", "sim"))).toBe(false);
+    expect(owned.has(collectionKey("kingdom-death-monster-rulebook", "1-3-included"))).toBe(false);
+  });
+  it("matches explicitly equivalent copies without merging versions or equal labels", () => {
+    const item: ReviewItem = {
+      name: "Rulebook",
+      tags: [],
+      editions: [
+        { id: "1-5", label: "1.5", format: "physical" },
+        { id: "1-6", label: "1.6", format: "physical", prices: [4000] },
+        { id: "1-6-included", label: "1.6", equivalentTo: "1-6", format: "physical", includedOnly: true, prices: [0] },
+        { id: "other", label: "1.6", format: "physical" },
+      ],
+    };
+    const editions = item.editions!;
+    expect(reviewEquivalentEditions(item, editions[2]!).map((edition) => edition.id)).toEqual(["1-6", "1-6-included"]);
+    expect(reviewEquivalentEditions(item, editions[1]!)).toEqual([editions[1], editions[2]]);
+    expect(reviewEquivalentEditions(item, editions[0]!)).toEqual([editions[0]]);
+    editions[2]!.label = "Box";
+    expect(reviewEquivalentEditions(item, editions[1]!)).toEqual([editions[1], editions[2]]);
+    expect(editions[1]!.prices).toEqual([4000]);
+    expect(editions[2]!.prices).toEqual([0]);
+  });
+  it("recognizes released editions without treating future, unknown, or open release windows as released", () => {
+    const edition = { id: "original", label: "Original", format: "physical" } as const;
+    const today = "2026-10-16";
+    expect(reviewEditionReleased({ ...edition, releaseDate: today }, today)).toBe(true);
+    expect(reviewEditionReleased({ ...edition, releaseDate: "2026-10-17" }, today)).toBe(false);
+    expect(reviewEditionReleased({ ...edition, releaseWindow: "2026 Q3" }, today)).toBe(true);
+    expect(reviewEditionReleased({ ...edition, releaseWindow: "2026-Q4" }, today)).toBe(false);
+    expect(reviewEditionReleased({ ...edition, releaseWindow: "2025" }, today)).toBe(true);
+    expect(reviewEditionReleased({ ...edition, releaseWindow: "2026" }, today)).toBe(false);
+    expect(reviewEditionReleased({ ...edition, releaseWindow: "Unknown" }, today)).toBe(false);
+    expect(reviewEditionReleased(edition, today)).toBe(false);
+    expect(reviewEditionReleased({ ...edition, label: "Preorder", releaseWindow: "2025" }, today)).toBe(false);
+    expect(reviewEditionReleased({ ...edition, releaseDate: today, releaseWindow: "2027" }, today)).toBe(true);
+  });
+
   it("groups gameplay first while preserving item order, references, and edition overrides", () => {
     const data: ReviewCatalog = {
       content: {
@@ -134,9 +195,14 @@ describe("review catalog facts", () => {
       accessories: {},
       homebrew: {},
     };
-    expect(reviewIndex(data).bundlePricing("set", "bundle")).toEqual({ total: 1000, missing: 0, savings: 200, percent: 20 });
+    const index = reviewIndex(data);
+    expect(index.bundlePricing("set", "bundle")).toEqual({ total: 1000, missing: 0, savings: 200, percent: 20 });
+    expect(index.bundlePricing("set", "bundle", new Set(["box"]))).toEqual({ total: 0, missing: 0, savings: -800, percent: undefined });
+    expect(index.bundlePricing("set", "bundle", new Set(["model"]))?.total).toBe(1000);
+    expect(index.bundlePricing("set", "bundle")?.total).toBe(1000);
     data.bundles.set.includes!.push({ item: "model", editionId: "missing-edition" });
     expect(reviewIndex(data).bundlePricing("set", "bundle")).toEqual({ total: 1000, missing: 1, savings: undefined, percent: undefined });
+    expect(reviewIndex(data).bundlePricing("set", "bundle", new Set(["model"]))?.missing).toBe(0);
     data.content.box.currency = "EUR";
     expect(reviewIndex(data).bundlePricing("set", "bundle")?.savings).toBeUndefined();
   });

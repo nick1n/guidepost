@@ -172,6 +172,10 @@ export interface Edition {
    */
   beta?: true;
   /**
+   * Permanent readable release ID, unique within its item. Assign once; retain it when labels, names, or other facts change. The item and bundle IDs are reserved for synthetic editions.
+   */
+  equivalentTo?: string;
+  /**
    * Workbook Expansion value.
    */
   expansion?: string;

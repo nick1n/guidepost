@@ -87,19 +87,19 @@
         { "item": "white-lion", "editionId": "plastic", "parentEditionIds": ["1-3", "1-5", "1-6"] },
         { "item": "screaming-antelope", "editionId": "resin", "parentEditionIds": ["resin"] },
         { "item": "armor-kit-lantern", "editionId": "plastic", "parentEditionIds": ["1-3", "1-5", "1-6"] },
-        { "item": "armor-kit-lantern", "materials": ["Resin"], "parentEditionIds": ["resin"] },
+        { "item": "armor-kit-lantern", "editionId": "resin-included", "parentEditionIds": ["resin"] },
         { "item": "armor-kit-leather", "editionId": "plastic", "parentEditionIds": ["1-3", "1-5", "1-6"] },
-        { "item": "armor-kit-leather", "materials": ["Resin"], "parentEditionIds": ["resin"] },
+        { "item": "armor-kit-leather", "editionId": "resin-included", "parentEditionIds": ["resin"] },
         { "item": "armor-kit-phoenix", "editionId": "plastic", "parentEditionIds": ["1-3", "1-5", "1-6"] },
-        { "item": "armor-kit-phoenix", "materials": ["Resin"], "parentEditionIds": ["resin"] },
+        { "item": "armor-kit-phoenix", "editionId": "resin-included", "parentEditionIds": ["resin"] },
         { "item": "armor-kit-rawhide", "editionId": "plastic", "parentEditionIds": ["1-3", "1-5", "1-6"] },
-        { "item": "armor-kit-rawhide", "materials": ["Resin"], "parentEditionIds": ["resin"] },
+        { "item": "armor-kit-rawhide", "editionId": "resin-included", "parentEditionIds": ["resin"] },
         { "item": "armor-kit-screaming", "editionId": "plastic", "parentEditionIds": ["1-3", "1-5", "1-6"] },
-        { "item": "armor-kit-screaming", "materials": ["Resin"], "parentEditionIds": ["resin"] },
+        { "item": "armor-kit-screaming", "editionId": "resin-included", "parentEditionIds": ["resin"] },
         { "item": "armor-kit-unarmored", "editionId": "plastic", "parentEditionIds": ["1-3", "1-5", "1-6"] },
-        { "item": "armor-kit-unarmored", "materials": ["Resin"], "parentEditionIds": ["resin"] },
+        { "item": "armor-kit-unarmored", "editionId": "resin-included", "parentEditionIds": ["resin"] },
         { "item": "armor-kit-white-lion", "editionId": "plastic", "parentEditionIds": ["1-3", "1-5", "1-6"] },
-        { "item": "armor-kit-white-lion", "materials": ["Resin"], "parentEditionIds": ["resin"] },
+        { "item": "armor-kit-white-lion", "editionId": "resin-included", "parentEditionIds": ["resin"] },
         { "item": "intimacy-couple", "editionId": "plastic", "parentEditionIds": ["1-5", "1-6"] },
         { "item": "old-survivor-joe", "editionId": "plastic", "parentEditionIds": ["1-5", "1-6"] },
         { "item": "young-survivor-rachel", "editionId": "plastic", "parentEditionIds": ["1-5", "1-6"] },
@@ -136,10 +136,10 @@
         "monster-hand",
         "weapon-proficiency",
         "monster-gold-smoke-knight",
+        "showdown",
         "monster-kings-man",
         "monster-watcher",
         "novel-proficiency",
-        "showdown",
         "pot-lantern"
       ]
     },
@@ -166,16 +166,16 @@
         "in-stock",
         "male",
         "gear",
+        "terrain",
         "2016",
         "resource",
         "2021",
         "sim",
         "settlement-location",
-        "hunt-event",
         "innovation",
+        "hunt-event",
         "expansion",
         "fighting-art",
-        "terrain",
         "secret-fighting-art",
         "ai",
         "hit-location",
@@ -212,17 +212,17 @@
         "male",
         "gear",
         "knight",
+        "terrain",
         "2026",
         "2016",
         "resource",
         "2021",
         "sim",
         "settlement-location",
-        "hunt-event",
         "innovation",
+        "hunt-event",
         "expansion",
         "fighting-art",
-        "terrain",
         "secret-fighting-art",
         "ai",
         "hit-location",
@@ -252,15 +252,15 @@
         "male",
         "gear",
         "knight",
+        "terrain",
         "2016",
         "resource",
         "2021",
         "sim",
-        "hunt-event",
         "innovation",
+        "hunt-event",
         "expansion",
         "fighting-art",
-        "terrain",
         "secret-fighting-art",
         "ai",
         "hit-location",
@@ -297,9 +297,9 @@
         "2021",
         "sim",
         "settlement-location",
+        "innovation",
         "armor",
         "hunt-event",
-        "innovation",
         "expansion",
         "fighting-art",
         "secret-fighting-art",
@@ -330,15 +330,15 @@
         "in-stock",
         "male",
         "gear",
+        "terrain",
         "2016",
         "resource",
         "2021",
         "sim",
-        "hunt-event",
         "innovation",
+        "hunt-event",
         "expansion",
         "fighting-art",
-        "terrain",
         "secret-fighting-art",
         "ai",
         "hit-location",
@@ -360,7 +360,7 @@
       "gameplay": true,
       "includes": [
         { "item": "lion-knight-2nd", "editionId": "plastic", "parentEditionIds": ["1-3", "1-6"] },
-        { "item": "role-survivors-set-of-4", "editionId": "plastic", "parentEditionIds": ["1-3", "1-6"] }
+        { "item": "role-survivors-set-of-4", "editionId": "plastic-included", "parentEditionIds": ["1-3", "1-6"] }
       ],
       "kind": "expansion",
       "name": "Lion Knight Expansion",
@@ -372,13 +372,13 @@
         "male",
         "gear",
         "knight",
+        "terrain",
         "2016",
         "2021",
         "sim",
         "innovation",
         "expansion",
         "fighting-art",
-        "terrain",
         "secret-fighting-art",
         "ai",
         "hit-location",
@@ -387,8 +387,8 @@
         "node-2-nemesis",
         "monster-lion-knight",
         "nemesis",
-        "tactics",
-        "showdown"
+        "showdown",
+        "tactics"
       ]
     },
     "expansion-lonely-tree": {
@@ -405,7 +405,7 @@
       ],
       "kind": "expansion",
       "name": "Lonely Tree Expansion",
-      "tags": ["female", "gameplay", "monster", "in-stock", "male", "2016", "resource", "2021", "sim", "hunt-event", "expansion", "terrain", "ai", "hit-location", "expansions-of-death-vol-1", "monster-lonely-tree", "special-showdown"]
+      "tags": ["female", "gameplay", "monster", "in-stock", "male", "terrain", "2016", "resource", "2021", "sim", "hunt-event", "expansion", "ai", "hit-location", "expansions-of-death-vol-1", "monster-lonely-tree", "special-showdown"]
     },
     "expansion-manhunter": {
       "announcements": ["2022-12-25", "2023-11-24"],
@@ -502,16 +502,16 @@
         "in-stock",
         "male",
         "gear",
+        "terrain",
         "2016",
         "resource",
         "2021",
         "sim",
         "settlement-location",
-        "hunt-event",
         "innovation",
+        "hunt-event",
         "expansion",
         "fighting-art",
-        "terrain",
         "secret-fighting-art",
         "ai",
         "hit-location",
@@ -534,7 +534,7 @@
       "includes": [
         { "item": "sunstalker-adult", "editionId": "plastic", "parentEditionIds": ["1-3", "1-6"] },
         { "item": "armor-kit-cycloid-scale", "editionId": "plastic", "parentEditionIds": ["1-3", "1-6"] },
-        { "item": "priests-of-the-sun", "editionId": "plastic", "parentEditionIds": ["1-3", "1-6"] }
+        { "item": "priests-of-the-sun", "editionId": "plastic-included", "parentEditionIds": ["1-3", "1-6"] }
       ],
       "kind": "expansion",
       "name": "Sunstalker Expansion",
@@ -545,16 +545,16 @@
         "in-stock",
         "male",
         "gear",
+        "terrain",
         "2016",
         "resource",
         "2021",
         "sim",
         "settlement-location",
-        "hunt-event",
         "innovation",
+        "hunt-event",
         "expansion",
         "fighting-art",
-        "terrain",
         "pot-sun",
         "secret-fighting-art",
         "ai",
@@ -629,7 +629,7 @@
         { "item": "magma-masochist", "editionId": "plastic", "parentEditionIds": ["box"] },
         { "item": "murder-victim", "editionId": "plastic", "parentEditionIds": ["box"] },
         { "item": "murderer", "editionId": "plastic", "parentEditionIds": ["box"] },
-        { "item": "neko-twilight-knight", "editionId": "plastic", "parentEditionIds": ["box"] },
+        { "item": "neko-twilight-knight", "editionId": "plastic-included", "parentEditionIds": ["box"] },
         { "item": "nightmare-adam", "editionId": "plastic", "parentEditionIds": ["box"] },
         { "item": "popular-guy", "editionId": "plastic", "parentEditionIds": ["box"] },
         { "item": "romantic-adventurer", "editionId": "plastic", "parentEditionIds": ["box"] },
@@ -677,8 +677,8 @@
         "finale-monster",
         "monster-smog-singers",
         "monster-atnas",
-        "monster-gambler",
         "encounter-monster",
+        "monster-gambler",
         "king",
         "monster-godhand",
         "pot-dream-keeper"
@@ -693,8 +693,8 @@
       "gameplay": true,
       "includes": [
         { "item": "black-knight", "editionId": "plastic", "parentEditionIds": ["box"] },
-        { "item": "black-knights-squire-female", "editionId": "plastic", "parentEditionIds": ["box"] },
-        { "item": "black-knights-squire-male", "editionId": "plastic", "parentEditionIds": ["box"] }
+        { "item": "black-knights-squire-female", "editionId": "plastic-included", "parentEditionIds": ["box"] },
+        { "item": "black-knights-squire-male", "editionId": "plastic-included", "parentEditionIds": ["box"] }
       ],
       "kind": "expansion",
       "name": "Black Knight Expansion",
@@ -707,20 +707,20 @@
         "gear",
         "knight",
         "2024",
+        "terrain",
         "pattern",
         "sim",
         "innovation",
         "expansion",
         "fighting-art",
-        "terrain",
         "secret-fighting-art",
         "ai",
         "hit-location",
         "disorder",
         "expansions-of-death-vol-2",
         "knowledge",
-        "settlement-event",
         "monster-black-knight",
+        "settlement-event",
         "campaign",
         "collective-cognition",
         "node-3-nemesis",
@@ -748,15 +748,15 @@
         "male",
         "gear",
         "2024",
+        "terrain",
         "pattern",
         "resource",
         "sim",
+        "innovation",
         "armor",
         "hunt-event",
-        "innovation",
         "expansion",
         "fighting-art",
-        "terrain",
         "secret-fighting-art",
         "ai",
         "hit-location",
@@ -789,12 +789,12 @@
         "male",
         "gear",
         "2025",
+        "terrain",
         "pattern",
         "sim",
         "innovation",
         "expansion",
         "fighting-art",
-        "terrain",
         "secret-fighting-art",
         "ai",
         "hit-location",
@@ -827,8 +827,8 @@
         "2025",
         "resource",
         "sim",
-        "hunt-event",
         "innovation",
+        "hunt-event",
         "expansion",
         "fighting-art",
         "secret-fighting-art",
@@ -853,7 +853,7 @@
       ],
       "gameplay": true,
       "includes": [
-        { "item": "illuminated-lady", "editionId": "plastic", "parentEditionIds": ["box"] },
+        { "item": "illuminated-lady", "editionId": "plastic-included", "parentEditionIds": ["box"] },
         { "item": "screaming-god", "editionId": "plastic", "parentEditionIds": ["box"] },
         { "item": "parasite-queen", "editionId": "plastic", "parentEditionIds": ["box"] }
       ],
@@ -865,17 +865,17 @@
         "in-stock",
         "male",
         "gear",
+        "terrain",
         "2026",
         "pattern",
         "resource",
         "sim",
         "settlement-location",
+        "innovation",
         "armor",
         "hunt-event",
-        "innovation",
         "expansion",
         "fighting-art",
-        "terrain",
         "secret-fighting-art",
         "ai",
         "hit-location",
@@ -903,11 +903,11 @@
         { "item": "dung-beetle-baron-and-baron-ball", "editionId": "plastic" },
         { "item": "people-of-the-stars-intimacy-couple", "editionId": "plastic" },
         { "item": "people-of-the-sun-intimacy-couple", "editionId": "plastic" },
-        { "item": "sunstalker-infant-and-caretakers", "editionId": "plastic" },
+        { "item": "sunstalker-infant-and-caretakers", "editionId": "plastic-included", "parentEditionIds": ["box"] },
         { "item": "verdant-lord", "editionId": "plastic" },
         { "item": "vocal-spidicules", "editionId": "plastic" },
-        { "item": "warrior-of-the-sun-female", "editionId": "plastic" },
-        { "item": "warrior-of-the-sun-male", "editionId": "plastic" }
+        { "item": "warrior-of-the-sun-female", "editionId": "plastic-included", "parentEditionIds": ["box"] },
+        { "item": "warrior-of-the-sun-male", "editionId": "plastic-included", "parentEditionIds": ["box"] }
       ],
       "kind": "expansion",
       "name": "Campaigns of Death",
@@ -975,10 +975,10 @@
       "editions": [{ "id": "box", "label": "Preorder", "format": "physical", "materials": ["Plastic"], "prices": [5000, 8000], "releaseWindow": "2029" }],
       "gameplay": true,
       "includes": [
-        { "item": "thrall", "editionId": "plastic" },
-        { "item": "mountain-man", "editionId": "plastic" },
-        { "item": "apotheosis-female", "editionId": "plastic" },
-        { "item": "apotheosis", "editionId": "plastic" }
+        { "item": "thrall", "editionId": "plastic-included", "parentEditionIds": ["box"] },
+        { "item": "mountain-man", "editionId": "plastic-included", "parentEditionIds": ["box"] },
+        { "item": "apotheosis-female", "editionId": "plastic-included", "parentEditionIds": ["box"] },
+        { "item": "apotheosis", "editionId": "plastic-included", "parentEditionIds": ["box"] }
       ],
       "kind": "expansion",
       "name": "Inverted Mountain Expansion",
@@ -988,13 +988,13 @@
       "editions": [{ "id": "box", "label": "Preorder", "format": "physical", "materials": ["Plastic"], "prices": [15000, 20000], "releaseWindow": "2030" }],
       "gameplay": true,
       "includes": [
-        { "item": "disciple-of-the-witch-1", "editionId": "plastic" },
-        { "item": "disciple-of-the-witch-2", "editionId": "plastic" },
-        { "item": "disciple-of-the-witch-3", "editionId": "plastic" },
-        { "item": "disciple-of-the-witch-4", "editionId": "plastic" },
-        { "item": "disciple-of-the-witch-5-6", "editionId": "plastic" },
-        { "item": "flower-witch", "editionId": "plastic" },
-        { "item": "goblin-guard", "editionId": "plastic" },
+        { "item": "disciple-of-the-witch-1", "editionId": "plastic-included", "parentEditionIds": ["box"] },
+        { "item": "disciple-of-the-witch-2", "editionId": "plastic-included", "parentEditionIds": ["box"] },
+        { "item": "disciple-of-the-witch-3", "editionId": "plastic-included", "parentEditionIds": ["box"] },
+        { "item": "disciple-of-the-witch-4", "editionId": "plastic-included", "parentEditionIds": ["box"] },
+        { "item": "disciple-of-the-witch-5-6", "editionId": "plastic-included", "parentEditionIds": ["box"] },
+        { "item": "flower-witch", "editionId": "plastic-included", "parentEditionIds": ["box"] },
+        { "item": "goblin-guard", "editionId": "plastic-included", "parentEditionIds": ["box"] },
         { "item": "goblin-dragon", "editionId": "plastic", "parentEditionIds": ["box"] }
       ],
       "kind": "expansion",
@@ -1030,7 +1030,10 @@
     "allison-the-twilight-knight": {
       "aliases": ["Allison The Twilight Knight, Pinup Reversal"],
       "announcements": ["2024-08-29"],
-      "editions": [{ "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseDate": "2015-11-27", "shop": "out-of-stock" }],
+      "editions": [
+        { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseDate": "2015-11-27", "shop": "out-of-stock" },
+        { "id": "plastic-included", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseWindow": "2027" }
+      ],
       "gameplay": true,
       "handle": "allison-the-twilight-knight",
       "kind": "box",
@@ -1076,7 +1079,8 @@
         { "id": "halloween", "label": "Halloween", "format": "physical", "handle": "halloween-apotheosis", "materials": ["Photoresin"], "prices": [4000], "releaseDate": "2024-10-31", "shop": "out-of-stock" },
         { "id": "deathmas-2024", "label": "Deathmas 2024", "format": "physical", "handle": "deathmas-apotheosis-2024", "materials": ["Photoresin"], "prices": [4000], "releaseDate": "2024-12-25", "shop": "missing" },
         { "id": "valentines", "label": "Valentines", "format": "physical", "handle": "valentines-apotheosis", "materials": ["Photoresin"], "prices": [4000], "releaseDate": "2025-03-03", "shop": "out-of-stock" },
-        { "id": "plastic", "label": "Plastic", "expansion": "Inverted Mountain", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseWindow": "2029" }
+        { "id": "plastic", "label": "Plastic", "expansion": "Inverted Mountain", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseWindow": "2029" },
+        { "id": "plastic-included", "label": "Plastic", "expansion": "Inverted Mountain", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseWindow": "2029" }
       ],
       "kind": "model",
       "name": "Apotheosis",
@@ -1088,7 +1092,8 @@
       "editions": [
         { "id": "first-run", "label": "First Run", "expansion": "Inverted Mountain", "format": "physical", "materials": ["Resin"], "numbered": true, "prices": [2500], "releaseDate": "2015-04-08", "runSize": 500 },
         { "id": "encore", "label": "Encore", "format": "physical", "materials": ["Resin"], "prices": [2500], "releaseDate": "2015-04-08" },
-        { "id": "plastic", "label": "Plastic", "expansion": "Inverted Mountain", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseWindow": "2029" }
+        { "id": "plastic", "label": "Plastic", "expansion": "Inverted Mountain", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseWindow": "2029" },
+        { "id": "plastic-included", "label": "Plastic", "expansion": "Inverted Mountain", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseWindow": "2029" }
       ],
       "kind": "model",
       "name": "Apotheosis (Female)",
@@ -1190,7 +1195,8 @@
       "aliases": ["Naked Lantern Armor Kit"],
       "editions": [
         { "id": "naked", "label": "Naked", "format": "physical", "handle": "lantern-armor-kit", "materials": ["Plastic"], "prices": [2500, 3000], "releaseDate": "2015-09-03", "shop": "out-of-stock" },
-        { "id": "plastic", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2015-09-15" }
+        { "id": "plastic", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2015-09-15" },
+        { "id": "resin-included", "label": "Resin", "format": "physical", "includedOnly": true, "materials": ["Resin"], "prices": [0], "releaseDate": "2015-10-31" }
       ],
       "kind": "armor-kit",
       "name": "Lantern Armor Kit",
@@ -1202,7 +1208,8 @@
       "aliases": ["Naked Leather Armor Kit"],
       "editions": [
         { "id": "naked", "label": "Naked", "format": "physical", "handle": "leather-armor-kit", "materials": ["Plastic"], "prices": [2500, 3000], "releaseDate": "2015-09-03", "shop": "out-of-stock" },
-        { "id": "plastic", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2015-09-15" }
+        { "id": "plastic", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2015-09-15" },
+        { "id": "resin-included", "label": "Resin", "format": "physical", "includedOnly": true, "materials": ["Resin"], "prices": [0], "releaseDate": "2015-10-31" }
       ],
       "kind": "armor-kit",
       "name": "Leather Armor Kit",
@@ -1213,7 +1220,8 @@
     "armor-kit-phoenix": {
       "editions": [
         { "id": "naked", "label": "Naked", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseDate": "2015-09-03" },
-        { "id": "plastic", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2015-09-15" }
+        { "id": "plastic", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2015-09-15" },
+        { "id": "resin-included", "label": "Resin", "format": "physical", "includedOnly": true, "materials": ["Resin"], "prices": [0], "releaseDate": "2015-10-31" }
       ],
       "kind": "armor-kit",
       "name": "Phoenix Armor Kit",
@@ -1223,7 +1231,8 @@
     "armor-kit-rawhide": {
       "editions": [
         { "id": "naked", "label": "Naked", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseDate": "2015-09-03" },
-        { "id": "plastic", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2015-09-15" }
+        { "id": "plastic", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2015-09-15" },
+        { "id": "resin-included", "label": "Resin", "format": "physical", "includedOnly": true, "materials": ["Resin"], "prices": [0], "releaseDate": "2015-10-31" }
       ],
       "kind": "armor-kit",
       "name": "Rawhide Armor Kit",
@@ -1234,7 +1243,8 @@
       "aliases": ["Naked Screaming Armor Kit"],
       "editions": [
         { "id": "naked", "label": "Naked", "format": "physical", "handle": "screaming-fur-armor-kit", "materials": ["Plastic"], "prices": [2500, 3000], "releaseDate": "2015-09-03", "shop": "out-of-stock" },
-        { "id": "plastic", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2015-09-15" }
+        { "id": "plastic", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2015-09-15" },
+        { "id": "resin-included", "label": "Resin", "format": "physical", "includedOnly": true, "materials": ["Resin"], "prices": [0], "releaseDate": "2015-10-31" }
       ],
       "kind": "armor-kit",
       "name": "Screaming Armor Kit",
@@ -1257,7 +1267,8 @@
     "armor-kit-unarmored": {
       "editions": [
         { "id": "naked", "label": "Naked", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseDate": "2015-09-03" },
-        { "id": "plastic", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2015-09-15" }
+        { "id": "plastic", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2015-09-15" },
+        { "id": "resin-included", "label": "Resin", "format": "physical", "includedOnly": true, "materials": ["Resin"], "prices": [0], "releaseDate": "2015-10-31" }
       ],
       "kind": "armor-kit",
       "name": "Unarmored Armor Kit",
@@ -1267,7 +1278,8 @@
     "armor-kit-white-lion": {
       "editions": [
         { "id": "naked", "label": "Naked", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseDate": "2015-09-03" },
-        { "id": "plastic", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2015-09-15" }
+        { "id": "plastic", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2015-09-15" },
+        { "id": "resin-included", "label": "Resin", "format": "physical", "includedOnly": true, "materials": ["Resin"], "prices": [0], "releaseDate": "2015-10-31" }
       ],
       "kind": "armor-kit",
       "name": "White Lion Armor Kit",
@@ -1394,7 +1406,8 @@
       "editions": [
         { "id": "first-run", "label": "First Run", "format": "physical", "gameplay": false, "materials": ["Resin"], "numbered": true, "prices": [2500], "releaseDate": "2012-06-01", "runSize": 250 },
         { "id": "encore", "label": "Encore", "format": "physical", "gameplay": false, "materials": ["Resin"], "prices": [2500], "releaseDate": "2012-06-01" },
-        { "id": "plastic", "label": "Plastic", "available": true, "format": "physical", "handle": "beyond-the-wall-1a", "materials": ["Plastic"], "prices": [2500], "releaseDate": "2024-08-29", "shop": "in-stock" }
+        { "id": "plastic", "label": "Plastic", "available": true, "format": "physical", "handle": "beyond-the-wall-1a", "materials": ["Plastic"], "prices": [2500], "releaseDate": "2024-08-29", "shop": "in-stock" },
+        { "id": "plastic-included", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseWindow": "2027" }
       ],
       "gameplay": true,
       "kind": "box",
@@ -1474,7 +1487,7 @@
       ],
       "kind": "model",
       "name": "Black Knight",
-      "tags": ["plastic", "knight", "2024", "2016", "node-3-nemesis", "black-knight"]
+      "tags": ["plastic", "monster", "knight", "2024", "2016", "monster-black-knight", "node-3-nemesis"]
     },
     "black-knight-elastomer-statues": {
       "aliases": ["Black Knight - Elastomer Statues (11 miniatures, 6 variants)", "Elastomer Statue Terrain Enhancements"],
@@ -1484,27 +1497,29 @@
       "kind": "terrain",
       "name": "Black Knight Elastomer Statues",
       "size": "30",
-      "tags": ["knight", "2024"]
+      "tags": ["knight", "2024", "monster-black-knight", "elastomer-statues"]
     },
     "black-knights-squire-female": {
       "editions": [
         { "id": "first-run", "label": "First Run", "expansion": "Black Knight", "format": "physical", "materials": ["Resin"], "numbered": true, "prices": [2500], "releaseDate": "2016-02-14", "runSize": 500 },
-        { "id": "plastic", "label": "Plastic", "expansion": "Black Knight", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseDate": "2024-04-02" }
+        { "id": "plastic", "label": "Plastic", "expansion": "Black Knight", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseDate": "2024-04-02" },
+        { "id": "plastic-included", "label": "Plastic", "expansion": "Black Knight", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2024-04-02" }
       ],
       "kind": "model",
       "name": "Black Knight's Squire - Female",
       "size": "30",
-      "tags": ["female", "plastic", "generic", "knight", "2024", "2016", "black-knight"]
+      "tags": ["female", "plastic", "generic", "knight", "2024", "2016", "monster-black-knight"]
     },
     "black-knights-squire-male": {
       "editions": [
         { "id": "first-run", "label": "First Run", "expansion": "Black Knight", "format": "physical", "materials": ["Resin"], "numbered": true, "prices": [2500], "releaseDate": "2016-02-14", "runSize": 500 },
-        { "id": "plastic", "label": "Plastic", "expansion": "Black Knight", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseDate": "2024-04-02" }
+        { "id": "plastic", "label": "Plastic", "expansion": "Black Knight", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseDate": "2024-04-02" },
+        { "id": "plastic-included", "label": "Plastic", "expansion": "Black Knight", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2024-04-02" }
       ],
       "kind": "model",
       "name": "Black Knight's Squire - Male",
       "size": "30",
-      "tags": ["plastic", "generic", "male", "knight", "2024", "2016", "black-knight"]
+      "tags": ["plastic", "generic", "male", "knight", "2024", "2016", "monster-black-knight"]
     },
     "blushing-owl": {
       "announcements": ["2021-07-19", "2024-02-29"],
@@ -2332,6 +2347,7 @@
       "editions": [
         { "id": "first-run", "label": "First Run", "expansion": "Abyssal Woods", "format": "physical", "handle": "disciple-of-the-witch-one", "materials": ["Resin"], "numbered": true, "prices": [3000], "releaseDate": "2015-10-31", "runSize": 500, "shop": "out-of-stock" },
         { "id": "encore", "label": "Encore", "format": "physical", "handle": "disciple-of-the-witch-one", "materials": ["Resin"], "prices": [3000], "releaseDate": "2015-10-31", "shop": "out-of-stock" },
+        { "id": "plastic-included", "label": "Plastic", "expansion": "Abyssal Woods", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2016-10-28" },
         { "id": "plastic", "label": "Plastic", "expansion": "Abyssal Woods", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseWindow": "2030" }
       ],
       "kind": "model",
@@ -2345,6 +2361,7 @@
       "editions": [
         { "id": "first-run", "label": "First Run", "expansion": "Abyssal Woods", "format": "physical", "handle": "disciple-of-the-witch-two", "materials": ["Resin"], "numbered": true, "prices": [3400], "releaseDate": "2015-10-31", "runSize": 500, "shop": "out-of-stock" },
         { "id": "encore", "label": "Encore", "format": "physical", "handle": "disciple-of-the-witch-two", "materials": ["Resin"], "prices": [3400], "releaseDate": "2015-10-31", "shop": "out-of-stock" },
+        { "id": "plastic-included", "label": "Plastic", "expansion": "Abyssal Woods", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2016-10-28" },
         { "id": "plastic", "label": "Plastic", "expansion": "Abyssal Woods", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseWindow": "2030" }
       ],
       "kind": "model",
@@ -2356,6 +2373,7 @@
       "editions": [
         { "id": "first-run", "label": "First Run", "expansion": "Abyssal Woods", "format": "physical", "materials": ["Resin"], "numbered": true, "prices": [2500], "releaseDate": "2015-10-31", "runSize": 500 },
         { "id": "encore", "label": "Encore", "format": "physical", "materials": ["Resin"], "prices": [2500], "releaseDate": "2015-10-31" },
+        { "id": "plastic-included", "label": "Plastic", "expansion": "Abyssal Woods", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2016-10-28" },
         { "id": "plastic", "label": "Plastic", "expansion": "Abyssal Woods", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseWindow": "2030" }
       ],
       "kind": "model",
@@ -2367,6 +2385,7 @@
       "editions": [
         { "id": "first-run", "label": "First Run", "expansion": "Abyssal Woods", "format": "physical", "materials": ["Resin"], "numbered": true, "prices": [2500], "releaseDate": "2015-10-31", "runSize": 500 },
         { "id": "encore", "label": "Encore", "format": "physical", "materials": ["Resin"], "prices": [2500], "releaseDate": "2015-10-31" },
+        { "id": "plastic-included", "label": "Plastic", "expansion": "Abyssal Woods", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2016-10-28" },
         { "id": "plastic", "label": "Plastic", "expansion": "Abyssal Woods", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseWindow": "2030" }
       ],
       "kind": "model",
@@ -2380,6 +2399,7 @@
       "editions": [
         { "id": "first-run", "label": "First Run", "expansion": "Abyssal Woods", "format": "physical", "handle": "disciple-of-the-witch-six", "materials": ["Resin"], "numbered": true, "prices": [3000], "releaseDate": "2015-10-31", "runSize": 500, "shop": "out-of-stock" },
         { "id": "encore", "label": "Encore", "format": "physical", "handle": "disciple-of-the-witch-six", "materials": ["Resin"], "prices": [3000], "releaseDate": "2015-10-31", "shop": "out-of-stock" },
+        { "id": "plastic-included", "label": "Plastic", "expansion": "Abyssal Woods", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2016-10-28" },
         { "id": "plastic", "label": "Plastic", "expansion": "Abyssal Woods", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseWindow": "2030" }
       ],
       "kind": "model",
@@ -2676,7 +2696,12 @@
       "announcements": ["2025-07-22", "2025-09-30"],
       "editions": [{ "id": "plastic", "label": "Plastic", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [8000], "releaseDate": "2025-07-22", "shop": "in-stock" }],
       "handle": "false-messengers",
-      "includes": ["messenger-of-courage", "messenger-of-humanity", "messenger-of-the-first-story", "messenger-of-the-spiral-path"],
+      "includes": [
+        { "item": "messenger-of-courage", "editionId": "plastic-included" },
+        { "item": "messenger-of-humanity", "editionId": "plastic-included" },
+        { "item": "messenger-of-the-first-story", "editionId": "plastic-included" },
+        { "item": "messenger-of-the-spiral-path", "editionId": "plastic-included" }
+      ],
       "kind": "model",
       "name": "False Messengers",
       "tags": ["female", "plastic", "generic", "gameplay", "in-stock", "gear", "2025", "pattern", "disorder", "settlement-event", "pillar"]
@@ -2737,6 +2762,7 @@
       "editions": [
         { "id": "first-run", "label": "First Run", "expansion": "Abyssal Woods", "format": "physical", "handle": "flower-witch", "materials": ["Resin"], "numbered": true, "prices": [3200], "releaseDate": "2014-12-23", "runSize": 500, "shop": "missing" },
         { "id": "encore", "label": "Encore", "format": "physical", "handle": "flower-witch", "materials": ["Resin"], "prices": [3200], "releaseDate": "2014-12-23", "shop": "missing" },
+        { "id": "plastic-included", "label": "Plastic", "expansion": "Abyssal Woods", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2016-10-28" },
         { "id": "plastic", "label": "Plastic", "expansion": "Abyssal Woods", "format": "physical", "materials": ["Plastic"], "prices": [3200], "releaseWindow": "2030" }
       ],
       "kind": "model",
@@ -2844,7 +2870,13 @@
     },
     "gift-of-death": {
       "editions": [{ "id": "resin-metal", "label": "Resin & Metal", "format": "physical", "materials": ["Resin", "Metal"], "prices": [9000], "releaseDate": "2009-12-10" }],
-      "includes": ["savior-snow", "the-preacher", "twilight-knight-alternate", "white-speaker-koshka"],
+      "includes": [
+        { "item": "savior-snow", "editionId": "resin-included" },
+        { "item": "manhunter", "editionId": "resin-included" },
+        { "item": "the-preacher", "editionId": "resin-included" },
+        { "item": "twilight-knight-alternate" },
+        { "item": "white-speaker-koshka", "editionId": "resin-included" }
+      ],
       "kind": "model",
       "name": "Gift of Death",
       "notes": "A boxed release of about 100 copies, containing White Speaker, Manhunter, Preacher, Savior, an alternate Twilight Knight, and an art print.",
@@ -2884,7 +2916,8 @@
       "editions": [
         { "id": "first-run", "label": "First Run", "format": "physical", "handle": "dragon-goblin-guard", "materials": ["Resin"], "numbered": true, "prices": [4000], "releaseDate": "2016-09-17", "runSize": 325, "shop": "missing" },
         { "id": "encore", "label": "Encore", "format": "physical", "handle": "dragon-goblin-guard", "materials": ["Resin"], "prices": [4000], "releaseDate": "2016-09-17", "shop": "missing" },
-        { "id": "plastic", "label": "Plastic", "expansion": "Abyssal Woods", "format": "physical", "materials": ["Plastic"], "prices": [4000], "releaseWindow": "2030" }
+        { "id": "plastic", "label": "Plastic", "expansion": "Abyssal Woods", "format": "physical", "materials": ["Plastic"], "prices": [4000], "releaseWindow": "2030" },
+        { "id": "plastic-included", "label": "Plastic", "expansion": "Abyssal Woods", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseWindow": "2030" }
       ],
       "kind": "model",
       "name": "Goblin Guard",
@@ -3152,7 +3185,8 @@
       "announcements": ["2018-12-25", "2019-12-27", "2020-12-22", "2021-12-24", "2024-12-25"],
       "editions": [
         { "id": "plastic", "label": "Plastic", "format": "physical", "handle": "holiday-white-speaker-nico", "materials": ["Plastic"], "prices": [3500], "releaseDate": "2015-09-03", "shop": "missing" },
-        { "id": "painters", "label": "Painters", "format": "physical", "gameplay": false, "handle": "holiday-white-speaker-nico-painters-scale", "materials": ["Photoresin"], "prices": [7500], "releaseDate": "2024-12-25", "shop": "out-of-stock", "size": "50" }
+        { "id": "painters", "label": "Painters", "format": "physical", "gameplay": false, "handle": "holiday-white-speaker-nico-painters-scale", "materials": ["Photoresin"], "prices": [7500], "releaseDate": "2024-12-25", "shop": "out-of-stock", "size": "50" },
+        { "id": "plastic-included", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseWindow": "2027" }
       ],
       "gameplay": true,
       "kind": "box",
@@ -3197,7 +3231,8 @@
       "editions": [
         { "id": "first-run", "label": "First Run", "expansion": "Screaming God", "format": "physical", "materials": ["Resin"], "numbered": true, "prices": [2500], "releaseDate": "2012-08-18", "runSize": 450 },
         { "id": "encore", "label": "Encore", "format": "physical", "materials": ["Resin"], "prices": [2500], "releaseDate": "2012-08-18" },
-        { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseDate": "2026-07-31" }
+        { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseDate": "2026-07-31" },
+        { "id": "plastic-included", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2026-07-31" }
       ],
       "kind": "model",
       "name": "Illuminated Lady",
@@ -3655,7 +3690,7 @@
       "gameplay": true,
       "kind": "promo",
       "name": "Legendary Card Pack",
-      "tags": ["gameplay", "in-stock", "gear", "2026", "2020", "upcoming", "terrain", "settlement-event", "legendary", "cards"]
+      "tags": ["gameplay", "in-stock", "gear", "terrain", "2026", "2020", "upcoming", "settlement-event", "legendary", "cards"]
     },
     "legendary-character-glow": {
       "aliases": ["Survivor Character - Glow"],
@@ -3721,7 +3756,7 @@
         { "item": "savior-20-years", "editionId": "plastic" },
         { "item": "savior-40-years", "editionId": "plastic" },
         { "item": "savior-80-years", "editionId": "plastic" },
-        { "item": "savior-snow", "editionId": "plastic" }
+        { "item": "savior-snow", "editionId": "plastic-included" }
       ],
       "kind": "box",
       "name": "Legendary Character - Snow the Savior",
@@ -3932,6 +3967,7 @@
       "editions": [
         { "id": "first-run", "label": "First Run", "expansion": "Manhunter", "format": "physical", "materials": ["Resin"], "numbered": true, "prices": [2500], "releaseDate": "2009-10-27", "runSize": 100, "size": "30" },
         { "id": "encore", "label": "Encore", "expansion": "Manhunter", "format": "physical", "materials": ["Resin"], "prices": [2500], "releaseDate": "2009-10-27", "size": "30" },
+        { "id": "resin-included", "label": "Resin", "format": "physical", "includedOnly": true, "materials": ["Resin"], "prices": [0], "releaseDate": "2009-12-10", "size": "30" },
         { "id": "plastic", "label": "Plastic", "expansion": "Manhunter", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2016-02-16" }
       ],
       "kind": "model",
@@ -3949,7 +3985,10 @@
       "tags": ["generic", "male", "photoresin", "2026", "apotheosis"]
     },
     "messenger-of-courage": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseDate": "2015-09-03" }],
+      "editions": [
+        { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseDate": "2015-09-03" },
+        { "id": "plastic-included", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2025-07-22" }
+      ],
       "kind": "model",
       "name": "Messenger of Courage",
       "notes": "The Plastic version was offered in the Naked Promo Collection on Black Friday 2015.",
@@ -3957,7 +3996,10 @@
       "tags": ["female", "plastic", "generic", "2015", "messenger"]
     },
     "messenger-of-humanity": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseDate": "2015-09-03" }],
+      "editions": [
+        { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseDate": "2015-09-03" },
+        { "id": "plastic-included", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2025-07-22" }
+      ],
       "kind": "model",
       "name": "Messenger of Humanity",
       "notes": "The Plastic version was offered in the Naked Promo Collection on Black Friday 2015.",
@@ -3965,7 +4007,10 @@
       "tags": ["female", "plastic", "generic", "2015", "messenger"]
     },
     "messenger-of-the-first-story": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseDate": "2015-09-03" }],
+      "editions": [
+        { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseDate": "2015-09-03" },
+        { "id": "plastic-included", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2025-07-22" }
+      ],
       "kind": "model",
       "name": "Messenger of the First Story",
       "notes": "The Plastic version was offered in the Naked Promo Collection on Black Friday 2015.",
@@ -3973,7 +4018,10 @@
       "tags": ["female", "plastic", "generic", "2015", "messenger"]
     },
     "messenger-of-the-spiral-path": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseDate": "2015-09-03" }],
+      "editions": [
+        { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseDate": "2015-09-03" },
+        { "id": "plastic-included", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2025-07-22" }
+      ],
       "kind": "model",
       "name": "Messenger of the Spiral Path",
       "notes": "The Plastic version was offered in the Naked Promo Collection on Black Friday 2015.",
@@ -4076,7 +4124,8 @@
       "editions": [
         { "id": "first-run", "label": "First Run", "expansion": "Inverted Mountain", "format": "physical", "materials": ["Resin"], "numbered": true, "prices": [4000], "releaseDate": "2016-09-17", "runSize": 500, "size": "50" },
         { "id": "encore", "label": "Encore", "expansion": "Inverted Mountain", "format": "physical", "materials": ["Resin"], "prices": [4000], "releaseDate": "2016-09-17", "size": "50" },
-        { "id": "plastic", "label": "Plastic", "expansion": "Inverted Mountain", "format": "physical", "materials": ["Plastic"], "prices": [4000], "releaseWindow": "2029" }
+        { "id": "plastic", "label": "Plastic", "expansion": "Inverted Mountain", "format": "physical", "materials": ["Plastic"], "prices": [4000], "releaseWindow": "2029" },
+        { "id": "plastic-included", "label": "Plastic", "expansion": "Inverted Mountain", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseWindow": "2029" }
       ],
       "kind": "model",
       "name": "Mountain Man",
@@ -4125,7 +4174,7 @@
     },
     "naked-experiment-of-death": {
       "editions": [{ "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["PVC"], "prices": [2500], "releaseDate": "2012-06-01" }],
-      "includes": [{ "item": "wet-nurse", "editionId": "plastic" }],
+      "includes": [{ "item": "wet-nurse", "editionId": "pvc-included" }],
       "kind": "model",
       "name": "Experiment of Death",
       "notes": "The original release contained PVC Wet Nurse and Pinup Twilight Knight miniatures, with 180 units produced. Stock was replenished three times in 2013, followed by a final Naked release in 2014.",
@@ -4223,7 +4272,8 @@
       "editions": [
         { "id": "first-run", "label": "First Run", "expansion": "Gambler's Chest", "format": "physical", "handle": "neko-twilight-knight", "materials": ["Resin"], "numbered": true, "prices": [2700], "releaseDate": "2021-11-26", "runSize": 500, "shop": "missing" },
         { "id": "encore", "label": "Encore", "format": "physical", "handle": "neko-twilight-knight", "materials": ["Resin"], "prices": [2700], "releaseDate": "2021-11-26", "shop": "missing" },
-        { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [2700], "releaseDate": "2023-11-24" }
+        { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [2700], "releaseDate": "2023-11-24" },
+        { "id": "plastic-included", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2023-11-24" }
       ],
       "kind": "model",
       "name": "Neko Twilight Knight",
@@ -4564,7 +4614,8 @@
       "editions": [
         { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Resin"], "numbered": true, "prices": [2500], "releaseDate": "2011-12-10", "runSize": 150 },
         { "id": "encore", "label": "Encore", "format": "physical", "materials": ["Resin"], "prices": [2500], "releaseDate": "2011-12-10" },
-        { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseWindow": "2027" }
+        { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseWindow": "2027" },
+        { "id": "plastic-included", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseWindow": "2027" }
       ],
       "kind": "model",
       "name": "Paul The Survivor",
@@ -4620,7 +4671,7 @@
       "gameplay": true,
       "kind": "box",
       "name": "Philosophies of Death: Gatherism",
-      "tags": ["plastic", "gameplay", "in-stock", "gear", "2025", "pattern", "resource", "sim", "hunt-event", "terrain", "knowledge", "gatherism", "philosophy", "philosophies-of-death"]
+      "tags": ["plastic", "gameplay", "in-stock", "gear", "2025", "terrain", "pattern", "resource", "sim", "hunt-event", "knowledge", "gatherism", "philosophy", "philosophies-of-death"]
     },
     "philosophies-of-death-heliocenterism": {
       "editions": [{ "id": "box", "label": "Preorder", "format": "physical", "materials": ["Plastic"], "prices": [6500], "releaseWindow": "2027" }],
@@ -4687,7 +4738,7 @@
       "kind": "box",
       "name": "Pillar - Forge Priest",
       "size": "30",
-      "tags": ["female", "plastic", "generic", "gameplay", "in-stock", "gear", "2026", "2017", "naked", "terrain", "2011", "pillar", "minion"]
+      "tags": ["female", "plastic", "generic", "gameplay", "in-stock", "gear", "terrain", "2026", "2017", "naked", "2011", "pillar", "minion"]
     },
     "pillar-percival": {
       "announcements": ["2025-07-22", "2025-09-30"],
@@ -4718,7 +4769,8 @@
       "aliases": ["Pinup Apotheosis (Remastered)"],
       "editions": [
         { "id": "resin", "label": "Resin", "format": "physical", "materials": ["Resin"], "prices": [2600], "releaseDate": "2016-02-14" },
-        { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "name": "remaster", "prices": [3000], "releaseDate": "2020-12-12" }
+        { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "name": "remaster", "prices": [3000], "releaseDate": "2020-12-12" },
+        { "id": "plastic-included", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2020-12-12" }
       ],
       "kind": "model",
       "name": "Pinup Apotheosis",
@@ -4729,7 +4781,8 @@
     "pinup-architect": {
       "editions": [
         { "id": "resin", "label": "Resin", "format": "physical", "materials": ["Resin"], "prices": [2500], "releaseDate": "2012-08-18" },
-        { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseDate": "2014-03-11" }
+        { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseDate": "2014-03-11" },
+        { "id": "plastic-included", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2014-03-11" }
       ],
       "kind": "model",
       "name": "Pinup Architect",
@@ -4738,7 +4791,10 @@
       "tags": ["female", "plastic", "generic", "resin", "pinup", "promo", "2014", "2012", "architect"]
     },
     "pinup-black-knight-armor": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [3000], "releaseDate": "2020-12-12", "shop": "in-stock" }],
+      "editions": [
+        { "id": "plastic", "label": "Plastic", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [3000], "releaseDate": "2020-12-12", "shop": "in-stock" },
+        { "id": "plastic-included", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2020-12-12" }
+      ],
       "handle": "pinup-black-knight",
       "kind": "model",
       "name": "Pinup Black Knight Armor",
@@ -4750,6 +4806,7 @@
       "announcements": ["2023-06-12"],
       "editions": [
         { "id": "plastic", "label": "Plastic", "available": true, "format": "physical", "handle": "pinup-butcher", "materials": ["Plastic"], "prices": [3000], "releaseDate": "2020-12-12", "shop": "in-stock", "size": "30" },
+        { "id": "plastic-included", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2020-12-12", "size": "30" },
         { "id": "painters", "label": "Painters", "format": "physical", "handle": "pinup-butcher-painters-scale", "materials": ["Photoresin"], "prices": [5000], "releaseDate": "2023-06-12", "shop": "missing", "size": "50" }
       ],
       "kind": "model",
@@ -4758,7 +4815,10 @@
       "tags": ["female", "plastic", "generic", "monster", "in-stock", "pinup", "2020", "painters-scale", "monster-butcher", "node-1-nemesis"]
     },
     "pinup-death-armor": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [3000], "releaseDate": "2020-12-12", "shop": "in-stock" }],
+      "editions": [
+        { "id": "plastic", "label": "Plastic", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [3000], "releaseDate": "2020-12-12", "shop": "in-stock" },
+        { "id": "plastic-included", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2020-12-12" }
+      ],
       "handle": "pinup-death-armor",
       "kind": "model",
       "name": "Pinup Death Armor",
@@ -4766,7 +4826,10 @@
       "tags": ["female", "plastic", "generic", "in-stock", "pinup", "2020", "armor"]
     },
     "pinup-disciple-of-the-witch": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [3000], "releaseDate": "2020-12-12", "shop": "in-stock" }],
+      "editions": [
+        { "id": "plastic", "label": "Plastic", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [3000], "releaseDate": "2020-12-12", "shop": "in-stock" },
+        { "id": "plastic-included", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2020-12-12" }
+      ],
       "handle": "pinup-disciple-of-the-witch",
       "kind": "model",
       "name": "Pinup Disciple of the Witch",
@@ -4774,7 +4837,10 @@
       "tags": ["female", "plastic", "generic", "in-stock", "pinup", "2020", "disciple-of-the-witch"]
     },
     "pinup-dragon-goblin": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [3000], "releaseDate": "2020-12-12", "shop": "in-stock" }],
+      "editions": [
+        { "id": "plastic", "label": "Plastic", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [3000], "releaseDate": "2020-12-12", "shop": "in-stock" },
+        { "id": "plastic-included", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2020-12-12" }
+      ],
       "handle": "pinup-dragon-goblin",
       "kind": "model",
       "name": "Pinup Dragon Goblin",
@@ -4782,7 +4848,10 @@
       "tags": ["female", "plastic", "monster", "in-stock", "pinup", "2020", "monster-dragon-king", "node-3-quarry"]
     },
     "pinup-dragon-goblin-male": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [3000], "releaseDate": "2020-12-12", "shop": "in-stock" }],
+      "editions": [
+        { "id": "plastic", "label": "Plastic", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [3000], "releaseDate": "2020-12-12", "shop": "in-stock" },
+        { "id": "plastic-included", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2020-12-12" }
+      ],
       "handle": "pinup-male-dragon-goblin",
       "kind": "model",
       "name": "Pinup Dragon Goblin Male",
@@ -4794,14 +4863,18 @@
       "editions": [
         { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseDate": "2015-09-03", "size": "30" },
         { "id": "resin", "label": "Resin", "format": "physical", "materials": ["Resin"], "prices": [2500], "releaseDate": "2015-09-03", "size": "30" },
-        { "id": "painters", "label": "Painters", "format": "physical", "materials": ["Resin"], "prices": [4000], "releaseDate": "2016-06-17", "size": "54" }
+        { "id": "painters", "label": "Painters", "format": "physical", "materials": ["Resin"], "prices": [4000], "releaseDate": "2016-06-17", "size": "54" },
+        { "id": "plastic-included", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2019-11-29", "size": "30" }
       ],
       "kind": "model",
       "name": "Pinup Dragon Sacrifice",
       "tags": ["female", "plastic", "generic", "monster", "resin", "pinup", "2015", "painters-scale", "promo", "monster-dragon-king", "node-3-quarry"]
     },
     "pinup-dung-ball": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [3000], "releaseDate": "2020-12-12", "shop": "in-stock" }],
+      "editions": [
+        { "id": "plastic", "label": "Plastic", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [3000], "releaseDate": "2020-12-12", "shop": "in-stock" },
+        { "id": "plastic-included", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2020-12-12" }
+      ],
       "handle": "pinup-dung-ball",
       "kind": "model",
       "name": "Pinup Dung Ball",
@@ -4809,7 +4882,10 @@
       "tags": ["female", "plastic", "monster", "in-stock", "pinup", "2020", "node-4-quarry", "monster-dung-beetle-knight"]
     },
     "pinup-dung-beetle-dancer": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [3000], "releaseDate": "2020-12-12", "shop": "in-stock" }],
+      "editions": [
+        { "id": "plastic", "label": "Plastic", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [3000], "releaseDate": "2020-12-12", "shop": "in-stock" },
+        { "id": "plastic-included", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2020-12-12" }
+      ],
       "handle": "pinup-dung-beetle-dancer",
       "kind": "model",
       "name": "Pinup Dung Beetle Dancer",
@@ -4817,7 +4893,10 @@
       "tags": ["female", "plastic", "monster", "in-stock", "pinup", "2020", "node-4-quarry", "monster-dung-beetle-knight", "dancer"]
     },
     "pinup-dung-beetle-dancer-male": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [3000], "releaseDate": "2020-12-12", "shop": "in-stock" }],
+      "editions": [
+        { "id": "plastic", "label": "Plastic", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [3000], "releaseDate": "2020-12-12", "shop": "in-stock" },
+        { "id": "plastic-included", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2020-12-12" }
+      ],
       "handle": "pinup-male-dung-beetle-dancer",
       "kind": "model",
       "name": "Pinup Dung Beetle Dancer Male",
@@ -4825,7 +4904,10 @@
       "tags": ["plastic", "monster", "in-stock", "male", "pinup", "2020", "node-4-quarry", "monster-dung-beetle-knight", "dancer"]
     },
     "pinup-dung-beetle-knight": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [3000], "releaseDate": "2020-12-12", "shop": "in-stock" }],
+      "editions": [
+        { "id": "plastic", "label": "Plastic", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [3000], "releaseDate": "2020-12-12", "shop": "in-stock" },
+        { "id": "plastic-included", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2020-12-12" }
+      ],
       "handle": "pinup-dung-beetle",
       "kind": "model",
       "name": "Pinup Dung Beetle Knight",
@@ -4847,7 +4929,10 @@
       "tags": ["female", "plastic", "generic", "gameplay", "resin", "knight", "pinup", "seasonal", "resource", "2017", "promo", "twilight-knight", "vermin", "easter"]
     },
     "pinup-faceless-survivor": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [3000], "releaseDate": "2020-12-12", "shop": "in-stock" }],
+      "editions": [
+        { "id": "plastic", "label": "Plastic", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [3000], "releaseDate": "2020-12-12", "shop": "in-stock" },
+        { "id": "plastic-included", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2020-12-12" }
+      ],
       "handle": "pinup-faceless-survivor",
       "kind": "model",
       "name": "Pinup Faceless Survivor",
@@ -4857,7 +4942,8 @@
     "pinup-forsaker-helen": {
       "editions": [
         { "id": "resin", "label": "Resin", "format": "physical", "materials": ["Resin"], "prices": [2500], "releaseDate": "2010-08-08" },
-        { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseDate": "2014-03-11" }
+        { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseDate": "2014-03-11" },
+        { "id": "plastic-included", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2014-03-11" }
       ],
       "kind": "model",
       "name": "Pinup Forsaker Helen",
@@ -4865,7 +4951,10 @@
       "tags": ["female", "plastic", "monster", "resin", "pinup", "2014", "2010", "monster-forsaker", "helen"]
     },
     "pinup-frogdog-armor": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [3000], "releaseDate": "2020-12-12", "shop": "in-stock" }],
+      "editions": [
+        { "id": "plastic", "label": "Plastic", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [3000], "releaseDate": "2020-12-12", "shop": "in-stock" },
+        { "id": "plastic-included", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2020-12-12" }
+      ],
       "handle": "pinup-frogdog-armor",
       "kind": "model",
       "name": "Pinup Frogdog Armor",
@@ -4873,7 +4962,10 @@
       "tags": ["female", "plastic", "generic", "monster", "in-stock", "pinup", "2020", "armor", "node-1-quarry", "monster-frogdog"]
     },
     "pinup-gold-smoke-knight-armor": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [3000], "releaseDate": "2020-12-12", "shop": "in-stock" }],
+      "editions": [
+        { "id": "plastic", "label": "Plastic", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [3000], "releaseDate": "2020-12-12", "shop": "in-stock" },
+        { "id": "plastic-included", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2020-12-12" }
+      ],
       "handle": "pinup-gold-smoke-knight",
       "kind": "model",
       "name": "Pinup Gold Smoke Knight Armor",
@@ -4883,7 +4975,8 @@
     "pinup-great-game-hunter-julia": {
       "editions": [
         { "id": "resin", "label": "Resin", "format": "physical", "materials": ["Resin"], "prices": [2500], "releaseDate": "2011-08-11" },
-        { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseDate": "2014-03-11" }
+        { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseDate": "2014-03-11" },
+        { "id": "plastic-included", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2014-03-11" }
       ],
       "kind": "model",
       "name": "Pinup Great Game Hunter Julia",
@@ -4909,6 +5002,7 @@
       "announcements": ["2023-10-02"],
       "editions": [
         { "id": "plastic", "label": "Plastic", "available": true, "format": "physical", "handle": "pinup-honeycomb-weaver", "materials": ["Plastic"], "prices": [3000], "releaseDate": "2020-12-12", "shop": "in-stock", "size": "54" },
+        { "id": "plastic-included", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2020-12-12", "size": "54" },
         { "id": "painters", "label": "Painters", "format": "physical", "handle": "pinup-honey-comb-weaver-painters-scale", "materials": ["Photoresin"], "prices": [3000, 6000], "releaseDate": "2023-10-02", "shop": "out-of-stock", "size": "50" }
       ],
       "kind": "model",
@@ -4917,7 +5011,10 @@
       "tags": ["female", "plastic", "generic", "monster", "in-stock", "photoresin", "pinup", "2020", "painters-scale", "node-3-nemesis", "monster-honeycomb-weaver"]
     },
     "pinup-kings-man": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [3000], "releaseDate": "2020-12-12", "shop": "in-stock" }],
+      "editions": [
+        { "id": "plastic", "label": "Plastic", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [3000], "releaseDate": "2020-12-12", "shop": "in-stock" },
+        { "id": "plastic-included", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2020-12-12" }
+      ],
       "handle": "pinup-kingsman",
       "kind": "model",
       "name": "Pinup King's Man",
@@ -4927,7 +5024,8 @@
     "pinup-lantern-festival": {
       "editions": [
         { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseDate": "2015-09-03" },
-        { "id": "resin", "label": "Resin", "format": "physical", "materials": ["Resin"], "prices": [2500], "releaseDate": "2015-09-03" }
+        { "id": "resin", "label": "Resin", "format": "physical", "materials": ["Resin"], "prices": [2500], "releaseDate": "2015-09-03" },
+        { "id": "plastic-included", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2019-11-29" }
       ],
       "kind": "model",
       "name": "Pinup Lantern Festival",
@@ -4940,6 +5038,7 @@
       "editions": [
         { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseDate": "2015-09-03", "size": "30" },
         { "id": "resin", "label": "Resin", "format": "physical", "materials": ["Resin"], "prices": [2500], "releaseDate": "2015-09-03", "size": "30" },
+        { "id": "plastic-included", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2019-11-29", "size": "30" },
         { "id": "bust", "label": "Bust", "format": "physical", "handle": "leather-queen-bust", "materials": ["Photoresin"], "numbered": true, "prices": [7500], "releaseDate": "2023-12-25", "runSize": 200, "shop": "out-of-stock", "size": "120" }
       ],
       "kind": "model",
@@ -4953,6 +5052,7 @@
       "editions": [
         { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseDate": "2015-09-03", "size": "30" },
         { "id": "resin", "label": "Resin", "format": "physical", "materials": ["Resin"], "prices": [2500], "releaseDate": "2015-09-03", "size": "30" },
+        { "id": "plastic-included", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2019-11-29", "size": "30" },
         { "id": "bust-first-run", "label": "Bust: First Run", "format": "physical", "handle": "pinup-lioness-bust", "materials": ["Resin"], "numbered": true, "prices": [7500], "releaseDate": "2021-11-26", "runSize": 500, "shop": "missing", "size": "120" },
         { "id": "bust-encore", "label": "Bust: Encore", "format": "physical", "handle": "pinup-lioness-bust", "materials": ["Resin"], "prices": [7500], "releaseDate": "2021-11-26", "shop": "missing", "size": "120" }
       ],
@@ -4962,7 +5062,10 @@
       "tags": ["female", "plastic", "generic", "resin", "pinup", "2015", "bust", "lioness"]
     },
     "pinup-manhunter": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [3000], "releaseDate": "2020-12-12", "shop": "in-stock" }],
+      "editions": [
+        { "id": "plastic", "label": "Plastic", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [3000], "releaseDate": "2020-12-12", "shop": "in-stock" },
+        { "id": "plastic-included", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2020-12-12" }
+      ],
       "handle": "pinup-manhunter",
       "kind": "model",
       "name": "Pinup Manhunter",
@@ -4970,7 +5073,10 @@
       "tags": ["female", "plastic", "monster", "in-stock", "pinup", "2020", "node-1-nemesis", "monster-manhunter"]
     },
     "pinup-manhunter-male": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [3000], "releaseDate": "2020-12-12", "shop": "in-stock" }],
+      "editions": [
+        { "id": "plastic", "label": "Plastic", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [3000], "releaseDate": "2020-12-12", "shop": "in-stock" },
+        { "id": "plastic-included", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2020-12-12" }
+      ],
       "handle": "pinup-male-manhunter",
       "kind": "model",
       "name": "Pinup Manhunter Male",
@@ -4978,7 +5084,10 @@
       "tags": ["plastic", "monster", "in-stock", "male", "pinup", "2020", "node-1-nemesis", "monster-manhunter"]
     },
     "pinup-mountain-dungeon-armor": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [3000], "releaseDate": "2020-12-12", "shop": "in-stock" }],
+      "editions": [
+        { "id": "plastic", "label": "Plastic", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [3000], "releaseDate": "2020-12-12", "shop": "in-stock" },
+        { "id": "plastic-included", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2020-12-12" }
+      ],
       "handle": "pinup-mountain-dungeon-armor",
       "kind": "model",
       "name": "Pinup Mountain Dungeon Armor",
@@ -4991,6 +5100,7 @@
       "editions": [
         { "id": "resin", "label": "Resin", "format": "physical", "materials": ["Resin"], "prices": [1500], "releaseDate": "2016-06-17", "size": "30" },
         { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [1500], "releaseDate": "2020-12-12", "size": "30" },
+        { "id": "plastic-included", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2020-12-12", "size": "30" },
         { "id": "painters", "label": "Painters", "format": "physical", "handle": "pinup-nightmare-ram-armor-painters-scale", "materials": ["Photoresin"], "prices": [5000], "releaseDate": "2023-03-31", "shop": "out-of-stock", "size": "50" }
       ],
       "kind": "model",
@@ -4999,7 +5109,10 @@
       "tags": ["female", "plastic", "generic", "photoresin", "resin", "pinup", "2016", "painters-scale", "armor", "nightmare-ram"]
     },
     "pinup-nightmare-ram-armor-male": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [3000], "releaseDate": "2020-12-12", "shop": "in-stock" }],
+      "editions": [
+        { "id": "plastic", "label": "Plastic", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [3000], "releaseDate": "2020-12-12", "shop": "in-stock" },
+        { "id": "plastic-included", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2020-12-12" }
+      ],
       "handle": "pinup-male-nightmare-ram-armor-1",
       "kind": "model",
       "name": "Pinup Nightmare Ram Armor Male",
@@ -5017,7 +5130,10 @@
       "tags": ["female", "plastic", "generic", "gameplay", "gear", "knight", "pinup", "2016", "promo", "order-knight"]
     },
     "pinup-percival": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [3000], "releaseDate": "2020-12-12", "shop": "in-stock" }],
+      "editions": [
+        { "id": "plastic", "label": "Plastic", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [3000], "releaseDate": "2020-12-12", "shop": "in-stock" },
+        { "id": "plastic-included", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2020-12-12" }
+      ],
       "handle": "pinup-percival",
       "kind": "model",
       "name": "Pinup Percival",
@@ -5027,7 +5143,8 @@
     "pinup-phoenix-dancer": {
       "editions": [
         { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseDate": "2015-09-03" },
-        { "id": "resin", "label": "Resin", "format": "physical", "materials": ["Resin"], "prices": [2500], "releaseDate": "2015-09-03" }
+        { "id": "resin", "label": "Resin", "format": "physical", "materials": ["Resin"], "prices": [2500], "releaseDate": "2015-09-03" },
+        { "id": "plastic-included", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2019-11-29" }
       ],
       "kind": "model",
       "name": "Pinup Phoenix Dancer",
@@ -5035,7 +5152,10 @@
       "tags": ["female", "plastic", "generic", "monster", "resin", "pinup", "2015", "monster-phoenix", "node-3-quarry", "dancer"]
     },
     "pinup-pond-scum-armor": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [3000], "releaseDate": "2020-12-12", "shop": "in-stock" }],
+      "editions": [
+        { "id": "plastic", "label": "Plastic", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [3000], "releaseDate": "2020-12-12", "shop": "in-stock" },
+        { "id": "plastic-included", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2020-12-12" }
+      ],
       "handle": "pinup-pond-scum-armor",
       "kind": "model",
       "name": "Pinup Pond Scum Armor",
@@ -5047,7 +5167,8 @@
       "editions": [
         { "id": "resin", "label": "Resin", "format": "physical", "materials": ["Resin"], "prices": [2500], "releaseDate": "2011-03-17", "size": "30" },
         { "id": "painters", "label": "Painters", "format": "physical", "materials": ["Resin"], "prices": [4000], "releaseDate": "2011-10-31", "size": "54" },
-        { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseDate": "2014-03-11", "size": "30" }
+        { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseDate": "2014-03-11", "size": "30" },
+        { "id": "plastic-included", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2014-03-11", "size": "30" }
       ],
       "kind": "box",
       "name": "Pinup Preacher Wendy",
@@ -5060,6 +5181,7 @@
       "editions": [
         { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseDate": "2015-09-03", "size": "30" },
         { "id": "resin", "label": "Resin", "format": "physical", "materials": ["Resin"], "prices": [2500], "releaseDate": "2015-09-03", "size": "30" },
+        { "id": "plastic-included", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2019-11-29", "size": "30" },
         { "id": "bust-first-run", "label": "Bust: First Run", "format": "physical", "handle": "primal-huntress-bust", "materials": ["Resin"], "numbered": true, "prices": [7500], "releaseDate": "2019-12-27", "runSize": 200, "shop": "missing", "size": "120" },
         { "id": "bust-encore", "label": "Bust: Encore", "format": "physical", "handle": "primal-huntress-bust", "materials": ["Resin"], "prices": [7500], "releaseDate": "2019-12-27", "shop": "missing", "size": "120" }
       ],
@@ -5072,8 +5194,8 @@
       "editions": [{ "id": "plastic", "label": "Plastic", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [3000], "releaseDate": "2022-06-27", "shop": "in-stock" }],
       "handle": "pinup-male-nightmare-ram-armor",
       "includes": [
-        { "item": "pinup-nightmare-ram-armor", "editionId": "plastic" },
-        { "item": "pinup-nightmare-ram-armor-male", "editionId": "plastic" }
+        { "item": "pinup-nightmare-ram-armor", "editionId": "plastic-included" },
+        { "item": "pinup-nightmare-ram-armor-male", "editionId": "plastic-included" }
       ],
       "kind": "model",
       "name": "Pinup Ramette and Nightmare Ram Armor",
@@ -5084,7 +5206,8 @@
       "aliases": ["Pinup Rawhide Dame / Rawhide Armor Maiden"],
       "editions": [
         { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseDate": "2015-09-03" },
-        { "id": "resin", "label": "Resin", "format": "physical", "materials": ["Resin"], "prices": [2500], "releaseDate": "2015-09-03" }
+        { "id": "resin", "label": "Resin", "format": "physical", "materials": ["Resin"], "prices": [2500], "releaseDate": "2015-09-03" },
+        { "id": "plastic-included", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2019-11-29" }
       ],
       "kind": "model",
       "name": "Pinup Rawhide Dame",
@@ -5094,6 +5217,7 @@
     "pinup-regeneration-suit": {
       "editions": [
         { "id": "resin", "label": "Resin", "expansion": "Gorm", "format": "physical", "materials": ["Resin"], "prices": [2500], "releaseDate": "2015-09-03" },
+        { "id": "plastic-included", "label": "Plastic", "expansion": "Gorm", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2019-11-29" },
         { "id": "plastic", "label": "Plastic", "expansion": "Gorm", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseDate": "2021-11-26" }
       ],
       "kind": "model",
@@ -5104,7 +5228,8 @@
     "pinup-savior-morgan": {
       "editions": [
         { "id": "resin", "label": "Resin", "format": "physical", "materials": ["Resin"], "prices": [2500], "releaseDate": "2011-12-10" },
-        { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseDate": "2014-03-11" }
+        { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseDate": "2014-03-11" },
+        { "id": "plastic-included", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2014-03-11" }
       ],
       "kind": "model",
       "name": "Pinup Savior Morgan",
@@ -5114,7 +5239,8 @@
     "pinup-savior-variant": {
       "editions": [
         { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Resin"], "numbered": true, "prices": [2500], "releaseDate": "2013-11-01", "runSize": 100 },
-        { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseDate": "2014-03-11" }
+        { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseDate": "2014-03-11" },
+        { "id": "plastic-included", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2014-03-11" }
       ],
       "kind": "model",
       "name": "Pinup Savior Variant",
@@ -5134,7 +5260,10 @@
       "tags": ["female", "plastic", "generic", "gameplay", "gear", "knight", "pinup", "2015", "promo", "twilight-knight", "sci-fi"]
     },
     "pinup-scout-of-death": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [3000], "releaseDate": "2020-12-12", "shop": "in-stock" }],
+      "editions": [
+        { "id": "plastic", "label": "Plastic", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [3000], "releaseDate": "2020-12-12", "shop": "in-stock" },
+        { "id": "plastic-included", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2020-12-12" }
+      ],
       "handle": "pinup-scout-of-death",
       "kind": "model",
       "name": "Pinup Scout of Death",
@@ -5145,7 +5274,8 @@
       "announcements": ["2020-02-14"],
       "editions": [
         { "id": "first-run", "label": "First Run", "format": "physical", "handle": "pinup-screaming-god-armor", "materials": ["Resin"], "numbered": true, "prices": [2700], "releaseDate": "2020-02-14", "runSize": 900, "shop": "out-of-stock" },
-        { "id": "plastic", "label": "Plastic", "available": true, "format": "physical", "handle": "pinup-screaming-god-armor-1", "materials": ["Plastic"], "prices": [3000], "releaseDate": "2020-12-12", "shop": "in-stock" }
+        { "id": "plastic", "label": "Plastic", "available": true, "format": "physical", "handle": "pinup-screaming-god-armor-1", "materials": ["Plastic"], "prices": [3000], "releaseDate": "2020-12-12", "shop": "in-stock" },
+        { "id": "plastic-included", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2020-12-12" }
       ],
       "kind": "model",
       "name": "Pinup Screaming God Armor",
@@ -5155,7 +5285,10 @@
     },
     "pinup-screaming-god-armor-male": {
       "aliases": ["Pinup Screaming God Armor Male / Pinup Alpha Armor"],
-      "editions": [{ "id": "plastic", "label": "Plastic", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [3000], "releaseDate": "2020-12-12", "shop": "in-stock" }],
+      "editions": [
+        { "id": "plastic", "label": "Plastic", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [3000], "releaseDate": "2020-12-12", "shop": "in-stock" },
+        { "id": "plastic-included", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2020-12-12" }
+      ],
       "handle": "pinup-male-screaming-god",
       "kind": "model",
       "name": "Pinup Screaming God Armor Male",
@@ -5165,7 +5298,8 @@
     "pinup-spidersilk-assassin": {
       "editions": [
         { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseDate": "2015-09-03" },
-        { "id": "resin", "label": "Resin", "format": "physical", "materials": ["Resin"], "prices": [2500], "releaseDate": "2015-09-03" }
+        { "id": "resin", "label": "Resin", "format": "physical", "materials": ["Resin"], "prices": [2500], "releaseDate": "2015-09-03" },
+        { "id": "plastic-included", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2019-11-29" }
       ],
       "kind": "model",
       "name": "Pinup Spidersilk Assassin",
@@ -5177,6 +5311,7 @@
       "announcements": ["2023-05-02"],
       "editions": [
         { "id": "resin", "label": "Resin", "format": "physical", "materials": ["Resin"], "prices": [2700], "releaseDate": "2016-04-18", "size": "30" },
+        { "id": "plastic-included", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2020-12-12", "size": "30" },
         { "id": "painters", "label": "Painters", "format": "physical", "handle": "pinup-storm-armor-painters-scale", "materials": ["Photoresin"], "prices": [5000], "releaseDate": "2023-05-02", "shop": "out-of-stock", "size": "50" },
         { "id": "plastic", "label": "Plastic", "available": true, "format": "physical", "handle": "pinup-storm-knight-armor", "materials": ["Plastic"], "prices": [3000], "releaseDate": "2025-11-27", "shop": "in-stock", "size": "30" }
       ],
@@ -5191,6 +5326,7 @@
       "editions": [
         { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseDate": "2015-09-03", "size": "30" },
         { "id": "resin", "label": "Resin", "format": "physical", "materials": ["Resin"], "prices": [2500], "releaseDate": "2015-09-03", "size": "30" },
+        { "id": "plastic-included", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2019-11-29", "size": "30" },
         { "id": "bust-first-run", "label": "Bust: First Run", "format": "physical", "handle": "sunstalker-dancer-bust", "materials": ["Resin"], "numbered": true, "prices": [7500], "releaseDate": "2023-06-12", "runSize": 500, "shop": "out-of-stock", "size": "120" },
         { "id": "bust-encore", "label": "Bust: Encore", "format": "physical", "handle": "sunstalker-dancer-bust", "materials": ["Resin"], "prices": [7500], "releaseDate": "2023-06-12", "shop": "out-of-stock", "size": "120" },
         { "id": "painters", "label": "Painters", "format": "physical", "handle": "sunstalker-dancer-painters-scale", "materials": ["Photoresin"], "prices": [6000], "releaseDate": "2024-04-02", "shop": "out-of-stock", "size": "50" }
@@ -5203,7 +5339,8 @@
     "pinup-survivor-aya": {
       "editions": [
         { "id": "resin", "label": "Resin", "format": "physical", "materials": ["Resin"], "prices": [2500], "releaseDate": "2012-06-01" },
-        { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseDate": "2014-03-11" }
+        { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseDate": "2014-03-11" },
+        { "id": "plastic-included", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2014-03-11" }
       ],
       "kind": "model",
       "name": "Pinup Survivor Aya",
@@ -5212,7 +5349,10 @@
       "tags": ["female", "plastic", "resin", "survivor", "pinup", "2014", "2012", "aya"]
     },
     "pinup-titan-bee-armor": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [3000], "releaseDate": "2020-12-12", "shop": "in-stock" }],
+      "editions": [
+        { "id": "plastic", "label": "Plastic", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [3000], "releaseDate": "2020-12-12", "shop": "in-stock" },
+        { "id": "plastic-included", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2020-12-12" }
+      ],
       "handle": "pinup-titan-bee-armor",
       "kind": "model",
       "name": "Pinup Titan Bee Armor",
@@ -5225,7 +5365,8 @@
         { "id": "white-resin", "label": "White Resin", "format": "physical", "materials": ["White Resin"], "prices": [2500], "releaseDate": "2010-02-14", "size": "30" },
         { "id": "resin", "label": "Resin", "format": "physical", "materials": ["Resin"], "prices": [2500], "releaseDate": "2010-02-14", "size": "30" },
         { "id": "painters", "label": "Painters", "format": "physical", "materials": ["Resin"], "prices": [4000], "releaseDate": "2011-03-17", "size": "54" },
-        { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseDate": "2014-03-11", "size": "30" }
+        { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseDate": "2014-03-11", "size": "30" },
+        { "id": "plastic-included", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2014-03-11", "size": "30" }
       ],
       "kind": "model",
       "name": "Pinup Twilight Knight Allison",
@@ -5234,7 +5375,10 @@
     },
     "pinup-twilight-knight-deserter": {
       "aliases": ["Pinup Twilight Deserter Knight"],
-      "editions": [{ "id": "plastic", "label": "Plastic", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [3000], "releaseDate": "2020-12-12", "shop": "in-stock" }],
+      "editions": [
+        { "id": "plastic", "label": "Plastic", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [3000], "releaseDate": "2020-12-12", "shop": "in-stock" },
+        { "id": "plastic-included", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2020-12-12" }
+      ],
       "handle": "pinup-twilight-knight-deserter-1",
       "kind": "model",
       "name": "Pinup Twilight Knight Deserter",
@@ -5242,7 +5386,10 @@
       "tags": ["female", "plastic", "generic", "in-stock", "survivor", "knight", "pinup", "2020", "twilight-knight"]
     },
     "pinup-twilight-knight-male": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [3000], "releaseDate": "2020-12-12", "shop": "in-stock" }],
+      "editions": [
+        { "id": "plastic", "label": "Plastic", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [3000], "releaseDate": "2020-12-12", "shop": "in-stock" },
+        { "id": "plastic-included", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2020-12-12" }
+      ],
       "handle": "pinup-male-twilight-knight",
       "kind": "model",
       "name": "Pinup Twilight Knight Male",
@@ -5255,6 +5402,7 @@
       "editions": [
         { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseDate": "2015-09-03", "size": "30" },
         { "id": "resin", "label": "Resin", "format": "physical", "materials": ["Resin"], "prices": [2500], "releaseDate": "2015-09-03", "size": "30" },
+        { "id": "plastic-included", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2019-11-29", "size": "30" },
         { "id": "painters", "label": "Painters", "format": "physical", "handle": "painters-scale-pinup-twilight-witch", "materials": ["Photoresin"], "prices": [5500], "releaseDate": "2023-08-28", "shop": "out-of-stock", "size": "50" }
       ],
       "kind": "model",
@@ -5277,7 +5425,8 @@
       "announcements": ["2020-06-24"],
       "editions": [
         { "id": "resin", "label": "Resin", "format": "physical", "handle": "pinup-visionary", "materials": ["Resin"], "prices": [2500], "releaseDate": "2014-10-31", "shop": "missing" },
-        { "id": "plastic", "label": "Plastic", "available": true, "format": "physical", "handle": "pinup-visionary-1", "materials": ["Plastic"], "prices": [3000], "releaseDate": "2020-12-12", "shop": "in-stock" }
+        { "id": "plastic", "label": "Plastic", "available": true, "format": "physical", "handle": "pinup-visionary-1", "materials": ["Plastic"], "prices": [3000], "releaseDate": "2020-12-12", "shop": "in-stock" },
+        { "id": "plastic-included", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2020-12-12" }
       ],
       "kind": "model",
       "name": "Pinup Visionary",
@@ -5285,7 +5434,10 @@
       "tags": ["female", "plastic", "generic", "in-stock", "resin", "pinup", "2020", "2014", "visionary"]
     },
     "pinup-visionary-male": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [3000], "releaseDate": "2020-12-12", "shop": "in-stock" }],
+      "editions": [
+        { "id": "plastic", "label": "Plastic", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [3000], "releaseDate": "2020-12-12", "shop": "in-stock" },
+        { "id": "plastic-included", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2020-12-12" }
+      ],
       "handle": "pinup-male-visionary",
       "kind": "model",
       "name": "Pinup Visionary Male",
@@ -5329,7 +5481,8 @@
       "editions": [
         { "id": "metal", "label": "Metal", "format": "physical", "materials": ["Metal"], "prices": [2500], "releaseDate": "2009-12-10" },
         { "id": "resin", "label": "Resin", "format": "physical", "materials": ["Resin"], "prices": [2500], "releaseDate": "2011-05-23" },
-        { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseDate": "2014-03-11" }
+        { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseDate": "2014-03-11" },
+        { "id": "plastic-included", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2014-03-11" }
       ],
       "kind": "model",
       "name": "Pinup White Speaker (Kisya)",
@@ -5342,7 +5495,8 @@
       "announcements": ["2018-12-25", "2019-12-27", "2020-12-22", "2021-12-24", "2022-12-25", "2024-12-25", "2025-12-25"],
       "editions": [
         { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [4500], "releaseDate": "2014-12-23", "shop": "missing" },
-        { "id": "naked", "label": "Naked", "format": "physical", "gameplay": false, "materials": ["Plastic"], "prices": [4500], "releaseDate": "2014-12-23", "shop": "missing" }
+        { "id": "naked", "label": "Naked", "format": "physical", "gameplay": false, "materials": ["Plastic"], "prices": [4500], "releaseDate": "2014-12-23", "shop": "missing" },
+        { "id": "plastic-included", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseWindow": "2027" }
       ],
       "gameplay": true,
       "handle": "naked-xmas-pinup-twilight-knight",
@@ -5382,7 +5536,8 @@
       "editions": [
         { "id": "first-run", "label": "First Run", "expansion": "Sunstalker", "format": "physical", "materials": ["Resin"], "numbered": true, "prices": [5000], "releaseDate": "2014-08-07", "runSize": 500 },
         { "id": "encore", "label": "Encore", "format": "physical", "materials": ["Resin"], "prices": [5000], "releaseDate": "2014-08-07" },
-        { "id": "plastic", "label": "Plastic", "expansion": "Sunstalker", "format": "physical", "materials": ["Plastic"], "prices": [5000], "releaseDate": "2016-02-16" }
+        { "id": "plastic", "label": "Plastic", "expansion": "Sunstalker", "format": "physical", "materials": ["Plastic"], "prices": [5000], "releaseDate": "2016-02-16" },
+        { "id": "plastic-included", "label": "Plastic", "expansion": "Sunstalker", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2016-02-16" }
       ],
       "kind": "model",
       "name": "Priests of the Sun",
@@ -5543,6 +5698,7 @@
     },
     "role-survivors-set-of-4": {
       "editions": [
+        { "id": "plastic-included", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2016-02-16" },
         { "id": "first-run", "label": "First Run", "expansion": "Lion Knight", "format": "physical", "materials": ["Resin"], "numbered": true, "prices": [5000], "releaseDate": "2016-09-17", "runSize": 500 },
         { "id": "encore", "label": "Encore", "format": "physical", "materials": ["Resin"], "prices": [5000], "releaseDate": "2016-09-17" },
         { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [5000], "releaseDate": "2021-11-26" }
@@ -5661,9 +5817,11 @@
     },
     "savior-snow": {
       "editions": [
+        { "id": "resin-included", "label": "Resin", "format": "physical", "includedOnly": true, "materials": ["Resin"], "prices": [0], "releaseDate": "2009-12-10" },
         { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Resin"], "numbered": true, "prices": [2500], "releaseDate": "2010-01-20", "runSize": 105 },
         { "id": "encore", "label": "Encore", "format": "physical", "materials": ["Resin"], "prices": [2500], "releaseDate": "2010-01-20" },
-        { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseDate": "2025-08-29" }
+        { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseDate": "2025-08-29" },
+        { "id": "plastic-included", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2025-08-29" }
       ],
       "kind": "model",
       "name": "Savior (Snow)",
@@ -5917,7 +6075,7 @@
       "kind": "set",
       "name": "15th Anniversary Survivors",
       "size": "30",
-      "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "survivor", "2024", "resource", "settlement-location", "core-survivor", "innovation", "terrain", "lucy", "erza", "allister", "zachary", "anniversary"]
+      "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "survivor", "2024", "terrain", "resource", "settlement-location", "innovation", "core-survivor", "lucy", "erza", "allister", "zachary", "anniversary"]
     },
     "set-echoes-of-death": {
       "announcements": ["2019-03-27"],
@@ -5978,7 +6136,10 @@
     "set-halloween-survivors": {
       "aliases": ["Halloween Survivors (set of 4)", "Halloween Survivors I"],
       "announcements": ["2019-10-31", "2020-10-30", "2022-10-31", "2023-10-31", "2024-10-31", "2025-10-31"],
-      "editions": [{ "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [5000], "releaseDate": "2017-10-31", "shop": "missing" }],
+      "editions": [
+        { "id": "plastic-included", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2016-10-28" },
+        { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [5000], "releaseDate": "2017-10-31", "shop": "missing" }
+      ],
       "handle": "halloween-survivors",
       "kind": "set",
       "name": "Halloween Survivors",
@@ -6016,15 +6177,15 @@
       "gameplay": true,
       "handle": "pinups-of-death-series-1",
       "includes": [
-        { "item": "pinup-architect", "editionId": "plastic" },
-        { "item": "pinup-forsaker-helen", "editionId": "plastic" },
-        { "item": "pinup-great-game-hunter-julia", "editionId": "plastic" },
-        { "item": "pinup-preacher-wendy", "editionId": "plastic" },
-        { "item": "pinup-savior-morgan", "editionId": "plastic" },
-        { "item": "pinup-savior-variant", "editionId": "plastic" },
-        { "item": "pinup-survivor-aya", "editionId": "plastic" },
-        { "item": "pinup-twilight-knight-allison", "editionId": "plastic" },
-        { "item": "pinup-white-speaker-kisya", "editionId": "plastic" }
+        { "item": "pinup-architect", "editionId": "plastic-included" },
+        { "item": "pinup-forsaker-helen", "editionId": "plastic-included" },
+        { "item": "pinup-great-game-hunter-julia", "editionId": "plastic-included" },
+        { "item": "pinup-preacher-wendy", "editionId": "plastic-included" },
+        { "item": "pinup-savior-morgan", "editionId": "plastic-included" },
+        { "item": "pinup-savior-variant", "editionId": "plastic-included" },
+        { "item": "pinup-survivor-aya", "editionId": "plastic-included" },
+        { "item": "pinup-twilight-knight-allison", "editionId": "plastic-included" },
+        { "item": "pinup-white-speaker-kisya", "editionId": "plastic-included" }
       ],
       "kind": "set",
       "name": "Pinups Of Death I",
@@ -6041,17 +6202,17 @@
       ],
       "gameplay": true,
       "includes": [
-        { "item": "pinup-dragon-sacrifice", "editionId": "plastic" },
-        { "item": "pinup-lantern-festival", "editionId": "plastic" },
-        { "item": "pinup-leather-queen", "editionId": "plastic" },
-        { "item": "pinup-lioness", "editionId": "plastic" },
-        { "item": "pinup-phoenix-dancer", "editionId": "plastic" },
-        { "item": "pinup-primal-huntress", "editionId": "plastic" },
-        { "item": "pinup-rawhide-dame", "editionId": "plastic" },
-        { "item": "pinup-regeneration-suit", "editionId": "plastic" },
-        { "item": "pinup-spidersilk-assassin", "editionId": "plastic" },
-        { "item": "pinup-sunstalker-dancer", "editionId": "plastic" },
-        { "item": "pinup-twilight-witch", "editionId": "plastic" }
+        { "item": "pinup-dragon-sacrifice", "editionId": "plastic-included" },
+        { "item": "pinup-lantern-festival", "editionId": "plastic-included" },
+        { "item": "pinup-leather-queen", "editionId": "plastic-included" },
+        { "item": "pinup-lioness", "editionId": "plastic-included" },
+        { "item": "pinup-phoenix-dancer", "editionId": "plastic-included" },
+        { "item": "pinup-primal-huntress", "editionId": "plastic-included" },
+        { "item": "pinup-rawhide-dame", "editionId": "plastic-included" },
+        { "item": "pinup-regeneration-suit", "editionId": "plastic-included" },
+        { "item": "pinup-spidersilk-assassin", "editionId": "plastic-included" },
+        { "item": "pinup-sunstalker-dancer", "editionId": "plastic-included" },
+        { "item": "pinup-twilight-witch", "editionId": "plastic-included" }
       ],
       "kind": "set",
       "name": "Pinups Of Death II",
@@ -6065,17 +6226,17 @@
       "gameplayContent": "Replacement trait cards",
       "handle": "pinups-of-death-series-3",
       "includes": [
-        "pinup-kings-man",
-        "pinup-butcher",
-        "pinup-death-armor",
-        "pinup-disciple-of-the-witch",
-        "pinup-gold-smoke-knight-armor",
-        "pinup-scout-of-death",
-        { "item": "pinup-storm-knight-armor", "editionId": "plastic" },
-        "pinup-twilight-knight-deserter",
-        "pinup-twilight-knight-male",
-        { "item": "pinup-visionary", "editionId": "plastic" },
-        "pinup-visionary-male"
+        { "item": "pinup-kings-man", "editionId": "plastic-included" },
+        { "item": "pinup-butcher", "editionId": "plastic-included" },
+        { "item": "pinup-death-armor", "editionId": "plastic-included" },
+        { "item": "pinup-disciple-of-the-witch", "editionId": "plastic-included" },
+        { "item": "pinup-gold-smoke-knight-armor", "editionId": "plastic-included" },
+        { "item": "pinup-scout-of-death", "editionId": "plastic-included" },
+        { "item": "pinup-storm-knight-armor", "editionId": "plastic-included" },
+        { "item": "pinup-twilight-knight-deserter", "editionId": "plastic-included" },
+        { "item": "pinup-twilight-knight-male", "editionId": "plastic-included" },
+        { "item": "pinup-visionary", "editionId": "plastic-included" },
+        { "item": "pinup-visionary-male", "editionId": "plastic-included" }
       ],
       "kind": "set",
       "name": "Pinups Of Death III",
@@ -6089,18 +6250,18 @@
       "gameplayContent": "Survivor Tokens",
       "handle": "pinups-of-death-series-iv",
       "includes": [
-        "pinup-apotheosis",
-        "pinup-black-knight-armor",
-        "pinup-faceless-survivor",
-        "pinup-frogdog-armor",
-        "pinup-honeycomb-weaver",
-        "pinup-mountain-dungeon-armor",
-        { "item": "pinup-nightmare-ram-armor", "editionId": "plastic" },
-        "pinup-nightmare-ram-armor-male",
-        "pinup-percival",
-        "pinup-pond-scum-armor",
-        "pinup-titan-bee-armor",
-        "pinup-upside-survivor"
+        { "item": "pinup-apotheosis", "editionId": "plastic-included" },
+        { "item": "pinup-black-knight-armor", "editionId": "plastic-included" },
+        { "item": "pinup-faceless-survivor", "editionId": "plastic-included" },
+        { "item": "pinup-frogdog-armor", "editionId": "plastic-included" },
+        { "item": "pinup-honeycomb-weaver", "editionId": "plastic-included" },
+        { "item": "pinup-mountain-dungeon-armor", "editionId": "plastic-included" },
+        { "item": "pinup-nightmare-ram-armor", "editionId": "plastic-included" },
+        { "item": "pinup-nightmare-ram-armor-male", "editionId": "plastic-included" },
+        { "item": "pinup-percival", "editionId": "plastic-included" },
+        { "item": "pinup-pond-scum-armor", "editionId": "plastic-included" },
+        { "item": "pinup-titan-bee-armor", "editionId": "plastic-included" },
+        { "item": "pinup-upside-survivor", "editionId": "plastic" }
       ],
       "kind": "set",
       "name": "Pinups Of Death IV",
@@ -6114,16 +6275,16 @@
       "gameplayContent": "Replacement trait cards",
       "handle": "pinups-of-death-series-v",
       "includes": [
-        "pinup-dragon-goblin",
-        "pinup-dragon-goblin-male",
-        "pinup-dung-ball",
-        "pinup-dung-beetle-dancer",
-        "pinup-dung-beetle-dancer-male",
-        "pinup-dung-beetle-knight",
-        "pinup-manhunter",
-        "pinup-manhunter-male",
-        { "item": "pinup-screaming-god-armor", "editionId": "plastic" },
-        "pinup-screaming-god-armor-male"
+        { "item": "pinup-dragon-goblin", "editionId": "plastic-included" },
+        { "item": "pinup-dragon-goblin-male", "editionId": "plastic-included" },
+        { "item": "pinup-dung-ball", "editionId": "plastic-included" },
+        { "item": "pinup-dung-beetle-dancer", "editionId": "plastic-included" },
+        { "item": "pinup-dung-beetle-dancer-male", "editionId": "plastic-included" },
+        { "item": "pinup-dung-beetle-knight", "editionId": "plastic-included" },
+        { "item": "pinup-manhunter", "editionId": "plastic-included" },
+        { "item": "pinup-manhunter-male", "editionId": "plastic-included" },
+        { "item": "pinup-screaming-god-armor", "editionId": "plastic-included" },
+        { "item": "pinup-screaming-god-armor-male", "editionId": "plastic-included" }
       ],
       "kind": "set",
       "name": "Pinups Of Death V",
@@ -6133,14 +6294,14 @@
     "set-promos-of-death": {
       "editions": [{ "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [12500], "releaseWindow": "2027" }],
       "includes": [
-        { "item": "twilight-knight", "editionId": "plastic" },
-        { "item": "survivor-aya", "editionId": "plastic" },
-        { "item": "paul-the-survivor", "editionId": "plastic" },
-        { "item": "holiday-white-speaker-nico", "editionId": "plastic" },
-        { "item": "pinup-x-mas-special-twilight-knight", "editionId": "plastic" },
-        { "item": "allison-the-twilight-knight", "editionId": "plastic" },
-        { "item": "beyond-the-wall", "editionId": "plastic" },
-        { "item": "savior-snow", "editionId": "plastic" }
+        { "item": "twilight-knight", "editionId": "plastic-included" },
+        { "item": "survivor-aya", "editionId": "plastic-included" },
+        { "item": "paul-the-survivor", "editionId": "plastic-included" },
+        { "item": "holiday-white-speaker-nico", "editionId": "plastic-included" },
+        { "item": "pinup-x-mas-special-twilight-knight", "editionId": "plastic-included" },
+        { "item": "allison-the-twilight-knight", "editionId": "plastic-included" },
+        { "item": "beyond-the-wall", "editionId": "plastic-included" },
+        { "item": "savior-snow", "editionId": "plastic-included" }
       ],
       "kind": "set",
       "name": "Promos of Death",
@@ -6470,7 +6631,8 @@
       "editions": [
         { "id": "first-run", "label": "First Run", "format": "physical", "handle": "sunstalker-infant", "materials": ["Resin"], "numbered": true, "prices": [8500], "releaseDate": "2011-10-31", "runSize": 275, "shop": "missing" },
         { "id": "encore", "label": "Encore", "format": "physical", "handle": "sunstalker-infant", "materials": ["Resin"], "prices": [8500], "releaseDate": "2011-10-31", "shop": "missing" },
-        { "id": "plastic", "label": "Plastic", "expansion": "Campaigns of Death", "format": "physical", "materials": ["Plastic"], "prices": [8500], "releaseWindow": "2026 Q4" }
+        { "id": "plastic", "label": "Plastic", "expansion": "Campaigns of Death", "format": "physical", "materials": ["Plastic"], "prices": [8500], "releaseWindow": "2026 Q4" },
+        { "id": "plastic-included", "label": "Plastic", "expansion": "Campaigns of Death", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseWindow": "2026-Q4" }
       ],
       "kind": "model",
       "name": "Sunstalker Infant and Caretakers",
@@ -6510,7 +6672,8 @@
       "editions": [
         { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Resin"], "numbered": true, "prices": [2500], "releaseDate": "2011-12-10", "runSize": 200 },
         { "id": "encore", "label": "Encore", "format": "physical", "materials": ["Resin"], "prices": [2500], "releaseDate": "2011-12-10" },
-        { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseWindow": "2027" }
+        { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseWindow": "2027" },
+        { "id": "plastic-included", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseWindow": "2027" }
       ],
       "kind": "model",
       "name": "Survivor Aya",
@@ -6586,7 +6749,10 @@
     },
     "the-preacher": {
       "aliases": ["Preacher, The"],
-      "editions": [{ "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Resin"], "numbered": true, "prices": [2500], "releaseDate": "2009-11-26", "runSize": 100 }],
+      "editions": [
+        { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Resin"], "numbered": true, "prices": [2500], "releaseDate": "2009-11-26", "runSize": 100 },
+        { "id": "resin-included", "label": "Resin", "format": "physical", "includedOnly": true, "materials": ["Resin"], "prices": [0], "releaseDate": "2009-12-10" }
+      ],
       "kind": "box",
       "name": "The Preacher",
       "size": "30",
@@ -6634,7 +6800,8 @@
       "editions": [
         { "id": "first-run", "label": "First Run", "format": "physical", "handle": "thrall", "materials": ["Resin"], "numbered": true, "prices": [3000], "releaseDate": "2019-10-31", "runSize": 500, "shop": "out-of-stock" },
         { "id": "encore", "label": "Encore", "format": "physical", "handle": "thrall", "materials": ["Resin"], "prices": [3000], "releaseDate": "2019-10-31", "shop": "out-of-stock" },
-        { "id": "plastic", "label": "Plastic", "expansion": "Inverted Mountain", "format": "physical", "materials": ["Plastic"], "prices": [2700], "releaseWindow": "2029" }
+        { "id": "plastic", "label": "Plastic", "expansion": "Inverted Mountain", "format": "physical", "materials": ["Plastic"], "prices": [2700], "releaseWindow": "2029" },
+        { "id": "plastic-included", "label": "Plastic", "expansion": "Inverted Mountain", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseWindow": "2029" }
       ],
       "kind": "model",
       "name": "Thrall",
@@ -6654,32 +6821,21 @@
       "kind": "box",
       "name": "Till Death Do Us Part",
       "notes": "First Run / Encore: Valentines Day release.",
-      "tags": ["female", "generic", "gameplay", "photoresin", "2026", "2018", "innovation", "resculpt", "remaster", "intimacy-couple"]
+      "tags": ["female", "generic", "gameplay", "photoresin", "2026", "innovation", "2018", "resculpt", "remaster", "intimacy-couple"]
     },
     "twilight-knight": {
       "announcements": ["2026-08-31"],
       "editions": [
         { "id": "first-run", "label": "First Run", "format": "physical", "handle": "twilight-knight", "materials": ["Resin"], "numbered": true, "prices": [3400], "releaseDate": "2012-08-18", "runSize": 450, "shop": "out-of-stock" },
         { "id": "encore", "label": "Encore", "format": "physical", "handle": "twilight-knight", "materials": ["Resin"], "prices": [3400], "releaseDate": "2026-08-31", "shop": "out-of-stock" },
-        { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseWindow": "2027" }
+        { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseWindow": "2027" },
+        { "id": "plastic-included", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseWindow": "2027" }
       ],
       "kind": "model",
       "name": "Twilight Knight",
       "notes": "The first character conceived for Kingdom Death. First Run included an illustrated certificate, and 75 copies were released as a Gen Con 2012 special. Also offered through Promos of Death and the Survivor Level Rewards.",
       "size": "30",
       "tags": ["female", "plastic", "generic", "resin", "knight", "2026", "upcoming", "twilight-knight", "2012", "2027", "promos-of-death"]
-    },
-    "twilight-knight-alternate": {
-      "aliases": ["Twilight Knight, Alternate /w metal sword"],
-      "editions": [
-        { "id": "resin-metal", "label": "Resin & Metal", "format": "physical", "materials": ["Resin"], "prices": [0], "releaseDate": "2009-12-10" },
-        { "id": "resin", "label": "Resin", "format": "physical", "materials": ["Resin"], "prices": [0], "releaseDate": "2009-12-10" }
-      ],
-      "kind": "box",
-      "name": "Twilight Knight Alternate",
-      "notes": "A bonus miniature in the Gift of Death boxed release, with a metal sword.",
-      "size": "30",
-      "tags": ["female", "generic", "resin", "knight", "beta", "twilight-knight", "2009", "metal"]
     },
     "twilight-order-knight": {
       "aliases": ["Order Knight / Twilight Order Knight"],
@@ -6706,7 +6862,7 @@
       "editions": [{ "id": "box", "label": "Preorder", "format": "physical", "materials": ["Plastic"], "prices": [10000], "releaseWindow": "2027" }],
       "kind": "terrain",
       "name": "Ultimate Core Terrain",
-      "tags": ["core", "upcoming", "terrain", "2027", "preorder"]
+      "tags": ["core", "terrain", "upcoming", "2027", "preorder"]
     },
     "usagi": {
       "aliases": ["Usagi Deathgrey M2 Edition"],
@@ -6741,7 +6897,7 @@
         { "id": "plastic", "label": "Plastic", "available": true, "format": "physical", "handle": "vignette-of-death-killennium-butcher", "materials": ["Plastic"], "prices": [10000], "releaseDate": "2024-02-29", "shop": "in-stock" }
       ],
       "gameplay": true,
-      "includes": [{ "item": "vignette-of-death-killennium-butcher-survivors", "editionId": "plastic", "parentEditionIds": ["plastic"] }],
+      "includes": [{ "item": "vignette-of-death-killennium-butcher-survivors", "editionId": "plastic-included", "parentEditionIds": ["plastic"] }],
       "kind": "vignette",
       "name": "Vignette of Death: Killennium Butcher",
       "size": "100",
@@ -6756,9 +6912,9 @@
         "core",
         "survivor",
         "2024",
+        "terrain",
         "resource",
         "sim",
-        "terrain",
         "ai",
         "strain",
         "monster-butcher",
@@ -6775,7 +6931,10 @@
     },
     "vignette-of-death-killennium-butcher-survivors": {
       "aliases": ["Vignette of Death: Killennium Butcher Survivors (x4)"],
-      "editions": [{ "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [9000], "releaseDate": "2024-02-29" }],
+      "editions": [
+        { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [9000], "releaseDate": "2024-02-29" },
+        { "id": "plastic-included", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2024-02-29" }
+      ],
       "gameplay": true,
       "gameplayContent": "Vignette of Death",
       "kind": "box",
@@ -6793,7 +6952,7 @@
       "gameplay": true,
       "kind": "vignette",
       "name": "Vignette of Death: Screaming Nukealope",
-      "tags": ["gameplay", "monster", "in-stock", "gear", "2025", "resource", "sim", "settlement-location", "fighting-art", "terrain", "secret-fighting-art", "ai", "strain", "node-2-quarry", "vignette", "minion", "monster-screaming-nukealope"]
+      "tags": ["gameplay", "monster", "in-stock", "gear", "2025", "terrain", "resource", "sim", "settlement-location", "fighting-art", "secret-fighting-art", "ai", "strain", "node-2-quarry", "vignette", "minion", "monster-screaming-nukealope"]
     },
     "vignette-of-death-super-survivors": {
       "aliases": ["Super Survivors (Set of 4 plus Super Dung Beetle Knight)"],
@@ -6812,7 +6971,7 @@
       ],
       "gameplay": true,
       "gameplayContent": "Vignette of Death",
-      "includes": [{ "item": "vignette-of-death-white-gigalion-survivors", "editionId": "plastic", "parentEditionIds": ["plastic"] }],
+      "includes": [{ "item": "vignette-of-death-white-gigalion-survivors", "editionId": "plastic-included", "parentEditionIds": ["plastic"] }],
       "kind": "vignette",
       "name": "Vignette of Death: White Gigalion",
       "size": "100",
@@ -6820,7 +6979,10 @@
     },
     "vignette-of-death-white-gigalion-survivors": {
       "aliases": ["Vignette of Death: White Gigalion Survivors (x4)"],
-      "editions": [{ "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [7500], "releaseDate": "2019-08-16" }],
+      "editions": [
+        { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [7500], "releaseDate": "2019-08-16" },
+        { "id": "plastic-included", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseDate": "2019-08-16" }
+      ],
       "gameplay": true,
       "gameplayContent": "Vignette of Death",
       "kind": "box",
@@ -6946,7 +7108,8 @@
       "editions": [
         { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Resin"], "numbered": true, "prices": [2500], "releaseDate": "2013-11-01", "runSize": 450 },
         { "id": "encore", "label": "Encore", "format": "physical", "materials": ["Resin"], "prices": [2500], "releaseDate": "2013-11-01" },
-        { "id": "plastic", "label": "Plastic", "expansion": "Campaigns of Death", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseWindow": "2026 Q4" }
+        { "id": "plastic", "label": "Plastic", "expansion": "Campaigns of Death", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseWindow": "2026 Q4" },
+        { "id": "plastic-included", "label": "Plastic", "expansion": "Campaigns of Death", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseWindow": "2026-Q4" }
       ],
       "kind": "model",
       "name": "Warrior of the Sun (Female)",
@@ -6957,7 +7120,8 @@
       "editions": [
         { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Resin"], "numbered": true, "prices": [3000], "releaseDate": "2013-11-01", "runSize": 450 },
         { "id": "encore", "label": "Encore", "format": "physical", "materials": ["Resin"], "prices": [3000], "releaseDate": "2013-11-01" },
-        { "id": "plastic", "label": "Plastic", "expansion": "Campaigns of Death", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseWindow": "2026 Q4" }
+        { "id": "plastic", "label": "Plastic", "expansion": "Campaigns of Death", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseWindow": "2026 Q4" },
+        { "id": "plastic-included", "label": "Plastic", "expansion": "Campaigns of Death", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseWindow": "2026-Q4" }
       ],
       "kind": "model",
       "name": "Warrior of the Sun (Male)",
@@ -6982,7 +7146,8 @@
       "editions": [
         { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Resin"], "numbered": true, "prices": [6500], "releaseDate": "2010-11-15", "runSize": 100 },
         { "id": "encore", "label": "Encore", "format": "physical", "materials": ["Resin"], "prices": [6500], "releaseDate": "2010-11-15" },
-        { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["PVC"], "prices": [6500], "releaseDate": "2012-06-01" }
+        { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["PVC"], "prices": [6500], "releaseDate": "2012-06-01" },
+        { "id": "pvc-included", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["PVC"], "prices": [0], "releaseDate": "2012-06-01" }
       ],
       "kind": "model",
       "name": "Wet Nurse",
@@ -7054,6 +7219,7 @@
       "editions": [
         { "id": "first-run", "label": "First Run", "format": "physical", "gameplay": false, "materials": ["Resin"], "numbered": true, "prices": [2000], "releaseDate": "2009-09-09", "runSize": 100, "size": "30" },
         { "id": "encore", "label": "Encore", "format": "physical", "gameplay": false, "materials": ["Resin"], "prices": [2000], "releaseDate": "2009-09-09", "size": "30" },
+        { "id": "resin-included", "label": "Resin", "format": "physical", "gameplay": false, "includedOnly": true, "materials": ["Resin"], "prices": [0], "releaseDate": "2009-12-10", "size": "30" },
         { "id": "painters", "label": "Painters", "format": "physical", "gameplay": false, "materials": ["Resin"], "prices": [4000], "releaseDate": "2012-04-06", "size": "54" },
         { "id": "plastic", "label": "Plastic", "format": "physical", "handle": "white-speaker-1", "materials": ["Plastic"], "prices": [2500], "releaseDate": "2024-08-29", "shop": "out-of-stock", "size": "30" }
       ],
@@ -7796,6 +7962,18 @@
       "size": "30",
       "tags": ["female", "plastic", "generic", "2019"]
     },
+    "twilight-knight-alternate": {
+      "aliases": ["Twilight Knight, Alternate /w metal sword"],
+      "editions": [
+        { "id": "resin-metal", "label": "Resin & Metal", "format": "physical", "includedOnly": true, "materials": ["Resin", "Metal"], "prices": [0], "releaseDate": "2009-12-10" },
+        { "id": "resin", "label": "Resin", "format": "physical", "includedOnly": true, "materials": ["Resin"], "prices": [0], "releaseDate": "2009-12-10" }
+      ],
+      "kind": "box",
+      "name": "Twilight Knight Alternate",
+      "notes": "A bonus miniature in the Gift of Death boxed release, with a metal sword.",
+      "size": "30",
+      "tags": ["female", "generic", "resin", "knight", "beta", "twilight-knight", "2009", "metal"]
+    },
     "verdant-lord": {
       "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Campaigns of Death", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "prices": [0], "releaseWindow": "2026 Q4" }],
       "kind": "model",
@@ -7846,7 +8024,7 @@
       "name": "Black Knight Citadel Board - Travel Edition",
       "notes": "A preposterously small rendering of the Black Knight's crumbling citadel.",
       "size": "mini",
-      "tags": ["photoresin", "knight", "2025"]
+      "tags": ["photoresin", "knight", "2025", "monster-black-knight", "board", "showdown", "kale", "rene", "morg", "marchioness"]
     },
     "dice-1-0": { "accessoryType": "dice", "kind": "accessory", "name": "1.0 Death Dice", "price": 2000, "tags": ["core", "dice", "black", "white"] },
     "dice-black-and-red": {
@@ -8047,9 +8225,9 @@
       "editions": [
         { "id": "1-3-included", "label": "1.3", "format": "physical", "includedOnly": true, "prices": [0], "releaseDate": "2015-09-15" },
         { "id": "1-5", "label": "1.5", "format": "physical", "prices": [4000], "releaseDate": "2017-10-13" },
-        { "id": "1-5-included", "label": "1.5", "format": "physical", "includedOnly": true, "prices": [0], "releaseDate": "2017-10-13" },
+        { "id": "1-5-included", "label": "1.5", "equivalentTo": "1-5", "format": "physical", "includedOnly": true, "prices": [0], "releaseDate": "2017-10-13" },
         { "id": "1-6", "label": "1.6", "format": "physical", "handle": "kingdom-death-monster-1-6-rulebook", "prices": [4000], "releaseDate": "2021-11-26", "shop": "out-of-stock" },
-        { "id": "1-6-included", "label": "1.6", "format": "physical", "includedOnly": true, "prices": [0], "releaseDate": "2021-11-26" }
+        { "id": "1-6-included", "label": "1.6", "equivalentTo": "1-6", "format": "physical", "includedOnly": true, "prices": [0], "releaseDate": "2021-11-26" }
       ],
       "kind": "accessory",
       "name": "Monster Core Game Rulebook",
@@ -8081,7 +8259,7 @@
       "handle": "phobia-the-hunt",
       "kind": "accessory",
       "name": "Kingdom Death Comic: Phobia 1 - The Hunt",
-      "tags": ["2025", "comic", "phobia", "hunt"]
+      "tags": ["2025", "hunt", "comic", "phobia"]
     },
     "phobia-2-the-settlement": {
       "accessoryType": "comic",
@@ -8402,7 +8580,7 @@
       "price": 20000,
       "releaseDate": "2024-07-26",
       "shop": "missing",
-      "tags": ["2024", "showdown", "board"]
+      "tags": ["plastic", "2024", "board", "showdown"]
     }
   },
   "bundles": {
@@ -8459,7 +8637,7 @@
       "name": "Craft of Death Full Catalog",
       "price": 6800,
       "priceMinimum": true,
-      "tags": ["homebrew", "3d-files", "core", "member-only", "terrain", "dice", "craft-of-death", "monster-phoenix", "monster-white-lion", "monster-butcher", "monster-screaming-antelope", "monster-hand", "base", "accessory", "monster-bullfrogdog", "counter"]
+      "tags": ["homebrew", "3d-files", "core", "terrain", "member-only", "dice", "craft-of-death", "monster-phoenix", "monster-white-lion", "monster-butcher", "monster-screaming-antelope", "monster-hand", "base", "accessory", "monster-bullfrogdog", "counter"]
     },
     "craft-of-death-phoenix-base-bundle": {
       "currency": "EUR",
@@ -8503,7 +8681,7 @@
         { "item": "lonely-tree", "editionId": "plastic", "parentEditionIds": ["1-6"] },
         { "item": "manhunter", "editionId": "plastic", "parentEditionIds": ["1-6"] },
         { "item": "people-of-the-stars", "editionId": "plastic", "parentEditionIds": ["1-6"] },
-        { "item": "role-survivors-set-of-4", "editionId": "plastic", "parentEditionIds": ["1-6"] },
+        { "item": "role-survivors-set-of-4", "editionId": "plastic-included", "parentEditionIds": ["1-6"] },
         { "item": "slenderman", "editionId": "plastic", "parentEditionIds": ["1-6"] },
         { "item": "spidicules", "editionId": "plastic", "parentEditionIds": ["1-6"] },
         { "item": "sunstalker-adult", "editionId": "plastic", "parentEditionIds": ["1-6"] },
@@ -8527,13 +8705,13 @@
     "halloween-trick-or-treat-bag": {
       "editions": [{ "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [10000], "releaseDate": "2016-10-28" }],
       "includes": [
-        { "item": "disciple-of-the-witch-1", "editionId": "plastic" },
-        { "item": "disciple-of-the-witch-2", "editionId": "plastic" },
-        { "item": "disciple-of-the-witch-3", "editionId": "plastic" },
-        { "item": "disciple-of-the-witch-4", "editionId": "plastic" },
-        { "item": "disciple-of-the-witch-5-6", "editionId": "plastic" },
-        { "item": "flower-witch", "editionId": "plastic" },
-        "set-halloween-survivors"
+        { "item": "disciple-of-the-witch-1", "editionId": "plastic-included" },
+        { "item": "disciple-of-the-witch-2", "editionId": "plastic-included" },
+        { "item": "disciple-of-the-witch-3", "editionId": "plastic-included" },
+        { "item": "disciple-of-the-witch-4", "editionId": "plastic-included" },
+        { "item": "disciple-of-the-witch-5-6", "editionId": "plastic-included" },
+        { "item": "flower-witch", "editionId": "plastic-included" },
+        { "item": "set-halloween-survivors", "editionId": "plastic-included" }
       ],
       "name": "Halloween Trick or Treat Bag",
       "notes": "Halloween Survivors (4) with sticker and art card / Flower Witch / Disciples of the Witch (5).",
@@ -8602,7 +8780,7 @@
       "includes": ["revampedgame-black-knight-crest", "revampedgame-gamblers-chest-crest", "revampedgame-gorm-crest", "revampedgame-lonely-tree-crest", "revampedgame-screaming-god-crest", "revampedgame-slenderman-crest", "revampedgame-the-hands-crest"],
       "name": "RevampedGame Crests",
       "price": 0,
-      "tags": ["homebrew", "3d-files", "monster", "revampedgame", "core", "gamblers-chest", "crest", "monster-screaming-god", "monster-gorm", "monster-black-knight", "monster-hand", "monster-lonely-tree", "monster-slenderman", "model"]
+      "tags": ["homebrew", "3d-files", "monster", "revampedgame", "core", "gamblers-chest", "crest", "monster-black-knight", "monster-screaming-god", "monster-gorm", "monster-hand", "monster-lonely-tree", "monster-slenderman", "model"]
     },
     "revampedgame-full-catalog": {
       "gameplay": true,
@@ -8775,16 +8953,17 @@
         "revampedgame",
         "core",
         "gamblers-chest",
+        "terrain",
         "settlement-location",
-        "hunt-event",
         "innovation",
+        "hunt-event",
         "expansion",
         "member-only",
-        "terrain",
         "dice",
         "pot-sun",
         "crest",
         "monster-phoenix",
+        "monster-black-knight",
         "monster-white-lion",
         "monster-screaming-god",
         "monster-dragon-king",
@@ -8792,7 +8971,6 @@
         "monster-gorm",
         "monster-sunstalker",
         "pot-star",
-        "monster-black-knight",
         "monster-screaming-antelope",
         "monster-bone-eaters",
         "monster-frogdog",
@@ -8800,11 +8978,11 @@
         "monster-hand",
         "monster-lonely-tree",
         "anniversary",
+        "base",
         "ccg",
         "gatherism",
         "monster-flower-knight",
         "monster-smog-singers",
-        "base",
         "monster-atnas",
         "monster-parasite-queen",
         "monster-pariah",
@@ -8852,7 +9030,7 @@
       ],
       "name": "RevampedGame Gambler's Chest Catalog",
       "price": 0,
-      "tags": ["homebrew", "3d-files", "monster", "revampedgame", "gamblers-chest", "member-only", "terrain", "crest", "monster-bone-eaters", "monster-crimson-crocodile", "monster-smog-singers", "base", "monster-atnas", "model", "accessory"]
+      "tags": ["homebrew", "3d-files", "monster", "revampedgame", "gamblers-chest", "terrain", "member-only", "crest", "monster-bone-eaters", "monster-crimson-crocodile", "base", "monster-smog-singers", "monster-atnas", "model", "accessory"]
     },
     "revampedgame-settlement-locations-bundle": {
       "includes": [
@@ -9186,7 +9364,7 @@
       "name": "Acanthus Plants",
       "price": 500,
       "priceMinimum": true,
-      "tags": ["homebrew", "3d-files", "core", "craft-of-death"],
+      "tags": ["homebrew", "3d-files", "core", "terrain", "craft-of-death"],
       "url": "https://ko-fi.com/s/744d038dff"
     },
     "craft-of-death-attribute-counters": {
@@ -9220,7 +9398,7 @@
       "name": "Hiding Bushes",
       "price": 500,
       "priceMinimum": true,
-      "tags": ["homebrew", "3d-files", "core", "craft-of-death"],
+      "tags": ["homebrew", "3d-files", "core", "terrain", "craft-of-death"],
       "url": "https://ko-fi.com/s/09aec6f2f4"
     },
     "craft-of-death-knight-of-hands-base": {
@@ -9262,7 +9440,7 @@
       "kind": "terrain",
       "name": "Phoenix Nightmare Tree",
       "price": 900,
-      "tags": ["homebrew", "3d-files", "monster", "core", "craft-of-death", "monster-phoenix"],
+      "tags": ["homebrew", "3d-files", "monster", "core", "terrain", "craft-of-death", "monster-phoenix"],
       "url": "https://ko-fi.com/s/23394aac95"
     },
     "craft-of-death-rock-base-lion-monster": {
@@ -9295,7 +9473,7 @@
       "name": "Scenic Terrain - Lion Monster",
       "price": 0,
       "priceMinimum": true,
-      "tags": ["homebrew", "3d-files", "monster", "core", "member-only", "craft-of-death", "monster-white-lion"],
+      "tags": ["homebrew", "3d-files", "monster", "core", "terrain", "member-only", "craft-of-death", "monster-white-lion"],
       "url": "https://ko-fi.com/s/4ad38b4baa"
     },
     "craft-of-death-shield-location-dice": {
@@ -9337,7 +9515,7 @@
       "name": "Perfect Lantern",
       "price": 0,
       "requires": ["set-15th-anniversary-survivors"],
-      "tags": ["homebrew", "3d-files", "anniversary", "raitenjuro"],
+      "tags": ["homebrew", "3d-files", "terrain", "anniversary", "raitenjuro"],
       "url": "https://ko-fi.com/s/2ffb1e5b94"
     },
     "revampedgame-ammonia-v1": {
@@ -9393,7 +9571,7 @@
       "name": "Beheaded Corpse Terrain",
       "price": 0,
       "requires": ["expansion-gamblers-chest"],
-      "tags": ["homebrew", "3d-files", "revampedgame", "gamblers-chest"],
+      "tags": ["homebrew", "3d-files", "revampedgame", "gamblers-chest", "terrain"],
       "url": "https://ko-fi.com/s/544e92359d"
     },
     "revampedgame-berserk-rosine": {
@@ -9413,7 +9591,7 @@
       "name": "BK Bell",
       "price": 0,
       "requires": ["expansion-black-knight"],
-      "tags": ["homebrew", "3d-files", "monster", "revampedgame", "monster-black-knight"],
+      "tags": ["homebrew", "3d-files", "monster", "revampedgame", "terrain", "monster-black-knight"],
       "url": "https://ko-fi.com/s/d690dccc4b"
     },
     "revampedgame-black-knight-board": {
@@ -9442,7 +9620,7 @@
       "name": "(Black Knight) Elastomer Statue Terrain",
       "price": 0,
       "requires": ["expansion-black-knight"],
-      "tags": ["homebrew", "3d-files", "monster", "revampedgame", "knight", "monster-black-knight"],
+      "tags": ["homebrew", "3d-files", "monster", "revampedgame", "knight", "terrain", "monster-black-knight", "elastomer-statues"],
       "url": "https://ko-fi.com/s/5bb7402d55"
     },
     "revampedgame-black-knight-tile-holder-storage": {
@@ -9480,7 +9658,7 @@
       "name": "Blood Beard Plant",
       "price": 0,
       "requires": ["philosophies-of-death-gatherism"],
-      "tags": ["homebrew", "3d-files", "revampedgame", "gatherism"],
+      "tags": ["homebrew", "3d-files", "revampedgame", "terrain", "gatherism"],
       "url": "https://ko-fi.com/s/b7a08a5f6c"
     },
     "revampedgame-blood-pool-terrain": {
@@ -9490,7 +9668,7 @@
       "name": "Blood Pool Terrain",
       "price": 0,
       "requires": ["expansion-gamblers-chest"],
-      "tags": ["homebrew", "3d-files", "revampedgame", "gamblers-chest"],
+      "tags": ["homebrew", "3d-files", "revampedgame", "gamblers-chest", "terrain"],
       "url": "https://ko-fi.com/s/265cc675f0"
     },
     "revampedgame-bodp-tokens-insert": {
@@ -9535,7 +9713,7 @@
       "kind": "terrain",
       "name": "Bug Patch Terrain",
       "price": 0,
-      "tags": ["homebrew", "3d-files", "revampedgame", "core"],
+      "tags": ["homebrew", "3d-files", "revampedgame", "core", "terrain"],
       "url": "https://ko-fi.com/s/0b459e1884"
     },
     "revampedgame-cancer-pigeon": {
@@ -9573,7 +9751,7 @@
       "name": "Copperfish Den Terrain",
       "price": 0,
       "requires": ["expansion-frogdog"],
-      "tags": ["homebrew", "3d-files", "monster", "revampedgame", "monster-frogdog"],
+      "tags": ["homebrew", "3d-files", "monster", "revampedgame", "terrain", "monster-frogdog"],
       "url": "https://ko-fi.com/s/fb24710e32"
     },
     "revampedgame-corpse": {
@@ -9582,7 +9760,7 @@
       "kind": "model",
       "name": "Corpse",
       "price": 0,
-      "tags": ["homebrew", "3d-files", "revampedgame", "hunt-event", "member-only"],
+      "tags": ["homebrew", "3d-files", "revampedgame", "terrain", "hunt-event", "member-only"],
       "url": "https://ko-fi.com/s/0fb4eba665"
     },
     "revampedgame-corpse-lily-terrain": {
@@ -9592,7 +9770,7 @@
       "name": "Corpse Lily Terrain",
       "price": 0,
       "requires": ["white-sunlion-armor-erza"],
-      "tags": ["homebrew", "3d-files", "revampedgame"],
+      "tags": ["homebrew", "3d-files", "revampedgame", "terrain"],
       "url": "https://ko-fi.com/s/59fe4302b1"
     },
     "revampedgame-crafting-table": {
@@ -9656,7 +9834,7 @@
       "kind": "terrain",
       "name": "Debris Terrain",
       "price": 0,
-      "tags": ["homebrew", "3d-files", "revampedgame", "core"],
+      "tags": ["homebrew", "3d-files", "revampedgame", "core", "terrain"],
       "url": "https://ko-fi.com/s/4f70e4dcd3"
     },
     "revampedgame-divine-fragment": {
@@ -9686,7 +9864,7 @@
       "name": "Eggsack & Nest",
       "price": 0,
       "requires": ["expansion-spidicules"],
-      "tags": ["homebrew", "3d-files", "monster", "revampedgame", "monster-spidicules"],
+      "tags": ["homebrew", "3d-files", "monster", "revampedgame", "terrain", "monster-spidicules"],
       "url": "https://ko-fi.com/s/1c71568a0e"
     },
     "revampedgame-ethereal-dreamer": {
@@ -9735,7 +9913,7 @@
       "name": "Fallen Lantern Terrain",
       "price": 0,
       "requires": ["expansion-gamblers-chest"],
-      "tags": ["homebrew", "3d-files", "revampedgame", "gamblers-chest"],
+      "tags": ["homebrew", "3d-files", "revampedgame", "gamblers-chest", "terrain"],
       "url": "https://ko-fi.com/s/25f6c2f6d7"
     },
     "revampedgame-false-prophet": {
@@ -9782,7 +9960,7 @@
       "name": "Gabel's Tree Terrain V2",
       "price": 0,
       "requires": ["expansion-gamblers-chest"],
-      "tags": ["homebrew", "3d-files", "revampedgame", "gamblers-chest"],
+      "tags": ["homebrew", "3d-files", "revampedgame", "gamblers-chest", "terrain"],
       "url": "https://ko-fi.com/s/f199d1a4f7"
     },
     "revampedgame-gamblers-chest-atnas-star": {
@@ -9801,7 +9979,7 @@
       "name": "(Gambler's Chest) Blood Pool Terrain",
       "price": 0,
       "requires": ["expansion-gamblers-chest"],
-      "tags": ["homebrew", "3d-files", "monster", "revampedgame", "gamblers-chest", "monster-crimson-crocodile"],
+      "tags": ["homebrew", "3d-files", "monster", "revampedgame", "gamblers-chest", "terrain", "monster-crimson-crocodile"],
       "url": "https://ko-fi.com/s/f55e0b3daf"
     },
     "revampedgame-gamblers-chest-box-of-delicious-promise": {
@@ -9829,7 +10007,7 @@
       "name": "(Gambler's Chest) Encounter Board",
       "price": 0,
       "requires": ["expansion-gamblers-chest"],
-      "tags": ["homebrew", "3d-files", "revampedgame", "gamblers-chest"],
+      "tags": ["homebrew", "3d-files", "revampedgame", "gamblers-chest", "board", "encounter-monster"],
       "url": "https://ko-fi.com/s/2e3086e1dc"
     },
     "revampedgame-gamblers-chest-fingers-terrain": {
@@ -9839,7 +10017,7 @@
       "name": "(Gambler's Chest) Fingers Terrain",
       "price": 0,
       "requires": ["expansion-gamblers-chest"],
-      "tags": ["homebrew", "3d-files", "monster", "revampedgame", "gamblers-chest", "monster-bone-eaters"],
+      "tags": ["homebrew", "3d-files", "monster", "revampedgame", "gamblers-chest", "terrain", "monster-bone-eaters"],
       "url": "https://ko-fi.com/s/1a68251852"
     },
     "revampedgame-gamblers-chest-gabels-tree-terrain": {
@@ -9849,7 +10027,7 @@
       "name": "(Gambler's Chest) Gabel's Tree Terrain",
       "price": 0,
       "requires": ["expansion-gamblers-chest"],
-      "tags": ["homebrew", "3d-files", "revampedgame", "gamblers-chest"],
+      "tags": ["homebrew", "3d-files", "revampedgame", "gamblers-chest", "terrain"],
       "url": "https://ko-fi.com/s/fb5fd084c5"
     },
     "revampedgame-gamblers-chest-headless-statue-terrain": {
@@ -9859,7 +10037,7 @@
       "name": "(Gambler's Chest) Headless Statue Terrain",
       "price": 0,
       "requires": ["expansion-gamblers-chest"],
-      "tags": ["homebrew", "3d-files", "revampedgame", "gamblers-chest"],
+      "tags": ["homebrew", "3d-files", "revampedgame", "gamblers-chest", "terrain"],
       "url": "https://ko-fi.com/s/aa21d1f82f"
     },
     "revampedgame-gamblers-chest-hidden-face-terrain": {
@@ -9869,7 +10047,7 @@
       "name": "(Gambler's Chest) Hidden Face Terrain",
       "price": 0,
       "requires": ["expansion-gamblers-chest"],
-      "tags": ["homebrew", "3d-files", "revampedgame", "gamblers-chest"],
+      "tags": ["homebrew", "3d-files", "revampedgame", "gamblers-chest", "terrain"],
       "url": "https://ko-fi.com/s/5ebf554c08"
     },
     "revampedgame-gamblers-chest-lantern-halberd-terrain": {
@@ -9879,7 +10057,7 @@
       "name": "(Gambler's Chest) Lantern Halberd Terrain",
       "price": 0,
       "requires": ["expansion-gamblers-chest"],
-      "tags": ["homebrew", "3d-files", "revampedgame", "gamblers-chest"],
+      "tags": ["homebrew", "3d-files", "revampedgame", "gamblers-chest", "terrain"],
       "url": "https://ko-fi.com/s/de32d0dcc1"
     },
     "revampedgame-gamblers-chest-lantern-terrain": {
@@ -9889,7 +10067,7 @@
       "name": "(Gambler's Chest) Lantern Terrain",
       "price": 0,
       "requires": ["expansion-gamblers-chest"],
-      "tags": ["homebrew", "3d-files", "revampedgame", "gamblers-chest"],
+      "tags": ["homebrew", "3d-files", "revampedgame", "gamblers-chest", "terrain"],
       "url": "https://ko-fi.com/s/ee0f732873"
     },
     "revampedgame-gamblers-chest-rock-formation-terrain": {
@@ -9899,7 +10077,7 @@
       "name": "(Gambler's Chest) Rock Formation Terrain",
       "price": 0,
       "requires": ["expansion-gamblers-chest"],
-      "tags": ["homebrew", "3d-files", "revampedgame", "gamblers-chest"],
+      "tags": ["homebrew", "3d-files", "revampedgame", "gamblers-chest", "terrain"],
       "url": "https://ko-fi.com/s/6dc72d079d"
     },
     "revampedgame-gamblers-chest-smog-incense-terrain": {
@@ -9909,7 +10087,7 @@
       "name": "(Gambler's Chest) Smog Incense Terrain",
       "price": 0,
       "requires": ["expansion-gamblers-chest"],
-      "tags": ["homebrew", "3d-files", "monster", "revampedgame", "gamblers-chest", "monster-smog-singers"],
+      "tags": ["homebrew", "3d-files", "monster", "revampedgame", "gamblers-chest", "terrain", "monster-smog-singers"],
       "url": "https://ko-fi.com/s/c667446ad3"
     },
     "revampedgame-gamblers-chest-tokens-pack-1": {
@@ -9955,7 +10133,7 @@
       "kind": "terrain",
       "name": "Giant Stone Face Terrain",
       "price": 0,
-      "tags": ["homebrew", "3d-files", "revampedgame", "core"],
+      "tags": ["homebrew", "3d-files", "revampedgame", "core", "terrain"],
       "url": "https://ko-fi.com/s/9f8a2f2365"
     },
     "revampedgame-glowing-waypoint-terrain": {
@@ -9965,7 +10143,7 @@
       "name": "Glowing Waypoint Terrain",
       "price": 0,
       "requires": ["expansion-gamblers-chest"],
-      "tags": ["homebrew", "3d-files", "revampedgame", "gamblers-chest"],
+      "tags": ["homebrew", "3d-files", "revampedgame", "gamblers-chest", "terrain"],
       "url": "https://ko-fi.com/s/931a0d0ebc"
     },
     "revampedgame-gorm-crest": {
@@ -10003,7 +10181,7 @@
       "name": "Hidden Face Terrain",
       "price": 0,
       "requires": ["expansion-gamblers-chest"],
-      "tags": ["homebrew", "3d-files", "revampedgame", "gamblers-chest"],
+      "tags": ["homebrew", "3d-files", "revampedgame", "gamblers-chest", "terrain"],
       "url": "https://ko-fi.com/s/2fe69d9cc3"
     },
     "revampedgame-host-of-hands": {
@@ -10040,7 +10218,7 @@
       "kind": "accessory",
       "name": "Hunt Board",
       "price": 0,
-      "tags": ["homebrew", "3d-files", "revampedgame"],
+      "tags": ["homebrew", "3d-files", "revampedgame", "board", "hunt"],
       "url": "https://ko-fi.com/s/eef15a7918"
     },
     "revampedgame-incensed-pinaceae-fruit": {
@@ -10050,7 +10228,7 @@
       "name": "Incensed Pinaceae Fruit",
       "price": 0,
       "requires": ["philosophies-of-death-gatherism"],
-      "tags": ["homebrew", "3d-files", "revampedgame", "gatherism"],
+      "tags": ["homebrew", "3d-files", "revampedgame", "terrain", "gatherism"],
       "url": "https://ko-fi.com/s/e2e36a533b"
     },
     "revampedgame-kd-15th-anniversary": {
@@ -10160,7 +10338,7 @@
       "name": "Mammoth Leaf Terrain",
       "price": 0,
       "requires": ["expansion-frogdog"],
-      "tags": ["homebrew", "3d-files", "monster", "revampedgame", "monster-frogdog"],
+      "tags": ["homebrew", "3d-files", "monster", "revampedgame", "terrain", "monster-frogdog"],
       "url": "https://ko-fi.com/s/e3218e870c"
     },
     "revampedgame-mask-1": {
@@ -10301,7 +10479,7 @@
       "name": "Mush Lithops Plant",
       "price": 0,
       "requires": ["philosophies-of-death-gatherism"],
-      "tags": ["homebrew", "3d-files", "revampedgame", "gatherism"],
+      "tags": ["homebrew", "3d-files", "revampedgame", "terrain", "gatherism"],
       "url": "https://ko-fi.com/s/0dbc31e763"
     },
     "revampedgame-oily-pinkies-plant": {
@@ -10311,7 +10489,7 @@
       "name": "Oily Pinkies Plant",
       "price": 0,
       "requires": ["philosophies-of-death-gatherism"],
-      "tags": ["homebrew", "3d-files", "revampedgame", "gatherism"],
+      "tags": ["homebrew", "3d-files", "revampedgame", "terrain", "gatherism"],
       "url": "https://ko-fi.com/s/e3c7c9ad25"
     },
     "revampedgame-organ-grinder-v2": {
@@ -10338,7 +10516,7 @@
       "kind": "model",
       "name": "Overwhelming Darkness",
       "price": 0,
-      "tags": ["homebrew", "3d-files", "revampedgame", "core", "hunt-event"],
+      "tags": ["homebrew", "3d-files", "revampedgame", "core", "hunt-event", "hunt"],
       "url": "https://ko-fi.com/s/f4e8af7e7a"
     },
     "revampedgame-perfect-lantern-terrain": {
@@ -10348,7 +10526,7 @@
       "name": "Perfect Lantern Terrain",
       "price": 0,
       "requires": ["set-15th-anniversary-survivors"],
-      "tags": ["homebrew", "3d-files", "revampedgame", "anniversary"],
+      "tags": ["homebrew", "3d-files", "revampedgame", "terrain", "anniversary"],
       "url": "https://ko-fi.com/s/8c486cdde2"
     },
     "revampedgame-perfect-slayer": {
@@ -10357,7 +10535,7 @@
       "kind": "model",
       "name": "Perfect Slayer",
       "price": 0,
-      "tags": ["homebrew", "3d-files", "revampedgame"],
+      "tags": ["homebrew", "3d-files", "revampedgame", "innovation"],
       "url": "https://ko-fi.com/s/c571e6ec38"
     },
     "revampedgame-piton": {
@@ -10433,7 +10611,7 @@
       "name": "Preserved Dogpole Terrain",
       "price": 0,
       "requires": ["expansion-frogdog"],
-      "tags": ["homebrew", "3d-files", "monster", "revampedgame", "monster-frogdog"],
+      "tags": ["homebrew", "3d-files", "monster", "revampedgame", "terrain", "monster-frogdog"],
       "url": "https://ko-fi.com/s/36f4724dfb"
     },
     "revampedgame-priority-target": {
@@ -10453,7 +10631,7 @@
       "name": "Royal Causeway Terrain",
       "price": 0,
       "requires": ["expansion-gamblers-chest"],
-      "tags": ["homebrew", "3d-files", "revampedgame", "gamblers-chest"],
+      "tags": ["homebrew", "3d-files", "revampedgame", "gamblers-chest", "terrain"],
       "url": "https://ko-fi.com/s/561fc81962"
     },
     "revampedgame-sacred-pool": {
@@ -10537,7 +10715,7 @@
       "name": "Sinkhole",
       "price": 0,
       "requires": ["expansion-lion-god"],
-      "tags": ["homebrew", "3d-files", "monster", "revampedgame", "monster-lion-god"],
+      "tags": ["homebrew", "3d-files", "monster", "revampedgame", "terrain", "monster-lion-god"],
       "url": "https://ko-fi.com/s/4053b4b7f8"
     },
     "revampedgame-skinnery-v1": {
@@ -10602,7 +10780,7 @@
       "name": "Smog Incense Terrain",
       "price": 0,
       "requires": ["expansion-gamblers-chest"],
-      "tags": ["homebrew", "3d-files", "monster", "revampedgame", "gamblers-chest", "monster-smog-singers"],
+      "tags": ["homebrew", "3d-files", "monster", "revampedgame", "gamblers-chest", "terrain", "monster-smog-singers"],
       "url": "https://ko-fi.com/s/3122347b9f"
     },
     "revampedgame-stone-box": {
@@ -10638,7 +10816,7 @@
       "kind": "terrain",
       "name": "Stone Column Terrain",
       "price": 0,
-      "tags": ["homebrew", "3d-files", "revampedgame", "core", "member-only"],
+      "tags": ["homebrew", "3d-files", "revampedgame", "core", "terrain", "member-only"],
       "url": "https://ko-fi.com/s/f5bdd399f0"
     },
     "revampedgame-stone-faces-rolling-pin": {
@@ -10648,7 +10826,7 @@
       "name": "Stone Faces Rolling Pin",
       "price": 0,
       "priceMinimum": true,
-      "tags": ["generic", "homebrew", "3d-files", "revampedgame", "member-only"],
+      "tags": ["homebrew", "3d-files", "revampedgame", "member-only", "base"],
       "url": "https://ko-fi.com/s/d95cd2cb42"
     },
     "revampedgame-stone-fingers-terrain": {
@@ -10658,7 +10836,7 @@
       "name": "Stone Fingers Terrain",
       "price": 0,
       "requires": ["expansion-gamblers-chest"],
-      "tags": ["homebrew", "3d-files", "monster", "revampedgame", "gamblers-chest", "monster-bone-eaters"],
+      "tags": ["homebrew", "3d-files", "monster", "revampedgame", "gamblers-chest", "terrain", "monster-bone-eaters"],
       "url": "https://ko-fi.com/s/2b9bb385ad"
     },
     "revampedgame-stone-heap": {
@@ -10668,7 +10846,7 @@
       "name": "Stone Heap",
       "price": 0,
       "priceMinimum": true,
-      "tags": ["generic", "homebrew", "3d-files", "revampedgame", "member-only"],
+      "tags": ["homebrew", "3d-files", "revampedgame", "member-only"],
       "url": "https://ko-fi.com/s/a0cc9c0682"
     },
     "revampedgame-storage-box": {
@@ -10686,7 +10864,7 @@
       "kind": "terrain",
       "name": "Survivor Corpse Terrain",
       "price": 0,
-      "tags": ["homebrew", "3d-files", "revampedgame", "core", "survivor"],
+      "tags": ["homebrew", "3d-files", "revampedgame", "core", "survivor", "terrain"],
       "url": "https://ko-fi.com/s/410c436d22"
     },
     "revampedgame-tall-grass-terrain": {
@@ -10695,7 +10873,7 @@
       "kind": "terrain",
       "name": "Tall Grass Terrain",
       "price": 0,
-      "tags": ["homebrew", "3d-files", "revampedgame", "core", "member-only"],
+      "tags": ["homebrew", "3d-files", "revampedgame", "core", "terrain", "member-only"],
       "url": "https://ko-fi.com/s/9b187aaac5"
     },
     "revampedgame-the-butcher-1x1": {
@@ -10743,7 +10921,7 @@
       "name": "The Stampede",
       "price": 0,
       "requires": ["expansion-screaming-god"],
-      "tags": ["homebrew", "3d-files", "monster", "revampedgame", "monster-screaming-god"],
+      "tags": ["homebrew", "3d-files", "monster", "revampedgame", "terrain", "monster-screaming-god"],
       "url": "https://ko-fi.com/s/5add3e8472"
     },
     "revampedgame-the-traveler": {
@@ -10772,7 +10950,7 @@
       "name": "Timeworn Statue Terrain",
       "price": 0,
       "requires": ["vignette-of-death-killennium-butcher"],
-      "tags": ["homebrew", "3d-files", "monster", "revampedgame", "monster-butcher", "monster-killennium-butcher"],
+      "tags": ["homebrew", "3d-files", "monster", "revampedgame", "terrain", "monster-butcher", "monster-killennium-butcher"],
       "url": "https://ko-fi.com/s/460d97369a"
     },
     "revampedgame-toppled-pillar-terrain": {
@@ -10781,7 +10959,7 @@
       "kind": "terrain",
       "name": "Toppled Pillar Terrain",
       "price": 0,
-      "tags": ["homebrew", "3d-files", "revampedgame", "core", "pillar"],
+      "tags": ["homebrew", "3d-files", "revampedgame", "core", "terrain", "pillar"],
       "url": "https://ko-fi.com/s/7ac0986d49"
     },
     "revampedgame-weapon-crafter": {

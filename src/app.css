@@ -114,11 +114,13 @@
   --transition-colors:
     background-color var(--duration-fast) var(--ease-standard), color var(--duration-fast) var(--ease-standard),
     border-color var(--duration-fast) var(--ease-standard);
+
   /* from https://open-props.style/#easing */
   /* prettier-ignore */
   --ease-bounce: linear(0,.004,.016,.035,.063,.098,.141,.191,.25,.316,.391 36.8%,.563,.766,1 58.8%,.946,.908 69.1%,.895,.885,.879,.878,.879,.885,.895,.908 89.7%,.946,1);
   --ease-quint-in-out: cubic-bezier(0.86, 0, 0.07, 1);
   --ease-standard: cubic-bezier(0.25, 0, 0.5, 1);
+
   --letter-spacing-tight: -0.03em;
   --line-height-none: 1;
   --line-height-snug: 1.25;
@@ -193,12 +195,13 @@
 
 * {
   border-color: var(--border);
+  scrollbar-color: var(--card) transparent;
+  scrollbar-width: thin;
   user-select: none;
 }
 
 html:has(.scrollbar-stable) {
   scrollbar-gutter: stable both-edges;
-  scrollbar-width: thin;
 }
 
 body {

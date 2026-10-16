@@ -443,7 +443,7 @@
 
     max-inline-size: var(--size-catalog);
     margin-inline: auto;
-    padding: 0 0.25rem 2rem;
+    padding-block-end: 2rem;
     overflow-anchor: none;
   }
   .catalog-viewport {
@@ -814,6 +814,9 @@
     padding: 0.5rem;
     gap: 0.375rem;
   }
+  .tag-icon {
+    display: none;
+  }
   .more-heading {
     justify-content: space-between;
     padding-inline: 0.25rem;
@@ -1006,7 +1009,7 @@
       border-color: var(--accent);
     }
     .tag-heading:hover :is(.tag-icon, .tag-chevron),
-    summary:hover :is(.tag-icon, .tag-chevron, .more-chevron) {
+    summary:hover .more-chevron {
       color: var(--accent);
     }
     .back:hover {
@@ -1031,6 +1034,9 @@
     }
   }
   @media (min-width: 40rem) {
+    .tag-icon {
+      display: inline-block;
+    }
     .is-inline .search-row {
       grid-template-columns: minmax(0, 1fr) auto auto;
     }

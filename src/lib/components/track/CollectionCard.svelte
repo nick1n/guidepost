@@ -36,7 +36,16 @@
 <script lang="ts">
   import TagRail from "#lib/components/track/TagRail.svelte";
   import HoldRipple from "#lib/components/gestures/HoldRipple.svelte";
-  import { reviewShopLink, reviewEditions, reviewNumberedEditions, reviewPrice, reviewTagLabel, reviewBadges } from "#lib/catalog-view.ts";
+  import {
+    reviewShopLink,
+    reviewEditions,
+    reviewEquivalentEditions,
+    reviewEditionReleased,
+    reviewNumberedEditions,
+    reviewPrice,
+    reviewTagLabel,
+    reviewBadges,
+  } from "#lib/catalog-view.ts";
   import { editionGameplay, editionLabel, editionMaterials, formatPrice } from "#lib/kdm-data.ts";
   import { onDestroy } from "svelte";
   import { getCollection } from "#lib/state/collection.svelte.ts";
@@ -49,23 +58,44 @@
   const catalog = collection.catalog;
   const writable = $derived(collection.canWrite);
   let inspected = $state<string>();
-  let contentsOpen = $state<Record<string, boolean>>({});
+  let contentsOpen = $state(false);
+  let missingOnly = $state(false);
   let feedback = $state<OwnershipKind>();
   let feedbackTimer: ReturnType<typeof setTimeout> | undefined;
   onDestroy(() => clearTimeout(feedbackTimer));
-  const editions = $derived(reviewEditions(item).filter((edition) => !edition.includedOnly || selection(edition).owned));
+  const editions = $derived(reviewEditions(item));
   const selected = $derived(
     editions.find((edition) => edition.id === inspected) ??
       editions.findLast((edition) => selection(edition).owned) ??
+      editions.findLast((edition) => !edition.includedOnly && reviewEditionReleased(edition)) ??
       editions.findLast((edition) => !edition.includedOnly) ??
       editions.at(-1),
   );
   const badges = $derived(reviewBadges(item));
   const numberedEditions = $derived(reviewNumberedEditions(item).filter((edition) => selection(edition).owned));
   const hasOwned = $derived(editions.some((edition) => selection(edition).owned));
+  const ownedItems = $derived(new Set(collection.owned.map(({ item }) => item.id)));
 
   function selection(edition: ReviewEdition) {
     return collection.getEdition(item.id, edition.id);
+  }
+  function includedOwnership(edition: ReviewEdition, target = item) {
+    const children = catalog.includedEditions(target.id, edition.id, false).map((child) => {
+      const ownedEditions = reviewEditions(child.item).filter((release) => collection.getEdition(child.item.id, release.id).owned);
+      return {
+        ...child,
+        ownedEditions,
+        owned: ownedEditions.length > 0,
+        exactOwned: reviewEquivalentEditions(child.item, child.edition).some(
+          (release) => collection.getEdition(child.item.id, release.id).owned,
+        ),
+      };
+    });
+    const count = children.filter((child) => child.owned).length;
+    const exactCount = children.filter((child) => child.exactOwned).length;
+    const ratio = children.length ? exactCount / children.length : 1;
+    const shade = ratio === 1 ? "var(--grey-0)" : ratio < 0.5 ? "var(--grey-7)" : "var(--grey-6)";
+    return { children, count, exactCount, shade };
   }
   function showOwnershipFeedback(kind: OwnershipKind) {
     clearTimeout(feedbackTimer);
@@ -81,7 +111,7 @@
   function holdOwnership() {
     if (!writable) return "Collection changes are unavailable until your collection is loaded.";
     const owned = !hasOwned;
-    const targets = editions.filter((edition) => (owned ? !edition.includedOnly : selection(edition).owned));
+    const targets = editions.filter((edition) => owned || selection(edition).owned);
     collectionActions.run(
       collection.setEditionsOwned(
         targets.map((edition) => ({ item, edition })),
@@ -95,19 +125,27 @@
     if (selected?.id === edition.id) toggleOwned(edition);
     else inspected = edition.id;
   }
-  function toggleOwned(edition: ReviewEdition) {
-    if (!writable || edition.includedOnly) return;
+  function toggleOwned(edition: ReviewEdition, target = item) {
+    if (!writable) return;
     clearTimeout(feedbackTimer);
     feedback = undefined;
-    collectionActions.run(collection.setEditionsOwned([{ item, edition }], !selection(edition).owned));
-    inspected = edition.id;
+    const equivalent = reviewEquivalentEditions(target, edition);
+    const owned = equivalent.some((release) => collection.getEdition(target.id, release.id).owned);
+    const targets = owned ? equivalent : [edition];
+    collectionActions.run(
+      collection.setEditionsOwned(
+        targets.map((release) => ({ item: target, edition: release })),
+        !owned,
+      ),
+    );
+    if (target.id === item.id) inspected = edition.id;
   }
-  function toggleWish(edition: ReviewEdition) {
-    if (!writable || edition.includedOnly) return;
-    collectionActions.run(collection.toggleWish(collectionKey(item.id, edition.id)));
+  function toggleWish(edition: ReviewEdition, target = item) {
+    if (!writable) return;
+    collectionActions.run(collection.toggleWish(collectionKey(target.id, edition.id)));
   }
   function updateCopyNumber(edition: ReviewEdition, input: HTMLInputElement) {
-    if (!writable || edition.includedOnly) return;
+    if (!writable) return;
     const copyNumber = input.value === "" && !input.validity.badInput ? undefined : input.valueAsNumber;
     collectionActions.run(collection.setCopyNumber(collectionKey(item.id, edition.id), copyNumber), { success: false });
   }
@@ -128,7 +166,7 @@
           type="button"
           aria-label="Owned editions of {item.name}"
           aria-pressed={hasOwned}
-          disabled={!writable || (!hasOwned && (!selected || selected.includedOnly))}
+          disabled={!writable || (!hasOwned && !selected)}
           {...events}
         >
           {@render paint()}
@@ -138,7 +176,7 @@
               {#if feedback}
                 {ownershipMessages[feedback]}
               {:else}
-                {item.category === "bundles" ? "bundle" : (item.kind ?? "Item")}
+                {item.category === "bundles" ? "bundle" : (item.category === "accessories" && item.accessoryType) || item.kind || "Item"}
                 {#if editions.length > 1}
                   / {editions.length} versions
                 {/if}
@@ -176,12 +214,14 @@
           {#each editions as summaryEdition (summaryEdition.id)}
             {@const active = selected.id === summaryEdition.id}
             {@const price = reviewPrice(item, summaryEdition)}
-            {@const bundle = catalog.bundlePricing(item.id, summaryEdition.id)}
+            {@const bundle = catalog.bundlePricing(item.id, summaryEdition.id, ownedItems)}
             <div class={["edition-summary", !active && "inactive"]} inert={!active}>
-              <div class="edition-value">
-                <strong class="price">{price === undefined ? "Price unknown" : formatPrice(price, item.currency)}</strong>
-                <span class="caption">for {editionLabel(summaryEdition)}</span>
-              </div>
+              {#if price !== 0}
+                <div class="edition-value">
+                  <strong class="price">{price === undefined ? "Price unknown" : formatPrice(price, item.currency)}</strong>
+                  <span class="caption">for {editionLabel(summaryEdition)}</span>
+                </div>
+              {/if}
               <div class="badges">
                 {#if item.category === "accessories"}
                   {#if item.accessoryType}{@render badge(item.accessoryType, item.accessoryType)}{/if}
@@ -219,7 +259,7 @@
                   type="number"
                   min="1"
                   max={Math.min(numberedEdition.runSize ?? copyNumberMaximum, copyNumberMaximum)}
-                  disabled={!writable || numberedEdition.includedOnly}
+                  disabled={!writable}
                   value={value.copyNumber ?? ""}
                   oninput={(event) => updateCopyNumber(numberedEdition, event.currentTarget)}
                   placeholder="13"
@@ -273,37 +313,88 @@
   {@const references = collection.getOwners(item.id, edition.id)}
   {#if references.length}
     <p class="included-note">
-      Covered by your {references.map((parent) => `${parent.parent} (${parent.parentEdition})`).join(", ")}.
+      {selection(edition).owned ? "Covered by" : "Included with"} your {references
+        .map((parent) => `${parent.parent} (${parent.parentEdition})`)
+        .join(", ")}.
     </p>
   {:else if edition.includedOnly}
-    <p class="included-note">This edition is tracked through the item it comes with.</p>
+    <p class="included-note">This edition comes with another item. You can track its ownership separately.</p>
   {/if}
   {#if item.includes?.length || edition.includesAllSim}
-    {@const included = catalog.inclusions(item.id, edition.id)}
-    <details class="contents" bind:open={contentsOpen[edition.id]}>
-      <summary>Included with {editionLabel(edition)} <span class="contents-count">{included.length} catalog entries</span></summary>
+    {@const ownership = includedOwnership(edition)}
+    {@const included = ownership.children}
+    {@const visible = included.filter((child) => !missingOnly || !child.exactOwned)}
+    <details class="contents" bind:open={contentsOpen}>
+      <summary>
+        Included with {editionLabel(edition)}
+        <span class="contents-count">
+          {ownership.exactCount} of {included.length} owned
+        </span>
+      </summary>
       {#if edition.includesAllSim}
         <p>Includes every current and future Sim edition. This list shows the editions currently in the catalog.</p>
       {/if}
-      {#if contentsOpen[edition.id] && selected?.id === edition.id}
+      {#if contentsOpen && selected?.id === edition.id}
+        {#if included.length}
+          <button class="contents-filter" type="button" aria-pressed={missingOnly} onclick={() => (missingOnly = !missingOnly)}>
+            Show missing only
+          </button>
+        {/if}
         <ul>
-          {#if item.category === "bundles"}
-            {#each catalog.includedEditions(item.id, edition.id, false) as child (collectionKey(child.item.id, child.edition.id))}
-              {@const price = reviewPrice(child.item, child.edition)}
-              <li>
+          {#each visible as child (collectionKey(child.item.id, child.edition.id))}
+            {@const price = reviewPrice(child.item, child.edition)}
+            {@const value = collection.getEdition(child.item.id, child.edition.id)}
+            <li class="included-row">
+              <label class="own">
+                <input
+                  type="checkbox"
+                  aria-label="Own {child.item.name}, {editionLabel(child.edition)}"
+                  checked={child.exactOwned}
+                  indeterminate={child.owned && !child.exactOwned}
+                  disabled={!writable}
+                  aria-describedby={child.owned && !child.exactOwned
+                    ? `other-owned-${item.id}-${edition.id}-${child.item.id}-${child.edition.id}`
+                    : undefined}
+                  onchange={() => toggleOwned(child.edition, child.item)}
+                />
+              </label>
+              <button
+                class="edition-label"
+                type="button"
+                aria-label="Own {child.item.name}, {editionLabel(child.edition)}"
+                aria-pressed={child.exactOwned}
+                disabled={!writable}
+                onclick={() => toggleOwned(child.edition, child.item)}
+              >
                 <span>{child.item.name} <small>{editionLabel(child.edition)}</small></span>
+                {#if child.owned && !child.exactOwned}
+                  <span class="included-owned" id={`other-owned-${item.id}-${edition.id}-${child.item.id}-${child.edition.id}`}>
+                    Owned: {child.ownedEditions.map(editionLabel).join(", ")}
+                  </span>
+                {/if}
+              </button>
+              {#if price !== 0}
                 <span class="included-price">{price === undefined ? "Price unknown" : formatPrice(price, child.item.currency)}</span>
-              </li>
-            {/each}
-          {:else}
-            {#each included as child, index (JSON.stringify([child.item, child.editionId ?? index]))}
-              <li>
-                <span>{child.name}</span>
-                <small>{child.editionLabel ?? child.materials?.join(", ") ?? "Edition unspecified"}</small>
-              </li>
-            {/each}
-          {/if}
+              {/if}
+              <button
+                class="wish"
+                type="button"
+                aria-label="Wishlist {child.item.name}, {editionLabel(child.edition)}"
+                aria-pressed={!!value.wished}
+                disabled={!writable || child.exactOwned}
+                onclick={() => toggleWish(child.edition, child.item)}
+              >
+                <span
+                  class={["wish-icon", value.wished ? "i-material-symbols:favorite" : "i-material-symbols:favorite-outline"]}
+                  aria-hidden="true"
+                ></span>
+              </button>
+            </li>
+          {/each}
         </ul>
+        {#if missingOnly && included.length && !visible.length}
+          <p class="included-note" role="status">All included editions are owned.</p>
+        {/if}
       {/if}
       {#if !included.length}<p>No inclusions are listed for this edition.</p>{/if}
     </details>
@@ -322,6 +413,8 @@
 
 {#snippet editionRow(edition: ReviewEdition, active: boolean)}
   {@const value = selection(edition)}
+  {@const ownership = includedOwnership(edition)}
+  {@const hasContents = ownership.children.length > 0}
   {@const gameplay = editionGameplay(item, edition)}
   {@const price = reviewPrice(item, edition)}
   {@const detail = [...new Set([edition.name, ...(edition.format === "digital" ? ["Digital"] : editionMaterials(edition))])]
@@ -331,11 +424,21 @@
     <label class="own">
       <input
         type="checkbox"
+        class={[hasContents && "contents-own"]}
+        style:--ownership-fill={hasContents ? ownership.shade : undefined}
         aria-label="Own {item.name}, {editionLabel(edition)}"
+        aria-describedby={hasContents ? `ownership-${item.id}-${edition.id}` : undefined}
         checked={!!value.owned}
-        disabled={!writable || edition.includedOnly}
+        indeterminate={hasContents && ownership.exactCount > 0 && (!value.owned || ownership.exactCount < ownership.children.length)}
+        disabled={!writable}
         onchange={() => toggleOwned(edition)}
       />
+      {#if hasContents}
+        <span class="visually-hidden" id={`ownership-${item.id}-${edition.id}`}>
+          {ownership.count} of {ownership.children.length} included items owned; {ownership.exactCount} match this edition. White indicates all
+          included editions match.
+        </span>
+      {/if}
     </label>
     <button
       class="edition-label"
@@ -364,7 +467,7 @@
     <div class="edition-price">
       {#if edition.includedOnly}
         <small>Included only</small>
-      {:else}
+      {:else if price !== 0}
         {price === undefined ? "Unknown" : formatPrice(price, item.currency)}
       {/if}
     </div>
@@ -373,7 +476,7 @@
       type="button"
       aria-pressed={!!value.wished}
       aria-label="Wishlist {item.name}, {editionLabel(edition)}"
-      disabled={!writable || !!value.owned || edition.includedOnly}
+      disabled={!writable || !!value.owned}
       onclick={() => toggleWish(edition)}
     >
       <span class={["wish-icon", value.wished ? "i-material-symbols:favorite" : "i-material-symbols:favorite-outline"]} aria-hidden="true"
@@ -636,7 +739,8 @@
     display: grid;
     grid-template-columns: max-content minmax(0, 1fr) max-content max-content auto max-content;
   }
-  .edition {
+  .edition,
+  .included-row {
     display: grid;
     position: relative;
     grid-template-rows: auto auto;
@@ -660,7 +764,7 @@
   .edition:not(:has(.run)) > :is(.shop, .gameplay-icon, .edition-price) {
     grid-row: 1 / -1;
   }
-  .edition > :is(.own, .shop, .wish) {
+  :is(.edition, .included-row) > :is(.own, .shop, .wish) {
     /* Keep the independent controls above the edition button's row-wide hit area. */
     z-index: 1;
   }
@@ -677,6 +781,10 @@
     grid-column: 1;
     padding-inline: 0.125rem;
     border-radius: var(--radius-control);
+
+    &:has(input:disabled) {
+      cursor: default;
+    }
   }
   input[type="checkbox"] {
     appearance: none;
@@ -689,13 +797,24 @@
     cursor: pointer;
     opacity: 0.5;
 
-    &:is(:hover, :focus-visible, :checked) {
+    &:is(:hover:not(:disabled), :focus-visible, :checked) {
       opacity: 1;
     }
 
     &:checked {
       background:
-        linear-gradient(var(--foreground) 0 0) content-box,
+        linear-gradient(var(--ownership-fill, var(--foreground)) 0 0) content-box,
+        var(--contrast);
+    }
+    &:indeterminate {
+      opacity: 1;
+      background:
+        linear-gradient(var(--foreground) 0 0) center / 0.75rem 0.125rem no-repeat,
+        var(--contrast);
+    }
+    &.contents-own:indeterminate {
+      background:
+        linear-gradient(var(--ownership-fill) 0 0) content-box,
         var(--contrast);
     }
   }
@@ -715,7 +834,7 @@
       position: absolute;
       inset: 0;
       content: "";
-      cursor: pointer;
+      cursor: inherit;
     }
   }
   .edition-name {
@@ -808,21 +927,45 @@
   .contents-count {
     float: inline-end;
   }
+  .contents-filter {
+    margin-block-start: 0.5rem;
+    padding: 0.25rem 0.5rem;
+    border: var(--border-width) solid var(--color-divider);
+    border-radius: var(--radius-control);
+    background: var(--panel);
+    color: var(--muted-foreground);
+
+    &[aria-pressed="true"] {
+      border-color: var(--accent-blue);
+      background: var(--blue-8);
+      color: var(--accent-blue);
+    }
+  }
   .contents ul {
     display: grid;
+    grid-template-columns: max-content minmax(0, 1fr) max-content max-content;
     margin-block-start: 0.5rem;
-    gap: 0.375rem;
-  }
-  .contents li {
-    display: flex;
-    justify-content: space-between;
-    gap: 1rem;
-  }
-  .contents li small {
-    flex-shrink: 0;
   }
   .included-price {
+    grid-column: 3;
+    text-align: end;
     white-space: nowrap;
+  }
+  .included-row {
+    grid-template-rows: auto;
+  }
+  .included-row .edition-label {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.125rem 0.5rem;
+  }
+  .included-row .wish {
+    grid-column: 4;
+  }
+  .included-owned {
+    color: var(--accent-green);
+    font-size: var(--text-sm);
   }
   .notes p {
     margin-block-start: 0.5rem;
@@ -841,7 +984,8 @@
   a,
   summary,
   input,
-  .edition {
+  .edition,
+  .included-row {
     transition: var(--transition-colors);
   }
   @media (hover: hover) {
@@ -851,11 +995,16 @@
     .ownership[aria-pressed="false"]:not(:disabled):hover .ownership-label {
       opacity: 0.5;
     }
-    button:not(:disabled, .wish, .edition-label, .badge):hover,
+    button:not(:disabled, .wish, .edition-label, .badge, .contents-filter):hover,
     summary:hover,
-    .edition:hover {
+    .edition:hover,
+    .included-row:hover {
       background: var(--blue-8);
       color: var(--accent);
+    }
+    .contents-filter:hover {
+      border-color: var(--accent-blue);
+      color: var(--accent-blue);
     }
     input[type="number"]:not(:disabled):hover {
       border-color: var(--accent);

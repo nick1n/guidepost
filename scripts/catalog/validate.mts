@@ -46,6 +46,13 @@ export async function validateCatalog(catalog: Catalog, schemaPath = "static/kdm
       for (const edition of item.editions ?? []) {
         if (editionIds.has(edition.id!)) throw new Error("Duplicate edition ID: " + id + "/" + edition.id);
         editionIds.add(edition.id!);
+        if (edition.equivalentTo) {
+          const canonical = item.editions?.find((release) => release.id === edition.equivalentTo);
+          if (!canonical || canonical === edition || canonical.equivalentTo)
+            throw new Error("Invalid equivalent edition: " + id + "/" + edition.id);
+          if (canonical.format !== edition.format || !!canonical.simulator !== !!edition.simulator)
+            throw new Error("Incompatible equivalent edition: " + id + "/" + edition.id);
+        }
         if (
           edition.releaseDate &&
           (!Number.isFinite(Date.parse(edition.releaseDate)) ||

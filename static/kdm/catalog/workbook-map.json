@@ -16661,7 +16661,7 @@
       "row": 646,
       "name": "Twilight Knight, Alternate",
       "primary": {
-        "category": "content",
+        "category": "included-only",
         "contentId": "twilight-knight-alternate",
         "editionId": "resin",
         "sourceEdition": "Resin"
@@ -16672,7 +16672,7 @@
       "row": 647,
       "name": "Twilight Knight, Alternate /w metal sword",
       "primary": {
-        "category": "content",
+        "category": "included-only",
         "contentId": "twilight-knight-alternate",
         "editionId": "resin-metal",
         "sourceEdition": "Resin & Metal"

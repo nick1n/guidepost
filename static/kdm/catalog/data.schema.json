@@ -223,6 +223,10 @@
           "description": "Available in at least one matching cached shop variant. False by default; omit when unavailable or unknown."
         },
         "beta": { "type": "boolean", "const": true, "description": "Beta release. Omit for non-Beta editions." },
+        "equivalentTo": {
+          "$ref": "#/$defs/editionId",
+          "description": "Canonical edition ID on this item with identical contents for ownership and completeness. Packaging and prices may differ. Must reference a different edition without equivalentTo."
+        },
         "expansion": { "type": "string", "description": "Workbook Expansion value.", "minLength": 1 },
         "format": { "enum": ["physical", "digital"], "description": "Delivery format of this release." },
         "gameplay": {
