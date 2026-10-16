@@ -274,7 +274,7 @@
               class={[
                 "collapse-icon",
                 "control-icon",
-                cards.allCollapsed ? "i-material-symbols:unfold-more-double" : "i-material-symbols:unfold-less-double",
+                cards.allCollapsed ? "i-material-symbols:unfold-more" : "i-material-symbols:unfold-less",
               ]}
               aria-hidden="true"
             ></span>

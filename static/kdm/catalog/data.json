@@ -2806,10 +2806,11 @@
         { "id": "deathgrey", "label": "Deathgrey", "available": true, "beta": true, "format": "physical", "materials": ["Deathgrey"], "numbered": true, "prices": [3900], "releaseDate": "2026-01-30", "shop": "in-stock" },
         { "id": "encore", "label": "Encore", "beta": true, "format": "physical", "materials": ["Photoresin"], "prices": [3400], "releaseDate": "2026-01-30", "shop": "out-of-stock" }
       ],
+      "gameplay": true,
       "handle": "frozen-survivor-cyclamen",
       "kind": "beta",
       "name": "Frozen Survivor - Cyclamen",
-      "tags": ["in-stock", "male", "photoresin", "deathgrey", "survivor", "2026", "beta", "frozen-survivor", "cyclamen"]
+      "tags": ["gameplay", "in-stock", "male", "photoresin", "deathgrey", "survivor", "2026", "beta", "frozen-survivor", "cyclamen"]
     },
     "frozen-survivor-galanthus": {
       "aliases": ["Frozen Survivor - Galanthus Deathgrey M2 Edition"],

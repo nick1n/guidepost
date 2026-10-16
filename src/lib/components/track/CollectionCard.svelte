@@ -55,7 +55,10 @@
   onDestroy(() => clearTimeout(feedbackTimer));
   const editions = $derived(reviewEditions(item).filter((edition) => !edition.includedOnly || selection(edition).owned));
   const selected = $derived(
-    editions.find((edition) => edition.id === inspected) ?? editions.findLast((edition) => !edition.includedOnly) ?? editions.at(-1),
+    editions.find((edition) => edition.id === inspected) ??
+      editions.findLast((edition) => selection(edition).owned) ??
+      editions.findLast((edition) => !edition.includedOnly) ??
+      editions.at(-1),
   );
   const badges = $derived(reviewBadges(item));
   const numberedEditions = $derived(reviewNumberedEditions(item).filter((edition) => selection(edition).owned));
@@ -113,31 +116,6 @@
 <article class={[badges.beta && !badges.gameplay && "beta-only", collapsed && "is-collapsed"]} {@attach observe}>
   <h2>
     <HoldRipple
-      ontap={onToggle}
-      onhold={onHold}
-      holdHint="Click to collapse or expand this card. Hold or press Shift+Enter to collapse or expand all cards across every category."
-    >
-      {#snippet children(events, paint)}
-        <button class="card-heading" type="button" aria-expanded={!collapsed} aria-controls={`card-body-${item.id}`} {...events}>
-          {@render paint()}
-          <span class="card-label">
-            <span class="card-title">{item.name}</span>
-            <span class={["card-meta", feedback && (feedback === "hint" ? "hold-hint" : "ownership-feedback")]}>
-              {#if feedback}
-                {ownershipMessages[feedback]}
-              {:else}
-                {item.category === "bundles" ? "bundle" : (item.kind ?? "Item")}
-                {#if editions.length > 1}
-                  / {editions.length} versions
-                {/if}
-              {/if}
-            </span>
-          </span>
-          <span class="card-chevron control-icon i-material-symbols:expand-more" aria-hidden="true"></span>
-        </button>
-      {/snippet}
-    </HoldRipple>
-    <HoldRipple
       ontap={tapOwnership}
       onhold={holdOwnership}
       holdHint={hasOwned
@@ -154,7 +132,39 @@
           {...events}
         >
           {@render paint()}
+          <span class="card-label">
+            <span class="card-title">{item.name}</span>
+            <span class={["card-meta", feedback && (feedback === "hint" ? "hold-hint" : "ownership-feedback")]}>
+              {#if feedback}
+                {ownershipMessages[feedback]}
+              {:else}
+                {item.category === "bundles" ? "bundle" : (item.kind ?? "Item")}
+                {#if editions.length > 1}
+                  / {editions.length} versions
+                {/if}
+              {/if}
+            </span>
+          </span>
           <span class="ownership-label">Owned</span>
+        </button>
+      {/snippet}
+    </HoldRipple>
+    <HoldRipple
+      ontap={onToggle}
+      onhold={onHold}
+      holdHint="Click to collapse or expand this card. Hold or press Shift+Enter to collapse or expand all cards across every category."
+    >
+      {#snippet children(events, paint)}
+        <button
+          class="card-heading"
+          type="button"
+          aria-label={`${collapsed ? "Expand" : "Collapse"} ${item.name}`}
+          aria-expanded={!collapsed}
+          aria-controls={`card-body-${item.id}`}
+          {...events}
+        >
+          {@render paint()}
+          <span class="card-chevron control-icon i-material-symbols:expand-more" aria-hidden="true"></span>
         </button>
       {/snippet}
     </HoldRipple>
@@ -203,18 +213,24 @@
           <div class="copies">
             {#each numberedEditions as numberedEdition (numberedEdition.id)}
               {@const value = selection(numberedEdition)}
-              <label class="copy">
-                <span>{editionLabel(numberedEdition)} #</span>
-                <input
-                  type="number"
-                  min="1"
-                  max={Math.min(numberedEdition.runSize ?? copyNumberMaximum, copyNumberMaximum)}
-                  disabled={!writable || numberedEdition.includedOnly}
-                  value={value.copyNumber ?? ""}
-                  oninput={(event) => updateCopyNumber(numberedEdition, event.currentTarget)}
-                  placeholder="13"
-                />
-              </label>
+              <div class="copy-field">
+                <label class="copy">
+                  <span>{editionLabel(numberedEdition)} #</span>
+                  <input
+                    type="number"
+                    min="1"
+                    max={Math.min(numberedEdition.runSize ?? copyNumberMaximum, copyNumberMaximum)}
+                    disabled={!writable || numberedEdition.includedOnly}
+                    value={value.copyNumber ?? ""}
+                    oninput={(event) => updateCopyNumber(numberedEdition, event.currentTarget)}
+                    placeholder="13"
+                    aria-describedby={numberedEdition.runSize ? `run-${item.id}-${numberedEdition.id}` : undefined}
+                  />
+                </label>
+                {#if numberedEdition.runSize}
+                  <p class="run" id={`run-${item.id}-${numberedEdition.id}`}>Limited run of {numberedEdition.runSize}</p>
+                {/if}
+              </div>
             {/each}
           </div>
         {/if}
@@ -259,7 +275,7 @@
 
 {#snippet editionDetail(edition: ReviewEdition)}
   {@const references = collection.getOwners(item.id, edition.id)}
-  {#if edition.runSize}
+  {#if edition.runSize && !(edition.numbered && selection(edition).owned)}
     <p class="run">Limited run of {edition.runSize}</p>
   {/if}
   {#if references.length}
@@ -407,7 +423,6 @@
     gap: 0.5rem;
   }
   .card-chevron {
-    flex-shrink: 0;
     color: var(--muted-foreground);
     transition: rotate var(--duration-fast) var(--ease-standard);
   }
@@ -455,13 +470,12 @@
     background: var(--panel);
   }
   .card-heading {
-    display: flex;
+    display: grid;
     position: relative;
-    flex: 1;
-    align-items: center;
-    min-inline-size: 0;
+    place-items: center;
+    flex-shrink: 0;
     padding: var(--space-card);
-    text-align: start;
+    border-inline-start: 1px solid color-mix(var(--foreground) 3%, transparent);
   }
   .card-title,
   .card-meta {
@@ -494,19 +508,25 @@
     min-inline-size: 0;
   }
   .ownership {
+    display: flex;
     position: relative;
-    padding-inline: var(--space-card);
-    border-inline-start: 1px solid color-mix(var(--foreground) 3%, transparent);
-    font-weight: var(--font-bold);
-    font-size: var(--text-sm);
+    flex: 1;
+    align-items: center;
+    gap: 0.5rem;
+    min-inline-size: 0;
+    padding: var(--space-card);
+    text-align: start;
   }
   .ownership-label {
     display: inline-block;
+    flex-shrink: 0;
     padding: 0.25rem 0.5rem;
     border: var(--border-width) solid var(--accent);
     border-radius: var(--radius-control);
     background: var(--accent);
     color: var(--foreground);
+    font-weight: var(--font-bold);
+    font-size: var(--text-sm);
     opacity: 0.05;
     transition: opacity var(--duration-fast) var(--ease-standard);
   }
@@ -747,6 +767,11 @@
     align-items: center;
     gap: 0.5rem;
   }
+  .copy-field {
+    display: grid;
+    align-content: start;
+    gap: 0.25rem;
+  }
   .copy input {
     flex-shrink: 0;
     inline-size: 5rem;
@@ -789,6 +814,9 @@
   input:disabled {
     cursor: default;
     opacity: 0.4;
+  }
+  .ownership:disabled {
+    opacity: 1;
   }
   button,
   a,
