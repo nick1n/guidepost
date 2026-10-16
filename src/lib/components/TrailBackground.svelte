@@ -4,17 +4,21 @@
 
   const maxTrails = 7;
 
+  function coordinates(x: number, y: number) {
+    return `${Math.trunc(x)},${Math.trunc(y)}`;
+  }
+
   function curve(points: Point[], closed = false) {
     const at = (index: number) =>
       points[closed ? (index + points.length) % points.length : Math.max(0, Math.min(points.length - 1, index))];
-    let d = `M${points[0].x},${points[0].y}`;
+    let d = `M${coordinates(points[0].x, points[0].y)}`;
     for (let i = 0; i < points.length - (closed ? 0 : 1); i++) {
       const previous = at(i - 1);
       const start = at(i);
       const end = at(i + 1);
       const next = at(i + 2);
-      d += ` C${start.x + (end.x - previous.x) / 6},${start.y + (end.y - previous.y) / 6}`;
-      d += ` ${end.x - (next.x - start.x) / 6},${end.y - (next.y - start.y) / 6} ${end.x},${end.y}`;
+      d += ` C${coordinates(start.x + (end.x - previous.x) / 6, start.y + (end.y - previous.y) / 6)}`;
+      d += ` ${coordinates(end.x - (next.x - start.x) / 6, end.y - (next.y - start.y) / 6)} ${coordinates(end.x, end.y)}`;
     }
     return closed ? `${d}Z` : d;
   }
@@ -72,7 +76,7 @@
         { x: mountain.x + 450, y: mountain.y + 270 },
         { x: 1680, y: mountain.y + 150 },
       ]),
-      marker: `${circuit[12].x},${circuit[12].y}`,
+      marker: coordinates(circuit[12].x, circuit[12].y),
     };
     return { contours, openingTrail };
   }
@@ -83,8 +87,7 @@
   import { draw, fade } from "svelte/transition";
 
   const maskId = $props.id();
-  // A deterministic first render keeps SSR and hydration aligned until client initialization.
-  let terrain = $state.raw(createTerrain(() => 0.5));
+  let contours = $state.raw<string[]>([]);
   let trails = $state.raw<Trail[]>([]);
   let reducedMotion = $state(false);
   let nextId = $state(0);
@@ -113,7 +116,7 @@
     const breadth = vertical ? 1600 : 1000;
     const reverse = Math.random() < 0.5;
     const point = (along: number, across: number) =>
-      vertical ? `${across},${reverse ? length - along : along}` : `${reverse ? length - along : along},${across}`;
+      vertical ? coordinates(across, reverse ? length - along : along) : coordinates(reverse ? length - along : along, across);
     const center = breadth * (0.15 + Math.random() * 0.7);
     const phase = Math.random() * Math.PI * 2;
     const points = Array.from({ length: 11 }, (_, i) => ({
@@ -138,7 +141,8 @@
   }
 
   onMount(() => {
-    terrain = createTerrain();
+    const terrain = createTerrain();
+    contours = terrain.contours;
     const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
     let timer: ReturnType<typeof setTimeout> | undefined;
 
@@ -166,23 +170,25 @@
   });
 </script>
 
-<svg viewBox="0 0 1600 1000" preserveAspectRatio="none" aria-hidden="true" focusable="false">
-  {#each terrain.contours as d (d)}
-    <path {d} />
-  {/each}
-  {#each trails as trail (trail.id)}
-    {@const trailMask = `${maskId}-${trail.id}`}
-    <g in:drawTrail={{ duration: reducedMotion ? 0 : 22000, marker: trail.marker }} out:fade={{ duration: reducedMotion ? 0 : 4000 }}>
-      <defs>
-        <mask id={trailMask} maskUnits="userSpaceOnUse" x="-100" y="-100" width="1800" height="1200">
-          <path class="reveal" d={trail.d} />
-        </mask>
-      </defs>
-      <path d={trail.d} stroke-dasharray="5 12" stroke-dashoffset="0" mask={`url(#${trailMask})`} />
-      <circle class="marker" transform={`translate(${trail.marker})`} r="3" stroke-dasharray="none" />
-    </g>
-  {/each}
-</svg>
+{#if contours.length}
+  <svg viewBox="0 0 1600 1000" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+    {#each contours as d (d)}
+      <path {d} />
+    {/each}
+    {#each trails as trail (trail.id)}
+      {@const trailMask = `${maskId}-${trail.id}`}
+      <g in:drawTrail={{ duration: reducedMotion ? 0 : 22000, marker: trail.marker }} out:fade={{ duration: reducedMotion ? 0 : 4000 }}>
+        <defs>
+          <mask id={trailMask} maskUnits="userSpaceOnUse" x="-100" y="-100" width="1800" height="1200">
+            <path class="reveal" d={trail.d} />
+          </mask>
+        </defs>
+        <path d={trail.d} stroke-dasharray="5 12" stroke-dashoffset="0" mask={`url(#${trailMask})`} />
+        <circle class="marker" transform={`translate(${trail.marker})`} r="3" stroke-dasharray="none" />
+      </g>
+    {/each}
+  </svg>
+{/if}
 
 <style>
   svg {
@@ -208,5 +214,17 @@
 
   .reveal {
     stroke: white;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    svg {
+      transition: opacity var(--duration-slower) var(--ease-standard);
+    }
+
+    @starting-style {
+      svg {
+        opacity: 0;
+      }
+    }
   }
 </style>

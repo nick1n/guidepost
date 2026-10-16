@@ -145,7 +145,7 @@
 <script lang="ts">
   import { asset, resolve } from "$app/paths";
   import { Effect } from "effect";
-  import { onDestroy } from "svelte";
+  import { onDestroy, onMount } from "svelte";
   import type { PointerEventHandler } from "svelte/elements";
   import ConfirmDialog from "#lib/components/ConfirmDialog.svelte";
   import TrailBackground from "#lib/components/TrailBackground.svelte";
@@ -165,9 +165,23 @@
   let lightingY = 0;
   let relighting = $state(false);
   let brighter = $state(false);
+  let ready = $state(false);
   const relightDuration = 3600;
   let relightTimer: ReturnType<typeof setTimeout> | undefined;
   let onpointermove = $state<PointerEventHandler<Window> | null>(moveLightingFromPointer);
+
+  onMount(() => {
+    let active = true;
+    // Decode the rendered SVG's source through the browser image cache before revealing it.
+    const logo = new Image();
+    logo.src = asset("logo/guidepost-min.svg");
+    void Promise.allSettled([document.fonts.ready, logo.decode()]).then(() => {
+      if (active) ready = true;
+    });
+    return () => {
+      active = false;
+    };
+  });
 
   function onclick() {
     if (relighting) return;
@@ -271,7 +285,7 @@
 
 <main
   bind:this={landing}
-  class={["landing", relighting && "is-relighting", brighter && "is-brighter"]}
+  class={["landing", ready && "is-ready", relighting && "is-relighting", brighter && "is-brighter"]}
   style:--duration-relight={`${relightDuration}ms`}
 >
   <span id="new-tab-description" hidden>Opens in a new tab</span>
@@ -353,41 +367,45 @@
   </ConfirmDialog>
 
   <div class="glow">
-    <div class="light-field light-output" aria-hidden="true">
-      <span class="glow-source ambient"></span>
-      <span class="glow-source pulse"></span>
+    <div class="lantern">
+      <div class="light-field light-output" aria-hidden="true">
+        <span class="glow-source ambient"></span>
+        <span class="glow-source pulse"></span>
+      </div>
     </div>
-    <div aria-hidden="true"><TrailBackground /></div>
-    <button
-      class="guidepost"
-      type="button"
-      tabindex="-1"
-      aria-label="Extinguish the guidepost lantern"
-      aria-disabled={relighting}
-      {onpointerdown}
-      {onclick}
-    >
-      <svg viewBox="0 0 850 1100" aria-hidden="true" focusable="false">
-        <defs>
-          <radialGradient id="lantern-glass" gradientUnits="userSpaceOnUse" cx="425" cy="504" r="78">
-            <stop class="lantern-core" offset="0%" />
-            <stop class="lantern-honey" offset="42%" />
-            <stop class="lantern-ember" offset="100%" />
-          </radialGradient>
-        </defs>
-        <image href={asset("logo/guidepost-min.svg")} width="850" height="1100" />
-        <g class="light-output">
-          <path
-            class="lantern-glass"
-            fill="url(#lantern-glass)"
-            d="M360 469q0 22 8 36c5 9 3 8 11 11q24 9 40 27c8 9 12-3 25-13q41-46 22-69c-23 10-24-8-41-21l-35 20c-18 1-19 2-30 9 9-2 20-3 24-8l3 8c14 0 23-13 38-29 11 11 19 26 35 30l6-9c11 28-7 49-22 69l10-6c17-10 19-5 27-17 10-16 9-31 6-48q-15-1-24-9-3 10-7 7c-11-2-23-18-31-30-8 12-20 28-36 30l-2-7c-11 7-11 6-25 9z"
-          />
-        </g>
-      </svg>
-    </button>
-    <div class="light-field light-output" aria-hidden="true">
-      <span class="glow-source flicker"></span>
-      <span class="glow-source candle"></span>
+    <TrailBackground />
+    <div class="lantern">
+      <button
+        class="guidepost"
+        type="button"
+        tabindex="-1"
+        aria-label="Extinguish the guidepost lantern"
+        aria-disabled={relighting}
+        {onpointerdown}
+        {onclick}
+      >
+        <svg viewBox="0 0 850 1100" aria-hidden="true" focusable="false">
+          <defs>
+            <radialGradient id="lantern-glass" gradientUnits="userSpaceOnUse" cx="425" cy="504" r="78">
+              <stop class="lantern-core" offset="0%" />
+              <stop class="lantern-honey" offset="42%" />
+              <stop class="lantern-ember" offset="100%" />
+            </radialGradient>
+          </defs>
+          <image href={asset("logo/guidepost-min.svg")} width="850" height="1100" />
+          <g class="light-output">
+            <path
+              class="lantern-glass"
+              fill="url(#lantern-glass)"
+              d="M360 469q0 22 8 36c5 9 3 8 11 11q24 9 40 27c8 9 12-3 25-13q41-46 22-69c-23 10-24-8-41-21l-35 20c-18 1-19 2-30 9 9-2 20-3 24-8l3 8c14 0 23-13 38-29 11 11 19 26 35 30l6-9c11 28-7 49-22 69l10-6c17-10 19-5 27-17 10-16 9-31 6-48q-15-1-24-9-3 10-7 7c-11-2-23-18-31-30-8 12-20 28-36 30l-2-7c-11 7-11 6-25 9z"
+            />
+          </g>
+        </svg>
+      </button>
+      <div class="light-field light-output" aria-hidden="true">
+        <span class="glow-source flicker"></span>
+        <span class="glow-source candle"></span>
+      </div>
     </div>
   </div>
 </main>
@@ -404,7 +422,7 @@
     --gap-tool: round(clamp(0.5rem, 0.8vh, 0.75rem), 1px);
     --layer-backdrop: -1;
     --offset-tagline: 2px;
-    --position-glow-x: 35%;
+    --position-glow-x: min(35%, 10rem);
     --position-glow-y: 12rem;
     --position-guidepost-orb-x: 50%;
     --position-guidepost-orb-y: 44%;
@@ -448,6 +466,9 @@
     --gradient-page-sheen-vignette:
       linear-gradient(150deg, transparent 20%, #ffd6ad0f 50%, transparent 80%),
       radial-gradient(ellipse at center, transparent 70%, #fff0bd04 100%);
+
+    /* Clip the menu entrance horizontally while the window keeps vertical scrolling. */
+    overflow-x: clip;
 
     &::before {
       z-index: var(--layer-backdrop);
@@ -703,6 +724,7 @@
     inline-size: 100%;
   }
 
+  .lantern,
   .light-field {
     position: absolute;
     inset: 0;
@@ -861,6 +883,46 @@
 
   .lantern-ember {
     stop-color: var(--color-lantern-ember);
+  }
+
+  @media (scripting: enabled) {
+    .landing:not(.is-ready) :is(header, nav, .lantern) {
+      visibility: hidden;
+    }
+  }
+
+  @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+    :is(header, nav, .lantern) {
+      transition: transform var(--duration-medium) var(--ease-quint-in-out);
+    }
+
+    .landing::before {
+      transition: opacity var(--duration-slow) var(--ease-standard);
+    }
+
+    .landing:not(.is-ready) {
+      :is(header, .lantern) {
+        transform: translateX(-100vw);
+      }
+
+      nav {
+        transform: translateX(100vw);
+      }
+    }
+
+    @starting-style {
+      :is(header, .lantern) {
+        transform: translateX(-100vw);
+      }
+
+      nav {
+        transform: translateX(100vw);
+      }
+
+      .landing::before {
+        opacity: 0;
+      }
+    }
   }
 
   @media (width >= 46rem) {
