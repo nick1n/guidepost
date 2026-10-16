@@ -7,7 +7,6 @@
     cleared: "Ownership cleared",
     owned: "All editions owned",
     hint: "Hold to clear ownership",
-    "own-hint": "Hold when unowned to own all editions",
   };
   type OwnershipKind = keyof typeof ownershipMessages;
   const ownershipFeedbackDuration = 5000;
@@ -74,7 +73,7 @@
     if (!writable) return;
     const previouslyOwned = hasOwned;
     if (selected && !selection(selected).owned) toggleOwned(selected);
-    showOwnershipFeedback(previouslyOwned ? "hint" : "own-hint");
+    if (previouslyOwned) showOwnershipFeedback("hint");
   }
   function holdOwnership() {
     if (!writable) return "Collection changes are unavailable until your collection is loaded.";
@@ -467,15 +466,13 @@
   .card-title,
   .card-meta {
     display: block;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  .card-title {
-    font: var(--font-semibold) 1rem / var(--line-height-snug) var(--font-display);
   }
   .card-meta {
-    margin-block-start: 0.15rem;
+    margin-block-start: 0.125rem;
+    line-height: var(--line-height-none);
+  }
+  .card-title {
+    font: var(--font-semibold) 1rem / var(--line-height-none) var(--font-display);
   }
   .ownership-feedback {
     color: var(--accent-green);
@@ -592,6 +589,7 @@
     display: inline-flex;
     grid-column: 3;
     align-items: center;
+    align-self: stretch;
     justify-self: center;
     padding-inline: 0.25rem;
     border-radius: var(--radius-control);
@@ -639,6 +637,7 @@
   .wish {
     display: grid;
     place-items: center;
+    align-self: stretch;
     min-block-size: var(--size-edition-control);
     padding-inline: 0.25rem;
     cursor: pointer;
@@ -728,7 +727,6 @@
   .wish {
     --accent: var(--accent-red);
     grid-column: 6;
-    align-self: stretch;
     &:disabled {
       visibility: hidden;
     }
@@ -752,7 +750,7 @@
   .copy input {
     flex-shrink: 0;
     inline-size: 5rem;
-    padding: 0.35rem;
+    padding: 0.375rem;
     color: var(--foreground);
   }
   .contents,
@@ -769,7 +767,7 @@
   .contents ul {
     display: grid;
     margin-block-start: 0.5rem;
-    gap: 0.35rem;
+    gap: 0.375rem;
   }
   .contents li {
     display: flex;

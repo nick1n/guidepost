@@ -496,7 +496,7 @@
     place-items: center;
     aspect-ratio: 1;
     inline-size: 2.75rem;
-    padding: 0.1875rem;
+    padding: 0.25rem;
     border-radius: 50%;
     background: conic-gradient(from -90deg, var(--result-color) var(--chance), var(--color-divider) 0);
   }

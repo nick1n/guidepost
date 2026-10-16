@@ -63,14 +63,15 @@ Arc survivors with Disposition (heart, i-material-symbols:favorite).
 
 ## Tagline candidates
 
-- "Tools left here for the next player."
-- "Everything you need between sessions."
-- "Find your way back to the table."
-- "Pick up where you left off."
+- "board game aids left here for the next player"
+- "tools left here for the next player"
+- "everything you need between sessions"
+- "find your way back to the table"
+- "pick up where you left off"
 
-- "A light for the long campaign."
-- "Made by players, for players."
-- "Tools left behind by players, for players."
-- "Companion tools for campaign board games."
-- "Your campaign, kept safe."
-- "Trail markers for tabletop campaigns."
+- "a light for the long campaign"
+- "made by players, for players"
+- "tools left behind by players, for players"
+- "companion tools for campaign board games"
+- "your campaign, kept safe"
+- "trail markers for tabletop campaigns"

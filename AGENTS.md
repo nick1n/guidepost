@@ -73,6 +73,8 @@ Use component-scoped `<style>` blocks for layout, spacing, typography, and inter
 
 Prefer modern CSS and native features. Add workarounds or optimizations only for verified support or profiling needs.
 
+Use multiples of `0.125rem` for all `rem` values, including tokens, inline styles, and CSS math functions. Gradient stops and shadow values are exempt. When adjusting values, preserve dependent sizing and visible gradient bands.
+
 Every declaration must affect a supported layout or state. Avoid repeating inherited fonts/colors, preflight resets, or sizing/alignment supplied by normal block/grid layout. Do not add `position`, `z-index`, `overflow`, `isolation`, `contain`, `will-change`, or `pointer-events` defensively; each needs a specific purpose. Preserve companion declarations required for that behavior.
 
 Remove obsolete declarations and tokens when touching a rule. Verify base and wide layouts, interaction, and reduced motion before removing apparently redundant styles.

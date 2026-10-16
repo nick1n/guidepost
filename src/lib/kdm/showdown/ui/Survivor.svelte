@@ -1306,7 +1306,7 @@
     &[data-acted] {
       --signal-acted:
         radial-gradient(ellipse 85% 110% at 70% 50%, #0000008c, transparent 80%),
-        repeating-linear-gradient(135deg, #00000030 0 0.35rem, transparent 0.35rem 0.9rem);
+        repeating-linear-gradient(135deg, #00000030 0 0.375rem, transparent 0.375rem 0.875rem);
       --signal-orbit-x: -30%;
       --signal-orbit-y: 28%;
       --signal-orbit-scale-x: 0.85;
@@ -1319,10 +1319,10 @@
       --signal-priority: radial-gradient(
         circle at 91% 48%,
         transparent 0 1.25rem,
-        color-mix(var(--accent-blue) 78%, transparent) 1.3rem 1.43rem,
-        transparent 1.48rem 2.4rem,
-        var(--signal-priority-color) 2.45rem 2.55rem,
-        transparent 2.6rem
+        color-mix(var(--accent-blue) 78%, transparent) 1.25rem 1.375rem,
+        transparent 1.5rem 2.375rem,
+        var(--signal-priority-color) 2.5rem 2.625rem,
+        transparent 2.75rem
       );
       --signal-orbit-x: -8%;
       --signal-orbit-y: -22%;
@@ -1336,8 +1336,8 @@
       --signal-controller: repeating-radial-gradient(
         circle at 82% 112%,
         transparent 0 1rem,
-        var(--signal-controller-color) 1.05rem 1.14rem,
-        transparent 1.2rem 2.05rem
+        var(--signal-controller-color) 1rem 1.125rem,
+        transparent 1.25rem 2rem
       );
       --signal-orbit-x: -10%;
       --signal-orbit-y: 4%;

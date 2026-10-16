@@ -686,9 +686,9 @@
   }
   .progress {
     position: absolute;
-    inset: 0.0625rem;
-    inline-size: calc(100% - 0.125rem);
-    block-size: calc(100% - 0.125rem);
+    inset: 0.125rem;
+    inline-size: calc(100% - 0.25rem);
+    block-size: calc(100% - 0.25rem);
     pointer-events: none;
     rotate: -90deg;
     opacity: var(--opacity-progress, 0);

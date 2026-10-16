@@ -206,7 +206,7 @@
   <div class="catalog-filters">
     <div class={["search-controls", browsing.selectedTags.length > 0 && browsing.selectedTags.length <= 2 && "is-inline"]}>
       <div class="search-heading">
-        <label class="search" for="catalog-search">Search catalog</label>
+        <label class="search" for="catalog-search">Search</label>
         {#if browsing.hasSearch}
           <button class="search-command" type="button" onclick={markLatestOwned} disabled={!writable || !browsing.latestUnowned.length}>
             Mark latest editions owned
@@ -523,6 +523,7 @@
     font-size: 5rem;
     line-height: var(--line-height-none);
     font-family: var(--font-display);
+    text-box: trim-both cap alphabetic;
     letter-spacing: var(--letter-spacing-tight);
   }
   .back {
@@ -657,12 +658,14 @@
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 0.5rem;
+    font-size: var(--text-xl);
+    line-height: var(--line-height-tight);
+    font-variant-numeric: tabular-nums;
   }
-  .stats > :is(div, button) {
+  .stats > * {
     display: grid;
     align-content: center;
     padding: 0.75rem;
-    gap: 0.25rem;
     border-radius: var(--radius-card);
     background: var(--panel);
   }
@@ -685,24 +688,22 @@
     grid-row: 2;
     grid-column: 1 / -1;
     justify-items: center;
+    padding-block: 0.5rem;
+    color: var(--accent-green);
+    font-size: var(--text-2xl);
   }
   .stat-label {
     display: flex;
     align-items: center;
     gap: 0.375rem;
     color: var(--muted-foreground);
-    font-size: var(--text-sm);
+    font-size: var(--text-lg);
   }
   .stat-icon {
     color: var(--stat-accent);
   }
   .stats button strong {
     color: var(--stat-accent);
-  }
-  .stats strong {
-    font-size: clamp(var(--text-xl), 3vw, 2rem);
-    line-height: var(--line-height-snug);
-    font-variant-numeric: tabular-nums;
   }
   .catalog-filters {
     display: grid;
@@ -722,7 +723,6 @@
     margin-inline-end: 0.5rem;
     color: var(--muted-foreground);
     font-size: var(--text-sm);
-    /* Let clicks on the hint focus the input underneath it. */
     pointer-events: none;
 
     &.is-hidden {
@@ -969,6 +969,9 @@
     }
     .search-command:not(:disabled):hover {
       color: var(--accent);
+    }
+    .stat-wishlist:not(:disabled):hover {
+      background: var(--red-8);
     }
     .active-tag:not(:disabled):hover,
     input[type="search"]:hover {

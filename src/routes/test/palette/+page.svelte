@@ -390,7 +390,7 @@
     gap: 0.5rem;
   }
   .option {
-    padding: 0.55rem 0.75rem;
+    padding: 0.5rem 0.75rem;
     border: 1px solid var(--color-divider);
     border-radius: var(--radius-control);
     background: var(--panel);
@@ -453,7 +453,7 @@
     display: block;
     margin-block-start: 0.5rem;
     text-align: center;
-    font-size: 0.6rem;
+    font-size: 0.625rem;
   }
   .lightness {
     text-align: center;
@@ -589,14 +589,14 @@
   .mockup-content {
     display: grid;
     grid-template-columns: 6fr 3fr 1fr;
-    gap: 0.35rem;
+    gap: 0.375rem;
   }
   .mockup-content > div {
     display: grid;
     align-content: center;
     gap: 0.5rem;
     min-inline-size: 0;
-    padding: 0.75rem 0.35rem;
+    padding: 0.75rem 0.375rem;
     border-radius: var(--radius-control);
     font-size: var(--text-xs);
   }

@@ -100,6 +100,7 @@
   --text-sm: 0.75rem;
   --text-xs: 0.625rem;
   --text-xl: 1.5rem;
+  --text-2xl: 2rem;
   --text-num-input: 1.625rem;
 
   --size-icon-control: 1.5rem;
@@ -191,7 +192,6 @@
 * {
   border-color: var(--border);
   user-select: none;
-  /* text-box: trim-both cap alphabetic; */
 }
 
 html:has(.scrollbar-stable) {

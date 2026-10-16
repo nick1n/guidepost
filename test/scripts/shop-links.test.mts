@@ -1,11 +1,19 @@
 import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
-import { expect, it } from "vitest";
+import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { checkShopLinks } from "#scripts/check-shop-links.mts";
 
 // Every checkShopLinks call injects a fake check function, so no URL is requested over the network.
 // offline: false exercises request scheduling; logged HTTP statuses and URLs come from these mocks.
+
+beforeEach(() => {
+  vi.spyOn(console, "log").mockImplementation(() => {});
+});
+
+afterEach(() => {
+  vi.mocked(console.log).mockRestore();
+});
 
 async function fixture(run: (catalog: string, checkpoint: string, report: string) => Promise<void>) {
   const directory = await mkdtemp(join(tmpdir(), "guidepost-links-"));

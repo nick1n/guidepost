@@ -280,7 +280,7 @@
     <h1><button class="wordmark" type="button" tabindex="-1" aria-disabled={relighting} {onpointerdown} {onclick}>Guidepost</button></h1>
     <p>
       <button class="wordmark" type="button" tabindex="-1" aria-disabled={relighting} {onpointerdown} {onclick}>
-        board game aids left here for the next player
+        tools left here for the next player
       </button>
     </p>
   </header>
@@ -403,7 +403,7 @@
     --color-shadow-edge: color-mix(var(--background) 90%, transparent);
     --gap-tool: round(clamp(0.5rem, 0.8vh, 0.75rem), 1px);
     --layer-backdrop: -1;
-    --offset-tagline: -10px;
+    --offset-tagline: 2px;
     --position-glow-x: 35%;
     --position-glow-y: 12rem;
     --position-guidepost-orb-x: 50%;
@@ -474,6 +474,7 @@
     font-size: var(--text-hero);
     font-family: var(--font-display);
     letter-spacing: var(--letter-spacing-tight);
+    text-box: trim-both cap alphabetic;
   }
 
   :is(.wordmark, .guidepost) {
