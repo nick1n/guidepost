@@ -43,6 +43,11 @@
   const showSwipeTabs = $derived((dragDistance !== 0 || swipeFeedback) && !categoriesVisible);
   let searchInput: HTMLInputElement | undefined;
 
+  function clearSearchText() {
+    browsing.setQuery("");
+    searchInput?.focus();
+  }
+
   function onkeydown(event: KeyboardEvent) {
     if (event.defaultPrevented || event.isComposing || event.repeat || event.altKey) return;
     const target = event.target;
@@ -236,6 +241,11 @@
           <span id="search-shortcut" class={["shortcut", browsing.query && "is-hidden"]}>
             <span class="visually-hidden">Press </span><kbd>/</kbd><span class="visually-hidden"> to focus search</span>
           </span>
+          {#if browsing.query}
+            <button class="clear-text" type="button" aria-label="Clear search text" onclick={clearSearchText}>
+              <span class="control-icon i-material-symbols:close" aria-hidden="true"></span>
+            </button>
+          {/if}
         </div>
         {#if browsing.selectedTags.length}
           <section class="tag-filters" aria-label="Selected tags">
@@ -760,12 +770,27 @@
     inline-size: 100%;
     min-inline-size: 0;
     padding: 0.5rem;
+    padding-inline-end: 2.5rem;
     border: var(--border-width) solid var(--color-divider);
     border-radius: var(--radius-control);
     background: var(--card);
 
-    &:placeholder-shown {
-      padding-inline-end: 2.5rem;
+    &::-webkit-search-cancel-button {
+      display: none;
+    }
+  }
+  .clear-text {
+    display: grid;
+    grid-area: 1 / 1;
+    place-items: center;
+    align-self: stretch;
+    justify-self: end;
+    inline-size: 2.25rem;
+    border-radius: var(--radius-control);
+    color: var(--muted-foreground);
+
+    &:focus-visible {
+      outline: var(--border-width) solid var(--accent);
     }
   }
   .tag-filters {
@@ -962,7 +987,10 @@
     transition: var(--transition-colors);
   }
   @media (hover: hover) {
-    button:not(:disabled, .cloud-tag, .search-command):hover,
+    .clear-text:hover {
+      color: var(--accent);
+    }
+    button:not(:disabled, .cloud-tag, .search-command, .clear-text):hover,
     summary:hover {
       background: var(--blue-8);
       color: var(--accent);

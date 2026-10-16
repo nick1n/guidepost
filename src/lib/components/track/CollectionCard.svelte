@@ -213,24 +213,20 @@
           <div class="copies">
             {#each numberedEditions as numberedEdition (numberedEdition.id)}
               {@const value = selection(numberedEdition)}
-              <div class="copy-field">
-                <label class="copy">
-                  <span>{editionLabel(numberedEdition)} #</span>
-                  <input
-                    type="number"
-                    min="1"
-                    max={Math.min(numberedEdition.runSize ?? copyNumberMaximum, copyNumberMaximum)}
-                    disabled={!writable || numberedEdition.includedOnly}
-                    value={value.copyNumber ?? ""}
-                    oninput={(event) => updateCopyNumber(numberedEdition, event.currentTarget)}
-                    placeholder="13"
-                    aria-describedby={numberedEdition.runSize ? `run-${item.id}-${numberedEdition.id}` : undefined}
-                  />
-                </label>
-                {#if numberedEdition.runSize}
-                  <p class="run" id={`run-${item.id}-${numberedEdition.id}`}>Limited run of {numberedEdition.runSize}</p>
-                {/if}
-              </div>
+              <label class="copy">
+                <span>{editionLabel(numberedEdition)} #</span>
+                <input
+                  type="number"
+                  min="1"
+                  max={Math.min(numberedEdition.runSize ?? copyNumberMaximum, copyNumberMaximum)}
+                  disabled={!writable || numberedEdition.includedOnly}
+                  value={value.copyNumber ?? ""}
+                  oninput={(event) => updateCopyNumber(numberedEdition, event.currentTarget)}
+                  placeholder="13"
+                  aria-describedby={numberedEdition.runSize ? `run-${item.id}-${numberedEdition.id}` : undefined}
+                />
+                {#if numberedEdition.runSize}<span>of {numberedEdition.runSize}</span>{/if}
+              </label>
             {/each}
           </div>
         {/if}
@@ -275,9 +271,6 @@
 
 {#snippet editionDetail(edition: ReviewEdition)}
   {@const references = collection.getOwners(item.id, edition.id)}
-  {#if edition.runSize && !(edition.numbered && selection(edition).owned)}
-    <p class="run">Limited run of {edition.runSize}</p>
-  {/if}
   {#if references.length}
     <p class="included-note">
       Covered by your {references.map((parent) => `${parent.parent} (${parent.parentEdition})`).join(", ")}.
@@ -332,7 +325,7 @@
   {@const gameplay = editionGameplay(item, edition)}
   {@const price = reviewPrice(item, edition)}
   {@const detail = [...new Set([edition.name, ...(edition.format === "digital" ? ["Digital"] : editionMaterials(edition))])]
-    .filter((part) => part && part !== edition.label)
+    .filter((part) => part && !edition.label.toLowerCase().includes(part.toLowerCase()))
     .join(", ")}
   <div class={["edition", active && "inspected"]}>
     <label class="own">
@@ -359,7 +352,6 @@
         <strong class="edition-title">{edition.label}</strong>
         {#if detail}<span class="edition-meta">{detail}</span>{/if}
       </span>
-      <small class="edition-date">{release(edition)}</small>
     </button>
     {@render shopLink(edition)}
     {#if gameplay}
@@ -387,6 +379,12 @@
       <span class={["wish-icon", value.wished ? "i-material-symbols:favorite" : "i-material-symbols:favorite-outline"]} aria-hidden="true"
       ></span>
     </button>
+    <div class="edition-release">
+      <small class="edition-date">{release(edition)}</small>
+      {#if edition.runSize}
+        <small class="run" id={`run-${item.id}-${edition.id}`}>Run of {edition.runSize}</small>
+      {/if}
+    </div>
   </div>
 {/snippet}
 
@@ -398,7 +396,6 @@
   .caption,
   .card-meta,
   .edition-meta,
-  .run,
   .copy,
   .included-note,
   .bundle-price {
@@ -412,7 +409,7 @@
   }
   .bundle-price,
   .price,
-  .edition-date,
+  .edition-release,
   .edition-price,
   .included-price {
     font-variant-numeric: tabular-nums;
@@ -447,6 +444,8 @@
   }
   article {
     --space-card: 0.75rem;
+    --space-edition-control: 0.25rem;
+    --gap-edition: 0.5rem;
     --size-edition-control: 1.5rem;
     --size-card-placeholder: 14rem;
     --size-card-collapsed: 4.5rem;
@@ -472,8 +471,8 @@
   .card-heading {
     display: grid;
     position: relative;
-    place-items: center;
     flex-shrink: 0;
+    place-items: center;
     padding: var(--space-card);
     border-inline-start: 1px solid color-mix(var(--foreground) 3%, transparent);
   }
@@ -512,9 +511,9 @@
     position: relative;
     flex: 1;
     align-items: center;
-    gap: 0.5rem;
     min-inline-size: 0;
     padding: var(--space-card);
+    gap: 0.5rem;
     text-align: start;
   }
   .ownership-label {
@@ -603,6 +602,12 @@
       color: var(--accent-green);
     }
   }
+  .shop,
+  .wish {
+    /* Extend padded hit areas into the gap without moving their visible contents. */
+    margin-inline-start: calc(-1 * var(--space-edition-control));
+    padding-inline: var(--space-edition-control);
+  }
   .shop {
     --accent: var(--accent-blue);
 
@@ -611,8 +616,7 @@
     align-items: center;
     align-self: stretch;
     justify-self: center;
-    padding-inline: 0.25rem;
-    border-radius: var(--radius-control);
+    margin-inline-end: calc(-1 * var(--space-edition-control));
     font-size: var(--text-md);
     line-height: var(--size-edition-control);
     white-space: nowrap;
@@ -635,10 +639,11 @@
   .edition {
     display: grid;
     position: relative;
+    grid-template-rows: auto auto;
     grid-template-columns: subgrid;
     grid-column: 1 / -1;
     align-items: center;
-    gap: 0.25rem;
+    gap: 0 var(--gap-edition);
     border-block-end: 1px solid #fff1;
     background-clip: padding-box;
 
@@ -649,6 +654,12 @@
       background-color: var(--panel);
     }
   }
+  .edition > :is(.edition-label, .shop, .gameplay-icon, .edition-price) {
+    grid-row: 1;
+  }
+  .edition:not(:has(.run)) > :is(.shop, .gameplay-icon, .edition-price) {
+    grid-row: 1 / -1;
+  }
   .edition > :is(.own, .shop, .wish) {
     /* Keep the independent controls above the edition button's row-wide hit area. */
     z-index: 1;
@@ -656,13 +667,14 @@
   .own,
   .wish {
     display: grid;
+    grid-row: 1 / -1;
     place-items: center;
     align-self: stretch;
     min-block-size: var(--size-edition-control);
-    padding-inline: 0.25rem;
     cursor: pointer;
   }
   .own {
+    grid-column: 1;
     padding-inline: 0.125rem;
     border-radius: var(--radius-control);
   }
@@ -689,12 +701,11 @@
   }
   .edition-label {
     display: grid;
-    grid-template-columns: minmax(0, 1fr);
+    grid-column: 2;
     align-items: center;
     min-inline-size: 0;
     min-block-size: var(--size-edition-control);
-    padding: 0.25rem 0.125rem;
-    gap: 0.125rem 0.5rem;
+    padding-block: 0.25rem;
     border-radius: var(--radius-control);
     font-size: var(--text-md);
     line-height: var(--line-height-snug);
@@ -717,9 +728,20 @@
   .edition-meta {
     text-transform: lowercase;
   }
-  .edition-date {
-    font-size: clamp(var(--text-xs), 3.75cqi, var(--text-sm));
+  .edition-release {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-row: 2;
+    grid-column: 2 / -2;
+    align-items: baseline;
+    padding-block-end: 0.25rem;
+    gap: var(--gap-edition);
+    font-size: var(--text-sm);
+    line-height: 1;
     white-space: nowrap;
+  }
+  .edition-release small {
+    font-size: inherit;
   }
   .gameplay-icon,
   .wish-icon {
@@ -758,19 +780,16 @@
       color var(--duration-fast) var(--ease-standard);
   }
   .copies {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
-    gap: 0.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 1rem;
   }
   .copy {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-  }
-  .copy-field {
-    display: grid;
-    align-content: start;
-    gap: 0.25rem;
+    white-space: nowrap;
   }
   .copy input {
     flex-shrink: 0;
@@ -866,9 +885,14 @@
       background: none;
     }
   }
-  @container (min-width: 32rem) {
+  @container (min-width: 31.5rem) {
+    .edition {
+      grid-template-rows: auto;
+    }
+    .editions {
+      grid-template-columns: max-content minmax(0, 1fr) repeat(6, max-content);
+    }
     .edition-label {
-      grid-template-columns: minmax(0, 1fr) 6rem;
       padding-block: 0.125rem;
     }
     .edition-name {
@@ -881,10 +905,24 @@
       text-overflow: ellipsis;
       white-space: nowrap;
     }
-    .edition-date {
+    .edition-release {
+      grid-template-columns: subgrid;
       grid-row: 1;
-      grid-column: 2;
-      text-align: center;
+      grid-column: 3 / 5;
+      padding: 0.125rem 0;
+      gap: var(--gap-edition);
+    }
+    .shop {
+      grid-column: 5;
+    }
+    .gameplay-icon {
+      grid-column: 6;
+    }
+    .edition-price {
+      grid-column: 7;
+    }
+    .wish {
+      grid-column: 8;
     }
   }
 </style>
