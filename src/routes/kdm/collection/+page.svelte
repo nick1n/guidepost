@@ -451,14 +451,15 @@
   }
   .swipe-previous,
   .swipe-next {
+    --swipe-shadow: drop-shadow(0 0.125rem 0.25rem color-mix(var(--contrast) 80%, transparent));
+
     display: grid;
     visibility: hidden;
     z-index: 2;
     position: fixed;
     inset-block-start: 50%;
     /* Shadow the icon's silhouette, since a text shadow does not apply to its mask. */
-    filter: drop-shadow(0 0.125rem 0.25rem color-mix(in oklch, var(--contrast) 80%, transparent))
-      drop-shadow(0 0 0.5rem color-mix(in oklch, var(--foreground) 20%, transparent));
+    filter: var(--swipe-shadow) drop-shadow(0 0 0.5rem color-mix(var(--foreground) 20%, transparent));
     opacity: 0;
     /* Decorative gesture feedback must not intercept the swipe or nearby controls. */
     pointer-events: none;
@@ -475,8 +476,7 @@
       transition-duration: var(--duration-fast), 0s, 0s;
     }
     &[data-ready="true"] {
-      filter: drop-shadow(0 0.125rem 0.25rem color-mix(in oklch, var(--contrast) 80%, transparent))
-        drop-shadow(0 0 0.75rem color-mix(in oklch, var(--accent) 65%, transparent));
+      filter: var(--swipe-shadow) drop-shadow(0 0 0.75rem color-mix(var(--accent) 65%, transparent));
     }
   }
   .swipe-previous {
@@ -555,7 +555,10 @@
     block-size: 3rem;
     inset-block-end: max(1rem, env(safe-area-inset-bottom));
     inset-inline-start: max(1rem, env(safe-area-inset-left));
-    box-shadow: 0 0.25rem 0.5rem color-mix(in oklch, var(--contrast) 25%, transparent);
+  }
+  .back-to-top,
+  .swipe-tabs {
+    box-shadow: 0 0.25rem 0.5rem color-mix(var(--contrast) 25%, transparent);
   }
   .back-to-top,
   .show-more {
@@ -588,7 +591,6 @@
     inset-inline: 0.25rem;
     padding-block-start: max(0.25rem, env(safe-area-inset-top));
     translate: 0 calc(-100% - 0.5rem);
-    box-shadow: 0 0.25rem 0.5rem color-mix(in oklch, var(--contrast) 25%, transparent);
     transition:
       translate var(--duration-fast) var(--ease-standard),
       visibility 0s var(--duration-fast);

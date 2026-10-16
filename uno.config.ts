@@ -34,7 +34,7 @@ export default defineConfig({
     "i-material-symbols:unfold-more-double",
     "i-material-symbols:close",
     "i-material-symbols:link-off",
-    "i-material-symbols:open-in-new",
+    "i-material-symbols:arrow-outward",
     "i-material-symbols:do-not-disturb-on",
   ],
   presets: [

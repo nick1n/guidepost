@@ -337,7 +337,7 @@
     gap: 0.25rem;
     border: 0;
     border-radius: var(--radius-control);
-    background: color-mix(var(--identity) 8%, transparent);
+    background: var(--identity-9);
     color: var(--background);
     font-size: var(--text-xs);
     line-height: 1.15;
@@ -421,7 +421,7 @@
       box-shadow: inset 0 0 0 var(--border-width) var(--identity-2);
     }
     .slot[draggable="false"]:hover {
-      background: color-mix(var(--identity) 14%, transparent);
+      background: var(--identity-8);
     }
   }
 </style>

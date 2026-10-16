@@ -964,11 +964,6 @@
     color: inherit;
     font: inherit;
     letter-spacing: inherit;
-
-    &::placeholder {
-      color: color-mix(currentColor 65%, transparent);
-      opacity: 1;
-    }
   }
   .survival {
     --counter-radius: 50%;
@@ -1002,7 +997,7 @@
     padding: 0.25rem;
     border-radius: 1rem 0.25rem 1rem 0.25rem;
     border-inline-start: 0;
-    background: color-mix(in srgb, var(--background) 48%, transparent);
+    background: var(--identity-8);
   }
   .stats,
   .armor {
@@ -1262,6 +1257,8 @@
     font-family: var(--font-serif);
   }
   :global(.signal) .identity {
+    --signal-danger-color: color-mix(var(--accent-red) 55%, transparent);
+    --signal-danger-glow: color-mix(var(--accent-red) 45%, transparent);
     --signal-threat: none;
     --signal-acted: none;
     --signal-controller: none;
@@ -1300,10 +1297,10 @@
 
     &[data-threat] {
       --signal-threat:
-        radial-gradient(ellipse 65% 145% at 107% -10%, color-mix(in srgb, var(--accent-red) 55%, transparent), transparent 72%),
-        linear-gradient(105deg, transparent 80%, color-mix(in srgb, var(--accent-red) 30%, transparent) 81% 84%, transparent 85%);
+        radial-gradient(ellipse 65% 145% at 107% -10%, var(--signal-danger-color), transparent 72%),
+        linear-gradient(105deg, transparent 80%, color-mix(var(--accent-red) 30%, transparent) 81% 84%, transparent 85%);
       --signal-orbit-y: -40%;
-      --signal-orbit-color: color-mix(in srgb, var(--accent-red) 42%, transparent);
+      --signal-orbit-color: color-mix(var(--accent-red) 42%, transparent);
     }
 
     &[data-acted] {
@@ -1318,26 +1315,28 @@
     }
 
     &[data-priority] {
+      --signal-priority-color: color-mix(var(--accent-blue) 52%, transparent);
       --signal-priority: radial-gradient(
         circle at 91% 48%,
         transparent 0 1.25rem,
-        color-mix(in srgb, var(--accent-blue) 78%, transparent) 1.3rem 1.43rem,
+        color-mix(var(--accent-blue) 78%, transparent) 1.3rem 1.43rem,
         transparent 1.48rem 2.4rem,
-        color-mix(in srgb, var(--accent-blue) 52%, transparent) 2.45rem 2.55rem,
+        var(--signal-priority-color) 2.45rem 2.55rem,
         transparent 2.6rem
       );
       --signal-orbit-x: -8%;
       --signal-orbit-y: -22%;
       --signal-orbit-scale-x: 0.8;
       --signal-orbit-scale-y: 0.8;
-      --signal-orbit-color: color-mix(in srgb, var(--accent-blue) 52%, transparent);
+      --signal-orbit-color: var(--signal-priority-color);
     }
 
     &[data-controller] {
+      --signal-controller-color: color-mix(var(--accent-purple) 48%, transparent);
       --signal-controller: repeating-radial-gradient(
         circle at 82% 112%,
         transparent 0 1rem,
-        color-mix(in srgb, var(--accent-purple) 48%, transparent) 1.05rem 1.14rem,
+        var(--signal-controller-color) 1.05rem 1.14rem,
         transparent 1.2rem 2.05rem
       );
       --signal-orbit-x: -10%;
@@ -1345,14 +1344,14 @@
       --signal-orbit-scale-x: 1.35;
       --signal-orbit-scale-y: 1.35;
       --signal-orbit-rotate: 20deg;
-      --signal-orbit-color: color-mix(in srgb, var(--accent-purple) 48%, transparent);
+      --signal-orbit-color: var(--signal-controller-color);
     }
 
     &[data-blind] {
       --signal-blind: radial-gradient(
         ellipse 78% 115% at 0% 45%,
         #000000ad 0 18%,
-        color-mix(in srgb, var(--accent-green) 46%, transparent) 38%,
+        color-mix(var(--accent-green) 46%, transparent) 38%,
         transparent 72%
       );
       --signal-orbit-x: -55%;
@@ -1360,19 +1359,13 @@
       --signal-orbit-scale-x: 1.7;
       --signal-orbit-scale-y: 1.7;
       --signal-orbit-rotate: -45deg;
-      --signal-orbit-color: color-mix(in srgb, var(--accent-green) 42%, transparent);
+      --signal-orbit-color: color-mix(var(--accent-green) 42%, transparent);
     }
 
     &[data-knocked] {
       --signal-knocked:
-        linear-gradient(
-          155deg,
-          transparent 0 40%,
-          color-mix(in srgb, var(--accent-red) 55%, transparent) 41% 44%,
-          #0000008c 45% 76%,
-          transparent 77%
-        ),
-        radial-gradient(ellipse 80% 45% at 22% 110%, color-mix(in srgb, var(--accent-red) 45%, transparent), transparent 80%);
+        linear-gradient(155deg, transparent 0 40%, var(--signal-danger-color) 41% 44%, #0000008c 45% 76%, transparent 77%),
+        radial-gradient(ellipse 80% 45% at 22% 110%, var(--signal-danger-glow), transparent 80%);
       --signal-orbit-x: -40%;
       --signal-orbit-y: 26%;
       --signal-orbit-scale-x: 1.9;
@@ -1383,28 +1376,23 @@
 
     &[data-retired] {
       --signal-retired:
-        radial-gradient(ellipse 85% 75% at 12% 120%, color-mix(in srgb, var(--secondary) 58%, transparent), transparent 78%),
+        radial-gradient(ellipse 85% 75% at 12% 120%, color-mix(var(--secondary) 58%, transparent), transparent 78%),
         linear-gradient(0deg, #00000080, transparent 75%);
       --signal-orbit-x: -45%;
       --signal-orbit-y: 20%;
       --signal-orbit-scale-x: 2;
       --signal-orbit-scale-y: 0.6;
-      --signal-orbit-color: color-mix(in srgb, var(--secondary) 48%, transparent);
+      --signal-orbit-color: color-mix(var(--secondary) 48%, transparent);
       border-radius: 2.5rem 2.5rem 0.375rem 0.375rem;
     }
 
     &[data-dead] {
-      --signal-dead: radial-gradient(
-        ellipse 70% 115% at 48% 50%,
-        #000000d9 0 36%,
-        color-mix(in srgb, var(--accent-red) 45%, transparent) 65%,
-        transparent 80%
-      );
+      --signal-dead: radial-gradient(ellipse 70% 115% at 48% 50%, #000000d9 0 36%, var(--signal-danger-glow) 65%, transparent 80%);
       --signal-orbit-x: -20%;
       --signal-orbit-y: -15%;
       --signal-orbit-scale-x: 1.25;
       --signal-orbit-scale-y: 1.25;
-      --signal-orbit-color: color-mix(in srgb, var(--accent-red) 55%, transparent);
+      --signal-orbit-color: var(--signal-danger-color);
       border-radius: 0.375rem;
       background-color: var(--background);
     }

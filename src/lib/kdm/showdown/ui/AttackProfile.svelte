@@ -462,6 +462,7 @@
   }
   .obsidian-result {
     --result-color: var(--accent-green);
+    --result-tint: var(--green-1);
 
     display: grid;
     grid-template-rows: auto 0.375rem auto;
@@ -471,10 +472,12 @@
 
     &.wound {
       --result-color: var(--accent-red);
+      --result-tint: var(--red-1);
     }
 
     &.crit {
       --result-color: var(--accent-blue);
+      --result-tint: var(--blue-1);
     }
   }
   .obsidian-caption {
@@ -583,7 +586,7 @@
     background: var(--grey-7);
   }
   .one {
-    background: color-mix(in oklch, var(--result-color, var(--identity)) 40%, var(--identity-light));
+    background: var(--result-tint, var(--identity-2));
   }
   .many {
     background: var(--result-color, var(--identity));

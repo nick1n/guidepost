@@ -640,7 +640,7 @@
     font-size: var(--text-sm);
   }
   .closest {
-    background: color-mix(in srgb, var(--accent-blue) 12%, transparent);
+    background: var(--blue-9);
   }
   .match-color {
     display: flex;

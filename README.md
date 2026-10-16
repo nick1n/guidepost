@@ -179,8 +179,10 @@ JSON backups preserve the complete snapshot. The workbook map loads and validate
 ## Known warnings
 
 The pnpm patch for `@unocss/svelte-scoped` preserves source maps when inserting the global stylesheet link and unregisters
-its unused `transformIndexHtml` hook in SvelteKit. Standalone Vite retains that hook. When updating UnoCSS, remove the patch
-only after verifying upstream handles both source maps and hook registration. After integration upgrades, verify the global
+its unused `transformIndexHtml` hook in SvelteKit. Standalone Vite retains that hook. It also checks the complete streamed HTML
+head, including `res.end()` content, so split chunks do not trigger false missing-stylesheet errors. Error and non-HTML responses
+are excluded. When updating UnoCSS, remove the patch only after verifying upstream handles source maps, hook registration,
+and streamed response checks. After integration upgrades, verify the global
 stylesheet, safelisted icons, and absence of `%unocss-svelte-scoped.global%` placeholders in generated HTML.
 
 - The CSS validator may report `Unknown property: 'corner-shape'` in `AttackProfile.svelte`.

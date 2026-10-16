@@ -12,10 +12,10 @@
   type OwnershipKind = keyof typeof ownershipMessages;
   const ownershipFeedbackDuration = 5000;
   const shopStates = {
-    "in-stock": { icon: "i-material-symbols:open-in-new", description: "In stock" },
+    "in-stock": { icon: "i-material-symbols:arrow-outward", description: "In stock" },
     "out-of-stock": { icon: "i-material-symbols:do-not-disturb-on", description: "Out of stock" },
     missing: { icon: "i-material-symbols:link-off", description: "Listing missing" },
-    unknown: { icon: "i-material-symbols:open-in-new", description: "Stock unknown" },
+    unknown: { icon: "i-material-symbols:arrow-outward", description: "Stock unknown" },
   };
 
   type Props = {
@@ -499,7 +499,7 @@
   .ownership {
     position: relative;
     padding-inline: var(--space-card);
-    border-inline-start: 1px solid color-mix(in oklch, var(--foreground) 3%, transparent);
+    border-inline-start: 1px solid color-mix(var(--foreground) 3%, transparent);
     font-weight: var(--font-bold);
     font-size: var(--text-sm);
   }
@@ -555,13 +555,15 @@
     gap: 0.375rem;
   }
   .badge {
+    --badge-fill: var(--grey-7);
+
     padding: 0.25rem 0.5rem;
     border: var(--border-width) solid var(--color-divider);
     border-radius: var(--radius-control);
     font-size: var(--text-sm);
 
     &[aria-pressed="true"] {
-      background: color-mix(in oklch, currentColor 12%, transparent);
+      background: var(--badge-fill);
     }
 
     &:focus-visible {
@@ -570,12 +572,16 @@
     }
 
     &.beta {
+      --badge-fill: var(--blue-8);
+
+      border-radius: 0;
       border-color: var(--accent);
       color: var(--accent);
-      border-radius: 0;
     }
 
     &.gameplay {
+      --badge-fill: var(--green-8);
+
       border-color: var(--accent-green);
       color: var(--accent-green);
     }
@@ -592,6 +598,10 @@
     font-size: var(--text-md);
     line-height: var(--size-edition-control);
     white-space: nowrap;
+    &:is([data-state="out-of-stock"], [data-state="missing"]) {
+      gap: 2px;
+    }
+
     &:is([data-state="out-of-stock"], [data-state="unknown"]) {
       --accent: var(--muted-foreground);
     }
@@ -634,6 +644,7 @@
     cursor: pointer;
   }
   .own {
+    padding-inline: 0.125rem;
     border-radius: var(--radius-control);
   }
   input[type="checkbox"] {
@@ -699,6 +710,8 @@
     grid-column: 4;
     justify-self: center;
     color: var(--accent-green);
+    /* Let clicks reach the edition button's row-wide hit area beneath the masked icon. */
+    pointer-events: none;
     &.beta {
       color: var(--accent-blue);
     }
@@ -788,7 +801,7 @@
   }
   @media (hover: hover) {
     button.badge:hover {
-      background: color-mix(in oklch, currentColor 12%, transparent);
+      background: var(--badge-fill);
     }
     .ownership[aria-pressed="false"]:not(:disabled):hover .ownership-label {
       opacity: 0.5;

@@ -163,9 +163,7 @@ settings:
   excludeLinksFromLockfile: false
 
 patchedDependencies:
-  '@unocss/svelte-scoped@66.11.0':
-    hash: 6a0407a2f74a0f4d7599e28129faf8df3fedce35c4fc851456efc3e7943f8cb3
-    path: patches/@unocss__svelte-scoped@66.11.0.patch
+  '@unocss/svelte-scoped@66.11.0': 6280e45d339c1691c2cd79c78b60eb9ff90000a106404eead22ad24cd5fc868a
 
 importers:
 
@@ -213,7 +211,7 @@ importers:
         version: typescript@7.0.2
       '@unocss/svelte-scoped':
         specifier: ^66.11.0
-        version: 66.11.0(patch_hash=6a0407a2f74a0f4d7599e28129faf8df3fedce35c4fc851456efc3e7943f8cb3)
+        version: 66.11.0(patch_hash=6280e45d339c1691c2cd79c78b60eb9ff90000a106404eead22ad24cd5fc868a)
       ajv:
         specifier: ^8.20.0
         version: 8.20.0
@@ -1968,7 +1966,7 @@ snapshots:
       '@unocss/core': 66.11.0
       magic-string: 1.4.3
 
-  '@unocss/svelte-scoped@66.11.0(patch_hash=6a0407a2f74a0f4d7599e28129faf8df3fedce35c4fc851456efc3e7943f8cb3)':
+  '@unocss/svelte-scoped@66.11.0(patch_hash=6280e45d339c1691c2cd79c78b60eb9ff90000a106404eead22ad24cd5fc868a)':
     dependencies:
       '@unocss/config': 66.11.0
       '@unocss/core': 66.11.0

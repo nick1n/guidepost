@@ -89,6 +89,16 @@ Name tokens by purpose, with broad-to-specific grouping such as `--layer-content
 
 Use alpha hex (`#RRGGBBAA`) for fixed translucent colors. Reserve `color-mix()` for token-derived colors or blends; specify an interpolation space such as `in oklch` only when blending distinct colors benefits. Omit it for one-color/transparent mixes and gradients. Open Props may guide naming/scales; add the dependency only if a substantial portion is needed.
 
+For UI color choices and simplification:
+
+- Prefer existing palette shades for solid fills, borders, and text over ad hoc mixes with black, white, or neutral surfaces. Match the color roles and interaction colors of equivalent controls.
+- Shared palettes run from `0` (lightest) to `10` (darkest), with a 20% OKLCH lightness floor. Read each family's values from `src/app.css`; matching shade numbers do not guarantee matching lightness. When inserting or renumbering shades, update every consumer and the palette lab while preserving existing colors.
+- Keep entity colors identity-based. Use the existing `--identity-*` scale, where `--identity-5` is the original color. Generate shades `in oklch` with achromatic endpoints whose hue is `none`, and define the scale on the element owning `--identity` so inherited shades resolve correctly.
+- Compare an alpha mix with the color rendered over its actual background, including any parent tint. Opacity percentages are not lightness percentages or shade numbers. Choose the closest usable shade by OKLab distance, checking text contrast and preserving visible hover, focus, selected, and disabled states.
+- Retain transparency for gradients, shadows, glows, artwork overlays, and adaptive borders whose appearance depends on their backdrop. A shade replacement may approximate a flat surface; it cannot generally replace alpha over varying backgrounds.
+- Share repeated fills, tints, and complex effects through purpose-based local tokens when they serve the same role. Keep unrelated roles and independently active status colors separate. Remove obsolete declarations rather than preserving unused styling.
+- Verify that tokens resolve on every owner and variant, check combined status effects, and keep palette previews in sync with scale changes.
+
 The reduced-motion query in `src/app.css` disables shared durations; do not repeat these resets in components. Keep component reduced-motion rules for transforms, custom animations, gesture feedback, and other behavior the shared durations do not cover.
 
 ### Icons
