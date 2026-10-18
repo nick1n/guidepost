@@ -69,7 +69,10 @@ inclusions, equivalences, and `completedBy` recipes. Each recipe requires all re
 ownership or supplies new contents. Inclusion lists may be partial, so progress counts only listed contents.
 
 `toggleEditionOwned()` and `setEditionOwned()` clear the product's missing override. Checking also clears its wish and exact included
-descendants' missing overrides in one save, without recording child acquisitions. Unchecking preserves descendants and their overrides.
+descendants' missing overrides in one save. For bundles, checking also records ownership of the exact included editions, including nested
+contents, and clears their wishes while preserving copy numbers. Other products do not record child acquisitions.
+Unchecking a bundle also clears ownership and missing overrides on its exact included descendants in the same save, preserving
+copy numbers and wishes. Unchecking other products preserves descendants and their overrides.
 Missing components do not change product ownership.
 
 `toggleIncludedOwned()` clears component ownership when unchecked, keeping `missing: true` only if another source still covers it.

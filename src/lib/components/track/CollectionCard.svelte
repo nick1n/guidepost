@@ -48,6 +48,7 @@
   } from "#lib/catalog-view.ts";
   import { editionGameplay, editionLabel, editionMaterials, formatPrice } from "#lib/kdm-data.ts";
   import { onDestroy } from "svelte";
+  import { SvelteSet } from "svelte/reactivity";
   import { getCollection } from "#lib/state/collection.svelte.ts";
   import { collectionActions } from "#lib/state/collection-actions.ts";
   import { collectionKey, copyNumberMaximum } from "#lib/types/collection.ts";
@@ -59,6 +60,7 @@
   const writable = $derived(collection.canWrite);
   let inspected = $state<string>();
   let contentsOpen = $state(false);
+  const animatingEditions = new SvelteSet<string>();
   let feedback = $state<OwnershipKind>();
   let feedbackTimer: ReturnType<typeof setTimeout> | undefined;
   onDestroy(() => clearTimeout(feedbackTimer));
@@ -80,6 +82,11 @@
 
   function selection(edition: ReviewEdition) {
     return collection.getEdition(item.id, edition.id);
+  }
+  function updateProgressAnimation(event: TransitionEvent, editionId: string) {
+    if (event.target !== event.currentTarget || event.propertyName !== "--ownership-progress") return;
+    if (event.type === "transitionrun") animatingEditions.add(editionId);
+    else animatingEditions.delete(editionId);
   }
   function includedOwnership(edition: ReviewEdition, target = item) {
     return collection.coverage.contents(target.id, edition.id);
@@ -389,8 +396,11 @@
     .filter((part) => part && !edition.label.toLowerCase().includes(part.toLowerCase()))
     .join(", ")}
   <div
-    class={["edition", active && "inspected", hasContents && "contents-progress"]}
+    class={["edition", active && "inspected", hasContents && "contents-progress", animatingEditions.has(edition.id) && "is-animating"]}
     style:--ownership-progress={hasContents ? `${(ownership.exactCount / ownership.children.length) * 100}%` : undefined}
+    ontransitionrun={(event) => updateProgressAnimation(event, edition.id)}
+    ontransitionend={(event) => updateProgressAnimation(event, edition.id)}
+    ontransitioncancel={(event) => updateProgressAnimation(event, edition.id)}
   >
     <label class="own">
       <input
@@ -465,6 +475,11 @@
     syntax: "<percentage>";
     inherits: false;
     initial-value: 0%;
+  }
+  @property --ownership-progress-color {
+    syntax: "<color>";
+    inherits: false;
+    initial-value: oklch(40% 0 0);
   }
 
   .shop,
@@ -737,10 +752,17 @@
     grid-row: 1;
   }
   .edition.contents-progress {
-    border-image: linear-gradient(to left, var(--grey-7) var(--ownership-progress), var(--grey-8) 0) 1;
+    --ownership-progress-color: var(--grey-7);
+
+    border-image: linear-gradient(to left, var(--ownership-progress-color) var(--ownership-progress), var(--grey-8) 0) 1;
     transition:
       var(--transition-colors),
+      --ownership-progress-color var(--duration-fast) var(--ease-standard),
       --ownership-progress var(--duration-medium) var(--ease-standard);
+
+    &.is-animating {
+      --ownership-progress-color: var(--grey-4);
+    }
   }
   .edition:not(:has(.run)) > .edition-label {
     grid-row: 1 / -1;

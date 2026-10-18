@@ -8,7 +8,7 @@
 </script>
 
 <script lang="ts">
-  import { afterNavigate, beforeNavigate, replaceState } from "$app/navigation";
+  import { afterNavigate, beforeNavigate, goto } from "$app/navigation";
   import { resolve } from "$app/paths";
   import { page } from "$app/state";
   import { onDestroy, untrack } from "svelte";
@@ -38,7 +38,7 @@
     },
     {
       current: () => page.shallow?.url ?? page.url,
-      replace: (url) => replaceState(url, page.state),
+      replace: (url) => goto(url, { state: page.state, shallow: true, replace: true }),
     },
   );
   let dragDistance = $state(0);

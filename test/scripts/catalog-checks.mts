@@ -408,7 +408,6 @@ test("availability refresh downloads all pages, preserves raw snapshots, and cha
   const saved = JSON.parse(await readFile(path, "utf8"));
   assert.equal(saved.content.aya.editions[0].shop, "in-stock");
   assert.match(saved.shopUpdated, /^\d{4}-\d{2}-\d{2}$/);
-  assert.deepEqual(saved.content.aya.editions[0].shop, "in-stock");
   Reflect.deleteProperty(saved, "shopUpdated");
   Reflect.deleteProperty(saved.content.aya.editions[0], "shop");
   assert.deepEqual(saved.content.aya.editions[0], { ...catalog.content.aya.editions![0], available: true });

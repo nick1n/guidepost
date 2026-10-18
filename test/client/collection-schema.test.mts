@@ -15,6 +15,7 @@ it("uses collision-safe keys and stable owner-scoped entry IDs", () => {
   expect(collectionKey("a:b", "c")).not.toBe(collectionKey("a", "b:c"));
   expect(entryId("guest", key)).toBe(entryId("guest", JSON.parse(JSON.stringify(key))));
   expect(entryId("guest", key)).not.toBe(entryId("account", key));
+  expect(entryId("guest", collectionKey("core", "core-16"))).toBe('["guest","core","core-16"]');
 });
 
 it("rejects malformed or noncanonical keys and invalid state", () => {
@@ -34,12 +35,4 @@ it("rejects malformed or noncanonical keys and invalid state", () => {
   expect(
     S.decodeUnknownSync(CollectionSnapshotSchema)({ [collectionKey("item", "edition")]: { owned: true, wished: false, copyNumber: 42 } }),
   ).toEqual({ [collectionKey("item", "edition")]: { owned: true, wished: false, copyNumber: 42 } });
-});
-
-it("keeps the same key when an edition display label changes", () => {
-  const edition = { id: "core-16", label: "1.6" };
-  const key = collectionKey("core", edition.id);
-  edition.label = "Second edition";
-  expect(collectionKey("core", edition.id)).toBe(key);
-  expect(entryId("guest", key)).toBe('["guest","core","core-16"]');
 });

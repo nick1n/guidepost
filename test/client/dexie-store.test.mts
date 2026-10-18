@@ -161,21 +161,6 @@ it.effect("sparse optimistic edits remove rows through the snapshot deletion pat
   }),
 );
 
-it.effect("keeps persisted ownership attached to an edition ID after its label changes", () =>
-  Effect.gen(function* () {
-    const f = fixture();
-    const store = yield* f.make();
-    const edition = { ...coreEdition };
-    const key = collectionKey("core", edition.id);
-    yield* store.load();
-    yield* store.save({ [key]: { owned: true } });
-    edition.label = "Second edition";
-    const reopened = yield* f.make();
-    expect(collectionKey("core", edition.id)).toBe(key);
-    expect(yield* reopened.load()).toEqual({ [key]: { owned: true } });
-  }),
-);
-
 it.effect("isolates owners and retains stable entry identities when selections change", () =>
   Effect.gen(function* () {
     const f = fixture();

@@ -37,7 +37,7 @@ export function availabilityFromUrls(catalog: Catalog, products: Product[], shop
         const url = catalogListing(item);
         const key = url ? handle(url) : undefined;
         const product = key ? listings.get(key) : undefined;
-        observe(item, url, product ? stock(product.variants) : "missing");
+        observe(item, key ? url : undefined, product ? stock(product.variants) : "missing");
         continue;
       }
       observe(item);
@@ -61,6 +61,11 @@ export function availabilityFromUrls(catalog: Catalog, products: Product[], shop
         }
         const url = catalogListing(item, edition);
         const key = url ? handle(url) : undefined;
+        // The Kingdom Death snapshot provides no stock evidence for external listings.
+        if (url && !key) {
+          observe(edition);
+          continue;
+        }
         const product = key ? listings.get(key) : undefined;
         let state: "in-stock" | "out-of-stock" | "missing" = "missing";
         // Promotional prize fulfillment is not a purchasable listing, despite Shopify stock availability.

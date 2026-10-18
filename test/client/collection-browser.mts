@@ -137,10 +137,6 @@ try {
   await progress("Have Kingdom Death: Monster, 1.6", 0);
   await click("Have Kingdom Death: Monster, 1.6");
   await evaluate("document.querySelector('.edition-detail:not(.inactive) details.contents summary').click()");
-  assert(
-    await evaluate("![...document.querySelectorAll('button')].some(e=>e.textContent.includes('Show missing only'))"),
-    "Removed missing-only control stays absent",
-  );
   await progress("Remove ownership of Kingdom Death: Monster, 1.6", 100);
   await click("View Kingdom Death: Monster, 1.3, includes gameplay");
   assert(

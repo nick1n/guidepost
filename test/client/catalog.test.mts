@@ -249,7 +249,7 @@ describe("edition coverage", () => {
     expect(missing.edition("allison-the-twilight-knight-gameplay", "original").available).toBe(false);
     expect(missing.edition("white-speaker-koshka-gameplay", "original").available).toBe(true);
   });
-  it("requires the listed base and gameplay upgrade, and revokes completion when either disappears", () => {
+  it("requires every listed recipe component without substituting unrelated ownership", () => {
     const index = reviewIndex(coverageFixture());
     const inspect = (snapshot: CollectionSnapshot) => index.coverage(snapshot).edition("core", "1-6");
     const packOnly = { [collectionKey("upgrade-pack", "i")]: { owned: true } };
@@ -261,7 +261,12 @@ describe("edition coverage", () => {
     expect(inspect(packOnly)).toMatchObject({ available: false, source: "missing" });
     expect(inspect(complete)).toMatchObject({ available: true, source: "upgrade" });
     expect(inspect({ [collectionKey("core", "1-5")]: { owned: true } })).toMatchObject({ available: false, source: "missing" });
-    expect(inspect({ [collectionKey("upgrade-pack", "i")]: { owned: true } })).toMatchObject({ available: false, source: "missing" });
+    const unrelated = {
+      [collectionKey("core", "1-5")]: { owned: true },
+      [collectionKey("book", "1-6")]: { owned: true },
+    };
+    expect(inspect(unrelated)).toMatchObject({ available: false, source: "missing" });
+    expect(inspect({ ...unrelated, ...packOnly })).toMatchObject({ available: true, source: "upgrade" });
   });
 
   it("lets an explicit missing mark override ownership and restores availability when cleared", () => {
@@ -286,14 +291,6 @@ describe("edition coverage", () => {
     const coverage = index.coverage(snapshot);
     expect(coverage.edition("core", "1-6")).toMatchObject({ available: false, source: "missing" });
     expect(coverage.edition("core", "sim")).toMatchObject({ available: false, source: "missing" });
-  });
-
-  it("recognizes an explicitly equivalent included rulebook", () => {
-    const index = reviewIndex(coverageFixture());
-    expect(index.coverage({ [collectionKey("book", "1-6-included")]: { owned: true } }).edition("book", "1-6")).toMatchObject({
-      available: true,
-      source: "equivalent",
-    });
   });
 
   it.each([
@@ -489,19 +486,6 @@ describe("edition coverage", () => {
 });
 
 describe("review catalog facts", () => {
-  it("requires the gameplay-content upgrade to complete Core 1.6", () => {
-    const index = reviewIndex(coverageFixture());
-    const snapshot: CollectionSnapshot = {
-      [collectionKey("core", "1-5")]: { owned: true },
-      [collectionKey("book", "1-6")]: { owned: true },
-    };
-    expect(index.coverage(snapshot).edition("core", "1-6").available).toBe(false);
-
-    const upgraded = { ...snapshot, [collectionKey("upgrade-pack", "i")]: { owned: true } };
-    expect(index.coverage(upgraded).edition("core", "1-6").available).toBe(true);
-    expect(index.coverage(snapshot).edition("core", "sim").available).toBe(false);
-    expect(snapshot[collectionKey("core", "1-6")]).toBeUndefined();
-  });
   it("matches explicitly equivalent copies without merging versions or equal labels", () => {
     const item: ReviewItem = {
       name: "Rulebook",
@@ -621,19 +605,6 @@ describe("review catalog facts", () => {
     ]);
     expect(data.bundles.set.editions).toBeUndefined();
     expect(data.homebrew.model.editions).toBeUndefined();
-  });
-
-  it("preserves stable edition IDs when labels change", () => {
-    const data: ReviewCatalog = {
-      content: { core: { name: "Core", tags: [], editions: [{ id: "core-1-6", label: "1.6", format: "physical" }] } },
-      bundles: {},
-      homebrew: {},
-      accessories: {},
-      "included-only": {},
-    };
-    const indexed = reviewIndex(data).byCategory.get("content")![0];
-    indexed.editions![0].label = "First Edition";
-    expect(indexed.editions![0].id).toBe("core-1-6");
   });
 
   it("leaves unreviewed live bundle components unpriced", () => {

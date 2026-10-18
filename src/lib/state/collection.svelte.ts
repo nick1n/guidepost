@@ -65,7 +65,7 @@ export class Collection {
         .map((edition) => ({ item, edition })),
     ),
   );
-  readonly ownedCount = $derived(this.owned.filter(({ edition }) => !edition.includedOnly).length);
+  readonly ownedCount = $derived(this.owned.filter(({ item, edition }) => item.category !== "bundles" && !edition.includedOnly).length);
   readonly available = $derived.by(() =>
     this.catalog.entries.flatMap((item) =>
       reviewEditions(item)
@@ -357,13 +357,14 @@ export class Collection {
 
   setManyOwned = Effect.fn("Collection.setManyOwned")({ self: this }, function (keys: readonly string[], owned: boolean) {
     const patch: CollectionPatch = Object.fromEntries(keys.map((key) => [key, ownershipPatch(owned)]));
-    if (owned) {
-      for (const key of keys) {
-        const [itemId, editionId] = parseCollectionKey(key);
-        for (const child of this.catalog.includedEditions(itemId, editionId)) {
-          const childKey = collectionKey(child.item.id, child.edition.id);
-          if (this.get(childKey).missing) patch[childKey] = { ...patch[childKey], missing: false };
-        }
+    for (const key of keys) {
+      const [itemId, editionId] = parseCollectionKey(key);
+      const bundle = this.catalog.byId.get(itemId)?.category === "bundles";
+      if (!owned && !bundle) continue;
+      for (const child of this.catalog.includedEditions(itemId, editionId)) {
+        const childKey = collectionKey(child.item.id, child.edition.id);
+        if (bundle) patch[childKey] = ownershipPatch(owned);
+        else if (this.get(childKey).missing) patch[childKey] = { ...patch[childKey], missing: false };
       }
     }
     return this.commitMany(patch);

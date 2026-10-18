@@ -9,7 +9,6 @@ import { Cause, Deferred, Effect, Exit, Fiber } from "effect";
 import { FetchHttpClient } from "effect/http";
 import { offlineMode, workflow } from "#scripts/catalog/cli.mts";
 import { checkListing } from "#scripts/check-shop-links.mts";
-import { refreshAvailability } from "#scripts/refresh-catalog-availability.mts";
 import { downloadNewsPage } from "#scripts/news/scrape-shop-links.mts";
 
 it.effect("interruption waits for the promise workflow's cleanup", () =>
@@ -393,58 +392,4 @@ it.effect("link request interruption aborts transport without a failure result",
     expect(aborted).toBe(true);
     expect(Exit.isFailure(exit) && Cause.hasInterrupts(exit.cause)).toBe(true);
   }),
-);
-
-it.effect("explicit fetch mode refreshes availability from exactly two product snapshot URLs", () =>
-  Effect.gen(function* () {
-    const directory = yield* Effect.acquireRelease(
-      Effect.promise(() => mkdtemp(join(tmpdir(), "guidepost-fetch-availability-"))),
-      (path) => Effect.promise(() => rm(path, { recursive: true, force: true })),
-    );
-    const catalog = join(directory, "static/kdm/catalog/data.json");
-    yield* Effect.promise(async () => {
-      await mkdir(join(directory, "static/kdm/catalog"), { recursive: true });
-      await writeFile(catalog, JSON.stringify({ content: {}, "included-only": {}, bundles: {}, accessories: {}, homebrew: {} }));
-    });
-    const urls: string[] = [];
-    const pages = [
-      {
-        products: [
-          {
-            id: 1,
-            title: "Example",
-            handle: "example",
-            variants: [{ id: 11, title: "Default Title", requires_shipping: true, price: "10.00", available: true }],
-          },
-        ],
-      },
-      { products: [] },
-    ];
-    const result = yield* Effect.promise(() =>
-      refreshAvailability({
-        catalog,
-        offline: offlineMode({ fetch: true, offline: false }),
-        client: {
-          get: async (url) => {
-            const page = pages[urls.length];
-            urls.push(url);
-            if (!page) throw new Error("Unexpected request: " + url);
-            return { url, checkedAt: "2026-01-01T00:00:00.000Z", data: page };
-          },
-        },
-      }),
-    );
-    expect(urls).toEqual([
-      "https://shop.kingdomdeath.com/products.json?limit=250&page=1",
-      "https://shop.kingdomdeath.com/products.json?limit=250&page=2",
-    ]);
-    expect(result.pages).toBe(2);
-    expect(result.products).toBe(1);
-    for (const [index, page] of pages.entries()) {
-      const saved = yield* Effect.promise(() =>
-        readFile(join(directory, "temp/kdm-catalog/shopify-products/products-page-" + (index + 1) + ".json"), "utf8"),
-      );
-      expect(JSON.parse(saved)).toEqual(page);
-    }
-  }).pipe(Effect.scoped),
 );

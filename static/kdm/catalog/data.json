@@ -9093,7 +9093,6 @@
       "name": "Phoenix Base Bundle",
       "price": 1200,
       "releaseDate": "2024-08-12",
-      "shop": "missing",
       "tags": ["homebrew", "3d-files", "monster", "core", "terrain", "craft-of-death", "monster-phoenix", "base"],
       "url": "https://ko-fi.com/s/cb9ee97746"
     },
@@ -9815,7 +9814,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [500], "releaseDate": "2023-02-13" }],
       "kind": "terrain",
       "name": "Acanthus Plants",
-      "price": 500,
       "priceMinimum": true,
       "tags": ["homebrew", "3d-files", "core", "terrain", "craft-of-death"],
       "url": "https://ko-fi.com/s/744d038dff"
@@ -9826,7 +9824,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [400], "releaseDate": "2026-03-21" }],
       "kind": "accessory",
       "name": "Attribute Counters",
-      "price": 400,
       "priceMinimum": true,
       "tags": ["homebrew", "3d-files", "craft-of-death", "counter"],
       "url": "https://ko-fi.com/s/efbd334f4f"
@@ -9837,7 +9834,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [900], "releaseDate": "2026-08-11" }],
       "kind": "model",
       "name": "Frogophant",
-      "price": 900,
       "priceMinimum": true,
       "requires": ["expansion-frogdog"],
       "tags": ["homebrew", "3d-files", "monster", "craft-of-death", "monster-bullfrogdog"],
@@ -9849,7 +9845,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [500], "releaseDate": "2026-06-11" }],
       "kind": "terrain",
       "name": "Hiding Bushes",
-      "price": 500,
       "priceMinimum": true,
       "tags": ["homebrew", "3d-files", "core", "terrain", "craft-of-death"],
       "url": "https://ko-fi.com/s/09aec6f2f4"
@@ -9860,7 +9855,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [800], "releaseDate": "2022-09-14" }],
       "kind": "base",
       "name": "Knight of Hands Base",
-      "price": 800,
       "priceMinimum": true,
       "tags": ["homebrew", "3d-files", "monster", "core", "knight", "craft-of-death", "monster-hand"],
       "url": "https://ko-fi.com/s/db104cca41"
@@ -9871,7 +9865,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [900], "releaseDate": "2025-05-24" }],
       "kind": "model",
       "name": "Lion Monster",
-      "price": 900,
       "priceMinimum": true,
       "tags": ["homebrew", "3d-files", "monster", "core", "craft-of-death", "monster-white-lion"],
       "url": "https://ko-fi.com/s/0bd973fcfa"
@@ -9882,7 +9875,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [600], "releaseDate": "2024-08-12" }],
       "kind": "base",
       "name": "Phoenix Base - Materialize",
-      "price": 600,
       "tags": ["homebrew", "3d-files", "core", "terrain", "craft-of-death", "monster-phoenix", "base"],
       "url": "https://ko-fi.com/s/51e4b8a167"
     },
@@ -9892,7 +9884,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [900], "releaseDate": "2024-08-12" }],
       "kind": "terrain",
       "name": "Phoenix Nightmare Tree",
-      "price": 900,
       "tags": ["homebrew", "3d-files", "monster", "core", "terrain", "craft-of-death", "monster-phoenix"],
       "url": "https://ko-fi.com/s/23394aac95"
     },
@@ -9902,7 +9893,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0], "releaseDate": "2026-05-16" }],
       "kind": "base",
       "name": "Rock Base - Lion Monster",
-      "price": 0,
       "priceMinimum": true,
       "tags": ["homebrew", "3d-files", "monster", "core", "member-only", "craft-of-death", "monster-white-lion"],
       "url": "https://ko-fi.com/s/d3a4efca06"
@@ -9913,7 +9903,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [800], "releaseDate": "2022-09-28" }],
       "kind": "base",
       "name": "Running Deer Base",
-      "price": 800,
       "priceMinimum": true,
       "tags": ["homebrew", "3d-files", "monster", "core", "craft-of-death", "monster-screaming-antelope"],
       "url": "https://ko-fi.com/s/a1a7b30fdc"
@@ -9924,7 +9913,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0], "releaseDate": "2026-07-03" }],
       "kind": "terrain",
       "name": "Scenic Terrain - Lion Monster",
-      "price": 0,
       "priceMinimum": true,
       "tags": ["homebrew", "3d-files", "monster", "core", "terrain", "member-only", "craft-of-death", "monster-white-lion"],
       "url": "https://ko-fi.com/s/4ad38b4baa"
@@ -9935,7 +9923,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0], "releaseDate": "2025-10-19" }],
       "kind": "accessory",
       "name": "Shield Location Dice",
-      "price": 0,
       "priceMinimum": true,
       "tags": ["homebrew", "3d-files", "dice", "craft-of-death"],
       "url": "https://ko-fi.com/s/c9d732bf63"
@@ -9946,7 +9933,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [500], "releaseDate": "2022-09-27" }],
       "kind": "base",
       "name": "The Slaughterer Base",
-      "price": 500,
       "priceMinimum": true,
       "tags": ["homebrew", "3d-files", "monster", "core", "craft-of-death", "monster-butcher"],
       "url": "https://ko-fi.com/s/85e10683ef"
@@ -9957,7 +9943,6 @@
       "gameplay": true,
       "kind": "expansion",
       "name": "Rosine Expansion (Alpha v0.2_20.12.2022)",
-      "price": 0,
       "tags": ["gameplay", "homebrew", "revampedgame", "2022", "berserk", "rosine", "print-and-play"],
       "url": "https://ko-fi.com/s/6860d7efac"
     },
@@ -9966,7 +9951,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "terrain",
       "name": "Perfect Lantern",
-      "price": 0,
       "requires": ["set-15th-anniversary-survivors"],
       "tags": ["homebrew", "3d-files", "terrain", "anniversary", "raitenjuro"],
       "url": "https://ko-fi.com/s/2ffb1e5b94"
@@ -9976,7 +9960,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "model",
       "name": "Ammonia V1",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "revampedgame", "core", "innovation"],
       "url": "https://ko-fi.com/s/ca8cd255f4"
     },
@@ -9985,7 +9968,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "model",
       "name": "Ammonia V2",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "revampedgame", "core", "innovation"],
       "url": "https://ko-fi.com/s/32ac3b01a5"
     },
@@ -9994,7 +9976,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "accessory",
       "name": "Baby Monster Controller",
-      "price": 0,
       "priceMinimum": true,
       "tags": ["homebrew", "3d-files", "revampedgame", "member-only"],
       "url": "https://ko-fi.com/s/3403c3f0d3"
@@ -10004,7 +9985,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "model",
       "name": "Barber Surgeon V1",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "revampedgame", "core", "settlement-location"],
       "url": "https://ko-fi.com/s/11c30ede5f"
     },
@@ -10013,7 +9993,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "model",
       "name": "Barber Surgeon V2 (Split Parts)",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "revampedgame", "core", "settlement-location"],
       "url": "https://ko-fi.com/s/3e3028b0aa"
     },
@@ -10022,7 +10001,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "terrain",
       "name": "Beheaded Corpse Terrain",
-      "price": 0,
       "requires": ["expansion-gamblers-chest"],
       "tags": ["homebrew", "3d-files", "revampedgame", "gamblers-chest", "terrain"],
       "url": "https://ko-fi.com/s/544e92359d"
@@ -10032,7 +10010,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [1000] }],
       "kind": "model",
       "name": "(Berserk) Rosine",
-      "price": 1000,
       "priceMinimum": true,
       "tags": ["homebrew", "3d-files", "revampedgame", "berserk", "rosine"],
       "url": "https://ko-fi.com/s/97dfbba8cf"
@@ -10042,7 +10019,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "terrain",
       "name": "BK Bell",
-      "price": 0,
       "requires": ["expansion-black-knight"],
       "tags": ["homebrew", "3d-files", "monster", "revampedgame", "terrain", "monster-black-knight"],
       "url": "https://ko-fi.com/s/d690dccc4b"
@@ -10052,7 +10028,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "accessory",
       "name": "Black Knight Board",
-      "price": 0,
       "requires": ["expansion-black-knight"],
       "tags": ["homebrew", "3d-files", "monster", "revampedgame", "knight", "monster-black-knight"],
       "url": "https://ko-fi.com/s/0a5157e862"
@@ -10062,7 +10037,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "model",
       "name": "Black Knight Crest",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "monster", "revampedgame", "knight", "crest", "monster-black-knight"],
       "url": "https://ko-fi.com/s/0eb2785773"
     },
@@ -10071,7 +10045,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "terrain",
       "name": "(Black Knight) Elastomer Statue Terrain",
-      "price": 0,
       "requires": ["expansion-black-knight"],
       "tags": ["homebrew", "3d-files", "monster", "revampedgame", "knight", "terrain", "monster-black-knight", "elastomer-statues"],
       "url": "https://ko-fi.com/s/5bb7402d55"
@@ -10081,7 +10054,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "accessory",
       "name": "Black Knight Tile Holder Storage",
-      "price": 0,
       "requires": ["expansion-black-knight"],
       "tags": ["homebrew", "3d-files", "monster", "revampedgame", "knight", "monster-black-knight"],
       "url": "https://ko-fi.com/s/02f078f125"
@@ -10091,7 +10063,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "model",
       "name": "Blacksmith V1",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "revampedgame", "core", "settlement-location"],
       "url": "https://ko-fi.com/s/3541bf3061"
     },
@@ -10100,7 +10071,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "model",
       "name": "Blacksmith V2",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "revampedgame", "core", "settlement-location"],
       "url": "https://ko-fi.com/s/58dc5cd331"
     },
@@ -10109,7 +10079,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "terrain",
       "name": "Blood Beard Plant",
-      "price": 0,
       "requires": ["philosophies-of-death-gatherism"],
       "tags": ["homebrew", "3d-files", "revampedgame", "terrain", "gatherism"],
       "url": "https://ko-fi.com/s/b7a08a5f6c"
@@ -10119,7 +10088,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "terrain",
       "name": "Blood Pool Terrain",
-      "price": 0,
       "requires": ["expansion-gamblers-chest"],
       "tags": ["homebrew", "3d-files", "revampedgame", "gamblers-chest", "terrain"],
       "url": "https://ko-fi.com/s/265cc675f0"
@@ -10129,7 +10097,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "accessory",
       "name": "BoDP Tokens Insert",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "revampedgame", "tokens"],
       "url": "https://ko-fi.com/s/9e8bb61eee"
     },
@@ -10138,7 +10105,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "model",
       "name": "Bone Eater",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "monster", "revampedgame", "monster-bone-eaters"],
       "url": "https://ko-fi.com/s/7cfaae126b"
     },
@@ -10147,7 +10113,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "model",
       "name": "Bone Smith",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "revampedgame", "core", "settlement-location"],
       "url": "https://ko-fi.com/s/cb9157acd6"
     },
@@ -10156,7 +10121,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "model",
       "name": "Broken Lantern Oven",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "revampedgame", "hunt-event"],
       "url": "https://ko-fi.com/s/f080ec9918"
     },
@@ -10165,7 +10129,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "terrain",
       "name": "Bug Patch Terrain",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "revampedgame", "core", "terrain"],
       "url": "https://ko-fi.com/s/0b459e1884"
     },
@@ -10174,7 +10137,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "model",
       "name": "Cancer Pigeon",
-      "price": 0,
       "priceMinimum": true,
       "tags": ["homebrew", "3d-files", "revampedgame", "hunt-event", "member-only"],
       "url": "https://ko-fi.com/s/d33ad6a8f4"
@@ -10184,7 +10146,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "model",
       "name": "Catarium",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "monster", "revampedgame", "core", "settlement-location", "monster-white-lion"],
       "url": "https://ko-fi.com/s/9427d9325a"
     },
@@ -10193,7 +10154,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "model",
       "name": "Catarium (Split Parts)",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "monster", "revampedgame", "core", "settlement-location", "monster-white-lion"],
       "url": "https://ko-fi.com/s/88d5eff694"
     },
@@ -10202,7 +10162,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "terrain",
       "name": "Copperfish Den Terrain",
-      "price": 0,
       "requires": ["expansion-frogdog"],
       "tags": ["homebrew", "3d-files", "monster", "revampedgame", "terrain", "monster-frogdog"],
       "url": "https://ko-fi.com/s/fb24710e32"
@@ -10212,7 +10171,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "model",
       "name": "Corpse",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "revampedgame", "terrain", "hunt-event", "member-only"],
       "url": "https://ko-fi.com/s/0fb4eba665"
     },
@@ -10221,7 +10179,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "terrain",
       "name": "Corpse Lily Terrain",
-      "price": 0,
       "requires": ["white-sunlion-armor-erza"],
       "tags": ["homebrew", "3d-files", "revampedgame", "terrain"],
       "url": "https://ko-fi.com/s/59fe4302b1"
@@ -10231,7 +10188,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "accessory",
       "name": "Crafting Table",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "revampedgame"],
       "url": "https://ko-fi.com/s/453f74aa00"
     },
@@ -10240,7 +10196,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "base",
       "name": "Crimson Croc Base",
-      "price": 0,
       "requires": ["expansion-gamblers-chest"],
       "tags": ["homebrew", "3d-files", "monster", "revampedgame", "gamblers-chest", "member-only", "monster-crimson-crocodile"],
       "url": "https://ko-fi.com/s/5ac90ce94c"
@@ -10250,7 +10205,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "accessory",
       "name": "Darkness Coin",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "revampedgame"],
       "url": "https://ko-fi.com/s/6cf76bf14c"
     },
@@ -10259,7 +10213,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "model",
       "name": "Dead Dragon King",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "monster", "revampedgame", "monster-dragon-king", "pot-star"],
       "url": "https://ko-fi.com/s/d6ea3b22de"
     },
@@ -10268,7 +10221,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "model",
       "name": "Dead Gorm",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "monster", "revampedgame", "monster-gorm"],
       "url": "https://ko-fi.com/s/de9fb89417"
     },
@@ -10277,7 +10229,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "model",
       "name": "Dead Phoenix",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "monster", "revampedgame", "core", "monster-phoenix"],
       "url": "https://ko-fi.com/s/6107c56b03"
     },
@@ -10286,7 +10237,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "terrain",
       "name": "Debris Terrain",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "revampedgame", "core", "terrain"],
       "url": "https://ko-fi.com/s/4f70e4dcd3"
     },
@@ -10295,7 +10245,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "terrain",
       "name": "Divine Fragment",
-      "price": 0,
       "requires": ["expansion-screaming-god"],
       "tags": ["homebrew", "3d-files", "monster", "revampedgame", "monster-screaming-god"],
       "url": "https://ko-fi.com/s/36bde17f1f"
@@ -10305,7 +10254,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "model",
       "name": "Dragon Armory",
-      "price": 0,
       "requires": ["expansion-dragon-king"],
       "tags": ["homebrew", "3d-files", "monster", "revampedgame", "settlement-location", "monster-dragon-king", "pot-star"],
       "url": "https://ko-fi.com/s/10016e2cd4"
@@ -10315,7 +10263,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "terrain",
       "name": "Eggsack & Nest",
-      "price": 0,
       "requires": ["expansion-spidicules"],
       "tags": ["homebrew", "3d-files", "monster", "revampedgame", "terrain", "monster-spidicules"],
       "url": "https://ko-fi.com/s/1c71568a0e"
@@ -10325,7 +10272,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "model",
       "name": "Ethereal Dreamer",
-      "price": 0,
       "priceMinimum": true,
       "tags": ["homebrew", "3d-files", "revampedgame", "ccg"],
       "url": "https://ko-fi.com/s/cf78144561"
@@ -10335,7 +10281,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "model",
       "name": "Exhausted Lantern Hoard",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "revampedgame", "core", "settlement-location"],
       "url": "https://ko-fi.com/s/21f333f9f9"
     },
@@ -10344,7 +10289,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "model",
       "name": "Eye Jelly & Minion",
-      "price": 0,
       "priceMinimum": true,
       "tags": ["homebrew", "3d-files", "revampedgame", "ccg"],
       "url": "https://ko-fi.com/s/f731eb2d02"
@@ -10354,7 +10298,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "model",
       "name": "Faceless Statue",
-      "price": 0,
       "priceMinimum": true,
       "tags": ["homebrew", "3d-files", "revampedgame", "hunt-event", "member-only"],
       "url": "https://ko-fi.com/s/c49f4e3519"
@@ -10364,7 +10307,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "terrain",
       "name": "Fallen Lantern Terrain",
-      "price": 0,
       "requires": ["expansion-gamblers-chest"],
       "tags": ["homebrew", "3d-files", "revampedgame", "gamblers-chest", "terrain"],
       "url": "https://ko-fi.com/s/25f6c2f6d7"
@@ -10374,7 +10316,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "model",
       "name": "False Prophet",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "revampedgame"],
       "url": "https://ko-fi.com/s/2fe5548f13"
     },
@@ -10383,7 +10324,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "model",
       "name": "Forbidden Fruit",
-      "price": 0,
       "priceMinimum": true,
       "tags": ["homebrew", "3d-files", "monster", "revampedgame", "monster-lonely-tree"],
       "url": "https://ko-fi.com/s/ea21f1a2ae"
@@ -10393,7 +10333,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "accessory",
       "name": "Forest Coin",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "monster", "revampedgame", "monster-flower-knight"],
       "url": "https://ko-fi.com/s/a15a146014"
     },
@@ -10402,7 +10341,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "model",
       "name": "Forest Gate",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "monster", "revampedgame", "hunt-event", "monster-flower-knight"],
       "url": "https://ko-fi.com/s/c9767888dd"
     },
@@ -10411,7 +10349,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "terrain",
       "name": "Gabel's Tree Terrain V2",
-      "price": 0,
       "requires": ["expansion-gamblers-chest"],
       "tags": ["homebrew", "3d-files", "revampedgame", "gamblers-chest", "terrain"],
       "url": "https://ko-fi.com/s/f199d1a4f7"
@@ -10421,7 +10358,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "model",
       "name": "(Gambler's Chest) Atnas Star",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "monster", "revampedgame", "gamblers-chest", "monster-atnas"],
       "url": "https://ko-fi.com/s/52b318a015"
     },
@@ -10430,7 +10366,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "terrain",
       "name": "(Gambler's Chest) Blood Pool Terrain",
-      "price": 0,
       "requires": ["expansion-gamblers-chest"],
       "tags": ["homebrew", "3d-files", "monster", "revampedgame", "gamblers-chest", "terrain", "monster-crimson-crocodile"],
       "url": "https://ko-fi.com/s/f55e0b3daf"
@@ -10440,7 +10375,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "accessory",
       "name": "(Gambler's Chest) Box of Delicious Promise",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "revampedgame", "gamblers-chest"],
       "url": "https://ko-fi.com/s/63ec48a234"
     },
@@ -10449,7 +10383,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "model",
       "name": "Gambler's Chest Crest",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "revampedgame", "gamblers-chest", "crest"],
       "url": "https://ko-fi.com/s/7104180d20"
     },
@@ -10458,7 +10391,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "accessory",
       "name": "(Gambler's Chest) Encounter Board",
-      "price": 0,
       "requires": ["expansion-gamblers-chest"],
       "tags": ["homebrew", "3d-files", "revampedgame", "gamblers-chest", "board", "encounter-monster"],
       "url": "https://ko-fi.com/s/2e3086e1dc"
@@ -10468,7 +10400,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "terrain",
       "name": "(Gambler's Chest) Fingers Terrain",
-      "price": 0,
       "requires": ["expansion-gamblers-chest"],
       "tags": ["homebrew", "3d-files", "monster", "revampedgame", "gamblers-chest", "terrain", "monster-bone-eaters"],
       "url": "https://ko-fi.com/s/1a68251852"
@@ -10478,7 +10409,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "terrain",
       "name": "(Gambler's Chest) Gabel's Tree Terrain",
-      "price": 0,
       "requires": ["expansion-gamblers-chest"],
       "tags": ["homebrew", "3d-files", "revampedgame", "gamblers-chest", "terrain"],
       "url": "https://ko-fi.com/s/fb5fd084c5"
@@ -10488,7 +10418,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "terrain",
       "name": "(Gambler's Chest) Headless Statue Terrain",
-      "price": 0,
       "requires": ["expansion-gamblers-chest"],
       "tags": ["homebrew", "3d-files", "revampedgame", "gamblers-chest", "terrain"],
       "url": "https://ko-fi.com/s/aa21d1f82f"
@@ -10498,7 +10427,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "terrain",
       "name": "(Gambler's Chest) Hidden Face Terrain",
-      "price": 0,
       "requires": ["expansion-gamblers-chest"],
       "tags": ["homebrew", "3d-files", "revampedgame", "gamblers-chest", "terrain"],
       "url": "https://ko-fi.com/s/5ebf554c08"
@@ -10508,7 +10436,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "terrain",
       "name": "(Gambler's Chest) Lantern Halberd Terrain",
-      "price": 0,
       "requires": ["expansion-gamblers-chest"],
       "tags": ["homebrew", "3d-files", "revampedgame", "gamblers-chest", "terrain"],
       "url": "https://ko-fi.com/s/de32d0dcc1"
@@ -10518,7 +10445,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "terrain",
       "name": "(Gambler's Chest) Lantern Terrain",
-      "price": 0,
       "requires": ["expansion-gamblers-chest"],
       "tags": ["homebrew", "3d-files", "revampedgame", "gamblers-chest", "terrain"],
       "url": "https://ko-fi.com/s/ee0f732873"
@@ -10528,7 +10454,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "terrain",
       "name": "(Gambler's Chest) Rock Formation Terrain",
-      "price": 0,
       "requires": ["expansion-gamblers-chest"],
       "tags": ["homebrew", "3d-files", "revampedgame", "gamblers-chest", "terrain"],
       "url": "https://ko-fi.com/s/6dc72d079d"
@@ -10538,7 +10463,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "terrain",
       "name": "(Gambler's Chest) Smog Incense Terrain",
-      "price": 0,
       "requires": ["expansion-gamblers-chest"],
       "tags": ["homebrew", "3d-files", "monster", "revampedgame", "gamblers-chest", "terrain", "monster-smog-singers"],
       "url": "https://ko-fi.com/s/c667446ad3"
@@ -10548,7 +10472,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "accessory",
       "name": "(Gambler's Chest) Tokens Pack #1",
-      "price": 0,
       "requires": ["expansion-gamblers-chest"],
       "tags": ["homebrew", "3d-files", "revampedgame", "gamblers-chest", "tokens"],
       "url": "https://ko-fi.com/s/c42e3e6f88"
@@ -10558,7 +10481,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "accessory",
       "name": "GCE Storage Box",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "revampedgame", "gamblers-chest"],
       "url": "https://ko-fi.com/s/0e2d2d49d7"
     },
@@ -10567,7 +10489,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "model",
       "name": "(GCE) Vaultless Maze",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "revampedgame", "gamblers-chest", "terrain"],
       "url": "https://ko-fi.com/s/7f520dddbd"
     },
@@ -10576,7 +10497,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "terrain",
       "name": "(Generic) Plateau Terrain",
-      "price": 0,
       "tags": ["generic", "homebrew", "3d-files", "revampedgame", "member-only"],
       "url": "https://ko-fi.com/s/ab180ab581"
     },
@@ -10585,7 +10505,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "terrain",
       "name": "Giant Stone Face Terrain",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "revampedgame", "core", "terrain"],
       "url": "https://ko-fi.com/s/9f8a2f2365"
     },
@@ -10594,7 +10513,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "terrain",
       "name": "Glowing Waypoint Terrain",
-      "price": 0,
       "requires": ["expansion-gamblers-chest"],
       "tags": ["homebrew", "3d-files", "revampedgame", "gamblers-chest", "terrain"],
       "url": "https://ko-fi.com/s/931a0d0ebc"
@@ -10604,7 +10522,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "model",
       "name": "Gorm Crest",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "monster", "revampedgame", "crest", "monster-gorm"],
       "url": "https://ko-fi.com/s/fab54dc4f9"
     },
@@ -10613,7 +10530,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "model",
       "name": "Gormery",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "monster", "revampedgame", "settlement-location", "monster-gorm"],
       "url": "https://ko-fi.com/s/6254edd6a3"
     },
@@ -10622,7 +10538,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "model",
       "name": "Gragelope",
-      "price": 0,
       "priceMinimum": true,
       "tags": ["homebrew", "3d-files", "revampedgame", "hunt-event", "member-only"],
       "url": "https://ko-fi.com/s/7108397f9d"
@@ -10632,7 +10547,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "terrain",
       "name": "Hidden Face Terrain",
-      "price": 0,
       "requires": ["expansion-gamblers-chest"],
       "tags": ["homebrew", "3d-files", "revampedgame", "gamblers-chest", "terrain"],
       "url": "https://ko-fi.com/s/2fe69d9cc3"
@@ -10642,7 +10556,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "terrain",
       "name": "Host of Hands",
-      "price": 0,
       "requires": ["expansion-screaming-god"],
       "tags": ["homebrew", "3d-files", "monster", "revampedgame", "monster-parasite-queen"],
       "url": "https://ko-fi.com/s/b96c0065d4"
@@ -10652,7 +10565,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "model",
       "name": "Hovel V1",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "revampedgame", "core", "innovation"],
       "url": "https://ko-fi.com/s/0263bf915e"
     },
@@ -10661,7 +10573,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "model",
       "name": "Hovel V2",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "revampedgame", "core", "innovation"],
       "url": "https://ko-fi.com/s/f146f6ef3e"
     },
@@ -10670,7 +10581,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "accessory",
       "name": "Hunt Board",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "revampedgame", "board", "hunt"],
       "url": "https://ko-fi.com/s/eef15a7918"
     },
@@ -10679,7 +10589,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "terrain",
       "name": "Incensed Pinaceae Fruit",
-      "price": 0,
       "requires": ["philosophies-of-death-gatherism"],
       "tags": ["homebrew", "3d-files", "revampedgame", "terrain", "gatherism"],
       "url": "https://ko-fi.com/s/e2e36a533b"
@@ -10689,7 +10598,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "model",
       "name": "KD 15th Anniversary",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "revampedgame"],
       "url": "https://ko-fi.com/s/881aa2c80d"
     },
@@ -10698,7 +10606,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "model",
       "name": "KDM Community Bonsai Tree",
-      "price": 0,
       "priceMinimum": true,
       "tags": ["homebrew", "3d-files", "revampedgame"],
       "url": "https://ko-fi.com/s/9a42e7a68c"
@@ -10708,7 +10615,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "model",
       "name": "KDM Record Player",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "revampedgame"],
       "url": "https://ko-fi.com/s/7cbde4e478"
     },
@@ -10717,7 +10623,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "model",
       "name": "KDM Skull",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "revampedgame"],
       "url": "https://ko-fi.com/s/59ec5bcc4c"
     },
@@ -10726,7 +10631,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "accessory",
       "name": "Kingdom Death Bookend",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "revampedgame"],
       "url": "https://ko-fi.com/s/9db6108662"
     },
@@ -10735,7 +10639,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "model",
       "name": "King's Crown",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "revampedgame"],
       "url": "https://ko-fi.com/s/4a51f79ff0"
     },
@@ -10744,7 +10647,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "model",
       "name": "Lantern Hoard",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "revampedgame", "core", "settlement-location"],
       "url": "https://ko-fi.com/s/6c2c7123be"
     },
@@ -10753,7 +10655,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "model",
       "name": "Lantern Oven",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "revampedgame", "core", "innovation"],
       "url": "https://ko-fi.com/s/cfaafa1bc4"
     },
@@ -10762,7 +10663,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "model",
       "name": "Leather Worker V1",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "revampedgame", "core", "settlement-location"],
       "url": "https://ko-fi.com/s/8510b1c2a0"
     },
@@ -10771,7 +10671,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "model",
       "name": "Leather Worker V2",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "revampedgame", "core", "settlement-location"],
       "url": "https://ko-fi.com/s/0f22ebfe88"
     },
@@ -10780,7 +10679,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "model",
       "name": "Lonely Tree Crest",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "monster", "revampedgame", "crest", "monster-lonely-tree"],
       "url": "https://ko-fi.com/s/399e8a6694"
     },
@@ -10789,7 +10687,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "terrain",
       "name": "Mammoth Leaf Terrain",
-      "price": 0,
       "requires": ["expansion-frogdog"],
       "tags": ["homebrew", "3d-files", "monster", "revampedgame", "terrain", "monster-frogdog"],
       "url": "https://ko-fi.com/s/e3218e870c"
@@ -10799,7 +10696,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "model",
       "name": "Mask #1",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "revampedgame"],
       "url": "https://ko-fi.com/s/511e98cdcc"
     },
@@ -10808,7 +10704,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "model",
       "name": "Mask #2",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "revampedgame"],
       "url": "https://ko-fi.com/s/f614cbb6ba"
     },
@@ -10817,7 +10712,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "model",
       "name": "Mask #3",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "revampedgame"],
       "url": "https://ko-fi.com/s/76b8edd773"
     },
@@ -10826,7 +10720,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "model",
       "name": "Mask #4",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "revampedgame"],
       "url": "https://ko-fi.com/s/c539ec7bc8"
     },
@@ -10835,7 +10728,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "model",
       "name": "Mask #5",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "revampedgame"],
       "url": "https://ko-fi.com/s/1f7b4b9794"
     },
@@ -10844,7 +10736,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "model",
       "name": "Mask #6",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "revampedgame"],
       "url": "https://ko-fi.com/s/c173591a9a"
     },
@@ -10853,7 +10744,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "model",
       "name": "Mask Maker",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "revampedgame", "core", "settlement-location"],
       "url": "https://ko-fi.com/s/2dd7952ec0"
     },
@@ -10862,7 +10752,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "model",
       "name": "Merchant",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "revampedgame", "ccg"],
       "url": "https://ko-fi.com/s/2647fd66f6"
     },
@@ -10871,7 +10760,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "accessory",
       "name": "Monster Board (Option 1)",
-      "price": 0,
       "priceMinimum": true,
       "tags": ["homebrew", "3d-files", "revampedgame", "member-only"],
       "url": "https://ko-fi.com/s/9abfa0cc1a"
@@ -10881,7 +10769,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "accessory",
       "name": "Monster Board (Option2)",
-      "price": 0,
       "priceMinimum": true,
       "tags": ["homebrew", "3d-files", "revampedgame", "member-only"],
       "url": "https://ko-fi.com/s/39a685e859"
@@ -10891,7 +10778,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "accessory",
       "name": "Monster Controller (Adult Female)",
-      "price": 0,
       "priceMinimum": true,
       "tags": ["female", "homebrew", "3d-files", "revampedgame", "member-only"],
       "url": "https://ko-fi.com/s/a4c528201f"
@@ -10901,7 +10787,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "accessory",
       "name": "Monster Controller (Adult Male)",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "revampedgame", "male"],
       "url": "https://ko-fi.com/s/a9f6c0b802"
     },
@@ -10910,7 +10795,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "accessory",
       "name": "Monster Controller (Child)",
-      "price": 0,
       "priceMinimum": true,
       "tags": ["homebrew", "3d-files", "revampedgame", "member-only"],
       "url": "https://ko-fi.com/s/4efeb744a9"
@@ -10920,7 +10804,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "accessory",
       "name": "Monster Controller (Elderly)",
-      "price": 0,
       "priceMinimum": true,
       "tags": ["homebrew", "3d-files", "revampedgame", "member-only"],
       "url": "https://ko-fi.com/s/45e77464d7"
@@ -10930,7 +10813,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "terrain",
       "name": "Mush Lithops Plant",
-      "price": 0,
       "requires": ["philosophies-of-death-gatherism"],
       "tags": ["homebrew", "3d-files", "revampedgame", "terrain", "gatherism"],
       "url": "https://ko-fi.com/s/0dbc31e763"
@@ -10940,7 +10822,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "terrain",
       "name": "Oily Pinkies Plant",
-      "price": 0,
       "requires": ["philosophies-of-death-gatherism"],
       "tags": ["homebrew", "3d-files", "revampedgame", "terrain", "gatherism"],
       "url": "https://ko-fi.com/s/e3c7c9ad25"
@@ -10950,7 +10831,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "model",
       "name": "Organ Grinder V2",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "revampedgame", "core", "settlement-location"],
       "url": "https://ko-fi.com/s/f5af0cbf56"
     },
@@ -10959,7 +10839,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "model",
       "name": "Organ Grinder V3",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "revampedgame", "core", "settlement-location"],
       "url": "https://ko-fi.com/s/cfbc3ae662"
     },
@@ -10968,7 +10847,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "model",
       "name": "Overwhelming Darkness",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "revampedgame", "core", "hunt-event", "hunt"],
       "url": "https://ko-fi.com/s/f4e8af7e7a"
     },
@@ -10977,7 +10855,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "terrain",
       "name": "Perfect Lantern Terrain",
-      "price": 0,
       "requires": ["set-15th-anniversary-survivors"],
       "tags": ["homebrew", "3d-files", "revampedgame", "terrain", "anniversary"],
       "url": "https://ko-fi.com/s/8c486cdde2"
@@ -10987,7 +10864,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "model",
       "name": "Perfect Slayer",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "revampedgame", "innovation"],
       "url": "https://ko-fi.com/s/c571e6ec38"
     },
@@ -10996,7 +10872,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "terrain",
       "name": "Piton",
-      "price": 0,
       "requires": ["expansion-pariah"],
       "tags": ["homebrew", "3d-files", "monster", "revampedgame", "monster-pariah"],
       "url": "https://ko-fi.com/s/9d6011d625"
@@ -11006,7 +10881,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "accessory",
       "name": "Player Board (Option 1)",
-      "price": 0,
       "priceMinimum": true,
       "tags": ["homebrew", "3d-files", "revampedgame", "member-only"],
       "url": "https://ko-fi.com/s/58b5171c18"
@@ -11016,7 +10890,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "accessory",
       "name": "Player Board (Option 2)",
-      "price": 0,
       "priceMinimum": true,
       "tags": ["homebrew", "3d-files", "revampedgame", "member-only"],
       "url": "https://ko-fi.com/s/df4fb7111f"
@@ -11026,7 +10899,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "model",
       "name": "Plumery (Split parts)",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "monster", "revampedgame", "core", "settlement-location", "monster-phoenix"],
       "url": "https://ko-fi.com/s/90dfc10f75"
     },
@@ -11035,7 +10907,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "model",
       "name": "Plumery V1",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "monster", "revampedgame", "core", "settlement-location", "monster-phoenix"],
       "url": "https://ko-fi.com/s/5f6094413f"
     },
@@ -11044,7 +10915,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "model",
       "name": "Plumery V2",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "monster", "revampedgame", "core", "settlement-location", "monster-phoenix"],
       "url": "https://ko-fi.com/s/269a705295"
     },
@@ -11053,7 +10923,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "model",
       "name": "Portcullis",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "revampedgame", "hunt-event"],
       "url": "https://ko-fi.com/s/4b9bc63476"
     },
@@ -11062,7 +10931,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "terrain",
       "name": "Preserved Dogpole Terrain",
-      "price": 0,
       "requires": ["expansion-frogdog"],
       "tags": ["homebrew", "3d-files", "monster", "revampedgame", "terrain", "monster-frogdog"],
       "url": "https://ko-fi.com/s/36f4724dfb"
@@ -11072,7 +10940,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "accessory",
       "name": "Priority Target",
-      "price": 0,
       "priceMinimum": true,
       "tags": ["homebrew", "3d-files", "revampedgame", "member-only"],
       "url": "https://ko-fi.com/s/ee0c774fe4"
@@ -11082,7 +10949,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "terrain",
       "name": "Royal Causeway Terrain",
-      "price": 0,
       "requires": ["expansion-gamblers-chest"],
       "tags": ["homebrew", "3d-files", "revampedgame", "gamblers-chest", "terrain"],
       "url": "https://ko-fi.com/s/561fc81962"
@@ -11092,7 +10958,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "model",
       "name": "Sacred Pool",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "monster", "revampedgame", "settlement-location", "pot-sun", "monster-sunstalker"],
       "url": "https://ko-fi.com/s/17d64ee4c0"
     },
@@ -11101,7 +10966,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "model",
       "name": "Scared Pool Decor",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "monster", "revampedgame", "settlement-location", "pot-sun", "monster-sunstalker"],
       "url": "https://ko-fi.com/s/dd757eb96e"
     },
@@ -11110,7 +10974,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "model",
       "name": "Screaming God Crest",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "monster", "revampedgame", "crest", "monster-screaming-god"],
       "url": "https://ko-fi.com/s/eb8f09d0d1"
     },
@@ -11119,7 +10982,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "terrain",
       "name": "Screaming God Labyrinth",
-      "price": 0,
       "requires": ["expansion-screaming-god"],
       "tags": ["homebrew", "3d-files", "monster", "revampedgame", "monster-screaming-god"],
       "url": "https://ko-fi.com/s/3852b8a8cf"
@@ -11129,7 +10991,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "model",
       "name": "Sculpture",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "revampedgame", "core", "innovation"],
       "url": "https://ko-fi.com/s/95db259e6d"
     },
@@ -11138,7 +10999,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "model",
       "name": "Shrine",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "revampedgame", "core", "innovation"],
       "url": "https://ko-fi.com/s/7affef696f"
     },
@@ -11147,7 +11007,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "model",
       "name": "Signs of Battle",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "revampedgame", "core", "hunt-event", "member-only"],
       "url": "https://ko-fi.com/s/82b9debdc8"
     },
@@ -11156,7 +11015,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "model",
       "name": "Singing Mantis Shrimp",
-      "price": 0,
       "priceMinimum": true,
       "tags": ["homebrew", "3d-files", "revampedgame", "ccg"],
       "url": "https://ko-fi.com/s/ad14b89c3e"
@@ -11166,7 +11024,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "terrain",
       "name": "Sinkhole",
-      "price": 0,
       "requires": ["expansion-lion-god"],
       "tags": ["homebrew", "3d-files", "monster", "revampedgame", "terrain", "monster-lion-god"],
       "url": "https://ko-fi.com/s/4053b4b7f8"
@@ -11176,7 +11033,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "model",
       "name": "Skinnery V1",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "revampedgame", "core", "settlement-location"],
       "url": "https://ko-fi.com/s/4c6585c818"
     },
@@ -11185,7 +11041,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "model",
       "name": "Skinnery V2",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "revampedgame", "core", "settlement-location"],
       "url": "https://ko-fi.com/s/79f22725fc"
     },
@@ -11194,7 +11049,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "accessory",
       "name": "Skull Coin",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "revampedgame"],
       "url": "https://ko-fi.com/s/8b4edbdaca"
     },
@@ -11203,7 +11057,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "accessory",
       "name": "Skull Dice Tower",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "revampedgame", "dice"],
       "url": "https://ko-fi.com/s/99f6e2ca48"
     },
@@ -11212,7 +11065,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "model",
       "name": "Skyreef Sanctuary",
-      "price": 0,
       "requires": ["expansion-sunstalker"],
       "tags": ["homebrew", "3d-files", "monster", "revampedgame", "settlement-location", "pot-sun", "monster-sunstalker"],
       "url": "https://ko-fi.com/s/b54c5ef066"
@@ -11222,7 +11074,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "model",
       "name": "Slenderman Crest",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "monster", "revampedgame", "crest", "monster-slenderman"],
       "url": "https://ko-fi.com/s/b8f29a788d"
     },
@@ -11231,7 +11082,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "terrain",
       "name": "Smog Incense Terrain",
-      "price": 0,
       "requires": ["expansion-gamblers-chest"],
       "tags": ["homebrew", "3d-files", "monster", "revampedgame", "gamblers-chest", "terrain", "monster-smog-singers"],
       "url": "https://ko-fi.com/s/3122347b9f"
@@ -11241,7 +11091,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "accessory",
       "name": "Stone Box",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "revampedgame"],
       "url": "https://ko-fi.com/s/603fad33b0"
     },
@@ -11250,7 +11099,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "model",
       "name": "Stone Circle Ruin",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "monster", "revampedgame", "core", "settlement-location", "monster-screaming-antelope"],
       "url": "https://ko-fi.com/s/a8f8ccf662"
     },
@@ -11259,7 +11107,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "model",
       "name": "Stone Circle V1",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "monster", "revampedgame", "core", "settlement-location", "monster-screaming-antelope"],
       "url": "https://ko-fi.com/s/e37d6ebd9b"
     },
@@ -11268,7 +11115,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "terrain",
       "name": "Stone Column Terrain",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "revampedgame", "core", "terrain", "member-only"],
       "url": "https://ko-fi.com/s/f5bdd399f0"
     },
@@ -11277,7 +11123,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "accessory",
       "name": "Stone Faces Rolling Pin",
-      "price": 0,
       "priceMinimum": true,
       "tags": ["homebrew", "3d-files", "revampedgame", "member-only", "base"],
       "url": "https://ko-fi.com/s/d95cd2cb42"
@@ -11287,7 +11132,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "terrain",
       "name": "Stone Fingers Terrain",
-      "price": 0,
       "requires": ["expansion-gamblers-chest"],
       "tags": ["homebrew", "3d-files", "monster", "revampedgame", "gamblers-chest", "terrain", "monster-bone-eaters"],
       "url": "https://ko-fi.com/s/2b9bb385ad"
@@ -11297,7 +11141,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "terrain",
       "name": "Stone Heap",
-      "price": 0,
       "priceMinimum": true,
       "tags": ["homebrew", "3d-files", "revampedgame", "member-only"],
       "url": "https://ko-fi.com/s/a0cc9c0682"
@@ -11307,7 +11150,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "accessory",
       "name": "Storage Box",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "revampedgame"],
       "url": "https://ko-fi.com/s/364f07b911"
     },
@@ -11316,7 +11158,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "terrain",
       "name": "Survivor Corpse Terrain",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "revampedgame", "core", "survivor", "terrain"],
       "url": "https://ko-fi.com/s/410c436d22"
     },
@@ -11325,7 +11166,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "terrain",
       "name": "Tall Grass Terrain",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "revampedgame", "core", "terrain", "member-only"],
       "url": "https://ko-fi.com/s/9b187aaac5"
     },
@@ -11334,7 +11174,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [500] }],
       "kind": "model",
       "name": "The Butcher (1X1)",
-      "price": 500,
       "priceMinimum": true,
       "tags": ["homebrew", "3d-files", "revampedgame", "townsfolk-tussle"],
       "url": "https://ko-fi.com/s/f8c91a1e74"
@@ -11344,7 +11183,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [500] }],
       "kind": "model",
       "name": "The Butcher (2x2)",
-      "price": 500,
       "priceMinimum": true,
       "tags": ["homebrew", "3d-files", "revampedgame", "townsfolk-tussle"],
       "url": "https://ko-fi.com/s/4e7536026d"
@@ -11354,7 +11192,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "model",
       "name": "The Gambler Chest is Now Printing!",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "revampedgame", "gamblers-chest"],
       "url": "https://ko-fi.com/s/3a56546732"
     },
@@ -11363,7 +11200,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "model",
       "name": "The Hand's Crest",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "monster", "revampedgame", "core", "crest", "monster-hand"],
       "url": "https://ko-fi.com/s/70bb8f291a"
     },
@@ -11372,7 +11208,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "terrain",
       "name": "The Stampede",
-      "price": 0,
       "requires": ["expansion-screaming-god"],
       "tags": ["homebrew", "3d-files", "monster", "revampedgame", "terrain", "monster-screaming-god"],
       "url": "https://ko-fi.com/s/5add3e8472"
@@ -11382,7 +11217,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "model",
       "name": "The Traveler",
-      "price": 0,
       "priceMinimum": true,
       "tags": ["homebrew", "3d-files", "revampedgame", "ccg"],
       "url": "https://ko-fi.com/s/fc2e6ac56e"
@@ -11392,7 +11226,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "accessory",
       "name": "Tile Forceps",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "revampedgame", "member-only"],
       "url": "https://ko-fi.com/s/bdb42e3d8d"
     },
@@ -11401,7 +11234,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "terrain",
       "name": "Timeworn Statue Terrain",
-      "price": 0,
       "requires": ["vignette-of-death-killennium-butcher"],
       "tags": ["homebrew", "3d-files", "monster", "revampedgame", "terrain", "monster-butcher", "monster-killennium-butcher"],
       "url": "https://ko-fi.com/s/460d97369a"
@@ -11411,7 +11243,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "terrain",
       "name": "Toppled Pillar Terrain",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "revampedgame", "core", "terrain", "pillar"],
       "url": "https://ko-fi.com/s/7ac0986d49"
     },
@@ -11420,7 +11251,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "model",
       "name": "Weapon Crafter",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "revampedgame", "core", "settlement-location"],
       "url": "https://ko-fi.com/s/d44803487c"
     },
@@ -11429,7 +11259,6 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "model",
       "name": "White Lion Persistent Injury",
-      "price": 0,
       "tags": ["homebrew", "3d-files", "monster", "revampedgame", "core", "monster-white-lion"],
       "url": "https://ko-fi.com/s/e4469a803a"
     }

@@ -257,7 +257,7 @@ it.effect("workbook ownership records a bundle directly and cannot wish an owned
   }).pipe(Effect.provideService(FetchHttpClient.Fetch, workbookFetch)),
 );
 
-it.effect("bundle commands save direct ownership and expose derived coverage separately", () =>
+it.effect("bundle commands own included editions and clear their wishes in one save", () =>
   Effect.gen(function* () {
     const collection = new Collection(bundleCatalog());
     const plastic = collectionKey("model", "plastic");
@@ -281,9 +281,9 @@ it.effect("bundle commands save direct ownership and expose derived coverage sep
     expect(f.writes).toBe(1);
     expect(Object.keys(f.state)).toHaveLength(3);
     expect(f.state[collectionKey("set", "bundle")]).toEqual({ owned: true });
-    expect(collection.getEdition("model", "plastic")).toEqual({ wished: true, copyNumber: 9 });
-    expect(collection.ownedCount).toBe(1);
-    expect(collection.wishlistCount).toBe(2);
+    expect(collection.getEdition("model", "plastic")).toEqual({ owned: true, copyNumber: 9 });
+    expect(collection.ownedCount).toBe(0);
+    expect(collection.wishlistCount).toBe(1);
     expect(collection.totals).toEqual({ USD: 2000 });
     expect(collection.getOwners("model", "plastic")).toEqual([
       { parentId: "set", parentEditionId: "bundle", parent: "Set", parentEdition: "Bundle", editionId: "plastic" },
@@ -297,7 +297,7 @@ it.effect("bundle commands save direct ownership and expose derived coverage sep
   }),
 );
 
-it.effect("counts a directly wished edition while a box supplies its contents", () =>
+it.effect("bundle ownership clears included product wishes and removal clears their ownership", () =>
   Effect.gen(function* () {
     const catalog = bundleCatalog();
     delete catalog.content.model.editions![0]!.includedOnly;
@@ -311,14 +311,14 @@ it.effect("counts a directly wished edition while a box supplies its contents", 
 
     expect(collection.wishlistCount).toBe(1);
     yield* collection.setEditionsOwned([{ item: set, edition }], true);
-    expect(collection.get(childKey)).toMatchObject({ wished: true });
-    expect(collection.state[childKey]?.wished).toBe(true);
-    expect(collection.wishlistCount).toBe(1);
+    expect(collection.get(childKey)).toEqual({ owned: true });
+    expect(collection.wishlistCount).toBe(0);
+    expect(collection.ownedCount).toBe(1);
 
     yield* collection.setEditionsOwned([{ item: set, edition }], false);
-    expect(collection.get(childKey)).toMatchObject({ wished: true });
-    expect(collection.state[childKey]?.wished).toBe(true);
-    expect(collection.wishlistCount).toBe(1);
+    expect(collection.get(childKey)).toEqual({});
+    expect(collection.wishlistCount).toBe(0);
+    expect(collection.ownedCount).toBe(0);
   }),
 );
 
@@ -343,7 +343,7 @@ it.effect("failed bundle saves restore selections, totals, and coverage together
   }),
 );
 
-it.effect("removing one box preserves direct component ownership and ownership from another box", () =>
+it.effect("removing one bundle clears component ownership while another bundle still supplies coverage", () =>
   Effect.gen(function* () {
     const catalog: Catalog = {
       content: {
@@ -381,7 +381,7 @@ it.effect("removing one box preserves direct component ownership and ownership f
     yield* collection.setEditionsOwned([{ item: first, edition: first.editions![0]! }], false);
     expect(collection.state[firstKey]).toBeUndefined();
     expect(collection.state[secondKey]).toEqual({ owned: true });
-    expect(collection.state[componentKey]).toEqual({ owned: true });
+    expect(collection.state[componentKey]).toBeUndefined();
     expect(collection.catalog.coverage(collection.state).edition("component", "plastic").available).toBe(true);
   }),
 );
@@ -543,7 +543,7 @@ it.effect("included checkboxes mark supplied contents missing and restore them w
   }),
 );
 
-it.effect("product checkboxes restore included contents while removals preserve independent acquisitions", () =>
+it.effect("bundle checkboxes restore included contents and clear included acquisitions on removal", () =>
   Effect.gen(function* () {
     const collection = new Collection(bundleCatalog());
     const parent = collectionKey("set", "bundle");
@@ -554,10 +554,10 @@ it.effect("product checkboxes restore included contents while removals preserve 
     yield* collection.toggleEditionOwned(parent);
     expect(collection.get(parent)).toEqual({ copyNumber: 4 });
     expect(f.state[parent]?.owned).toBeUndefined();
-    expect(collection.get(child)).toEqual({ owned: true });
+    expect(collection.get(child)).toEqual({});
     expect(collection.ownedCount).toBe(0);
     expect(collection.coverage.edition("set", "bundle").available).toBe(false);
-    expect(collection.coverage.edition("model", "plastic").available).toBe(true);
+    expect(collection.coverage.edition("model", "plastic").available).toBe(false);
     yield* collection.toggleEditionOwned(parent, false);
     expect(collection.get(parent).owned).toBeUndefined();
     yield* collection.toggleEditionOwned(parent, true);
@@ -578,7 +578,7 @@ it.effect("product checkboxes restore included contents while removals preserve 
   }),
 );
 
-it.effect("checking a product restores exact nested contents without changing other editions or recording child acquisitions", () =>
+it.effect("bundle ownership changes apply to exact nested contents without changing other editions", () =>
   Effect.gen(function* () {
     const catalog = bundleCatalog();
     catalog.content.model.includes = [{ item: "part", editionId: "item", parentEditionIds: ["plastic"] }];
@@ -592,16 +592,45 @@ it.effect("checking a product restores exact nested contents without changing ot
     yield* collection.setStore(f.api);
     yield* collection.toggleEditionOwned(parent, true);
     expect(f.writes).toBe(1);
-    expect(collection.state).toEqual({ [parent]: { owned: true }, [child]: { copyNumber: 4 }, [other]: { missing: true } });
+    expect(collection.state).toEqual({
+      [parent]: { owned: true },
+      [child]: { owned: true, copyNumber: 4 },
+      [other]: { missing: true },
+      [part]: { owned: true },
+    });
     expect(collection.coverage.edition("part", "item").available).toBe(true);
     yield* collection.toggleIncludedOwned(child, false);
     expect(collection.get(parent).owned).toBe(true);
     expect(collection.get(child).missing).toBe(true);
+    yield* collection.toggleWish(child);
+    const writes = f.writes;
+    yield* collection.toggleEditionOwned(parent, false);
+    expect(f.writes).toBe(writes + 1);
+    expect(collection.state).toEqual({ [child]: { wished: true, copyNumber: 4 }, [other]: { missing: true } });
+    expect(collection.coverage.edition("part", "item").available).toBe(false);
     expect(f.state).toEqual(collection.state);
   }),
 );
 
-it.effect("a failed product acquisition rolls back its ownership and included missing overrides together", () =>
+it.effect("ordinary product ownership restores included coverage without acquiring components", () =>
+  Effect.gen(function* () {
+    const catalog = bundleCatalog();
+    catalog.content.model.includes = [{ item: "part", editionId: "item", parentEditionIds: ["resin"] }];
+    catalog["included-only"].part = { name: "Part", tags: [] };
+    const collection = new Collection(catalog);
+    const parent = collectionKey("model", "resin");
+    const child = collectionKey("part", "item");
+    const f = store({ [child]: { missing: true } });
+    yield* collection.setStore(f.api);
+    yield* collection.toggleEditionOwned(parent);
+    expect(collection.state).toEqual({ [parent]: { owned: true } });
+    expect(collection.coverage.edition("part", "item").available).toBe(true);
+    expect(f.writes).toBe(1);
+    expect(f.state).toEqual(collection.state);
+  }),
+);
+
+it.effect("a failed bundle acquisition rolls back its ownership and included missing overrides together", () =>
   Effect.gen(function* () {
     const collection = new Collection(bundleCatalog());
     const parent = collectionKey("set", "bundle");
@@ -692,7 +721,7 @@ it.effect("Core 1.5 with upgrades supplies Core 1.6 contents without owning the 
   }),
 );
 
-it.effect("a failed product removal restores the acquisition and preserves individually owned contents", () =>
+it.effect("a failed bundle removal restores ownership of the bundle and its included editions", () =>
   Effect.gen(function* () {
     const collection = new Collection(bundleCatalog());
     const parent = collectionKey("set", "bundle");
@@ -721,19 +750,6 @@ it.effect("a failed included restoration preserves the missing override and dire
     expect(f.writes).toBe(1);
     expect(collection.state).toEqual(initial);
     expect(f.state).toEqual(initial);
-  }),
-);
-
-it.effect("an unowned edition checkbox records its acquisition", () =>
-  Effect.gen(function* () {
-    const collection = new Collection(bundleCatalog());
-    const key = collectionKey("model", "resin");
-    const f = store();
-    yield* collection.setStore(f.api);
-    yield* collection.toggleEditionOwned(key);
-    expect(collection.get(key).owned).toBe(true);
-    expect(collection.get(key).missing).not.toBe(true);
-    expect(f.state).toEqual(collection.state);
   }),
 );
 
