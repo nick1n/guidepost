@@ -22,6 +22,14 @@ export async function validateCatalog(catalog: Catalog, schemaPath = "static/kdm
     if (JSON.stringify(Object.keys(catalog[category])) !== JSON.stringify(Object.keys(ordered[category])))
       throw new Error("Catalog items are out of catalog order: " + category);
   const items = new Map<string, Catalog["content"][string]>();
+  const editionNodes = new Map<string, { itemId: string; edition: NonNullable<Catalog["content"][string]["editions"]>[number] }>();
+  const editionEdges = new Map<string, Set<string>>();
+  const nodeId = (itemId: string, editionId: string) => `${itemId}/${editionId}`;
+  const addEditionEdge = (from: string, to: string) => {
+    const edges = editionEdges.get(from) ?? new Set<string>();
+    edges.add(to);
+    editionEdges.set(from, edges);
+  };
   for (const category of categories)
     for (const [id, item] of Object.entries(catalog[category])) {
       const inStock = hasStock(item);
@@ -35,6 +43,8 @@ export async function validateCatalog(catalog: Catalog, schemaPath = "static/kdm
         throw new Error("Item ID needs its family prefix: " + id + " -> " + prefixedId(id, item));
       if (items.has(id)) throw new Error("Duplicate item ID: " + id);
       items.set(id, item);
+      for (const edition of item.editions ?? [])
+        if (edition.includedOnly && edition.prices) throw new Error("Included-only edition cannot have a price: " + id + "/" + edition.id);
       const normalized = structuredClone(item);
       normalizeItem(normalized);
       if (JSON.stringify(normalized) !== JSON.stringify(item)) throw new Error("Untrimmed catalog facts or URLs: " + id);
@@ -46,12 +56,23 @@ export async function validateCatalog(catalog: Catalog, schemaPath = "static/kdm
       for (const edition of item.editions ?? []) {
         if (editionIds.has(edition.id!)) throw new Error("Duplicate edition ID: " + id + "/" + edition.id);
         editionIds.add(edition.id!);
+        const sourceNode = nodeId(id, edition.id!);
+        editionNodes.set(sourceNode, { itemId: id, edition });
+        if (edition.equivalentTo) addEditionEdge(sourceNode, nodeId(id, edition.equivalentTo));
         if (edition.equivalentTo) {
           const canonical = item.editions?.find((release) => release.id === edition.equivalentTo);
           if (!canonical || canonical === edition || canonical.equivalentTo)
             throw new Error("Invalid equivalent edition: " + id + "/" + edition.id);
           if (canonical.format !== edition.format || !!canonical.simulator !== !!edition.simulator)
             throw new Error("Incompatible equivalent edition: " + id + "/" + edition.id);
+        }
+        if (edition.priceFrom) {
+          const source = item.editions?.find((release) => release.id === edition.priceFrom);
+          if (!source || source === edition || source.includedOnly || source.priceFrom || !source.prices?.length)
+            throw new Error("Invalid price reference: " + id + "/" + edition.id);
+          if (edition.prices) throw new Error("Edition cannot have both prices and priceFrom: " + id + "/" + edition.id);
+          if (source.format !== edition.format || !!source.simulator !== !!edition.simulator)
+            throw new Error("Incompatible price reference: " + id + "/" + edition.id);
         }
         if (
           edition.releaseDate &&
@@ -66,6 +87,49 @@ export async function validateCatalog(catalog: Catalog, schemaPath = "static/kdm
         if (edition.format === "digital" && edition.size) throw new Error("Physical model size on digital edition: " + id);
       }
     }
+  for (const [itemId, item] of items) {
+    for (const edition of item.editions ?? []) {
+      const sourceNode = nodeId(itemId, edition.id!);
+      for (const alternative of edition.completedBy ?? []) {
+        for (const reference of alternative.all) {
+          const targetItem = items.get(reference.item);
+          const target = targetItem?.editions?.find((candidate) => candidate.id === reference.editionId);
+          if (!target) throw new Error("Missing completed-by edition: " + reference.item + "/" + reference.editionId);
+          if (reference.item === itemId && reference.editionId === edition.id)
+            throw new Error("Edition cannot complete itself: " + sourceNode);
+          if (target.format !== edition.format || !!target.simulator !== !!edition.simulator)
+            throw new Error("Incompatible completed-by edition: " + sourceNode + " -> " + nodeId(reference.item, reference.editionId));
+          addEditionEdge(sourceNode, nodeId(reference.item, reference.editionId));
+        }
+      }
+    }
+    for (const reference of item.includes ?? []) {
+      const childId = typeof reference === "string" ? reference : reference.item;
+      const child = items.get(childId);
+      if (!child) continue;
+      const targetIds =
+        typeof reference === "string" || !reference.editionId
+          ? (child.editions?.map((edition) => edition.id!) ?? [])
+          : [reference.editionId];
+      const parentIds =
+        typeof reference === "string" || !reference.parentEditionIds?.length
+          ? (item.editions?.map((edition) => edition.id!) ?? [])
+          : reference.parentEditionIds;
+      for (const parentEditionId of parentIds)
+        for (const childEditionId of targetIds) addEditionEdge(nodeId(itemId, parentEditionId), nodeId(childId, childEditionId));
+    }
+  }
+  const complete = new Set<string>();
+  const active = new Set<string>();
+  function walkEditions(id: string, path: string[] = []) {
+    if (active.has(id)) throw new Error("Edition dependency cycle: " + [...path, id].join(" -> "));
+    if (complete.has(id)) return;
+    active.add(id);
+    for (const target of editionEdges.get(id) ?? []) walkEditions(target, [...path, id]);
+    active.delete(id);
+    complete.add(id);
+  }
+  for (const id of editionNodes.keys()) walkEditions(id);
   const visited = new Set<string>();
   function walk(id: string, path = new Set<string>()) {
     if (path.has(id)) throw new Error("Contents cycle: " + [...path, id].join(" -> "));

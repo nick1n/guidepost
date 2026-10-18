@@ -30,10 +30,17 @@
   const catalog = collection.catalog;
   const entries = catalog.entries;
   const shopUpdated = $derived(data.catalog.shopUpdated);
-  const browsing = new CollectionBrowsing(catalog, (item, edition) => collection.getEdition(item, edition), {
-    current: () => page.shallow?.url ?? page.url,
-    replace: (url) => replaceState(url, page.state),
-  });
+  const browsing = new CollectionBrowsing(
+    catalog,
+    (item, edition) => {
+      const value = collection.getEdition(item, edition);
+      return { owned: value.owned, wished: value.wished && !value.owned };
+    },
+    {
+      current: () => page.shallow?.url ?? page.url,
+      replace: (url) => replaceState(url, page.state),
+    },
+  );
   let dragDistance = $state(0);
   let swipeReady = $state(false);
   let categoriesVisible = $state(true);
@@ -194,9 +201,9 @@
       aria-pressed={browsing.status === "wishlist"}
       onclick={() => browsing.toggleStatus("wishlist")}
     >
-      <span class="stat-label"
-        ><span class="stat-icon control-icon i-material-symbols:favorite-outline" aria-hidden="true"></span>Wishlist</span
-      >
+      <span class="stat-label">
+        <span class="stat-icon control-icon i-material-symbols:favorite-outline" aria-hidden="true"></span>Wishlist
+      </span>
       <strong>{collection.wishlistCount}</strong>
     </button>
   </section>

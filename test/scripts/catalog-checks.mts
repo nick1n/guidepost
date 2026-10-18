@@ -48,6 +48,100 @@ test("equivalent editions reject missing, self, chained, and incompatible refere
   await assert.rejects(validateCatalog(catalog), /Incompatible equivalent edition/);
 });
 
+test("completed-by recipes validate references, formats, and edition dependency cycles", async (t) => {
+  const workspace = await mkdtemp(join(tmpdir(), "kdm-completed-by-"));
+  const schemaPath = join(workspace, "data.schema.json");
+  t.after(() => rm(workspace, { recursive: true, force: true }));
+  await writeFile(schemaPath, await readFile("static/kdm/catalog/data.schema.json", "utf8"));
+  const catalog = empty();
+  catalog.content.aya = {
+    name: "Aya",
+    kind: "gameplay-content",
+    tags: ["aya"],
+    editions: [
+      {
+        id: "plastic",
+        label: "Plastic",
+        format: "physical",
+        materials: ["Plastic"],
+        completedBy: [{ all: [{ item: "rene", editionId: "plastic" }] }],
+      },
+    ],
+  };
+  catalog.content.rene = {
+    name: "Rene",
+    kind: "model",
+    tags: ["rene"],
+    editions: [{ id: "plastic", label: "Plastic", format: "physical", materials: ["Plastic"] }],
+  };
+  assert.equal((await validateCatalog(catalog, schemaPath)).editions, 2);
+
+  const aya = catalog.content.aya!.editions![0]!;
+  aya.completedBy![0]!.all[0]!.item = "missing";
+  await assert.rejects(validateCatalog(catalog, schemaPath), /Missing completed-by edition/);
+  aya.completedBy![0]!.all[0] = { item: "aya", editionId: "plastic" };
+  await assert.rejects(validateCatalog(catalog, schemaPath), /Edition cannot complete itself/);
+  aya.completedBy![0]!.all[0] = { item: "rene", editionId: "plastic" };
+  catalog.content.rene!.editions!.push({
+    id: "canonical",
+    label: "Resin",
+    format: "physical",
+    materials: ["Resin"],
+    completedBy: [{ all: [{ item: "aya", editionId: "plastic" }] }],
+  });
+  catalog.content.rene!.editions![0]!.equivalentTo = "canonical";
+  await assert.rejects(validateCatalog(catalog, schemaPath), /Edition dependency cycle/);
+  delete catalog.content.rene!.editions![0]!.equivalentTo;
+  catalog.content.rene!.editions!.pop();
+  catalog.content.rene!.includes = [{ item: "aya", editionId: "plastic" }];
+  await assert.rejects(validateCatalog(catalog, schemaPath), /Edition dependency cycle/);
+  delete catalog.content.rene!.includes;
+  catalog.content.rene!.editions![0]!.format = "digital";
+  await assert.rejects(validateCatalog(catalog, schemaPath), /Incompatible completed-by edition/);
+  catalog.content.rene!.editions![0]!.format = "digital";
+  aya.format = "digital";
+  catalog.content.rene!.editions![0]!.label = "Sim";
+  delete catalog.content.rene!.editions![0]!.materials;
+  catalog.content.rene!.editions![0]!.simulator = true;
+  await assert.rejects(validateCatalog(catalog, schemaPath), /Incompatible completed-by edition/);
+});
+
+test("completed-by recipes require nonempty alternatives with unique edition references", async () => {
+  const catalog = empty();
+  catalog.content.aya = {
+    name: "Aya",
+    kind: "gameplay-content",
+    tags: ["aya"],
+    editions: [
+      {
+        id: "plastic",
+        label: "Plastic",
+        format: "physical",
+        materials: ["Plastic"],
+        completedBy: [
+          {
+            all: [
+              { item: "rene", editionId: "plastic" },
+              { item: "rene", editionId: "plastic" },
+            ],
+          },
+        ],
+      },
+    ],
+  };
+  catalog.content.rene = {
+    name: "Rene",
+    kind: "model",
+    tags: ["rene"],
+    editions: [{ id: "plastic", label: "Plastic", format: "physical", materials: ["Plastic"] }],
+  };
+  await assert.rejects(validateCatalog(catalog), /Catalog schema errors/);
+  catalog.content.aya!.editions![0]!.completedBy = [{ all: [] }];
+  await assert.rejects(validateCatalog(catalog), /Catalog schema errors/);
+  catalog.content.aya!.editions![0]!.completedBy = [];
+  await assert.rejects(validateCatalog(catalog), /Catalog schema errors/);
+});
+
 test("deleted local tag files fall back to saved catalog assignments", async (t) => {
   const workspace = await mkdtemp(join(tmpdir(), "kdm-catalog-tags-"));
   const root = join(workspace, "static/kdm/catalog");
@@ -1249,6 +1343,20 @@ test("normalization moves legacy aliases and gameplay details to items without l
   const once = structuredClone(varied);
   normalizeItem(varied);
   assert.deepEqual(varied, once);
+});
+
+test("included-only editions omit prices without changing sold zero-price products", () => {
+  const item: Catalog["content"][string] = {
+    name: "Components",
+    tags: ["components"],
+    editions: [
+      { id: "included", label: "Plastic", format: "physical", includedOnly: true, prices: [0] },
+      { id: "sold", label: "Original", format: "physical", prices: [0] },
+    ],
+  };
+  normalizeItem(item);
+  assert.equal(Object.hasOwn(item.editions![0]!, "prices"), false);
+  assert.deepEqual(item.editions![1]!.prices, [0]);
 });
 
 test("a box contents listing does not manufacture separate catalog items", () => {

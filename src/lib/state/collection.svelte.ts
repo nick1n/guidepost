@@ -47,7 +47,7 @@ function collectionNotReadyError(operation: CollectionError["operation"], itemId
 }
 
 function ownershipPatch(owned: boolean): EntryState {
-  return owned ? { owned: true, wished: false } : { owned: false };
+  return owned ? { owned: true, wished: false, missing: false } : { owned: false, missing: false };
 }
 
 export class Collection {
@@ -66,6 +66,13 @@ export class Collection {
     ),
   );
   readonly ownedCount = $derived(this.owned.filter(({ edition }) => !edition.includedOnly).length);
+  readonly available = $derived.by(() =>
+    this.catalog.entries.flatMap((item) =>
+      reviewEditions(item)
+        .filter((edition) => this.coverage.edition(item.id, edition.id).available)
+        .map((edition) => ({ item, edition })),
+    ),
+  );
   readonly wishlistCount = $derived(
     this.catalog.entries.reduce(
       (total, item) => total + reviewEditions(item).filter((edition) => this.getEdition(item.id, edition.id).wished).length,
@@ -75,12 +82,13 @@ export class Collection {
   readonly totals = $derived.by(() => {
     const totals: Partial<Record<Currency, number>> = {};
     for (const { item, edition } of this.owned) {
+      if (edition.includedOnly) continue;
       const currency = item.currency ?? "USD";
       totals[currency] = (totals[currency] ?? 0) + (reviewPrice(item, edition) ?? 0);
     }
     return totals;
   });
-  private readonly coverage = $derived(this.catalog.ownershipCoverage(this.owned));
+  readonly coverage = $derived(this.catalog.coverage(this.state));
   private catalogData: Catalog = $state.raw({ content: {}, "included-only": {}, accessories: {}, bundles: {}, homebrew: {} });
   private readonly catalogIndex = $derived(reviewIndex(this.catalogData));
   private userId?: string;
@@ -240,8 +248,7 @@ export class Collection {
   }
 
   getOwners(contentId: string, editionId: string) {
-    const edition = this.catalog.byId.get(contentId)?.editions?.find((edition) => edition.id === editionId);
-    return edition ? (this.coverage.get(contentId) ?? []).filter((owner) => !owner.editionId || owner.editionId === editionId) : [];
+    return this.coverage.owners(contentId, editionId);
   }
 
   private reportSave(effect: Effect.Effect<void, StoreError>, keys: readonly string[]) {
@@ -294,7 +301,27 @@ export class Collection {
   }
 
   toggleOwned = Effect.fn("Collection.toggleOwned")({ self: this }, function (key: string) {
-    return this.commitMany({ [key]: ownershipPatch(!this.get(key).owned) });
+    return this.setEditionOwned(key, !this.get(key).owned);
+  });
+
+  setEditionOwned = Effect.fn("Collection.setEditionOwned")({ self: this }, function (key: string, owned: boolean) {
+    return this.setManyOwned([key], owned);
+  });
+
+  toggleEditionOwned = Effect.fn("Collection.toggleEditionOwned")({ self: this }, function (key: string, owned?: boolean) {
+    return this.setEditionOwned(key, owned ?? !this.get(key).owned);
+  });
+
+  toggleIncludedOwned = Effect.fn("Collection.toggleIncludedOwned")({ self: this }, function (key: string, owned?: boolean) {
+    const entry = this.get(key);
+    const [itemId, editionId] = parseCollectionKey(key);
+    const shouldOwn = owned ?? !this.coverage.edition(itemId, editionId).available;
+    const restored = { ...this.state, [key]: { ...entry, owned: false, missing: false } };
+    const supplied = this.catalog.coverage(restored).edition(itemId, editionId).available;
+    if (!shouldOwn) {
+      return this.commitMany({ [key]: { owned: false, missing: supplied } });
+    }
+    return supplied ? this.setEditionMissing(key, false) : this.setEditionOwned(key, true);
   });
 
   toggleWish = Effect.fn("Collection.toggleWish")({ self: this }, function (key: string) {
@@ -329,7 +356,17 @@ export class Collection {
   });
 
   setManyOwned = Effect.fn("Collection.setManyOwned")({ self: this }, function (keys: readonly string[], owned: boolean) {
-    return this.commitMany(Object.fromEntries(keys.map((key) => [key, ownershipPatch(owned)])));
+    const patch: CollectionPatch = Object.fromEntries(keys.map((key) => [key, ownershipPatch(owned)]));
+    if (owned) {
+      for (const key of keys) {
+        const [itemId, editionId] = parseCollectionKey(key);
+        for (const child of this.catalog.includedEditions(itemId, editionId)) {
+          const childKey = collectionKey(child.item.id, child.edition.id);
+          if (this.get(childKey).missing) patch[childKey] = { ...patch[childKey], missing: false };
+        }
+      }
+    }
+    return this.commitMany(patch);
   });
 
   setEditionsOwned = Effect.fn("Collection.setEditionsOwned")(
@@ -338,6 +375,10 @@ export class Collection {
       return this.setManyOwned(this.catalog.ownershipKeys(targets), owned);
     },
   );
+
+  setEditionMissing = Effect.fn("Collection.setEditionMissing")({ self: this }, function (key: string, missing: boolean) {
+    return this.commitMany({ [key]: { missing } });
+  });
 
   exportBackup = Effect.fn("Collection.exportBackup")({ self: this }, function* () {
     const generation = this.generation;
@@ -359,15 +400,11 @@ export class Collection {
     const entries = yield* this.guardGeneration(previewWorkbookRows(rows, this.catalogData));
     const patch: CollectionPatch = {};
     for (const [key, entry] of Object.entries(entries)) {
-      if (entry.owned === undefined) continue;
-      const [contentId, editionId] = parseCollectionKey(key);
-      const item = this.catalog.byId.get(contentId)!;
-      const edition = reviewEditions(item).find((edition) => edition.id === editionId)!;
-      for (const ownedKey of this.catalog.ownershipKeys([{ item, edition }])) {
-        patch[ownedKey] = { ...patch[ownedKey], ...ownershipPatch(entry.owned) };
-      }
+      patch[key] = {
+        ...(entry.owned === undefined ? {} : ownershipPatch(entry.owned)),
+        ...entry,
+      };
     }
-    for (const [key, entry] of Object.entries(entries)) patch[key] = { ...patch[key], ...entry };
     for (const [key, entry] of Object.entries(patch)) {
       if (entry.owned ?? this.get(key).owned) patch[key] = { ...entry, wished: false };
     }

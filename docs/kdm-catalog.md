@@ -50,10 +50,19 @@ Run `catalog:availability` after importing new editions to assign snapshot stock
 Reviewed fallback: undated Encore without a release window inherits First Run's date, or Deathgrey's if First Run has none.
 Known Encore dates stay unchanged.
 
+## Product, content, and ownership
+
+Use `includes` to reference shared canonical content. A simple product may represent its own contents; do not create
+editions solely to duplicate packaging or suppress prices. Genuine non-sale components use `includedOnly: true` without `prices`.
+
+Inclusions and upgrades provide content coverage, never product ownership. Lists may be partial; reviewed bundle lists remain fixed until
+reviewed again. Runtime rules live in [ownership and coverage](kdm-architecture.md#product-ownership-and-content-coverage).
+
 Current data rules:
 
+- Use inclusion `shortLabel` only when the parent makes part of the canonical name redundant, such as `Model`, `Armor`, or `Gameplay content`. It applies only within that relationship. Keep canonical names for unrelated contents and named variants.
 - `included-only` contains items whose editions are all explicitly marked `includedOnly: true`. Mixed items retain their existing category and that flag on included-only editions. Parent `includes` references remain valid across categories.
-- Edition labels describe the release and may repeat. Use `includedOnly: true` for included-only copies rather than adding "Included" to the label; the UI derives that distinction. Set the flag only for confirmed included-only editions and omit it otherwise. Keep separate permanent IDs and `[0]` component prices when included copies are tracked separately from standalone releases. Shop matching excludes included-only editions. Workbook regeneration retains mapped IDs; a new legacy label reference prefers a unique standalone edition, otherwise requires an unambiguous included edition.
+- Edition labels describe the release and may repeat. Use `includedOnly: true` only for confirmed components available as part of another product; the UI derives that distinction. Included-only editions have no `prices` field because they are not separately sold. Shop matching excludes them. Workbook regeneration retains mapped IDs; a new legacy label reference prefers a unique standalone edition, otherwise requires an unambiguous included edition.
 
 - Content IDs are object keys. Explicit edition IDs are permanent lowercase kebab-case, unique within their item. Keep IDs when labels
   or facts change; never reuse retired IDs. Creation tooling suggests initial IDs and rejects collisions. Reserve `item` and `bundle`
@@ -74,6 +83,11 @@ Current data rules:
   `scripts/catalog/stock.mts` owns stock, availability, link-health, and listing-invalidation operations. Tag sorting and validation
   share its stock predicate; workflow code chooses whether a stock observation also replaces availability.
 - Prices are integer cents. Edition `prices` arrays contain recorded sale amounts and current MSRP, with the maximum representing MSRP. Missing prices are unknown; `[0]` is a known zero price. Lunar Aya's Sim price remains the user-authorized $7 estimate, documented in the report.
+- For reviewed bundle comparisons, an unpriced edition may set `priceFrom` to one standalone edition ID on the same item.
+  The target must have its own `prices`, match the format and simulator status, and have neither `includedOnly` nor `priceFrom`.
+  Do not combine `prices` with `priceFrom`. This reference does not establish content equivalence or product ownership and does not
+  supply a price to the edition's own card or collection value. Without an explicit reference, missing prices stay unknown;
+  matching labels, materials, and `equivalentTo` never provide a price. Item-level `price` applies only to synthetic item/bundle editions.
 - Shared shop handles live on the item; resolve external URLs with `edition.url ?? item.url`. Omit variant selectors and temporary
   preorder URLs. Physical sizes may inherit the item default; Sim has no model size.
 - Exact dates remain edition `releaseDate`, formatted YYYY-MM-DD. Imprecise dates use `releaseWindow`; future quarters use YYYY Qn. Unknown run counts are omitted. Released expansion dates use the public shop launch announcement when only a month was documented.
@@ -126,12 +140,12 @@ creation year is at least one year earlier than publication year.
 
 | Item                                    | Review decision                                                                                                                                                                                                                                                                                         |
 | --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `armor-kit-dragon-king`                 | Naked uses the 2015-11-23 creation date and Black Friday 2015 tag, replacing 2021-11-26; the 2025 publication is a listing update. Included Plastic follows the expansion's 2016-02-16 release.                                                                                                         |
-| `armor-kit-gorment`                     | Standalone Gorm merged into Gorment. Naked uses the 2015-11-23 creation date and Black Friday 2015 tag, rather than the 2025 listing update. Included Plastic follows the expansion's 2016-02-16 release.                                                                                               |
+| `armor-kit-dragon-king`                 | The retained Naked edition uses the 2015-11-23 creation date and Black Friday 2015 tag, replacing 2021-11-26; the 2025 publication is a listing update. The duplicate included Plastic edition was removed after its contents were confirmed equivalent.                                                |
+| `armor-kit-gorment`                     | Standalone Gorm merged into Gorment. The retained Naked edition uses the 2015-11-23 creation date and Black Friday 2015 tag, rather than the 2025 listing update. The duplicate included Plastic edition was removed after its contents were confirmed equivalent.                                      |
 | `armor-kit-lantern`                     | Naked matches Lantern Armor Kit and retains its earlier release date.                                                                                                                                                                                                                                   |
 | `armor-kit-leather`                     | Naked matches Leather Armor Kit and retains its earlier release date.                                                                                                                                                                                                                                   |
 | `armor-kit-screaming`                   | Naked matches Screaming Armor Kit and retains its earlier release date.                                                                                                                                                                                                                                 |
-| `armor-kit-spider-silk`                 | Naked matches Spider Silk Armor Kit and uses its 2015-11-23 creation date. Included Plastic follows the expansion's 2016-02-16 release.                                                                                                                                                                 |
+| `armor-kit-spider-silk`                 | Naked matches Spider Silk Armor Kit and uses its 2015-11-23 creation date. The duplicate included Plastic edition was removed after its contents were confirmed equivalent.                                                                                                                             |
 | `pinup-ramette-and-nightmare-ram-armor` | Standalone box uses creation date 2022-06-27, more than a year before publication/restock. Both models retain earlier Pinups of Death IV dates.                                                                                                                                                         |
 | `shadow-box-holy-lands`                 | Undated Encore inherits First Run's 2026-04-01 announcement under the reviewed fallback.                                                                                                                                                                                                                |
 | `apotheosis`                            | Only Male Apotheosis and the Deathmas, Deathmas 2024, Easter, Halloween, and Valentines versions share this item. Female, Pinup, and May 2026 Apotheosis remain separate. Easter's old female tag conflicted with its source note identifying a reworked male sculpt; the combined item is tagged male. |
@@ -141,9 +155,15 @@ creation year is at least one year earlier than publication year.
 | `vignette-of-death-collection`          | Regional listings map to the same 2025 bundle. Its contents are fixed to the three physical vignettes released at that time; future vignettes and Sim editions are not added automatically.                                                                                                             |
 | `set-promos-of-death`                   | Tentative 2027 release uses `releaseWindow`, not an exact date.                                                                                                                                                                                                                                         |
 
-Armor-kit Naked editions retain the former standalone edition's price and date. Included Plastic editions use `[0]`, are marked `includedOnly: true`, and follow the earliest applicable physical Core or expansion release. A parent with only a future release window passes that window to the included edition. `[0]` represents no separate component price, not a free standalone shop product. The blanket Naked-edition rule also covers included-only kits; those labels do not establish that a standalone product was sold.
+The catalog owner confirmed identical models in 19 reviewed Naked/Plastic armor-kit pairs. Keep the sold Naked edition with its
+price and date; if both editions were included-only, keep Plastic. Inclusions and local workbook targets use the retained ID.
+Resin remains distinct. Included-only components retain reviewed parent dates or windows and omit prices; a Naked label alone
+does not establish a standalone sale. Do not extend this normalization to unreviewed pairs.
 
-Included Plastic monster editions follow the same zero-price and parent-date convention. Resin, Encore, Bust, and other standalone releases retain their own prices and dates. Physical Core and official expansion editions use Plastic materials, except Core's Resin edition; Sim editions have no physical material.
+Unreviewed sold/included Plastic pairs remain separate; cached listings do not establish sculpt identity, and Pinup Apotheosis has an
+unresolved `remaster` difference. See `temp/kdm-catalog/reports/plastic-included-pairs-review.json` (Git-ignored).
+
+Included Plastic monster editions follow the same parent-date convention and omit prices. Resin, Encore, Bust, and other standalone releases retain their own prices and dates. Physical Core and official expansion editions use Plastic materials, except Core's Resin edition; Sim editions have no physical material.
 
 The painting-contest prize model remains unresolved in the cached-product audit. Sleeves and Kickstarter listings remain excluded.
 
@@ -151,17 +171,24 @@ The Ultimate Starting Survivor Set - Finale Edition uses the cached `products-pa
 
 The regular Ultimate Starting Survivor Set follows the cached `lantern-year-29-bundle` listing: Core 1.6, Gambler's Chest, Frogdog, Black Knight, Flower Knight, Sunstalker, Dragon King, Slenderman, Lonely Tree, Dung Beetle Knight, Gorm, Lion Knight, White Gigalion, and Killennium Butcher. Green Knight Armor Expansion retains reviewed `kind: "box"`.
 
-The Oblivion Mosquito monster and Oblivion Mosquito Armor Kit have separate included Plastic editions for the expansion's 2027 release window. These editions use `[0]` for no separate component price and `includedOnly: true`. Their earlier Naked editions keep their own prices and dates.
+The Oblivion Mosquito monster and Armor Kit have included Plastic editions for the expansion's 2027 release window. Both use `includedOnly: true` and omit prices. The monster's separate Naked edition remains; the armor kit's duplicate Naked edition was removed because its contents match the retained Plastic edition.
 
-Goblin Dragon is confirmed by the catalog owner as part of Abyssal Woods. Its included Plastic edition follows the expansion's 2030 release window; the Naked edition retains its 2023 date and price. Steel Wax Armor Kit is confirmed by the catalog owner as part of Honeycomb Weaver. Its included Plastic edition follows the expansion's 2026 release window and uses [0] with includedOnly: true; the Naked edition retains its 2024 date and $30 price.
+Goblin Dragon is confirmed by the catalog owner as part of Abyssal Woods. Its included Plastic edition follows the expansion's 2030 release window; its distinct Naked edition retains its 2023 date and, because it is included-only, has no price. Steel Wax Armor Kit is confirmed by the catalog owner as part of Honeycomb Weaver. Its retained Plastic edition follows the expansion's 2026 release window and uses `includedOnly: true` without prices; the duplicate Naked edition was removed because its contents match Plastic.
 
 Core 1.3 and Resin boxes include the same 1.3 rulebook and share its `1-3-included` edition reference. The former `resin-included` rulebook ID is retired and must not be reused.
 
-The boxed 1.5 and 1.6 rulebooks declare `equivalentTo` references to the corresponding standalone rulebook IDs.
-Either copy satisfies that version's inclusion for completeness and missing-item filtering. Edition IDs, packaging,
-prices, and saved purchase records stay separate. Equivalence is explicit, never inferred from matching labels,
-and does not make 1.5, 1.6, or Sim interchangeable. The reference stays within one item and points directly to a
-canonical edition without its own `equivalentTo`.
+Gameplay components are included-only and versioned by physical ruleset; Core rulebooks are separate. Legendary Card Pack I upgrades Core
+gameplay and rulebooks from 1.5 to 1.6, plus gameplay from 1.3 to 1.6 for Dung Beetle Knight, Dragon King, Lonely Tree, Lion Knight,
+Sunstalker, and Flower Knight. Each update requires its corresponding older content.
+
+Gorm, Green Knight Armor, Lion God, Manhunter, Slenderman, and Spidicules share 1.3/1.6 gameplay through `equivalentTo`. No 1.7 or Sim upgrades
+are inferred.
+
+Pack I also supplies Allison the Twilight Knight, White Speaker Koshka, Holiday White Speaker Nico, Pinups of Death II, and Beyond the Wall
+gameplay without prerequisites or miniatures. Their gameplay-bearing physical editions share these components. This owner-reviewed inclusion
+supersedes the cached Pinups of Death II exclusion.
+
+Boxed 1.5 and 1.6 rulebooks use the matching standalone `1-5` and `1-6` IDs. Retired duplicate included IDs must not be reused.
 
 ## Shop handles
 

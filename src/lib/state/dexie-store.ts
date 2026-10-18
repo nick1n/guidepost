@@ -201,7 +201,8 @@ export class DexieStore implements CollectionStore {
               !previous ||
               previous.owned !== row.state.owned ||
               previous.wished !== row.state.wished ||
-              previous.copyNumber !== row.state.copyNumber
+              previous.copyNumber !== row.state.copyNumber ||
+              previous.missing !== row.state.missing
             );
           });
           if (removed.length) await db.entries.bulkDelete(removed);

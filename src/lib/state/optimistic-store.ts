@@ -1,5 +1,6 @@
 import { Effect, Semaphore } from "effect";
 import type { CollectionPatch, CollectionSnapshot } from "#lib/types/index.ts";
+import { normalizeEntry, normalizeSnapshot } from "#lib/types/collection.ts";
 import type { CollectionStore } from "./stores.ts";
 
 type Change = { patch: CollectionPatch | null; replacement?: CollectionSnapshot };
@@ -9,13 +10,13 @@ function cloneSnapshot(state: CollectionSnapshot): CollectionSnapshot {
 }
 
 function applyChange(state: CollectionSnapshot, { patch, replacement }: Change): CollectionSnapshot {
-  if (replacement !== undefined) return cloneSnapshot(replacement);
+  if (replacement !== undefined) return normalizeSnapshot(replacement);
   if (patch === null) return {};
   const next = { ...state };
   for (const [id, fields] of Object.entries(patch)) {
-    const entry = { ...state[id], ...fields };
-    if (fields.copyNumber === undefined && Object.hasOwn(fields, "copyNumber")) delete entry.copyNumber;
-    next[id] = entry;
+    const entry = normalizeEntry({ ...state[id], ...fields });
+    if (Object.keys(entry).length) next[id] = entry;
+    else delete next[id];
   }
   return next;
 }

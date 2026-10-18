@@ -12,6 +12,7 @@ import {
 } from "#lib/types/index.ts";
 
 import { workbookLocator, WorkbookMapSchema, WorkbookRowsSchema, type WorkbookMap, type WorkbookRow } from "#lib/types/workbook.ts";
+import { normalizeSnapshot } from "#lib/types/collection.ts";
 export type { WorkbookMap, WorkbookRow } from "#lib/types/workbook.ts";
 
 export class TransferError extends S.TaggedError<TransferError>()("TransferError", {
@@ -86,14 +87,14 @@ export const encodeBackup = Effect.fn("CollectionTransfer.encodeBackup")(functio
     Effect.mapError(() => invalid("export", "Collection data is invalid.")),
   );
   yield* validateSnapshot(entries, catalog, "export");
-  return JSON.stringify({ formatVersion: 1, entries });
+  return JSON.stringify({ formatVersion: 1, entries: normalizeSnapshot(entries) });
 });
 
 export const decodeBackup = Effect.fn("CollectionTransfer.decodeBackup")(function* (json: string, catalog: Catalog) {
   const backup = yield* S.decodeUnknownEffect(BackupJsonSchema, { onExcessProperty: "error" })(json).pipe(
     Effect.mapError(() => invalid("import", "Backup format or collection entries are invalid.")),
   );
-  return yield* validateSnapshot(backup.entries, catalog, "import");
+  return normalizeSnapshot(yield* validateSnapshot(backup.entries, catalog, "import"));
 });
 
 export const previewWorkbookRows = Effect.fn("CollectionTransfer.previewWorkbookRows")(function* (
@@ -196,10 +197,11 @@ export const exportWorkbookRows = Effect.fn("CollectionTransfer.exportWorkbookRo
   catalog: Catalog,
   mapping?: unknown,
 ) {
-  const entries = yield* S.decodeUnknownEffect(CollectionSnapshotSchema, { onExcessProperty: "error" })(snapshot).pipe(
+  const validated = yield* S.decodeUnknownEffect(CollectionSnapshotSchema, { onExcessProperty: "error" })(snapshot).pipe(
     Effect.mapError(() => invalid("export", "Collection data is invalid.")),
   );
-  yield* validateSnapshot(entries, catalog, "export");
+  yield* validateSnapshot(validated, catalog, "export");
+  const entries = normalizeSnapshot(validated);
   const map = yield* decodeMapping("export", mapping);
   const rows: WorkbookRow[] = [];
   const represented = new Set<string>();
@@ -262,6 +264,7 @@ export const exportWorkbookRows = Effect.fn("CollectionTransfer.exportWorkbookRo
         !roundtrip[key] ||
         Boolean(roundtrip[key].owned) !== Boolean(entry.owned) ||
         Boolean(roundtrip[key].wished) !== Boolean(entry.wished) ||
+        Boolean(roundtrip[key].missing) !== Boolean(entry.missing) ||
         roundtrip[key].copyNumber !== entry.copyNumber,
     )
   )

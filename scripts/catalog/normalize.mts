@@ -54,6 +54,7 @@ export function clearChangedListings(item: Item, before: ReturnType<typeof listi
 export function normalizeItem(item: Item) {
   const listings = listingSnapshot(item);
   for (const edition of item.editions ?? []) {
+    if (edition.includedOnly) delete edition.prices;
     if (edition.label === "Deathgrey M2 Edition") edition.label = "Deathgrey M2";
     recordAvailability(edition, edition.available === true);
     edition.format ??= ["Sim", "3D Files"].includes(edition.label) ? "digital" : "physical";

@@ -39,12 +39,12 @@
   import {
     reviewShopLink,
     reviewEditions,
-    reviewEquivalentEditions,
     reviewEditionReleased,
     reviewNumberedEditions,
     reviewPrice,
     reviewTagLabel,
     reviewBadges,
+    reviewIncludedEditionLabel,
   } from "#lib/catalog-view.ts";
   import { editionGameplay, editionLabel, editionMaterials, formatPrice } from "#lib/kdm-data.ts";
   import { onDestroy } from "svelte";
@@ -59,11 +59,14 @@
   const writable = $derived(collection.canWrite);
   let inspected = $state<string>();
   let contentsOpen = $state(false);
-  let missingOnly = $state(false);
   let feedback = $state<OwnershipKind>();
   let feedbackTimer: ReturnType<typeof setTimeout> | undefined;
   onDestroy(() => clearTimeout(feedbackTimer));
-  const editions = $derived(reviewEditions(item));
+  const editions = $derived(
+    reviewEditions(item).filter(
+      (edition) => !edition.includedOnly || selection(edition).owned || collection.coverage.edition(item.id, edition.id).available,
+    ),
+  );
   const selected = $derived(
     editions.find((edition) => edition.id === inspected) ??
       editions.findLast((edition) => selection(edition).owned) ??
@@ -74,28 +77,12 @@
   const badges = $derived(reviewBadges(item));
   const numberedEditions = $derived(reviewNumberedEditions(item).filter((edition) => selection(edition).owned));
   const hasOwned = $derived(editions.some((edition) => selection(edition).owned));
-  const ownedItems = $derived(new Set(collection.owned.map(({ item }) => item.id)));
 
   function selection(edition: ReviewEdition) {
     return collection.getEdition(item.id, edition.id);
   }
   function includedOwnership(edition: ReviewEdition, target = item) {
-    const children = catalog.includedEditions(target.id, edition.id, false).map((child) => {
-      const ownedEditions = reviewEditions(child.item).filter((release) => collection.getEdition(child.item.id, release.id).owned);
-      return {
-        ...child,
-        ownedEditions,
-        owned: ownedEditions.length > 0,
-        exactOwned: reviewEquivalentEditions(child.item, child.edition).some(
-          (release) => collection.getEdition(child.item.id, release.id).owned,
-        ),
-      };
-    });
-    const count = children.filter((child) => child.owned).length;
-    const exactCount = children.filter((child) => child.exactOwned).length;
-    const ratio = children.length ? exactCount / children.length : 1;
-    const shade = ratio === 1 ? "var(--grey-0)" : ratio < 0.5 ? "var(--grey-7)" : "var(--grey-6)";
-    return { children, count, exactCount, shade };
+    return collection.coverage.contents(target.id, edition.id);
   }
   function showOwnershipFeedback(kind: OwnershipKind) {
     clearTimeout(feedbackTimer);
@@ -125,24 +112,20 @@
     if (selected?.id === edition.id) toggleOwned(edition);
     else inspected = edition.id;
   }
-  function toggleOwned(edition: ReviewEdition, target = item) {
+  function toggleOwned(edition: ReviewEdition, target = item, owned?: boolean) {
     if (!writable) return;
+    if (target.id === item.id) inspected = edition.id;
     clearTimeout(feedbackTimer);
     feedback = undefined;
-    const equivalent = reviewEquivalentEditions(target, edition);
-    const owned = equivalent.some((release) => collection.getEdition(target.id, release.id).owned);
-    const targets = owned ? equivalent : [edition];
-    collectionActions.run(
-      collection.setEditionsOwned(
-        targets.map((release) => ({ item: target, edition: release })),
-        !owned,
-      ),
-    );
-    if (target.id === item.id) inspected = edition.id;
+    collectionActions.run(collection.toggleEditionOwned(collectionKey(target.id, edition.id), owned));
   }
   function toggleWish(edition: ReviewEdition, target = item) {
     if (!writable) return;
     collectionActions.run(collection.toggleWish(collectionKey(target.id, edition.id)));
+  }
+  function toggleIncludedOwned(edition: ReviewEdition, target: Entry, owned?: boolean) {
+    if (!writable) return;
+    collectionActions.run(collection.toggleIncludedOwned(collectionKey(target.id, edition.id), owned));
   }
   function updateCopyNumber(edition: ReviewEdition, input: HTMLInputElement) {
     if (!writable) return;
@@ -164,7 +147,7 @@
         <button
           class="ownership"
           type="button"
-          aria-label="Owned editions of {item.name}"
+          aria-label="Ownership of {item.name}"
           aria-pressed={hasOwned}
           disabled={!writable || (!hasOwned && !selected)}
           {...events}
@@ -176,7 +159,7 @@
               {#if feedback}
                 {ownershipMessages[feedback]}
               {:else}
-                {item.category === "bundles" ? "bundle" : (item.category === "accessories" && item.accessoryType) || item.kind || "Item"}
+                {item.category === "bundles" ? "bundle" : (item.category === "accessories" && item.accessoryType) || item.kind || "item"}
                 {#if editions.length > 1}
                   / {editions.length} versions
                 {/if}
@@ -214,9 +197,9 @@
           {#each editions as summaryEdition (summaryEdition.id)}
             {@const active = selected.id === summaryEdition.id}
             {@const price = reviewPrice(item, summaryEdition)}
-            {@const bundle = catalog.bundlePricing(item.id, summaryEdition.id, ownedItems)}
+            {@const bundle = catalog.bundlePricing(item.id, summaryEdition.id, collection.state)}
             <div class={["edition-summary", !active && "inactive"]} inert={!active}>
-              {#if price !== 0}
+              {#if !summaryEdition.includedOnly}
                 <div class="edition-value">
                   <strong class="price">{price === undefined ? "Price unknown" : formatPrice(price, item.currency)}</strong>
                   <span class="caption">for {editionLabel(summaryEdition)}</span>
@@ -234,9 +217,8 @@
               </div>
               {#if bundle}
                 <p class="bundle-price">
-                  {bundle.missing ? "Known item prices" : "Items separately"}: {formatPrice(bundle.total, item.currency)}
-                  {#if bundle.missing}<span>{bundle.missing} item prices unavailable</span>
-                  {:else if bundle.savings !== undefined && bundle.savings > 0}
+                  Items separately: {formatPrice(bundle.total, item.currency)}
+                  {#if bundle.savings !== undefined && bundle.savings > 0}
                     <strong>Save {formatPrice(bundle.savings, item.currency)} ({bundle.percent}%)</strong>
                   {/if}
                 </p>
@@ -285,8 +267,6 @@
         {selectedTags}
         label={`${item.name} tags`}
         {onTagClick}
-        --tag-gap="0.25rem"
-        --tag-margin="0"
         --tag-rail-padding="0.25rem"
         --tag-padding="0.25rem 0.375rem"
         --tag-color="var(--muted-foreground)"
@@ -305,75 +285,67 @@
 </article>
 
 {#snippet badge(tag: string, label: string, variant?: "beta" | "gameplay")}
-  <button class={["badge", variant]} type="button" aria-pressed={selectedTags.includes(tag)} onclick={() => onTagClick(tag)}>{label}</button
-  >
+  <button class={["badge", variant]} type="button" aria-pressed={selectedTags.includes(tag)} onclick={() => onTagClick(tag)}>
+    {label}
+  </button>
 {/snippet}
 
 {#snippet editionDetail(edition: ReviewEdition)}
-  {@const references = collection.getOwners(item.id, edition.id)}
-  {#if references.length}
-    <p class="included-note">
-      {selection(edition).owned ? "Covered by" : "Included with"} your {references
-        .map((parent) => `${parent.parent} (${parent.parentEdition})`)
-        .join(", ")}.
-    </p>
-  {:else if edition.includedOnly}
-    <p class="included-note">This edition comes with another item. You can track its ownership separately.</p>
-  {/if}
-  {#if item.includes?.length || edition.includesAllSim}
-    {@const ownership = includedOwnership(edition)}
-    {@const included = ownership.children}
-    {@const visible = included.filter((child) => !missingOnly || !child.exactOwned)}
+  {@const { children, exactCount } = includedOwnership(edition)}
+  {#if children.length}
     <details class="contents" bind:open={contentsOpen}>
       <summary>
-        Included with {editionLabel(edition)}
+        {editionLabel(edition)} includes
         <span class="contents-count">
-          {ownership.exactCount} of {included.length} owned
+          {exactCount} of {children.length} owned
         </span>
       </summary>
       {#if edition.includesAllSim}
-        <p>Includes every current and future Sim edition. This list shows the editions currently in the catalog.</p>
+        <p>Includes every current and future Sim edition. This shows the editions currently in the catalog.</p>
       {/if}
       {#if contentsOpen && selected?.id === edition.id}
-        {#if included.length}
-          <button class="contents-filter" type="button" aria-pressed={missingOnly} onclick={() => (missingOnly = !missingOnly)}>
-            Show missing only
-          </button>
-        {/if}
         <ul>
-          {#each visible as child (collectionKey(child.item.id, child.edition.id))}
+          {#each children as child (collectionKey(child.item.id, child.edition.id))}
             {@const price = reviewPrice(child.item, child.edition)}
+            {@const name = child.name === child.item.name ? child.name : `${child.name}, ${child.item.name}`}
+            {@const label = reviewIncludedEditionLabel(item, child.edition)}
             {@const value = collection.getEdition(child.item.id, child.edition.id)}
             <li class="included-row">
               <label class="own">
                 <input
                   type="checkbox"
-                  aria-label="Own {child.item.name}, {editionLabel(child.edition)}"
+                  aria-label={child.status.available ? `Mark ${name}, ${label} missing` : `Have ${name}, ${label}`}
                   checked={child.exactOwned}
-                  indeterminate={child.owned && !child.exactOwned}
                   disabled={!writable}
                   aria-describedby={child.owned && !child.exactOwned
                     ? `other-owned-${item.id}-${edition.id}-${child.item.id}-${child.edition.id}`
                     : undefined}
-                  onchange={() => toggleOwned(child.edition, child.item)}
+                  onchange={(event) => toggleIncludedOwned(child.edition, child.item, event.currentTarget.checked)}
                 />
               </label>
               <button
                 class="edition-label"
                 type="button"
-                aria-label="Own {child.item.name}, {editionLabel(child.edition)}"
+                aria-label={child.status.available ? `Mark ${name}, ${label} missing` : `Have ${name}, ${label}`}
                 aria-pressed={child.exactOwned}
                 disabled={!writable}
-                onclick={() => toggleOwned(child.edition, child.item)}
+                onclick={() => toggleIncludedOwned(child.edition, child.item)}
               >
-                <span>{child.item.name} <small>{editionLabel(child.edition)}</small></span>
+                <span>{child.name} <small>{label}</small></span>
                 {#if child.owned && !child.exactOwned}
                   <span class="included-owned" id={`other-owned-${item.id}-${edition.id}-${child.item.id}-${child.edition.id}`}>
-                    Owned: {child.ownedEditions.map(editionLabel).join(", ")}
+                    Owned: {[...new Set(child.ownedEditions.map((edition) => reviewIncludedEditionLabel(item, edition)))].join(", ")}
+                  </span>
+                {:else if child.status.source === "upgrade"}
+                  <span class="included-owned">
+                    Upgraded with {child.status.via
+                      .filter(({ item }) => item.id !== child.item.id)
+                      .map(({ item }) => item.name)
+                      .join(", ")}
                   </span>
                 {/if}
               </button>
-              {#if price !== 0}
+              {#if !child.edition.includedOnly && price !== 0}
                 <span class="included-price">{price === undefined ? "Price unknown" : formatPrice(price, child.item.currency)}</span>
               {/if}
               <button
@@ -381,7 +353,7 @@
                 type="button"
                 aria-label="Wishlist {child.item.name}, {editionLabel(child.edition)}"
                 aria-pressed={!!value.wished}
-                disabled={!writable || child.exactOwned}
+                disabled={!writable || !!value.owned}
                 onclick={() => toggleWish(child.edition, child.item)}
               >
                 <span
@@ -392,11 +364,7 @@
             </li>
           {/each}
         </ul>
-        {#if missingOnly && included.length && !visible.length}
-          <p class="included-note" role="status">All included editions are owned.</p>
-        {/if}
       {/if}
-      {#if !included.length}<p>No inclusions are listed for this edition.</p>{/if}
     </details>
   {/if}
 {/snippet}
@@ -420,23 +388,24 @@
   {@const detail = [...new Set([edition.name, ...(edition.format === "digital" ? ["Digital"] : editionMaterials(edition))])]
     .filter((part) => part && !edition.label.toLowerCase().includes(part.toLowerCase()))
     .join(", ")}
-  <div class={["edition", active && "inspected"]}>
+  <div
+    class={["edition", active && "inspected", hasContents && "contents-progress"]}
+    style:--ownership-progress={hasContents ? `${(ownership.exactCount / ownership.children.length) * 100}%` : undefined}
+  >
     <label class="own">
       <input
         type="checkbox"
-        class={[hasContents && "contents-own"]}
-        style:--ownership-fill={hasContents ? ownership.shade : undefined}
-        aria-label="Own {item.name}, {editionLabel(edition)}"
-        aria-describedby={hasContents ? `ownership-${item.id}-${edition.id}` : undefined}
+        aria-label={value.owned
+          ? `Remove ownership of ${item.name}, ${editionLabel(edition)}`
+          : `Have ${item.name}, ${editionLabel(edition)}`}
         checked={!!value.owned}
-        indeterminate={hasContents && ownership.exactCount > 0 && (!value.owned || ownership.exactCount < ownership.children.length)}
+        aria-describedby={hasContents ? `ownership-${item.id}-${edition.id}` : undefined}
         disabled={!writable}
-        onchange={() => toggleOwned(edition)}
+        onchange={(event) => toggleOwned(edition, item, event.currentTarget.checked)}
       />
       {#if hasContents}
         <span class="visually-hidden" id={`ownership-${item.id}-${edition.id}`}>
-          {ownership.count} of {ownership.children.length} included items owned; {ownership.exactCount} match this edition. White indicates all
-          included editions match.
+          {ownership.exactCount} of {ownership.children.length} included items owned.
         </span>
       {/if}
     </label>
@@ -456,6 +425,12 @@
         {#if detail}<span class="edition-meta">{detail}</span>{/if}
       </span>
     </button>
+    <div class="edition-release">
+      {#if edition.runSize}
+        <small class="run" id={`run-${item.id}-${edition.id}`}>Run of {edition.runSize}</small>
+      {/if}
+      <small class="edition-date">{release(edition)}</small>
+    </div>
     {@render shopLink(edition)}
     {#if gameplay}
       <span
@@ -482,16 +457,16 @@
       <span class={["wish-icon", value.wished ? "i-material-symbols:favorite" : "i-material-symbols:favorite-outline"]} aria-hidden="true"
       ></span>
     </button>
-    <div class="edition-release">
-      <small class="edition-date">{release(edition)}</small>
-      {#if edition.runSize}
-        <small class="run" id={`run-${item.id}-${edition.id}`}>Run of {edition.runSize}</small>
-      {/if}
-    </div>
   </div>
 {/snippet}
 
 <style>
+  @property --ownership-progress {
+    syntax: "<percentage>";
+    inherits: false;
+    initial-value: 0%;
+  }
+
   .shop,
   .price {
     color: var(--accent);
@@ -724,7 +699,7 @@
     line-height: var(--size-edition-control);
     white-space: nowrap;
     &:is([data-state="out-of-stock"], [data-state="missing"]) {
-      gap: 2px;
+      gap: 0.125rem;
     }
 
     &:is([data-state="out-of-stock"], [data-state="unknown"]) {
@@ -734,6 +709,9 @@
     &[data-state="missing"] {
       --accent: var(--red-3);
     }
+  }
+  .shop:is([data-state="out-of-stock"], [data-state="missing"]) .external-icon {
+    --size-icon: calc(var(--size-external) - 0.125rem);
   }
   .editions {
     display: grid;
@@ -748,12 +726,9 @@
     grid-column: 1 / -1;
     align-items: center;
     gap: 0 var(--gap-edition);
-    border-block-end: 1px solid #fff1;
+    border-block-end: var(--border-width) solid var(--grey-8);
     background-clip: padding-box;
 
-    &:last-child {
-      border-block-end: 0;
-    }
     &.inspected {
       background-color: var(--panel);
     }
@@ -761,7 +736,13 @@
   .edition > :is(.edition-label, .shop, .gameplay-icon, .edition-price) {
     grid-row: 1;
   }
-  .edition:not(:has(.run)) > :is(.shop, .gameplay-icon, .edition-price) {
+  .edition.contents-progress {
+    border-image: linear-gradient(to left, var(--grey-7) var(--ownership-progress), var(--grey-8) 0) 1;
+    transition:
+      var(--transition-colors),
+      --ownership-progress var(--duration-medium) var(--ease-standard);
+  }
+  .edition:not(:has(.run)) > .edition-label {
     grid-row: 1 / -1;
   }
   :is(.edition, .included-row) > :is(.own, .shop, .wish) {
@@ -803,19 +784,11 @@
 
     &:checked {
       background:
-        linear-gradient(var(--ownership-fill, var(--foreground)) 0 0) content-box,
+        linear-gradient(var(--foreground) 0 0) content-box,
         var(--contrast);
     }
-    &:indeterminate {
-      opacity: 1;
-      background:
-        linear-gradient(var(--foreground) 0 0) center / 0.75rem 0.125rem no-repeat,
-        var(--contrast);
-    }
-    &.contents-own:indeterminate {
-      background:
-        linear-gradient(var(--ownership-fill) 0 0) content-box,
-        var(--contrast);
+    &:disabled {
+      cursor: default;
     }
   }
   .edition-label {
@@ -861,6 +834,9 @@
   }
   .edition-release small {
     font-size: inherit;
+  }
+  .edition-date {
+    grid-column: 2;
   }
   .gameplay-icon,
   .wish-icon {
@@ -927,20 +903,6 @@
   .contents-count {
     float: inline-end;
   }
-  .contents-filter {
-    margin-block-start: 0.5rem;
-    padding: 0.25rem 0.5rem;
-    border: var(--border-width) solid var(--color-divider);
-    border-radius: var(--radius-control);
-    background: var(--panel);
-    color: var(--muted-foreground);
-
-    &[aria-pressed="true"] {
-      border-color: var(--accent-blue);
-      background: var(--blue-8);
-      color: var(--accent-blue);
-    }
-  }
   .contents ul {
     display: grid;
     grid-template-columns: max-content minmax(0, 1fr) max-content max-content;
@@ -957,6 +919,7 @@
   .included-row .edition-label {
     display: flex;
     flex-wrap: wrap;
+    align-content: center;
     align-items: baseline;
     gap: 0.125rem 0.5rem;
   }
@@ -995,16 +958,12 @@
     .ownership[aria-pressed="false"]:not(:disabled):hover .ownership-label {
       opacity: 0.5;
     }
-    button:not(:disabled, .wish, .edition-label, .badge, .contents-filter):hover,
+    button:not(:disabled, .wish, .edition-label, .badge):hover,
     summary:hover,
     .edition:hover,
     .included-row:hover {
       background: var(--blue-8);
       color: var(--accent);
-    }
-    .contents-filter:hover {
-      border-color: var(--accent-blue);
-      color: var(--accent-blue);
     }
     input[type="number"]:not(:disabled):hover {
       border-color: var(--accent);
@@ -1055,17 +1014,28 @@
       white-space: nowrap;
     }
     .edition-release {
-      grid-template-columns: subgrid;
+      display: contents;
+    }
+    .edition-release small {
       grid-row: 1;
-      grid-column: 3 / 5;
       padding: 0.125rem 0;
-      gap: var(--gap-edition);
+      text-align: right;
+    }
+    .run {
+      grid-column: 3;
     }
     .shop {
-      grid-column: 5;
+      grid-column: 4;
     }
     .gameplay-icon {
+      grid-column: 5;
+    }
+    .edition-date {
       grid-column: 6;
+    }
+    .edition-date,
+    .edition-price {
+      line-height: 1;
     }
     .edition-price {
       grid-column: 7;

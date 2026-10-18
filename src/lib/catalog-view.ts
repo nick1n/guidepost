@@ -1,6 +1,6 @@
 import { editionGameplay, editionLabel, editionMaterials } from "./kdm-data.ts";
 import { catalogCategories, type Catalog, type Edition, type Item } from "#lib/types/index.ts";
-import { collectionKey } from "#lib/types/collection.ts";
+import { collectionKey, type CollectionSnapshot } from "#lib/types/collection.ts";
 
 export type ReviewEdition = Edition;
 export type ReviewItem = Item;
@@ -9,10 +9,28 @@ export type CatalogEntry = ReturnType<typeof reviewEntries>[number];
 export type CatalogIndex = ReturnType<typeof reviewIndex>;
 export type EditionSelection = { item: CatalogEntry; edition: ReviewEdition };
 type Inclusion = Exclude<NonNullable<ReviewItem["includes"]>[number], string>;
+type IncludedEdition = EditionSelection & { name: string };
 type Owner = { parentId: string; parentEditionId: string; parent: string; parentEdition: string; editionId?: string };
+
+type CoverageNode = {
+  selection: EditionSelection;
+  children: { key: string; name: string }[];
+  equivalents: string[];
+  recipes: string[][];
+};
+
+type CoverageStatus = {
+  available: boolean;
+  source: "owned" | "included" | "equivalent" | "upgrade" | "missing";
+  via: EditionSelection[];
+};
 
 export function reviewTagLabel(tag: string) {
   return tag.replace(/^monster-/, "").replaceAll("-", " ");
+}
+
+export function reviewIncludedEditionLabel(parent: Pick<CatalogEntry, "category">, edition: ReviewEdition) {
+  return parent.category === "bundles" ? editionLabel(edition) : editionMaterials(edition).join(", ") || editionLabel(edition);
 }
 
 export function reviewEntries(catalog: ReviewCatalog) {
@@ -47,7 +65,10 @@ export function reviewShopLink(item: ReviewItem, edition: ReviewEdition) {
 }
 
 export function reviewPrice(item: ReviewItem, edition: ReviewEdition) {
-  return edition.prices?.length ? Math.max(...edition.prices) : item.price;
+  if (edition.includedOnly) return;
+  if (edition.prices?.length) return Math.max(...edition.prices);
+  // Item-level prices belong to synthetic editions, not to unpriced selectable releases.
+  return ["item", "bundle"].includes(edition.id) ? item.price : undefined;
 }
 
 export function reviewEditions(item: ReviewItem & { category?: string }): ReviewEdition[] {
@@ -201,12 +222,12 @@ function indexRelationships(entries: readonly CatalogEntry[], byId: ReadonlyMap<
     return included;
   }
 
-  const includedCache = new Map<string, EditionSelection[]>();
+  const includedCache = new Map<string, IncludedEdition[]>();
   function includedEditions(id: string, editionId: string, includeNested = true) {
     const cacheKey = JSON.stringify([id, editionId, includeNested]);
     const cached = includedCache.get(cacheKey);
     if (cached) return cached;
-    const included: EditionSelection[] = [];
+    const included: IncludedEdition[] = [];
     const visited = new Set([collectionKey(id, editionId)]);
     function visit(parentId: string, parentEditionId: string) {
       const parentEdition = byId.get(parentId)?.editions?.find((release) => release.id === parentEditionId);
@@ -217,7 +238,7 @@ function indexRelationships(entries: readonly CatalogEntry[], byId: ReadonlyMap<
           const key = collectionKey(item.id, release.id);
           if (visited.has(key)) continue;
           visited.add(key);
-          included.push({ item, edition: release });
+          included.push({ item, edition: release, name: reference.shortLabel ?? item.name });
           if (includeNested) visit(item.id, release.id);
         }
       }
@@ -227,23 +248,30 @@ function indexRelationships(entries: readonly CatalogEntry[], byId: ReadonlyMap<
     return included;
   }
 
-  type Pricing = { total: number; missing: number; savings: number | undefined; percent: number | undefined };
+  type Pricing = {
+    total: number;
+    missing: number;
+    unavailable: number;
+    savings: number | undefined;
+    percent: number | undefined;
+  };
   const pricingCache = new Map<string, Pricing>();
-  function bundlePricing(id: string, editionId: string, ownedItems?: ReadonlySet<string>) {
+  function bundlePricing(id: string, editionId: string, snapshot?: CollectionSnapshot) {
     const item = byId.get(id);
     if (item?.category !== "bundles" || !inclusions(id, editionId).length) return;
     const cacheKey = collectionKey(id, editionId);
-    const cached = !ownedItems?.size && pricingCache.get(cacheKey);
+    const cached = !snapshot && pricingCache.get(cacheKey);
     if (cached) return cached;
     const release = reviewEditions(item).find((release) => release.id === editionId);
     if (!release) return;
     const price = reviewPrice(item, release);
     let total = 0;
     let missing = 0;
-    const children = includedEditions(id, editionId, false).filter((child) => !ownedItems?.has(child.item.id));
+    let unavailable = 0;
+    const ownership = snapshot && coverage(snapshot);
+    const children = includedEditions(id, editionId, false);
     for (const reference of inclusions(id, editionId))
       if (
-        !ownedItems?.has(reference.item) &&
         !children.some(
           (child) =>
             child.item.id === reference.item &&
@@ -252,48 +280,61 @@ function indexRelationships(entries: readonly CatalogEntry[], byId: ReadonlyMap<
         )
       )
         missing += 1;
-    for (const child of children) {
-      const amount = reviewPrice(child.item, child.edition);
+    const needed = children.filter((child) => !ownership?.edition(child.item.id, child.edition.id).available);
+    const priced = new Set<string>();
+    for (const child of needed) {
+      const canonical = collectionKey(child.item.id, child.edition.equivalentTo ?? child.edition.id);
+      if (priced.has(canonical)) continue;
+      priced.add(canonical);
+      // A listed box already pays for its descendants. Shared contents are never charged twice.
+      if (
+        needed.some(
+          (parent) =>
+            parent !== child &&
+            !parent.edition.includedOnly &&
+            includedEditions(parent.item.id, parent.edition.id).some(
+              (part) => collectionKey(part.item.id, part.edition.equivalentTo ?? part.edition.id) === canonical,
+            ),
+        )
+      )
+        continue;
+      const product = child.edition.priceFrom
+        ? reviewEditions(child.item).find((release) => release.id === child.edition.priceFrom)
+        : child.edition;
+      if (!product || product.includedOnly) {
+        unavailable += 1;
+        continue;
+      }
+      const amount = reviewPrice(child.item, product);
       if (amount === undefined || (child.item.currency ?? "USD") !== (item.currency ?? "USD")) missing += 1;
       else total += amount;
     }
-    const savings = !missing && price !== undefined ? total - price : undefined;
+    const savings = !missing && !unavailable && price !== undefined ? total - price : undefined;
     const pricing = {
       total,
       missing,
+      unavailable,
       savings,
       percent: savings !== undefined && total > 0 ? Math.round((savings / total) * 100) : undefined,
     };
-    if (!ownedItems?.size) pricingCache.set(cacheKey, pricing);
+    if (!snapshot) pricingCache.set(cacheKey, pricing);
     return pricing;
   }
 
   function ownershipKeys(targets: readonly EditionSelection[]) {
-    return [
-      ...new Set(
-        targets.flatMap(({ item, edition }) =>
-          [{ item, edition }, ...includedEditions(item.id, edition.id)].map(({ item, edition }) => collectionKey(item.id, edition.id)),
-        ),
-      ),
-    ];
+    return [...new Set(targets.map(({ item, edition }) => collectionKey(item.id, edition.id)))];
   }
 
-  function ownershipCoverage(owned: readonly EditionSelection[]) {
-    const grouped = new Map<string, Owner[]>();
-    for (const { item, edition } of owned) {
-      for (const child of inclusions(item.id, edition.id)) {
-        const owners = grouped.get(child.item) ?? [];
-        owners.push({
-          parentId: item.id,
-          parentEditionId: edition.id,
-          parent: item.name,
-          parentEdition: editionLabel(edition),
-          editionId: child.editionId,
-        });
-        grouped.set(child.item, owners);
-      }
+  let coverageGraph: ReturnType<typeof indexCoverage> | undefined;
+  const coverageCache = new WeakMap<CollectionSnapshot, ReturnType<typeof resolveCoverage>>();
+  function coverage(snapshot: CollectionSnapshot) {
+    let resolved = coverageCache.get(snapshot);
+    if (!resolved) {
+      coverageGraph ??= indexCoverage(entries, includedEditions);
+      resolved = resolveCoverage(coverageGraph, snapshot);
+      coverageCache.set(snapshot, resolved);
     }
-    return grouped;
+    return resolved;
   }
 
   return {
@@ -301,6 +342,115 @@ function indexRelationships(entries: readonly CatalogEntry[], byId: ReadonlyMap<
     includedEditions,
     bundlePricing,
     ownershipKeys,
-    ownershipCoverage,
+    coverage,
   };
+}
+
+/** Catalog relationships are resolved once; snapshots only evaluate coverage over these keys. */
+function indexCoverage(
+  entries: readonly CatalogEntry[],
+  includedEditions: (id: string, editionId: string, includeNested: boolean) => IncludedEdition[],
+) {
+  const nodes = new Map<string, CoverageNode>();
+  for (const item of entries)
+    for (const edition of reviewEditions(item))
+      nodes.set(collectionKey(item.id, edition.id), {
+        selection: { item, edition },
+        children: includedEditions(item.id, edition.id, false).map((child) => ({
+          key: collectionKey(child.item.id, child.edition.id),
+          name: child.name,
+        })),
+        equivalents: reviewEquivalentEditions(item, edition).map((candidate) => collectionKey(item.id, candidate.id)),
+        recipes: (edition.completedBy ?? []).map((recipe) =>
+          recipe.all.map((reference) => collectionKey(reference.item, reference.editionId)),
+        ),
+      });
+  return nodes;
+}
+
+/** Only recorded acquisitions supply contents. Equivalent and upgraded coverage never become sources. */
+function collectSupplies(nodes: ReadonlyMap<string, CoverageNode>, snapshot: CollectionSnapshot) {
+  const supplied = new Map<string, EditionSelection[]>();
+  for (const [rootKey, root] of nodes) {
+    if (!snapshot[rootKey]?.owned) continue;
+    const visited = new Set<string>();
+    const pending = [rootKey];
+    while (pending.length) {
+      const key = pending.pop()!;
+      if (visited.has(key) || snapshot[key]?.missing) continue;
+      visited.add(key);
+      const sources = supplied.get(key) ?? [];
+      sources.push(root.selection);
+      supplied.set(key, sources);
+      pending.push(...nodes.get(key)!.children.map((child) => child.key));
+    }
+  }
+  return supplied;
+}
+
+function resolveCoverage(nodes: ReadonlyMap<string, CoverageNode>, snapshot: CollectionSnapshot) {
+  const supplied = collectSupplies(nodes, snapshot);
+  const cache = new Map<string, CoverageStatus>();
+  const visiting = new Set<string>();
+  function status(key: string): CoverageStatus {
+    const cached = cache.get(key);
+    if (cached) return cached;
+    const node = nodes.get(key);
+    if (!node || visiting.has(key) || snapshot[key]?.missing) return { available: false, source: "missing", via: [] };
+    visiting.add(key);
+    const result = resolveStatus(key, node);
+    visiting.delete(key);
+    cache.set(key, result);
+    return result;
+  }
+  function resolveStatus(key: string, node: CoverageNode): CoverageStatus {
+    const sources = supplied.get(key);
+    if (sources?.length) return { available: true, source: snapshot[key]?.owned ? "owned" : "included", via: sources };
+
+    const equivalents = node.equivalents.filter((candidate) => !snapshot[candidate]?.missing);
+    const equivalent = equivalents.find((candidate) => candidate !== key && supplied.has(candidate));
+    if (equivalent) return { available: true, source: "equivalent", via: [nodes.get(equivalent)!.selection] };
+
+    for (const recipe of equivalents.flatMap((candidate) => nodes.get(candidate)!.recipes)) {
+      if (!recipe.every((key) => status(key).available)) continue;
+      const via = recipe.map((key) => nodes.get(key)!.selection);
+      return { available: true, source: "upgrade", via };
+    }
+    return { available: false, source: "missing", via: [] };
+  }
+  function edition(id: string, editionId: string) {
+    return status(collectionKey(id, editionId));
+  }
+  function contents(id: string, editionId: string) {
+    const children = (nodes.get(collectionKey(id, editionId))?.children ?? []).map(({ key, name }) => {
+      const child = nodes.get(key)!.selection;
+      const status = edition(child.item.id, child.edition.id);
+      const ownedEditions = reviewEditions(child.item).filter((release) => edition(child.item.id, release.id).available);
+      return { ...child, name, status, exactOwned: status.available, owned: ownedEditions.length > 0, ownedEditions };
+    });
+    return {
+      children,
+      exactCount: children.filter((child) => child.exactOwned).length,
+      count: children.filter((child) => child.owned).length,
+    };
+  }
+  function owners(id: string, editionId: string): Owner[] {
+    const key = collectionKey(id, editionId);
+    const node = nodes.get(key);
+    if (!node || snapshot[key]?.missing) return [];
+    const roots = new Map<string, EditionSelection>();
+    for (const equivalent of node.equivalents)
+      for (const root of supplied.get(equivalent) ?? []) {
+        if (root.item.id === id) continue;
+        roots.set(collectionKey(root.item.id, root.edition.id), root);
+      }
+    return [...roots.values()].map((root) => ({
+      parentId: root.item.id,
+      parentEditionId: root.edition.id,
+      parent: root.item.name,
+      parentEdition: editionLabel(root.edition),
+      editionId,
+    }));
+  }
+  return { edition, contents, owners };
 }

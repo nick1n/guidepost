@@ -86,6 +86,7 @@
             "armor-kit",
             "beta",
             "box",
+            "gameplay-content",
             "simulator"
           ],
           "description": "Product classification. The beta kind means all editions are Beta; box may contain mixed Beta and non-Beta editions or other boxed products. Bundles may omit kind."
@@ -169,14 +170,14 @@
             "2025",
             "3D Files",
             "Box",
-            "Bust",
             "Bust: Encore",
             "Bust: First Run",
             "Bust: Second Run",
-            "Deathgrey",
+            "Bust",
             "Deathgrey M2",
-            "Deathmas",
+            "Deathgrey",
             "Deathmas 2024",
+            "Deathmas",
             "Deathpink",
             "Dwelling Key",
             "Early Variant",
@@ -184,33 +185,33 @@
             "Ein Lee",
             "Encore",
             "First Run",
+            "First",
             "Halloween",
-            "I",
-            "II",
             "Illusionist Key",
             "Lokman Lam",
             "Master Dwelling Key",
             "Metal",
             "Naked",
             "Original",
-            "Painters",
             "Painters: Cheeky",
             "Painters: Encore",
             "Painters: First Run",
+            "Painters",
             "Pawel Zdanowski",
             "Photoresin",
             "Plastic",
             "Pledge",
             "Preorder",
             "Prize",
-            "Remaster",
             "Remaster: Deathgrey",
             "Remaster: Encore",
             "Remaster: First Run",
+            "Remaster",
             "Resculpt: Encore",
             "Resculpt: First Run",
-            "Resin",
             "Resin & Metal",
+            "Resin",
+            "Second",
             "Sim",
             "Valentines",
             "Wenjuinn Png",
@@ -223,9 +224,15 @@
           "description": "Available in at least one matching cached shop variant. False by default; omit when unavailable or unknown."
         },
         "beta": { "type": "boolean", "const": true, "description": "Beta release. Omit for non-Beta editions." },
+        "completedBy": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/completionAlternative" },
+          "description": "Alternative recipes that provide this edition's content. Each alternative requires every referenced edition. Missing overrides block coverage. Recipes never record ownership of the product."
+        },
         "equivalentTo": {
           "$ref": "#/$defs/editionId",
-          "description": "Canonical edition ID on this item with identical contents for ownership and completeness. Packaging and prices may differ. Must reference a different edition without equivalentTo."
+          "description": "Canonical edition ID on this item with identical content coverage. Packaging and prices may differ; product ownership remains explicit. Must reference a different edition without equivalentTo."
         },
         "expansion": { "type": "string", "description": "Workbook Expansion value.", "minLength": 1 },
         "format": { "enum": ["physical", "digital"], "description": "Delivery format of this release." },
@@ -261,6 +268,10 @@
           "minLength": 1
         },
         "numbered": { "const": true, "description": "The release is known to have individually numbered copies. Omit otherwise." },
+        "priceFrom": {
+          "$ref": "#/$defs/editionId",
+          "description": "Reviewed standalone edition ID on this item whose own price is used only for bundle comparisons. Does not grant ownership or content equivalence. The target must have prices and cannot be included-only or have priceFrom. Omit when this edition has prices; missing prices never imply a reference."
+        },
         "prices": {
           "type": "array",
           "items": {
@@ -302,7 +313,8 @@
           "minLength": 1,
           "description": "External listing URL. Kingdom Death shop product listings use handle instead."
         }
-      }
+      },
+      "allOf": [{ "if": { "required": ["includedOnly"] }, "then": { "not": { "required": ["prices"] } } }]
     },
     "announcement": {
       "type": "string",
@@ -333,6 +345,11 @@
               "uniqueItems": true,
               "items": { "$ref": "#/$defs/editionId" },
               "description": "Stable edition IDs on the containing item for which this inclusion applies. Omitted means no edition restriction on the containing item; physical contents still require a physical release."
+            },
+            "shortLabel": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Optional contextual display name for this inclusion within its directly related parent."
             }
           },
           "description": "Included item restricted to a child edition ID or materials. Physical child editions require a physical containing edition; digital child editions require a digital containing edition. Optional parentEditionIds restricts membership to those containing editions. Never grant ownership of other editions."
@@ -365,6 +382,26 @@
       "type": "string",
       "pattern": "^(?!(?:item|bundle)$)[a-z0-9]+(?:-[a-z0-9]+)*$",
       "description": "Permanent readable release ID, unique within its item. Assign once; retain it when labels, names, or other facts change. The item and bundle IDs are reserved for synthetic editions."
+    },
+    "completionAlternative": {
+      "type": "object",
+      "required": ["all"],
+      "additionalProperties": false,
+      "properties": {
+        "all": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/editionReference" },
+          "description": "All referenced editions are required for this content coverage recipe."
+        }
+      }
+    },
+    "editionReference": {
+      "type": "object",
+      "required": ["item", "editionId"],
+      "additionalProperties": false,
+      "properties": { "item": { "type": "string", "minLength": 1 }, "editionId": { "$ref": "#/$defs/editionId" } }
     },
     "shop": {
       "enum": ["in-stock", "out-of-stock", "missing"],

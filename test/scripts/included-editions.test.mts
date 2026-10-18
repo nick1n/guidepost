@@ -29,7 +29,7 @@ function catalog(): Catalog {
         kind: "accessory",
         accessoryType: "other",
         editions: [
-          { id: "1-6-included", label: "1.6", format: "physical", prices: [0], releaseDate: "2021-11-26", includedOnly: true },
+          { id: "1-6-included", label: "1.6", format: "physical", releaseDate: "2021-11-26", includedOnly: true },
           { id: "1-6", label: "1.6", format: "physical", prices: [4000], releaseDate: "2021-12-16", handle: "rulebook" },
         ],
       },
@@ -61,6 +61,9 @@ test("duplicate labels retain ID-based references, uniqueness checks, and chrono
     await writeFile(schemaPath, await readFile("static/kdm/catalog/data.schema.json", "utf8"));
     const data = catalog();
     expect((await validateCatalog(data, schemaPath)).editions).toBe(3);
+    const fakePrice = structuredClone(data);
+    fakePrice.accessories.rulebook!.editions![0]!.prices = [0];
+    await expect(validateCatalog(fakePrice, schemaPath)).rejects.toThrow("Catalog schema errors");
     const unconfirmed = structuredClone(data);
     delete unconfirmed.accessories.rulebook!.editions![0]!.includedOnly;
     expect((await validateCatalog(unconfirmed, schemaPath)).editions).toBe(3);
@@ -113,7 +116,7 @@ test("shared listings never make included editions purchasable or ambiguous for 
   expect(standalone!.available).toBe(true);
 });
 
-test("catalog updates preserve included component identity, price, and facts", () => {
+test("catalog updates preserve included component identity and facts without inventing a price", () => {
   const data = catalog();
   const included = structuredClone(data.accessories.rulebook!.editions![0]!);
   const tags = Object.fromEntries(
@@ -129,6 +132,7 @@ test("catalog updates preserve included component identity, price, and facts", (
     tags,
   );
   expect(result.catalog.accessories.rulebook!.editions!.find((edition) => edition.id === included.id)).toEqual(included);
+  expect(result.catalog.accessories.rulebook!.editions!.find((edition) => edition.id === included.id)?.prices).toBeUndefined();
   expect(result.catalog.accessories.rulebook!.editions!.find((edition) => edition.id === "1-6")?.prices).toEqual([4500]);
 });
 

@@ -16,10 +16,21 @@ const primaryKey = collectionKey(mapped.primary.contentId, mapped.primary.editio
 
 it.effect("exports and restores a versioned collection with stable edition IDs", () =>
   Effect.gen(function* () {
-    const entries = { [primaryKey]: { owned: true, wished: false, copyNumber: 42 } };
+    const entries = { [primaryKey]: { owned: true, copyNumber: 42 } };
     const json = yield* encodeBackup(entries, data);
     assert.deepEqual(JSON.parse(json), { formatVersion: 1, entries });
     assert.deepEqual(yield* decodeBackup(json, data), entries);
+  }),
+);
+
+it.effect("backup boundaries omit false flags and empty entries", () =>
+  Effect.gen(function* () {
+    const second = workbookMap.rows.find((row) => row.primary.contentId !== mapped.primary.contentId)!;
+    const secondKey = collectionKey(second.primary.contentId, second.primary.editionId);
+    const entries = { [primaryKey]: { owned: true, wished: false, missing: false }, [secondKey]: { owned: false } };
+    const sparse = { [primaryKey]: { owned: true } };
+    assert.deepEqual(JSON.parse(yield* encodeBackup(entries, data)).entries, sparse);
+    assert.deepEqual(yield* decodeBackup(JSON.stringify({ formatVersion: 1, entries }), data), sparse);
   }),
 );
 

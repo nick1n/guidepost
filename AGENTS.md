@@ -41,6 +41,10 @@ Before adding a constants-only module, check `src/lib/constants.ts` and existing
 
 Use Svelte 5 runes and callback props.
 
+Before UI-affecting refactors, capture the current working-tree behavior and screenshots, including uncommitted user changes. Preserve
+copy, controls, and styling outside the requested scope; verify the same scenarios afterward. Restore regressions from that baseline,
+not from memory or an older commit.
+
 Use event shorthand when a local handler matches the attribute, including on `<svelte:window>` and `<svelte:document>`. Name handlers used by only one binding after that event. Keep explicit attributes for argument passing, event transformations, propagation control, or shared/imported handlers with meaningful names. Do not rename domain handlers to force shorthand. Move multiline inline handlers into `<script>`.
 
 Use `$effect` only for external synchronization that cannot happen in an event handler; explain why in a preceding comment. Otherwise use derived values or handlers.
@@ -133,6 +137,10 @@ editor schema by hand. Workbook publication guards its captured catalog, import 
 
 Keep item fields alphabetical, edition fields starting with `id` then `label`, and inclusion-object fields starting with `item`; remaining fields are alphabetical. Use `orderItemFields`/`organizeCatalog` in `scripts/catalog/order.mts`. Preserve category/item ordering and edition/other array ordering. Keep `includes` on parents: `editionId` resolves on the child item and `parentEditionIds` on the containing item. Derive reverse membership.
 
+Product ownership is explicit; never infer it from included components, equivalences, or upgrade recipes. Inclusion lists may be partial
+and support listed-content progress and bundle savings. Use `Collection.toggleEditionOwned` for product checkboxes,
+`Collection.toggleIncludedOwned` for included-content controls, and `Collection.setEditionOwned` for explicit acquisitions.
+
 Keep catalog-derived helpers in `src/lib/kdm-data.ts` or `src/lib/catalog-view.ts`, not duplicated in components. `CollectionBrowsing`
 owns browsing and URL transitions; `CollectionCards` owns card collapse, deferred rendering, viewport observation, and held-card scroll
 anchoring. The collection page disposes card resources on unmount and owns focus, gestures, and navigation.
@@ -171,9 +179,11 @@ Preserve direct owner edits and reviewed facts.
 - Gameplay defaults to false; store item `gameplay` only when true and edition overrides only when different.
   Beta belongs on editions as `beta: true`, without beta ID prefixes. Item badges aggregate all editions.
   Bundle gameplay respects included editions and their overrides.
-- Edition prices are integer cents in `prices` arrays (recorded sales plus current MSRP, maximum is MSRP). Missing is unknown;
-  `[0]` is a known zero price. Included Plastic components use `[0]` and `includedOnly: true`, preserving sold resin/Naked
-  editions. Items whose editions are all included-only belong in included-only; mixed items stay in content.
+- Edition prices are integer cents in `prices` arrays (recorded sales plus current MSRP, maximum is MSRP). Missing prices on products
+  are unknown; `[0]` is a known zero price. Genuine non-sale components use `includedOnly: true` with no `prices` field.
+  Reuse reviewed identical content through `includes` instead of creating another edition to suppress its price. Simple products may
+  represent their own contents; keep distinct content editions for actual differences. Items whose editions are all included-only
+  belong in included-only; mixed items stay in content.
 - Exact release dates use edition `releaseDate`; windows use `releaseWindow`, quarters as `YYYY Qn`. Earlier documented releases
   take precedence over restock dates. Undated Encore without a window inherits First Run or Deathgrey.
   Future Box releases use `Preorder` and Plastic material; items with any future release retain `upcoming`.
@@ -218,7 +228,7 @@ Collection -> OptimisticStore -> DexieStore (CollectionStore)
 - `DexieStore` reads and writes complete snapshots scoped to one owner in IndexedDB. It applies changed rows and removals with the revision check and update in one transaction. The `ownerId` index serves snapshot reads; entry primary keys serve writes. Load Dexie only inside browser initialization. Metadata schema version 1 validates the stored shape and is not a migration. Keep storage details out of `Collection`.
 - `CollectionStore.changes` optionally reports stale snapshots. `DexieStore` uses metadata `liveQuery` subscriptions with Effect finalizers. `Collection.observeChanges()` blocks edits and offers explicit refresh without replacing optimistic state. Observations never advance the expected write revision; local saves must not report themselves as stale.
 - Observer failures set a load error and block edits while preserving the snapshot. The layout forwards `Collection.canObserve` to `CollectionSession`, which owns startup, scoped monitoring, and teardown. Keep healthy monitoring active during refresh and restart failed monitoring only after a successful retry. Interrupt the subscription before closing Dexie. A storage-module download failure has no store to retry; offer a page reload.
-- Collection state stores `owned`, `wished`, and numeric `copyNumber` (integers 1 through 9999, bounded by a known run size) under stable content and edition IDs. Never key entries by mutable labels.
+- Store `owned`, `wished`, component `missing` overrides, and `copyNumber` under stable content and edition IDs. Copy numbers are integers 1 through 9999, bounded by known run size. Keep product ownership separate from derived coverage; omit false defaults and delete empty edited entries. See [ownership rules](docs/kdm-architecture.md#product-ownership-and-content-coverage).
 - `OptimisticStore` holds confirmed state plus pending field patches, serializes persistence, and removes failed patches without overwriting newer edits. Only persistence waits in the queue. Batch related updates in one `saveMany()` transaction.
 - Backups validate before replacing a snapshot; workbook imports validate normalized row identities and merge provided fields in one queued save. Exports wait for queued writes and use confirmed data. Keep XLSX controls deferred.
 - Guard asynchronous results and failures against owner/store changes, including backup and workbook validation and export. Superseded operations interrupt before updating the next owner's state or reaching notifications.
@@ -226,8 +236,9 @@ Collection -> OptimisticStore -> DexieStore (CollectionStore)
 - `Notifications` currently uses injected Effect logging; visible toasts are planned. Initialize with `{ success: false }` to avoid startup save announcements.
 - Reusable dialogs use ordinary callbacks and close immediately on confirmation. They own focus, dismissal, and closing-animation guards; the parent owns persistence/workflows. Quick Start assumes core ownership and navigates independently of saving, even on failure.
 
-Client-facing tests live in `test/client/`, using Vitest 5 and the version-aligned `@effect/vitest` adapter. Build and catalog script tests live in `test/scripts/` and import tooling through `#scripts/*`. Prefer `it.effect`, injected services, `Deferred` synchronization, and `TestClock`. Preserve optimistic-update, rollback, interruption, and finalization coverage when refactoring the queue. Keep Dexie snapshot, owner isolation, and stale-revision coverage in `test/client/dexie-store.test.mts`.
-Preserve mixed-cause handling, observer failure/retry, refresh races, and superseded transfer coverage in the collection action, collection, and transfer tests.
+Client-facing tests live in `test/client/`, using Vitest 5 and the version-aligned `@effect/vitest` adapter. Build and catalog script tests live
+in `test/scripts/` and import tooling through `#scripts/*`. Prefer `it.effect`, injected services, `Deferred`, and `TestClock`.
+Preserve existing regression coverage when refactoring.
 
 ## PWA and service worker
 

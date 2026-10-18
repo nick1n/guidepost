@@ -91,10 +91,10 @@
 <style>
   .rail {
     display: flex;
-    gap: var(--tag-gap, 0.5rem);
+    gap: var(--tag-gap, 0.25rem);
     min-inline-size: 0;
     overflow-x: auto;
-    margin-inline: var(--tag-margin, -0.75rem);
+    margin-inline: var(--tag-margin, 0);
     padding: var(--tag-rail-padding, 0.25rem 0.75rem);
     cursor: grab;
     scrollbar-width: none;

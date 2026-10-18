@@ -15,7 +15,7 @@ Planned gameplay uses an action history; collection tracking, campaign managemen
 | Preferences         | Account and device settings                                      | None                    |
 | Catalog             | Bundled, versioned reference data                                | None                    |
 
-The `/kdm/collection/` page saves owned, wished, and numeric `copyNumber` values locally. Copy numbers are integers from 1 to 9999,
+The `/kdm/collection/` page saves owned, wished, component missing overrides, and numeric `copyNumber` values locally. Copy numbers are integers from 1 to 9999,
 bounded by a known run size. Entries use compound content/edition keys. Explicit edition IDs are permanent lowercase kebab-case,
 unique within each item, and independent of labels or other mutable facts. Edition-less items use `item`, or `bundle` for bundles.
 See the [catalog guide](kdm-catalog.md) for authoring rules.
@@ -40,7 +40,8 @@ or another owner's collection.
 
 The root layout provides one `Collection` per app instance through Svelte context. It owns commands, derived totals and coverage,
 load/save errors, and pending-write status. Components run commands through `collectionActions`; injected notifications use Effect
-logging. Bundle ownership commands continue to propagate to included editions.
+logging. Ownership commands record selected acquisitions; included content coverage is derived. Collection value sums catalog
+prices of directly owned products, excluding included-only components.
 
 The root initializes an empty catalog. Quick Start imports generated `src/lib/gen/core-editions.json`: playable core IDs and labels
 in catalog order, excluding Resin. The collection route loads the full catalog without replacing ownership or pending saves.
@@ -60,6 +61,28 @@ The mapping loads on demand; XLSX adapters and controls remain future work.
 Metadata schema version 1 validates records; it is separate from Dexie's database version and provides no migration.
 The collection queue has no durable undo. After release, table/index changes need Dexie upgrades, and incompatible records need a
 compatibility or migration policy with preservation tests.
+
+## Product ownership and content coverage
+
+Product checkboxes, badges, filters, counts, and value use recorded `owned` values. Included rows use derived `coverage` from acquisitions,
+inclusions, equivalences, and `completedBy` recipes. Each recipe requires all references; alternatives are independent. Coverage never records
+ownership or supplies new contents. Inclusion lists may be partial, so progress counts only listed contents.
+
+`toggleEditionOwned()` and `setEditionOwned()` clear the product's missing override. Checking also clears its wish and exact included
+descendants' missing overrides in one save, without recording child acquisitions. Unchecking preserves descendants and their overrides.
+Missing components do not change product ownership.
+
+`toggleIncludedOwned()` clears component ownership when unchecked, keeping `missing: true` only if another source still covers it.
+Checking removes the override, restoring coverage or recording an acquisition if needed. Missing overrides block the exact edition
+and its supplied descendants; independent sources can still supply those descendants.
+
+Saved edits omit false defaults and absent copy numbers, deleting empty entries. Patches retain false values to clear fields;
+loading never rewrites snapshots. JSON backups preserve overrides; workbook exports reject unrepresentable values.
+
+Bundle savings price uncovered listed contents, deduplicating shared contents and descendants of listed boxes. Unknown prices or unavailable
+standalone products prevent savings calculations. An edition uses its own price, or an explicit reviewed `priceFrom` reference to
+one priced standalone edition on the same item. Missing prices never trigger a search through equivalent or similar releases.
+Price references apply only to bundle comparisons and do not grant ownership or content equivalence.
 
 ## Domain relationships
 

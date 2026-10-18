@@ -92,7 +92,7 @@ it.effect("snapshot saves preserve untouched entries and fields", () =>
     yield* f.release(0);
     assert.ok(Exit.isSuccess(yield* finish(edit)));
     assert.deepEqual(f.disk, {
-      core: { owned: true, copyNumber: 16, wished: false },
+      core: { owned: true, copyNumber: 16 },
       dice: { wished: true },
     });
   }),
@@ -110,11 +110,55 @@ it.effect("clearing a copy number removes its key from optimistic and saved snap
   }),
 );
 
+it.effect("false patches remove empty rows without clearing untouched legacy data", () =>
+  Effect.gen(function* () {
+    const legacy = { owned: false, wished: false };
+    const f = yield* fixture({ core: { owned: true, missing: true }, legacy });
+    const edit = yield* start(f.writer.saveMany({ core: { owned: false, missing: false } }));
+    assert.deepEqual(f.visible, { legacy });
+    yield* f.started(0);
+    yield* f.release(0);
+    yield* finish(edit);
+    assert.deepEqual(f.disk, { legacy });
+  }),
+);
+
+it.effect("an explicit false patch survives an earlier failure even when its optimistic row disappears", () =>
+  Effect.gen(function* () {
+    const f = yield* fixture({ core: { wished: true } }, [0]);
+    const first = yield* start(f.writer.saveMany({ core: { owned: true, wished: false } }));
+    yield* f.started(0);
+    const second = yield* start(f.writer.saveMany({ core: { owned: false, wished: false } }));
+    assert.deepEqual(f.visible, {});
+    yield* f.release(0);
+    assert.ok(Exit.isFailure(yield* finish(first)));
+    yield* f.started(1);
+    assert.deepEqual(f.visible, {});
+    yield* f.release(1);
+    yield* finish(second);
+    assert.deepEqual(f.disk, {});
+  }),
+);
+
+it.effect("a failed row removal restores the confirmed sparse entry", () =>
+  Effect.gen(function* () {
+    const initial = { core: { owned: true } };
+    const f = yield* fixture(initial, [0]);
+    const edit = yield* start(f.writer.saveMany({ core: { owned: false } }));
+    assert.deepEqual(f.visible, {});
+    yield* f.started(0);
+    yield* f.release(0);
+    assert.ok(Exit.isFailure(yield* finish(edit)));
+    assert.deepEqual(f.visible, initial);
+    assert.deepEqual(f.disk, initial);
+  }),
+);
+
 it.effect("a failed copy number clear restores the confirmed number", () =>
   Effect.gen(function* () {
     const f = yield* fixture({ core: { copyNumber: 42 } }, [0]);
     const edit = yield* start(f.writer.saveMany({ core: { copyNumber: undefined } }));
-    assert.deepEqual(f.visible, { core: {} });
+    assert.deepEqual(f.visible, {});
     yield* f.started(0);
     yield* f.release(0);
     assert.ok(Exit.isFailure(yield* finish(edit)));
@@ -217,11 +261,11 @@ it.effect("a failed earlier edit does not erase newer edits or leak into their s
     yield* f.release(0);
     assert.ok(Exit.isFailure(yield* finish(first)));
     yield* f.started(1);
-    assert.equal(f.visible.core.owned, false);
+    assert.equal(f.visible.core.owned, undefined);
     assert.equal(f.visible.core.wished, true);
     yield* f.release(1);
     assert.ok(Exit.isSuccess(yield* finish(second)));
-    assert.deepEqual(f.disk, { core: { owned: false, wished: true }, dice: { owned: true } });
+    assert.deepEqual(f.disk, { core: { wished: true }, dice: { owned: true } });
   }),
 );
 

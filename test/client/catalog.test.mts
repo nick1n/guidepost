@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { collectionKey } from "#lib/types/collection.ts";
+import { collectionKey, type CollectionSnapshot } from "#lib/types/collection.ts";
 import catalog from "#catalog/data.json";
 import { catalogTags, editionGameplay, editionLabel, editionMaterials } from "#lib/kdm-data.ts";
 import {
@@ -9,34 +9,498 @@ import {
   reviewEntries,
   reviewGameplayFirst,
   reviewIndex,
+  reviewPrice,
   reviewShopLink,
   reviewShopUrl,
   type ReviewCatalog,
   type ReviewItem,
 } from "#lib/catalog-view.ts";
 
-describe("review catalog facts", () => {
-  it("completes Core 1.6 from Core 1.5 plus a standalone 1.6 rulebook without granting Sim or a second box", () => {
+function coverageFixture(): ReviewCatalog {
+  return {
+    content: {
+      core: {
+        name: "Core",
+        tags: [],
+        editions: [
+          { id: "1-5", label: "1.5", format: "physical" },
+          {
+            id: "1-6",
+            label: "1.6",
+            format: "physical",
+            completedBy: [
+              {
+                all: [
+                  { item: "core", editionId: "1-5" },
+                  { item: "upgrade-pack", editionId: "i" },
+                ],
+              },
+            ],
+          },
+          { id: "sim", label: "Sim", format: "digital", simulator: true },
+        ],
+      },
+      "upgrade-pack": {
+        name: "Upgrade pack",
+        tags: [],
+        kind: "gameplay-content",
+        editions: [
+          { id: "i", label: "I", format: "physical" },
+          { id: "ii", label: "II", format: "physical" },
+        ],
+      },
+      book: {
+        name: "Rulebook",
+        tags: [],
+        editions: [
+          { id: "1-5", label: "1.5", format: "physical" },
+          { id: "1-6", label: "1.6", format: "physical" },
+          { id: "1-6-included", label: "1.6", equivalentTo: "1-6", format: "physical", includedOnly: true },
+        ],
+      },
+    },
+    bundles: {
+      set: {
+        name: "Set",
+        tags: [],
+        includes: [
+          { item: "core", editionId: "1-6" },
+          { item: "upgrade-pack", editionId: "i" },
+        ],
+      },
+    },
+    accessories: {},
+    homebrew: {},
+    "included-only": {},
+  } as ReviewCatalog;
+}
+
+function pricingFixture(): ReviewCatalog {
+  return {
+    content: {
+      model: {
+        name: "Model",
+        price: 9999,
+        tags: [],
+        editions: [
+          { id: "included", label: "Plastic", format: "physical", materials: ["Plastic"], includedOnly: true },
+          { id: "sold", label: "Plastic", format: "physical", materials: ["Plastic"], prices: [2000, 2500] },
+          { id: "cheaper", label: "Plastic", format: "physical", equivalentTo: "sold", prices: [1000] },
+          { id: "unpriced", label: "Plastic", format: "physical", equivalentTo: "sold" },
+        ],
+      },
+    },
+    bundles: { set: { name: "Set", tags: [], price: 1000, includes: [{ item: "model", editionId: "included" }] } },
+    accessories: {},
+    homebrew: {},
+    "included-only": {},
+  };
+}
+
+describe("edition coverage", () => {
+  it("keeps the reviewed sold Naked editions without duplicate included Plastic editions", () => {
     const index = reviewIndex(catalog as ReviewCatalog);
-    const core = index.byId.get("core")!;
-    const original = core.editions!.find((edition) => edition.id === "1-5")!;
-    const owned = new Set(index.ownershipKeys([{ item: core, edition: original }]));
-    const complete = (editionId: string) => {
-      const children = index.includedEditions(core.id, editionId, false);
-      return (
-        children.filter((child) =>
-          reviewEquivalentEditions(child.item, child.edition).some((edition) => owned.has(collectionKey(child.item.id, edition.id))),
-        ).length === children.length
-      );
+    const retained = new Set([
+      "armor-kit-cycloid-scale",
+      "armor-kit-dragon-king",
+      "armor-kit-gorment",
+      "armor-kit-green-knight",
+      "armor-kit-lantern",
+      "armor-kit-leather",
+      "armor-kit-phoenix",
+      "armor-kit-rawhide",
+      "armor-kit-screaming",
+      "armor-kit-spider-silk",
+      "armor-kit-unarmored",
+      "armor-kit-white-lion",
+    ]);
+    const kits = [...retained].map((id) => index.byId.get(id)!);
+    expect(kits.every(Boolean)).toBe(true);
+    expect(
+      index.entries.filter((item) => item.kind === "armor-kit" && item.editions?.some((edition) => edition.id === "naked")),
+    ).toHaveLength(12);
+    for (const item of kits) {
+      const naked = item.editions!.find((edition) => edition.id === "naked");
+      expect(naked, item.id).toBeDefined();
+      expect(naked!.includedOnly, item.id).toBeUndefined();
+      expect(naked!.prices?.length, item.id).toBeGreaterThan(0);
+      expect(
+        item.editions!.some((edition) => edition.id === "plastic"),
+        item.id,
+      ).toBe(false);
+    }
+    expect(
+      index.entries.filter(
+        (item) => item.kind === "armor-kit" && item.editions?.some((edition) => edition.id === "plastic" && edition.includedOnly),
+      ).length,
+    ).toBeGreaterThan(0);
+  });
+
+  it("does not encode included-only editions as zero-priced products", () => {
+    const index = reviewIndex(catalog as ReviewCatalog);
+    for (const item of index.entries) {
+      for (const edition of item.editions ?? []) {
+        if (edition.includedOnly) expect(edition.prices).not.toEqual([0]);
+      }
+    }
+  });
+  it("covers live gameplay upgrades without synthesizing later physical Core or expansion products", () => {
+    const index = reviewIndex(catalog as ReviewCatalog);
+    const keys = (id: string, editionId: string) => {
+      const item = index.byId.get(id)!;
+      const edition = item.editions!.find((release) => release.id === editionId)!;
+      return index.ownershipKeys([{ item, edition }]);
     };
-    expect(complete("1-5")).toBe(true);
-    expect(complete("1-6")).toBe(false);
-    owned.add(collectionKey("kingdom-death-monster-rulebook", "1-6"));
-    expect(complete("1-5")).toBe(true);
-    expect(complete("1-6")).toBe(true);
-    expect(owned.has(collectionKey("core", "1-6"))).toBe(false);
-    expect(owned.has(collectionKey("core", "sim"))).toBe(false);
-    expect(owned.has(collectionKey("kingdom-death-monster-rulebook", "1-3-included"))).toBe(false);
+    const base = Object.fromEntries(
+      [...keys("core", "1-5"), ...keys("expansion-dung-beetle-knight", "1-3")].map((key) => [key, { owned: true }]),
+    );
+    expect(index.coverage(base).edition("core", "1-6").available).toBe(false);
+    const upgraded = { ...base, ...Object.fromEntries(keys("legendary-card-pack", "1").map((key) => [key, { owned: true }])) };
+    const result = index.coverage(upgraded);
+    expect(result.edition("core", "1-5").available).toBe(true);
+    expect(result.edition("core", "1-6").available).toBe(false);
+    expect(result.edition("core-gameplay", "1-6").available).toBe(true);
+    expect(result.edition("expansion-dung-beetle-knight", "1-3").available).toBe(true);
+    expect(result.edition("expansion-dung-beetle-knight", "1-6").available).toBe(false);
+    expect(result.edition("dung-beetle-knight-gameplay", "1-6").available).toBe(true);
+    expect(result.edition("expansion-dung-beetle-knight", "1-7").available).toBe(false);
+    expect(result.edition("core", "sim").available).toBe(false);
+    expect(upgraded[collectionKey("core", "1-6")]).toBeUndefined();
+    const missingUpdate = index.coverage({
+      ...upgraded,
+      [collectionKey("dung-beetle-knight-upgrade", "1-6")]: { owned: true, missing: true },
+    });
+    expect(missingUpdate.edition("expansion-dung-beetle-knight", "1-6").available).toBe(false);
+    expect(missingUpdate.edition("expansion-dung-beetle-knight", "1-3").available).toBe(true);
+    expect(missingUpdate.edition("core-gameplay", "1-6").available).toBe(true);
+    const missingBookUpdate = index.coverage({
+      ...upgraded,
+      [collectionKey("core-rulebook-upgrade", "1-6")]: { owned: true, missing: true },
+    });
+    expect(missingBookUpdate.edition("core", "1-6").available).toBe(false);
+    expect(missingBookUpdate.edition("core-gameplay", "1-6").available).toBe(true);
+    expect(missingBookUpdate.edition("kingdom-death-monster-rulebook", "1-6-included").available).toBe(false);
+    expect(result.edition("kingdom-death-monster-rulebook", "1-6").available).toBe(true);
+    expect(result.edition("kingdom-death-monster-rulebook", "1-6-included").available).toBe(false);
+  });
+
+  it("limits Legendary Card Pack I expansion updates to the six reviewed gameplay differences", () => {
+    const index = reviewIndex(catalog as ReviewCatalog);
+    const changed = new Set(["dung-beetle-knight", "dragon-king", "lonely-tree", "lion-knight", "sunstalker", "flower-knight"]);
+    const unchanged = ["gorm", "green-knight-armor", "lion-god", "manhunter", "slenderman", "spidicules"];
+    const pack = index.byId.get("legendary-card-pack")!;
+    const updates = Object.fromEntries(
+      index
+        .ownershipKeys([{ item: pack, edition: pack.editions!.find((edition) => edition.id === "1")! }])
+        .map((key) => [key, { owned: true }]),
+    );
+    for (const name of [...changed, ...unchanged]) {
+      const id = `${name}-gameplay`;
+      const base = { [collectionKey(id, "1-3")]: { owned: true } };
+      expect(index.coverage(base).edition(id, "1-6").available, name).toBe(!changed.has(name));
+      expect(index.coverage({ ...base, ...updates }).edition(id, "1-6").available, name).toBe(true);
+      expect(index.coverage(updates).edition(id, "1-6").available, name).toBe(false);
+      if (!changed.has(name)) {
+        expect(index.byId.has(`${name}-upgrade`)).toBe(false);
+        expect(index.coverage({ [collectionKey(id, "1-6")]: { owned: true } }).edition(id, "1-3").available).toBe(true);
+      }
+    }
+    expect(index.includedEditions(pack.id, "1", false)).toHaveLength(13);
+    expect(index.includedEditions(pack.id, "2", false)).toHaveLength(0);
+  });
+  it("tracks the five promo gameplay contents from Pack I without granting their miniatures or complete products", () => {
+    const index = reviewIndex(catalog as ReviewCatalog);
+    const pack = index.byId.get("legendary-card-pack")!;
+    const owned = Object.fromEntries(
+      index
+        .ownershipKeys([{ item: pack, edition: pack.editions!.find((edition) => edition.id === "1")! }])
+        .map((key) => [key, { owned: true }]),
+    );
+    const result = index.coverage(owned);
+    const ids = [
+      "allison-the-twilight-knight",
+      "white-speaker-koshka",
+      "holiday-white-speaker-nico",
+      "set-pinups-of-death-series-2",
+      "beyond-the-wall",
+    ];
+    for (const id of ids) {
+      const gameplayId = `${id.replace(/^set-/, "")}-gameplay`;
+      expect(result.edition(gameplayId, "original").available, id).toBe(true);
+      expect(result.edition(id, "box").available, id).toBe(false);
+      const children = result.contents(id, "box");
+      expect(children.exactCount, id).toBe(1);
+      expect(children.children.length, id).toBeGreaterThan(1);
+      const item = index.byId.get(id)!;
+      for (const edition of item.editions!.filter((edition) => edition.gameplay === false)) {
+        expect(
+          index.includedEditions(id, edition.id).some((child) => child.item.id === gameplayId),
+          `${id}/${edition.id}`,
+        ).toBe(false);
+      }
+      const productKeys = index.ownershipKeys([{ item, edition: item.editions!.find((edition) => edition.id === "box")! }]);
+      expect(productKeys).toEqual([collectionKey(id, "box")]);
+      expect(index.includedEditions(pack.id, "2").some((child) => child.item.id === gameplayId)).toBe(false);
+    }
+    const missing = index.coverage({
+      ...owned,
+      [collectionKey("allison-the-twilight-knight-gameplay", "original")]: { owned: true, missing: true },
+    });
+    expect(missing.edition("allison-the-twilight-knight-gameplay", "original").available).toBe(false);
+    expect(missing.edition("white-speaker-koshka-gameplay", "original").available).toBe(true);
+  });
+  it("requires the listed base and gameplay upgrade, and revokes completion when either disappears", () => {
+    const index = reviewIndex(coverageFixture());
+    const inspect = (snapshot: CollectionSnapshot) => index.coverage(snapshot).edition("core", "1-6");
+    const packOnly = { [collectionKey("upgrade-pack", "i")]: { owned: true } };
+    const complete = {
+      [collectionKey("core", "1-5")]: { owned: true },
+      [collectionKey("upgrade-pack", "i")]: { owned: true },
+    };
+
+    expect(inspect(packOnly)).toMatchObject({ available: false, source: "missing" });
+    expect(inspect(complete)).toMatchObject({ available: true, source: "upgrade" });
+    expect(inspect({ [collectionKey("core", "1-5")]: { owned: true } })).toMatchObject({ available: false, source: "missing" });
+    expect(inspect({ [collectionKey("upgrade-pack", "i")]: { owned: true } })).toMatchObject({ available: false, source: "missing" });
+  });
+
+  it("lets an explicit missing mark override ownership and restores availability when cleared", () => {
+    const index = reviewIndex(coverageFixture());
+    const key = collectionKey("core", "1-6");
+    expect(index.coverage({ [key]: { owned: true, missing: true } }).edition("core", "1-6")).toMatchObject({
+      available: false,
+      source: "missing",
+    });
+    expect(index.coverage({ [key]: { owned: true, missing: false } }).edition("core", "1-6")).toMatchObject({
+      available: true,
+      source: "owned",
+    });
+  });
+
+  it("keeps upgrade recipes edition-specific and treats Sim as a separate edition", () => {
+    const index = reviewIndex(coverageFixture());
+    const snapshot = {
+      [collectionKey("core", "1-5")]: { owned: true },
+      [collectionKey("upgrade-pack", "ii")]: { owned: true },
+    };
+    const coverage = index.coverage(snapshot);
+    expect(coverage.edition("core", "1-6")).toMatchObject({ available: false, source: "missing" });
+    expect(coverage.edition("core", "sim")).toMatchObject({ available: false, source: "missing" });
+  });
+
+  it("recognizes an explicitly equivalent included rulebook", () => {
+    const index = reviewIndex(coverageFixture());
+    expect(index.coverage({ [collectionKey("book", "1-6-included")]: { owned: true } }).edition("book", "1-6")).toMatchObject({
+      available: true,
+      source: "equivalent",
+    });
+  });
+
+  it.each([
+    {
+      source: "owned",
+      owned: [
+        ["book", "1-6"],
+        ["book", "1-6-included"],
+      ],
+      via: ["book", "1-6"],
+    },
+    {
+      source: "included",
+      owned: [
+        ["set", "bundle"],
+        ["book", "1-6-included"],
+      ],
+      via: ["set", "bundle"],
+    },
+    { source: "equivalent", owned: [["book", "1-6-included"]], via: ["book", "1-6-included"] },
+    { source: "upgrade", owned: [], via: ["upgrade-pack", "i"] },
+  ] as const)("prefers $source coverage over lower-priority sources", ({ source, owned, via }) => {
+    const data = coverageFixture();
+    data.bundles.set.includes = [{ item: "book", editionId: "1-6" }];
+    data.content.book.editions![1]!.completedBy = [{ all: [{ item: "upgrade-pack", editionId: "i" }] }];
+    const snapshot = Object.fromEntries(
+      [...owned, ["upgrade-pack", "i"] as const].map(([id, editionId]) => [collectionKey(id, editionId), { owned: true }]),
+    );
+    const result = reviewIndex(data).coverage(snapshot).edition("book", "1-6");
+    expect(result).toMatchObject({ available: true, source });
+    expect(result.via.map(({ item, edition }) => [item.id, edition.id])).toEqual([via]);
+  });
+
+  it("skips cyclic and unresolved recipes before trying an independently satisfied alternative", () => {
+    const data = coverageFixture();
+    data.content.core.editions![1]!.completedBy = [{ all: [{ item: "book", editionId: "1-6" }] }];
+    data.content.book.editions![1]!.completedBy = [
+      { all: [{ item: "core", editionId: "1-6" }] },
+      { all: [{ item: "unknown", editionId: "item" }] },
+      { all: [{ item: "upgrade-pack", editionId: "i" }] },
+    ];
+    const index = reviewIndex(data);
+    expect(index.coverage({}).edition("book", "1-6")).toMatchObject({ available: false, source: "missing" });
+    const result = index.coverage({ [collectionKey("upgrade-pack", "i")]: { owned: true } }).edition("book", "1-6");
+    expect(result).toMatchObject({ available: true, source: "upgrade" });
+    expect(result.via.map(({ item, edition }) => [item.id, edition.id])).toEqual([["upgrade-pack", "i"]]);
+  });
+
+  it("still supplies a shared child through an independent branch when another branch is missing", () => {
+    const data = coverageFixture();
+    data.content.core.includes = [{ item: "upgrade-pack", editionId: "i" }];
+    const coverage = reviewIndex(data).coverage({
+      [collectionKey("set", "bundle")]: { owned: true },
+      [collectionKey("core", "1-6")]: { missing: true },
+    });
+    expect(coverage.edition("core", "1-6").available).toBe(false);
+    const child = coverage.edition("upgrade-pack", "i");
+    expect(child).toMatchObject({ available: true, source: "included" });
+    expect(child.via.map(({ item, edition }) => [item.id, edition.id])).toEqual([["set", "bundle"]]);
+  });
+
+  it("shares derived completion with equivalent copies and respects a missing override on the requested copy", () => {
+    const data = coverageFixture();
+    data.content.book.editions![1]!.completedBy = [{ all: [{ item: "upgrade-pack", editionId: "i" }] }];
+    const index = reviewIndex(data);
+    const snapshot = { [collectionKey("upgrade-pack", "i")]: { owned: true } };
+    expect(index.coverage(snapshot).edition("book", "1-6-included").available).toBe(true);
+    expect(
+      index.coverage({ ...snapshot, [collectionKey("book", "1-6-included")]: { missing: true } }).edition("book", "1-6-included").available,
+    ).toBe(false);
+  });
+
+  it("does not synthesize product coverage from all listed children or a partial inclusion list", () => {
+    const data = coverageFixture();
+    data.content.book.includes = [{ item: "upgrade-pack", editionId: "i" }];
+    const child = collectionKey("upgrade-pack", "i");
+    const parent = collectionKey("book", "1-6");
+    const children = { [child]: { owned: true } };
+    const index = reviewIndex(data);
+    expect(index.coverage(children).edition("book", "1-6").available).toBe(false);
+    expect(index.coverage(children).contents("book", "1-6")).toMatchObject({ exactCount: 1, count: 1 });
+    expect(index.coverage({ [parent]: { owned: true } }).edition("book", "1-6").available).toBe(true);
+    expect(index.coverage({ [parent]: { owned: true }, [child]: { missing: true } }).edition("book", "1-6").available).toBe(true);
+    expect(index.coverage(children).edition("book", "1-6-included").available).toBe(false);
+
+    const fullSet = {
+      [collectionKey("core", "1-6")]: { owned: true },
+      [child]: { owned: true },
+    };
+    expect(index.coverage(fullSet).contents("set", "bundle")).toMatchObject({ exactCount: 2, count: 2 });
+    expect(index.coverage(fullSet).edition("set", "bundle").available).toBe(false);
+  });
+
+  it("resolves nested bundle contents without writing derived ownership into the snapshot", () => {
+    const data = coverageFixture();
+    data.content.core.includes = [{ item: "upgrade-pack", editionId: "i", parentEditionIds: ["1-6"] }];
+    const index = reviewIndex(data);
+    const snapshot: CollectionSnapshot = {
+      [collectionKey("core", "1-5")]: { owned: true },
+      [collectionKey("upgrade-pack", "i")]: { owned: true },
+    };
+    const before = structuredClone(snapshot);
+    const coverage = index.coverage(snapshot);
+    expect(coverage.edition("core", "1-6")).toMatchObject({ available: true, source: "upgrade" });
+    expect(coverage.edition("set", "bundle")).toMatchObject({ available: false, source: "missing" });
+    expect(coverage.contents("set", "bundle")).toMatchObject({ exactCount: 2, count: 2 });
+    expect(snapshot).toEqual(before);
+    expect(snapshot[collectionKey("set", "bundle")]).toBeUndefined();
+  });
+
+  it("uses direct ownership keys while deriving recursive included ownership from the snapshot", () => {
+    const data = coverageFixture();
+    data.content.core.includes = [{ item: "upgrade-pack", editionId: "i", parentEditionIds: ["1-6"] }];
+    data.bundles.set.includes = [{ item: "core", editionId: "1-6" }];
+    const index = reviewIndex(data);
+    const set = index.byId.get("set")!;
+    const bundleEdition = set.editions![0]!;
+    const selected = index.ownershipKeys([{ item: set, edition: bundleEdition }]);
+    expect(selected).toEqual([collectionKey("set", "bundle")]);
+
+    const snapshot = { [selected[0]!]: { owned: true } };
+    const coverage = index.coverage(snapshot);
+    expect(coverage.edition("core", "1-6").available).toBe(true);
+    expect(coverage.edition("upgrade-pack", "i")).toMatchObject({
+      available: true,
+      source: "included",
+      via: [{ item: { id: "set" }, edition: { id: "bundle" } }],
+    });
+    expect(coverage.owners("upgrade-pack", "i")).toEqual([
+      { parentId: "set", parentEditionId: "bundle", parent: "Set", parentEdition: "Bundle", editionId: "i" },
+    ]);
+    expect(coverage.contents("set", "bundle").exactCount).toBe(1);
+    expect(snapshot[collectionKey("core", "1-6")]).toBeUndefined();
+    expect(snapshot[collectionKey("upgrade-pack", "i")]).toBeUndefined();
+  });
+
+  it("blocks a missing nested branch locally while retaining the recorded parent and other-edition labels", () => {
+    const data = coverageFixture();
+    data.content.core.includes = [{ item: "upgrade-pack", editionId: "i", parentEditionIds: ["1-6"] }];
+    data.bundles.set.includes = [{ item: "core", editionId: "1-6" }];
+    const index = reviewIndex(data);
+    const snapshot = {
+      [collectionKey("set", "bundle")]: { owned: true },
+      [collectionKey("core", "1-6")]: { missing: true },
+      [collectionKey("core", "1-5")]: { owned: true },
+    };
+    const coverage = index.coverage(snapshot);
+    expect(coverage.edition("set", "bundle")).toMatchObject({ available: true, source: "owned" });
+    expect(coverage.edition("core", "1-6").available).toBe(false);
+    expect(coverage.edition("upgrade-pack", "i").available).toBe(false);
+    expect(coverage.owners("core", "1-6")).toEqual([]);
+    expect(coverage.owners("upgrade-pack", "i")).toEqual([]);
+    const contents = coverage.contents("set", "bundle");
+    expect(contents).toMatchObject({ exactCount: 0, count: 1 });
+    expect(contents.children[0]!.ownedEditions.map((edition) => edition.id)).toEqual(["1-5"]);
+  });
+
+  it("blocks a missing included branch and restores its derived coverage when cleared", () => {
+    const data = coverageFixture();
+    data.content.core.includes = [{ item: "upgrade-pack", editionId: "i", parentEditionIds: ["1-6"] }];
+    data.bundles.set.includes = [{ item: "core", editionId: "1-6" }];
+    const index = reviewIndex(data);
+    const snapshot = {
+      [collectionKey("core", "1-5")]: { owned: true },
+      [collectionKey("upgrade-pack", "i")]: { owned: true, missing: true },
+    };
+    const blocked = index.coverage(snapshot);
+    expect(blocked.edition("core", "1-6").available).toBe(false);
+    expect(blocked.edition("upgrade-pack", "i").available).toBe(false);
+    expect(blocked.edition("set", "bundle").available).toBe(false);
+
+    const restored = index.coverage({ ...snapshot, [collectionKey("upgrade-pack", "i")]: { owned: true, missing: false } });
+    expect(restored.edition("core", "1-6").available).toBe(true);
+    expect(restored.edition("upgrade-pack", "i").available).toBe(true);
+  });
+
+  it("keeps direct included contents and missing overrides separate from automatic upgrade recipes", () => {
+    const data = coverageFixture();
+    data.content.core.includes = [{ item: "upgrade-pack", editionId: "i", parentEditionIds: ["1-6"] }];
+    const index = reviewIndex(data);
+    const rawParent = { [collectionKey("core", "1-6")]: { owned: true } };
+    expect(index.coverage(rawParent).edition("core", "1-6").available).toBe(true);
+    expect(
+      index.coverage({ ...rawParent, [collectionKey("upgrade-pack", "i")]: { owned: false, missing: false } }).edition("core", "1-6")
+        .available,
+    ).toBe(true);
+    const missingChild = index.coverage({ ...rawParent, [collectionKey("upgrade-pack", "i")]: { owned: true, missing: true } });
+    expect(missingChild.edition("core", "1-6").available).toBe(true);
+    expect(missingChild.edition("upgrade-pack", "i").available).toBe(false);
+    expect(missingChild.contents("core", "1-6").exactCount).toBe(0);
+    expect(index.coverage({ [collectionKey("core", "1-5")]: { owned: true } }).edition("core", "1-6").available).toBe(false);
+  });
+});
+
+describe("review catalog facts", () => {
+  it("requires the gameplay-content upgrade to complete Core 1.6", () => {
+    const index = reviewIndex(coverageFixture());
+    const snapshot: CollectionSnapshot = {
+      [collectionKey("core", "1-5")]: { owned: true },
+      [collectionKey("book", "1-6")]: { owned: true },
+    };
+    expect(index.coverage(snapshot).edition("core", "1-6").available).toBe(false);
+
+    const upgraded = { ...snapshot, [collectionKey("upgrade-pack", "i")]: { owned: true } };
+    expect(index.coverage(upgraded).edition("core", "1-6").available).toBe(true);
+    expect(index.coverage(snapshot).edition("core", "sim").available).toBe(false);
+    expect(snapshot[collectionKey("core", "1-6")]).toBeUndefined();
   });
   it("matches explicitly equivalent copies without merging versions or equal labels", () => {
     const item: ReviewItem = {
@@ -172,7 +636,86 @@ describe("review catalog facts", () => {
     expect(indexed.editions![0].id).toBe("core-1-6");
   });
 
-  it("compares bundle prices with direct included editions without counting nested contents twice", () => {
+  it("leaves unreviewed live bundle components unpriced", () => {
+    expect(reviewIndex(catalog as ReviewCatalog).bundlePricing("halloween-trick-or-treat-bag", "plastic")).toEqual({
+      total: 0,
+      missing: 0,
+      unavailable: 7,
+      savings: undefined,
+      percent: undefined,
+    });
+  });
+
+  it.each(["included", "unpriced"])("does not infer a price for the %s edition", (editionId) => {
+    const data = pricingFixture();
+    data.bundles.set.includes = [{ item: "model", editionId }];
+    const item = data.content.model;
+    expect(
+      reviewPrice(
+        item,
+        item.editions!.find((edition) => edition.id === editionId)!,
+      ),
+    ).toBeUndefined();
+    expect(reviewIndex(data).bundlePricing("set", "bundle")).toEqual({
+      total: 0,
+      missing: editionId === "unpriced" ? 1 : 0,
+      unavailable: editionId === "included" ? 1 : 0,
+      savings: undefined,
+      percent: undefined,
+    });
+  });
+
+  it.each(["included", "unpriced"])("uses an explicit price reference only for bundle comparisons of %s", (editionId) => {
+    const data = pricingFixture();
+    const item = data.content.model;
+    const edition = item.editions!.find((edition) => edition.id === editionId)!;
+    edition.priceFrom = "sold";
+    data.bundles.set.includes = [{ item: "model", editionId }];
+    const index = reviewIndex(data);
+    expect(index.bundlePricing("set", "bundle")).toEqual({
+      total: 2500,
+      missing: 0,
+      unavailable: 0,
+      savings: 1500,
+      percent: 60,
+    });
+    expect(reviewPrice(item, edition)).toBeUndefined();
+    if (editionId === "included") {
+      expect(index.coverage({ [collectionKey("model", "sold")]: { owned: true } }).edition("model", editionId).available).toBe(false);
+      expect(index.coverage({ [collectionKey("model", editionId)]: { owned: true } }).edition("model", "sold").available).toBe(false);
+    }
+  });
+
+  it("uses the selected edition's own price rather than a cheaper equivalent", () => {
+    const data = pricingFixture();
+    data.bundles.set.includes = [{ item: "model", editionId: "sold" }];
+    expect(reviewIndex(data).bundlePricing("set", "bundle")?.total).toBe(2500);
+  });
+
+  it("does not follow a price reference beyond its target or search when that target loses its price", () => {
+    const data = pricingFixture();
+    const [included, sold] = data.content.model.editions!;
+    included!.priceFrom = "sold";
+    delete sold!.prices;
+    sold!.priceFrom = "cheaper";
+    expect(reviewIndex(data).bundlePricing("set", "bundle")).toMatchObject({ total: 0, missing: 1, savings: undefined });
+  });
+
+  it("preserves known zero prices through explicit references", () => {
+    const data = pricingFixture();
+    const [included, sold] = data.content.model.editions!;
+    included!.priceFrom = "sold";
+    sold!.prices = [0];
+    expect(reviewIndex(data).bundlePricing("set", "bundle")).toEqual({
+      total: 0,
+      missing: 0,
+      unavailable: 0,
+      savings: -1000,
+      percent: undefined,
+    });
+  });
+
+  it("prices bundle contents by exact edition ownership and reports unavailable or unknown prices", () => {
     const data: ReviewCatalog = {
       content: {
         box: {
@@ -190,21 +733,113 @@ describe("review catalog facts", () => {
           ],
         },
       },
-      bundles: { set: { name: "Set", tags: [], price: 800, includes: [{ item: "box", editionId: "box-plastic" }] } },
+      bundles: {
+        set: { name: "Set", tags: [], price: 800, includes: [{ item: "box", editionId: "box-plastic" }] },
+      },
       "included-only": {},
       accessories: {},
       homebrew: {},
     };
     const index = reviewIndex(data);
-    expect(index.bundlePricing("set", "bundle")).toEqual({ total: 1000, missing: 0, savings: 200, percent: 20 });
-    expect(index.bundlePricing("set", "bundle", new Set(["box"]))).toEqual({ total: 0, missing: 0, savings: -800, percent: undefined });
-    expect(index.bundlePricing("set", "bundle", new Set(["model"]))?.total).toBe(1000);
+    expect(index.bundlePricing("set", "bundle")).toEqual({
+      total: 1000,
+      missing: 0,
+      unavailable: 0,
+      savings: 200,
+      percent: 20,
+    });
+    const exactOwnership = { [collectionKey("box", "box-plastic")]: { owned: true } };
+    expect(index.bundlePricing("set", "bundle", exactOwnership)).toEqual({
+      total: 0,
+      missing: 0,
+      unavailable: 0,
+      savings: -800,
+      percent: undefined,
+    });
+    const otherEdition = { [collectionKey("box", "box-resin")]: { owned: true } };
+    expect(index.bundlePricing("set", "bundle", otherEdition)?.total).toBe(1000);
     expect(index.bundlePricing("set", "bundle")?.total).toBe(1000);
     data.bundles.set.includes!.push({ item: "model", editionId: "missing-edition" });
-    expect(reviewIndex(data).bundlePricing("set", "bundle")).toEqual({ total: 1000, missing: 1, savings: undefined, percent: undefined });
-    expect(reviewIndex(data).bundlePricing("set", "bundle", new Set(["model"]))?.missing).toBe(0);
+    expect(reviewIndex(data).bundlePricing("set", "bundle")).toEqual({
+      total: 1000,
+      missing: 1,
+      unavailable: 0,
+      savings: undefined,
+      percent: undefined,
+    });
     data.content.box.currency = "EUR";
     expect(reviewIndex(data).bundlePricing("set", "bundle")?.savings).toBeUndefined();
+
+    data.bundles.set.includes = [{ item: "model", editionId: "model-sim" }];
+    data.content.model.editions![1]!.includedOnly = true;
+    data.content.model.editions![1]!.prices = undefined;
+    expect(reviewIndex(data).bundlePricing("set", "bundle")).toMatchObject({
+      total: 0,
+      missing: 0,
+      unavailable: 1,
+      savings: undefined,
+    });
+    delete data.content.model.editions![1]!.includedOnly;
+    expect(reviewIndex(data).bundlePricing("set", "bundle")).toMatchObject({
+      total: 0,
+      missing: 1,
+      unavailable: 0,
+      savings: undefined,
+    });
+  });
+
+  it("prices duplicate equivalent references once and does not charge a listed child beneath its parent", () => {
+    const data: ReviewCatalog = {
+      content: {
+        box: {
+          name: "Box",
+          tags: [],
+          editions: [{ id: "box", label: "Box", format: "physical", prices: [1000] }],
+          includes: [{ item: "model", editionId: "plastic" }],
+        },
+        model: {
+          name: "Model",
+          tags: [],
+          editions: [
+            { id: "plastic", label: "Plastic", format: "physical", prices: [500] },
+            { id: "plastic-copy", label: "Plastic", equivalentTo: "plastic", format: "physical", prices: [650] },
+            { id: "resin", label: "Resin", format: "physical", prices: [800] },
+          ],
+        },
+      },
+      bundles: {
+        set: {
+          name: "Set",
+          tags: [],
+          price: 1200,
+          includes: [
+            { item: "box", editionId: "box" },
+            { item: "model", editionId: "plastic" },
+            { item: "model", editionId: "plastic-copy" },
+          ],
+        },
+      },
+      accessories: {},
+      homebrew: {},
+      "included-only": {},
+    };
+    const index = reviewIndex(data);
+    expect(index.bundlePricing("set", "bundle")).toEqual({
+      total: 1000,
+      missing: 0,
+      unavailable: 0,
+      savings: -200,
+      percent: -20,
+    });
+
+    data.bundles.set.includes = [
+      { item: "model", editionId: "plastic" },
+      { item: "model", editionId: "plastic-copy" },
+    ];
+    const directOnly = reviewIndex(data);
+    expect(directOnly.bundlePricing("set", "bundle")?.total).toBe(500);
+    expect(directOnly.bundlePricing("set", "bundle", { [collectionKey("model", "plastic-copy")]: { owned: true } })?.total).toBe(0);
+    expect(directOnly.bundlePricing("set", "bundle", { [collectionKey("model", "resin")]: { owned: true } })?.total).toBe(500);
   });
   it("defaults missing gameplay to false while preserving overrides", () => {
     expect(editionGameplay({ gameplay: true }, { id: "model-first-run", label: "First Run", format: "physical", gameplay: false })).toBe(
@@ -545,10 +1180,7 @@ describe("included edition display and identity", () => {
     const named = { ...included, name: "Alternate cover" };
     expect(editionLabel(named)).toBe("1.6");
     expect(index.inclusions("core", "1-6")[0]!.editionLabel).toBe("1.6");
-    expect(index.ownershipKeys([{ item: core, edition: standalone }])).toEqual([
-      collectionKey("core", standalone.id),
-      collectionKey("rulebook", included.id),
-    ]);
+    expect(index.ownershipKeys([{ item: core, edition: standalone }])).toEqual([collectionKey("core", standalone.id)]);
     expect(reviewShopUrl(data.accessories.rulebook, included)).toBeUndefined();
     expect(reviewShopUrl(data.accessories.rulebook, standalone)).toBe("https://shop.kingdomdeath.com/products/rulebook");
   });

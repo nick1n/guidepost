@@ -5,6 +5,107 @@ export type Content = Record<string, Item>;
  * News publication date, YYYY-MM-DD. Full post details remain in scripts/news/shop-links.json.
  */
 export type Announcement = string;
+export type Edition = {
+  id: EditionId;
+  /**
+   * Display label, such as First Run, Encore, Plastic, or Sim. Labels may repeat; the edition ID supplies identity and includedOnly supplies inclusion status.
+   */
+  label: string;
+  /**
+   * Available in at least one matching cached shop variant. False by default; omit when unavailable or unknown.
+   */
+  available?: true;
+  /**
+   * Beta release. Omit for non-Beta editions.
+   */
+  beta?: true;
+  /**
+   * Alternative recipes that provide this edition's content. Each alternative requires every referenced edition. Missing overrides block coverage. Recipes never record ownership of the product.
+   *
+   * @minItems 1
+   */
+  completedBy?: CompletionAlternative[];
+  /**
+   * Permanent readable release ID, unique within its item. Assign once; retain it when labels, names, or other facts change. The item and bundle IDs are reserved for synthetic editions.
+   */
+  equivalentTo?: string;
+  /**
+   * Workbook Expansion value.
+   */
+  expansion?: string;
+  /**
+   * Delivery format of this release.
+   */
+  format: "physical" | "digital";
+  /**
+   * Override of the item gameplay default (false when omitted). Store only when different from the item default.
+   */
+  gameplay?: boolean;
+  /**
+   * Kingdom Death shop product handle. Used only when the item has no shared handle.
+   */
+  handle?: string;
+  /**
+   * True when this edition is available only as part of another product. Omit for other or unconfirmed releases. Collection views may hide these editions.
+   */
+  includedOnly?: true;
+  /**
+   * Grants every current and future simulator edition. Resolve against editions marked simulator when reading the catalog; do not materialize a static list.
+   */
+  includesAllSim?: true;
+  limit?: boolean;
+  /**
+   * Known materials of this release. Omitted means the material is unspecified.
+   *
+   * @minItems 1
+   */
+  materials?: string[];
+  /**
+   * Release-specific name when it differs from the sculpt item name, such as Plastic Ramette.
+   */
+  name?: string;
+  /**
+   * The release is known to have individually numbered copies. Omit otherwise.
+   */
+  numbered?: true;
+  /**
+   * Permanent readable release ID, unique within its item. Assign once; retain it when labels, names, or other facts change. The item and bundle IDs are reserved for synthetic editions.
+   */
+  priceFrom?: string;
+  /**
+   * Known sale amounts plus current MSRP in cents. Maximum is MSRP; the array makes no active-sale claim. Price evidence and estimates remain in the audit.
+   *
+   * @minItems 1
+   *
+   * Items: Amount in cents; inherits the item currency, which defaults to USD.
+   */
+  prices?: number[];
+  /**
+   * Exact release date, YYYY-MM-DD. Derive its year from this value; use releaseWindow when only a year or an imprecise date is known.
+   */
+  releaseDate?: string;
+  /**
+   * An imprecise release date, including a year alone such as 2024, a quarter in year-first format such as 2026 Q4, or a named source window. No exact date is invented.
+   */
+  releaseWindow?: string;
+  /**
+   * Known production or sale limit. Omit unknown counts; preserve supplied First Run and Encore counts. Do not infer counts from units sold.
+   */
+  runSize?: number;
+  shop?: Shop;
+  /**
+   * This digital release is a Kingdom Death Simulator entitlement. Omit for other releases, including 3D Files.
+   */
+  simulator?: true;
+  /**
+   * Physical release size override when it differs from the item default. Sim never has a model size. Omit unknown placeholders.
+   */
+  size?: string;
+  /**
+   * External listing URL. Kingdom Death shop product listings use handle instead.
+   */
+  url?: string;
+};
 /**
  * Permanent readable release ID, unique within its item. Assign once; retain it when labels, names, or other facts change. The item and bundle IDs are reserved for synthetic editions.
  */
@@ -31,6 +132,10 @@ export type Inclusion =
        * @minItems 1
        */
       parentEditionIds?: EditionId[];
+      /**
+       * Optional contextual display name for this inclusion within its directly related parent.
+       */
+      shortLabel?: string;
     };
 export type Accessories = Record<string, Item>;
 
@@ -157,94 +262,15 @@ export interface Item {
    */
   urls?: string[];
 }
-export interface Edition {
-  id: EditionId;
+export interface CompletionAlternative {
   /**
-   * Display label, such as First Run, Encore, Plastic, or Sim. Labels may repeat; the edition ID supplies identity and includedOnly supplies inclusion status.
-   */
-  label: string;
-  /**
-   * Available in at least one matching cached shop variant. False by default; omit when unavailable or unknown.
-   */
-  available?: true;
-  /**
-   * Beta release. Omit for non-Beta editions.
-   */
-  beta?: true;
-  /**
-   * Permanent readable release ID, unique within its item. Assign once; retain it when labels, names, or other facts change. The item and bundle IDs are reserved for synthetic editions.
-   */
-  equivalentTo?: string;
-  /**
-   * Workbook Expansion value.
-   */
-  expansion?: string;
-  /**
-   * Delivery format of this release.
-   */
-  format: "physical" | "digital";
-  /**
-   * Override of the item gameplay default (false when omitted). Store only when different from the item default.
-   */
-  gameplay?: boolean;
-  /**
-   * Kingdom Death shop product handle. Used only when the item has no shared handle.
-   */
-  handle?: string;
-  /**
-   * True when this edition is available only as part of another product. Omit for other or unconfirmed releases. Collection views may hide these editions.
-   */
-  includedOnly?: true;
-  /**
-   * Grants every current and future simulator edition. Resolve against editions marked simulator when reading the catalog; do not materialize a static list.
-   */
-  includesAllSim?: true;
-  limit?: boolean;
-  /**
-   * Known materials of this release. Omitted means the material is unspecified.
+   * All referenced editions are required for this content coverage recipe.
    *
    * @minItems 1
    */
-  materials?: string[];
-  /**
-   * Release-specific name when it differs from the sculpt item name, such as Plastic Ramette.
-   */
-  name?: string;
-  /**
-   * The release is known to have individually numbered copies. Omit otherwise.
-   */
-  numbered?: true;
-  /**
-   * Known sale amounts plus current MSRP in cents. Maximum is MSRP; the array makes no active-sale claim. Price evidence and estimates remain in the audit.
-   *
-   * @minItems 1
-   *
-   * Items: Amount in cents; inherits the item currency, which defaults to USD.
-   */
-  prices?: number[];
-  /**
-   * Exact release date, YYYY-MM-DD. Derive its year from this value; use releaseWindow when only a year or an imprecise date is known.
-   */
-  releaseDate?: string;
-  /**
-   * An imprecise release date, including a year alone such as 2024, a quarter in year-first format such as 2026 Q4, or a named source window. No exact date is invented.
-   */
-  releaseWindow?: string;
-  /**
-   * Known production or sale limit. Omit unknown counts; preserve supplied First Run and Encore counts. Do not infer counts from units sold.
-   */
-  runSize?: number;
-  shop?: Shop;
-  /**
-   * This digital release is a Kingdom Death Simulator entitlement. Omit for other releases, including 3D Files.
-   */
-  simulator?: true;
-  /**
-   * Physical release size override when it differs from the item default. Sim never has a model size. Omit unknown placeholders.
-   */
-  size?: string;
-  /**
-   * External listing URL. Kingdom Death shop product listings use handle instead.
-   */
-  url?: string;
+  all: EditionReference[];
+}
+export interface EditionReference {
+  item: string;
+  editionId: EditionId;
 }

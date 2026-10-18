@@ -5,6 +5,7 @@ export const CopyNumberSchema = S.Int.check(S.isBetween({ minimum: 1, maximum: c
 
 export const EntryStateSchema = S.Struct({
   owned: S.optionalKey(S.Boolean),
+  missing: S.optionalKey(S.Boolean),
   wished: S.optionalKey(S.Boolean),
   copyNumber: S.optionalKey(CopyNumberSchema),
 });
@@ -33,6 +34,24 @@ export const CollectionSnapshotSchema = S.Record(S.String, EntryStateSchema).che
 );
 export type CollectionSnapshot = S.Schema.Type<typeof CollectionSnapshotSchema>;
 export type CollectionPatch = Record<string, Omit<EntryState, "copyNumber"> & { copyNumber?: number | undefined }>;
+
+export function normalizeEntry(entry: EntryState): EntryState {
+  return {
+    ...(entry.owned ? { owned: true } : {}),
+    ...(entry.wished ? { wished: true } : {}),
+    ...(entry.missing ? { missing: true } : {}),
+    ...(entry.copyNumber === undefined ? {} : { copyNumber: entry.copyNumber }),
+  };
+}
+
+export function normalizeSnapshot(snapshot: CollectionSnapshot): CollectionSnapshot {
+  return Object.fromEntries(
+    Object.entries(snapshot).flatMap(([key, entry]) => {
+      const normalized = normalizeEntry(entry);
+      return Object.keys(normalized).length ? [[key, normalized]] : [];
+    }),
+  );
+}
 
 export function collectionKey(contentId: string, editionId: string) {
   return JSON.stringify([contentId, editionId]);

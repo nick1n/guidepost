@@ -34,9 +34,12 @@ See [AGENTS.md](AGENTS.md) for coding conventions and required checks, and the
 Tests live in `test/client/` and `test/scripts/`. Tests import tooling through `#scripts/*` and catalog JSON through `#catalog/*`, including file extensions.
 `pnpm test` watches both Vitest projects; `pnpm test:scripts` also runs `*-checks.mts` with Node's test runner.
 
+With a dev server running, `pnpm test:collection-browser [URL]` runs isolated Chrome checks. Set `CHROME_PATH` if Chrome is not detected.
+
 ## Catalog
 
 The live app reads [static/kdm/catalog/data.json](static/kdm/catalog/data.json).
+Run `pnpm exec prettier --write static/kdm/catalog/data.json` after direct edits; its override keeps short records compact.
 Its [schema](static/kdm/catalog/data.schema.json) generates `src/lib/types/gen/kdm-data.d.ts`.
 Run `pnpm generate:types` after schema changes. It also generates `src/lib/gen/core-editions.json` for Quick Start,
 with playable core edition IDs and labels in catalog order, excluding Resin. Development, checks, and builds regenerate these files;
@@ -156,8 +159,10 @@ Open [/kdm/collection/](http://localhost:5173/kdm/collection/) for search, editi
 Catalog-load errors offer retry and home controls; retry preserves the URL and saved ownership.
 Offline use requires a previously cached catalog.
 
-Entries save locally in IndexedDB through Dexie, keyed by stable content and edition IDs.
-They store owned, wished, and numeric `copyNumber` values. Copy numbers are integers from 1 to 9999, bounded by a known run size;
+Entries save locally through Dexie under stable content and edition IDs. Product ownership is explicit; included rows show content coverage.
+Collection value uses catalog prices of directly owned products. See the
+[ownership rules](docs/kdm-architecture.md#product-ownership-and-content-coverage) for commands and storage details.
+Copy numbers are integers from 1 to 9999, bounded by a known run size;
 a blank input removes the value. Saves write changed rows atomically. Stale tabs block editing and offer refresh while preserving their view.
 Load and monitoring failures offer retry; a storage-module download failure requires reload.
 
@@ -170,8 +175,8 @@ See the [architecture guide](docs/kdm-architecture.md#scope-and-existing-behavio
 `Collection.exportBackup()` waits for queued saves and exports confirmed data.
 `restoreBackup(json)` validates and replaces the snapshot in one queued save, with rollback on failure.
 `previewWorkbook(rows)` validates without writing; `importWorkbook(rows)` validates again and merges provided fields in one save.
-Rows require sheet, row, product name, and an explicit edition ID for ambiguous releases. Ownership propagates to related editions;
-copy numbers apply only to the selected edition. Invalid numeric cells fail validation.
+Rows require sheet, row, product name, and an explicit edition ID for ambiguous releases. Ownership follows explicit row mappings without
+creating child acquisitions; copy numbers apply only to the selected edition. Invalid numeric cells fail validation.
 
 `exportWorkbook()` returns normalized rows, rejecting unmapped editions and values a shared row cannot represent.
 JSON backups preserve the complete snapshot. The workbook map loads and validates on demand, then caches for offline transfers.

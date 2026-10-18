@@ -5,6 +5,7 @@ import { afterEach, vi } from "vitest";
 import { it, expect } from "@effect/vitest";
 import { Deferred, Effect, Fiber, Queue, Stream } from "effect";
 import { DexieStore } from "#lib/state/dexie-store.ts";
+import { OptimisticStore } from "#lib/state/optimistic-store.ts";
 import { StoreError } from "#lib/state/stores.ts";
 import catalogJson from "#catalog/data.json";
 import { collectionKey, entryId, type Catalog } from "#lib/types/index.ts";
@@ -125,6 +126,37 @@ it.effect("persists edition ownership, wishlist, and copy numbers across connect
     yield* reopened.save({ [resin]: { owned: true } });
     expect(yield* reopened.load()).toEqual({ [resin]: { owned: true } });
     yield* reopened.clear();
+    expect(yield* reopened.load()).toEqual({});
+  }),
+);
+
+it.effect("persists a missing-only edition override across connections", () =>
+  Effect.gen(function* () {
+    const f = fixture();
+    const first = yield* f.make();
+    yield* first.load();
+    yield* first.save({ [core]: { missing: true } });
+    first.close();
+
+    const reopened = yield* f.make();
+    expect(yield* reopened.load()).toEqual({ [core]: { missing: true } });
+    yield* reopened.save({ [core]: { missing: false } });
+    expect(yield* reopened.load()).toEqual({ [core]: { missing: false } });
+  }),
+);
+
+it.effect("sparse optimistic edits remove rows through the snapshot deletion path", () =>
+  Effect.gen(function* () {
+    const f = fixture();
+    const store = yield* f.make();
+    yield* store.load();
+    yield* store.save({ [core]: { owned: true }, [resin]: { missing: true } });
+    const writer = new OptimisticStore(store, yield* store.load(), () => {});
+    yield* writer.saveMany({ [core]: { owned: false }, [resin]: { missing: false } });
+    expect(yield* store.load()).toEqual({});
+    const db = yield* f.inspect();
+    expect(yield* Effect.promise(() => db.table("entries").count())).toBe(0);
+    const reopened = yield* f.make();
     expect(yield* reopened.load()).toEqual({});
   }),
 );
