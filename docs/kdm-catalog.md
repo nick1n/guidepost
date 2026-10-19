@@ -94,7 +94,7 @@ Current data rules:
 - Every explicit edition records `format: "physical"` or `format: "digital"`. Sim entitlements also record `simulator: true`; digital 3D Files do not grant simulator access. Known `materials` and `numbered: true` are explicit facts. A release-specific `name` can supply alternate display wording.
 - `includes` remains on the item. Child `editionId` selects a stable release ID on the referenced child item, and `parentEditionIds` selects releases on the containing item. IDs can repeat across different items. Sim references require explicit parent editions, which can include physical keys that grant digital access. Physical expansion contents are scoped to physical editions. Reverse membership is derived. Satan Pledge preserves its 184 exact release references.
 - Simulator keys share the `kingdom-death-simulator` content item. Dwelling Key and Illusionist Key include Core's Sim edition. Master Dwelling Key's `includesAllSim: true` dynamically grants all current and future `simulator: true` editions, without physical ownership.
-- Both catalog and master tag files share category and item ordering. Content starts with core, then expansions sorted by release date, then all remaining items alphabetically by ID without family blocks. Other categories sort alphabetically by ID. Editions sort with Sim first, then by release date or release window, oldest first. Undated editions come last. Equal dates use the established release-label order as a tie-breaker.
+- Both catalog and master tag files share category and item ordering. Content starts with core, then expansions sorted by release date, then all remaining items alphabetically by ID without family blocks. Homebrew puts CCG-tagged items first, sorting each group alphabetically by ID. Other categories sort alphabetically by ID. Editions sort with Sim first, then by release date or release window, oldest first. Undated editions come last. Equal dates use the established release-label order as a tie-breaker.
 - Item fields are alphabetical. Edition fields start with `id`, then `label`; inclusion-object fields start with `item`, followed by alphabetical fields. Catalog write commands preserve this property order; array contents and their established ordering remain unchanged.
 
 The schema retains ID-pattern rules and basic field validation without conditional branches. The CLI additionally checks references, cycles, edition labels, real dates, normalization, and ordering.
@@ -203,5 +203,7 @@ without restoring the obsolete handle. Mappings live in `temp/kdm-catalog/shopif
 this local file is Git-ignored, so keep a copy if you need to preserve historical mappings when clearing temporary files.
 A different release needs its own edition. A shared listing that splits into different listings becomes edition-level handles.
 Homebrew editions retain their manually assigned availability during shop availability refreshes.
+
+CCG projects use digital `Digital Files` editions and `prices: [0]`. Unfinished projects keep `upcoming` without availability.
 
 `kings-coin-prize` remains unavailable despite Shopify stock because it is a promotional prize.

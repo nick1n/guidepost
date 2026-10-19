@@ -86,7 +86,7 @@
             "armor-kit",
             "beta",
             "box",
-            "gameplay-content",
+            "content",
             "simulator"
           ],
           "description": "Product classification. The beta kind means all editions are Beta; box may contain mixed Beta and non-Beta editions or other boxed products. Bundles may omit kind."
@@ -179,6 +179,7 @@
             "Deathmas 2024",
             "Deathmas",
             "Deathpink",
+            "Digital Files",
             "Dwelling Key",
             "Early Variant",
             "Easter",

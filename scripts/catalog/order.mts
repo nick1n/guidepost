@@ -89,8 +89,11 @@ export function organizeCatalog<T extends Catalog | AppCatalog>(catalog: T) {
   for (const category of categories) {
     const entries = Object.entries(catalog[category]);
     for (const [, item] of entries) orderItemFields(item);
-    const rank = (item: Item | AppItem) => (category === "content" ? (item.kind === "core" ? 0 : item.kind === "expansion" ? 1 : 2) : 2);
-    // Keep core and expansions first; alphabetize all remaining items by ID.
+    const rank = (item: Item | AppItem) => {
+      if (category === "homebrew" && item.tags.includes("ccg")) return 0;
+      return category === "content" ? (item.kind === "core" ? 0 : item.kind === "expansion" ? 1 : 2) : 2;
+    };
+    // Keep core and expansions first in content, and CCG first in homebrew; otherwise sort by ID.
     entries.sort(([leftId, left], [rightId, right]) => {
       const a = rank(left);
       const b = rank(right);

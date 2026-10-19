@@ -35,6 +35,7 @@
 
 <script lang="ts">
   import TagRail from "#lib/components/track/TagRail.svelte";
+  import KdIcon from "#lib/components/KdIcon.svelte";
   import HoldRipple from "#lib/components/gestures/HoldRipple.svelte";
   import {
     reviewShopLink,
@@ -45,6 +46,7 @@
     reviewTagLabel,
     reviewBadges,
     reviewIncludedEditionLabel,
+    reviewRequirements,
   } from "#lib/catalog-view.ts";
   import { editionGameplay, editionLabel, editionMaterials, formatPrice } from "#lib/kdm-data.ts";
   import { onDestroy } from "svelte";
@@ -77,6 +79,7 @@
       editions.at(-1),
   );
   const badges = $derived(reviewBadges(item));
+  const requirements = $derived(reviewRequirements(item, catalog.byId));
   const numberedEditions = $derived(reviewNumberedEditions(item).filter((edition) => selection(edition).owned));
   const hasOwned = $derived(editions.some((edition) => selection(edition).owned));
 
@@ -281,11 +284,17 @@
       />
       {#if item.notes || item.aliases?.length || item.gameplayContent}
         <details class="notes">
-          <summary>Notes &amp; other names</summary>
+          <summary>{item.aliases?.length ? "Notes & other names" : "Notes"}</summary>
           {#if item.notes}<p>{item.notes}</p>{/if}
           {#if item.gameplayContent}<p>{item.gameplayContent}</p>{/if}
           {#if item.aliases?.length}<p>Also known as: {item.aliases.join(", ")}</p>{/if}
         </details>
+      {/if}
+      {#if requirements.length}
+        <div class="requirements">
+          <KdIcon i="require" />
+          <p><span class="visually-hidden">Requires: </span>{requirements.map((required) => required.name).join(", ")}</p>
+        </div>
       {/if}
     {/if}
   </div>
@@ -955,6 +964,16 @@
   .notes p {
     margin-block-start: 0.5rem;
     white-space: pre-line;
+  }
+  .requirements {
+    display: flex;
+    align-items: start;
+    gap: 0.5rem;
+    color: var(--muted-foreground);
+    font-size: var(--text-lg);
+  }
+  .requirements p {
+    font-size: var(--text-sm);
   }
 
   button:disabled,

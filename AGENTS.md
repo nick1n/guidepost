@@ -141,6 +141,9 @@ Product ownership is explicit; never infer it from included components, equivale
 and support listed-content progress and bundle savings. Use `Collection.toggleEditionOwned` for product checkboxes,
 `Collection.toggleIncludedOwned` for included-content controls, and `Collection.setEditionOwned` for explicit acquisitions.
 
+`requires` lists dependencies beyond core and its contents; omit empty arrays. Keep campaign restrictions and partial or optional
+requirements in notes, without repeating `requires`.
+
 Keep catalog-derived helpers in `src/lib/kdm-data.ts` or `src/lib/catalog-view.ts`, not duplicated in components. `CollectionBrowsing`
 owns browsing and URL transitions; `CollectionCards` owns card collapse, deferred rendering, viewport observation, and held-card scroll
 anchoring. The collection page disposes card resources on unmount and owns focus, gestures, and navigation.
@@ -190,7 +193,8 @@ Preserve direct owner edits and reviewed facts.
 - Use the schema's edition-label enum. Label changes preserve edition IDs; update label-based local mappings when needed.
   Do not automatically create an item for each miniature in a box; add child items only for separately cataloged products or reviewed
   included components. Master Dwelling Key dynamically grants all Sim editions.
-- Content sorts core, expansions by release, then other items by ID. Other categories sort by ID. Editions sort Sim first,
+- Content sorts core, expansions by release, then other items by ID. Homebrew puts CCG-tagged items first, sorting each group by ID.
+  Other categories sort by ID. Editions sort Sim first,
   then release chronology. Keep aliases deduplicated without case/punctuation differences. Product notes are user-facing;
   maintenance assumptions belong in the catalog guide. Keep previously excluded products excluded.
 - Shop links use `handle`: an item handle applies to all editions; otherwise each edition needs its own. External links

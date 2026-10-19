@@ -43,7 +43,7 @@ function coverageFixture(): ReviewCatalog {
       "upgrade-pack": {
         name: "Upgrade pack",
         tags: [],
-        kind: "gameplay-content",
+        kind: "content",
         editions: [
           { id: "i", label: "I", format: "physical" },
           { id: "ii", label: "II", format: "physical" },

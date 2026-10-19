@@ -29,6 +29,13 @@ export function reviewTagLabel(tag: string) {
   return tag.replace(/^monster-/, "").replaceAll("-", " ");
 }
 
+export function reviewRequirements(item: ReviewItem, byId: ReadonlyMap<string, CatalogEntry>) {
+  return (item.requires ?? []).flatMap((id) => {
+    const required = byId.get(id);
+    return required ? [required] : [];
+  });
+}
+
 export function reviewIncludedEditionLabel(parent: Pick<CatalogEntry, "category">, edition: ReviewEdition) {
   return parent.category === "bundles" ? editionLabel(edition) : editionMaterials(edition).join(", ") || editionLabel(edition);
 }

@@ -118,8 +118,8 @@
         "gameplay",
         "monster",
         "in-stock",
-        "male",
         "gear",
+        "male",
         "resin",
         "survivor",
         "2015",
@@ -128,19 +128,19 @@
         "core-survivor",
         "dice",
         "lucy",
-        "erza",
         "monster-phoenix",
+        "erza",
         "monster-white-lion",
-        "monster-butcher",
-        "allister",
-        "monster-screaming-antelope",
-        "zachary",
         "campaign",
+        "monster-butcher",
+        "monster-screaming-antelope",
+        "allister",
+        "showdown",
+        "zachary",
         "monster-hand",
         "weapon-proficiency",
-        "monster-gold-smoke-knight",
-        "showdown",
         "monster-kings-man",
+        "monster-gold-smoke-knight",
         "monster-watcher",
         "novel-proficiency",
         "pot-lantern"
@@ -169,27 +169,27 @@
         "gameplay",
         "monster",
         "in-stock",
-        "male",
         "gear",
+        "male",
         "terrain",
         "2016",
         "resource",
         "2021",
+        "expansion",
         "sim",
         "settlement-location",
-        "innovation",
         "hunt-event",
-        "expansion",
+        "innovation",
         "fighting-art",
         "secret-fighting-art",
         "ai",
         "hit-location",
         "disorder",
+        "campaign",
         "expansions-of-death-vol-1",
         "monster-dragon-king",
         "pot-star",
         "node-3-quarry",
-        "campaign",
         "weapon-proficiency",
         "king"
       ]
@@ -217,19 +217,19 @@
         "gameplay",
         "monster",
         "in-stock",
-        "male",
         "gear",
+        "male",
         "knight",
         "terrain",
         "2026",
         "2016",
         "resource",
         "2021",
+        "expansion",
         "sim",
         "settlement-location",
-        "innovation",
         "hunt-event",
-        "expansion",
+        "innovation",
         "fighting-art",
         "secret-fighting-art",
         "ai",
@@ -261,17 +261,17 @@
         "gameplay",
         "monster",
         "in-stock",
-        "male",
         "gear",
+        "male",
         "knight",
         "terrain",
         "2016",
         "resource",
         "2021",
-        "sim",
-        "innovation",
-        "hunt-event",
         "expansion",
+        "sim",
+        "hunt-event",
+        "innovation",
         "fighting-art",
         "secret-fighting-art",
         "ai",
@@ -304,17 +304,17 @@
         "gameplay",
         "monster",
         "in-stock",
-        "male",
         "gear",
+        "male",
         "2016",
         "resource",
         "2021",
+        "expansion",
         "sim",
         "settlement-location",
-        "innovation",
-        "armor",
         "hunt-event",
-        "expansion",
+        "armor",
+        "innovation",
         "fighting-art",
         "secret-fighting-art",
         "ai",
@@ -322,8 +322,8 @@
         "disorder",
         "settlement-event",
         "expansions-of-death-vol-1",
-        "monster-gorm",
-        "node-1-quarry"
+        "node-1-quarry",
+        "monster-gorm"
       ]
     },
     "expansion-lion-god": {
@@ -346,16 +346,16 @@
         "gameplay",
         "monster",
         "in-stock",
-        "male",
         "gear",
+        "male",
         "terrain",
         "2016",
         "resource",
         "2021",
-        "sim",
-        "innovation",
-        "hunt-event",
         "expansion",
+        "sim",
+        "hunt-event",
+        "innovation",
         "fighting-art",
         "secret-fighting-art",
         "ai",
@@ -389,25 +389,25 @@
         "gameplay",
         "monster",
         "in-stock",
-        "male",
         "gear",
+        "male",
         "knight",
         "terrain",
         "2016",
         "2021",
+        "expansion",
         "sim",
         "innovation",
-        "expansion",
         "fighting-art",
         "secret-fighting-art",
         "ai",
         "hit-location",
         "disorder",
         "expansions-of-death-vol-1",
-        "node-2-nemesis",
-        "monster-lion-knight",
         "nemesis",
+        "node-2-nemesis",
         "showdown",
+        "monster-lion-knight",
         "tactics"
       ]
     },
@@ -427,7 +427,7 @@
       ],
       "kind": "expansion",
       "name": "Lonely Tree Expansion",
-      "tags": ["female", "gameplay", "monster", "in-stock", "male", "terrain", "2016", "resource", "2021", "sim", "hunt-event", "expansion", "ai", "hit-location", "expansions-of-death-vol-1", "monster-lonely-tree", "special-showdown"]
+      "tags": ["female", "gameplay", "monster", "in-stock", "male", "terrain", "2016", "resource", "2021", "expansion", "sim", "hunt-event", "ai", "hit-location", "expansions-of-death-vol-1", "monster-lonely-tree", "special-showdown"]
     },
     "expansion-manhunter": {
       "announcements": ["2022-12-25", "2023-11-24"],
@@ -449,22 +449,22 @@
         "gameplay",
         "monster",
         "in-stock",
-        "male",
         "gear",
+        "male",
         "survivor",
         "2016",
         "resource",
         "2021",
+        "expansion",
         "sim",
         "innovation",
-        "expansion",
         "fighting-art",
         "secret-fighting-art",
         "ai",
         "hit-location",
         "expansions-of-death-vol-1",
-        "node-1-nemesis",
         "nemesis",
+        "node-1-nemesis",
         "monster-manhunter"
       ]
     },
@@ -490,15 +490,15 @@
         "gameplay",
         "monster",
         "in-stock",
-        "male",
         "gear",
+        "male",
         "2026",
         "2016",
         "resource",
         "2021",
+        "expansion",
         "sim",
         "innovation",
-        "expansion",
         "fighting-art",
         "secret-fighting-art",
         "ai",
@@ -506,9 +506,9 @@
         "disorder",
         "settlement-event",
         "expansions-of-death-vol-1",
+        "nemesis",
         "node-2-nemesis",
         "monster-slenderman",
-        "nemesis",
         "dark"
       ]
     },
@@ -533,17 +533,17 @@
         "gameplay",
         "monster",
         "in-stock",
-        "male",
         "gear",
+        "male",
         "terrain",
         "2016",
         "resource",
         "2021",
+        "expansion",
         "sim",
         "settlement-location",
-        "innovation",
         "hunt-event",
-        "expansion",
+        "innovation",
         "fighting-art",
         "secret-fighting-art",
         "ai",
@@ -578,27 +578,27 @@
         "gameplay",
         "monster",
         "in-stock",
-        "male",
         "gear",
+        "male",
         "terrain",
         "2016",
         "resource",
         "2021",
+        "expansion",
         "sim",
         "settlement-location",
-        "innovation",
         "hunt-event",
-        "expansion",
+        "innovation",
         "fighting-art",
-        "pot-sun",
         "secret-fighting-art",
+        "pot-sun",
         "ai",
         "hit-location",
         "disorder",
+        "campaign",
         "expansions-of-death-vol-1",
         "monster-sunstalker",
         "node-3-quarry",
-        "campaign",
         "weapon-proficiency"
       ]
     },
@@ -696,20 +696,20 @@
         "2023",
         "survivor",
         "gamblers-chest",
-        "sim",
         "expansion",
+        "sim",
         "dice",
         "node-4-quarry",
         "knowledge",
+        "campaign",
         "node-1-quarry",
         "node-2-nemesis",
         "node-2-quarry",
+        "finale-monster",
         "monster-bone-eaters",
-        "campaign",
         "monster-crimson-crocodile",
         "arc-survivor",
         "core-monster",
-        "finale-monster",
         "monster-smog-singers",
         "monster-atnas",
         "encounter-monster",
@@ -738,28 +738,28 @@
         "gameplay",
         "monster",
         "in-stock",
-        "male",
         "gear",
+        "male",
         "knight",
-        "2024",
         "terrain",
+        "2024",
         "pattern",
+        "expansion",
         "sim",
         "innovation",
-        "expansion",
         "fighting-art",
         "secret-fighting-art",
         "ai",
         "hit-location",
         "disorder",
+        "settlement-event",
         "expansions-of-death-vol-2",
         "knowledge",
         "monster-black-knight",
-        "settlement-event",
         "campaign",
-        "collective-cognition",
-        "node-3-nemesis",
         "nemesis",
+        "node-3-nemesis",
+        "collective-cognition",
         "tactics",
         "squire"
       ]
@@ -780,28 +780,28 @@
         "gameplay",
         "monster",
         "in-stock",
-        "male",
         "gear",
-        "2024",
+        "male",
         "terrain",
+        "2024",
         "pattern",
         "resource",
-        "sim",
-        "innovation",
-        "armor",
-        "hunt-event",
         "expansion",
+        "sim",
+        "hunt-event",
+        "armor",
+        "innovation",
         "fighting-art",
         "secret-fighting-art",
         "ai",
         "hit-location",
         "disorder",
+        "settlement-event",
         "expansions-of-death-vol-2",
         "knowledge",
-        "settlement-event",
         "node-1-quarry",
-        "monster-frogdog",
         "vermin",
+        "monster-frogdog",
         "monster-bullfrogdog"
       ]
     },
@@ -821,22 +821,22 @@
         "gameplay",
         "monster",
         "in-stock",
-        "male",
         "gear",
+        "male",
         "2025",
         "terrain",
         "pattern",
+        "expansion",
         "sim",
         "innovation",
-        "expansion",
         "fighting-art",
         "secret-fighting-art",
         "ai",
         "hit-location",
         "disorder",
+        "settlement-event",
         "expansions-of-death-vol-2",
         "knowledge",
-        "settlement-event",
         "node-1-nemesis",
         "collective-cognition",
         "monster-pariah"
@@ -857,14 +857,14 @@
         "gameplay",
         "monster",
         "in-stock",
-        "male",
         "gear",
+        "male",
         "2025",
         "resource",
-        "sim",
-        "innovation",
-        "hunt-event",
         "expansion",
+        "sim",
+        "hunt-event",
+        "innovation",
         "fighting-art",
         "secret-fighting-art",
         "ai",
@@ -898,32 +898,32 @@
         "gameplay",
         "monster",
         "in-stock",
-        "male",
         "gear",
+        "male",
         "terrain",
         "2026",
         "pattern",
         "resource",
+        "expansion",
         "sim",
         "settlement-location",
-        "innovation",
-        "armor",
         "hunt-event",
-        "expansion",
+        "armor",
+        "innovation",
         "fighting-art",
         "secret-fighting-art",
         "ai",
         "hit-location",
         "disorder",
-        "expansions-of-death-vol-2",
         "node-4-quarry",
-        "knowledge",
         "settlement-event",
+        "expansions-of-death-vol-2",
+        "knowledge",
         "monster-screaming-god",
         "strain",
         "pillar",
-        "collective-cognition",
         "finale-monster",
+        "collective-cognition",
         "vignette",
         "monster-parasite-queen"
       ]
@@ -947,7 +947,7 @@
       "kind": "expansion",
       "name": "Campaigns of Death",
       "notes": "Custom campaign construction rules, the strain system, and additional campaigns for the core game and original expansions.",
-      "tags": ["gameplay", "2026", "upcoming", "expansion", "expansions-of-death-vol-2", "preorder", "campaigns-of-death", "campaign", "pot-wise-one"]
+      "tags": ["gameplay", "2026", "upcoming", "expansion", "expansions-of-death-vol-2", "preorder", "campaign", "campaigns-of-death", "pot-wise-one"]
     },
     "expansion-dead-armor": {
       "editions": [{ "id": "box", "label": "Preorder", "format": "physical", "materials": ["Plastic"], "prices": [2000, 2500], "releaseWindow": "2026-Q4" }],
@@ -997,7 +997,7 @@
       "includes": [{ "item": "gryphon", "editionId": "plastic" }],
       "kind": "expansion",
       "name": "Gryphon Expansion",
-      "tags": ["gameplay", "upcoming", "expansion", "expansions-of-death-vol-2", "node-4-quarry", "preorder", "2028", "gryphon"]
+      "tags": ["gameplay", "upcoming", "expansion", "node-4-quarry", "expansions-of-death-vol-2", "preorder", "2028", "gryphon"]
     },
     "expansion-silver-city": {
       "editions": [{ "id": "box", "label": "Preorder", "format": "physical", "materials": ["Plastic"], "prices": [6500, 10000], "releaseWindow": "2028" }],
@@ -1359,7 +1359,7 @@
       "kind": "beta",
       "name": "Badar",
       "size": "30",
-      "tags": ["gameplay", "male", "gear", "deathgrey", "beta", "2022", "badar"]
+      "tags": ["gameplay", "gear", "male", "deathgrey", "beta", "2022", "badar"]
     },
     "barbarian-allister": {
       "aliases": ["Barbarian Allister Deathgrey"],
@@ -1442,7 +1442,7 @@
       "name": "Beyond the Wall",
       "notes": "Includes two body options. Also offered through Promos of Death.",
       "size": "30",
-      "tags": ["female", "plastic", "generic", "gameplay", "in-stock", "gear", "survivor", "promo", "armor", "2012", "aya", "white-box", "item"]
+      "tags": ["female", "plastic", "generic", "gameplay", "in-stock", "gear", "survivor", "armor", "promo", "2012", "aya", "white-box", "item"]
     },
     "biomech-butcher": {
       "announcements": ["2024-08-29"],
@@ -1659,7 +1659,7 @@
       "kind": "model",
       "name": "Butcher",
       "notes": "Bust: First Run was limited to 21 copies; ten were sold in person at Gen Con 2023 for $300. A later Collector's Edition run contained 200 busts.\n\nThe original miniature's First Run and Encore releases were packaged with a sculpted Butcher crest.",
-      "tags": ["plastic", "monster", "core", "2015", "bust", "2011", "monster-butcher", "node-1-nemesis"]
+      "tags": ["plastic", "monster", "core", "2015", "bust", "monster-butcher", "2011", "node-1-nemesis"]
     },
     "caster-hunter": {
       "aliases": ["Caster Hunter Deathgrey"],
@@ -1883,7 +1883,7 @@
       "kind": "box",
       "name": "Death Crown Inheritor Aya",
       "size": "35 & 54",
-      "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "2023", "painters-scale", "seasonal", "pattern", "resource", "ai", "aya", "monster-phoenix"]
+      "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "2023", "painters-scale", "seasonal", "pattern", "resource", "ai", "monster-phoenix", "aya"]
     },
     "death-high-allister": {
       "aliases": ["Death High Allister Deathgrey"],
@@ -2295,7 +2295,7 @@
       "kind": "box",
       "name": "Deathmas - Cockroach Queen",
       "notes": "Painters: 400 printed.\n\nThe plastic model with gameplay was first released during Deathmas sale 2024.",
-      "tags": ["female", "plastic", "gameplay", "gear", "photoresin", "2023", "deathgrey", "painters-scale", "seasonal", "beta", "resource", "ai", "deathmas", "vermin"]
+      "tags": ["female", "plastic", "gameplay", "gear", "photoresin", "2023", "deathgrey", "painters-scale", "seasonal", "beta", "resource", "ai", "vermin", "deathmas"]
     },
     "deathmas-gunborg": {
       "aliases": ["Deathmas Gunborg Sleighs - Painter's Scale"],
@@ -2683,7 +2683,7 @@
       "kind": "beta",
       "name": "Estate Hero - Male",
       "size": "30",
-      "tags": ["generic", "gameplay", "male", "gear", "photoresin", "deathgrey", "2025", "seasonal", "beta"]
+      "tags": ["generic", "gameplay", "gear", "male", "photoresin", "deathgrey", "2025", "seasonal", "beta"]
     },
     "expansion-green-knight-armor": {
       "aliases": ["Green Knight"],
@@ -2702,7 +2702,7 @@
       "kind": "box",
       "name": "Green Knight Armor Expansion",
       "requires": ["expansion-dung-beetle-knight", "expansion-gorm", "expansion-spidicules", "expansion-sunstalker"],
-      "tags": ["gameplay", "in-stock", "gear", "knight", "2016", "2021", "sim", "armor", "expansion", "pot-sun", "expansions-of-death-vol-1"]
+      "tags": ["gameplay", "in-stock", "gear", "knight", "2016", "2021", "expansion", "sim", "armor", "pot-sun", "expansions-of-death-vol-1"]
     },
     "fade": {
       "editions": [{ "id": "box", "label": "Box", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseDate": "2016-08-16" }],
@@ -2773,7 +2773,7 @@
       "handle": "male-fighter",
       "kind": "beta",
       "name": "Fighter - Male",
-      "tags": ["generic", "gameplay", "male", "gear", "deathgrey", "2025", "beta", "fighter"]
+      "tags": ["generic", "gameplay", "gear", "male", "deathgrey", "2025", "beta", "fighter"]
     },
     "flower-knight": {
       "aliases": ["Flower Knight (Resin)", "Flower Knight Bust"],
@@ -2883,7 +2883,7 @@
       "kind": "beta",
       "name": "Frozen Survivor - Galanthus",
       "size": "30",
-      "tags": ["gameplay", "in-stock", "male", "gear", "photoresin", "deathgrey", "survivor", "2024", "beta", "frozen-survivor", "galanthus"]
+      "tags": ["gameplay", "in-stock", "gear", "male", "photoresin", "deathgrey", "survivor", "2024", "beta", "frozen-survivor", "galanthus"]
     },
     "frozen-survivor-hellebore": {
       "aliases": ["Hellebore", "Hellebore - A Frozen Survivor", "Hellebore - A Frozen Survivor (Beta)"],
@@ -2898,7 +2898,7 @@
       "kind": "beta",
       "name": "Frozen Survivor - Hellebore",
       "size": "30",
-      "tags": ["gameplay", "in-stock", "male", "gear", "photoresin", "2023", "survivor", "beta", "frozen-survivor", "hellebore"]
+      "tags": ["gameplay", "in-stock", "gear", "male", "photoresin", "2023", "survivor", "beta", "frozen-survivor", "hellebore"]
     },
     "gift-of-death": {
       "editions": [{ "id": "resin-metal", "label": "Resin & Metal", "format": "physical", "materials": ["Resin", "Metal"], "prices": [9000], "releaseDate": "2009-12-10" }],
@@ -2941,7 +2941,7 @@
       "kind": "beta",
       "name": "Gnostin Stonesmasher",
       "size": "30",
-      "tags": ["gameplay", "male", "gear", "2023", "deathgrey", "beta", "gnostin"]
+      "tags": ["gameplay", "gear", "male", "2023", "deathgrey", "beta", "gnostin"]
     },
     "goblin-guard": {
       "announcements": ["2019-03-27"],
@@ -2967,7 +2967,7 @@
       ],
       "kind": "model",
       "name": "Gold Smoke Knight",
-      "tags": ["plastic", "monster", "core", "knight", "2017", "2014", "bust", "finale-monster", "monster-gold-smoke-knight"]
+      "tags": ["plastic", "monster", "knight", "core", "2017", "2014", "bust", "finale-monster", "monster-gold-smoke-knight"]
     },
     "golden-bat": {
       "announcements": ["2024-10-31"],
@@ -3003,7 +3003,7 @@
       ],
       "kind": "model",
       "name": "Gorm",
-      "tags": ["plastic", "monster", "2016", "monster-gorm", "node-1-quarry", "2010"]
+      "tags": ["plastic", "monster", "2016", "node-1-quarry", "monster-gorm", "2010"]
     },
     "grand-mother": {
       "editions": [
@@ -3089,7 +3089,7 @@
       "name": "Grimmory",
       "notes": "Some Deathgrey copies were misprinted without a lower jaw; the number affected is unknown. Grimmory was the first miniature produced in Deathpink, with about 335 copies and no First Run certificate.",
       "size": "30",
-      "tags": ["gameplay", "male", "gear", "photoresin", "deathgrey", "beta", "2022", "grimmory", "deathpink"]
+      "tags": ["gameplay", "gear", "male", "photoresin", "deathgrey", "beta", "2022", "grimmory", "deathpink"]
     },
     "griswaldan": {
       "announcements": ["2026-02-27"],
@@ -3176,7 +3176,7 @@
       "name": "Halloween Survivor - Flower Knight Costume",
       "notes": "Exclusive to Halloween. First released during the 2022 Halloween Sale.",
       "size": "30",
-      "tags": ["female", "plastic", "gameplay", "survivor", "knight", "seasonal", "pattern", "2022", "halloween"]
+      "tags": ["female", "plastic", "gameplay", "knight", "survivor", "seasonal", "pattern", "2022", "halloween"]
     },
     "halloween-survivors-king-costume": {
       "announcements": ["2023-10-31", "2024-10-31", "2025-10-31"],
@@ -3328,7 +3328,7 @@
       "kind": "box",
       "name": "Indomitable Survivor - Greatest Gaxe Morg",
       "size": "30",
-      "tags": ["plastic", "gameplay", "in-stock", "male", "gear", "survivor", "2024", "pattern", "resource", "sim", "indomitable-survivor", "morg"]
+      "tags": ["plastic", "gameplay", "in-stock", "gear", "male", "survivor", "2024", "pattern", "resource", "sim", "indomitable-survivor", "morg"]
     },
     "indomitable-survivor-gusk-knives-grimmory": {
       "announcements": ["2024-04-02"],
@@ -3340,7 +3340,7 @@
       "kind": "box",
       "name": "Indomitable Survivor - Gusk Knives Grimmory",
       "size": "30",
-      "tags": ["plastic", "gameplay", "in-stock", "male", "gear", "survivor", "2024", "pattern", "resource", "sim", "indomitable-survivor", "grimmory"]
+      "tags": ["plastic", "gameplay", "in-stock", "gear", "male", "survivor", "2024", "pattern", "resource", "sim", "indomitable-survivor", "grimmory"]
     },
     "indomitable-survivor-heartleech-baselard-rene": {
       "announcements": ["2026-02-27", "2026-09-30"],
@@ -3374,7 +3374,7 @@
       "kind": "box",
       "name": "Indomitable Survivor - Lordsruin Titus",
       "size": "30",
-      "tags": ["plastic", "gameplay", "in-stock", "male", "gear", "survivor", "2024", "pattern", "resource", "indomitable-survivor", "titus"]
+      "tags": ["plastic", "gameplay", "in-stock", "gear", "male", "survivor", "2024", "pattern", "resource", "indomitable-survivor", "titus"]
     },
     "indomitable-survivor-oblouk-shield-arco": {
       "announcements": ["2025-08-29"],
@@ -3412,7 +3412,7 @@
       "kind": "box",
       "name": "Indomitable Survivor - Roaring Harmonica Kale",
       "size": "30",
-      "tags": ["plastic", "gameplay", "in-stock", "male", "gear", "survivor", "2025", "pattern", "resource", "sim", "indomitable-survivor", "kale"]
+      "tags": ["plastic", "gameplay", "in-stock", "gear", "male", "survivor", "2025", "pattern", "resource", "sim", "indomitable-survivor", "kale"]
     },
     "indomitable-survivor-stampede-glaive-xell": {
       "aliases": ["Stampede Glaive - Xell"],
@@ -3456,7 +3456,7 @@
       "handle": "indomitable-survivor-toxicimitar-badar",
       "kind": "model",
       "name": "Indomitable Survivor - Toxicimitar Badar",
-      "tags": ["plastic", "gameplay", "in-stock", "male", "gear", "survivor", "2025", "pattern", "resource", "indomitable-survivor", "badar"]
+      "tags": ["plastic", "gameplay", "in-stock", "gear", "male", "survivor", "2025", "pattern", "resource", "indomitable-survivor", "badar"]
     },
     "indomitable-survivor-tyrant-slayer-scarlet": {
       "aliases": ["Indomitable - Tyrant Slayer Scarlet"],
@@ -3743,7 +3743,7 @@
       ],
       "kind": "promo",
       "name": "Legendary Card Pack",
-      "tags": ["gameplay", "in-stock", "gear", "terrain", "2026", "2020", "upcoming", "settlement-event", "legendary", "cards"]
+      "tags": ["gameplay", "in-stock", "gear", "terrain", "2026", "2020", "upcoming", "settlement-event", "cards", "legendary"]
     },
     "legendary-character-glow": {
       "aliases": ["Survivor Character - Glow"],
@@ -3813,7 +3813,7 @@
       ],
       "kind": "box",
       "name": "Legendary Character - Snow the Savior",
-      "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "2025", "innovation", "secret-fighting-art", "savior", "character", "snow", "legendary", "legendary-character"]
+      "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "2025", "innovation", "secret-fighting-art", "savior", "character", "legendary", "snow", "legendary-character"]
     },
     "level-2-butcher-prototype": {
       "announcements": ["2026-08-31"],
@@ -4701,7 +4701,7 @@
       "kind": "box",
       "name": "Percival (Resin)",
       "notes": "Percival was fully re-sculpted for her hard plastic incarnation.",
-      "tags": ["female", "plastic", "gameplay", "knight", "2024", "2015", "promo", "hunt-event", "secret-fighting-art", "resculpt", "percival", "white-box", "black-knight"]
+      "tags": ["female", "plastic", "gameplay", "knight", "2024", "2015", "hunt-event", "promo", "secret-fighting-art", "resculpt", "percival", "white-box", "black-knight"]
     },
     "phantom-weaver-delusion-of-the-royal-jelly": {
       "announcements": ["2026-02-27"],
@@ -5276,7 +5276,7 @@
       "kind": "model",
       "name": "Pinup Regeneration Suit",
       "size": "30",
-      "tags": ["female", "plastic", "generic", "monster", "resin", "pinup", "2015", "monster-gorm", "node-1-quarry"]
+      "tags": ["female", "plastic", "generic", "monster", "resin", "pinup", "2015", "node-1-quarry", "monster-gorm"]
     },
     "pinup-savior-morgan": {
       "editions": [
@@ -5436,7 +5436,7 @@
       "kind": "model",
       "name": "Pinup Twilight Knight Deserter",
       "size": "30",
-      "tags": ["female", "plastic", "generic", "in-stock", "survivor", "knight", "pinup", "2020", "twilight-knight"]
+      "tags": ["female", "plastic", "generic", "in-stock", "knight", "survivor", "pinup", "2020", "twilight-knight"]
     },
     "pinup-twilight-knight-male": {
       "editions": [
@@ -6128,7 +6128,7 @@
       "kind": "set",
       "name": "15th Anniversary Survivors",
       "size": "30",
-      "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "survivor", "2024", "terrain", "resource", "settlement-location", "innovation", "core-survivor", "lucy", "erza", "allister", "zachary", "anniversary"]
+      "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "survivor", "terrain", "2024", "resource", "settlement-location", "innovation", "core-survivor", "lucy", "erza", "allister", "zachary", "anniversary"]
     },
     "set-echoes-of-death": {
       "announcements": ["2019-03-27"],
@@ -6172,7 +6172,7 @@
       "name": "Echoes of Death 3",
       "notes": "First release on Black Friday 2020. Features canon variants of Sniper, Knight, Dark Paladin & Monk.",
       "size": "30",
-      "tags": ["female", "plastic", "generic", "gameplay", "in-stock", "knight", "2020", "sim", "fighting-art", "strain", "paladin", "vermin", "echoes-of-death", "prototype"]
+      "tags": ["female", "plastic", "generic", "gameplay", "in-stock", "knight", "2020", "sim", "fighting-art", "strain", "vermin", "paladin", "echoes-of-death", "prototype"]
     },
     "set-echoes-of-death-4": {
       "announcements": ["2023-08-28", "2023-10-02"],
@@ -6244,7 +6244,7 @@
       "name": "Pinups Of Death I",
       "notes": "First released in 2013 as a black kraft box with black ink, containing 8 plastic renditions of early resin pinups.",
       "size": "30",
-      "tags": ["female", "plastic", "gameplay", "monster", "survivor", "knight", "pinup", "promo", "2014", "aya", "white-speaker", "savior", "bundle", "allison", "morgan", "monster-forsaker", "wendy", "helen", "julia", "kisya"]
+      "tags": ["female", "plastic", "gameplay", "monster", "knight", "survivor", "pinup", "promo", "2014", "aya", "white-speaker", "savior", "allison", "bundle", "monster-forsaker", "morgan", "wendy", "helen", "julia", "kisya"]
     },
     "set-pinups-of-death-series-2": {
       "aliases": ["Pinups of Death II Collection", "Naked Pinups of Death II Bundle"],
@@ -6372,7 +6372,7 @@
       "name": "Survivors of Death 1",
       "notes": "Gen Con 2024. Features canon variants of Bullet Dancer, Hospitalar, Azure Knight & Investment Sniper.",
       "size": "30",
-      "tags": ["female", "plastic", "generic", "gameplay", "in-stock", "male", "gear", "survivor", "2024", "pattern", "resource", "fighting-art", "variant", "knowledge", "strain", "seed", "collective-cognition"]
+      "tags": ["female", "plastic", "generic", "gameplay", "in-stock", "gear", "male", "survivor", "2024", "pattern", "resource", "fighting-art", "variant", "knowledge", "strain", "seed", "collective-cognition"]
     },
     "set-survivors-of-death-2": {
       "announcements": ["2025-08-29"],
@@ -6380,7 +6380,7 @@
       "handle": "survivors-of-death-2",
       "kind": "set",
       "name": "Survivors of Death II",
-      "tags": ["female", "plastic", "generic", "gameplay", "in-stock", "male", "gear", "survivor", "2025", "pattern", "resource", "fighting-art", "knowledge", "strain", "seed", "collective-cognition"]
+      "tags": ["female", "plastic", "generic", "gameplay", "in-stock", "gear", "male", "survivor", "2025", "pattern", "resource", "fighting-art", "knowledge", "strain", "seed", "collective-cognition"]
     },
     "set-survivors-of-death-3": {
       "announcements": ["2026-09-30"],
@@ -6391,7 +6391,7 @@
       "kind": "set",
       "name": "Survivors of Death III",
       "notes": "The Troubadour Troupe set includes Lyra, Melody, Harmony, and Sage miniatures; four character cards; the Troubadour Troupe pillar; Band innovation; Demise Stridulation strain milestone; Blind Rocker vermin; Discord Cricket strange resource; and Resonance Headset pattern and gear. The shop recommends a Gambler's Chest campaign for the Feasting Songs collective cognition milestone (CC 23) and Ardent, Elegant, and Dueling Soundscape knowledge cards. Gen Con 2026 premiere.",
-      "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "survivor", "2026", "pattern", "resource", "innovation", "knowledge", "character", "strain", "pillar", "collective-cognition", "vermin", "harmony", "lyra", "melody", "sage"]
+      "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "survivor", "2026", "pattern", "resource", "innovation", "knowledge", "strain", "character", "pillar", "vermin", "collective-cognition", "harmony", "lyra", "melody", "sage"]
     },
     "shadow-box-holy-lands": {
       "announcements": ["2026-04-01"],
@@ -6799,7 +6799,7 @@
       "kind": "model",
       "name": "The Hand",
       "notes": "Illustrated First Run certificate.",
-      "tags": ["plastic", "monster", "core", "2015", "2012", "monster-hand", "node-3-nemesis"]
+      "tags": ["plastic", "monster", "core", "2015", "2012", "node-3-nemesis", "monster-hand"]
     },
     "the-preacher": {
       "aliases": ["Preacher, The"],
@@ -6961,17 +6961,17 @@
         "gameplay",
         "monster",
         "in-stock",
-        "male",
         "gear",
+        "male",
         "core",
         "survivor",
-        "2024",
         "terrain",
+        "2024",
         "resource",
         "sim",
         "ai",
-        "strain",
         "monster-butcher",
+        "strain",
         "node-1-nemesis",
         "snow",
         "weapon-proficiency",
@@ -7015,7 +7015,7 @@
       "kind": "vignette",
       "name": "Vignette of Death: Super Survivors",
       "size": "30 & 50",
-      "tags": ["female", "plastic", "gameplay", "male", "survivor", "knight", "upcoming", "promo", "core-survivor", "2027", "vignette"]
+      "tags": ["female", "plastic", "gameplay", "male", "knight", "survivor", "upcoming", "promo", "core-survivor", "2027", "vignette"]
     },
     "vignette-of-death-white-gigalion": {
       "announcements": ["2019-08-16", "2020-11-27", "2022-12-25", "2023-11-24"],
@@ -7029,7 +7029,7 @@
       "kind": "vignette",
       "name": "Vignette of Death: White Gigalion",
       "size": "100",
-      "tags": ["plastic", "gameplay", "monster", "in-stock", "gear", "2019", "resource", "sim", "settlement-location", "ai", "hit-location", "monster-white-lion", "strain", "node-1-quarry", "vignette"]
+      "tags": ["plastic", "gameplay", "monster", "in-stock", "gear", "2019", "resource", "sim", "settlement-location", "ai", "hit-location", "monster-white-lion", "node-1-quarry", "strain", "vignette"]
     },
     "vignette-of-death-white-gigalion-survivors": {
       "aliases": ["Vignette of Death: White Gigalion Survivors (x4)"],
@@ -7094,7 +7094,7 @@
       "kind": "box",
       "name": "Wanderer - Aeneas",
       "size": "30",
-      "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "2025", "resource", "sim", "innovation", "fighting-art", "secret-fighting-art", "knowledge", "arc-survivor", "trait", "wanderer", "philosophy", "aeneas"]
+      "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "2025", "resource", "sim", "innovation", "fighting-art", "secret-fighting-art", "knowledge", "wanderer", "arc-survivor", "trait", "philosophy", "aeneas"]
     },
     "wanderer-candy-cola": {
       "aliases": ["Lantern Year 3 Candy & Cola", "KDS Wanderer - Candy & Cola", "Wanderer - Candy"],
@@ -7109,7 +7109,7 @@
       "name": "Wanderer - Candy & Cola",
       "notes": "Crossover with Soda Pop.\n\nPlastic: Super Dungeon Explore.",
       "requires": ["expansion-gamblers-chest"],
-      "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "survivor", "gamblers-chest", "2025", "2015", "sim", "promo", "innovation", "fighting-art", "knowledge", "crossover", "arc-survivor", "wanderer", "doggo", "candy", "cola"]
+      "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "survivor", "gamblers-chest", "2025", "2015", "sim", "promo", "innovation", "fighting-art", "knowledge", "crossover", "wanderer", "arc-survivor", "doggo", "candy", "cola"]
     },
     "wanderer-death-drifter": {
       "aliases": ["KDS Wanderer - Hyperlight Drifter", "Death Drifter"],
@@ -7123,7 +7123,7 @@
       "name": "Wanderer - Death Drifter",
       "notes": "Plastic: Hyperlight Drifter.",
       "size": "30",
-      "tags": ["plastic", "generic", "gameplay", "in-stock", "male", "gear", "2025", "sim", "promo", "fighting-art", "knowledge", "strain", "crossover", "arc-survivor", "wanderer"]
+      "tags": ["plastic", "generic", "gameplay", "in-stock", "gear", "male", "2025", "sim", "promo", "fighting-art", "knowledge", "strain", "crossover", "wanderer", "arc-survivor"]
     },
     "wanderer-goth": {
       "aliases": ["Goth Amy, the Unraveling", "KDS Wanderer Goth"],
@@ -7137,7 +7137,7 @@
       "name": "Wanderer - Goth",
       "notes": "Plastic: Zombicide.",
       "size": "30",
-      "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "2025", "sim", "promo", "innovation", "fighting-art", "knowledge", "crossover", "arc-survivor", "wanderer", "goth", "amy"]
+      "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "2025", "sim", "promo", "innovation", "fighting-art", "knowledge", "crossover", "wanderer", "arc-survivor", "goth", "amy"]
     },
     "wanderer-preacher": {
       "aliases": ["Wanderer - Preacher AT REGIONAL WAREHOUSES"],
@@ -7146,7 +7146,7 @@
       "handle": "wanderer-preacher",
       "kind": "model",
       "name": "Wanderer - Preacher",
-      "tags": ["female", "plastic", "generic", "gameplay", "in-stock", "gear", "2026", "innovation", "fighting-art", "disorder", "knowledge", "arc-survivor", "wanderer", "preacher"]
+      "tags": ["female", "plastic", "generic", "gameplay", "in-stock", "gear", "2026", "innovation", "fighting-art", "disorder", "knowledge", "wanderer", "arc-survivor", "preacher"]
     },
     "warlords": {
       "editions": [
@@ -7314,7 +7314,7 @@
       "kind": "box",
       "name": "White Speaker - Sword Hunter",
       "notes": "The Box edition uses the blindfold sculpt and includes a hunt event, a settlement event, and Excalibur rare gear. It debuted during the 2019 post-Gen Con sale.",
-      "tags": ["female", "plastic", "generic", "gameplay", "gear", "2015", "2019", "promo", "hunt-event", "white-speaker", "settlement-event", "white-box", "sword-hunter"]
+      "tags": ["female", "plastic", "generic", "gameplay", "gear", "2015", "2019", "hunt-event", "promo", "settlement-event", "white-speaker", "white-box", "sword-hunter"]
     },
     "white-sunlion-armor-erza": {
       "aliases": ["White Sunlion Armor", "White Sunlion Armor - Erza (Beta)", "White Sun Lion / White Sunlion Armor", "White Sun Lion / White Sunlion Armor Deathgrey"],
@@ -7383,7 +7383,7 @@
       "handle": "woe-grimmory",
       "kind": "model",
       "name": "Woe Grimmory",
-      "tags": ["gameplay", "male", "gear", "photoresin", "deathgrey", "2025", "beta", "grimmory"]
+      "tags": ["gameplay", "gear", "male", "photoresin", "deathgrey", "2025", "beta", "grimmory"]
     },
     "woe-white-speaker": {
       "announcements": ["2026-06-30"],
@@ -7445,7 +7445,7 @@
     "allison-the-twilight-knight-gameplay": {
       "editions": [{ "id": "original", "label": "Original", "format": "physical", "includedOnly": true }],
       "gameplay": true,
-      "kind": "gameplay-content",
+      "kind": "content",
       "name": "Allison The Twilight Knight Gameplay Content",
       "notes": "Also included in Legendary Card Pack I.",
       "tags": ["gameplay"]
@@ -7501,7 +7501,7 @@
       "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Oblivion Mosquito", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "releaseWindow": "2027" }],
       "kind": "armor-kit",
       "name": "Oblivion Mosquito Armor Kit",
-      "tags": ["plastic", "2023", "upcoming", "naked", "armor", "armor-kit", "2027"]
+      "tags": ["plastic", "2023", "upcoming", "armor", "naked", "armor-kit", "2027"]
     },
     "armor-kit-singing": {
       "editions": [{ "id": "plastic", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "releaseDate": "2023-11-24" }],
@@ -7522,7 +7522,7 @@
       "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Honeycomb Weaver", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "releaseWindow": "2026" }],
       "kind": "armor-kit",
       "name": "Steel Wax Armor Kit",
-      "tags": ["plastic", "2024", "2026", "upcoming", "naked", "armor", "armor-kit"]
+      "tags": ["plastic", "2024", "2026", "upcoming", "armor", "naked", "armor-kit"]
     },
     "atnas-the-child-eater": {
       "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "releaseDate": "2023-11-24" }],
@@ -7567,7 +7567,7 @@
     "beyond-the-wall-gameplay": {
       "editions": [{ "id": "original", "label": "Original", "format": "physical", "includedOnly": true }],
       "gameplay": true,
-      "kind": "gameplay-content",
+      "kind": "content",
       "name": "Beyond the Wall Gameplay Content",
       "notes": "Also included in Legendary Card Pack I.",
       "tags": ["gameplay"]
@@ -7661,7 +7661,7 @@
       ],
       "gameplay": true,
       "gameplayContent": "Core rules and cards, excluding separately tracked rulebooks",
-      "kind": "gameplay-content",
+      "kind": "content",
       "name": "Core Gameplay Content",
       "tags": ["gameplay"]
     },
@@ -7669,7 +7669,7 @@
       "editions": [{ "id": "1-6", "label": "1.6", "format": "physical", "includedOnly": true, "releaseDate": "2020-11-25" }],
       "gameplay": true,
       "gameplayContent": "Updates the Core 1.5 rulebook to 1.6",
-      "kind": "gameplay-content",
+      "kind": "content",
       "name": "Core Rulebook Upgrade",
       "notes": "Rulebook updates included in Legendary Card Pack I. Requires the 1.5 rulebook.",
       "tags": ["gameplay"]
@@ -7678,7 +7678,7 @@
       "editions": [{ "id": "1-6", "label": "1.6", "format": "physical", "includedOnly": true, "releaseDate": "2020-11-25" }],
       "gameplay": true,
       "gameplayContent": "Core 1.6 upgrade cards",
-      "kind": "gameplay-content",
+      "kind": "content",
       "name": "Core Gameplay Content Upgrade",
       "notes": "Upgrade cards included in Legendary Card Pack I.",
       "tags": ["gameplay"]
@@ -7735,7 +7735,7 @@
       ],
       "gameplay": true,
       "gameplayContent": "Expansion rules and cards",
-      "kind": "gameplay-content",
+      "kind": "content",
       "name": "Dragon King Gameplay Content",
       "tags": ["gameplay"]
     },
@@ -7750,7 +7750,7 @@
       "editions": [{ "id": "1-6", "label": "1.6", "format": "physical", "includedOnly": true, "releaseDate": "2020-11-25" }],
       "gameplay": true,
       "gameplayContent": "Expansion 1.6 upgrade cards",
-      "kind": "gameplay-content",
+      "kind": "content",
       "name": "Dragon King Content Upgrade",
       "notes": "Upgrade cards included in Legendary Card Pack I.",
       "tags": ["gameplay"]
@@ -7791,7 +7791,7 @@
       ],
       "gameplay": true,
       "gameplayContent": "Expansion rules and cards",
-      "kind": "gameplay-content",
+      "kind": "content",
       "name": "Dung Beetle Knight Gameplay Content",
       "tags": ["gameplay"]
     },
@@ -7799,7 +7799,7 @@
       "editions": [{ "id": "1-6", "label": "1.6", "format": "physical", "includedOnly": true, "releaseDate": "2020-11-25" }],
       "gameplay": true,
       "gameplayContent": "Expansion 1.6 upgrade cards",
-      "kind": "gameplay-content",
+      "kind": "content",
       "name": "Dung Beetle Knight Content Upgrade",
       "notes": "Upgrade cards included in Legendary Card Pack I.",
       "tags": ["gameplay"]
@@ -7825,7 +7825,7 @@
       ],
       "gameplay": true,
       "gameplayContent": "Expansion rules and cards",
-      "kind": "gameplay-content",
+      "kind": "content",
       "name": "Flower Knight Gameplay Content",
       "tags": ["gameplay"]
     },
@@ -7833,7 +7833,7 @@
       "editions": [{ "id": "1-6", "label": "1.6", "format": "physical", "includedOnly": true, "releaseDate": "2020-11-25" }],
       "gameplay": true,
       "gameplayContent": "Expansion 1.6 upgrade cards",
-      "kind": "gameplay-content",
+      "kind": "content",
       "name": "Flower Knight Content Upgrade",
       "notes": "Upgrade cards included in Legendary Card Pack I.",
       "tags": ["gameplay"]
@@ -7862,7 +7862,7 @@
       ],
       "gameplay": true,
       "gameplayContent": "Expansion rules and cards",
-      "kind": "gameplay-content",
+      "kind": "content",
       "name": "Gorm Gameplay Content",
       "tags": ["gameplay"]
     },
@@ -7881,7 +7881,7 @@
       ],
       "gameplay": true,
       "gameplayContent": "Expansion rules and cards",
-      "kind": "gameplay-content",
+      "kind": "content",
       "name": "Green Knight Armor Gameplay Content",
       "tags": ["gameplay"]
     },
@@ -7896,7 +7896,7 @@
     "holiday-white-speaker-nico-gameplay": {
       "editions": [{ "id": "original", "label": "Original", "format": "physical", "includedOnly": true }],
       "gameplay": true,
-      "kind": "gameplay-content",
+      "kind": "content",
       "name": "Holiday White Speaker Nico Gameplay Content",
       "notes": "Also included in Legendary Card Pack I.",
       "tags": ["gameplay"]
@@ -7948,7 +7948,7 @@
       ],
       "gameplay": true,
       "gameplayContent": "Expansion rules and cards",
-      "kind": "gameplay-content",
+      "kind": "content",
       "name": "Lion God Gameplay Content",
       "tags": ["gameplay"]
     },
@@ -7973,7 +7973,7 @@
       ],
       "gameplay": true,
       "gameplayContent": "Expansion rules and cards",
-      "kind": "gameplay-content",
+      "kind": "content",
       "name": "Lion Knight Gameplay Content",
       "tags": ["gameplay"]
     },
@@ -7981,7 +7981,7 @@
       "editions": [{ "id": "1-6", "label": "1.6", "format": "physical", "includedOnly": true, "releaseDate": "2020-11-25" }],
       "gameplay": true,
       "gameplayContent": "Expansion 1.6 upgrade cards",
-      "kind": "gameplay-content",
+      "kind": "content",
       "name": "Lion Knight Content Upgrade",
       "notes": "Upgrade cards included in Legendary Card Pack I.",
       "tags": ["gameplay"]
@@ -8021,7 +8021,7 @@
       ],
       "gameplay": true,
       "gameplayContent": "Expansion rules and cards",
-      "kind": "gameplay-content",
+      "kind": "content",
       "name": "Lonely Tree Gameplay Content",
       "tags": ["gameplay"]
     },
@@ -8029,7 +8029,7 @@
       "editions": [{ "id": "1-6", "label": "1.6", "format": "physical", "includedOnly": true, "releaseDate": "2020-11-25" }],
       "gameplay": true,
       "gameplayContent": "Expansion 1.6 upgrade cards",
-      "kind": "gameplay-content",
+      "kind": "content",
       "name": "Lonely Tree Content Upgrade",
       "notes": "Upgrade cards included in Legendary Card Pack I.",
       "tags": ["gameplay"]
@@ -8057,7 +8057,7 @@
       ],
       "gameplay": true,
       "gameplayContent": "Expansion rules and cards",
-      "kind": "gameplay-content",
+      "kind": "content",
       "name": "Manhunter Gameplay Content",
       "tags": ["gameplay"]
     },
@@ -8108,7 +8108,7 @@
       "kind": "model",
       "name": "Parasite Queen",
       "notes": "A Plastic monster miniature included with the Screaming God Expansion.",
-      "tags": ["plastic", "monster", "2026", "core-monster", "finale-monster", "monster-parasite-queen"]
+      "tags": ["plastic", "monster", "2026", "finale-monster", "core-monster", "monster-parasite-queen"]
     },
     "people-of-the-stars": {
       "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Dragon King", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "releaseDate": "2021-11-26" }],
@@ -8142,7 +8142,7 @@
     "pinups-of-death-series-2-gameplay": {
       "editions": [{ "id": "original", "label": "Original", "format": "physical", "includedOnly": true }],
       "gameplay": true,
-      "kind": "gameplay-content",
+      "kind": "content",
       "name": "Pinups Of Death II Gameplay Content",
       "notes": "Also included in Legendary Card Pack I.",
       "tags": ["gameplay"]
@@ -8253,7 +8253,7 @@
       ],
       "gameplay": true,
       "gameplayContent": "Expansion rules and cards",
-      "kind": "gameplay-content",
+      "kind": "content",
       "name": "Slenderman Gameplay Content",
       "tags": ["gameplay"]
     },
@@ -8279,7 +8279,7 @@
       ],
       "gameplay": true,
       "gameplayContent": "Expansion rules and cards",
-      "kind": "gameplay-content",
+      "kind": "content",
       "name": "Spidicules Gameplay Content",
       "tags": ["gameplay"]
     },
@@ -8312,7 +8312,7 @@
       ],
       "gameplay": true,
       "gameplayContent": "Expansion rules and cards",
-      "kind": "gameplay-content",
+      "kind": "content",
       "name": "Sunstalker Gameplay Content",
       "tags": ["gameplay"]
     },
@@ -8320,7 +8320,7 @@
       "editions": [{ "id": "1-6", "label": "1.6", "format": "physical", "includedOnly": true, "releaseDate": "2020-11-25" }],
       "gameplay": true,
       "gameplayContent": "Expansion 1.6 upgrade cards",
-      "kind": "gameplay-content",
+      "kind": "content",
       "name": "Sunstalker Content Upgrade",
       "notes": "Upgrade cards included in Legendary Card Pack I.",
       "tags": ["gameplay"]
@@ -8421,7 +8421,7 @@
     "white-speaker-koshka-gameplay": {
       "editions": [{ "id": "original", "label": "Original", "format": "physical", "includedOnly": true }],
       "gameplay": true,
-      "kind": "gameplay-content",
+      "kind": "content",
       "name": "White Speaker Koshka Gameplay Content",
       "notes": "Also included in Legendary Card Pack I.",
       "tags": ["gameplay"]
@@ -8457,7 +8457,7 @@
       "name": "Black Knight Citadel Board - Travel Edition",
       "notes": "A preposterously small rendering of the Black Knight's crumbling citadel.",
       "size": "mini",
-      "tags": ["photoresin", "knight", "2025", "monster-black-knight", "board", "showdown", "kale", "rene", "morg", "marchioness"]
+      "tags": ["photoresin", "knight", "2025", "monster-black-knight", "showdown", "board", "kale", "rene", "morg", "marchioness"]
     },
     "dice-1-0": { "accessoryType": "dice", "kind": "accessory", "name": "1.0 Death Dice", "price": 2000, "tags": ["core", "dice", "black", "white"] },
     "dice-black-and-red": {
@@ -8679,7 +8679,7 @@
       "kind": "accessory",
       "name": "Monster Core Game Rulebook",
       "notes": "Core 1.3 and Resin boxes include the 1.3 rulebook. Core 1.5 and 1.6 include their matching rulebooks, which are also sold separately. Included copies have no separate component price.",
-      "tags": ["gameplay", "core", "2021", "2017", "hunt-event", "rulebook"]
+      "tags": ["gameplay", "core", "2021", "hunt-event", "2017", "rulebook"]
     },
     "kings-coins": {
       "accessoryType": "other",
@@ -8719,7 +8719,7 @@
       "handle": "kingdom-death-comic-phobia-2-the-settlement",
       "kind": "accessory",
       "name": "Kingdom Death Comic: Phobia 2 - The Settlement",
-      "tags": ["in-stock", "2026", "comic", "phobia", "settlement"]
+      "tags": ["in-stock", "2026", "settlement", "comic", "phobia"]
     },
     "shirt-black-knight": { "accessoryType": "shirt", "aliases": ["Black Knight Shirt (2018)"], "kind": "accessory", "name": "Black Knight Shirt", "price": 2500, "releaseYear": 2018, "tags": ["knight", "2018", "shirt"] },
     "shirt-bone-eater": {
@@ -9027,7 +9027,7 @@
       "price": 20000,
       "releaseDate": "2024-07-26",
       "shop": "missing",
-      "tags": ["plastic", "2024", "board", "showdown"]
+      "tags": ["plastic", "2024", "showdown", "board"]
     }
   },
   "bundles": {
@@ -9083,9 +9083,9 @@
       ],
       "name": "Craft of Death Full Catalog",
       "price": 6800,
-      "releaseWindow": "2026",
       "priceMinimum": true,
-      "tags": ["homebrew", "3d-files", "core", "terrain", "member-only", "dice", "craft-of-death", "monster-phoenix", "monster-white-lion", "monster-butcher", "monster-screaming-antelope", "monster-hand", "base", "accessory", "monster-bullfrogdog", "counter"]
+      "releaseWindow": "2026",
+      "tags": ["homebrew", "3d-files", "core", "terrain", "member-only", "dice", "monster-phoenix", "craft-of-death", "monster-white-lion", "accessory", "monster-butcher", "monster-screaming-antelope", "monster-hand", "base", "monster-bullfrogdog", "counter"]
     },
     "craft-of-death-phoenix-base-bundle": {
       "currency": "EUR",
@@ -9093,7 +9093,7 @@
       "name": "Phoenix Base Bundle",
       "price": 1200,
       "releaseDate": "2024-08-12",
-      "tags": ["homebrew", "3d-files", "monster", "core", "terrain", "craft-of-death", "monster-phoenix", "base"],
+      "tags": ["homebrew", "3d-files", "monster", "core", "terrain", "monster-phoenix", "craft-of-death", "base"],
       "url": "https://ko-fi.com/s/cb9ee97746"
     },
     "expansion-of-death-vol-1-6": {
@@ -9148,7 +9148,7 @@
       ],
       "name": "Expansions of Death Vol. 1",
       "notes": "Sim edition: Requires Kingdom Death: Simulator and the digital Kingdom Death: Monster core game.",
-      "tags": ["gameplay", "in-stock", "2023", "2016", "sim", "expansion", "pot-sun", "expansions-of-death-vol-1", "pot-star"]
+      "tags": ["gameplay", "in-stock", "2023", "2016", "expansion", "sim", "pot-sun", "expansions-of-death-vol-1", "pot-star"]
     },
     "halloween-trick-or-treat-bag": {
       "editions": [{ "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [10000], "releaseDate": "2016-10-28" }],
@@ -9227,9 +9227,9 @@
     "revampedgame-crests-bundle": {
       "includes": ["revampedgame-black-knight-crest", "revampedgame-gamblers-chest-crest", "revampedgame-gorm-crest", "revampedgame-lonely-tree-crest", "revampedgame-screaming-god-crest", "revampedgame-slenderman-crest", "revampedgame-the-hands-crest"],
       "name": "RevampedGame Crests",
-      "releaseWindow": "2026",
       "price": 0,
-      "tags": ["homebrew", "3d-files", "monster", "revampedgame", "core", "gamblers-chest", "crest", "monster-black-knight", "monster-screaming-god", "monster-gorm", "monster-hand", "monster-lonely-tree", "monster-slenderman", "model"]
+      "releaseWindow": "2026",
+      "tags": ["homebrew", "3d-files", "monster", "revampedgame", "core", "gamblers-chest", "crest", "monster-black-knight", "monster-screaming-god", "monster-gorm", "monster-lonely-tree", "monster-hand", "monster-slenderman", "model"]
     },
     "revampedgame-full-catalog": {
       "gameplay": true,
@@ -9392,9 +9392,9 @@
         "revampedgame-white-lion-persistent-injury"
       ],
       "name": "RevampedGame Full Catalog",
-      "releaseWindow": "2026",
       "price": 2000,
       "priceMinimum": true,
+      "releaseWindow": "2026",
       "tags": [
         "generic",
         "gameplay",
@@ -9404,34 +9404,36 @@
         "core",
         "gamblers-chest",
         "terrain",
-        "settlement-location",
-        "innovation",
-        "hunt-event",
+        "ccg",
+        "print-and-play",
         "expansion",
+        "settlement-location",
+        "hunt-event",
+        "innovation",
         "member-only",
         "dice",
         "pot-sun",
         "crest",
         "monster-phoenix",
-        "monster-black-knight",
         "monster-white-lion",
+        "accessory",
+        "monster-black-knight",
+        "monster-butcher",
         "monster-screaming-god",
         "monster-dragon-king",
-        "monster-butcher",
         "monster-gorm",
         "monster-sunstalker",
         "pot-star",
         "monster-screaming-antelope",
         "monster-bone-eaters",
         "monster-frogdog",
-        "monster-crimson-crocodile",
-        "monster-hand",
         "monster-lonely-tree",
+        "monster-crimson-crocodile",
+        "monster-flower-knight",
+        "monster-hand",
         "anniversary",
         "base",
-        "ccg",
         "gatherism",
-        "monster-flower-knight",
         "monster-smog-singers",
         "monster-atnas",
         "monster-parasite-queen",
@@ -9440,12 +9442,10 @@
         "monster-spidicules",
         "model",
         "monster-lion-god",
-        "accessory",
         "berserk",
         "monster-killennium-butcher",
         "rosine",
-        "townsfolk-tussle",
-        "print-and-play"
+        "townsfolk-tussle"
       ]
     },
     "revampedgame-gamblers-chest-bundle": {
@@ -9479,9 +9479,9 @@
         "revampedgame-the-gambler-chest-is-now-printing"
       ],
       "name": "RevampedGame Gambler's Chest Catalog",
-      "releaseWindow": "2026",
       "price": 0,
-      "tags": ["homebrew", "3d-files", "monster", "revampedgame", "gamblers-chest", "terrain", "member-only", "crest", "monster-bone-eaters", "monster-crimson-crocodile", "base", "monster-smog-singers", "monster-atnas", "model", "accessory"]
+      "releaseWindow": "2026",
+      "tags": ["homebrew", "3d-files", "monster", "revampedgame", "gamblers-chest", "terrain", "member-only", "crest", "accessory", "monster-bone-eaters", "monster-crimson-crocodile", "base", "monster-smog-singers", "monster-atnas", "model"]
     },
     "revampedgame-settlement-locations-bundle": {
       "includes": [
@@ -9514,8 +9514,8 @@
         "revampedgame-weapon-crafter"
       ],
       "name": "RevampedGame Settlement Locations",
-      "releaseWindow": "2026",
       "price": 0,
+      "releaseWindow": "2026",
       "tags": ["homebrew", "3d-files", "monster", "revampedgame", "core", "settlement-location", "pot-sun", "monster-phoenix", "monster-white-lion", "monster-dragon-king", "monster-gorm", "monster-sunstalker", "pot-star", "monster-screaming-antelope", "model"]
     },
     "satan-pledge": {
@@ -9808,6 +9808,624 @@
     }
   },
   "homebrew": {
+    "ccg-100-extra-hunt-events": {
+      "description": "CCG content pack in the development phase.",
+      "editions": [{ "id": "digital-files", "label": "Digital Files", "format": "digital", "prices": [0] }],
+      "gameplay": true,
+      "kind": "content",
+      "name": "100 Extra Hunt Events",
+      "notes": "Release status: Development Phase. Type: Content Pack. Scope: Medium. Subtypes: Hunt Phase.",
+      "tags": ["gameplay", "homebrew", "ccg", "print-and-play", "upcoming", "hunt-event", "hunt"],
+      "url": "https://docs.google.com/spreadsheets/d/1hBB4sGEFVuzstsZvY0nyNlw1ocXa7y5wZNzCXJdAAwY/edit#gid=1415263086&range=A8"
+    },
+    "ccg-2x2-mini-reference-cards": {
+      "description": "Small cards for all your fighting arts, abilities, disorders and more! Perfect for putting a survivor, their gear grid, and all their related cards into a binder. Includes basically everything from before the Gambler's Chest release.",
+      "editions": [{ "id": "digital-files", "label": "Digital Files", "available": true, "format": "digital", "prices": [0] }],
+      "kind": "accessory",
+      "name": "2x2 Mini Reference Cards",
+      "notes": "Release status: Released. Type: Utility. Scope: Huge. Subtypes: Gear-sized Reference.",
+      "tags": ["homebrew", "ccg", "print-and-play", "fighting-art", "disorder", "accessory", "cards"],
+      "url": "https://docs.google.com/spreadsheets/d/1hBB4sGEFVuzstsZvY0nyNlw1ocXa7y5wZNzCXJdAAwY/edit#gid=1415263086&range=A49"
+    },
+    "ccg-ability-and-impairment-cards": {
+      "description": "Adds bridge-sized reference cards for all abilities and impairments in the game.",
+      "editions": [{ "id": "digital-files", "label": "Digital Files", "available": true, "format": "digital", "prices": [0] }],
+      "kind": "accessory",
+      "name": "Ability and Impairment Cards",
+      "notes": "Release status: Released. Type: Utility. Scope: Medium. Subtypes: Bridge-sized Reference.",
+      "tags": ["homebrew", "ccg", "print-and-play", "accessory", "cards"],
+      "url": "https://docs.google.com/spreadsheets/d/1hBB4sGEFVuzstsZvY0nyNlw1ocXa7y5wZNzCXJdAAwY/edit#gid=1415263086&range=A50"
+    },
+    "ccg-additional-2x2-mini-reference-cards": {
+      "description": "More small gear-sized reference cards! This set includes Neuroses, Pulse Discoveries, abilities, impairments and severe injuries.",
+      "editions": [{ "id": "digital-files", "label": "Digital Files", "available": true, "format": "digital", "prices": [0] }],
+      "kind": "accessory",
+      "name": "Additional 2x2 Mini Reference Cards",
+      "notes": "Release status: Released. Type: Utility. Scope: Medium. Subtypes: Gear-sized Reference.",
+      "tags": ["homebrew", "ccg", "print-and-play", "accessory", "cards"],
+      "url": "https://docs.google.com/spreadsheets/d/1hBB4sGEFVuzstsZvY0nyNlw1ocXa7y5wZNzCXJdAAwY/edit#gid=1415263086&range=A51"
+    },
+    "ccg-ai-cards-against-humanity": {
+      "description": "A Kingdom Death-themed expansion for Cards Against Humanity.",
+      "editions": [{ "id": "digital-files", "label": "Digital Files", "available": true, "format": "digital", "prices": [0] }],
+      "kind": "accessory",
+      "name": "AI Cards Against Humanity",
+      "notes": "Release status: Released. Type: Utility. Scope: Small. Subtypes: Bridge-sized.",
+      "tags": ["homebrew", "ccg", "print-and-play", "accessory", "cards"],
+      "url": "https://docs.google.com/spreadsheets/d/1hBB4sGEFVuzstsZvY0nyNlw1ocXa7y5wZNzCXJdAAwY/edit#gid=1415263086&range=A53"
+    },
+    "ccg-alternate-prologue": {
+      "description": "Allows you to skip the Prologue showdown, with a more balanced table than the core rulebook.",
+      "editions": [{ "id": "digital-files", "label": "Digital Files", "available": true, "format": "digital", "prices": [0] }],
+      "gameplay": true,
+      "kind": "content",
+      "name": "Alternate Prologue",
+      "notes": "Release status: Released. Type: Conversion. Scope: Small. Subtypes: Prologue.\n\nNot compatible with campaigns that replace the prologue showdown, such as Scalding Seas and optionally Scourge Lord.",
+      "tags": ["gameplay", "homebrew", "ccg", "print-and-play", "showdown"],
+      "url": "https://docs.google.com/spreadsheets/d/1hBB4sGEFVuzstsZvY0nyNlw1ocXa7y5wZNzCXJdAAwY/edit#gid=1415263086&range=A29"
+    },
+    "ccg-butcher-intro-event": {
+      "description": "Adds a story event before your first Butcher showdown.",
+      "editions": [{ "id": "digital-files", "label": "Digital Files", "available": true, "format": "digital", "prices": [0] }],
+      "gameplay": true,
+      "kind": "content",
+      "name": "Butcher intro event",
+      "notes": "Release status: Released. Type: Content Pack. Scope: Small.",
+      "tags": ["gameplay", "homebrew", "ccg", "print-and-play", "settlement-event", "monster-butcher"],
+      "url": "https://docs.google.com/spreadsheets/d/1hBB4sGEFVuzstsZvY0nyNlw1ocXa7y5wZNzCXJdAAwY/edit#gid=1415263086&range=A9"
+    },
+    "ccg-challenge-scenarios": {
+      "description": "Formal rulebook pages for the Beta challenge scenarios during the first Kickstarter.",
+      "editions": [{ "id": "digital-files", "label": "Digital Files", "available": true, "format": "digital", "prices": [0] }],
+      "gameplay": true,
+      "kind": "accessory",
+      "name": "Challenge Scenarios",
+      "notes": "Release status: Released. Type: Utility. Scope: Small.",
+      "tags": ["gameplay", "homebrew", "ccg", "print-and-play", "accessory", "showdown"],
+      "url": "https://docs.google.com/spreadsheets/d/1hBB4sGEFVuzstsZvY0nyNlw1ocXa7y5wZNzCXJdAAwY/edit#gid=1415263086&range=A54"
+    },
+    "ccg-choice-of-death": {
+      "description": "Adds several random events where you must choose between two meaningful options. Provides a way to get official promo gear (from before 2020).",
+      "editions": [{ "id": "digital-files", "label": "Digital Files", "available": true, "format": "digital", "prices": [0] }],
+      "gameplay": true,
+      "kind": "content",
+      "name": "Choice of Death",
+      "notes": "Release status: Released. Type: Content Pack. Scope: Small.",
+      "tags": ["gameplay", "homebrew", "gear", "ccg", "print-and-play", "settlement-event"],
+      "url": "https://docs.google.com/spreadsheets/d/1hBB4sGEFVuzstsZvY0nyNlw1ocXa7y5wZNzCXJdAAwY/edit#gid=1415263086&range=A10"
+    },
+    "ccg-community-edition": {
+      "description": "Balance patches for underpowered gear. Available through the Lantern's Reign Discord channel #community-edition.",
+      "editions": [{ "id": "digital-files", "label": "Digital Files", "available": true, "format": "digital", "prices": [0] }],
+      "gameplay": true,
+      "kind": "content",
+      "name": "Community Edition",
+      "notes": "Release status: Released. Type: Conversion. Scope: Large.\n\nMost homebrew is written with Community Edition compatibility in mind.\n\nParts of Community Edition can be included or excluded by personal choice.",
+      "tags": ["gameplay", "homebrew", "gear", "ccg", "print-and-play"],
+      "url": "https://docs.google.com/spreadsheets/d/1hBB4sGEFVuzstsZvY0nyNlw1ocXa7y5wZNzCXJdAAwY/edit#gid=1415263086&range=A26"
+    },
+    "ccg-core-quarry-enhancements": {
+      "description": "Adds alternate basic action and trap cards for the Lion, Antelope and Phoenix, to randomize in your core game quarry fights.",
+      "editions": [{ "id": "digital-files", "label": "Digital Files", "available": true, "format": "digital", "prices": [0] }],
+      "gameplay": true,
+      "kind": "content",
+      "name": "Core Quarry Enhancements",
+      "notes": "Release status: Released. Type: Content Pack. Scope: Small.",
+      "tags": ["gameplay", "homebrew", "ccg", "print-and-play", "monster-phoenix", "monster-white-lion", "monster-screaming-antelope"],
+      "url": "https://docs.google.com/spreadsheets/d/1hBB4sGEFVuzstsZvY0nyNlw1ocXa7y5wZNzCXJdAAwY/edit#gid=1415263086&range=A11"
+    },
+    "ccg-crafting-recipes": {
+      "description": "Adds 2x2 inch reference cards for crafting recipes and gear, showing gear and costs side by side in a binder.",
+      "editions": [{ "id": "digital-files", "label": "Digital Files", "available": true, "format": "digital", "prices": [0] }],
+      "kind": "accessory",
+      "name": "Crafting Recipes",
+      "notes": "Release status: Released. Type: Utility. Scope: Medium. Subtypes: Gear-sized Reference.\n\nVersions by Maximo and upokolypzl8er; the latter has minor style differences and newer content.\n\nIncludes cards for Community Edition and official expansions.",
+      "tags": ["homebrew", "gear", "ccg", "print-and-play", "accessory", "cards"],
+      "url": "https://docs.google.com/spreadsheets/d/1hBB4sGEFVuzstsZvY0nyNlw1ocXa7y5wZNzCXJdAAwY/edit#gid=1415263086&range=A52"
+    },
+    "ccg-curse-the-wanderer": {
+      "description": "Adds a significant number of branching options between years 16 and 19, personalizing your story with the Level 2 Butcher and King's Man.",
+      "editions": [{ "id": "digital-files", "label": "Digital Files", "available": true, "format": "digital", "prices": [0] }],
+      "gameplay": true,
+      "kind": "content",
+      "name": "Curse, The Wanderer",
+      "notes": "Release status: Released. Type: Conversion. Scope: Medium. Subtypes: Story Focused.\n\nFor the People of the Lantern campaign.\n\nCompatible with King's Coin.",
+      "tags": ["gameplay", "homebrew", "ccg", "print-and-play", "monster-butcher", "monster-kings-man", "pot-lantern"],
+      "url": "https://docs.google.com/spreadsheets/d/1hBB4sGEFVuzstsZvY0nyNlw1ocXa7y5wZNzCXJdAAwY/edit#gid=1415263086&range=A28"
+    },
+    "ccg-dedheim": {
+      "description": "Adds the settlement of Dedheim to your game! You may discover it during your hunts and talk to the locals, if only you can get past its guards.",
+      "editions": [{ "id": "digital-files", "label": "Digital Files", "available": true, "format": "digital", "prices": [0] }],
+      "gameplay": true,
+      "kind": "content",
+      "name": "Dedheim",
+      "notes": "Release status: Released. Type: Content Pack. Scope: Small. Subtypes: Hunt Phase.",
+      "tags": ["gameplay", "homebrew", "ccg", "print-and-play", "hunt-event", "hunt"],
+      "url": "https://docs.google.com/spreadsheets/d/1hBB4sGEFVuzstsZvY0nyNlw1ocXa7y5wZNzCXJdAAwY/edit#gid=1415263086&range=A12"
+    },
+    "ccg-early-game-gear": {
+      "description": "Adds two new settlement locations for the early game, complete with armor sets and weapons.",
+      "editions": [{ "id": "digital-files", "label": "Digital Files", "available": true, "format": "digital", "prices": [0] }],
+      "gameplay": true,
+      "kind": "content",
+      "name": "Early Game Gear",
+      "notes": "Release status: Released. Type: Content Pack. Scope: Medium.",
+      "tags": ["gameplay", "homebrew", "gear", "ccg", "print-and-play", "settlement-location"],
+      "url": "https://docs.google.com/spreadsheets/d/1hBB4sGEFVuzstsZvY0nyNlw1ocXa7y5wZNzCXJdAAwY/edit#gid=1415263086&range=A7"
+    },
+    "ccg-easier-to-view-deathblow-locations": {
+      "description": "Replaces your Deathblow hit locations with striking black-background versions.",
+      "editions": [{ "id": "digital-files", "label": "Digital Files", "available": true, "format": "digital", "prices": [0] }],
+      "gameplay": true,
+      "kind": "content",
+      "name": "Easier to view Deathblow Locations",
+      "notes": "Release status: Released. Type: Conversion. Scope: Small.\n\nIncludes several CCG monster deathblow locations.",
+      "tags": ["gameplay", "homebrew", "ccg", "print-and-play", "hit-location"],
+      "url": "https://docs.google.com/spreadsheets/d/1hBB4sGEFVuzstsZvY0nyNlw1ocXa7y5wZNzCXJdAAwY/edit#gid=1415263086&range=A30"
+    },
+    "ccg-environment-cards": {
+      "description": "Adds a deck of random environment effects which can alter any showdown. Created as a contest!",
+      "editions": [{ "id": "digital-files", "label": "Digital Files", "available": true, "format": "digital", "prices": [0] }],
+      "gameplay": true,
+      "kind": "content",
+      "name": "Environment Cards",
+      "notes": "Release status: Released. Type: Content Pack. Scope: Small.",
+      "tags": ["gameplay", "homebrew", "ccg", "print-and-play", "cards", "showdown"],
+      "url": "https://docs.google.com/spreadsheets/d/1hBB4sGEFVuzstsZvY0nyNlw1ocXa7y5wZNzCXJdAAwY/edit#gid=1415263086&range=A24"
+    },
+    "ccg-expanded-cooking": {
+      "description": "Adds a few bigger and smaller cooking recipes for you to work with! Also includes a new consequence innovation, allowing you to brew your own spirits!",
+      "editions": [{ "id": "digital-files", "label": "Digital Files", "available": true, "format": "digital", "prices": [0] }],
+      "gameplay": true,
+      "kind": "content",
+      "name": "Expanded Cooking",
+      "notes": "Release status: Released. Type: Content Pack. Scope: Small.\n\nOne recipe requires the Dung Beetle Knight, Slenderman and Gorm official expansions.",
+      "tags": ["gameplay", "homebrew", "ccg", "print-and-play", "resource", "innovation"],
+      "url": "https://docs.google.com/spreadsheets/d/1hBB4sGEFVuzstsZvY0nyNlw1ocXa7y5wZNzCXJdAAwY/edit#gid=1415263086&range=A13"
+    },
+    "ccg-extra-monster-hunt-events": {
+      "description": "Adds extra monster hunt event cards for all official monsters, bringing them up to 12 cards each.",
+      "editions": [{ "id": "digital-files", "label": "Digital Files", "available": true, "format": "digital", "prices": [0] }],
+      "gameplay": true,
+      "kind": "content",
+      "name": "Extra Monster Hunt Events",
+      "notes": "Release status: Released. Type: Content Pack. Scope: Small. Subtypes: Hunt Phase.",
+      "tags": ["gameplay", "homebrew", "ccg", "print-and-play", "hunt-event", "hunt"],
+      "url": "https://docs.google.com/spreadsheets/d/1hBB4sGEFVuzstsZvY0nyNlw1ocXa7y5wZNzCXJdAAwY/edit#gid=1415263086&range=A14"
+    },
+    "ccg-floral-oddities": {
+      "description": "This expansion provides an additional resource deck that contains various flowers and plants that can be used in your campaign. To add to your campaign, you can replace the 2 Acanthus Plants terrain cards with the new ones here, add the Floral Oddities bookmark to the Herb Gathering story event, or both.",
+      "editions": [{ "id": "digital-files", "label": "Digital Files", "available": true, "format": "digital", "prices": [0] }],
+      "gameplay": true,
+      "kind": "content",
+      "name": "Floral Oddities",
+      "notes": "Release status: Released. Type: Content Pack. Scope: Small.",
+      "tags": ["gameplay", "homebrew", "terrain", "ccg", "print-and-play", "resource"],
+      "url": "https://docs.google.com/spreadsheets/d/1hBB4sGEFVuzstsZvY0nyNlw1ocXa7y5wZNzCXJdAAwY/edit#gid=1415263086&range=A15"
+    },
+    "ccg-flower-knight-non-bloom-campaign-integration": {
+      "description": "Adds alternate ways to get the Replica Flower Sword and Flower Knight Helm.",
+      "editions": [{ "id": "digital-files", "label": "Digital Files", "available": true, "format": "digital", "prices": [0] }],
+      "gameplay": true,
+      "kind": "content",
+      "name": "Flower Knight - Non-Bloom campaign integration",
+      "notes": "Release status: Released. Type: Conversion. Scope: Small.\n\nNot intented for the People of the Bloom official campaign.",
+      "requires": ["expansion-flower-knight"],
+      "tags": ["gameplay", "homebrew", "gear", "ccg", "print-and-play", "monster-flower-knight"],
+      "url": "https://docs.google.com/spreadsheets/d/1hBB4sGEFVuzstsZvY0nyNlw1ocXa7y5wZNzCXJdAAwY/edit#gid=1415263086&range=A31"
+    },
+    "ccg-gameplay-utilities-and-reference-sheets": {
+      "description": "Extra sheets for extending your settlement record sheet, rule reminders, gear crafting recipes, milestones and more.",
+      "editions": [{ "id": "digital-files", "label": "Digital Files", "available": true, "format": "digital", "prices": [0] }],
+      "kind": "accessory",
+      "name": "Gameplay Utilities and Reference Sheets",
+      "notes": "Release status: Released. Type: Utility. Scope: Small. Subtypes: Bridge-sized Reference.",
+      "tags": ["homebrew", "gear", "ccg", "print-and-play", "accessory", "settlement"],
+      "url": "https://docs.google.com/spreadsheets/d/1hBB4sGEFVuzstsZvY0nyNlw1ocXa7y5wZNzCXJdAAwY/edit#gid=1415263086&range=A55"
+    },
+    "ccg-graphic-pack-adobe": {
+      "description": "Adobe Photoshop card and book templates converted from Maximo's GIMP templates.",
+      "editions": [{ "id": "digital-files", "label": "Digital Files", "available": true, "format": "digital", "prices": [0] }],
+      "kind": "accessory",
+      "name": "Graphic Pack - Adobe",
+      "notes": "Release status: Released. Type: Utility. Scope: Medium.",
+      "tags": ["homebrew", "ccg", "accessory", "art"],
+      "url": "https://docs.google.com/spreadsheets/d/1hBB4sGEFVuzstsZvY0nyNlw1ocXa7y5wZNzCXJdAAwY/edit#gid=1415263086&range=A59"
+    },
+    "ccg-graphic-pack-gimp": {
+      "description": "GIMP card and book templates for creating homebrew content.",
+      "editions": [{ "id": "digital-files", "label": "Digital Files", "available": true, "format": "digital", "prices": [0] }],
+      "kind": "accessory",
+      "name": "Graphic Pack - Gimp",
+      "notes": "Release status: Released. Type: Utility. Scope: Medium.",
+      "tags": ["homebrew", "ccg", "accessory", "art"],
+      "url": "https://docs.google.com/spreadsheets/d/1hBB4sGEFVuzstsZvY0nyNlw1ocXa7y5wZNzCXJdAAwY/edit#gid=1415263086&range=A58"
+    },
+    "ccg-hides-and-eyes": {
+      "description": "Makes it more difficult to acquire the Rawhide Headband and Cat Eye Circlet.",
+      "editions": [{ "id": "digital-files", "label": "Digital Files", "available": true, "format": "digital", "prices": [0] }],
+      "gameplay": true,
+      "kind": "content",
+      "name": "Hides and Eyes",
+      "notes": "Release status: Released. Type: Content Pack. Scope: Small.",
+      "tags": ["gameplay", "homebrew", "gear", "ccg", "print-and-play"],
+      "url": "https://docs.google.com/spreadsheets/d/1hBB4sGEFVuzstsZvY0nyNlw1ocXa7y5wZNzCXJdAAwY/edit#gid=1415263086&range=A16"
+    },
+    "ccg-kings-coin": {
+      "description": "Revamps King's Man rewards and difficulty, offering changes to your least favorite mechanics... for a price.",
+      "editions": [{ "id": "digital-files", "label": "Digital Files", "available": true, "format": "digital", "prices": [0] }],
+      "gameplay": true,
+      "kind": "content",
+      "name": "King's Coin",
+      "notes": "Release status: Released. Type: Conversion. Scope: Small.",
+      "tags": ["gameplay", "homebrew", "ccg", "print-and-play", "monster-kings-man"],
+      "url": "https://docs.google.com/spreadsheets/d/1hBB4sGEFVuzstsZvY0nyNlw1ocXa7y5wZNzCXJdAAwY/edit#gid=1415263086&range=A32"
+    },
+    "ccg-legendary-and-finale-monster-showdown-pages": {
+      "description": "Contains alternate showdown pages for official Legendary monsters and Finale monsters, containing all setup instructions in one place.",
+      "editions": [{ "id": "digital-files", "label": "Digital Files", "available": true, "format": "digital", "prices": [0] }],
+      "gameplay": true,
+      "kind": "content",
+      "name": "Legendary and Finale monster showdown pages",
+      "notes": "Release status: Released. Type: Content Pack. Scope: Small.\n\nIncludes alternate versions for Community Edition.",
+      "tags": ["gameplay", "homebrew", "ccg", "print-and-play", "finale-monster", "legendary", "showdown"],
+      "url": "https://docs.google.com/spreadsheets/d/1hBB4sGEFVuzstsZvY0nyNlw1ocXa7y5wZNzCXJdAAwY/edit#gid=1415263086&range=A17"
+    },
+    "ccg-lonely-lady": {
+      "description": "She just needs a hug. Adds a chance for the Lonely Lady miniature to visit your showdowns.",
+      "editions": [{ "id": "digital-files", "label": "Digital Files", "available": true, "format": "digital", "prices": [0] }],
+      "gameplay": true,
+      "kind": "content",
+      "name": "Lonely Lady",
+      "notes": "Release status: Released. Type: Content Pack. Scope: Small.",
+      "tags": ["gameplay", "homebrew", "ccg", "print-and-play", "showdown"],
+      "url": "https://docs.google.com/spreadsheets/d/1hBB4sGEFVuzstsZvY0nyNlw1ocXa7y5wZNzCXJdAAwY/edit#gid=1415263086&range=A18"
+    },
+    "ccg-mundane-terrain": {
+      "description": "Adds some additional terrain cards to your showdowns, filling up the showdown board a little more and adding more variety.",
+      "editions": [{ "id": "digital-files", "label": "Digital Files", "available": true, "format": "digital", "prices": [0] }],
+      "gameplay": true,
+      "kind": "content",
+      "name": "Mundane Terrain",
+      "notes": "Release status: Released. Type: Content Pack. Scope: Small.\n\nModels are also listed alongside the terrain cards.",
+      "tags": ["gameplay", "homebrew", "terrain", "ccg", "print-and-play"],
+      "url": "https://docs.google.com/spreadsheets/d/1hBB4sGEFVuzstsZvY0nyNlw1ocXa7y5wZNzCXJdAAwY/edit#gid=1415263086&range=A19"
+    },
+    "ccg-newt-the-abandoned": {
+      "description": "Introduces Newt as a troubled wanderer to join your settlement, with her own Secret Fighting Art / Knowledge cards and her own waking nightmare.",
+      "editions": [{ "id": "digital-files", "label": "Digital Files", "available": true, "format": "digital", "prices": [0] }],
+      "gameplay": true,
+      "kind": "content",
+      "name": "Newt, The Abandoned",
+      "notes": "Release status: Released. Type: Content Pack. Scope: Small. Subtypes: Story Focused, Wanderer Node.\n\nRecommended with an Arc survivor campaign.",
+      "tags": ["gameplay", "homebrew", "ccg", "print-and-play", "secret-fighting-art", "knowledge", "wanderer"],
+      "url": "https://docs.google.com/spreadsheets/d/1hBB4sGEFVuzstsZvY0nyNlw1ocXa7y5wZNzCXJdAAwY/edit#gid=1415263086&range=A20"
+    },
+    "ccg-people-of-the-dark": {
+      "description": "Every several years, the survivors rediscover their settlement, with no memory of how they got there. How can you build a civilization if you keep forgetting it exists? A campaign featuring multiple loops building on the same settlement (kind of), trying to break out of a cycle of amnesia.",
+      "editions": [{ "id": "digital-files", "label": "Digital Files", "available": true, "format": "digital", "prices": [0] }],
+      "gameplay": true,
+      "kind": "content",
+      "name": "People of the Dark",
+      "notes": "Release status: Released. Type: Campaign. Scope: Small. Subtypes: 25 Year Campaign.",
+      "requires": ["expansion-slenderman", "expansion-lion-god"],
+      "tags": ["gameplay", "homebrew", "ccg", "print-and-play", "campaign"],
+      "url": "https://docs.google.com/spreadsheets/d/1hBB4sGEFVuzstsZvY0nyNlw1ocXa7y5wZNzCXJdAAwY/edit#gid=1415263086&range=A4"
+    },
+    "ccg-people-of-the-forge": {
+      "description": "CCG campaign in the design phase.",
+      "editions": [{ "id": "digital-files", "label": "Digital Files", "format": "digital", "prices": [0] }],
+      "gameplay": true,
+      "kind": "content",
+      "name": "People of the Forge",
+      "notes": "Release status: Design Phase. Type: Campaign. Scope: Medium. Subtypes: 25 Year Campaign.",
+      "tags": ["gameplay", "homebrew", "ccg", "print-and-play", "upcoming", "campaign"],
+      "url": "https://docs.google.com/spreadsheets/d/1hBB4sGEFVuzstsZvY0nyNlw1ocXa7y5wZNzCXJdAAwY/edit#gid=1415263086&range=A2"
+    },
+    "ccg-people-of-the-loop": {
+      "description": "A 6-year campaign which starts you solidly in the mid-game, with four survivors cursed with immortality in a time loop against a sadistic Phoenix. Includes replacement hunt events for this campaign only.",
+      "editions": [{ "id": "digital-files", "label": "Digital Files", "format": "digital", "prices": [0] }],
+      "gameplay": true,
+      "kind": "content",
+      "name": "People of the Loop",
+      "notes": "Release status: Proofreading Phase. Type: Campaign. Scope: Medium. Subtypes: 6 Year Campaign, Story Focused.",
+      "tags": ["gameplay", "homebrew", "ccg", "print-and-play", "upcoming", "monster-phoenix", "campaign"],
+      "url": "https://docs.google.com/spreadsheets/d/1hBB4sGEFVuzstsZvY0nyNlw1ocXa7y5wZNzCXJdAAwY/edit#gid=1415263086&range=A3"
+    },
+    "ccg-people-of-the-tree": {
+      "description": "A campaign with the Lonely Tree at its heart.",
+      "editions": [{ "id": "digital-files", "label": "Digital Files", "format": "digital", "prices": [0] }],
+      "gameplay": true,
+      "kind": "content",
+      "name": "People of the Tree",
+      "notes": "Release status: Development Phase. Type: Campaign. Subtypes: 5 Year Campaign.",
+      "requires": ["expansion-lonely-tree"],
+      "tags": ["gameplay", "homebrew", "ccg", "print-and-play", "upcoming", "campaign", "monster-lonely-tree"],
+      "url": "https://docs.google.com/spreadsheets/d/1hBB4sGEFVuzstsZvY0nyNlw1ocXa7y5wZNzCXJdAAwY/edit#gid=1415263086&range=A5"
+    },
+    "ccg-scalding-seas": {
+      "description": "A replacement biome and 30-year campaign with new monsters, gear, mechanics, narrative, boats, and secrets. Includes a new starting armor set and swimming rules, intended for experienced players.",
+      "editions": [{ "id": "digital-files", "label": "Digital Files", "available": true, "format": "digital", "prices": [0] }],
+      "gameplay": true,
+      "kind": "content",
+      "name": "Scalding Seas",
+      "notes": "Release status: Released. Type: Conversion. Scope: Huge. Subtypes: 30 Year Campaign, Story Focused, Hunt Phase, Nemesis, Quarry, Final Boss.\n\nEffectively replaces the core game and all expansions. Incompatible with most homebrew.\n\nScalding Seas quarries can be added to other campaigns although with limited compatibility.\n\nOptionally compatible with the Dragon King and Sunstalker official expansions.",
+      "tags": ["gameplay", "homebrew", "ccg", "print-and-play", "campaign", "nemesis", "hunt", "finale-monster"],
+      "url": "https://docs.google.com/spreadsheets/d/1hBB4sGEFVuzstsZvY0nyNlw1ocXa7y5wZNzCXJdAAwY/edit#gid=1415263086&range=A25"
+    },
+    "ccg-settlement-expansion-event-cards": {
+      "description": "Adds additional random settlement event cards, including cards which can add monster expansions to your campaign at random for a roguelike experience.",
+      "editions": [{ "id": "digital-files", "label": "Digital Files", "available": true, "format": "digital", "prices": [0] }],
+      "gameplay": true,
+      "kind": "content",
+      "name": "Settlement + Expansion Event Cards",
+      "notes": "Release status: Released. Type: Content Pack. Scope: Small.",
+      "tags": ["gameplay", "homebrew", "ccg", "print-and-play", "settlement-event"],
+      "url": "https://docs.google.com/spreadsheets/d/1hBB4sGEFVuzstsZvY0nyNlw1ocXa7y5wZNzCXJdAAwY/edit#gid=1415263086&range=A21"
+    },
+    "ccg-settlement-terrain": {
+      "description": "Adds parts of your settlement as terrain during nemesis encounters, adding ways for you to use settlement locations and innovations during combat but also increasing the stakes.",
+      "editions": [{ "id": "digital-files", "label": "Digital Files", "available": true, "format": "digital", "prices": [0] }],
+      "gameplay": true,
+      "kind": "content",
+      "name": "Settlement Terrain",
+      "notes": "Release status: Released. Type: Content Pack. Scope: Small.",
+      "tags": ["gameplay", "homebrew", "terrain", "ccg", "print-and-play", "settlement"],
+      "url": "https://docs.google.com/spreadsheets/d/1hBB4sGEFVuzstsZvY0nyNlw1ocXa7y5wZNzCXJdAAwY/edit#gid=1415263086&range=A22"
+    },
+    "ccg-severe-injury-cards": {
+      "description": "Includes reference cards for all your severe injuries.",
+      "editions": [{ "id": "digital-files", "label": "Digital Files", "available": true, "format": "digital", "prices": [0] }],
+      "kind": "accessory",
+      "name": "Severe Injury Cards",
+      "notes": "Release status: Released. Type: Utility. Scope: Small. Subtypes: Bridge-sized Reference.",
+      "tags": ["homebrew", "ccg", "print-and-play", "accessory", "cards"],
+      "url": "https://docs.google.com/spreadsheets/d/1hBB4sGEFVuzstsZvY0nyNlw1ocXa7y5wZNzCXJdAAwY/edit#gid=1415263086&range=A56"
+    },
+    "ccg-severe-injury-reference-cards-with-additional-results": {
+      "description": "Adds additional severe injury roll results for >10 or <1 rolls.",
+      "editions": [{ "id": "digital-files", "label": "Digital Files", "available": true, "format": "digital", "prices": [0] }],
+      "gameplay": true,
+      "kind": "content",
+      "name": "Severe Injury Reference Cards - with additional results",
+      "notes": "Release status: Released. Type: Conversion. Scope: Small. Subtypes: Bridge-sized Reference.",
+      "tags": ["gameplay", "homebrew", "ccg", "print-and-play", "cards"],
+      "url": "https://docs.google.com/spreadsheets/d/1hBB4sGEFVuzstsZvY0nyNlw1ocXa7y5wZNzCXJdAAwY/edit#gid=1415263086&range=A33"
+    },
+    "ccg-strain-milestone-tracker": {
+      "description": "A sheet including all your strain milestones in one place.",
+      "editions": [{ "id": "digital-files", "label": "Digital Files", "available": true, "format": "digital", "prices": [0] }],
+      "kind": "accessory",
+      "name": "Strain Milestone Tracker",
+      "notes": "Release status: Released. Type: Utility. Scope: Small.",
+      "tags": ["homebrew", "ccg", "print-and-play", "accessory", "strain"],
+      "url": "https://docs.google.com/spreadsheets/d/1hBB4sGEFVuzstsZvY0nyNlw1ocXa7y5wZNzCXJdAAwY/edit#gid=1415263086&range=A57"
+    },
+    "ccg-the-order-of-things": {
+      "description": "Adds a penalty to hunting the same quarry monsters repeatedly.",
+      "editions": [{ "id": "digital-files", "label": "Digital Files", "available": true, "format": "digital", "prices": [0] }],
+      "gameplay": true,
+      "kind": "content",
+      "name": "The Order of Things",
+      "notes": "Release status: Released. Type: Conversion. Scope: Small.",
+      "tags": ["gameplay", "homebrew", "ccg", "print-and-play"],
+      "url": "https://docs.google.com/spreadsheets/d/1hBB4sGEFVuzstsZvY0nyNlw1ocXa7y5wZNzCXJdAAwY/edit#gid=1415263086&range=A34"
+    },
+    "ccg-tracks-of-death": {
+      "description": "Replaces the hunt event table with decks of hunt event cards, which optionally you can choose between for a bit more control during the hunt phase, and/or adds support for hunt events changing over time.",
+      "editions": [{ "id": "digital-files", "label": "Digital Files", "available": true, "format": "digital", "prices": [0] }],
+      "gameplay": true,
+      "kind": "content",
+      "name": "Tracks of Death",
+      "notes": "Release status: Released. Type: Conversion. Scope: Large. Subtypes: Hunt Phase.\n\nIncludes Decks 1-3 and Deck 4.",
+      "tags": ["gameplay", "homebrew", "ccg", "print-and-play", "hunt-event", "hunt"],
+      "url": "https://docs.google.com/spreadsheets/d/1hBB4sGEFVuzstsZvY0nyNlw1ocXa7y5wZNzCXJdAAwY/edit#gid=1415263086&range=A27"
+    },
+    "ccg-trial-of-champions": {
+      "description": "Adds additional forms of character customization and a hero mode, based on the character classes introduced with the Generic promo survivor models. Provides tons of new options to spice up survivor progression.",
+      "editions": [{ "id": "digital-files", "label": "Digital Files", "available": true, "format": "digital", "prices": [0] }],
+      "gameplay": true,
+      "kind": "content",
+      "name": "Trial of Champions",
+      "notes": "Release status: Released. Type: Content Pack. Scope: Large. Subtypes: Survivor Progression.\n\nCompatible with all campaigns.",
+      "tags": ["gameplay", "homebrew", "survivor", "ccg", "print-and-play", "champion"],
+      "url": "https://docs.google.com/spreadsheets/d/1hBB4sGEFVuzstsZvY0nyNlw1ocXa7y5wZNzCXJdAAwY/edit#gid=1415263086&range=A6"
+    },
+    "ccg-vermin-cards": {
+      "description": "Adds more cards to the Vermin deck!",
+      "editions": [{ "id": "digital-files", "label": "Digital Files", "available": true, "format": "digital", "prices": [0] }],
+      "gameplay": true,
+      "kind": "content",
+      "name": "Vermin Cards",
+      "notes": "Release status: Released. Type: Content Pack. Scope: Small.",
+      "tags": ["gameplay", "homebrew", "ccg", "print-and-play", "cards", "vermin"],
+      "url": "https://docs.google.com/spreadsheets/d/1hBB4sGEFVuzstsZvY0nyNlw1ocXa7y5wZNzCXJdAAwY/edit#gid=1415263086&range=A23"
+    },
+    "expansion-ccg-allison-the-twilight-knight": {
+      "description": "Adds Allison as a nemesis with a one-on-one duel within a wider showdown, Twilight Sword narrative, and ways to join the Twilight Order. Includes a copper-based armor set, training for weak survivors, secrets, and an updated Watcher showdown.",
+      "editions": [{ "id": "digital-files", "label": "Digital Files", "available": true, "format": "digital", "prices": [0] }],
+      "gameplay": true,
+      "kind": "expansion",
+      "name": "Allison the Twilight Knight",
+      "notes": "Release status: Released. Type: Monster Expansion. Scope: Large. Subtypes: Additional Node 1 Nemesis, Story Focused.\n\nRequires the People of the Lantern campaign.",
+      "tags": ["gameplay", "homebrew", "monster", "knight", "ccg", "print-and-play", "expansion", "armor", "twilight-knight", "nemesis", "node-1-nemesis", "allison", "monster-watcher"],
+      "url": "https://docs.google.com/spreadsheets/d/1hBB4sGEFVuzstsZvY0nyNlw1ocXa7y5wZNzCXJdAAwY/edit#gid=1415263086&range=A36"
+    },
+    "expansion-ccg-aries-knight": {
+      "description": "Adds mechanics and craftable gear for the official Aries Knight miniature. The knight can interrupt showdowns as an adversary.",
+      "editions": [{ "id": "digital-files", "label": "Digital Files", "available": true, "format": "digital", "prices": [0] }],
+      "gameplay": true,
+      "kind": "expansion",
+      "name": "Aries Knight",
+      "notes": "Release status: Released. Type: Monster Expansion. Scope: Medium. Subtypes: Additional Node 3 Nemesis, Adversary, Hunt Phase.\n\nDoes not replace the Hand.\n\nIncludes cards for compatibility with most official and unofficial quarry monsters (including Fen's monsters).\n\nOptional interaction with Crimson Crocodile official expansion.",
+      "tags": ["gameplay", "homebrew", "monster", "knight", "ccg", "print-and-play", "expansion", "nemesis", "hunt", "node-3-nemesis", "adversaries", "aries"],
+      "url": "https://docs.google.com/spreadsheets/d/1hBB4sGEFVuzstsZvY0nyNlw1ocXa7y5wZNzCXJdAAwY/edit#gid=1415263086&range=A38"
+    },
+    "expansion-ccg-cinder-festival": {
+      "description": "Adds significant branching paths to the final decade of People of the Lantern, including many new mechanics and final bosses.",
+      "editions": [{ "id": "digital-files", "label": "Digital Files", "available": true, "format": "digital", "prices": [0] }],
+      "gameplay": true,
+      "kind": "expansion",
+      "name": "Cinder Festival",
+      "notes": "Release status: Released. Type: Monster Expansion. Scope: Huge. Subtypes: Story Focused, Final Boss.\n\nRequires the People of the Lantern campaign.\n\nRecommended with the Allison the Twilight Knight CCG expansion.",
+      "tags": ["gameplay", "homebrew", "monster", "ccg", "print-and-play", "expansion", "finale-monster", "pot-lantern"],
+      "url": "https://docs.google.com/spreadsheets/d/1hBB4sGEFVuzstsZvY0nyNlw1ocXa7y5wZNzCXJdAAwY/edit#gid=1415263086&range=A35"
+    },
+    "expansion-ccg-doug-dimmadome": {
+      "description": "An April Fools expansion with craftable gear and four nemesis fights against Doug Dimmadome in a colosseum.",
+      "editions": [{ "id": "digital-files", "label": "Digital Files", "available": true, "format": "digital", "prices": [0] }],
+      "gameplay": true,
+      "kind": "expansion",
+      "name": "Doug Dimmadome",
+      "notes": "Release status: Released. Type: Monster Expansion. Scope: Medium. Subtypes: Node 2 Nemesis.\n\nNote, at some point a number of survivors will be separated from the settlement. In my opinion, you should save your campaign right before this point, because it will be pretty crazy afterwards!",
+      "tags": ["gameplay", "homebrew", "monster", "ccg", "print-and-play", "expansion", "nemesis", "node-2-nemesis"],
+      "url": "https://docs.google.com/spreadsheets/d/1hBB4sGEFVuzstsZvY0nyNlw1ocXa7y5wZNzCXJdAAwY/edit#gid=1415263086&range=A39"
+    },
+    "expansion-ccg-drifter-knight": {
+      "description": "Adds a new quarry monster with weapons and gear, intended as an additional Node 2.5 quarry.",
+      "editions": [{ "id": "digital-files", "label": "Digital Files", "available": true, "format": "digital", "prices": [0] }],
+      "gameplay": true,
+      "kind": "expansion",
+      "name": "Drifter Knight",
+      "notes": "Release status: Released. Type: Monster Expansion. Scope: Medium. Subtypes: Additional Node 2 Quarry.\n\nIntended to be added a la Flower Knight, as an additional Node 2.5 quarry rather than replacing a Node 2 quarry.\n\nCan be combined with the Storm Knight CCG expansion to unlock the Storm Dancer legendary showdown.",
+      "tags": ["gameplay", "homebrew", "monster", "gear", "knight", "ccg", "print-and-play", "expansion", "node-2-quarry"],
+      "url": "https://docs.google.com/spreadsheets/d/1hBB4sGEFVuzstsZvY0nyNlw1ocXa7y5wZNzCXJdAAwY/edit#gid=1415263086&range=A40"
+    },
+    "expansion-ccg-forsaker-sisters": {
+      "description": "A deadly dance with the two Forsaker Sisters in a multi-opponent showdown!",
+      "editions": [{ "id": "digital-files", "label": "Digital Files", "available": true, "format": "digital", "prices": [0] }],
+      "gameplay": true,
+      "kind": "expansion",
+      "name": "Forsaker Sisters",
+      "notes": "Release status: Released. Type: Monster Expansion. Scope: Medium. Subtypes: Node 2 Nemesis.\n\nReplaces King's Man.",
+      "tags": ["gameplay", "homebrew", "monster", "ccg", "print-and-play", "expansion", "nemesis", "node-2-nemesis", "monster-forsaker"],
+      "url": "https://docs.google.com/spreadsheets/d/1hBB4sGEFVuzstsZvY0nyNlw1ocXa7y5wZNzCXJdAAwY/edit#gid=1415263086&range=A41"
+    },
+    "expansion-ccg-harvester-worm": {
+      "description": "Adds the Harvester Worm nemesis and minions that pursue survivors by sound during hunts and showdowns. Includes AI and hit-location manipulation gear, optional legendary encounters, and a five-year accelerated early-game campaign.",
+      "editions": [{ "id": "digital-files", "label": "Digital Files", "available": true, "format": "digital", "prices": [0] }],
+      "gameplay": true,
+      "kind": "expansion",
+      "name": "Harvester Worm",
+      "notes": "Release status: Released. Type: Monster Expansion. Scope: Large. Subtypes: Additional Node 3 Nemesis, 5 Year Campaign, Hunt Phase, Legendary Monster.\n\nDoes not replace the Hand.\n\nOptional interaction with Dung Beetle Knight official expansion.\n\nOptional interaction with Settlement Terrain CCG expansion.",
+      "tags": ["gameplay", "homebrew", "monster", "ccg", "print-and-play", "expansion", "campaign", "nemesis", "hunt", "legendary", "node-3-nemesis"],
+      "url": "https://docs.google.com/spreadsheets/d/1hBB4sGEFVuzstsZvY0nyNlw1ocXa7y5wZNzCXJdAAwY/edit#gid=1415263086&range=A37"
+    },
+    "expansion-ccg-hisspitter": {
+      "description": "CCG monster expansion in the design phase.",
+      "editions": [{ "id": "digital-files", "label": "Digital Files", "format": "digital", "prices": [0] }],
+      "gameplay": true,
+      "kind": "expansion",
+      "name": "Hisspitter",
+      "notes": "Release status: Design Phase. Type: Monster Expansion. Scope: Medium. Subtypes: Node 1 Quarry.",
+      "tags": ["gameplay", "homebrew", "monster", "ccg", "print-and-play", "upcoming", "expansion", "node-1-quarry"],
+      "url": "https://docs.google.com/spreadsheets/d/1hBB4sGEFVuzstsZvY0nyNlw1ocXa7y5wZNzCXJdAAwY/edit#gid=1415263086&range=A42"
+    },
+    "expansion-ccg-lantern-bear": {
+      "description": "CCG monster expansion in the design phase.",
+      "editions": [{ "id": "digital-files", "label": "Digital Files", "format": "digital", "prices": [0] }],
+      "gameplay": true,
+      "kind": "expansion",
+      "name": "Lantern Bear",
+      "notes": "Release status: Design Phase. Type: Monster Expansion. Scope: Medium. Subtypes: Node 1 Quarry.",
+      "tags": ["gameplay", "homebrew", "monster", "ccg", "print-and-play", "upcoming", "expansion", "node-1-quarry"],
+      "url": "https://docs.google.com/spreadsheets/d/1hBB4sGEFVuzstsZvY0nyNlw1ocXa7y5wZNzCXJdAAwY/edit#gid=1415263086&range=A43"
+    },
+    "expansion-ccg-scourge-lord": {
+      "description": "Bugs and bugs and bugs. The Scourge Lord is a minion-centric nemesis monster who infests your settlement until you drive him out, but also adds quests to craft new gear from the corpses of these vermin. Also includes an alternate Prologue showdown, Instrument proficiency, and gear which rewards high speed.",
+      "editions": [{ "id": "digital-files", "label": "Digital Files", "available": true, "format": "digital", "prices": [0] }],
+      "gameplay": true,
+      "kind": "expansion",
+      "name": "Scourge Lord",
+      "notes": "Release status: Released. Type: Monster Expansion. Scope: Medium. Subtypes: Node 1 Nemesis, Prologue.\n\nCan either be added beside the Node 1 Butcher or replace it.",
+      "tags": ["gameplay", "homebrew", "monster", "ccg", "print-and-play", "expansion", "nemesis", "node-1-nemesis", "vermin", "novel-proficiency", "minion"],
+      "url": "https://docs.google.com/spreadsheets/d/1hBB4sGEFVuzstsZvY0nyNlw1ocXa7y5wZNzCXJdAAwY/edit#gid=1415263086&range=A44"
+    },
+    "expansion-ccg-storm-dancer": {
+      "description": "A legendary monster combining Storm Knight and Drifter Knight mechanics. Adds gear to complete a custom armor set using both expansions and balance patches for both monsters.",
+      "editions": [{ "id": "digital-files", "label": "Digital Files", "available": true, "format": "digital", "prices": [0] }],
+      "gameplay": true,
+      "kind": "expansion",
+      "name": "Storm Dancer",
+      "notes": "Release status: Released. Type: Monster Expansion. Scope: Small. Subtypes: Legendary Monster.",
+      "requires": ["expansion-ccg-storm-knight", "expansion-ccg-drifter-knight"],
+      "tags": ["gameplay", "homebrew", "monster", "gear", "ccg", "print-and-play", "expansion", "armor", "legendary"],
+      "url": "https://docs.google.com/spreadsheets/d/1hBB4sGEFVuzstsZvY0nyNlw1ocXa7y5wZNzCXJdAAwY/edit#gid=1415263086&range=A47"
+    },
+    "expansion-ccg-storm-knight": {
+      "description": "Adds electrified Storm Knight nemesis encounters and rare gear to discover.",
+      "editions": [{ "id": "digital-files", "label": "Digital Files", "available": true, "format": "digital", "prices": [0] }],
+      "gameplay": true,
+      "kind": "expansion",
+      "name": "Storm Knight",
+      "notes": "Release status: Released. Type: Monster Expansion. Scope: Medium. Subtypes: Node 3 Nemesis.\n\nRequires a 25+ year campaign.\n\nReplaces the Hand around year 10.\n\nCan be combined with the Drifter Knight CCG expansion to unlock the Storm Dancer legendary showdown.",
+      "tags": ["gameplay", "homebrew", "monster", "gear", "knight", "ccg", "print-and-play", "expansion", "nemesis", "node-3-nemesis"],
+      "url": "https://docs.google.com/spreadsheets/d/1hBB4sGEFVuzstsZvY0nyNlw1ocXa7y5wZNzCXJdAAwY/edit#gid=1415263086&range=A45"
+    },
+    "expansion-ccg-the-great-bat": {
+      "description": "CCG monster expansion in the design phase.",
+      "editions": [{ "id": "digital-files", "label": "Digital Files", "format": "digital", "prices": [0] }],
+      "gameplay": true,
+      "kind": "expansion",
+      "name": "The Great Bat",
+      "notes": "Release status: Design Phase. Type: Monster Expansion. Subtypes: Node ? Quarry.",
+      "tags": ["gameplay", "homebrew", "monster", "ccg", "print-and-play", "upcoming", "expansion"],
+      "url": "https://docs.google.com/spreadsheets/d/1hBB4sGEFVuzstsZvY0nyNlw1ocXa7y5wZNzCXJdAAwY/edit#gid=1415263086&range=A48"
+    },
+    "expansion-ccg-veriphidian": {
+      "description": "An incredibly difficult endgame serpentine quarry monster. Those that survive can use the Veriphidian's bones as defensive terrain against other nemeses, use vermin as gear, and build a unique armor set combining multiple core game armor sets!",
+      "editions": [{ "id": "digital-files", "label": "Digital Files", "available": true, "format": "digital", "prices": [0] }],
+      "gameplay": true,
+      "kind": "expansion",
+      "name": "Veriphidian",
+      "notes": "Release status: Released. Type: Monster Expansion. Scope: Medium. Subtypes: Node 4 Quarry, Legendary Monster.\n\nOptional interactions with Arc Survivors and Scouts from the Gambler's Chest official expansion.",
+      "tags": ["gameplay", "homebrew", "monster", "terrain", "ccg", "print-and-play", "expansion", "armor", "node-4-quarry", "legendary", "vermin"],
+      "url": "https://docs.google.com/spreadsheets/d/1hBB4sGEFVuzstsZvY0nyNlw1ocXa7y5wZNzCXJdAAwY/edit#gid=1415263086&range=A46"
+    },
+    "revampedgame-ethereal-dreamer": {
+      "description": "3D model files only. Requires 3D printing.",
+      "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
+      "kind": "model",
+      "name": "Ethereal Dreamer",
+      "priceMinimum": true,
+      "tags": ["homebrew", "3d-files", "revampedgame", "ccg"],
+      "url": "https://ko-fi.com/s/cf78144561"
+    },
+    "revampedgame-eye-jelly-minion": {
+      "description": "3D model files only. Requires 3D printing.",
+      "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
+      "kind": "model",
+      "name": "Eye Jelly & Minion",
+      "priceMinimum": true,
+      "tags": ["homebrew", "3d-files", "revampedgame", "ccg"],
+      "url": "https://ko-fi.com/s/f731eb2d02"
+    },
+    "revampedgame-merchant": {
+      "description": "3D model files only. Requires 3D printing.",
+      "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
+      "kind": "model",
+      "name": "Merchant",
+      "tags": ["homebrew", "3d-files", "revampedgame", "ccg"],
+      "url": "https://ko-fi.com/s/2647fd66f6"
+    },
+    "revampedgame-singing-mantis-shrimp": {
+      "description": "3D model files only. Requires 3D printing.",
+      "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
+      "kind": "model",
+      "name": "Singing Mantis Shrimp",
+      "priceMinimum": true,
+      "tags": ["homebrew", "3d-files", "revampedgame", "ccg"],
+      "url": "https://ko-fi.com/s/ad14b89c3e"
+    },
+    "revampedgame-the-traveler": {
+      "description": "3D model files only. Requires 3D printing.",
+      "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
+      "kind": "model",
+      "name": "The Traveler",
+      "priceMinimum": true,
+      "tags": ["homebrew", "3d-files", "revampedgame", "ccg"],
+      "url": "https://ko-fi.com/s/fc2e6ac56e"
+    },
     "craft-of-death-acanthus-plants": {
       "currency": "EUR",
       "description": "Craft of Death digital terrain set containing three models for 3D printing.",
@@ -9856,7 +10474,7 @@
       "kind": "base",
       "name": "Knight of Hands Base",
       "priceMinimum": true,
-      "tags": ["homebrew", "3d-files", "monster", "core", "knight", "craft-of-death", "monster-hand"],
+      "tags": ["homebrew", "3d-files", "monster", "knight", "core", "craft-of-death", "monster-hand"],
       "url": "https://ko-fi.com/s/db104cca41"
     },
     "craft-of-death-lion-monster": {
@@ -9875,7 +10493,7 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [600], "releaseDate": "2024-08-12" }],
       "kind": "base",
       "name": "Phoenix Base - Materialize",
-      "tags": ["homebrew", "3d-files", "core", "terrain", "craft-of-death", "monster-phoenix", "base"],
+      "tags": ["homebrew", "3d-files", "core", "terrain", "monster-phoenix", "craft-of-death", "base"],
       "url": "https://ko-fi.com/s/51e4b8a167"
     },
     "craft-of-death-phoenix-nightmare-tree": {
@@ -9884,7 +10502,7 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [900], "releaseDate": "2024-08-12" }],
       "kind": "terrain",
       "name": "Phoenix Nightmare Tree",
-      "tags": ["homebrew", "3d-files", "monster", "core", "terrain", "craft-of-death", "monster-phoenix"],
+      "tags": ["homebrew", "3d-files", "monster", "core", "terrain", "monster-phoenix", "craft-of-death"],
       "url": "https://ko-fi.com/s/23394aac95"
     },
     "craft-of-death-rock-base-lion-monster": {
@@ -9943,7 +10561,7 @@
       "gameplay": true,
       "kind": "expansion",
       "name": "Rosine Expansion (Alpha v0.2_20.12.2022)",
-      "tags": ["gameplay", "homebrew", "revampedgame", "2022", "berserk", "rosine", "print-and-play"],
+      "tags": ["gameplay", "homebrew", "revampedgame", "print-and-play", "2022", "berserk", "rosine"],
       "url": "https://ko-fi.com/s/6860d7efac"
     },
     "raitenjuro-perfect-lantern": {
@@ -10267,15 +10885,6 @@
       "tags": ["homebrew", "3d-files", "monster", "revampedgame", "terrain", "monster-spidicules"],
       "url": "https://ko-fi.com/s/1c71568a0e"
     },
-    "revampedgame-ethereal-dreamer": {
-      "description": "3D model files only. Requires 3D printing.",
-      "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
-      "kind": "model",
-      "name": "Ethereal Dreamer",
-      "priceMinimum": true,
-      "tags": ["homebrew", "3d-files", "revampedgame", "ccg"],
-      "url": "https://ko-fi.com/s/cf78144561"
-    },
     "revampedgame-exhausted-lantern-hoard": {
       "description": "3D model files only. Requires 3D printing.",
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
@@ -10283,15 +10892,6 @@
       "name": "Exhausted Lantern Hoard",
       "tags": ["homebrew", "3d-files", "revampedgame", "core", "settlement-location"],
       "url": "https://ko-fi.com/s/21f333f9f9"
-    },
-    "revampedgame-eye-jelly-minion": {
-      "description": "3D model files only. Requires 3D printing.",
-      "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
-      "kind": "model",
-      "name": "Eye Jelly & Minion",
-      "priceMinimum": true,
-      "tags": ["homebrew", "3d-files", "revampedgame", "ccg"],
-      "url": "https://ko-fi.com/s/f731eb2d02"
     },
     "revampedgame-faceless-statue": {
       "description": "3D model files only. Requires 3D printing. Available to members.",
@@ -10581,7 +11181,7 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "accessory",
       "name": "Hunt Board",
-      "tags": ["homebrew", "3d-files", "revampedgame", "board", "hunt"],
+      "tags": ["homebrew", "3d-files", "revampedgame", "hunt", "board"],
       "url": "https://ko-fi.com/s/eef15a7918"
     },
     "revampedgame-incensed-pinaceae-fruit": {
@@ -10746,14 +11346,6 @@
       "name": "Mask Maker",
       "tags": ["homebrew", "3d-files", "revampedgame", "core", "settlement-location"],
       "url": "https://ko-fi.com/s/2dd7952ec0"
-    },
-    "revampedgame-merchant": {
-      "description": "3D model files only. Requires 3D printing.",
-      "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
-      "kind": "model",
-      "name": "Merchant",
-      "tags": ["homebrew", "3d-files", "revampedgame", "ccg"],
-      "url": "https://ko-fi.com/s/2647fd66f6"
     },
     "revampedgame-monster-board-option-1": {
       "description": "3D accessory files only. Requires 3D printing. Available to members.",
@@ -11010,15 +11602,6 @@
       "tags": ["homebrew", "3d-files", "revampedgame", "core", "hunt-event", "member-only"],
       "url": "https://ko-fi.com/s/82b9debdc8"
     },
-    "revampedgame-singing-mantis-shrimp": {
-      "description": "3D model files only. Requires 3D printing.",
-      "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
-      "kind": "model",
-      "name": "Singing Mantis Shrimp",
-      "priceMinimum": true,
-      "tags": ["homebrew", "3d-files", "revampedgame", "ccg"],
-      "url": "https://ko-fi.com/s/ad14b89c3e"
-    },
     "revampedgame-sinkhole": {
       "description": "3D terrain files only. Requires 3D printing.",
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
@@ -11211,15 +11794,6 @@
       "requires": ["expansion-screaming-god"],
       "tags": ["homebrew", "3d-files", "monster", "revampedgame", "terrain", "monster-screaming-god"],
       "url": "https://ko-fi.com/s/5add3e8472"
-    },
-    "revampedgame-the-traveler": {
-      "description": "3D model files only. Requires 3D printing.",
-      "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
-      "kind": "model",
-      "name": "The Traveler",
-      "priceMinimum": true,
-      "tags": ["homebrew", "3d-files", "revampedgame", "ccg"],
-      "url": "https://ko-fi.com/s/fc2e6ac56e"
     },
     "revampedgame-tile-forceps": {
       "description": "3D model files only. Requires 3D printing. Available to members.",

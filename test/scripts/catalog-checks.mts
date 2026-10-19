@@ -56,7 +56,7 @@ test("completed-by recipes validate references, formats, and edition dependency 
   const catalog = empty();
   catalog.content.aya = {
     name: "Aya",
-    kind: "gameplay-content",
+    kind: "content",
     tags: ["aya"],
     editions: [
       {
@@ -110,7 +110,7 @@ test("completed-by recipes require nonempty alternatives with unique edition ref
   const catalog = empty();
   catalog.content.aya = {
     name: "Aya",
-    kind: "gameplay-content",
+    kind: "content",
     tags: ["aya"],
     editions: [
       {
