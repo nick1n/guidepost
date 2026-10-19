@@ -68,7 +68,7 @@
       items: [
         {
           title: "Star Wars: Imperial Assault",
-          note: "Campaign log & tracker",
+          note: "Campaign log spreadsheet",
           icon: "i-material-symbols:sheets-outline",
           href: "https://boardgamegeek.com/filepage/262016/",
         },

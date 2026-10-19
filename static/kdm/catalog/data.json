@@ -800,8 +800,8 @@
         "expansions-of-death-vol-2",
         "knowledge",
         "node-1-quarry",
-        "vermin",
         "monster-frogdog",
+        "vermin",
         "monster-bullfrogdog"
       ]
     },
@@ -4724,6 +4724,7 @@
       "gameplay": true,
       "kind": "box",
       "name": "Philosophies of Death: Gatherism",
+      "requires": ["expansion-gamblers-chest"],
       "tags": ["plastic", "gameplay", "in-stock", "gear", "2025", "terrain", "pattern", "resource", "sim", "hunt-event", "knowledge", "gatherism", "philosophy", "philosophies-of-death"]
     },
     "philosophies-of-death-heliocenterism": {
@@ -4731,6 +4732,7 @@
       "gameplay": true,
       "kind": "box",
       "name": "Philosophies of Death: Heliocenterism",
+      "requires": ["expansion-gamblers-chest"],
       "tags": ["gameplay", "upcoming", "2027", "preorder", "philosophy", "philosophies-of-death", "heliocenterism"]
     },
     "philosophies-of-death-starbound": {
@@ -4738,6 +4740,7 @@
       "gameplay": true,
       "kind": "box",
       "name": "Philosophies of Death: Starbound",
+      "requires": ["expansion-gamblers-chest"],
       "tags": ["gameplay", "upcoming", "2027", "preorder", "philosophy", "philosophies-of-death", "starbound"]
     },
     "phoenix": {
@@ -7093,6 +7096,7 @@
       "gameplayContent": "Philosophy, (S)FA, Gear",
       "kind": "box",
       "name": "Wanderer - Aeneas",
+      "requires": ["expansion-gamblers-chest"],
       "size": "30",
       "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "2025", "resource", "sim", "innovation", "fighting-art", "secret-fighting-art", "knowledge", "wanderer", "arc-survivor", "trait", "philosophy", "aeneas"]
     },
@@ -7122,6 +7126,7 @@
       "kind": "box",
       "name": "Wanderer - Death Drifter",
       "notes": "Plastic: Hyperlight Drifter.",
+      "requires": ["expansion-gamblers-chest"],
       "size": "30",
       "tags": ["plastic", "generic", "gameplay", "in-stock", "gear", "male", "2025", "sim", "promo", "fighting-art", "knowledge", "strain", "crossover", "wanderer", "arc-survivor"]
     },
@@ -7136,6 +7141,7 @@
       "kind": "box",
       "name": "Wanderer - Goth",
       "notes": "Plastic: Zombicide.",
+      "requires": ["expansion-gamblers-chest"],
       "size": "30",
       "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "2025", "sim", "promo", "innovation", "fighting-art", "knowledge", "crossover", "wanderer", "arc-survivor", "goth", "amy"]
     },
@@ -7146,6 +7152,7 @@
       "handle": "wanderer-preacher",
       "kind": "model",
       "name": "Wanderer - Preacher",
+      "requires": ["expansion-gamblers-chest"],
       "tags": ["female", "plastic", "generic", "gameplay", "in-stock", "gear", "2026", "innovation", "fighting-art", "disorder", "knowledge", "wanderer", "arc-survivor", "preacher"]
     },
     "warlords": {
@@ -9425,8 +9432,8 @@
         "monster-sunstalker",
         "pot-star",
         "monster-screaming-antelope",
-        "monster-bone-eaters",
         "monster-frogdog",
+        "monster-bone-eaters",
         "monster-lonely-tree",
         "monster-crimson-crocodile",
         "monster-flower-knight",
@@ -10445,6 +10452,17 @@
       "priceMinimum": true,
       "tags": ["homebrew", "3d-files", "craft-of-death", "counter"],
       "url": "https://ko-fi.com/s/efbd334f4f"
+    },
+    "craft-of-death-bouncy-blossom": {
+      "currency": "EUR",
+      "description": "Craft of Death digital terrain for 3D printing, includes 8 models.",
+      "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [400], "releaseDate": "2026-10-19" }],
+      "kind": "model",
+      "name": "Bouncy Blossom",
+      "priceMinimum": true,
+      "requires": ["expansion-frogdog"],
+      "tags": ["homebrew", "3d-files", "terrain", "craft-of-death", "monster-frogdog"],
+      "url": "https://ko-fi.com/s/96dcfa2ca3"
     },
     "craft-of-death-frogophant": {
       "currency": "EUR",

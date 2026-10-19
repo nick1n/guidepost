@@ -82,6 +82,7 @@
   const requirements = $derived(reviewRequirements(item, catalog.byId));
   const numberedEditions = $derived(reviewNumberedEditions(item).filter((edition) => selection(edition).owned));
   const hasOwned = $derived(editions.some((edition) => selection(edition).owned));
+  const hasPartial = $derived(!hasOwned && editions.some((edition) => includedOwnership(edition).exactCount > 0));
 
   function selection(edition: ReviewEdition) {
     return collection.getEdition(item.id, edition.id);
@@ -176,7 +177,7 @@
               {/if}
             </span>
           </span>
-          <span class="ownership-label">Owned</span>
+          <span class={["ownership-label", hasPartial && "partial"]}>{hasPartial ? "Partial" : "Owned"}</span>
         </button>
       {/snippet}
     </HoldRipple>
@@ -221,7 +222,7 @@
                 {:else if badges.gameplay}
                   {@render badge("gameplay", "Gameplay", "gameplay")}
                 {:else if !badges.beta}
-                  <span class="badge">Models only</span>
+                  <span class="badge">{item.category === "homebrew" && item.kind === "accessory" ? "other" : "Models only"}</span>
                 {/if}
                 {#if badges.beta}{@render badge("beta", "Beta", "beta")}{/if}
               </div>
@@ -389,7 +390,10 @@
   {@const shop = reviewShopLink(item, edition)}
   {#if shop}
     <a class="shop" data-state={shop.state} href={shop.url} target="_blank" rel="noreferrer" title={shopStates[shop.state].description}>
-      Shop<span class={["external-icon", shopStates[shop.state].icon]} aria-hidden="true"></span>
+      {shop.url.startsWith("https://docs.google.com/spreadsheets/") ? "Link" : "Shop"}<span
+        class={["external-icon", shopStates[shop.state].icon]}
+        aria-hidden="true"
+      ></span>
       <span class="visually-hidden">{item.name}, {editionLabel(edition)}, {shopStates[shop.state].description}</span>
     </a>
   {/if}
@@ -631,7 +635,8 @@
     opacity: 0.05;
     transition: opacity var(--duration-fast) var(--ease-standard);
   }
-  .ownership[aria-pressed="true"] .ownership-label {
+  .ownership[aria-pressed="true"] .ownership-label,
+  .ownership-label.partial {
     opacity: 1;
   }
   .ownership:disabled .ownership-label {
@@ -993,10 +998,15 @@
     transition: var(--transition-colors);
   }
   @media (hover: hover) {
+    .ownership:not(:disabled):hover,
+    .card-heading:hover,
+    .ownership:not(:disabled):hover .ownership-label {
+      transition-duration: 0s;
+    }
     button.badge:hover {
       background: var(--badge-fill);
     }
-    .ownership[aria-pressed="false"]:not(:disabled):hover .ownership-label {
+    .ownership[aria-pressed="false"]:not(:disabled):hover .ownership-label:not(.partial) {
       opacity: 0.5;
     }
     button:not(:disabled, .wish, .edition-label, .badge):hover,
