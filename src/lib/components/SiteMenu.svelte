@@ -28,6 +28,9 @@
   let fullscreenPending = $state(false);
   let fullscreenError = $state("");
   let updateStatus = $state("");
+  let updating = $state(false);
+  let updateAttempt = $state(0);
+  let updateTimer: ReturnType<typeof setTimeout> | undefined;
   let online = $state(true);
   let drag = $state(0);
   const latest = $derived(log.notices[0]);
@@ -69,7 +72,10 @@
     fullscreenAvailable = Boolean(document.fullscreenEnabled);
     fullscreen = Boolean(document.fullscreenElement);
     online = navigator.onLine;
-    return unregister;
+    return () => {
+      unregister();
+      clearTimeout(updateTimer);
+    };
   });
 
   async function showView(next: typeof view) {
@@ -106,6 +112,10 @@
 
   function checkForUpdates() {
     updateStatus = "Update checks are not available yet.";
+    updating = true;
+    updateAttempt += 1;
+    clearTimeout(updateTimer);
+    updateTimer = setTimeout(() => (updating = false), 2000);
   }
 </script>
 
@@ -114,7 +124,7 @@
 
 {#if !hasNavbar}
   <div class="clearance" aria-hidden="true"></div>
-  <div class="launcher"><MenuButton /></div>
+  <div class={["launcher", page.route.id === "/" && "home"]}><MenuButton /></div>
 {/if}
 
 <dialog aria-labelledby={`${id}-heading`} data-swipe-ignore {@attach (dialog) => untrack(() => session.attach(dialog))} {@attach swipe}>
@@ -141,7 +151,12 @@
             <strong>Guidepost <span class="version">v{version}</span></strong>
             <span role="status">{updateStatus || "Check for updates"}</span>
           </span>
-          <span class="row-icon i-material-symbols:refresh" aria-hidden="true"></span>
+          {#key updateAttempt}
+            {#if updating}<span class="update-border" aria-hidden="true"></span>{/if}
+            <span class={["refresh", updating && "animating"]} aria-hidden="true">
+              <span class="row-icon i-material-symbols:refresh"></span>
+            </span>
+          {/key}
         </button>
         <div class="group">
           <button class="row" type="button" onclick={() => showView("account")}>
@@ -264,6 +279,15 @@
     position: fixed;
     inset-block-end: max(var(--inset-floating-control), env(safe-area-inset-bottom));
     inset-inline-end: max(var(--inset-floating-control), env(safe-area-inset-right));
+
+    &.home {
+      opacity: 0.8;
+      transition: opacity var(--duration-fast) var(--ease-standard);
+
+      &:is(:hover, :focus-within) {
+        opacity: 1;
+      }
+    }
   }
   dialog {
     --space-menu: 0.75rem;
@@ -410,13 +434,23 @@
     color: var(--foreground);
   }
   .brand {
+    position: relative;
     margin-block-end: var(--space-menu);
     overflow: clip;
-    border: var(--border-width) solid var(--grey-7);
+    overflow-clip-margin: border-box;
+    border: var(--border-width) solid transparent;
     border-radius: var(--radius-control);
     background:
       radial-gradient(ellipse 85% 180% at 8% 50% in oklch, #ffb25140 0%, #fb823b33 24%, #d440301a 58%, transparent 100%), var(--background);
 
+    &::after {
+      content: "";
+      position: absolute;
+      inset: calc(-1 * var(--border-width));
+      border: var(--border-width) solid var(--grey-7);
+      border-radius: inherit;
+      pointer-events: none;
+    }
     & .row-icon {
       color: var(--muted-foreground);
     }
@@ -427,6 +461,60 @@
     block-size: 3.5rem;
     margin: -0.75rem -1rem;
     overflow: visible;
+  }
+  .refresh {
+    display: grid;
+    flex: none;
+    place-items: center;
+
+    &.animating .row-icon {
+      animation: refresh-spin 1s linear 2;
+    }
+  }
+  @property --menu-update-angle {
+    syntax: "<angle>";
+    inherits: false;
+    initial-value: 0deg;
+  }
+  .update-border {
+    position: absolute;
+    z-index: 1;
+    inset: calc(-1 * var(--border-width));
+    padding: var(--border-width);
+    border-radius: inherit;
+    background: repeating-conic-gradient(
+      from var(--menu-update-angle),
+      var(--green-7) 0deg,
+      var(--green-8) 45deg,
+      var(--green-9) 90deg,
+      var(--green-8) 135deg,
+      var(--green-7) 180deg
+    );
+    mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    pointer-events: none;
+    animation: update-border-turn 2s linear both;
+  }
+  @keyframes update-border-turn {
+    from {
+      --menu-update-angle: 0deg;
+      opacity: 0;
+    }
+    20%,
+    80% {
+      opacity: 1;
+    }
+    to {
+      --menu-update-angle: 360deg;
+      opacity: 0;
+    }
+  }
+  @keyframes refresh-spin {
+    to {
+      transform: rotate(360deg);
+    }
   }
   .copy {
     display: grid;
@@ -646,6 +734,10 @@
     }
   }
   @media (prefers-reduced-motion: reduce) {
+    .refresh.animating .row-icon,
+    .update-border {
+      animation: none;
+    }
     .sheet,
     dialog[open] .sheet {
       translate: none;

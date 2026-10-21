@@ -50,15 +50,13 @@ function listen(element: HTMLElement, policy: Policy) {
     policy.onDrag?.(0);
   }
 
-  function ignored(target: EventTarget | null, mouse: boolean) {
+  function ignored(target: EventTarget | null) {
     if (!target || !("closest" in target)) return true;
     const origin = target as Element;
     if (downward) {
       if (!(element as HTMLDialogElement).open) return true;
       if (origin.closest("[data-drag-handle]")) return false;
       if (origin.closest("input, select, textarea, [contenteditable], [role=slider]")) return true;
-      // Touch can turn a row tap into a drag; mouse interaction keeps its usual control behavior.
-      if (mouse && origin.closest("a, button, summary, [role=button]")) return true;
     } else if (origin.closest("input, textarea, select, [contenteditable]:not([contenteditable='false']), [data-swipe-ignore]"))
       return true;
     for (let node: Element | null = origin; node && node !== element; node = node.parentElement) {
@@ -73,7 +71,7 @@ function listen(element: HTMLElement, policy: Policy) {
   function begin(target: EventTarget | null, x: number, y: number, time: number, id: number, mouse: boolean) {
     cancel();
     suppressUntil = 0;
-    if (ignored(target, mouse)) return;
+    if (ignored(target)) return;
     start = { x, y, time, id, mouse };
     if (!downward && !mouse)
       readinessTimer = setTimeout(() => {
@@ -177,7 +175,7 @@ function listen(element: HTMLElement, policy: Policy) {
     suppressUntil = 0;
   }
   function preventDrag(event: Event) {
-    if (start?.mouse && !downward) event.preventDefault();
+    if (start?.mouse) event.preventDefault();
   }
 
   const listeners: [EventTarget, string, EventListener, AddEventListenerOptions?][] = [

@@ -77,7 +77,29 @@ await runBrowser(
     await closed();
     assert(true, "Desktop mouse drag still dismisses the menu");
     await open();
-    await settings();
+    await gesture("dialog[data-swipe-ignore] .row", 40);
+    assert(
+      await evaluate(
+        "document.querySelector('dialog[data-swipe-ignore]').open && document.querySelector('dialog[data-swipe-ignore] h2').textContent.trim()==='Menu'",
+      ),
+      "Short mouse drag from a button snaps back without activating it",
+    );
+    await gesture("dialog[data-swipe-ignore] .row", 110);
+    await closed();
+    assert(true, "Desktop mouse drag from a button dismisses the menu");
+    await open();
+    await gesture("dialog[data-swipe-ignore] .navigation a", 40);
+    assert(
+      await evaluate("document.querySelector('dialog[data-swipe-ignore]').open && location.pathname.includes('collection')"),
+      "Short mouse drag from a link does not navigate",
+    );
+    await gesture("dialog[data-swipe-ignore] .navigation a", 110);
+    await closed();
+    assert(await evaluate("location.pathname.includes('collection')"), "Desktop mouse drag from a link dismisses without navigating");
+    await open();
+    await gesture("dialog[data-swipe-ignore] .row:nth-child(2)", 0);
+    await waitFor("document.querySelector('dialog[data-swipe-ignore] select') !== null");
+    assert(true, "Desktop mouse click still opens Settings");
     await evaluate(
       "(()=>{const select=document.querySelector('dialog[data-swipe-ignore] select');select.value='day-first';select.dispatchEvent(new Event('change',{bubbles:true}))})()",
     );

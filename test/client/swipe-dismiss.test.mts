@@ -81,7 +81,7 @@ describe("menu swipe dismissal", () => {
     view.detach();
   });
 
-  it.each(["a", "button", "input", "select", "textarea", "summary", "[contenteditable]", "[role=button]", "[role=slider]"])(
+  it.each(["input", "select", "textarea", "[contenteditable]", "[role=slider]"])(
     "leaves %s and its children in charge of their gestures",
     (selector) => {
       const view = fixture();
@@ -95,6 +95,51 @@ describe("menu swipe dismissal", () => {
       view.detach();
     },
   );
+
+  it.each(["a", "button", "summary", "[role=button]"])("allows mouse dismissal starting on %s without activating it", (selector) => {
+    const view = fixture();
+    const target = new Element("span", new Element(selector, view.body));
+    view.pointer("pointerdown", target);
+    expect(view.pointer("pointermove", target, 0, 100, 200).defaultPrevented).toBe(true);
+    view.pointer("pointerup", target, 0, 100, 300);
+    expect(view.dismiss).toHaveBeenCalledOnce();
+    const click = event("click", { target, detail: 1, timeStamp: 310 });
+    view.dialog.dispatchEvent(click);
+    expect(click.defaultPrevented).toBe(true);
+    view.detach();
+  });
+
+  it("preserves a mouse click on a row and suppresses its click after an incomplete drag", () => {
+    const view = fixture();
+    const target = new Element("button", view.body);
+    view.pointer("pointerdown", target);
+    view.pointer("pointerup", target, 0, 2, 200);
+    const click = event("click", { target, detail: 1, timeStamp: 210 });
+    view.dialog.dispatchEvent(click);
+    expect(click.defaultPrevented).toBe(false);
+    view.pointer("pointerdown", target, 0, 0, 300);
+    view.pointer("pointermove", target, 0, 40, 400);
+    view.pointer("pointerup", target, 0, 40, 500);
+    const dragClick = event("click", { target, detail: 1, timeStamp: 510 });
+    view.dialog.dispatchEvent(dragClick);
+    expect(dragClick.defaultPrevented).toBe(true);
+    expect(view.dismiss).not.toHaveBeenCalled();
+    expect(view.ondrag).toHaveBeenLastCalledWith(0);
+    view.detach();
+  });
+
+  it.each(["dragstart", "selectstart"])("prevents native %s from taking over a mouse dismissal", (type) => {
+    const view = fixture();
+    const target = new Element("a", view.body);
+    view.pointer("pointerdown", target);
+    const native = event(type, { target });
+    view.dialog.dispatchEvent(native);
+    expect(native.defaultPrevented).toBe(true);
+    view.pointer("pointermove", target, 0, 100, 200);
+    view.pointer("pointerup", target, 0, 100, 300);
+    expect(view.dismiss).toHaveBeenCalledOnce();
+    view.detach();
+  });
 
   it("leaves scrolled content alone, but permits a downward dismissal at its top or from the grip", () => {
     const view = fixture();
