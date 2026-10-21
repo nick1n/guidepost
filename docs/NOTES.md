@@ -75,3 +75,9 @@ Arc survivors with Disposition (heart, i-material-symbols:favorite).
 - "companion tools for campaign board games"
 - "your campaign, kept safe"
 - "trail markers for tabletop campaigns"
+
+## Future work
+
+- [ ] Investigate recoverable copy-number drafts for forced browser shutdown. Preserve owner isolation, validate recovered values, and save through the collection queue.
+- [ ] Review `HoldRipple.svelte` press-listener setup and cleanup for simplification. Preserve cancellation, keyboard behavior, and performance with many controls.
+- [ ] Consider replacing `TagRail.svelte` attachment-managed pointer listeners with declarative event handlers while preserving drag scrolling and click suppression.
