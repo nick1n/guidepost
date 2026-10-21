@@ -16,7 +16,6 @@ const gestureSlop = 10;
 const axisRatio = 1.5;
 const dismissDistance = 64;
 const dismissDuration = 1500;
-const dismissDragLimit = 180;
 const clickSuppressionDuration = 500;
 
 /** Horizontal navigation preserves native vertical scrolling, editable controls, and horizontal scrollers. */
@@ -25,7 +24,7 @@ export function swipe({ onSwipe, onDrag, threshold = 50, scope = "element" }: Sw
     listen(scope === "page" ? surface.ownerDocument.documentElement : surface, { onSwipe, onDrag, threshold });
 }
 
-/** Downward sheet dismissal leaves controls and scrolled content in charge of their gestures. */
+/** Downward sheet dismissal preserves native input gestures and scrolled content. */
 export function swipeDismiss({ dismiss, ondrag }: DismissOptions) {
   return (element: HTMLDialogElement) => listen(element, { dismiss, onDrag: ondrag });
 }
@@ -51,13 +50,15 @@ function listen(element: HTMLElement, policy: Policy) {
     policy.onDrag?.(0);
   }
 
-  function ignored(target: EventTarget | null) {
+  function ignored(target: EventTarget | null, mouse: boolean) {
     if (!target || !("closest" in target)) return true;
     const origin = target as Element;
     if (downward) {
       if (!(element as HTMLDialogElement).open) return true;
       if (origin.closest("[data-drag-handle]")) return false;
-      if (origin.closest("a, button, input, select, textarea, summary, [contenteditable], [role=button], [role=slider]")) return true;
+      if (origin.closest("input, select, textarea, [contenteditable], [role=slider]")) return true;
+      // Touch can turn a row tap into a drag; mouse interaction keeps its usual control behavior.
+      if (mouse && origin.closest("a, button, summary, [role=button]")) return true;
     } else if (origin.closest("input, textarea, select, [contenteditable]:not([contenteditable='false']), [data-swipe-ignore]"))
       return true;
     for (let node: Element | null = origin; node && node !== element; node = node.parentElement) {
@@ -72,7 +73,7 @@ function listen(element: HTMLElement, policy: Policy) {
   function begin(target: EventTarget | null, x: number, y: number, time: number, id: number, mouse: boolean) {
     cancel();
     suppressUntil = 0;
-    if (ignored(target)) return;
+    if (ignored(target, mouse)) return;
     start = { x, y, time, id, mouse };
     if (!downward && !mouse)
       readinessTimer = setTimeout(() => {
@@ -93,8 +94,10 @@ function listen(element: HTMLElement, policy: Policy) {
       if (movingUp || movingAcross) return cancel();
     } else if (cross > gestureSlop && cross >= primary) return cancel();
     if (primary > gestureSlop && primary > cross * axisRatio) {
+      // A noncancelable touch move means the browser already owns native scrolling.
+      if (downward && !start.mouse && !event.cancelable) return cancel();
       if (event.cancelable) event.preventDefault();
-      distance = downward ? Math.min(dy, dismissDragLimit) : dx;
+      distance = downward ? dy : dx;
       if (policy.dismiss) policy.onDrag?.(distance);
       else {
         const withinDuration = start.mouse || time - start.time <= touchDuration;
@@ -120,7 +123,12 @@ function listen(element: HTMLElement, policy: Policy) {
       const withinDuration = origin.mouse || time - origin.time <= touchDuration;
       complete = movingAcross && withinDuration;
     }
-    if (!complete) return cancel();
+    if (!complete) {
+      const dragged = downward && distance > 0;
+      cancel();
+      if (dragged) suppressUntil = time + clickSuppressionDuration;
+      return;
+    }
     clearTimeout(readinessTimer);
     start = undefined;
     suppressUntil = downward ? time + clickSuppressionDuration : Infinity;

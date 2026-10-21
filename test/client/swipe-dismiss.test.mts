@@ -69,13 +69,13 @@ function fixture() {
 }
 
 describe("menu swipe dismissal", () => {
-  it("tracks a downward drag outside the panel, caps its displacement, and dismisses on release", () => {
+  it("tracks a downward drag outside the panel without falling behind the pointer and dismisses on release", () => {
     const view = fixture();
     view.pointer("pointerdown");
     expect(view.pointer("pointermove", view.document, 4, 40, 200).defaultPrevented).toBe(true);
     expect(view.ondrag).toHaveBeenLastCalledWith(40);
     view.pointer("pointermove", view.document, 4, 240, 300);
-    expect(view.ondrag).toHaveBeenLastCalledWith(180);
+    expect(view.ondrag).toHaveBeenLastCalledWith(240);
     view.pointer("pointerup", view.document, 4, 240, 400);
     expect(view.dismiss).toHaveBeenCalledOnce();
     view.detach();
@@ -140,6 +140,65 @@ describe("menu swipe dismissal", () => {
     expect(view.dismiss).not.toHaveBeenCalled();
     view.touch("touchend", 100, 300);
     expect(view.dismiss).toHaveBeenCalledOnce();
+    view.detach();
+  });
+
+  it.each(["a", "button", "summary", "[role=button]"])("allows touch dismissal starting on %s without activating it", (selector) => {
+    const view = fixture();
+    const target = new Element("span", new Element(selector, view.body));
+    view.touch("touchstart", 0, 100, { target });
+    expect(view.touch("touchmove", 100, 200, { target }).defaultPrevented).toBe(true);
+    view.touch("touchend", 100, 300, { target });
+    expect(view.dismiss).toHaveBeenCalledOnce();
+    const click = event("click", { target, detail: 1, timeStamp: 310 });
+    view.dialog.dispatchEvent(click);
+    expect(click.defaultPrevented).toBe(true);
+    view.detach();
+  });
+
+  it.each(["input", "select", "textarea", "[contenteditable]", "[role=slider]"])("preserves touch interaction with %s", (selector) => {
+    const view = fixture();
+    const target = new Element(selector, view.body);
+    view.touch("touchstart", 0, 100, { target });
+    expect(view.touch("touchmove", 100, 200, { target }).defaultPrevented).toBe(false);
+    view.touch("touchend", 100, 300, { target });
+    expect(view.dismiss).not.toHaveBeenCalled();
+    view.detach();
+  });
+
+  it("does not turn a row tap into dismissal or suppress its click", () => {
+    const view = fixture();
+    const target = new Element("button", view.body);
+    view.touch("touchstart", 0, 100, { target });
+    view.touch("touchend", 2, 200, { target });
+    const click = event("click", { target, detail: 1, timeStamp: 210 });
+    view.dialog.dispatchEvent(click);
+    expect(view.dismiss).not.toHaveBeenCalled();
+    expect(click.defaultPrevented).toBe(false);
+    view.detach();
+  });
+
+  it("suppresses a row click after an incomplete drag", () => {
+    const view = fixture();
+    const target = new Element("button", view.body);
+    view.touch("touchstart", 0, 100, { target });
+    view.touch("touchmove", 40, 200, { target });
+    view.touch("touchend", 40, 300, { target });
+    const click = event("click", { target, detail: 1, timeStamp: 310 });
+    view.dialog.dispatchEvent(click);
+    expect(view.dismiss).not.toHaveBeenCalled();
+    expect(view.ondrag).toHaveBeenLastCalledWith(0);
+    expect(click.defaultPrevented).toBe(true);
+    view.detach();
+  });
+
+  it("cancels once native touch scrolling has taken over", () => {
+    const view = fixture();
+    view.touch("touchstart", 0);
+    view.touch("touchmove", 30, 200, { cancelable: false });
+    view.touch("touchend", 100, 300);
+    expect(view.dismiss).not.toHaveBeenCalled();
+    expect(view.ondrag).toHaveBeenLastCalledWith(0);
     view.detach();
   });
 

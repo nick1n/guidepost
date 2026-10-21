@@ -18,6 +18,7 @@ await runBrowser(
       await waitFor(
         "document.querySelector('dialog[data-swipe-ignore]')?.open && document.activeElement?.closest('dialog[data-swipe-ignore]')",
       );
+      await evaluate("Promise.all(document.querySelector('dialog[data-swipe-ignore] .sheet').getAnimations().map(a=>a.finished))");
     };
     const closed = async () => {
       await waitFor(
@@ -32,14 +33,27 @@ await runBrowser(
     const screenshot = async (name: string) => {
       await saveScreenshot(`temp/browser-verification/menu-${name}.png`);
     };
-    const gesture = async (selector: string, dy: number) => {
+    const gesture = async (selector: string, dy: number, input: "mouse" | "touch" = "mouse") => {
       const point = await evaluate<{ x: number; y: number }>(
         `(()=>{const r=document.querySelector(${JSON.stringify(selector)}).getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+Math.min(r.height/2,20)}})()`,
       );
-      await send("Input.dispatchMouseEvent", { type: "mousePressed", ...point, button: "left", clickCount: 1 });
-      for (const fraction of [0.25, 0.5, 0.75, 1])
-        await send("Input.dispatchMouseEvent", { type: "mouseMoved", x: point.x, y: point.y + dy * fraction, button: "left", buttons: 1 });
-      await send("Input.dispatchMouseEvent", { type: "mouseReleased", x: point.x, y: point.y + dy, button: "left", clickCount: 1 });
+      if (input === "touch") await send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ ...point, id: 1 }] });
+      else await send("Input.dispatchMouseEvent", { type: "mousePressed", ...point, button: "left", clickCount: 1 });
+      const samples: number[] = [];
+      for (const fraction of [0.05, 0.1, 0.25, 0.5, 0.75, 1]) {
+        const position = { x: point.x, y: point.y + dy * fraction };
+        if (input === "touch") await send("Input.dispatchTouchEvent", { type: "touchMove", touchPoints: [{ ...position, id: 1 }] });
+        else await send("Input.dispatchMouseEvent", { type: "mouseMoved", ...position, button: "left", buttons: 1 });
+        await evaluate("new Promise(requestAnimationFrame)");
+        samples.push(
+          await evaluate(
+            "parseFloat(getComputedStyle(document.querySelector('dialog[data-swipe-ignore] .sheet')).translate.split(' ')[1])",
+          ),
+        );
+      }
+      if (input === "touch") await send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+      else await send("Input.dispatchMouseEvent", { type: "mouseReleased", x: point.x, y: point.y + dy, button: "left", clickCount: 1 });
+      return samples;
     };
 
     await send("Emulation.setEmulatedMedia", { features: [{ name: "prefers-reduced-motion", value: "reduce" }] });
@@ -59,6 +73,10 @@ await runBrowser(
     await closed();
     assert(true, "Back dismisses the menu and releases scrolling");
     await open();
+    await gesture("dialog[data-swipe-ignore] [data-drag-handle]", 110);
+    await closed();
+    assert(true, "Desktop mouse drag still dismisses the menu");
+    await open();
     await settings();
     await evaluate(
       "(()=>{const select=document.querySelector('dialog[data-swipe-ignore] select');select.value='day-first';select.dispatchEvent(new Event('change',{bubbles:true}))})()",
@@ -68,7 +86,7 @@ await runBrowser(
     await escape();
     await evaluate("window.menuReloadSentinel = true");
     await send("Page.reload");
-    await waitFor("!window.menuReloadSentinel && /\\d{2}\\/\\d{2}\\/\\d{4}/.test(document.body.innerText)");
+    await waitFor("!window.menuReloadSentinel && /\\d{2}\\/\\d{2}\\/\\d{4}/.test(document.body?.innerText ?? '')");
     await waitFor("document.querySelector('article input[type=checkbox]:not(:disabled)') !== null");
     await open();
     await settings();
@@ -88,25 +106,53 @@ await runBrowser(
     await closed();
     assert(true, "Showdown density survives theme link navigation");
     await send("Emulation.setDeviceMetricsOverride", { width: 390, height: 844, deviceScaleFactor: 1, mobile: true });
+    await send("Emulation.setTouchEmulationEnabled", { enabled: true });
+    await send("Emulation.setEmulatedMedia", { features: [{ name: "prefers-reduced-motion", value: "no-preference" }] });
     await open();
     await screenshot("mobile-main");
-    await settings();
+    await gesture("dialog[data-swipe-ignore] .row", 40, "touch");
+    assert(
+      await evaluate(
+        "document.querySelector('dialog[data-swipe-ignore]').open && document.querySelector('dialog[data-swipe-ignore] h2').textContent.trim()==='Menu'",
+      ),
+      "Short row drag snaps back without activating the row",
+    );
+    await evaluate("Promise.all(document.querySelector('dialog[data-swipe-ignore] .sheet').getAnimations().map(a=>a.finished))");
+    const rowDrag = await gesture("dialog[data-swipe-ignore] .row", 110, "touch");
+    await closed();
+    assert(
+      rowDrag.slice(-3).every((value, index) => Math.abs(value - 110 * [0.5, 0.75, 1][index]) < 1),
+      "Touch row drag follows the finger each frame and dismisses",
+    );
+    await open();
+    await gesture("dialog[data-swipe-ignore] .row:nth-child(2)", 0, "touch");
+    await waitFor("document.querySelector('dialog[data-swipe-ignore] select') !== null");
+    assert(true, "Touch tap still opens Settings");
     await screenshot("mobile-settings");
-    await gesture("dialog[data-swipe-ignore] input[type=range]", 90);
+    await gesture("dialog[data-swipe-ignore] input[type=range]", 90, "touch");
     assert(
       await evaluate("document.querySelector('dialog[data-swipe-ignore]').open"),
       "Dragging a range control does not dismiss the menu",
     );
     await evaluate("document.querySelector('dialog[data-swipe-ignore] .body').scrollTop=200");
     await waitFor("document.querySelector('dialog[data-swipe-ignore] .body').scrollTop > 0");
-    await gesture("dialog[data-swipe-ignore] .body", 90);
+    await gesture("dialog[data-swipe-ignore] .body", 90, "touch");
     assert(
       await evaluate("document.querySelector('dialog[data-swipe-ignore]').open"),
       "Dragging scrolled settings content does not dismiss the menu",
     );
-    await gesture("dialog[data-swipe-ignore] [data-drag-handle]", 110);
+    const handleDrag = await gesture("dialog[data-swipe-ignore] [data-drag-handle]", 240, "touch");
     await closed();
-    assert(true, "Downward handle swipe dismisses the menu");
+    assert(Math.abs(handleDrag.at(-1)! - 240) < 1, "Touch handle swipe stays with the finger beyond 180px and dismisses");
+    await open();
+    await gesture("dialog[data-swipe-ignore] header", 110, "touch");
+    await closed();
+    assert(true, "Touch header swipe dismisses the menu");
+    await send("Emulation.setEmulatedMedia", { features: [{ name: "prefers-reduced-motion", value: "reduce" }] });
+    await open();
+    await gesture("dialog[data-swipe-ignore] .row", 110, "touch");
+    await closed();
+    assert(true, "Touch dismissal works with reduced motion");
     await open();
     await escape();
     assert(await evaluate("document.activeElement?.matches('[data-menu-trigger]')"), "Mobile Escape restores launcher focus");

@@ -118,15 +118,8 @@
   <div class="launcher"><MenuButton /></div>
 {/if}
 
-<dialog
-  aria-labelledby={`${id}-heading`}
-  data-swipe-ignore
-  data-dragging={drag > 0}
-  style:--drag={`${drag}px`}
-  {@attach (dialog) => untrack(() => session.attach(dialog))}
-  {@attach swipe}
->
-  <div class="sheet">
+<dialog aria-labelledby={`${id}-heading`} data-swipe-ignore {@attach (dialog) => untrack(() => session.attach(dialog))} {@attach swipe}>
+  <div class="sheet" data-dragging={drag > 0} style:translate={drag > 0 ? `0 ${drag}px` : undefined}>
     <div class="grip" data-drag-handle aria-hidden="true"><span></span></div>
     <header>
       <h2 id={`${id}-heading`} bind:this={heading} tabindex="-1">
@@ -322,10 +315,10 @@
       translate var(--duration-fast) var(--ease-standard);
   }
   dialog[open] .sheet {
-    translate: 0 var(--drag, 0px);
+    translate: 0 0;
     opacity: 1;
   }
-  dialog[open][data-dragging="true"] .sheet {
+  .sheet[data-dragging="true"] {
     transition: none;
   }
   @starting-style {
@@ -365,6 +358,7 @@
   }
   header {
     flex: none;
+    touch-action: pan-x;
     border-block-end: var(--border-width) solid var(--color-divider);
   }
   h2 {
