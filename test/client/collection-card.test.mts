@@ -1,7 +1,8 @@
+import type { Catalog } from "#lib/types/index.ts";
 import { expect, it, vi } from "vitest";
 import { render } from "svelte/server";
 import { Parser } from "htmlparser2";
-import { reviewIndex, type ReviewCatalog } from "#lib/catalog-view.ts";
+import { reviewIndex } from "#lib/catalog-view.ts";
 import CollectionCard from "#lib/components/track/CollectionCard.svelte";
 
 const context = await vi.hoisted(async () => {
@@ -22,7 +23,7 @@ vi.mock("#lib/state/date-preferences.svelte.ts", async (importOriginal) => {
 vi.mock(context.stylesheet, () => ({}));
 
 it("renders physical edition ownership and wishlist independently of content coverage", () => {
-  const data: ReviewCatalog = {
+  const data: Catalog = {
     content: {
       core: {
         name: "Core",

@@ -1,14 +1,11 @@
-import { editionGameplay, editionLabel, editionMaterials } from "./kdm-data.ts";
+import { editionGameplay, editionMaterials } from "./kdm-data.ts";
 import { catalogCategories, type Catalog, type Edition, type Item } from "#lib/types/index.ts";
 import { collectionKey, type CollectionSnapshot } from "#lib/types/collection.ts";
 
-export type ReviewEdition = Edition;
-export type ReviewItem = Item;
-export type ReviewCatalog = Catalog;
 export type CatalogEntry = ReturnType<typeof reviewEntries>[number];
 export type CatalogIndex = ReturnType<typeof reviewIndex>;
-export type EditionSelection = { item: CatalogEntry; edition: ReviewEdition };
-type Inclusion = Exclude<NonNullable<ReviewItem["includes"]>[number], string>;
+export type EditionSelection = { item: CatalogEntry; edition: Edition };
+type Inclusion = Exclude<NonNullable<Item["includes"]>[number], string>;
 type IncludedEdition = EditionSelection & { name: string };
 type Owner = { parentId: string; parentEditionId: string; parent: string; parentEdition: string; editionId?: string };
 
@@ -29,56 +26,56 @@ export function reviewTagLabel(tag: string) {
   return tag.replace(/^monster-/, "").replaceAll("-", " ");
 }
 
-export function reviewRequirements(item: ReviewItem, byId: ReadonlyMap<string, CatalogEntry>) {
+export function reviewRequirements(item: Item, byId: ReadonlyMap<string, CatalogEntry>) {
   return (item.requires ?? []).flatMap((id) => {
     const required = byId.get(id);
     return required ? [required] : [];
   });
 }
 
-export function reviewIncludedEditionLabel(parent: Pick<CatalogEntry, "category">, edition: ReviewEdition) {
-  return parent.category === "bundles" ? editionLabel(edition) : editionMaterials(edition).join(", ") || editionLabel(edition);
+export function reviewIncludedEditionLabel(parent: Pick<CatalogEntry, "category">, edition: Edition) {
+  return parent.category === "bundles" ? edition.label : editionMaterials(edition).join(", ") || edition.label;
 }
 
-export function reviewEntries(catalog: ReviewCatalog) {
+export function reviewEntries(catalog: Catalog) {
   return catalogCategories.flatMap((category) => Object.entries(catalog[category]).map(([id, item]) => ({ ...item, id, category })));
 }
 
-export function reviewTagCounts(items: readonly Pick<ReviewItem, "tags">[]) {
+export function reviewTagCounts(items: readonly Pick<Item, "tags">[]) {
   const counts = new Map<string, number>();
   for (const item of items) for (const tag of new Set(item.tags)) counts.set(tag, (counts.get(tag) ?? 0) + 1);
   return counts;
 }
 
-export function reviewTags(items: readonly Pick<ReviewItem, "tags">[]) {
+export function reviewTags(items: readonly Pick<Item, "tags">[]) {
   return [...reviewTagCounts(items)]
     .map(([tag, count]) => ({ tag, count }))
     .sort((a, b) => b.count - a.count || a.tag.localeCompare(b.tag, "en"));
 }
 
-export function reviewShopUrl(item: ReviewItem, edition: ReviewEdition) {
+export function reviewShopUrl(item: Item, edition: Edition) {
   if (edition.includedOnly) return;
   const handle = item.handle ?? edition.handle;
   return handle ? "https://shop.kingdomdeath.com/products/" + handle : (edition.url ?? item.url);
 }
 
-export function reviewShopLink(item: ReviewItem, edition: ReviewEdition) {
+export function reviewShopLink(item: Item, edition: Edition) {
   const url = reviewShopUrl(item, edition);
   if (!url) return;
 
-  const state: NonNullable<ReviewEdition["shop"]> | "unknown" =
+  const state: NonNullable<Edition["shop"]> | "unknown" =
     edition.shop ?? (["item", "bundle"].includes(edition.id) ? item.shop : undefined) ?? "unknown";
   return { url, state };
 }
 
-export function reviewPrice(item: ReviewItem, edition: ReviewEdition) {
+export function reviewPrice(item: Item, edition: Edition) {
   if (edition.includedOnly) return;
   if (edition.prices?.length) return Math.max(...edition.prices);
   // Item-level prices belong to synthetic editions, not to unpriced selectable releases.
   return ["item", "bundle"].includes(edition.id) ? item.price : undefined;
 }
 
-export function reviewEditions(item: ReviewItem & { category?: string }): ReviewEdition[] {
+export function reviewEditions(item: Item & { category?: string }): Edition[] {
   // Items without catalog editions get one trackable edition named for their category or accessory type.
   return item.editions?.length
     ? item.editions
@@ -100,16 +97,12 @@ export function reviewEditions(item: ReviewItem & { category?: string }): Review
       ];
 }
 
-export function reviewNumberedEditions(item: ReviewItem) {
-  return reviewEditions(item).filter((edition) => edition.numbered === true);
-}
-
-export function reviewEquivalentEditions(item: ReviewItem, edition: ReviewEdition) {
+export function reviewEquivalentEditions(item: Item, edition: Edition) {
   const canonical = edition.equivalentTo ?? edition.id;
   return reviewEditions(item).filter((release) => (release.equivalentTo ?? release.id) === canonical);
 }
 
-export function reviewEditionReleased(edition: ReviewEdition, today = new Date().toISOString().slice(0, 10)) {
+export function reviewEditionReleased(edition: Edition, today = new Date().toISOString().slice(0, 10)) {
   if (edition.label === "Preorder") return false;
   if (edition.releaseDate) return edition.releaseDate <= today;
   const window = edition.releaseWindow?.match(/^(\d{4})(?:[ -]Q([1-4]))?$/);
@@ -129,7 +122,7 @@ export function reviewGameplayFirst(items: readonly CatalogEntry[]) {
   return [...gameplay, ...models];
 }
 
-export function reviewBadges(item: ReviewItem) {
+export function reviewBadges(item: Item) {
   const editions = reviewEditions(item);
   return {
     gameplay: editions.some((edition) => editionGameplay(item, edition) && (!edition.beta || edition.gameplay === true)),
@@ -137,7 +130,7 @@ export function reviewBadges(item: ReviewItem) {
   };
 }
 
-function matchingEditions(item: CatalogEntry, reference: Inclusion, parent: ReviewEdition | undefined) {
+function matchingEditions(item: CatalogEntry, reference: Inclusion, parent: Edition | undefined) {
   const editions = reviewEditions(item);
   if (reference.editionId) return editions.filter((edition) => edition.id === reference.editionId);
   const { materials } = reference;
@@ -150,7 +143,7 @@ function matchingEditions(item: CatalogEntry, reference: Inclusion, parent: Revi
 }
 
 // Rebuild this index when the catalog changes; cached results belong to that snapshot.
-export function reviewIndex(catalog: ReviewCatalog) {
+export function reviewIndex(catalog: Catalog) {
   const entries = reviewEntries(catalog);
   // Resolve synthetic editions once on the indexed copies, leaving source items unchanged.
   for (const item of entries) item.editions = reviewEditions(item);
@@ -194,7 +187,7 @@ function indexRelationships(entries: readonly CatalogEntry[], byId: ReadonlyMap<
       const child = byId.get(reference.item);
       if (!child) return [];
       const childEdition = child.editions?.find((release) => release.id === reference.editionId);
-      return [{ ...reference, name: child.name, category: child.category, editionLabel: childEdition && editionLabel(childEdition) }];
+      return [{ ...reference, name: child.name, category: child.category, editionLabel: childEdition?.label }];
     });
     if (item?.editions?.find((release) => release.id === editionId)?.includesAllSim) {
       const explicitSim = new Set(
@@ -211,7 +204,7 @@ function indexRelationships(entries: readonly CatalogEntry[], byId: ReadonlyMap<
                 editionId: release.id,
                 name: child.name,
                 category: child.category,
-                editionLabel: editionLabel(release),
+                editionLabel: release.label,
               });
           }
     }
@@ -455,7 +448,7 @@ function resolveCoverage(nodes: ReadonlyMap<string, CoverageNode>, snapshot: Col
       parentId: root.item.id,
       parentEditionId: root.edition.id,
       parent: root.item.name,
-      parentEdition: editionLabel(root.edition),
+      parentEdition: root.edition.label,
       editionId,
     }));
   }

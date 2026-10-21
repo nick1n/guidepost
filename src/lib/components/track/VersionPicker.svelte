@@ -1,6 +1,5 @@
 <script lang="ts">
   import type { Edition } from "#lib/types/index.ts";
-  import { editionLabel } from "#lib/kdm-data.ts";
 
   type Props = {
     versions: Pick<Edition, "id" | "label" | "name">[];
@@ -23,7 +22,7 @@
       data-dialog-initial-focus={focusActive && active ? "true" : undefined}
       onclick={() => onselect(version.id)}
     >
-      {editionLabel(version)}
+      {version.label}
     </button>
   {/each}
 </div>

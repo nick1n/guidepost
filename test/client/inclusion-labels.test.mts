@@ -1,7 +1,8 @@
+import type { Catalog } from "#lib/types/index.ts";
 import { expect, it } from "vitest";
-import { reviewIndex, type ReviewCatalog } from "#lib/catalog-view.ts";
+import { reviewIndex } from "#lib/catalog-view.ts";
 
-function fixture(): ReviewCatalog {
+function fixture(): Catalog {
   return {
     content: {
       expansion: {

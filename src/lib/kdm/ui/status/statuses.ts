@@ -1,12 +1,8 @@
-import {
-  statuses,
-  statusIcons,
-  type SurvivorStatusIcons,
-  type StatusInfo,
-  type IconContext,
-  type Icon,
-  type StatusIcons,
-} from "#lib/constants.ts";
+import { statuses, statusIcons, type SurvivorStatusIcons, type StatusInfo, type IconContext, type Icon } from "#lib/constants.ts";
+
+function isSurvivorStatus(icon: Icon): icon is SurvivorStatusIcons {
+  return Object.hasOwn(statuses, icon);
+}
 
 export function statusSummary(status: SurvivorStatusIcons) {
   const info = statuses[status];
@@ -14,10 +10,7 @@ export function statusSummary(status: SurvivorStatusIcons) {
 }
 
 export function iconView(icon: Icon, { active = false, context = "control" }: { active?: boolean; context?: IconContext } = {}) {
-  const info: Omit<StatusInfo, "label"> = statuses[icon] ?? {
-    icon: statusIcons[icon as StatusIcons],
-    iconClass: `${icon}-icon`,
-  };
+  const info: Omit<StatusInfo, "label"> = isSurvivorStatus(icon) ? statuses[icon] : { icon: statusIcons[icon], iconClass: `${icon}-icon` };
   const symbol = active ? (info.activeIcon ?? info.icon) : info.icon;
   const role = info.iconClass ?? "status-icon";
   if (context === "quick" || context === "legend") {

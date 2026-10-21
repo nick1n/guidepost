@@ -13,13 +13,17 @@ type GearSelection = GearDrag & {
 
 export const [getGearDrag, setGearDrag] = createContext<{ current: GearDrag | null; selection: GearSelection | null }>();
 
+const trinketStart = 10;
+const trinketRowSize = 3;
+const slotLimit = trinketStart + 3 * trinketRowSize;
+
 export function trinketSpace(slots: (string | null)[]) {
-  const empty = slots.findIndex((item, index) => index >= 10 && index < 19 && item === null);
-  return empty !== -1 ? empty : slots.length < 19 ? slots.length : -1;
+  const empty = slots.findIndex((item, index) => index >= trinketStart && index < slotLimit && item === null);
+  return empty !== -1 ? empty : slots.length < slotLimit ? slots.length : -1;
 }
 
 export function canDropGear(source: GearDrag | null, slots: (string | null)[], target: number) {
-  const newRow = target === slots.length && (target === 13 || target === 16);
+  const newRow = target === slots.length && (target === trinketStart + trinketRowSize || target === trinketStart + 2 * trinketRowSize);
   return Boolean(
     source &&
     source.slot > 0 &&
@@ -33,7 +37,7 @@ export function canDropGear(source: GearDrag | null, slots: (string | null)[], t
 
 export function dropGear(source: GearDrag | null, slots: (string | null)[], target: number) {
   if (!source || !canDropGear(source, slots, target)) return false;
-  if (target === slots.length) slots.push(null, null, null);
+  if (target === slots.length) slots.push(...Array<null>(trinketRowSize).fill(null));
   const displaced = slots[target];
   slots[target] = source.item;
   source.slots[source.slot] = displaced;

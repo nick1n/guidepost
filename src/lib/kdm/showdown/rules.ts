@@ -1,13 +1,13 @@
 import { tokenNet, type Sheet } from "./sheet";
 
-export type AttackWeapon = "Founding Stone" | "Fist & Tooth";
-
 type WeaponStats = { speed: number; accuracy: number; strength: number; luck: number; keywords: readonly string[] };
 
-const weaponStats: Record<AttackWeapon, WeaponStats> = {
+const weaponStats = {
   "Founding Stone": { speed: 2, accuracy: 7, strength: 1, luck: 0, keywords: ["weapon", "melee", "stone"] },
   "Fist & Tooth": { speed: 2, accuracy: 8, strength: 0, luck: 1, keywords: ["weapon", "melee", "fist & tooth"] },
-};
+} satisfies Record<string, WeaponStats>;
+
+export type AttackWeapon = keyof typeof weaponStats;
 
 const clampTarget = (value: number) => Math.max(2, Math.min(10, value));
 

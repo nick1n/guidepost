@@ -185,7 +185,7 @@ const statusDefinitions = {
   },
 } as const;
 export type SurvivorStatusIcons = keyof typeof statusDefinitions;
-export const statuses: Record<string, StatusInfo> = statusDefinitions;
+export const statuses: Record<SurvivorStatusIcons, StatusInfo> = statusDefinitions;
 export const statusOrder = Object.keys(statuses) as SurvivorStatusIcons[];
 export const statusFlags = [
   "status:threat",

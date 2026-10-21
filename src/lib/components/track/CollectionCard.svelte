@@ -1,5 +1,6 @@
 <script module lang="ts">
-  import type { reviewEntries, ReviewEdition } from "#lib/catalog-view.ts";
+  import type { reviewEntries } from "#lib/catalog-view.ts";
+  import type { Edition } from "#lib/types/index.ts";
   import type { Attachment } from "svelte/attachments";
 
   type Entry = ReturnType<typeof reviewEntries>[number];
@@ -37,14 +38,13 @@
     reviewShopLink,
     reviewEditions,
     reviewEditionReleased,
-    reviewNumberedEditions,
     reviewPrice,
     reviewTagLabel,
     reviewBadges,
     reviewIncludedEditionLabel,
     reviewRequirements,
   } from "#lib/catalog-view.ts";
-  import { editionGameplay, editionLabel, editionMaterials, formatPrice } from "#lib/kdm-data.ts";
+  import { editionGameplay, editionMaterials, formatPrice } from "#lib/kdm-data.ts";
   import { onDestroy } from "svelte";
   import { SvelteSet } from "svelte/reactivity";
   import { getCollection } from "#lib/state/collection.svelte.ts";
@@ -57,7 +57,7 @@
   const collection = getCollection();
   const dates = getDatePreferences();
 
-  function release(edition: ReviewEdition) {
+  function release(edition: Edition) {
     return edition.releaseDate ? dates.formatDate(edition.releaseDate) : (edition.releaseWindow ?? "date unknown");
   }
   const collectionActions = getCollectionActions();
@@ -83,11 +83,11 @@
   );
   const badges = $derived(reviewBadges(item));
   const requirements = $derived(reviewRequirements(item, catalog.byId));
-  const numberedEditions = $derived(reviewNumberedEditions(item).filter((edition) => selection(edition).owned));
+  const numberedEditions = $derived(editions.filter((edition) => edition.numbered === true && selection(edition).owned));
   const hasOwned = $derived(editions.some((edition) => selection(edition).owned));
   const hasPartial = $derived(!hasOwned && editions.some((edition) => includedOwnership(edition).exactCount > 0));
 
-  function selection(edition: ReviewEdition) {
+  function selection(edition: Edition) {
     return collection.getEdition(item.id, edition.id);
   }
   function updateProgressAnimation(event: TransitionEvent, editionId: string) {
@@ -95,7 +95,7 @@
     if (event.type === "transitionrun") animatingEditions.add(editionId);
     else animatingEditions.delete(editionId);
   }
-  function includedOwnership(edition: ReviewEdition, target = item) {
+  function includedOwnership(edition: Edition, target = item) {
     return collection.coverage.contents(target.id, edition.id);
   }
   function showOwnershipFeedback(kind: OwnershipKind) {
@@ -122,26 +122,26 @@
     showOwnershipFeedback(owned ? "owned" : "cleared");
     return `${item.name}, all editions marked ${owned ? "owned" : "not owned"}.`;
   }
-  function selectEdition(edition: ReviewEdition) {
+  function selectEdition(edition: Edition) {
     if (selected?.id === edition.id) toggleOwned(edition);
     else inspected = edition.id;
   }
-  function toggleOwned(edition: ReviewEdition, target = item, owned?: boolean) {
+  function toggleOwned(edition: Edition, target = item, owned?: boolean) {
     if (!writable) return;
     if (target.id === item.id) inspected = edition.id;
     clearTimeout(feedbackTimer);
     feedback = undefined;
     collectionActions.run(collection.toggleEditionOwned(collectionKey(target.id, edition.id), owned));
   }
-  function toggleWish(edition: ReviewEdition, target = item) {
+  function toggleWish(edition: Edition, target = item) {
     if (!writable) return;
     collectionActions.run(collection.toggleWish(collectionKey(target.id, edition.id)));
   }
-  function toggleIncludedOwned(edition: ReviewEdition, target: Entry, owned?: boolean) {
+  function toggleIncludedOwned(edition: Edition, target: Entry, owned?: boolean) {
     if (!writable) return;
     collectionActions.run(collection.toggleIncludedOwned(collectionKey(target.id, edition.id), owned));
   }
-  function updateCopyNumber(edition: ReviewEdition, input: HTMLInputElement) {
+  function updateCopyNumber(edition: Edition, input: HTMLInputElement) {
     if (!writable) return;
     const copyNumber = input.value === "" && !input.validity.badInput ? undefined : input.valueAsNumber;
     collectionActions.run(collection.setCopyNumber(collectionKey(item.id, edition.id), copyNumber), { success: false });
@@ -216,7 +216,7 @@
               {#if !summaryEdition.includedOnly}
                 <div class="edition-value">
                   <strong class="price">{price === undefined ? "Price unknown" : formatPrice(price, item.currency)}</strong>
-                  <span class="caption">for {editionLabel(summaryEdition)}</span>
+                  <span class="caption">for {summaryEdition.label}</span>
                 </div>
               {/if}
               <div class="badges">
@@ -250,7 +250,7 @@
             {#each numberedEditions as numberedEdition (numberedEdition.id)}
               {@const value = selection(numberedEdition)}
               <label class="copy">
-                <span>{editionLabel(numberedEdition)} #</span>
+                <span>{numberedEdition.label} #</span>
                 <input
                   type="number"
                   min="1"
@@ -310,12 +310,12 @@
   </button>
 {/snippet}
 
-{#snippet editionDetail(edition: ReviewEdition)}
+{#snippet editionDetail(edition: Edition)}
   {@const { children, exactCount } = includedOwnership(edition)}
   {#if children.length}
     <details class="contents" bind:open={contentsOpen}>
       <summary>
-        {editionLabel(edition)} includes
+        {edition.label} includes
         <span class="contents-count">
           {exactCount} of {children.length} owned
         </span>
@@ -371,7 +371,7 @@
               <button
                 class="wish"
                 type="button"
-                aria-label="Wishlist {child.item.name}, {editionLabel(child.edition)}"
+                aria-label="Wishlist {child.item.name}, {child.edition.label}"
                 aria-pressed={!!value.wished}
                 disabled={!writable || !!value.owned}
                 onclick={() => toggleWish(child.edition, child.item)}
@@ -389,7 +389,7 @@
   {/if}
 {/snippet}
 
-{#snippet shopLink(edition: ReviewEdition)}
+{#snippet shopLink(edition: Edition)}
   {@const shop = reviewShopLink(item, edition)}
   {#if shop}
     <a class="shop" data-state={shop.state} href={shop.url} target="_blank" rel="noreferrer" title={shopStates[shop.state].description}>
@@ -397,12 +397,12 @@
         class={["external-icon", shopStates[shop.state].icon]}
         aria-hidden="true"
       ></span>
-      <span class="visually-hidden">{item.name}, {editionLabel(edition)}, {shopStates[shop.state].description}</span>
+      <span class="visually-hidden">{item.name}, {edition.label}, {shopStates[shop.state].description}</span>
     </a>
   {/if}
 {/snippet}
 
-{#snippet editionRow(edition: ReviewEdition, active: boolean)}
+{#snippet editionRow(edition: Edition, active: boolean)}
   {@const value = selection(edition)}
   {@const ownership = includedOwnership(edition)}
   {@const hasContents = ownership.children.length > 0}
@@ -421,9 +421,7 @@
     <label class="own">
       <input
         type="checkbox"
-        aria-label={value.owned
-          ? `Remove ownership of ${item.name}, ${editionLabel(edition)}`
-          : `Have ${item.name}, ${editionLabel(edition)}`}
+        aria-label={value.owned ? `Remove ownership of ${item.name}, ${edition.label}` : `Have ${item.name}, ${edition.label}`}
         checked={!!value.owned}
         aria-describedby={hasContents ? `ownership-${item.id}-${edition.id}` : undefined}
         disabled={!writable}
@@ -439,11 +437,7 @@
       class="edition-label"
       type="button"
       aria-pressed={active}
-      aria-label="View {item.name}, {editionLabel(edition)}{gameplay
-        ? edition.beta
-          ? ', includes beta gameplay'
-          : ', includes gameplay'
-        : ''}"
+      aria-label="View {item.name}, {edition.label}{gameplay ? (edition.beta ? ', includes beta gameplay' : ', includes gameplay') : ''}"
       onclick={() => selectEdition(edition)}
     >
       <span class="edition-name">
@@ -476,7 +470,7 @@
       class="wish"
       type="button"
       aria-pressed={!!value.wished}
-      aria-label="Wishlist {item.name}, {editionLabel(edition)}"
+      aria-label="Wishlist {item.name}, {edition.label}"
       disabled={!writable || !!value.owned}
       onclick={() => toggleWish(edition)}
     >

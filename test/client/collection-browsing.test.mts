@@ -1,11 +1,11 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { SvelteMap } from "svelte/reactivity";
-import { reviewIndex, type ReviewCatalog } from "#lib/catalog-view.ts";
+import { reviewIndex } from "#lib/catalog-view.ts";
 import { CollectionBrowsing } from "#lib/collection-browsing.svelte.ts";
-import type { EntryState } from "#lib/types/index.ts";
+import type { Catalog, EntryState } from "#lib/types/index.ts";
 
 function fixture(count = 0) {
-  const data: ReviewCatalog = {
+  const data: Catalog = {
     content: {
       model: {
         name: "Lantern Knight",

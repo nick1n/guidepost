@@ -6,15 +6,17 @@ export function dragScroll(workspace: HTMLElement) {
   const controls = "button:not(.slot[draggable=false]), input, textarea, select, a, [contenteditable], [draggable=true]";
 
   function nearestPanel(x: number) {
-    const panels = Array.from(workspace.querySelectorAll<HTMLElement>(":scope > .dashboard"));
-    return panels.reduce<HTMLElement | undefined>((nearest, panel) => {
-      if (!nearest) return panel;
-      const distance = (element: HTMLElement) => {
-        const bounds = element.getBoundingClientRect();
-        return Math.max(bounds.left - x, 0, x - bounds.right);
-      };
-      return distance(panel) < distance(nearest) ? panel : nearest;
-    }, undefined);
+    let nearest: HTMLElement | undefined;
+    let nearestDistance = Infinity;
+    for (const panel of workspace.querySelectorAll<HTMLElement>(":scope > .dashboard")) {
+      const bounds = panel.getBoundingClientRect();
+      const distance = Math.max(bounds.left - x, 0, x - bounds.right);
+      if (distance < nearestDistance) {
+        nearest = panel;
+        nearestDistance = distance;
+      }
+    }
+    return nearest;
   }
 
   function onpointerdown(event: PointerEvent) {

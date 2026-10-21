@@ -28,17 +28,20 @@ export class SectionControls {
   }
 
   isOpen(title: string) {
-    const matches = Array.from(this.sections).filter((section) => section.getTitle() === sectionName(title));
+    const name = sectionName(title);
+    const matches = Array.from(this.sections).filter((section) => section.getTitle() === name);
     return matches.length > 0 && matches.every((section) => section.getOpen());
   }
 
   hasSection(title: string) {
-    return Array.from(this.sections).some((section) => section.getTitle() === sectionName(title));
+    const name = sectionName(title);
+    return Array.from(this.sections).some((section) => section.getTitle() === name);
   }
 
   setSectionOpen(title: string, open: boolean) {
+    const name = sectionName(title);
     for (const section of this.sections) {
-      if (section.getTitle() === sectionName(title)) section.setOpen(open);
+      if (section.getTitle() === name) section.setOpen(open);
     }
   }
 }

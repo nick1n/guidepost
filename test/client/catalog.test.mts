@@ -1,7 +1,8 @@
+import type { Catalog, Item } from "#lib/types/index.ts";
 import { describe, expect, it } from "vitest";
 import { collectionKey, type CollectionSnapshot } from "#lib/types/collection.ts";
 import catalog from "#catalog/data.json";
-import { catalogTags, editionGameplay, editionLabel, editionMaterials } from "#lib/kdm-data.ts";
+import { catalogTags, editionGameplay, editionMaterials } from "#lib/kdm-data.ts";
 import {
   reviewEditions,
   reviewEquivalentEditions,
@@ -12,11 +13,9 @@ import {
   reviewPrice,
   reviewShopLink,
   reviewShopUrl,
-  type ReviewCatalog,
-  type ReviewItem,
 } from "#lib/catalog-view.ts";
 
-function coverageFixture(): ReviewCatalog {
+function coverageFixture(): Catalog {
   return {
     content: {
       core: {
@@ -72,10 +71,10 @@ function coverageFixture(): ReviewCatalog {
     accessories: {},
     homebrew: {},
     "included-only": {},
-  } as ReviewCatalog;
+  } as Catalog;
 }
 
-function pricingFixture(): ReviewCatalog {
+function pricingFixture(): Catalog {
   return {
     content: {
       model: {
@@ -99,7 +98,7 @@ function pricingFixture(): ReviewCatalog {
 
 describe("edition coverage", () => {
   it("keeps the reviewed sold Naked editions without duplicate included Plastic editions", () => {
-    const index = reviewIndex(catalog as ReviewCatalog);
+    const index = reviewIndex(catalog as Catalog);
     const retained = new Set([
       "armor-kit-cycloid-scale",
       "armor-kit-dragon-king",
@@ -137,7 +136,7 @@ describe("edition coverage", () => {
   });
 
   it("does not encode included-only editions as zero-priced products", () => {
-    const index = reviewIndex(catalog as ReviewCatalog);
+    const index = reviewIndex(catalog as Catalog);
     for (const item of index.entries) {
       for (const edition of item.editions ?? []) {
         if (edition.includedOnly) expect(edition.prices).not.toEqual([0]);
@@ -145,7 +144,7 @@ describe("edition coverage", () => {
     }
   });
   it("covers live gameplay upgrades without synthesizing later physical Core or expansion products", () => {
-    const index = reviewIndex(catalog as ReviewCatalog);
+    const index = reviewIndex(catalog as Catalog);
     const keys = (id: string, editionId: string) => {
       const item = index.byId.get(id)!;
       const edition = item.editions!.find((release) => release.id === editionId)!;
@@ -185,7 +184,7 @@ describe("edition coverage", () => {
   });
 
   it("limits Legendary Card Pack I expansion updates to the six reviewed gameplay differences", () => {
-    const index = reviewIndex(catalog as ReviewCatalog);
+    const index = reviewIndex(catalog as Catalog);
     const changed = new Set(["dung-beetle-knight", "dragon-king", "lonely-tree", "lion-knight", "sunstalker", "flower-knight"]);
     const unchanged = ["gorm", "green-knight-armor", "lion-god", "manhunter", "slenderman", "spidicules"];
     const pack = index.byId.get("legendary-card-pack")!;
@@ -209,7 +208,7 @@ describe("edition coverage", () => {
     expect(index.includedEditions(pack.id, "2", false)).toHaveLength(0);
   });
   it("tracks the five promo gameplay contents from Pack I without granting their miniatures or complete products", () => {
-    const index = reviewIndex(catalog as ReviewCatalog);
+    const index = reviewIndex(catalog as Catalog);
     const pack = index.byId.get("legendary-card-pack")!;
     const owned = Object.fromEntries(
       index
@@ -487,7 +486,7 @@ describe("edition coverage", () => {
 
 describe("review catalog facts", () => {
   it("matches explicitly equivalent copies without merging versions or equal labels", () => {
-    const item: ReviewItem = {
+    const item: Item = {
       name: "Rulebook",
       tags: [],
       editions: [
@@ -522,7 +521,7 @@ describe("review catalog facts", () => {
   });
 
   it("groups gameplay first while preserving item order, references, and edition overrides", () => {
-    const data: ReviewCatalog = {
+    const data: Catalog = {
       content: {
         model: { name: "Model", tags: [] },
         core: { name: "Core", gameplay: true, tags: [] },
@@ -556,7 +555,7 @@ describe("review catalog facts", () => {
   });
 
   it("resolves reused edition IDs within their own items and caches", () => {
-    const data: ReviewCatalog = {
+    const data: Catalog = {
       content: {
         left: {
           name: "Left",
@@ -589,7 +588,7 @@ describe("review catalog facts", () => {
   });
 
   it("tracks synthetic editions by category and release date without modifying source items", () => {
-    const data: ReviewCatalog = {
+    const data: Catalog = {
       content: {},
       bundles: { set: { name: "Set", tags: [], releaseDate: "2024-01-01" } },
       homebrew: { model: { name: "Model", tags: [], releaseWindow: "2025" } },
@@ -608,7 +607,7 @@ describe("review catalog facts", () => {
   });
 
   it("leaves unreviewed live bundle components unpriced", () => {
-    expect(reviewIndex(catalog as ReviewCatalog).bundlePricing("halloween-trick-or-treat-bag", "plastic")).toEqual({
+    expect(reviewIndex(catalog as Catalog).bundlePricing("halloween-trick-or-treat-bag", "plastic")).toEqual({
       total: 0,
       missing: 0,
       unavailable: 7,
@@ -687,7 +686,7 @@ describe("review catalog facts", () => {
   });
 
   it("prices bundle contents by exact edition ownership and reports unavailable or unknown prices", () => {
-    const data: ReviewCatalog = {
+    const data: Catalog = {
       content: {
         box: {
           name: "Box",
@@ -760,7 +759,7 @@ describe("review catalog facts", () => {
   });
 
   it("prices duplicate equivalent references once and does not charge a listed child beneath its parent", () => {
-    const data: ReviewCatalog = {
+    const data: Catalog = {
       content: {
         box: {
           name: "Box",
@@ -865,7 +864,7 @@ describe("review catalog facts", () => {
   });
 
   it("keeps item-level shop evidence after indexing synthetic editions", () => {
-    const data: ReviewCatalog = {
+    const data: Catalog = {
       content: {},
       accessories: {},
       homebrew: {},
@@ -888,7 +887,7 @@ describe("review catalog facts", () => {
   });
 
   it("keeps shared shop metadata out of catalog categories and indexes", () => {
-    const data: ReviewCatalog = {
+    const data: Catalog = {
       shopUpdated: "2026-10-06",
       content: {
         model: {
@@ -916,7 +915,7 @@ describe("review catalog facts", () => {
   });
 
   it("iterates only known categories in the catalog display order", () => {
-    const data: ReviewCatalog & { futureMetadata: { importedAt: string } } = {
+    const data: Catalog & { futureMetadata: { importedAt: string } } = {
       content: { model: { name: "Model", tags: [] } },
       bundles: { set: { name: "Set", tags: [] } },
       homebrew: { custom: { name: "Custom", tags: [] } },
@@ -947,7 +946,7 @@ describe("review catalog facts", () => {
 });
 
 describe("Simulator key access", () => {
-  function catalog(): ReviewCatalog {
+  function catalog(): Catalog {
     return {
       content: {
         core: {
@@ -1128,9 +1127,15 @@ describe("Simulator key access", () => {
 
 describe("included edition display and identity", () => {
   it("uses plain edition labels while resolving ownership by permanent edition ID", () => {
-    const included = { id: "1-6-included", label: "1.6", format: "physical" as const, includedOnly: true as const };
+    const included = {
+      id: "1-6-included",
+      label: "1.6",
+      name: "Alternate cover",
+      format: "physical" as const,
+      includedOnly: true as const,
+    };
     const standalone = { id: "1-6", label: "1.6", format: "physical" as const };
-    const data: ReviewCatalog = {
+    const data: Catalog = {
       content: {
         core: {
           name: "Core",
@@ -1146,10 +1151,6 @@ describe("included edition display and identity", () => {
     };
     const index = reviewIndex(data);
     const core = index.byId.get("core")!;
-    expect(editionLabel(standalone)).toBe("1.6");
-    expect(editionLabel(included)).toBe("1.6");
-    const named = { ...included, name: "Alternate cover" };
-    expect(editionLabel(named)).toBe("1.6");
     expect(index.inclusions("core", "1-6")[0]!.editionLabel).toBe("1.6");
     expect(index.ownershipKeys([{ item: core, edition: standalone }])).toEqual([collectionKey("core", standalone.id)]);
     expect(reviewShopUrl(data.accessories.rulebook, included)).toBeUndefined();

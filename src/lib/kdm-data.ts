@@ -25,10 +25,6 @@ export function formatPriceTotals(totals: Partial<Record<Currency, number>>) {
   return formatPrice(Math.round(usdCents));
 }
 
-export function editionLabel(edition: Pick<Edition, "label">) {
-  return edition.label;
-}
-
 export function editionMaterials(edition: Edition) {
   return edition.materials ?? [];
 }
