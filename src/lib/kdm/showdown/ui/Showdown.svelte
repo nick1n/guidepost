@@ -1,7 +1,8 @@
 <script lang="ts">
   import "../../ui/stats.css";
-  import { resolve } from "$app/paths";
-  import { onMount, tick } from "svelte";
+  import MenuButton from "#lib/components/MenuButton.svelte";
+  import { getSiteMenu } from "#lib/state/site-menu.svelte.ts";
+  import { getShowdownDisplay } from "../display.svelte.ts";
   import HoldRipple from "#lib/components/gestures/HoldRipple.svelte";
   import { sectionName } from "../../ui/sections/sections";
   import { dragScroll } from "./drag-scroll";
@@ -28,59 +29,8 @@
   let monsterKnockedDown = $state(false);
   let awakening = $state(0);
   let sheets = $state(survivors.map((_, index) => makeSheet(index)));
-  let menuOpen = $state(false);
-  let keyOpen = $state(false);
-  let menu = $state<HTMLDivElement>();
-  let fullscreen = $state(false);
-  let fullscreenAvailable = $state(false);
-  let fullscreenPending = $state(false);
-  let fullscreenError = $state("");
-  const quickViewStatuses = [
-    ["status:threat", "Threat", "Marked as a threat"],
-    ["status:act", "Acted", "Has acted this round"],
-    ["status:knocked-down", "Down", "Knocked down"],
-    ["priority", "Priority", "Priority target"],
-    ["status:blind-spot", "In Blind Spot", "In the monster's blind spot"],
-    ["status:deaf", "Deaf", "Deaf"],
-    ["status:blind", "Blind", "Blind"],
-  ] as const;
-
-  function toggleMenu() {
-    keyOpen = false;
-    menuOpen = !menuOpen;
-  }
-
-  async function showQuickView(show: boolean) {
-    keyOpen = show;
-    await tick();
-    if (!menu) return;
-    menu.scrollTop = 0;
-    menu.querySelector<HTMLButtonElement>(show ? ".back-option" : ".key-button")?.focus();
-  }
-
-  onMount(() => {
-    fullscreenAvailable = document.fullscreenEnabled;
-    onfullscreenchange();
-  });
-
-  function onfullscreenchange() {
-    fullscreen = Boolean(document.fullscreenElement);
-    fullscreenError = "";
-  }
-
-  async function toggleFullscreen() {
-    if (!fullscreenAvailable || fullscreenPending) return;
-    fullscreenPending = true;
-    fullscreenError = "";
-    try {
-      if (document.fullscreenElement) await document.exitFullscreen();
-      else await document.documentElement.requestFullscreen();
-    } catch {
-      fullscreenError = "Could not change fullscreen mode. Please try again.";
-    } finally {
-      fullscreenPending = false;
-    }
-  }
+  const menu = getSiteMenu();
+  const display = getShowdownDisplay();
   let dashboards = $state<
     {
       areSectionsOpen: () => boolean;
@@ -92,13 +42,7 @@
   >([]);
   let currentExpanded = $derived(dashboards[active]?.areSectionsOpen() ?? false);
   let allExpanded = $derived(dashboards.length > 0 && dashboards.every((dashboard) => dashboard.areSectionsOpen()));
-  let borderLightness = $state(72);
-  let foregroundLightness = $state(95);
-  let backgroundLightness = $state(38);
-  let brightenZachary = $state(false);
-  const colorId = $props.id();
-  let density = $state<Density>("default");
-  let snap = $state<Snap>("free");
+  let { density, snap, borderLightness, foregroundLightness, backgroundLightness, brightenZachary } = $derived(display.settings);
   let monsterStats = $state({ life: 8, movement: 6, toughness: 6, damage: 0, speed: 0 });
   let monsterTokens = $state(makeTokens(7));
   const monsterTokenIndex = { movement: 0, evasion: 4, toughness: 5, luck: 6 };
@@ -108,20 +52,6 @@
     luck: tokenNet(monsterTokens[monsterTokenIndex.luck]),
     evasion: tokenNet(monsterTokens[monsterTokenIndex.evasion]),
   });
-
-  type Density = "compact" | "default" | "comfortable";
-  type Snap = "left" | "center" | "right" | "free";
-  const densityOptions: { value: Density; label: string }[] = [
-    { value: "compact", label: "Compact" },
-    { value: "default", label: "Default" },
-    { value: "comfortable", label: "Comfortable" },
-  ];
-  const snapOptions: { value: Snap; label: string }[] = [
-    { value: "left", label: "Left" },
-    { value: "center", label: "Center" },
-    { value: "right", label: "Right" },
-    { value: "free", label: "Free" },
-  ];
 
   function beginSurvivorTurn() {
     for (const sheet of sheets) {
@@ -154,17 +84,25 @@
 
   // Overlay scrollbars need a small inset; classic scrollbars supply their own balanced gutters.
   function dashboardSpacing(element: HTMLElement) {
+    let frame = 0;
     function measure() {
+      frame = 0;
       const style = getComputedStyle(element);
       const gutter =
         element.offsetWidth - element.clientWidth - parseFloat(style.borderInlineStartWidth) - parseFloat(style.borderInlineEndWidth);
       const inset = gutter > 1 ? "0" : ".5rem";
       if (element.style.getPropertyValue("--panel-inset") !== inset) element.style.setProperty("--panel-inset", inset);
     }
-    const observer = new ResizeObserver(measure);
+    // Changing the inset can resize this dashboard, so write outside the observer's delivery cycle.
+    const observer = new ResizeObserver(() => {
+      if (!frame) frame = requestAnimationFrame(measure);
+    });
     observer.observe(element);
     measure();
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      cancelAnimationFrame(frame);
+    };
   }
   function alignDashboard(index: number) {
     const dashboard = rail.children[index] as HTMLElement;
@@ -180,10 +118,6 @@
     const inset = parseFloat(getComputedStyle(rail).paddingInlineStart);
     const left = dashboard.offsetLeft - rail.offsetLeft - inset;
     rail.scrollTo({ left, behavior: "instant" });
-  }
-  function selectSnap(value: Snap) {
-    snap = value;
-    requestAnimationFrame(() => alignDashboard(active));
   }
   function jump(index: number) {
     active = index;
@@ -236,10 +170,7 @@
   }
 
   function onkeydown(event: KeyboardEvent) {
-    if (event.key === "Escape") {
-      menuOpen = false;
-      keyOpen = false;
-    }
+    if (menu.open || event.defaultPrevented) return;
     const len = roster.length;
     const numberShortcut = RegExp(`^[1-${Math.min(len, 9)}]$`).test(event.key) && !event.altKey && !event.ctrlKey && !event.metaKey;
     if (!numberShortcut && event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
@@ -289,14 +220,29 @@
     for (const dashboard of matching) dashboard.setSectionOpen(name, open);
     return open;
   }
+
+  function registerMenu() {
+    return display.register(dashboardSummary, () => alignDashboard(active));
+  }
 </script>
 
 <svelte:window {onkeydown} />
-<svelte:document {onfullscreenchange} />
 <svelte:head><title>{design.name} Showdown | Guidepost</title></svelte:head>
+
+{#snippet dashboardSummary()}
+  <strong>{dashboardName(active)}</strong>
+  {#if active > 0}
+    <p class="menu-status">{statusText(sheets[active - 1])}</p>
+    <div class="menu-counts">
+      <span>{tokenTotal(sheets[active - 1])} Tokens</span>
+      <span>{availableActions(sheets[active - 1])} Survival Actions Available</span>
+    </div>
+  {/if}
+{/snippet}
 
 <main
   class={["showdown", design.className]}
+  {@attach registerMenu}
   data-density={density}
   data-snap={snap}
   style:--stat-border-lightness={`${borderLightness}%`}
@@ -422,146 +368,7 @@
       <span class="menu-icon control-icon i-material-symbols:undo" aria-hidden="true"></span>
     </button>
 
-    <button
-      class="icon-button"
-      aria-label={menuOpen ? "Close Showdown Menu" : "Showdown Menu"}
-      aria-expanded={menuOpen}
-      aria-controls={menuOpen ? "showdown-menu" : undefined}
-      onclick={toggleMenu}
-    >
-      <span class={["menu-icon", "control-icon", menuOpen ? "i-material-symbols:close" : "i-material-symbols:menu"]} aria-hidden="true"
-      ></span>
-    </button>
-    {#if menuOpen}
-      <div class="menu" id="showdown-menu" bind:this={menu}>
-        {#if keyOpen}
-          <button class="menu-option back-option" onclick={() => showQuickView(false)}>
-            <span class="back-icon i-material-symbols:arrow-back" aria-hidden="true"></span>
-            Back to menu
-          </button>
-          <h2>Quick View Key</h2>
-          <dl>
-            <div>
-              <dt>M / T</dt>
-              <dd>Monster movement and toughness</dd>
-            </div>
-            <div>
-              <dt>Ready</dt>
-              <dd>Alive and ready to act</dd>
-            </div>
-            {#each quickViewStatuses as [icon, label, description] (icon)}
-              <div>
-                <dt><StatusIcon {icon} active context="legend" />{label}</dt>
-                <dd>{description}</dd>
-              </div>
-            {/each}
-            <div>
-              <dt><span class="key-icon i-material-symbols:filter-none" aria-hidden="true"></span>Tokens</dt>
-              <dd>Total tokens, including bleeding</dd>
-            </div>
-            <div>
-              <dt><span class="key-icon i-material-symbols:bolt" aria-hidden="true"></span>Actions</dt>
-              <dd>Available survival actions</dd>
-            </div>
-          </dl>
-        {:else}
-          <strong>{dashboardName(active)}</strong>
-          {#if active > 0}
-            <p class="menu-status">{statusText(sheets[active - 1])}</p>
-            <div class="menu-counts">
-              <span>{tokenTotal(sheets[active - 1])} Tokens</span>
-              <span>{availableActions(sheets[active - 1])} Survival Actions Available</span>
-            </div>
-          {/if}
-          <div class="menu-settings">
-            <div class="display-settings">
-              <fieldset>
-                <legend>Survivor colors</legend>
-                <button class="menu-option" aria-pressed={brightenZachary} onclick={() => (brightenZachary = !brightenZachary)}>
-                  Brighten Zachary
-                </button>
-              </fieldset>
-              <fieldset>
-                <legend>Display</legend>
-                <button
-                  class="menu-option fullscreen-option"
-                  type="button"
-                  disabled={!fullscreenAvailable || fullscreenPending}
-                  onclick={toggleFullscreen}
-                >
-                  <span
-                    class={[
-                      "menu-icon",
-                      "control-icon",
-                      fullscreen ? "i-material-symbols:fullscreen-exit" : "i-material-symbols:fullscreen",
-                    ]}
-                    aria-hidden="true"
-                  ></span>
-                  {fullscreenAvailable ? (fullscreen ? "Exit Fullscreen" : "Enter Fullscreen") : "Fullscreen unavailable"}
-                </button>
-                {#if fullscreenError}<p role="alert">{fullscreenError}</p>{/if}
-              </fieldset>
-            </div>
-            <fieldset>
-              <legend>Dashboard snap</legend>
-              <div class="options snap-options">
-                {#each snapOptions as option (option.value)}
-                  <button class="menu-option" aria-pressed={snap === option.value} onclick={() => selectSnap(option.value)}>
-                    {option.label}
-                  </button>
-                {/each}
-              </div>
-            </fieldset>
-            <fieldset>
-              <legend>Interface density</legend>
-              <div class="options">
-                {#each densityOptions as option (option.value)}
-                  <button
-                    class="menu-option density-option"
-                    style:--size-preview={`var(--size-control-${option.value})`}
-                    aria-pressed={density === option.value}
-                    onclick={() => (density = option.value)}
-                  >
-                    {option.label}
-                  </button>
-                {/each}
-              </div>
-            </fieldset>
-            <fieldset>
-              <legend>Attribute and token colors</legend>
-              <label for={`${colorId}-border`}>
-                Border lightness <output for={`${colorId}-border`}>{borderLightness}%</output>
-                <input id={`${colorId}-border`} type="range" min="0" max="100" step="1" bind:value={borderLightness} />
-              </label>
-              <label for={`${colorId}-foreground`}>
-                Foreground lightness <output for={`${colorId}-foreground`}>{foregroundLightness}%</output>
-                <input id={`${colorId}-foreground`} type="range" min="0" max="100" step="1" bind:value={foregroundLightness} />
-              </label>
-              <label for={`${colorId}-background`}>
-                Background lightness <output for={`${colorId}-background`}>{backgroundLightness}%</output>
-                <input id={`${colorId}-background`} type="range" min="0" max="100" step="1" bind:value={backgroundLightness} />
-              </label>
-            </fieldset>
-            <fieldset>
-              <legend>Theme</legend>
-              <nav class="options" aria-label="Showdown themes">
-                {#each designs as item (item.name)}
-                  <a class="menu-option" href={resolve(item.href)} aria-current={item.name === design.name ? "page" : undefined}
-                    >{item.name}</a
-                  >
-                {/each}
-              </nav>
-            </fieldset>
-            <button class="menu-option key-button" onclick={() => showQuickView(true)}>Quick View Key</button>
-          </div>
-          <a class="menu-option back-option" href={resolve("/")}>
-            <span class="back-icon i-material-symbols:arrow-back" aria-hidden="true"></span>
-            Back to Guidepost
-          </a>
-          <p>Design preview. Rules and setup are illustrative.</p>
-        {/if}
-      </div>
-    {/if}
+    <MenuButton />
   </footer>
 </main>
 
@@ -638,7 +445,7 @@
     padding-inline: var(--panel-inset, 0.5rem);
     padding-block: 0.375rem;
     overflow: hidden scroll;
-    border-inline-end: 1px solid var(--color-divider);
+    border-inline-end: var(--border-width) solid var(--color-divider);
     background: var(--identity-10);
     scrollbar-color: var(--identity) transparent;
     scrollbar-gutter: stable both-edges;
@@ -650,11 +457,12 @@
   }
   footer {
     display: grid;
-    position: relative;
-    grid-template-columns: var(--size-control) minmax(0, 1fr) repeat(2, var(--size-control));
-    padding: 0.125rem 0.125rem max(0.125rem, env(safe-area-inset-bottom));
+    grid-template-columns: var(--size-control) minmax(0, 1fr) var(--size-control) var(--size-floating-control);
+    align-items: center;
+    padding: 0.125rem max(0.125rem, env(safe-area-inset-right)) max(0.125rem, env(safe-area-inset-bottom))
+      max(0.125rem, env(safe-area-inset-left));
     gap: var(--border-width);
-    border-block-start: 1px solid var(--color-divider);
+    border-block-start: var(--border-width) solid var(--color-divider);
     background: var(--panel);
   }
   .roster {
@@ -671,7 +479,7 @@
     min-block-size: 3.5rem;
     padding: 0 0 0.25rem;
     overflow: hidden;
-    border: 2px solid transparent;
+    border: var(--border-width) solid transparent;
     border-radius: var(--radius-control);
     background: var(--identity-10);
     font-size: var(--text-xs);
@@ -745,20 +553,6 @@
   .sections-button .menu-icon {
     grid-area: 1 / 1;
   }
-  .fullscreen-option {
-    gap: 0.375rem;
-    &:disabled {
-      opacity: 0.5;
-    }
-  }
-  .display-settings {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.5rem;
-  }
-  .display-settings .menu-option {
-    inline-size: 100%;
-  }
   .menu-status {
     margin-block: 0.375rem;
     font-size: var(--text-sm);
@@ -766,122 +560,9 @@
   .menu-counts {
     display: flex;
     flex-wrap: wrap;
-    margin-block-end: 1rem;
     gap: 0.375rem 1rem;
-    font-size: var(--text-sm);
-  }
-  .menu {
-    z-index: 1;
-    position: absolute;
-    inline-size: min(22rem, calc(100vw - 0.75rem));
-    max-block-size: calc(100dvh - 10rem);
-    inset-block-end: calc(100% + 0.375rem);
-    inset-inline-end: 0.375rem;
-    padding: 0.75rem;
-    overflow-y: auto;
-    border: 1px solid var(--color-divider);
-    border-radius: var(--radius-control);
-    background: var(--panel);
-    box-shadow: 0 1rem 3rem #00000066;
-  }
-  .menu strong {
-    font-size: var(--text-sm);
-  }
-  fieldset {
-    margin: 0;
-    padding: 0;
-    border: 0;
-  }
-  .menu-settings {
-    display: grid;
-    margin-block: 0.75rem;
-    gap: 0.75rem;
-  }
-  legend {
-    margin-block-end: 0.375rem;
-    font-weight: var(--font-bold);
-    font-size: var(--text-sm);
-  }
-  label {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    align-items: center;
-    font-size: var(--text-sm);
-  }
-  input[type="range"] {
-    grid-column: 1 / -1;
-    inline-size: 100%;
-    accent-color: var(--accent);
-  }
-  .options {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    align-items: center;
-    gap: 0.25rem;
-  }
-  .snap-options {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-  .menu-option {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-inline-size: var(--size-control);
-    min-block-size: var(--size-control);
-    padding-inline: 0.25rem;
-    border: 1px solid var(--color-divider);
-    border-radius: var(--radius-control);
-    background: var(--card);
-    font-size: var(--text-xs);
-    text-align: center;
-
-    &[aria-pressed="true"],
-    &[aria-current="page"] {
-      border-color: var(--accent);
-      background: var(--blue-7);
-      color: var(--foreground);
-    }
-  }
-  .density-option {
-    block-size: var(--size-preview);
-    min-block-size: var(--size-preview) !important;
-  }
-  h2 {
-    margin-block: 0.75rem;
-    font-size: var(--text-sm);
-  }
-  dl {
-    display: grid;
-    gap: 0.5rem;
-    font-size: var(--text-xs);
-  }
-  dl > div {
-    display: grid;
-    grid-template-columns: 6.5rem 1fr;
-    gap: 0.5rem;
-  }
-  dt {
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
-  }
-  dd {
     color: var(--muted-foreground);
-  }
-  .key-icon {
-    --size-icon: 1rem;
-  }
-  .back-option {
-    justify-content: flex-start;
-    gap: 0.375rem;
-  }
-  .back-icon {
-    --size-icon: 1rem;
-    flex: none;
-  }
-  .menu p {
-    color: var(--muted-foreground);
-    font-size: var(--text-xs);
+    font-size: var(--text-sm);
   }
   .folio .workspace {
     --size-panel: max(var(--size-column), calc((100% - 1.5rem) / 5));
@@ -938,8 +619,7 @@
 
   @media (min-width: 1100px) {
     footer {
-      grid-template-columns: minmax(22rem, 42rem) 3.5rem 13rem repeat(2, 3.5rem);
-      justify-content: center;
+      grid-template-columns: minmax(22rem, 1fr) 3.5rem 13rem repeat(2, 3.5rem);
       gap: 0.5rem;
     }
     .roster {

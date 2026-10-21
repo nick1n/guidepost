@@ -33,6 +33,8 @@ See [AGENTS.md](AGENTS.md) for coding conventions and required checks, and the
 
 Tests live in `test/client/` and `test/scripts/`. Tests import tooling through `#scripts/*` and catalog JSON through `#catalog/*`, including file extensions.
 `pnpm test` watches both Vitest projects; `pnpm test:scripts` also runs `*-checks.mts` with Node's test runner.
+With a local development server running, `pnpm test:menu-browser -- http://127.0.0.1:5173` checks menu history, focus, preferences, and gestures
+using an installed Chrome or Chromium browser (or `CHROME_PATH`). Screenshots and the report go to `temp/browser-verification/menu-*`.
 
 With a dev server running, `pnpm test:collection-browser [URL]` runs isolated Chrome checks. Set `CHROME_PATH` if Chrome is not detected.
 
@@ -171,6 +173,13 @@ Load and monitoring failures offer retry; a storage-module download failure requ
 [CollectionBrowsing](src/lib/collection-browsing.svelte.ts) owns browsing and URL transitions;
 [CollectionCards](src/lib/collection-cards.svelte.ts) owns collapse, deferred rendering, observation, and scroll anchoring.
 See the [architecture guide](docs/kdm-architecture.md#scope-and-existing-behavior) for lifecycle and error handling.
+
+The root layout provides separate app-scoped owners for menu state, date preferences, notification history, and showdown display settings.
+[DatePreferences](src/lib/state/date-preferences.svelte.ts) saves the date format on this device and reuses date/time formatters;
+catalog calendar dates stay in UTC, while notification timestamps use local time.
+[NotificationLog](src/lib/state/notification-log.svelte.ts) keeps the newest 100 entries in memory for the current session.
+[ShowdownDisplay](src/lib/kdm/showdown/display.svelte.ts) shares session-only display settings across showdown themes;
+active showdown summaries and alignment callbacks are released when their route unmounts.
 
 `Collection.exportBackup()` waits for queued saves and exports confirmed data.
 `restoreBackup(json)` validates and replaces the snapshot in one queued save, with rollback on failure.

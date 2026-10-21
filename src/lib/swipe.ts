@@ -9,190 +9,186 @@ type SwipeOptions = {
   /** Listen across the whole page instead of just the attached element. */
   scope?: "element" | "page";
 };
-
-type Gesture = { id: number; x: number; y: number; time: number };
+type DismissOptions = { dismiss: () => void; ondrag: (distance: number) => void };
+type Gesture = { id: number; x: number; y: number; time: number; mouse: boolean };
 const touchDuration = 700;
+const gestureSlop = 10;
+const axisRatio = 1.5;
+const dismissDistance = 64;
+const dismissDuration = 1500;
+const dismissDragLimit = 180;
+const clickSuppressionDuration = 500;
 
-/**
- * Detect horizontal mouse drags and single-finger swipes completed within 700 ms.
- * Use with `{@attach swipe({ onSwipe })}`
- * or call the returned function with an element and retain its cleanup function.
- * Inputs, editable content, horizontal scrollers, and `data-swipe-ignore` areas
- * keep their own gestures. Vertical scrolling and pinch zoom remain native.
- */
+/** Horizontal navigation preserves native vertical scrolling, editable controls, and horizontal scrollers. */
 export function swipe({ onSwipe, onDrag, threshold = 50, scope = "element" }: SwipeOptions) {
-  return (surface: HTMLElement) => {
-    const element = scope === "page" ? surface.ownerDocument.documentElement : surface;
-    let start: Gesture | undefined;
-    let mouse: Gesture | undefined;
-    let suppressClick = false;
-    let touchDistance = 0;
-    let readinessTimer: ReturnType<typeof setTimeout> | undefined;
+  return (surface: HTMLElement) =>
+    listen(scope === "page" ? surface.ownerDocument.documentElement : surface, { onSwipe, onDrag, threshold });
+}
 
-    function ignored(target: EventTarget | null) {
-      if (!(target instanceof Element)) return true;
-      if (target.closest("input, textarea, select, [contenteditable]:not([contenteditable='false']), [data-swipe-ignore]")) return true;
-      for (let node: Element | null = target; node && node !== element; node = node.parentElement) {
-        if (node.scrollWidth > node.clientWidth && /^(auto|scroll)$/.test(getComputedStyle(node).overflowX)) return true;
-      }
-      return false;
+/** Downward sheet dismissal leaves controls and scrolled content in charge of their gestures. */
+export function swipeDismiss({ dismiss, ondrag }: DismissOptions) {
+  return (element: HTMLDialogElement) => listen(element, { dismiss, onDrag: ondrag });
+}
+
+type Policy = { onDrag?: (distance: number, ready?: boolean) => void } & (
+  | { onSwipe: (direction: SwipeDirection) => void; threshold: number; dismiss?: never }
+  | { dismiss: () => void; onSwipe?: never; threshold?: never }
+);
+
+function listen(element: HTMLElement, policy: Policy) {
+  const document = element.ownerDocument;
+  const window = document.defaultView;
+  const downward = !!policy.dismiss;
+  let start: Gesture | undefined;
+  let suppressUntil = 0;
+  let distance = 0;
+  let readinessTimer: ReturnType<typeof setTimeout> | undefined;
+
+  function cancel() {
+    clearTimeout(readinessTimer);
+    start = undefined;
+    distance = 0;
+    policy.onDrag?.(0);
+  }
+
+  function ignored(target: EventTarget | null) {
+    if (!target || !("closest" in target)) return true;
+    const origin = target as Element;
+    if (downward) {
+      if (!(element as HTMLDialogElement).open) return true;
+      if (origin.closest("[data-drag-handle]")) return false;
+      if (origin.closest("a, button, input, select, textarea, summary, [contenteditable], [role=button], [role=slider]")) return true;
+    } else if (origin.closest("input, textarea, select, [contenteditable]:not([contenteditable='false']), [data-swipe-ignore]"))
+      return true;
+    for (let node: Element | null = origin; node && node !== element; node = node.parentElement) {
+      const style = window?.getComputedStyle(node);
+      if (downward) {
+        if (node.scrollTop > 0 && node.scrollHeight > node.clientHeight && /auto|scroll/.test(style?.overflowY ?? "")) return true;
+      } else if (node.scrollWidth > node.clientWidth && /^(auto|scroll)$/.test(style?.overflowX ?? "")) return true;
     }
+    return false;
+  }
 
-    function ontouchstart(event: TouchEvent) {
-      clearTimeout(readinessTimer);
-      touchDistance = 0;
-      start = undefined;
-      onDrag?.(0);
-      suppressClick = false;
-      if (event.touches.length !== 1 || ignored(event.target)) return;
-      const touch = event.touches[0];
-      start = { id: touch.identifier, x: touch.clientX, y: touch.clientY, time: event.timeStamp };
+  function begin(target: EventTarget | null, x: number, y: number, time: number, id: number, mouse: boolean) {
+    cancel();
+    suppressUntil = 0;
+    if (ignored(target)) return;
+    start = { x, y, time, id, mouse };
+    if (!downward && !mouse)
       readinessTimer = setTimeout(() => {
-        if (start && touchDistance) onDrag?.(touchDistance, false);
+        if (start && distance) policy.onDrag?.(distance, false);
       }, touchDuration);
-    }
+  }
 
-    function ontouchmove(event: TouchEvent) {
-      if (!start) return;
-      if (event.touches.length !== 1) {
-        start = undefined;
-        onDrag?.(0);
-        return;
+  function move(x: number, y: number, time: number, event: Event) {
+    if (!start) return;
+    const dx = x - start.x;
+    const dy = y - start.y;
+    const primary = downward ? dy : Math.abs(dx);
+    const cross = downward ? Math.abs(dx) : Math.abs(dy);
+    // Once native scrolling or an opposing gesture wins, it cannot become a swipe later.
+    if (downward) {
+      const movingUp = dy < -gestureSlop;
+      const movingAcross = cross > gestureSlop && cross > Math.abs(dy);
+      if (movingUp || movingAcross) return cancel();
+    } else if (cross > gestureSlop && cross >= primary) return cancel();
+    if (primary > gestureSlop && primary > cross * axisRatio) {
+      if (event.cancelable) event.preventDefault();
+      distance = downward ? Math.min(dy, dismissDragLimit) : dx;
+      if (policy.dismiss) policy.onDrag?.(distance);
+      else {
+        const withinDuration = start.mouse || time - start.time <= touchDuration;
+        policy.onDrag?.(distance, primary >= policy.threshold && withinDuration);
       }
-      const touch = event.touches[0];
-      const x = Math.abs(touch.clientX - start.x);
-      const y = Math.abs(touch.clientY - start.y);
-      // Once a gesture becomes vertical, never turn that scroll into a swipe.
-      if (y > 10 && y >= x) {
-        start = undefined;
-        onDrag?.(0);
-      } else if (x > 10 && x > y * 1.5) {
-        if (event.cancelable) event.preventDefault();
-        touchDistance = touch.clientX - start.x;
-        onDrag?.(touchDistance, x >= threshold && event.timeStamp - start.time <= touchDuration);
-      } else {
-        touchDistance = 0;
-        onDrag?.(0);
-      }
+    } else if (!downward) {
+      distance = 0;
+      policy.onDrag?.(0);
     }
+  }
 
-    function ontouchend(event: TouchEvent) {
-      clearTimeout(readinessTimer);
-      const origin = start;
-      start = undefined;
-      onDrag?.(0);
-      if (!origin || event.touches.length) return;
-      const touch = Array.from(event.changedTouches).find((touch) => touch.identifier === origin.id);
-      if (!touch) return;
-      finishSwipe(origin, touch.clientX, touch.clientY, event.timeStamp);
+  function finish(x: number, y: number, time: number) {
+    if (!start) return;
+    const origin = start;
+    const dx = x - origin.x;
+    const dy = y - origin.y;
+    let complete: boolean;
+    if (policy.dismiss) {
+      const movingDown = dy >= dismissDistance && dy > Math.abs(dx) * axisRatio;
+      complete = movingDown && time - origin.time < dismissDuration;
+    } else {
+      const movingAcross = Math.abs(dx) >= policy.threshold && Math.abs(dx) > Math.abs(dy) * axisRatio;
+      const withinDuration = origin.mouse || time - origin.time <= touchDuration;
+      complete = movingAcross && withinDuration;
     }
-
-    function finishSwipe(origin: Gesture, clientX: number, clientY: number, time: number, maxDuration = touchDuration) {
-      const x = clientX - origin.x;
-      const y = clientY - origin.y;
-      if (Math.abs(x) < threshold || Math.abs(x) <= Math.abs(y) * 1.5 || time - origin.time > maxDuration) return;
-      // A completed swipe must not also activate the control beneath the pointer.
-      suppressClick = true;
-      onSwipe(x < 0 ? "left" : "right");
+    if (!complete) return cancel();
+    clearTimeout(readinessTimer);
+    start = undefined;
+    suppressUntil = downward ? time + clickSuppressionDuration : Infinity;
+    if (policy.dismiss) policy.dismiss();
+    else {
+      policy.onDrag?.(0);
+      policy.onSwipe(dx < 0 ? "left" : "right");
     }
+  }
 
-    function ontouchcancel() {
-      clearTimeout(readinessTimer);
-      start = undefined;
-      onDrag?.(0);
-    }
+  function ontouchstart(event: TouchEvent) {
+    if (event.touches.length !== 1) return cancel();
+    const touch = event.touches[0];
+    begin(event.target, touch.clientX, touch.clientY, event.timeStamp, touch.identifier, false);
+  }
+  function ontouchmove(event: TouchEvent) {
+    if (event.touches.length !== 1) return cancel();
+    const touch = event.touches[0];
+    if (start && !start.mouse && touch.identifier === start.id) move(touch.clientX, touch.clientY, event.timeStamp, event);
+  }
+  function ontouchend(event: TouchEvent) {
+    if (!start || start.mouse) return;
+    const touch = Array.from(event.changedTouches).find((touch) => touch.identifier === start?.id);
+    if (touch && !event.touches.length) finish(touch.clientX, touch.clientY, event.timeStamp);
+  }
+  function onpointerdown(event: PointerEvent) {
+    if (event.pointerType !== "mouse") return;
+    if (!event.isPrimary || event.button !== 0) return cancel();
+    begin(event.target, event.clientX, event.clientY, event.timeStamp, event.pointerId, true);
+  }
+  function onpointermove(event: PointerEvent) {
+    if (!start?.mouse || event.pointerId !== start.id) return;
+    if (!(event.buttons & 1)) return cancel();
+    move(event.clientX, event.clientY, event.timeStamp, event);
+  }
+  function onpointerup(event: PointerEvent) {
+    if (start?.mouse && event.pointerId === start.id && event.button === 0) finish(event.clientX, event.clientY, event.timeStamp);
+  }
+  function onpointercancel(event: PointerEvent) {
+    if (start?.mouse && event.pointerId === start.id) cancel();
+  }
+  function onclick(event: MouseEvent) {
+    if (!suppressUntil || event.timeStamp > suppressUntil || event.detail === 0) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    suppressUntil = 0;
+  }
+  function preventDrag(event: Event) {
+    if (start?.mouse && !downward) event.preventDefault();
+  }
 
-    function onclick(event: MouseEvent) {
-      if (event.detail === 0 || !suppressClick) return;
-      event.preventDefault();
-      event.stopImmediatePropagation();
-      suppressClick = false;
-    }
-
-    function onpointerdown(event: PointerEvent) {
-      if (event.pointerType !== "mouse") return;
-      suppressClick = false;
-      mouse = undefined;
-      onDrag?.(0);
-      if (!event.isPrimary || event.button !== 0 || ignored(event.target)) return;
-      mouse = { id: event.pointerId, x: event.clientX, y: event.clientY, time: event.timeStamp };
-    }
-
-    function onpointermove(event: PointerEvent) {
-      if (mouse?.id !== event.pointerId) return;
-      if (!(event.buttons & 1)) {
-        mouse = undefined;
-        onDrag?.(0);
-        return;
-      }
-      const x = Math.abs(event.clientX - mouse.x);
-      const y = Math.abs(event.clientY - mouse.y);
-      if (y > 10 && y >= x) {
-        mouse = undefined;
-        onDrag?.(0);
-      } else if (x > 10 && x > y * 1.5) {
-        event.preventDefault();
-        onDrag?.(event.clientX - mouse.x, x >= threshold);
-      } else onDrag?.(0);
-    }
-
-    function onpointerup(event: PointerEvent) {
-      if (mouse?.id !== event.pointerId || event.button !== 0) return;
-      const origin = mouse;
-      mouse = undefined;
-      onDrag?.(0);
-      // Mouse dragging can be deliberate and slower than a touch flick.
-      finishSwipe(origin, event.clientX, event.clientY, event.timeStamp, Infinity);
-    }
-
-    function onpointercancel(event: PointerEvent) {
-      if (mouse?.id !== event.pointerId) return;
-      mouse = undefined;
-      onDrag?.(0);
-    }
-
-    function onblur() {
-      clearTimeout(readinessTimer);
-      mouse = undefined;
-      start = undefined;
-      onDrag?.(0);
-    }
-
-    function preventDrag(event: Event) {
-      if (mouse) event.preventDefault();
-    }
-
-    element.addEventListener("touchstart", ontouchstart, { passive: true });
-    element.addEventListener("touchmove", ontouchmove, { passive: false });
-    element.addEventListener("touchend", ontouchend, { passive: true });
-    element.addEventListener("touchcancel", ontouchcancel, { passive: true });
-    element.addEventListener("click", onclick, { capture: true });
-    element.addEventListener("pointerdown", onpointerdown, { passive: true });
-    element.addEventListener("dragstart", preventDrag);
-    element.addEventListener("selectstart", preventDrag);
-    // Track release outside the surface without taking capture from child controls.
-    const document = element.ownerDocument;
-    const window = document.defaultView;
-    document.addEventListener("pointermove", onpointermove);
-    document.addEventListener("pointerup", onpointerup);
-    document.addEventListener("pointercancel", onpointercancel);
-    window?.addEventListener("blur", onblur);
-
-    return () => {
-      clearTimeout(readinessTimer);
-      onDrag?.(0);
-      element.removeEventListener("touchstart", ontouchstart);
-      element.removeEventListener("touchmove", ontouchmove);
-      element.removeEventListener("touchend", ontouchend);
-      element.removeEventListener("touchcancel", ontouchcancel);
-      element.removeEventListener("click", onclick, { capture: true });
-      element.removeEventListener("pointerdown", onpointerdown);
-      element.removeEventListener("dragstart", preventDrag);
-      element.removeEventListener("selectstart", preventDrag);
-      document.removeEventListener("pointermove", onpointermove);
-      document.removeEventListener("pointerup", onpointerup);
-      document.removeEventListener("pointercancel", onpointercancel);
-      window?.removeEventListener("blur", onblur);
-    };
+  const listeners: [EventTarget, string, EventListener, AddEventListenerOptions?][] = [
+    [element, "touchstart", ontouchstart as EventListener, { passive: true }],
+    [element, "touchmove", ontouchmove as EventListener, { passive: false }],
+    [element, "touchend", ontouchend as EventListener, { passive: true }],
+    [element, "touchcancel", cancel],
+    [element, "pointerdown", onpointerdown as EventListener, { passive: true }],
+    [element, "click", onclick as EventListener, { capture: true }],
+    [element, "dragstart", preventDrag],
+    [element, "selectstart", preventDrag],
+    [document, "pointermove", onpointermove as EventListener],
+    [document, "pointerup", onpointerup as EventListener],
+    [document, "pointercancel", onpointercancel as EventListener],
+  ];
+  if (window) listeners.push([window, "blur", cancel]);
+  for (const [target, type, listener, options] of listeners) target.addEventListener(type, listener, options);
+  return () => {
+    for (const [target, type, listener, options] of listeners) target.removeEventListener(type, listener, options);
+    cancel();
   };
 }

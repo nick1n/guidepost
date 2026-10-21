@@ -27,10 +27,6 @@
     onHold: () => string;
     onTagClick: (tag: string) => void;
   };
-
-  function release(edition: ReviewEdition) {
-    return edition.releaseDate ?? edition.releaseWindow ?? "date unknown";
-  }
 </script>
 
 <script lang="ts">
@@ -52,12 +48,19 @@
   import { onDestroy } from "svelte";
   import { SvelteSet } from "svelte/reactivity";
   import { getCollection } from "#lib/state/collection.svelte.ts";
-  import { collectionActions } from "#lib/state/collection-actions.ts";
+  import { getDatePreferences } from "#lib/state/date-preferences.svelte.ts";
+  import { getCollectionActions } from "#lib/state/collection-actions.ts";
   import { collectionKey, copyNumberMaximum } from "#lib/types/collection.ts";
 
   let { item, ready, collapsed, selectedTags, observe, onToggle, onHold, onTagClick }: Props = $props();
 
   const collection = getCollection();
+  const dates = getDatePreferences();
+
+  function release(edition: ReviewEdition) {
+    return edition.releaseDate ? dates.formatDate(edition.releaseDate) : (edition.releaseWindow ?? "date unknown");
+  }
+  const collectionActions = getCollectionActions();
   const catalog = collection.catalog;
   const writable = $derived(collection.canWrite);
   let inspected = $state<string>();

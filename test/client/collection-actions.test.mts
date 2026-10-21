@@ -1,9 +1,10 @@
 import { it, expect } from "@effect/vitest";
 import { Cause, Deferred, Effect, Exit, Fiber, Layer, Logger, Result } from "effect";
+import { TestClock } from "effect/testing";
 import { NavigationError } from "#lib/navigation.ts";
 import { CollectionError } from "#lib/state/collection-errors.ts";
-import { reportAction } from "#lib/state/collection-actions.ts";
-import { Notifications } from "#lib/state/notifications.ts";
+import { createCollectionActions, reportAction } from "#lib/state/collection-actions.ts";
+import { Notifications, type Notice } from "#lib/state/notifications.ts";
 import { TransferError } from "#lib/state/collection-transfer.ts";
 
 function notifications() {
@@ -35,6 +36,37 @@ it.effect("startup can suppress success notifications", () =>
     const f = notifications();
     yield* reportAction(Effect.void, { success: false }).pipe(Effect.provide(f.layer));
     expect(f.messages).toEqual([]);
+  }),
+);
+
+it.effect("records timestamped actions for the injected session without announcing startup or interruptions", () =>
+  Effect.gen(function* () {
+    const notices: Notice[] = [];
+    const layer = Notifications.layerWith((notice) => notices.push(notice));
+    yield* TestClock.setTime(1000);
+    yield* reportAction(Effect.void, { success: false }).pipe(Effect.provide(layer));
+    yield* reportAction(Effect.void, { success: "Core saved." }).pipe(Effect.provide(layer));
+    yield* TestClock.adjust(2000);
+    const error = new CollectionError({ message: "Save failed", operation: "save", itemIds: [], cause: "quota" });
+    yield* reportAction(Effect.fail(error)).pipe(Effect.provide(layer));
+    yield* Effect.exit(reportAction(Effect.interrupt).pipe(Effect.provide(layer)));
+    expect(notices).toEqual([
+      { kind: "success", message: "Core saved.", timestamp: 1000 },
+      { kind: "error", message: "Save failed", timestamp: 3000 },
+    ]);
+  }),
+);
+
+it.effect("action runners keep separate app notification logs", () =>
+  Effect.gen(function* () {
+    const first: Notice[] = [];
+    const second: Notice[] = [];
+    const firstActions = createCollectionActions(Notifications.layerWith((notice) => first.push(notice)));
+    const secondActions = createCollectionActions(Notifications.layerWith((notice) => second.push(notice)));
+    yield* Fiber.join(firstActions.run(Effect.void, { success: "First app saved." }));
+    yield* Fiber.join(secondActions.run(Effect.void, { success: "Second app saved." }));
+    expect(first.map((notice) => notice.message)).toEqual(["First app saved."]);
+    expect(second.map((notice) => notice.message)).toEqual(["Second app saved."]);
   }),
 );
 

@@ -152,9 +152,10 @@
   import VersionPicker from "#lib/components/track/VersionPicker.svelte";
   import { navigate } from "#lib/navigation.ts";
   import { getCollection } from "#lib/state/collection.svelte.ts";
-  import { collectionActions } from "#lib/state/collection-actions.ts";
+  import { getCollectionActions } from "#lib/state/collection-actions.ts";
   import { collectionKey } from "#lib/types/collection.ts";
   const collection = getCollection();
+  const collectionActions = getCollectionActions();
 
   let landing: HTMLElement;
   let ownershipDialog: { show: Noop };

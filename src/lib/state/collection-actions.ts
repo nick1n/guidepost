@@ -1,4 +1,5 @@
-import { Cause, Effect, Result } from "effect";
+import { Cause, Effect, Layer, Result } from "effect";
+import { createContext } from "svelte";
 import type { NavigationError } from "#lib/navigation.ts";
 import type { CollectionError } from "./collection-errors.ts";
 import type { TransferError } from "./collection-transfer.ts";
@@ -7,11 +8,15 @@ import { Notifications } from "./notifications.ts";
 type ActionError = CollectionError | NavigationError | TransferError;
 type ActionOptions = { success?: string | false };
 
-export const collectionActions = {
-  run<A>(effect: Effect.Effect<A, ActionError, Notifications>, options: ActionOptions = {}) {
-    return Effect.runFork(reportAction(effect, options).pipe(Effect.provide(Notifications.layer)));
-  },
-};
+export function createCollectionActions(notifications: Layer.Layer<Notifications>) {
+  return {
+    run<A>(effect: Effect.Effect<A, ActionError, Notifications>, options: ActionOptions = {}) {
+      return Effect.runFork(reportAction(effect, options).pipe(Effect.provide(notifications)));
+    },
+  };
+}
+
+export const [getCollectionActions, setCollectionActions] = createContext<ReturnType<typeof createCollectionActions>>();
 
 export const reportAction = Effect.fn("CollectionActions.report")(function* <A>(
   effect: Effect.Effect<A, ActionError, Notifications>,

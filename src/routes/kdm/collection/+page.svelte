@@ -19,12 +19,14 @@
   import { CollectionBrowsing, browseCategories as categories } from "#lib/collection-browsing.svelte.ts";
   import { CollectionCards } from "#lib/collection-cards.svelte.ts";
   import { formatPriceTotals } from "#lib/kdm-data.ts";
-  import { collectionActions } from "#lib/state/collection-actions.ts";
+  import { getCollectionActions } from "#lib/state/collection-actions.ts";
+  import FloatingButton from "#lib/components/FloatingButton.svelte";
   import { getCollection } from "#lib/state/collection.svelte.ts";
   import type { PageProps } from "./$types";
 
   let { data }: PageProps = $props();
   const collection = getCollection();
+  const collectionActions = getCollectionActions();
   // Route entry installs the catalog before building this page's index and commands.
   collection.setCatalog(untrack(() => data.catalog));
   const catalog = collection.catalog;
@@ -391,9 +393,11 @@
 </main>
 
 {#if showBackToTop}
-  <button class="back-to-top" type="button" aria-label="Back to top" onclick={backToTop}>
-    <span class="control-icon i-material-symbols:expand-less" aria-hidden="true"></span>
-  </button>
+  <div class="back-to-top">
+    <FloatingButton label="Back to top" onclick={backToTop}>
+      <span class="control-icon i-material-symbols:expand-less" aria-hidden="true"></span>
+    </FloatingButton>
+  </div>
 {/if}
 
 {#snippet categoryButtons()}
@@ -556,7 +560,6 @@
   .remove-icon {
     --size-icon: 1rem;
   }
-  .back-to-top,
   .tag-heading,
   .show-more,
   .collapse-all {
@@ -565,20 +568,14 @@
     background: var(--panel);
   }
   .back-to-top {
-    display: grid;
     z-index: 2;
     position: fixed;
-    place-items: center;
-    inline-size: 3rem;
-    block-size: 3rem;
-    inset-block-end: max(1rem, env(safe-area-inset-bottom));
-    inset-inline-start: max(1rem, env(safe-area-inset-left));
+    inset-block-end: max(var(--inset-floating-control), env(safe-area-inset-bottom));
+    inset-inline-start: max(var(--inset-floating-control), env(safe-area-inset-left));
   }
-  .back-to-top,
   .swipe-tabs {
     box-shadow: 0 0.25rem 0.5rem color-mix(var(--contrast) 25%, transparent);
   }
-  .back-to-top,
   .show-more {
     color: var(--foreground);
   }
@@ -748,7 +745,7 @@
   }
   kbd {
     padding: 0.125rem 0.25rem;
-    border: 1px solid var(--color-divider);
+    border: var(--border-width) solid var(--color-divider);
     border-radius: 0.25rem;
     background: var(--panel);
   }

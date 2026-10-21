@@ -5,12 +5,23 @@
   import { afterNavigate } from "$app/navigation";
   import { Effect, Fiber } from "effect";
   import { Collection, setCollection } from "#lib/state/collection.svelte.ts";
-  import { collectionActions } from "#lib/state/collection-actions.ts";
+  import { createCollectionActions, setCollectionActions } from "#lib/state/collection-actions.ts";
   import { CollectionSession } from "#lib/state/collection-session.ts";
+  import { Notifications } from "#lib/state/notifications.ts";
+  import { SiteMenu, setSiteMenu } from "#lib/state/site-menu.svelte.ts";
+  import { DatePreferences, setDatePreferences } from "#lib/state/date-preferences.svelte.ts";
+  import { NotificationLog, setNotificationLog } from "#lib/state/notification-log.svelte.ts";
+  import { ShowdownDisplay, setShowdownDisplay } from "#lib/kdm/showdown/display.svelte.ts";
+  import SiteMenuPanel from "#lib/components/SiteMenu.svelte";
 
   let { children } = $props();
   const collection = setCollection(new Collection());
   const session = new CollectionSession(collection);
+  setSiteMenu(new SiteMenu());
+  const log = setNotificationLog(new NotificationLog());
+  const dates = setDatePreferences(new DatePreferences(log.record));
+  setShowdownDisplay(new ShowdownDisplay());
+  const collectionActions = setCollectionActions(createCollectionActions(Notifications.layerWith(log.record)));
 
   afterNavigate(({ to }) => {
     navigator.serviceWorker?.controller?.postMessage({ type: "cache-page", path: to?.url.pathname });
@@ -22,6 +33,7 @@
   });
 
   onMount(() => {
+    dates.loadDateFormat();
     const active = collectionActions.run(session.run("guest"), { success: false });
     return () => {
       Effect.runFork(Fiber.interrupt(active));
@@ -34,3 +46,4 @@
 </svelte:head>
 
 {@render children()}
+<SiteMenuPanel />

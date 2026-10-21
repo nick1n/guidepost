@@ -12,6 +12,12 @@ const context = await vi.hoisted(async () => {
   return { collection: {} as unknown, stylesheet: `/src/lib/components/track/__uno_CollectionCard_${hash}.svelte.css` };
 });
 vi.mock("#lib/state/collection.svelte.ts", () => ({ getCollection: () => context.collection }));
+vi.mock("#lib/state/collection-actions.ts", () => ({ getCollectionActions: () => ({ run: vi.fn() }) }));
+vi.mock("#lib/state/date-preferences.svelte.ts", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("#lib/state/date-preferences.svelte.ts")>();
+  const dates = new actual.DatePreferences();
+  return { ...actual, getDatePreferences: () => dates };
+});
 // SSR assertions do not need UnoCSS output. Its shared virtual CSS cache can miss entries across Vitest projects.
 vi.mock(context.stylesheet, () => ({}));
 
