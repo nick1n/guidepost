@@ -1,4 +1,4 @@
-import { Effect, Semaphore } from "effect";
+import { Effect, Equal, Semaphore } from "effect";
 import type { CollectionPatch, CollectionSnapshot } from "#lib/types/index.ts";
 import { normalizeEntry, normalizeSnapshot } from "#lib/types/collection.ts";
 import type { CollectionStore } from "./stores.ts";
@@ -83,6 +83,8 @@ export class OptimisticStore {
 
       const persist = Effect.suspend(() => {
         const next = applyChange(this.committed, change);
+        // Compare confirmed snapshots after earlier writes settle, so failed edits can still be retried.
+        if (Equal.equals(normalizeSnapshot(this.committed), normalizeSnapshot(next))) return Effect.succeed(false);
         const write = change.patch === null ? this.store.clear() : this.store.save(next);
         return write.pipe(
           Effect.tap(() =>
@@ -90,6 +92,7 @@ export class OptimisticStore {
               this.committed = next;
             }),
           ),
+          Effect.as(true),
         );
       });
 

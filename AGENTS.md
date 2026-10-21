@@ -47,7 +47,7 @@ not from memory or an older commit.
 
 Use event shorthand when a local handler matches the attribute, including on `<svelte:window>` and `<svelte:document>`. Name handlers used by only one binding after that event. Keep explicit attributes for argument passing, event transformations, propagation control, or shared/imported handlers with meaningful names. Do not rename domain handlers to force shorthand. Move multiline inline handlers into `<script>`.
 
-Use `$effect` only for external synchronization that cannot happen in an event handler; explain why in a preceding comment. Otherwise use derived values or handlers.
+Use `$effect` only when external synchronization must rerun as reactive values change and cannot be expressed through declarative markup, derived values, or event handlers. Explain why reactive reruns are necessary in a preceding comment.
 
 Use class arrays for conditional classes, such as `class={["item", active && "is-active"]}`. Avoid template strings and do not add `class:` directives.
 

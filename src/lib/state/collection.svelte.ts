@@ -1,5 +1,6 @@
 import { Cause, Effect, Result, Schema, Stream } from "effect";
 import { createContext } from "svelte";
+import { SvelteSet } from "svelte/reactivity";
 import { CollectionError } from "./collection-errors.ts";
 import { StoreError, type CollectionStore } from "./stores.ts";
 import { OptimisticStore } from "./optimistic-store.ts";
@@ -57,7 +58,9 @@ export class Collection {
   saveError = $state.raw<CollectionError | undefined>();
   needsRefresh = $state(false);
   pendingSaves = $state(0);
+  private readonly pendingEdits = new SvelteSet<{ flush: () => void }>();
   readonly isSaving = $derived(this.pendingSaves > 0);
+  readonly hasPendingChanges = $derived(this.pendingEdits.size > 0 || this.isSaving);
   readonly owned = $derived.by(() =>
     this.catalog.entries.flatMap((item) =>
       reviewEditions(item)
@@ -128,6 +131,25 @@ export class Collection {
     return this.generation === generation;
   }
 
+  registerPendingEdit(flush: () => void) {
+    const edit = { flush };
+    this.pendingEdits.add(edit);
+    return () => this.pendingEdits.delete(edit);
+  }
+
+  flushPendingEdits() {
+    // A flush may unregister itself or register another edit; visit only the captured batch.
+    for (const edit of [...this.pendingEdits]) {
+      if (this.pendingEdits.has(edit)) edit.flush();
+    }
+  }
+
+  forSession<A, E>(effect: Effect.Effect<A, E>) {
+    // Capture now, before a UI debounce delays execution, and reject superseded work before it can write.
+    const generation = this.generation;
+    return Effect.suspend(() => (this.isCurrent(generation) ? this.guardGeneration(effect, generation) : Effect.interrupt));
+  }
+
   private guardGeneration<A, E>(effect: Effect.Effect<A, E>, generation = this.generation) {
     // Superseded results and failures must not reach the action boundary.
     return effect.pipe(
@@ -154,6 +176,7 @@ export class Collection {
 
   setStore = Effect.fn("Collection.setStore")({ self: this }, function* (store: CollectionStore) {
     const generation = ++this.generation;
+    this.pendingEdits.clear();
     this.store = store;
     this.writer = undefined;
     this.loadStatus = "pending";
@@ -176,6 +199,7 @@ export class Collection {
   setUser(userId?: string) {
     if (this.userId === userId) return;
     this.generation += 1;
+    this.pendingEdits.clear();
     this.userId = userId;
     this.store = undefined;
     this.writer = undefined;
@@ -224,6 +248,7 @@ export class Collection {
     if (this.store && !this.writer) return yield* this.setStore(this.store);
     const generation = ++this.generation;
     const changeVersion = this.changeVersion;
+    this.pendingEdits.clear();
     this.loadError = undefined;
     return yield* Effect.gen({ self: this }, function* () {
       if (!this.store || !this.writer) return yield* unavailableStoreError("load");
@@ -251,7 +276,7 @@ export class Collection {
     return this.coverage.owners(contentId, editionId);
   }
 
-  private reportSave(effect: Effect.Effect<void, StoreError>, keys: readonly string[]) {
+  private reportSave<A>(effect: Effect.Effect<A, StoreError>, keys: readonly string[]) {
     const generation = this.generation;
     return Effect.acquireUseRelease(
       Effect.sync(() => {
@@ -283,7 +308,7 @@ export class Collection {
 
   private commitMany = Effect.fn("Collection.commitMany")({ self: this }, function* (patch: CollectionPatch) {
     const keys = Object.keys(patch);
-    if (!keys.length) return;
+    if (!keys.length) return false;
     const writer = yield* this.requireWriter("save", keys);
     return yield* this.reportSave(writer.saveMany(patch), keys);
   });

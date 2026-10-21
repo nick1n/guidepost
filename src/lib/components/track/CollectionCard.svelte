@@ -49,7 +49,8 @@
   import { SvelteSet } from "svelte/reactivity";
   import { getCollection } from "#lib/state/collection.svelte.ts";
   import { getDatePreferences } from "#lib/state/date-preferences.svelte.ts";
-  import { getCollectionActions } from "#lib/state/collection-actions.ts";
+  import { getCollectionActions, ownershipMessage, wishMessage, includedMessage } from "#lib/state/collection-actions.ts";
+  import { getCopyNumberEdits } from "#lib/state/copy-number-edits.svelte.ts";
   import { collectionKey, copyNumberMaximum } from "#lib/types/collection.ts";
 
   let { item, ready, collapsed, selectedTags, observe, onToggle, onHold, onTagClick }: Props = $props();
@@ -61,6 +62,7 @@
     return edition.releaseDate ? dates.formatDate(edition.releaseDate) : (edition.releaseWindow ?? "date unknown");
   }
   const collectionActions = getCollectionActions();
+  const copies = getCopyNumberEdits();
   const catalog = collection.catalog;
   const writable = $derived(collection.canWrite);
   let inspected = $state<string>();
@@ -68,7 +70,10 @@
   const animatingEditions = new SvelteSet<string>();
   let feedback = $state<OwnershipKind>();
   let feedbackTimer: ReturnType<typeof setTimeout> | undefined;
-  onDestroy(() => clearTimeout(feedbackTimer));
+  onDestroy(() => {
+    clearTimeout(feedbackTimer);
+    copies.flush(item.id);
+  });
   const editions = $derived(
     reviewEditions(item).filter(
       (edition) => !edition.includedOnly || selection(edition).owned || collection.coverage.edition(item.id, edition.id).available,
@@ -112,13 +117,8 @@
   function holdOwnership() {
     if (!writable) return "Collection changes are unavailable until your collection is loaded.";
     const owned = !hasOwned;
-    const targets = editions.filter((edition) => owned || selection(edition).owned);
-    collectionActions.run(
-      collection.setEditionsOwned(
-        targets.map((edition) => ({ item, edition })),
-        owned,
-      ),
-    );
+    const targets = editions.filter((edition) => owned || selection(edition).owned).map((edition) => ({ item, edition }));
+    collectionActions.run(collection.setEditionsOwned(targets, owned), { success: ownershipMessage(targets, owned) });
     showOwnershipFeedback(owned ? "owned" : "cleared");
     return `${item.name}, all editions marked ${owned ? "owned" : "not owned"}.`;
   }
@@ -131,20 +131,26 @@
     if (target.id === item.id) inspected = edition.id;
     clearTimeout(feedbackTimer);
     feedback = undefined;
-    collectionActions.run(collection.toggleEditionOwned(collectionKey(target.id, edition.id), owned));
+    const shouldOwn = owned ?? !collection.getEdition(target.id, edition.id).owned;
+    collectionActions.run(collection.toggleEditionOwned(collectionKey(target.id, edition.id), shouldOwn), {
+      success: ownershipMessage([{ item: target, edition }], shouldOwn),
+    });
   }
   function toggleWish(edition: Edition, target = item) {
     if (!writable) return;
-    collectionActions.run(collection.toggleWish(collectionKey(target.id, edition.id)));
+    const entry = collection.getEdition(target.id, edition.id);
+    const wished = !entry.owned && !entry.wished;
+    collectionActions.run(collection.toggleWish(collectionKey(target.id, edition.id)), {
+      success: wishMessage({ item: target, edition }, wished),
+    });
   }
   function toggleIncludedOwned(edition: Edition, target: Entry, owned?: boolean) {
     if (!writable) return;
-    collectionActions.run(collection.toggleIncludedOwned(collectionKey(target.id, edition.id), owned));
-  }
-  function updateCopyNumber(edition: Edition, input: HTMLInputElement) {
-    if (!writable) return;
-    const copyNumber = input.value === "" && !input.validity.badInput ? undefined : input.valueAsNumber;
-    collectionActions.run(collection.setCopyNumber(collectionKey(item.id, edition.id), copyNumber), { success: false });
+    const shouldOwn = owned ?? !collection.coverage.edition(target.id, edition.id).available;
+    const restoring = collection.getEdition(target.id, edition.id).missing;
+    collectionActions.run(collection.toggleIncludedOwned(collectionKey(target.id, edition.id), shouldOwn), {
+      success: includedMessage({ item: target, edition }, shouldOwn, restoring),
+    });
   }
 </script>
 
@@ -256,8 +262,10 @@
                   min="1"
                   max={Math.min(numberedEdition.runSize ?? copyNumberMaximum, copyNumberMaximum)}
                   disabled={!writable}
-                  value={value.copyNumber ?? ""}
-                  oninput={(event) => updateCopyNumber(numberedEdition, event.currentTarget)}
+                  value={copies.value(item.id, numberedEdition.id) ?? value.copyNumber ?? ""}
+                  oninput={(event) => copies.update({ item, edition: numberedEdition }, event.currentTarget)}
+                  onblur={() => copies.flush(item.id, numberedEdition.id)}
+                  onkeydown={(event) => copies.keydown(item.id, numberedEdition.id, event)}
                   placeholder="13"
                   aria-describedby={numberedEdition.runSize ? `run-${item.id}-${numberedEdition.id}` : undefined}
                 />

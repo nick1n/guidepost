@@ -88,9 +88,9 @@ it.effect("snapshot saves preserve untouched entries and fields", () =>
   Effect.gen(function* () {
     const f = yield* fixture({ core: { owned: true, copyNumber: 16 }, dice: { wished: true } });
     const edit = yield* start(f.writer.saveMany({ core: { wished: false } }));
-    yield* f.started(0);
-    yield* f.release(0);
-    assert.ok(Exit.isSuccess(yield* finish(edit)));
+    yield* TestClock.adjust(0);
+    assert.deepEqual(yield* finish(edit), Exit.succeed(false));
+    assert.equal(f.calls, 0);
     assert.deepEqual(f.disk, {
       core: { owned: true, copyNumber: 16 },
       dice: { wished: true },
@@ -217,7 +217,7 @@ it.effect("a newer value on the same field survives an earlier failure", () =>
   }),
 );
 
-it.effect("running the same Effect twice keeps each pending write independent", () =>
+it.effect("running the same Effect twice skips a queued write after the first succeeds", () =>
   Effect.gen(function* () {
     const f = yield* fixture();
     const action = f.writer.saveMany({ core: { owned: true } });
@@ -225,12 +225,71 @@ it.effect("running the same Effect twice keeps each pending write independent", 
     yield* f.started(0);
     const second = yield* start(action);
     yield* f.release(0);
-    yield* finish(first);
+    assert.deepEqual(yield* finish(first), Exit.succeed(true));
+    assert.deepEqual(f.visible, { core: { owned: true } });
+    yield* TestClock.adjust(0);
+    assert.deepEqual(yield* finish(second), Exit.succeed(false));
+    assert.equal(f.calls, 1);
+    assert.deepEqual(f.disk, f.visible);
+  }),
+);
+
+it.effect("an identical queued edit persists after the earlier write fails", () =>
+  Effect.gen(function* () {
+    const f = yield* fixture({}, [0]);
+    const action = f.writer.saveMany({ core: { owned: true } });
+    const first = yield* start(action);
+    yield* f.started(0);
+    const second = yield* start(action);
+    assert.deepEqual(f.visible, { core: { owned: true } });
+    yield* f.release(0);
+    assert.ok(Exit.isFailure(yield* finish(first)));
     yield* f.started(1);
     assert.deepEqual(f.visible, { core: { owned: true } });
+    assert.deepEqual(f.disk, {});
     yield* f.release(1);
-    yield* finish(second);
+    assert.deepEqual(yield* finish(second), Exit.succeed(true));
+    assert.equal(f.calls, 2);
     assert.deepEqual(f.disk, f.visible);
+  }),
+);
+
+it.effect("false defaults and absent copy numbers do not write an empty snapshot", () =>
+  Effect.gen(function* () {
+    const f = yield* fixture();
+    const edit = yield* start(f.writer.saveMany({ core: { owned: false, wished: false, missing: false, copyNumber: undefined } }));
+    assert.deepEqual(f.visible, {});
+    yield* TestClock.adjust(0);
+    assert.deepEqual(yield* finish(edit), Exit.succeed(false));
+    assert.equal(f.calls, 0);
+    assert.deepEqual(f.disk, {});
+  }),
+);
+
+it.effect("clearing an already empty snapshot does not write", () =>
+  Effect.gen(function* () {
+    const f = yield* fixture();
+    const reset = yield* start(f.writer.clear());
+    yield* TestClock.adjust(0);
+    assert.deepEqual(yield* finish(reset), Exit.succeed(false));
+    assert.equal(f.calls, 0);
+    assert.deepEqual(f.visible, {});
+    assert.deepEqual(f.disk, {});
+  }),
+);
+
+it.effect("an unchanged replacement ignores entry order and false defaults", () =>
+  Effect.gen(function* () {
+    const initial = { core: { owned: true, copyNumber: 42 }, dice: { wished: true } };
+    const f = yield* fixture(initial);
+    const replacement = yield* start(
+      f.writer.replace({ dice: { wished: true, owned: false }, core: { copyNumber: 42, owned: true }, absent: { missing: false } }),
+    );
+    yield* TestClock.adjust(0);
+    assert.deepEqual(yield* finish(replacement), Exit.succeed(false));
+    assert.equal(f.calls, 0);
+    assert.deepEqual(f.visible, initial);
+    assert.deepEqual(f.disk, initial);
   }),
 );
 

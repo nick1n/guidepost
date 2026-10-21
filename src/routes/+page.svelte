@@ -152,7 +152,7 @@
   import VersionPicker from "#lib/components/track/VersionPicker.svelte";
   import { navigate } from "#lib/navigation.ts";
   import { getCollection } from "#lib/state/collection.svelte.ts";
-  import { getCollectionActions } from "#lib/state/collection-actions.ts";
+  import { getCollectionActions, editionName } from "#lib/state/collection-actions.ts";
   import { collectionKey } from "#lib/types/collection.ts";
   const collection = getCollection();
   const collectionActions = getCollectionActions();
@@ -247,14 +247,17 @@
   function confirmCoreOwnership() {
     const version = selectedCoreVersion;
     const save = Effect.suspend(() => {
-      if (!version) return Effect.void;
+      if (!version) return Effect.succeed(false);
       const edition = coreVersions.find((edition) => edition.id === version);
-      if (!edition) return Effect.void;
+      if (!edition) return Effect.succeed(false);
       const key = collectionKey(coreId, edition.id);
-      if (collection.get(key).owned) return Effect.void;
+      if (collection.get(key).owned) return Effect.succeed(false);
       return collection.setManyOwned([key], true);
     });
-    collectionActions.run(save, { success: "Core game saved to your collection." });
+    const edition = coreVersions.find((edition) => edition.id === version);
+    collectionActions.run(save, {
+      success: edition ? `${editionName({ item: { name: "Kingdom Death: Monster" }, edition })} marked as owned.` : false,
+    });
     collectionActions.run(continueToQuickStart(), { success: false });
   }
 

@@ -96,7 +96,6 @@
       if (document.fullscreenElement) await document.exitFullscreen();
       else await document.documentElement.requestFullscreen();
       onfullscreenchange();
-      record(fullscreen ? "Entered fullscreen." : "Left fullscreen.");
     } catch {
       fullscreenError = "Could not change fullscreen mode. Please try again.";
       record(fullscreenError, "error");
@@ -197,7 +196,7 @@
         {#if log.notices.length}
           <ol>
             {#each log.notices as notice (notice.id)}
-              <li data-kind={notice.kind}>
+              <li class="notice" data-kind={notice.kind}>
                 <span
                   class={[
                     "notice-icon",
@@ -212,6 +211,16 @@
                 <div>
                   <span class="visually-hidden">{notice.kind === "error" ? "Error: " : notice.kind === "success" ? "Success: " : ""}</span>
                   <p>{notice.message}</p>
+                  {#if notice.details?.length}
+                    <details>
+                      <summary>View editions ({notice.details.length})</summary>
+                      <ul>
+                        {#each notice.details as detail, index (index)}
+                          <li>{detail}</li>
+                        {/each}
+                      </ul>
+                    </details>
+                  {/if}
                   <time datetime={new Date(notice.timestamp).toISOString()}>{dates.formatTimestamp(notice.timestamp)}</time>
                 </div>
               </li>
@@ -569,7 +578,7 @@
     color: var(--muted-foreground);
     font-size: var(--text-sm);
   }
-  li {
+  .notice {
     display: flex;
     padding-block: 0.875rem;
     gap: 0.75rem;
@@ -587,16 +596,33 @@
       font-size: var(--text-sm);
     }
   }
+  details {
+    margin-block-start: 0.5rem;
+    font-size: var(--text-sm);
+  }
+  summary {
+    padding-block: 0.375rem;
+    color: var(--accent);
+    cursor: pointer;
+  }
+  ul {
+    display: grid;
+    margin-block-start: 0.375rem;
+    padding-inline-start: 1.25rem;
+    gap: 0.375rem;
+    list-style: disc;
+    overflow-wrap: anywhere;
+  }
   .notice-icon {
     --size-icon: 1.25rem;
     flex: none;
     color: var(--accent);
   }
-  li[data-kind="error"] .notice-icon,
+  .notice[data-kind="error"] .notice-icon,
   .error {
     color: var(--red-3);
   }
-  li[data-kind="success"] .notice-icon {
+  .notice[data-kind="success"] .notice-icon {
     color: var(--accent-green);
   }
   .error {

@@ -19,7 +19,7 @@
   import { CollectionBrowsing, browseCategories as categories } from "#lib/collection-browsing.svelte.ts";
   import { CollectionCards } from "#lib/collection-cards.svelte.ts";
   import { formatPriceTotals } from "#lib/kdm-data.ts";
-  import { getCollectionActions } from "#lib/state/collection-actions.ts";
+  import { getCollectionActions, ownershipMessage } from "#lib/state/collection-actions.ts";
   import FloatingButton from "#lib/components/FloatingButton.svelte";
   import { getCollection } from "#lib/state/collection.svelte.ts";
   import type { PageProps } from "./$types";
@@ -112,7 +112,8 @@
   });
   function markLatestOwned() {
     if (!writable) return;
-    collectionActions.run(collection.setEditionsOwned(browsing.latestUnowned, true));
+    const targets = browsing.latestUnowned;
+    collectionActions.run(collection.setEditionsOwned(targets, true), { success: ownershipMessage(targets, true) });
   }
   function refreshCollection() {
     if (!collection.hasStore) {

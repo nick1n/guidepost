@@ -107,6 +107,95 @@ function store(initial: CollectionSnapshot = {}) {
   };
 }
 
+it("pending edits are independent registrations with idempotent cleanup", () => {
+  const collection = new Collection();
+  let flushes = 0;
+  const flush = () => flushes++;
+  const first = collection.registerPendingEdit(flush);
+  const second = collection.registerPendingEdit(flush);
+  expect(collection.hasPendingChanges).toBe(true);
+  expect(collection.isSaving).toBe(false);
+  first();
+  first();
+  collection.flushPendingEdits();
+  expect(flushes).toBe(1);
+  expect(collection.hasPendingChanges).toBe(true);
+  second();
+  expect(collection.hasPendingChanges).toBe(false);
+});
+
+it("flushing skips discarded edits and leaves newly registered edits for the next batch", () => {
+  const collection = new Collection();
+  const flushed: string[] = [];
+  let discard = () => {};
+  let releaseNext = () => {};
+  const releaseFirst = collection.registerPendingEdit(() => {
+    flushed.push("first");
+    discard();
+    releaseFirst();
+    releaseNext = collection.registerPendingEdit(() => flushed.push("next"));
+  });
+  discard = collection.registerPendingEdit(() => flushed.push("discarded"));
+  collection.flushPendingEdits();
+  expect(flushed).toEqual(["first"]);
+  collection.flushPendingEdits();
+  expect(flushed).toEqual(["first", "next"]);
+  releaseNext();
+  expect(collection.hasPendingChanges).toBe(false);
+});
+
+it.effect("superseded registrations cannot clear a new session's pending edits", () =>
+  Effect.gen(function* () {
+    const collection = new Collection();
+    const unregister = collection.registerPendingEdit(() => {});
+    collection.setUser("next-owner");
+    expect(collection.hasPendingChanges).toBe(false);
+    const next = collection.registerPendingEdit(() => {});
+    unregister();
+    expect(collection.hasPendingChanges).toBe(true);
+    next();
+    collection.registerPendingEdit(() => {});
+    yield* collection.setStore(store().api);
+    expect(collection.hasPendingChanges).toBe(false);
+    collection.registerPendingEdit(() => {});
+    yield* collection.refresh();
+    expect(collection.hasPendingChanges).toBe(false);
+  }),
+);
+
+it.effect("a prepared copy-number save stays lazy and saves in its captured session", () =>
+  Effect.gen(function* () {
+    const collection = new Collection(data);
+    const f = store({ [core]: { owned: true } });
+    yield* collection.setStore(f.api);
+    const save = collection.forSession(collection.setCopyNumber(core, 123));
+    expect(f.writes).toBe(0);
+    expect(collection.get(core).copyNumber).toBeUndefined();
+    yield* save;
+    expect(f.state[core].copyNumber).toBe(123);
+    expect(f.writes).toBe(1);
+  }),
+);
+
+for (const switchOwner of [false, true]) {
+  it.effect(`a prepared copy-number save cannot write after ${switchOwner ? "an owner" : "a store"} change`, () =>
+    Effect.gen(function* () {
+      const collection = new Collection(data);
+      const first = store({ [core]: { owned: true } });
+      yield* collection.setStore(first.api);
+      const save = collection.forSession(collection.setCopyNumber(core, 123));
+      if (switchOwner) collection.setUser("next-owner");
+      const next = store({ [core]: { owned: true, copyNumber: 42 } });
+      yield* collection.setStore(next.api);
+      const result = yield* Effect.exit(save);
+      expect(Exit.isFailure(result) && Cause.hasInterrupts(result.cause)).toBe(true);
+      expect(first.writes).toBe(0);
+      expect(next.writes).toBe(0);
+      expect(collection.get(core).copyNumber).toBe(42);
+    }),
+  );
+}
+
 it.effect("backup replacement validates first, saves once, and rolls back on failure", () =>
   Effect.gen(function* () {
     const collection = new Collection(bundleCatalog());
@@ -208,6 +297,7 @@ it.effect("switching catalogs refreshes the index without changing snapshots or 
     yield* Deferred.await(saveStarted);
     const wishlist = yield* Effect.forkChild(collection.toggleWish(dice), { startImmediately: true });
     expect(collection.pendingSaves).toBe(2);
+    expect(collection.isSaving).toBe(true);
     const optimisticSnapshot = collection.state;
     expect(f.state).toEqual(initial);
 
@@ -221,6 +311,7 @@ it.effect("switching catalogs refreshes the index without changing snapshots or 
     yield* Deferred.succeed(releaseSave, undefined);
     yield* Fiber.join(ownership);
     yield* Fiber.join(wishlist);
+    expect(collection.isSaving).toBe(false);
 
     expect(collection.state).toEqual({
       [core]: { owned: true },
@@ -956,7 +1047,9 @@ for (const operation of ["import", "export"] as const) {
             ? collection.importWorkbook([{ sheet: row.sheet, row: row.row, name: row.name, owned: true }])
             : collection.exportWorkbook();
         const active = yield* Effect.forkChild(
-          Effect.exit(reportAction(action).pipe(Effect.provide(notifications), Effect.provideService(FetchHttpClient.Fetch, fetch))),
+          Effect.exit(
+            reportAction<unknown>(action).pipe(Effect.provide(notifications), Effect.provideService(FetchHttpClient.Fetch, fetch)),
+          ),
         );
         yield* Deferred.await(started);
         collection.setUser("second-owner");

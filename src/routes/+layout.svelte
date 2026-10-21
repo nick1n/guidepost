@@ -12,6 +12,7 @@
   import { DatePreferences, setDatePreferences } from "#lib/state/date-preferences.svelte.ts";
   import { NotificationLog, setNotificationLog } from "#lib/state/notification-log.svelte.ts";
   import { ShowdownDisplay, setShowdownDisplay } from "#lib/kdm/showdown/display.svelte.ts";
+  import { CopyNumberEdits, setCopyNumberEdits } from "#lib/state/copy-number-edits.svelte.ts";
   import SiteMenuPanel from "#lib/components/SiteMenu.svelte";
 
   let { children } = $props();
@@ -22,6 +23,23 @@
   const dates = setDatePreferences(new DatePreferences(log.record));
   setShowdownDisplay(new ShowdownDisplay());
   const collectionActions = setCollectionActions(createCollectionActions(Notifications.layerWith(log.record)));
+  setCopyNumberEdits(new CopyNumberEdits(collection, collectionActions));
+
+  function onbeforeunload(event: BeforeUnloadEvent) {
+    if (!collection.hasPendingChanges) return;
+    collection.flushPendingEdits();
+    // IndexedDB work is asynchronous; allow the user to stay until all queued writes finish.
+    event.preventDefault();
+    event.returnValue = "";
+  }
+
+  function onvisibilitychange() {
+    if (document.visibilityState === "hidden") collection.flushPendingEdits();
+  }
+
+  function onpagehide() {
+    collection.flushPendingEdits();
+  }
 
   afterNavigate(({ to }) => {
     navigator.serviceWorker?.controller?.postMessage({ type: "cache-page", path: to?.url.pathname });
@@ -40,6 +58,9 @@
     };
   });
 </script>
+
+<svelte:document {onvisibilitychange} />
+<svelte:window {onbeforeunload} {onpagehide} />
 
 <svelte:head>
   <title>Guidepost</title>

@@ -14,6 +14,9 @@ const context = await vi.hoisted(async () => {
 });
 vi.mock("#lib/state/collection.svelte.ts", () => ({ getCollection: () => context.collection }));
 vi.mock("#lib/state/collection-actions.ts", () => ({ getCollectionActions: () => ({ run: vi.fn() }) }));
+vi.mock("#lib/state/copy-number-edits.svelte.ts", () => ({
+  getCopyNumberEdits: () => ({ value: () => undefined, flush: vi.fn() }),
+}));
 vi.mock("#lib/state/date-preferences.svelte.ts", async (importOriginal) => {
   const actual = await importOriginal<typeof import("#lib/state/date-preferences.svelte.ts")>();
   const dates = new actual.DatePreferences();
