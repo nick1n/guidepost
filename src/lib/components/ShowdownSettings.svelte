@@ -47,7 +47,6 @@
       onclick={() => (display.settings.brightenZachary = !display.settings.brightenZachary)}
     >
       Brighten Zachary
-      <span class="check i-material-symbols:check" style:opacity={display.settings.brightenZachary ? 1 : 0} aria-hidden="true"></span>
     </button>
   </fieldset>
   <fieldset>
@@ -177,9 +176,6 @@
       border-color: var(--accent);
       background: var(--blue-7);
     }
-  }
-  .check {
-    color: var(--accent);
   }
   .options {
     display: grid;

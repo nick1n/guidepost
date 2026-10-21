@@ -68,8 +68,10 @@
   --accent: var(--accent-blue);
   --accent-foreground: var(--grey-0);
 
-  --destructive: #86551e;
-  --secondary: #d97706;
+  --destructive: var(--red-4);
+  --secondary: var(--red-4);
+  /* --destructive: #86551e; */
+  /* --secondary: #d97706; */
 
   --beta: var(--accent-blue);
 

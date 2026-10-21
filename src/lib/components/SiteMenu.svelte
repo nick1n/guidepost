@@ -11,6 +11,9 @@
   import { getSiteMenu } from "#lib/state/site-menu.svelte.ts";
   import { getDatePreferences } from "#lib/state/date-preferences.svelte.ts";
   import { getNotificationLog } from "#lib/state/notification-log.svelte.ts";
+  import { getCollection } from "#lib/state/collection.svelte.ts";
+  import { getCollectionActions } from "#lib/state/collection-actions.ts";
+  import ConfirmDialog from "./ConfirmDialog.svelte";
   import { MenuSession } from "./menu-session.ts";
   import { swipeDismiss } from "../swipe.ts";
   import MenuButton from "./MenuButton.svelte";
@@ -19,6 +22,9 @@
   const menu = getSiteMenu();
   const dates = getDatePreferences();
   const log = getNotificationLog();
+  const collection = getCollection();
+  const collectionActions = getCollectionActions();
+  let resetDialog: ConfirmDialog;
   const id = $props.id();
   let view = $state<keyof typeof titles>("main");
   let content: HTMLDivElement;
@@ -117,6 +123,12 @@
     clearTimeout(updateTimer);
     updateTimer = setTimeout(() => (updating = false), 2000);
   }
+
+  function resetData() {
+    if (!collection.canWrite || collection.isSaving) return;
+    collection.flushPendingEdits();
+    collectionActions.run(collection.reset(), { success: "Saved collection data reset." });
+  }
 </script>
 
 <svelte:document {onfullscreenchange} />
@@ -124,7 +136,7 @@
 
 {#if !hasNavbar}
   <div class="clearance" aria-hidden="true"></div>
-  <div class={["launcher", page.route.id === "/" && "home"]}><MenuButton /></div>
+  <div class={["launcher", (page.route.id === "/" || page.route.id === "/kdm/collection") && "subtle"]}><MenuButton /></div>
 {/if}
 
 <dialog aria-labelledby={`${id}-heading`} data-swipe-ignore {@attach (dialog) => untrack(() => session.attach(dialog))} {@attach swipe}>
@@ -251,13 +263,29 @@
       {:else}
         <div class="date-settings">
           <label for={`${id}-date-format`}>Date format</label>
-          <select id={`${id}-date-format`} value={dates.dateFormat} onchange={(event) => dates.setDateFormat(event.currentTarget.value)}>
-            {#each dates.formats as format (format.value)}
-              <option value={format.value}>{format.label}</option>
-            {/each}
-          </select>
+          <div class="select-control">
+            <select id={`${id}-date-format`} value={dates.dateFormat} onchange={(event) => dates.setDateFormat(event.currentTarget.value)}>
+              {#each dates.formats as format (format.value)}
+                <option value={format.value}>{format.label}</option>
+              {/each}
+            </select>
+            <span class="select-chevron i-material-symbols:keyboard-arrow-down" aria-hidden="true"></span>
+          </div>
         </div>
         <ShowdownSettings {onnavigate} />
+        <div class="reset-settings">
+          <button class="reset" type="button" disabled={!collection.canWrite || collection.isSaving} onclick={() => resetDialog.show()}>
+            Reset saved data
+          </button>
+          <p class="description">Permanently clear your saved collection from this browser.</p>
+          {#if collection.saveError}<p class="error" role="alert">{collection.saveError.message}</p>{/if}
+          {#if !collection.canWrite}
+            <p class="description">
+              {collection.loadError?.message ??
+                (collection.needsRefresh ? "Refresh your collection before resetting saved data." : "Waiting for collection storage.")}
+            </p>
+          {/if}
+        </div>
       {/if}
     </div>
     <footer>
@@ -270,6 +298,15 @@
   <div class="toggle"><MenuButton onclose={session.close} onback={view !== "main" ? back : undefined} /></div>
 </dialog>
 
+<ConfirmDialog
+  bind:this={resetDialog}
+  title="Reset saved data?"
+  description="This permanently deletes your collection ownership, wishlist, missing-content marks, and copy numbers saved in this browser. This cannot be undone. Export a backup from your collection first if you want to keep it."
+  confirmLabel="Reset saved data"
+  confirmDisabled={!collection.canWrite || collection.isSaving}
+  onconfirm={resetData}
+/>
+
 <style>
   .clearance {
     block-size: calc(var(--size-floating-control) + var(--inset-floating-control) * 2 + env(safe-area-inset-bottom));
@@ -280,7 +317,7 @@
     inset-block-end: max(var(--inset-floating-control), env(safe-area-inset-bottom));
     inset-inline-end: max(var(--inset-floating-control), env(safe-area-inset-right));
 
-    &.home {
+    &.subtle {
       opacity: 0.8;
       transition: opacity var(--duration-fast) var(--ease-standard);
 
@@ -424,10 +461,45 @@
       font-weight: var(--font-bold);
     }
   }
+  .reset-settings {
+    display: grid;
+    gap: 0.5rem;
+    margin-block-start: 1.25rem;
+    padding-block-start: 1rem;
+    border-block-start: var(--border-width) solid var(--color-divider);
+  }
+  .reset {
+    min-block-size: 2.75rem;
+    padding: 0.5rem 0.875rem;
+    border: var(--border-width) solid var(--destructive);
+    border-radius: var(--radius-control);
+    color: var(--destructive);
+    font-weight: var(--font-semibold);
+
+    &:is(:hover, :focus-visible):not(:disabled) {
+      background: var(--destructive);
+      color: var(--foreground);
+    }
+  }
+  .select-control {
+    display: grid;
+    align-items: center;
+  }
+  .select-chevron {
+    --size-icon: 1.5rem;
+    grid-area: 1 / 1;
+    justify-self: end;
+    margin-inline-end: 0.75rem;
+    color: var(--muted-foreground);
+    pointer-events: none;
+  }
   select {
+    grid-area: 1 / 1;
+    appearance: none;
     inline-size: 100%;
     min-block-size: 2.75rem;
     padding: 0.5rem;
+    padding-inline-end: 2.75rem;
     border: var(--border-width) solid var(--grey-7);
     border-radius: var(--radius-control);
     background: var(--card);

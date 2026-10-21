@@ -977,13 +977,14 @@
   }
   .requirements {
     display: flex;
-    align-items: start;
+    align-items: center;
     gap: 0.5rem;
     color: var(--muted-foreground);
     font-size: var(--text-lg);
   }
   .requirements p {
     font-size: var(--text-sm);
+    line-height: var(--line-height-snug);
   }
 
   button:disabled,
