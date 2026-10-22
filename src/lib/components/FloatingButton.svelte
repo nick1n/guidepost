@@ -15,20 +15,27 @@
     place-items: center;
     inline-size: var(--size-floating-control);
     block-size: var(--size-floating-control);
-    border: var(--border-width) solid var(--color-divider);
+    border: var(--border-width) solid var(--grey-7);
     border-radius: var(--radius-control);
-    background: var(--card);
+    background: color-mix(var(--card) 67%, transparent);
+    backdrop-filter: blur(1.5px);
     color: var(--foreground);
-    transition: filter var(--duration-fast) var(--ease-standard);
     touch-action: manipulation;
 
-    &:active {
-      filter: brightness(var(--feedback-brightness, 1.12));
+    &[data-menu-trigger] {
+      position: relative;
+      z-index: 6;
+    }
+
+    &:is(:focus, :active) {
+      border-color: var(--grey-4);
+      background: var(--card);
     }
   }
   @media (hover: hover) {
     button:hover {
-      filter: brightness(var(--feedback-brightness, 1.12));
+      border-color: var(--grey-4);
+      background: var(--card);
     }
   }
 </style>

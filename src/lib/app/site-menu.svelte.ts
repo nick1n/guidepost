@@ -3,11 +3,18 @@
 export class SiteMenu {
   open = $state(false);
   onopen: Noop = () => {};
+  onclose: Noop = () => {};
+  onback = $state<Noop | undefined>();
 
-  registerOpen(callback: Noop) {
-    this.onopen = callback;
+  register(actions: { open: Noop; close: Noop }) {
+    this.onopen = actions.open;
+    this.onclose = actions.close;
     return () => {
-      if (this.onopen === callback) this.onopen = () => {};
+      if (this.onopen === actions.open) {
+        this.onopen = () => {};
+        this.onclose = () => {};
+        this.onback = undefined;
+      }
     };
   }
 }

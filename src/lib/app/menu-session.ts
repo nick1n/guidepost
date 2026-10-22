@@ -9,7 +9,7 @@ type Options = {
   report: (message: string) => void;
 };
 
-/** Coordinates the menu's history entry with its native modal and browser resources. */
+/** Coordinates the drawer's history entry, focus, and browser resources. */
 export class MenuSession {
   #options: Options;
   #dialog: HTMLDialogElement | undefined;
@@ -30,21 +30,27 @@ export class MenuSession {
     this.#dialog = dialog;
     const window = dialog.ownerDocument.defaultView!;
     const onclick = (event: MouseEvent) => {
-      if (event.target === dialog) this.close();
+      if (!this.#open || event.defaultPrevented || dialog.ownerDocument.querySelector("dialog:modal")) return;
+      // Icon changes can detach the original target before this window listener runs.
+      // The dispatch path still identifies the button or drawer that received the click.
+      const path = event.composedPath();
+      const trigger = this.#trigger();
+      if (!path.includes(dialog) && (!trigger || !path.includes(trigger))) this.close();
     };
-    const oncancel = (event: Event) => {
+    const onkeydown = (event: KeyboardEvent) => {
+      if (event.key !== "Escape" || !this.#open || event.defaultPrevented || dialog.ownerDocument.querySelector("dialog:modal")) return;
       event.preventDefault();
       this.close();
     };
-    dialog.addEventListener("click", onclick);
-    dialog.addEventListener("cancel", oncancel);
     window.addEventListener("resize", this.#align);
+    window.addEventListener("keydown", onkeydown);
+    window.addEventListener("click", onclick);
     this.synchronize(this.#wanted);
     return () => {
       this.#generation++;
-      dialog.removeEventListener("click", onclick);
-      dialog.removeEventListener("cancel", oncancel);
       window.removeEventListener("resize", this.#align);
+      window.removeEventListener("keydown", onkeydown);
+      window.removeEventListener("click", onclick);
       dialog.close();
       this.#release();
       this.#dialog = undefined;
@@ -96,7 +102,7 @@ export class MenuSession {
       if (!wasOpen) {
         this.#lock();
         this.#options.onchange(true);
-        dialog.showModal();
+        dialog.show();
       }
       this.#align();
       return;
@@ -114,7 +120,9 @@ export class MenuSession {
       const trigger = this.#returnFocus?.isConnected ? this.#returnFocus : this.#trigger();
       const generation = this.#generation;
       queueMicrotask(() => {
-        if (generation === this.#generation && !this.#open) trigger?.focus({ preventScroll: true });
+        if (generation === this.#generation && !this.#open) {
+          trigger?.focus({ preventScroll: true });
+        }
       });
     }
     this.#returnFocus = undefined;

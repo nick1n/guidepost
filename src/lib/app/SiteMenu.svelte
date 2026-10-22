@@ -56,6 +56,7 @@
     },
     onchange(open) {
       menu.open = open;
+      menu.onback = undefined;
       if (open) view = "main";
       else {
         if (content) content.scrollTop = 0;
@@ -67,14 +68,14 @@
   const swipe = swipeDismiss({ dismiss: session.close, ondrag: (distance) => (drag = distance) });
   const onnavigate = session.navigate;
 
-  // Browser history owns visibility; the session synchronizes the native modal and its browser resources.
+  // Browser history owns visibility; the session synchronizes the drawer and its browser resources.
   $effect(() => {
     const open = Boolean(page.state.siteMenu);
     untrack(() => session.synchronize(open));
   });
 
   onMount(() => {
-    const unregister = menu.registerOpen(session.open);
+    const unregister = menu.register({ open: session.open, close: session.close });
     fullscreenAvailable = Boolean(document.fullscreenEnabled);
     fullscreen = Boolean(document.fullscreenElement);
     online = navigator.onLine;
@@ -86,6 +87,7 @@
 
   async function showView(next: typeof view) {
     view = next;
+    menu.onback = next === "main" ? undefined : back;
     await tick();
     content.scrollTop = 0;
     heading.focus({ preventScroll: true });
@@ -136,9 +138,10 @@
 
 {#if !hasNavbar}
   <div class="clearance" aria-hidden="true"></div>
-  <div class={["launcher", (page.route.id === "/" || page.route.id === "/kdm/collection") && "subtle"]}><MenuButton /></div>
+  <div class="launcher"><MenuButton /></div>
 {/if}
 
+<div class={["scrim", menu.open && "is-open"]} aria-hidden="true"></div>
 <dialog aria-labelledby={`${id}-heading`} data-swipe-ignore {@attach (dialog) => untrack(() => session.attach(dialog))} {@attach swipe}>
   <div class="sheet" data-dragging={drag > 0} style:translate={drag > 0 ? `0 ${drag}px` : undefined}>
     <div class="grip" data-drag-handle aria-hidden="true"><span></span></div>
@@ -295,7 +298,6 @@
       <div class="toggle-space" aria-hidden="true"></div>
     </footer>
   </div>
-  <div class="toggle"><MenuButton onclose={session.close} onback={view !== "main" ? back : undefined} /></div>
 </dialog>
 
 <ConfirmDialog
@@ -312,18 +314,25 @@
     block-size: calc(var(--size-floating-control) + var(--inset-floating-control) * 2 + env(safe-area-inset-bottom));
   }
   .launcher {
-    z-index: 5;
+    z-index: 6;
     position: fixed;
     inset-block-end: max(var(--inset-floating-control), env(safe-area-inset-bottom));
     inset-inline-end: max(var(--inset-floating-control), env(safe-area-inset-right));
+  }
+  .scrim {
+    z-index: 4;
+    position: fixed;
+    inset: 0;
+    background: #00000080;
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity var(--duration-fast),
+      visibility var(--duration-fast);
 
-    &.subtle {
-      opacity: 0.8;
-      transition: opacity var(--duration-fast) var(--ease-standard);
-
-      &:is(:hover, :focus-within) {
-        opacity: 1;
-      }
+    &.is-open {
+      opacity: 1;
+      visibility: visible;
     }
   }
   dialog {
@@ -331,6 +340,7 @@
     --toggle-padding-inline: 0.5rem;
     --toggle-padding-block: 0.5rem;
 
+    z-index: 5;
     position: fixed;
     inline-size: min(24rem, var(--viewport-width, 100vw));
     max-inline-size: none;
@@ -342,24 +352,11 @@
     border: 0;
     background: transparent;
     color: var(--foreground);
-    transition:
-      display var(--duration-fast),
-      overlay var(--duration-fast);
+    transition: display var(--duration-fast);
     transition-behavior: allow-discrete;
 
     &[open] {
       display: flex;
-    }
-    &::backdrop {
-      background: #00000000;
-      transition:
-        background-color var(--duration-fast),
-        display var(--duration-fast),
-        overlay var(--duration-fast);
-      transition-behavior: allow-discrete;
-    }
-    &[open]::backdrop {
-      background: #00000080;
     }
   }
   .sheet {
@@ -375,7 +372,8 @@
     border-inline-end: 0;
     border-block-end: 0;
     border-start-start-radius: var(--radius-card);
-    background: var(--panel);
+    background: color-mix(var(--panel) 67%, transparent);
+    backdrop-filter: blur(4px);
     box-shadow:
       0 1rem 4rem #00000099,
       inset 0 1px #ffffff0a;
@@ -396,20 +394,11 @@
       translate: 0 1rem;
       opacity: 0;
     }
-    dialog[open]::backdrop {
-      background: #00000000;
-    }
   }
   .toggle-space {
     flex: none;
     inline-size: var(--toggle-size, var(--size-floating-control));
     block-size: var(--toggle-size, var(--size-floating-control));
-  }
-  .toggle {
-    --size-floating-control: var(--toggle-size);
-    position: absolute;
-    inset-block-end: var(--toggle-padding-block);
-    inset-inline-end: var(--toggle-padding-inline);
   }
   .grip {
     display: grid;
@@ -429,7 +418,7 @@
   header {
     flex: none;
     touch-action: pan-x;
-    border-block-end: var(--border-width) solid var(--color-divider);
+    border-block-end: var(--border-width) solid var(--grey-7);
   }
   h2 {
     font-weight: var(--font-bold);
@@ -466,13 +455,14 @@
     gap: 0.5rem;
     margin-block-start: 1.25rem;
     padding-block-start: 1rem;
-    border-block-start: var(--border-width) solid var(--color-divider);
+    border-block-start: var(--border-width) solid var(--grey-7);
   }
   .reset {
     min-block-size: 2.75rem;
     padding: 0.5rem 0.875rem;
     border: var(--border-width) solid var(--destructive);
     border-radius: var(--radius-control);
+    background: var(--panel);
     color: var(--destructive);
     font-weight: var(--font-semibold);
 
@@ -614,6 +604,7 @@
     overflow: hidden;
     border: var(--border-width) solid var(--grey-7);
     border-radius: var(--radius-control);
+    background: var(--panel);
   }
   .brand,
   .row {
@@ -687,7 +678,7 @@
     align-items: center;
     padding: 0.5rem var(--toggle-padding-inline) var(--toggle-padding-block) 1rem;
     gap: 0.75rem;
-    border-block-start: var(--border-width) solid var(--color-divider);
+    border-block-start: var(--border-width) solid var(--grey-7);
     color: var(--muted-foreground);
     font-size: var(--text-sm);
   }
@@ -742,7 +733,7 @@
     display: flex;
     padding-block: 0.875rem;
     gap: 0.75rem;
-    border-block-end: var(--border-width) solid var(--color-divider);
+    border-block-end: var(--border-width) solid var(--grey-7);
 
     & p {
       font-size: var(--text-md);

@@ -537,6 +537,8 @@
     color: var(--accent);
   }
   header {
+    /* Keep font-metric fractions from shifting the content below the trimmed heading. */
+    block-size: calc-size(auto, round(up, size, 1px));
     margin-block-end: 0.75rem;
     text-align: center;
   }
@@ -573,12 +575,6 @@
     position: fixed;
     inset-block-end: max(var(--inset-floating-control), env(safe-area-inset-bottom));
     inset-inline-start: max(var(--inset-floating-control), env(safe-area-inset-left));
-    opacity: 0.8;
-    transition: opacity var(--duration-fast) var(--ease-standard);
-
-    &:is(:hover, :focus-within) {
-      opacity: 1;
-    }
   }
   .swipe-tabs {
     box-shadow: 0 0.25rem 0.5rem color-mix(var(--contrast) 25%, transparent);

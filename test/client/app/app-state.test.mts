@@ -15,19 +15,24 @@ it("retains only the newest 100 notices with stable distinct IDs and an app-scop
   expect(new NotificationLog().notices).toEqual([]);
 });
 
-it("releases only the active menu opener registration", () => {
+it("releases only the active menu action registration", () => {
   const menu = new SiteMenu();
   const first = vi.fn();
   const second = vi.fn();
-  const releaseFirst = menu.registerOpen(first);
-  const releaseSecond = menu.registerOpen(second);
+  const close = vi.fn();
+  const releaseFirst = menu.register({ open: first, close: vi.fn() });
+  const releaseSecond = menu.register({ open: second, close });
   releaseFirst();
   menu.onopen();
   expect(first).not.toHaveBeenCalled();
   expect(second).toHaveBeenCalledTimes(1);
+  menu.onclose();
+  expect(close).toHaveBeenCalledOnce();
   releaseSecond();
   menu.onopen();
+  menu.onclose();
   expect(second).toHaveBeenCalledTimes(1);
+  expect(close).toHaveBeenCalledOnce();
 });
 
 it("keeps showdown settings for the app session while cleaning up route-owned summary and alignment", () => {

@@ -18,7 +18,7 @@ function fixture({ attach = true, gutter = "auto" } = {}) {
     defaultView: window,
     documentElement: root,
     activeElement: previous,
-    querySelector: vi.fn(() => trigger),
+    querySelector: vi.fn((selector: string) => (selector === "[data-menu-trigger]" ? trigger : null)),
   };
   const properties = new Map<string, string>();
   const dialog = Object.assign(new EventTarget(), {
@@ -31,7 +31,7 @@ function fixture({ attach = true, gutter = "auto" } = {}) {
       removeProperty: (key: string) => properties.delete(key),
     },
     getBoundingClientRect: vi.fn(() => ({ right: 984, bottom: 800 })),
-    showModal: vi.fn(() => {
+    show: vi.fn(() => {
       dialog.open = true;
     }),
     close: vi.fn(() => {
@@ -70,6 +70,72 @@ function click(overrides: Partial<MouseEvent> = {}) {
 }
 
 describe("menu session", () => {
+  it("ignores clicks inside the drawer or its persistent button and closes on outside clicks", () => {
+    const view = fixture();
+    view.synchronize(true);
+    const event = (path: unknown[] = []) => {
+      const event = new Event("click");
+      Object.defineProperty(event, "composedPath", { value: () => path });
+      return event;
+    };
+    view.window.dispatchEvent(event([view.dialog]));
+    expect(view.history.back).not.toHaveBeenCalled();
+    view.window.dispatchEvent(event([view.trigger]));
+    expect(view.history.back).not.toHaveBeenCalled();
+    view.window.dispatchEvent(event());
+    expect(view.history.back).toHaveBeenCalledOnce();
+    view.detach!();
+    view.history.back.mockClear();
+    view.window.dispatchEvent(event());
+    expect(view.history.back).not.toHaveBeenCalled();
+  });
+
+  it("does not dismiss the drawer when the menu icon was replaced during the opening click", () => {
+    const view = fixture();
+    const detachedIcon = {};
+    const event = new Event("click");
+    Object.defineProperty(event, "target", { value: detachedIcon });
+    Object.defineProperty(event, "composedPath", { value: () => [detachedIcon, view.trigger, view.window] });
+    view.synchronize(true);
+    view.window.dispatchEvent(event);
+    expect(view.history.back).not.toHaveBeenCalled();
+    expect(view.dialog.open).toBe(true);
+    view.detach!();
+  });
+
+  it("uses a nonmodal drawer and restores focus without waiting for visual transitions", async () => {
+    const view = fixture();
+    await view.session.open();
+    view.synchronize(true);
+    expect(view.dialog.show).toHaveBeenCalledOnce();
+    view.synchronize(false);
+    expect(view.onchange).toHaveBeenLastCalledWith(false);
+    await Promise.resolve();
+    expect(view.previous.focus).toHaveBeenCalledWith({ preventScroll: true });
+    view.detach!();
+  });
+
+  it("closes on Escape while leaving nested modal dialogs in control", () => {
+    const view = fixture();
+    view.synchronize(true);
+    const keydown = () => {
+      const event = new Event("keydown", { cancelable: true });
+      Object.defineProperty(event, "key", { value: "Escape" });
+      view.window.dispatchEvent(event);
+      return event;
+    };
+    view.dialog.ownerDocument.querySelector.mockImplementation((selector) => (selector === "dialog:modal" ? view.trigger : null));
+    expect(keydown().defaultPrevented).toBe(false);
+    expect(view.history.back).not.toHaveBeenCalled();
+    view.dialog.ownerDocument.querySelector.mockReturnValue(null);
+    expect(keydown().defaultPrevented).toBe(true);
+    expect(view.history.back).toHaveBeenCalledOnce();
+    view.detach!();
+    view.history.back.mockClear();
+    keydown();
+    expect(view.history.back).not.toHaveBeenCalled();
+  });
+
   it("waits for history before opening, follows Back and Forward, and does not duplicate resources", async () => {
     const view = fixture();
     await view.session.open();
@@ -77,7 +143,7 @@ describe("menu session", () => {
     expect(view.dialog.open).toBe(false);
     view.synchronize(true);
     view.synchronize(true);
-    expect(view.dialog.showModal).toHaveBeenCalledOnce();
+    expect(view.dialog.show).toHaveBeenCalledOnce();
     expect(view.root.style).toEqual({ overflow: "hidden", scrollbarGutter: "stable" });
     view.session.close();
     view.session.close();
@@ -88,7 +154,7 @@ describe("menu session", () => {
     expect(view.previous.focus).toHaveBeenCalledWith({ preventScroll: true });
     expect(view.root.style).toEqual({ overflow: "scroll", scrollbarGutter: "" });
     view.synchronize(true);
-    expect(view.dialog.showModal).toHaveBeenCalledTimes(2);
+    expect(view.dialog.show).toHaveBeenCalledTimes(2);
     expect(view.history.open).toHaveBeenCalledOnce();
     view.detach!();
   });
@@ -109,25 +175,6 @@ describe("menu session", () => {
     const calls = view.dialog.getBoundingClientRect.mock.calls.length;
     view.window.dispatchEvent(new Event("resize"));
     expect(view.dialog.getBoundingClientRect).toHaveBeenCalledTimes(calls);
-  });
-
-  it("intercepts native Escape cancellation and dismisses only backdrop clicks", () => {
-    const view = fixture();
-    view.synchronize(true);
-    const cancel = new Event("cancel", { cancelable: true });
-    view.dialog.dispatchEvent(cancel);
-    expect(cancel.defaultPrevented).toBe(true);
-    expect(view.history.back).toHaveBeenCalledOnce();
-    expect(view.dialog.open).toBe(true);
-    view.synchronize(false);
-    view.synchronize(true);
-    const inside = new Event("click");
-    Object.defineProperty(inside, "target", { value: {} });
-    view.dialog.dispatchEvent(inside);
-    expect(view.history.back).toHaveBeenCalledOnce();
-    view.dialog.dispatchEvent(new Event("click"));
-    expect(view.history.back).toHaveBeenCalledTimes(2);
-    view.detach!();
   });
 
   it("uses the current trigger when previous focus has left and preserves an existing gutter", async () => {
@@ -207,7 +254,9 @@ describe("menu session", () => {
     view.detach!();
     expect(view.dialog.open).toBe(false);
     expect(view.root.style).toEqual({ overflow: "scroll", scrollbarGutter: "" });
-    view.dialog.dispatchEvent(new Event("cancel", { cancelable: true }));
+    const escape = new Event("keydown", { cancelable: true });
+    Object.defineProperty(escape, "key", { value: "Escape" });
+    view.window.dispatchEvent(escape);
     expect(view.history.back).toHaveBeenCalledOnce();
     pending.reject(new Error("late failure"));
     await opening;

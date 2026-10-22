@@ -61,10 +61,21 @@ await runBrowser(
     await send("Page.navigate", { url: new URL("/kdm/collection/?q=kingdom%20death%20monster", base).href });
     await waitFor("document.querySelector('article input[type=checkbox]:not(:disabled)') !== null");
     await evaluate("document.querySelector('[data-menu-trigger]').focus()");
+    await evaluate("window.menuButtonIdentity = document.querySelector('[data-menu-trigger]')");
     await open();
+    assert(
+      await evaluate(
+        "document.querySelectorAll('[data-menu-trigger]').length === 1 && document.querySelector('[data-menu-trigger]') === window.menuButtonIdentity && !document.querySelector('dialog[data-swipe-ignore]').matches(':modal')",
+      ),
+      "One persistent menu button remains usable with a nonmodal drawer",
+    );
     assert(await evaluate("getComputedStyle(document.documentElement).overflow === 'hidden'"), "Desktop menu locks background scrolling");
     await screenshot("desktop-main");
     await escape();
+    assert(
+      await evaluate("document.querySelector('[data-menu-trigger]') === window.menuButtonIdentity"),
+      "Closing retains the same menu button element",
+    );
     assert(await evaluate("document.activeElement?.matches('[data-menu-trigger]')"), "Escape restores launcher focus");
     await evaluate("history.forward()");
     await waitFor("document.querySelector('dialog[data-swipe-ignore]')?.open");

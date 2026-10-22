@@ -154,7 +154,7 @@
   }
 </script>
 
-<article class={[badges.beta && !badges.gameplay && "beta-only", collapsed && "is-collapsed"]} {@attach observe}>
+<article class={[badges.beta && !badges.gameplay && "beta-only"]} {@attach observe}>
   <h2>
     <HoldRipple
       ontap={tapOwnership}
@@ -210,7 +210,16 @@
       {/snippet}
     </HoldRipple>
   </h2>
-  <div class={["card-body", !ready && "pending"]} id={`card-body-${item.id}`} hidden={collapsed}>
+  <div
+    class={["card-body", !ready && "pending"]}
+    id={`card-body-${item.id}`}
+    hidden={collapsed}
+    style:--edition-count={editions.length}
+    style:--notes-count={item.notes || item.aliases?.length || item.gameplayContent ? 1 : 0}
+    style:--requirements-count={requirements.length ? 1 : 0}
+    style:--contents-count={item.includes?.length || editions.some((edition) => edition.includesAllSim) ? 1 : 0}
+    style:--copy-count={numberedEditions.length}
+  >
     {#if ready}
       {#if selected}
         <div class="edition-details">
@@ -558,21 +567,14 @@
     --space-edition-control: 0.25rem;
     --gap-edition: 0.5rem;
     --size-edition-control: 1.5rem;
-    --size-card-placeholder: 14rem;
-    --size-card-collapsed: 4.5rem;
-
-    contain-intrinsic-block-size: auto calc(var(--size-card-placeholder) + var(--size-card-collapsed));
     container-type: inline-size;
-    content-visibility: auto;
+    /* Keep the header's paint containment independent of the body's visibility. */
+    contain: paint;
     overflow: hidden;
     border-radius: var(--radius-card);
     background: var(--card);
     &.beta-only {
       border-radius: 0;
-    }
-    &.is-collapsed {
-      /* Lay out the lightweight headers at their real heights for scroll anchoring. */
-      content-visibility: visible;
     }
   }
   h2 {
@@ -605,9 +607,19 @@
     color: var(--accent-red);
   }
   .card-body {
+    --size-edition-row: 2.625rem;
+    /* Estimate content-box height; padding is added separately by layout. */
+    --size-body-placeholder: calc(
+      5.5rem + max(1, var(--edition-count)) * var(--size-edition-row) + var(--notes-count) * 2.125rem + var(--requirements-count) * 2rem +
+        var(--contents-count) * 1.625rem + var(--copy-count) * 3rem
+    );
+
+    content-visibility: auto;
+    /* display:none removes the box while collapsed, preserving its last expanded measurement. */
+    contain-intrinsic-block-size: auto var(--size-body-placeholder);
     padding: var(--space-card);
     &.pending {
-      min-block-size: var(--size-card-placeholder);
+      min-block-size: calc(var(--size-body-placeholder) + 2 * var(--space-card));
     }
     &[hidden] {
       display: none;
@@ -1051,6 +1063,9 @@
     }
   }
   @container (min-width: 31.5rem) {
+    .card-body {
+      --size-edition-row: 1.625rem;
+    }
     .edition {
       grid-template-rows: auto;
     }

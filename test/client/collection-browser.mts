@@ -111,6 +111,25 @@ await runBrowser(
     await click("Mark Butcher, Plastic missing");
     await waitFor("document.querySelector('input[aria-label=\"Have Butcher, Plastic\"]')?.checked === false");
     assert((await rows()).length === 0, "Unchecking a standalone component removes its empty record without a missing override");
+    for (const width of [1280, 390]) {
+      await send("Emulation.setDeviceMetricsOverride", { width, height: 900, deviceScaleFactor: 1, mobile: width === 390 });
+      await navigate(new URL("/kdm/collection/", base).href);
+      await evaluate("document.querySelectorAll('article')[80].scrollIntoView()");
+      await waitFor("!document.querySelectorAll('article')[80].querySelector('.pending')");
+      await evaluate("new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)))");
+      const height = await evaluate<number>("document.querySelectorAll('article')[80].getBoundingClientRect().height");
+      await evaluate("scrollTo(0, 0); new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)))");
+      await evaluate("document.querySelector('.collapse-all').click()");
+      await waitFor("document.querySelectorAll('article')[80].querySelector('.card-body').hidden");
+      await evaluate("new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)))");
+      await evaluate("document.querySelector('.collapse-all').click()");
+      await waitFor("!document.querySelectorAll('article')[80].querySelector('.card-body').hidden");
+      await evaluate("new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)))");
+      assert(
+        Math.abs((await evaluate<number>("document.querySelectorAll('article')[80].getBoundingClientRect().height")) - height) < 1,
+        `Offscreen card retains its expanded height after collapse and expand at ${width}px`,
+      );
+    }
     assert(errors.length === 0, "No browser runtime exceptions, window errors, or error logs");
     await saveScreenshot("temp/browser-verification/ownership.png");
     await writeFile("temp/browser-verification/report.json", JSON.stringify({ report, errors }, null, 2));

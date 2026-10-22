@@ -559,7 +559,7 @@
     --color-tool-accent: var(--accent);
 
     padding-block: var(--gap-tool);
-    border-block-end: var(--border-width) solid var(--color-divider);
+    border-block-end: var(--border-width) solid var(--grey-7);
     line-height: var(--line-height-none);
     transition: color var(--duration-fast) var(--ease-standard);
 
