@@ -1,17 +1,17 @@
 <script lang="ts">
   import Counter from "../../ui/Counter.svelte";
   import HoldRipple from "#lib/components/gestures/HoldRipple.svelte";
-  import AttributeTokens from "../../ui/status/AttributeTokens.svelte";
-  import ActionRow from "../../ui/actions/ActionRow.svelte";
+  import AttributeTokens from "./status/AttributeTokens.svelte";
+  import ActionRow from "./actions/ActionRow.svelte";
   import AttackProfile from "./AttackProfile.svelte";
   import KdIcon from "#lib/components/KdIcon.svelte";
   import Section from "../../ui/sections/Section.svelte";
   import Gear from "../../survivors/ui/Gear.svelte";
-  import EntryList from "../../ui/sections/EntryList.svelte";
+  import EntryList from "./sections/EntryList.svelte";
   import ProgressTrack from "../../survivors/ui/ProgressTrack.svelte";
   import StatusIcon from "../../ui/status/StatusIcon.svelte";
   import { SectionControls, setSectionControls } from "../../ui/sections/sections";
-  import { statuses, statusOrder, statusIcons } from "#lib/constants.ts";
+  import { statuses, statusOrder, statusIcons } from "#lib/kdm/ui/status/statuses.ts";
   import {
     attributes,
     abbreviations,

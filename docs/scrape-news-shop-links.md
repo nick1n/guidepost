@@ -7,7 +7,7 @@ pnpm scrape:news          # Use cached pages
 pnpm scrape:news --fetch  # Refresh the index and all articles
 ```
 
-The entry point is `scripts/news/scrape-shop-links.mts`. Default runs make no requests; missing cached pages report how to rerun with
+The entry point is [scrape-shop-links.mts](../scripts/news/scrape-shop-links.mts). Default runs make no requests; missing cached pages report how to rerun with
 `--fetch`. `--offline` explicitly selects this default and cannot accompany `--fetch`.
 Successfully exported articles, including those with no retained links, are skipped unless `--refresh-posts` reprocesses saved pages.
 
@@ -18,7 +18,7 @@ use `pnpm scrape:news --fetch --delay 5` to slow them further.
 Results checkpoint after each post:
 
 - `scripts/news/shop-links.csv`: post date, title, URL, item name, and shop URL.
-- `scripts/news/shop-links.json`: the same rows plus coverage, including empty and failed posts.
+- [shop-links.json](../scripts/news/shop-links.json): the same rows plus coverage, including empty and failed posts.
 
 Only direct `shop.kingdomdeath.com/products` URLs remain. Non-product URLs and any URL containing `collections` (case-insensitive) are
 excluded, including `/collections/.../products/...`. Each run also filters existing exports and updates retained link counts.
@@ -40,5 +40,5 @@ Partial runs exit 1 and record failures. HTTP 401, 403, and 429 stop fetching wi
 Run offline parser, export, cache, and pacing checks:
 
 ```powershell
-node --test test/scripts/scrape-news-checks.mts
+node --test test/scripts/news/scrape-news-checks.mts
 ```

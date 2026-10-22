@@ -1,8 +1,5 @@
-import { Command } from "effect/cli";
-import { runCommand, workflow } from "./cli.mts";
 import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
-import { pathToFileURL } from "node:url";
 import { Ajv2020 } from "ajv/dist/2020.js";
 import {
   decodeWorkbookMap,
@@ -123,8 +120,8 @@ export async function writeWorkbookMap(root = process.cwd(), options: { signal?:
   options.signal?.throwIfAborted();
   const catalogRoot = resolve(root, "static/kdm/catalog");
   const mapPath = resolve(catalogRoot, "workbook-map.json");
-  const importsPath = resolve(root, "temp/kdm-catalog/imports/kdm-import-records.json");
-  const importsSchemaPath = resolve(root, "temp/kdm-catalog/imports/kdm-import-records.schema.json");
+  const importsPath = resolve(root, "local-data/kdm-catalog/imports/kdm-import-records.json");
+  const importsSchemaPath = resolve(root, "local-data/kdm-catalog/imports/kdm-import-records.schema.json");
   const catalogPath = resolve(catalogRoot, "data.json");
   const schemaPath = resolve(catalogRoot, "workbook-map.schema.json");
   const [importsText, importsSchemaText, catalogText, schemaText, oldText] = await Promise.all([
@@ -164,15 +161,4 @@ export async function writeWorkbookMap(root = process.cwd(), options: { signal?:
     signal: options.signal,
   });
   return map;
-}
-
-if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
-  runCommand(
-    Command.make("catalog:workbook", {}, () =>
-      workflow(async (signal) => {
-        const map = await writeWorkbookMap(process.cwd(), { signal });
-        console.log(`Mapped ${map.rows.length} workbook rows to catalog edition IDs.`);
-      }),
-    ),
-  );
 }

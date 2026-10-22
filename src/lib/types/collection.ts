@@ -1,22 +1,22 @@
-import { Result, Schema as S } from "effect";
+import { Result, Schema } from "effect";
 
 export const copyNumberMaximum = 9999;
-export const CopyNumberSchema = S.Int.check(S.isBetween({ minimum: 1, maximum: copyNumberMaximum }));
+export const CopyNumberSchema = Schema.Int.check(Schema.isBetween({ minimum: 1, maximum: copyNumberMaximum }));
 
-export const EntryStateSchema = S.Struct({
-  owned: S.optionalKey(S.Boolean),
-  missing: S.optionalKey(S.Boolean),
-  wished: S.optionalKey(S.Boolean),
-  copyNumber: S.optionalKey(CopyNumberSchema),
+export const EntryStateSchema = Schema.Struct({
+  owned: Schema.optionalKey(Schema.Boolean),
+  missing: Schema.optionalKey(Schema.Boolean),
+  wished: Schema.optionalKey(Schema.Boolean),
+  copyNumber: Schema.optionalKey(CopyNumberSchema),
 });
 
-export interface EntryState extends S.Schema.Type<typeof EntryStateSchema> {}
+export interface EntryState extends Schema.Schema.Type<typeof EntryStateSchema> {}
 
-const KeyPartsSchema = S.fromJsonString(S.Tuple([S.NonEmptyString, S.NonEmptyString]));
-const decodeKey = S.decodeUnknownResult(KeyPartsSchema);
+const KeyPartsSchema = Schema.fromJsonString(Schema.Tuple([Schema.NonEmptyString, Schema.NonEmptyString]));
+const decodeKey = Schema.decodeUnknownResult(KeyPartsSchema);
 
-export const CollectionKeySchema = S.String.check(
-  S.makeFilter(
+export const CollectionKeySchema = Schema.String.check(
+  Schema.makeFilter(
     (key) => {
       const decoded = decodeKey(key);
       return Result.isSuccess(decoded) && JSON.stringify(decoded.success) === key;
@@ -25,14 +25,14 @@ export const CollectionKeySchema = S.String.check(
   ),
 );
 
-const decodeCollectionKey = S.decodeUnknownResult(CollectionKeySchema);
+const decodeCollectionKey = Schema.decodeUnknownResult(CollectionKeySchema);
 
-export const CollectionSnapshotSchema = S.Record(S.String, EntryStateSchema).check(
-  S.makeFilter((state) => Object.keys(state).every((key) => Result.isSuccess(decodeCollectionKey(key))), {
+export const CollectionSnapshotSchema = Schema.Record(Schema.String, EntryStateSchema).check(
+  Schema.makeFilter((state) => Object.keys(state).every((key) => Result.isSuccess(decodeCollectionKey(key))), {
     message: "Collection entries must use canonical content and edition ID keys.",
   }),
 );
-export type CollectionSnapshot = S.Schema.Type<typeof CollectionSnapshotSchema>;
+export type CollectionSnapshot = Schema.Schema.Type<typeof CollectionSnapshotSchema>;
 export type CollectionPatch = Record<string, Omit<EntryState, "copyNumber"> & { copyNumber?: number | undefined }>;
 
 export function normalizeEntry(entry: EntryState): EntryState {
@@ -58,8 +58,8 @@ export function collectionKey(contentId: string, editionId: string) {
 }
 
 export function parseCollectionKey(key: string) {
-  S.decodeUnknownSync(CollectionKeySchema)(key);
-  return S.decodeUnknownSync(KeyPartsSchema)(key);
+  Schema.decodeUnknownSync(CollectionKeySchema)(key);
+  return Schema.decodeUnknownSync(KeyPartsSchema)(key);
 }
 
 export function entryId(ownerId: string, key: string) {

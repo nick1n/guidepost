@@ -27,7 +27,7 @@ the relevant files, constraints, and expected result. The primary agent owns int
 
 ## Landing page
 
-`src/routes/+page.svelte` is the tool directory. Keep it lightweight, dark, and mobile-first. On mobile, the header sits above the navigation and aligns right. At the wide breakpoint, it stays fixed in the bottom-left and aligns left, with navigation on the right.
+[+page.svelte](src/routes/+page.svelte) is the tool directory. Keep it lightweight, dark, and mobile-first. On mobile, the header sits above the navigation and aligns right. At the wide breakpoint, it stays fixed in the bottom-left and aligns left, with navigation on the right.
 
 The window owns scrolling as the link list grows; do not add a navigation scrolling container. Preserve the full-bleed warm glow, pointer or device-orientation movement, flicker, slow pulse, and reduced-motion behavior unless a redesign changes them. This page may override the global stable scrollbar gutter for edge-to-edge backgrounds.
 
@@ -35,7 +35,7 @@ The window owns scrolling as the link list grows; do not add a navigation scroll
 
 Infer types unless annotations clarify public APIs or complex values, improve readability, or prevent incorrect widening. Prefer one- or two-word type names unless longer is clearer; function names may be longer.
 
-Before adding a constants-only module, check `src/lib/constants.ts` and existing modules. Keep single-component constants local and shared constants in the module serving their consumers. Create a new module only for a distinct feature with enough related data or behavior. Update imports and remove obsolete modules when consolidating.
+Before adding a constants-only module, check [constants.ts](src/lib/constants.ts) and existing modules. Keep single-component constants local and shared constants in the module serving their consumers. Create a new module only for a distinct feature with enough related data or behavior. Update imports and remove obsolete modules when consolidating.
 
 ## Svelte
 
@@ -98,22 +98,22 @@ Use alpha hex (`#RRGGBBAA`) for fixed translucent colors. Reserve `color-mix()` 
 For UI color choices and simplification:
 
 - Prefer existing palette shades for solid fills, borders, and text over ad hoc mixes with black, white, or neutral surfaces. Match the color roles and interaction colors of equivalent controls.
-- Shared palettes run from `0` (lightest) to `10` (darkest), with a 20% OKLCH lightness floor. Read each family's values from `src/app.css`; matching shade numbers do not guarantee matching lightness. When inserting or renumbering shades, update every consumer and the palette lab while preserving existing colors.
+- Shared palettes run from `0` (lightest) to `10` (darkest), with a 20% OKLCH lightness floor. Read each family's values from [app.css](src/app.css); matching shade numbers do not guarantee matching lightness. When inserting or renumbering shades, update every consumer and the palette lab while preserving existing colors.
 - Keep entity colors identity-based. Use the existing `--identity-*` scale, where `--identity-5` is the original color. Generate shades `in oklch` with achromatic endpoints whose hue is `none`, and define the scale on the element owning `--identity` so inherited shades resolve correctly.
 - Compare an alpha mix with the color rendered over its actual background, including any parent tint. Opacity percentages are not lightness percentages or shade numbers. Choose the closest usable shade by OKLab distance, checking text contrast and preserving visible hover, focus, selected, and disabled states.
 - Retain transparency for gradients, shadows, glows, artwork overlays, and adaptive borders whose appearance depends on their backdrop. A shade replacement may approximate a flat surface; it cannot generally replace alpha over varying backgrounds.
 - Share repeated fills, tints, and complex effects through purpose-based local tokens when they serve the same role. Keep unrelated roles and independently active status colors separate. Remove obsolete declarations rather than preserving unused styling.
 - Verify that tokens resolve on every owner and variant, check combined status effects, and keep palette previews in sync with scale changes.
 
-The reduced-motion query in `src/app.css` disables shared durations; do not repeat these resets in components. Keep component reduced-motion rules for transforms, custom animations, gesture feedback, and other behavior the shared durations do not cover.
+The reduced-motion query in [app.css](src/app.css) disables shared durations; do not repeat these resets in components. Keep component reduced-motion rules for transforms, custom animations, gesture feedback, and other behavior the shared durations do not cover.
 
 ### Icons
 
-Use Material Symbols through UnoCSS, for example `class="search-icon i-material-symbols:search"`. The icon preset in `uno.config.ts` supplies `display: inline-block` and square dimensions from `--size-icon`, falling back to `1em`. Set `--size-icon` on the icon for a custom size instead of repeating display and dimension declarations. Use the shared `control-icon` and `external-icon` classes when their sizes fit. Keep local display overrides required by layout or visibility, and give icons an explicit text color on contrasting backgrounds. Follow the accessibility rules above.
+Use Material Symbols through UnoCSS, for example `class="search-icon i-material-symbols:search"`. The icon preset in [uno.config.ts](uno.config.ts) supplies `display: inline-block` and square dimensions from `--size-icon`, falling back to `1em`. Set `--size-icon` on the icon for a custom size instead of repeating display and dimension declarations. Use the shared `control-icon` and `external-icon` classes when their sizes fit. Keep local display overrides required by layout or visibility, and give icons an explicit text color on contrasting backgrounds. Follow the accessibility rules above.
 
 Keep `--size-icon` overrides on icon elements so the value does not unintentionally reach nested icons. This convention applies to UnoCSS icons; `KdIcon` uses font sizing, and icon containers still need their own layout dimensions.
 
-Safelist icon classes in `uno.config.ts` when extraction is unreliable. Verify production CSS if an icon works only in development.
+Safelist icon classes in [uno.config.ts](uno.config.ts) when extraction is unreliable. Verify production CSS if an icon works only in development.
 
 ## Scripts
 
@@ -122,20 +122,20 @@ Never download automatically for missing or stale caches; report missing data wi
 
 ## Catalog
 
-`static/kdm/catalog/data.json` is the live app's source of truth. Data is grouped by category and item IDs are object keys; do not add `id` fields to items. Update `static/kdm/catalog/data.schema.json` when the shape changes and regenerate types as described in [README.md](README.md#catalog).
+[data.json](static/kdm/catalog/data.json) is the live app's source of truth. Data is grouped by category and item IDs are object keys; do not add `id` fields to items. Update [data.schema.json](static/kdm/catalog/data.schema.json) when the shape changes and regenerate types as described in [README.md](README.md#catalog).
 
-Explicit editions require permanent readable lowercase kebab-case `id` values, unique within their item. Assign IDs once; retain them when facts change and never reuse retired IDs. Creation tooling in `scripts/catalog/identity.mts` rejects collisions for review. `label` is mutable display text, never collection identity. Items
+Explicit editions require permanent readable lowercase kebab-case `id` values, unique within their item. Assign IDs once; retain them when facts change and never reuse retired IDs. Creation tooling in [identity.mts](scripts/catalog/identity.mts) rejects collisions for review. `label` is mutable display text, never collection identity. Items
 without explicit editions use synthetic `item` IDs, or `bundle` for bundles. The product-only
-`static/kdm/catalog/workbook-map.json` connects local workbook rows to these IDs; regenerate it with `pnpm catalog:workbook` from the
+[workbook-map.json](static/kdm/catalog/workbook-map.json) connects local workbook rows to these IDs; regenerate it with `pnpm catalog:workbook` from the
 Git-ignored import records. Sheet and row numbers are locators for that workbook snapshot, not permanent IDs. Review changed row
 identities and ambiguous release alternatives before import or export uses them. Do not put personal workbook cells in
 the map.
 
-`src/lib/types/workbook.ts` owns workbook mapping and normalized-row schemas and types. Tooling and collection transfers share them.
-Change that contract and run `pnpm generate:types` to refresh `static/kdm/catalog/workbook-map.schema.json`; do not edit the generated
+[workbook.ts](src/lib/types/workbook.ts) owns workbook mapping and normalized-row schemas and types. Tooling and collection transfers share them.
+Change that contract and run `pnpm generate:types` to refresh [workbook-map.schema.json](static/kdm/catalog/workbook-map.schema.json); do not edit the generated
 editor schema by hand. Workbook publication guards its captured catalog, import records, schemas, and previous map before replacement.
 
-Keep item fields alphabetical, edition fields starting with `id` then `label`, and inclusion-object fields starting with `item`; remaining fields are alphabetical. Use `orderItemFields`/`organizeCatalog` in `scripts/catalog/order.mts`. Preserve category/item ordering and edition/other array ordering. Keep `includes` on parents: `editionId` resolves on the child item and `parentEditionIds` on the containing item. Derive reverse membership.
+Keep item fields alphabetical, edition fields starting with `id` then `label`, and inclusion-object fields starting with `item`; remaining fields are alphabetical. Use `orderItemFields`/[organizeCatalog](scripts/catalog/order.mts). Preserve category/item ordering and edition/other array ordering. Keep `includes` on parents: `editionId` resolves on the child item and `parentEditionIds` on the containing item. Derive reverse membership.
 
 Product ownership is explicit; never infer it from included components, equivalences, or upgrade recipes. Inclusion lists may be partial
 and support listed-content progress and bundle savings. Use `Collection.toggleEditionOwned` for product checkboxes,
@@ -144,26 +144,26 @@ and support listed-content progress and bundle savings. Use `Collection.toggleEd
 `requires` lists dependencies beyond core and its contents; omit empty arrays. Keep campaign restrictions and partial or optional
 requirements in notes, without repeating `requires`.
 
-Keep catalog-derived helpers in `src/lib/kdm-data.ts` or `src/lib/catalog-view.ts`, not duplicated in components. `CollectionBrowsing`
+Keep catalog-derived helpers in [kdm-data.ts](src/lib/kdm-data.ts) or [catalog-view.ts](src/lib/catalog-view.ts), not duplicated in components. `CollectionBrowsing`
 owns browsing and URL transitions; `CollectionCards` owns card collapse, deferred rendering, viewport observation, and held-card scroll
 anchoring. The collection page disposes card resources on unmount and owns focus, gestures, and navigation.
 
 Load the full catalog only through the collection route. The root layout initializes an empty catalog. Quick Start directly imports
-generated `src/lib/gen/core-editions.json`, containing only playable core editions' IDs and labels in catalog order, excluding Resin;
+generated [core-editions.json](src/lib/gen/core-editions.json), containing only playable core editions' IDs and labels in catalog order, excluding Resin;
 `pnpm generate:types` refreshes it from the live catalog. Catalog helpers receive data explicitly. Switching to
 the full catalog must preserve the owner's snapshot and pending writes. Disable collection-link hover data preloading and keep
 the full catalog and collection HTML out of service-worker precaching; cache them after collection is visited.
 
 ### Catalog workflow and decisions
 
-Read [the catalog guide](docs/kdm-catalog.md) for product-specific decisions and [README.md](README.md#catalog)
-for commands and the current collection route.
+Read [the catalog guide](docs/kdm-catalog.md) for product-specific decisions and [catalog workflows](docs/catalog-workflows.md)
+for commands, caches, retained local inputs, and reports.
 Preserve direct owner edits and reviewed facts.
 
-- Research cached news and `temp/kdm-catalog/shopify-products/products-page-N.json` before requesting the shop.
+- Research cached news and `.cache/kdm-catalog/shopify-products/products-page-N.json` before requesting the shop.
   Prefer product `.js` JSON; its prices are cents, while paginated product prices are dollars. Space shop requests at least
-  35 seconds apart. Temporary mappings, imports, reports, and archives are Git-ignored.
-- Local `temp/kdm-catalog/kdm-tags.json` supplies exact reviewed tags when present; sync it after direct tag edits.
+  35 seconds apart. Local mappings, imports, and archives live in Git-ignored `local-data/kdm-catalog/`; reports remain in `temp/kdm-catalog/reports/`.
+- Local `local-data/kdm-catalog/kdm-tags.json` supplies exact reviewed tags when present; sync it after direct tag edits.
   Catalog tags sort by global item frequency, highest first, with alphabetical ties. Master tag arrays stay alphabetical,
   and item key ordering matches the catalog. The tag schema validates vocabulary, not every item ID.
 - `catalog:tags` stages changes; `catalog:tags --apply` applies them and syncs the master file. `catalog:update` stages
@@ -220,7 +220,7 @@ At action boundaries, inspect the full cause before extracting typed errors. Any
 
 ## State and persistence
 
-For campaign, settlement, survivor, gameplay undo/redo, preferences, or Dexie synchronization work, read [docs/kdm-architecture.md](docs/kdm-architecture.md). It proposes one owner and settlement per campaign, many survivors, memberships, and shared showdown/settlement/hunt history. Campaign services are proposed, not implemented.
+For implemented collection behavior, read [docs/kdm-architecture.md](docs/kdm-architecture.md). For campaign, settlement, survivor, gameplay undo/redo, preferences, and synchronization proposals, read [docs/kdm-campaign-design.md](docs/kdm-campaign-design.md); those services are not implemented.
 
 Preserve these collection boundaries unless the task explicitly changes them:
 
@@ -228,7 +228,7 @@ Preserve these collection boundaries unless the task explicitly changes them:
 Collection -> OptimisticStore -> DexieStore (CollectionStore)
 ```
 
-- The root layout provides one `Collection` per app instance through Svelte context; it owns collection commands. `CollectionStore` in `src/lib/state/stores.ts` is the persistence interface implemented by `DexieStore` in `src/lib/state/dexie-store.ts`; data types live in `src/lib/types`.
+- The root layout provides one `Collection` per app instance through Svelte context; it owns collection commands. [CollectionStore](src/lib/kdm/collection/state/collection-store.ts) is the persistence interface implemented by [DexieStore](src/lib/kdm/collection/state/dexie-store.ts); data types live in `src/lib/types`.
 - `DexieStore` reads and writes complete snapshots scoped to one owner in IndexedDB. It applies changed rows and removals with the revision check and update in one transaction. The `ownerId` index serves snapshot reads; entry primary keys serve writes. Load Dexie only inside browser initialization. Metadata schema version 1 validates the stored shape and is not a migration. Keep storage details out of `Collection`.
 - `CollectionStore.changes` optionally reports stale snapshots. `DexieStore` uses metadata `liveQuery` subscriptions with Effect finalizers. `Collection.observeChanges()` blocks edits and offers explicit refresh without replacing optimistic state. Observations never advance the expected write revision; local saves must not report themselves as stale.
 - Observer failures set a load error and block edits while preserving the snapshot. The layout forwards `Collection.canObserve` to `CollectionSession`, which owns startup, scoped monitoring, and teardown. Keep healthy monitoring active during refresh and restart failed monitoring only after a successful retry. Interrupt the subscription before closing Dexie. A storage-module download failure has no store to retry; offer a page reload.

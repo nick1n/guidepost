@@ -1,7 +1,8 @@
 <script lang="ts">
   import InlineMarkdown from "#lib/components/InlineMarkdown.svelte";
   import KdIcon from "#lib/components/KdIcon.svelte";
-  import { sectionIcons, type KdIconName } from "#lib/constants.ts";
+  import { type KdIconName } from "#lib/constants.ts";
+  import { sectionIcons } from "#lib/kdm/ui/sections/sections.ts";
   import { onMount, type Snippet } from "svelte";
   import HoldRipple from "#lib/components/gestures/HoldRipple.svelte";
   import { getSectionControls } from "./sections";

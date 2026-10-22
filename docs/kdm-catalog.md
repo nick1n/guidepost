@@ -1,7 +1,7 @@
 # KDM catalog guide
 
 The catalog combines the previous app catalog, workbook, and cached news. Data and schema live in `static/kdm/catalog/`;
-archives live in `temp/kdm-data.json` and `temp/kdm-data.schema.json`. See [README](../README.md#catalog) for commands.
+archives live in `local-data/kdm-catalog/archives/kdm-data.json` and `local-data/kdm-catalog/archives/kdm-data.schema.json`. See [README](../README.md#catalog) for commands.
 
 | File                                                                                                              | Purpose                                     |
 | ----------------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
@@ -9,8 +9,8 @@ archives live in `temp/kdm-data.json` and `temp/kdm-data.schema.json`. See [READ
 | [Workbook map](../static/kdm/catalog/workbook-map.json), [schema](../static/kdm/catalog/workbook-map.schema.json) | Source rows and catalog edition IDs         |
 | [News export](../scripts/news/shop-links.json)                                                                    | Cached announcement dates and product links |
 
-Optional, Git-ignored `temp/kdm-catalog/kdm-tags.json` supplies exact reviewed assignments; otherwise updates use catalog tags.
-Apply edits before deleting it. Vocabulary lives in `temp/kdm-catalog/kdm-tags.schema.json` under `$defs.tag.enum`.
+Optional, Git-ignored `local-data/kdm-catalog/kdm-tags.json` supplies exact reviewed assignments; otherwise updates use catalog tags.
+Apply edits before deleting it. Vocabulary lives in `local-data/kdm-catalog/kdm-tags.schema.json` under `$defs.tag.enum`.
 VS Code flags invalid tags, empty arrays, and duplicates; merging checks missing and unknown item IDs.
 Catalog tags sort by global frequency with alphabetical ties; master tag arrays stay alphabetical.
 
@@ -32,7 +32,7 @@ pnpm catalog:update --apply-review temp/kdm-catalog/reports/kdm-update-review.js
 pnpm catalog:validate
 ```
 
-Reports and archives stay in Git-ignored `temp/kdm-catalog/reports/`. Updates stage reviews; unknown products need curated mappings and tags.
+Reports stay in Git-ignored `temp/kdm-catalog/reports/`; retained inputs and archives belong under `local-data/kdm-catalog/`. Updates stage reviews; unknown products need curated mappings and tags.
 Commands default to cached evidence and never download missing entries. `--fetch` refreshes caches; `--offline` selects the default and
 cannot accompany it. Use `--date YYYY-MM-DD` to select an article. Shop requests start at least 35 seconds apart, cache for 24 hours,
 and never retry automatically. A 404/410 preserves facts; other failures stop preparation.
@@ -80,7 +80,7 @@ Current data rules:
   update stock states and availability. Historical mappings and individual product responses cannot override that snapshot.
   The `in-stock` tag is derived from edition shop states and removed when none remain in stock.
   Tag and metadata updates use existing shop states; `catalog:availability` updates them from the snapshot.
-  `scripts/catalog/stock.mts` owns stock, availability, link-health, and listing-invalidation operations. Tag sorting and validation
+  [stock.mts](../scripts/catalog/stock.mts) owns stock, availability, link-health, and listing-invalidation operations. Tag sorting and validation
   share its stock predicate; workflow code chooses whether a stock observation also replaces availability.
 - Prices are integer cents. Edition `prices` arrays contain recorded sale amounts and current MSRP, with the maximum representing MSRP. Missing prices are unknown; `[0]` is a known zero price. Lunar Aya's Sim price remains the user-authorized $7 estimate, documented in the report.
 - For reviewed bundle comparisons, an unpriced edition may set `priceFrom` to one standalone edition ID on the same item.
@@ -101,27 +101,26 @@ The schema retains ID-pattern rules and basic field validation without condition
 
 ## Workbook mapping
 
-The original workbook remains in `temp/kdm-catalog/imports/KDM Collection Sheets.xlsx`.
+The original workbook remains in `local-data/kdm-catalog/imports/KDM Collection Sheets.xlsx`.
 Never infer ownership from ambiguous material or run choices.
 
-Run `pnpm catalog:workbook` to regenerate `static/kdm/catalog/workbook-map.json` from the local
-`temp/kdm-catalog/imports/kdm-import-records.json` and live catalog. The 705 mapped rows retain their sheet, row, and product name as
+Run `pnpm catalog:workbook` to regenerate [workbook-map.json](../static/kdm/catalog/workbook-map.json) from the local
+`local-data/kdm-catalog/imports/kdm-import-records.json` and live catalog. The 705 mapped rows retain their sheet, row, and product name as
 source anchors, plus primary, related, and release-column references to stable edition IDs. M, N, and O alternatives remain separate;
 general personal values stay scoped to the source row. The map contains product references only, never owned, wished, copy, comment,
 or raw cell values. Sheet and row numbers locate this workbook snapshot rather than serving as permanent IDs. Regeneration rejects
 changed row identities and unresolved references for review. Validated normalized-row import/export workflows exist in
-`src/lib/state/collection-transfer.ts`; XLSX parsing, writing, and controls are deferred. Exports reject unmapped entries and values
+[collection-transfer.ts](../src/lib/kdm/collection/state/collection-transfer.ts); XLSX parsing, writing, and controls are deferred. Exports reject unmapped entries and values
 that a shared row cannot represent. JSON backups preserve a complete collection snapshot.
 
 Validation checks optional import records and their schema when present. Keep records and the workbook to regenerate or verify the map.
 Shop mappings are optional; unresolved products stay in review. An explicit `--mappings` path must exist.
-Working files live under Git-ignored `temp/kdm-catalog/`, with product snapshots and mappings in `shopify-products/`.
-Custom catalog paths use the same `static/kdm/catalog/` and `temp/` layout.
+Retained import records belong under Git-ignored `local-data/kdm-catalog/imports/`; Shopify snapshots belong in `.cache/kdm-catalog/shopify-products/`, and reviewed shop mappings live in `local-data/kdm-catalog/kdm-shop-mappings.json`. Reports remain under `temp/kdm-catalog/reports/`. Custom workspaces use the same `static/kdm/catalog/`, `local-data/`, `.cache/`, and `temp/` layout.
 
 ## Availability refresh
 
 `pnpm catalog:availability --fetch` downloads `/products.json?limit=250&page=N` into
-`temp/kdm-catalog/shopify-products/products-page-N.json`, at least 35 seconds apart. After all pages succeed, it updates edition
+`.cache/kdm-catalog/shopify-products/products-page-N.json`, at least 35 seconds apart. After all pages succeed, it updates edition
 `available` fields, `shop` states, and the shared `shopUpdated` date. Handles or legacy URLs identify listings; names and optional mappings are unused.
 Release variants distinguish First Run, Encore, and format-qualified runs. Any matching warehouse in stock makes an edition available;
 unmatched or ambiguous editions omit the field. Details go to `temp/kdm-catalog/reports/availability-refresh.json`.
@@ -199,7 +198,7 @@ Shared handles identify listings; release variants still determine edition prici
 
 When a listing changes handle, add a reviewed mapping for the new handle to the same item and edition, with
 `replaceUrl: true`. Keep the old handle mapping without that flag so historical cache and news entries still resolve
-without restoring the obsolete handle. Mappings live in `temp/kdm-catalog/shopify-products/kdm-shop-mappings.json`;
+without restoring the obsolete handle. Mappings live in `local-data/kdm-catalog/kdm-shop-mappings.json`;
 this local file is Git-ignored, so keep a copy if you need to preserve historical mappings when clearing temporary files.
 A different release needs its own edition. A shared listing that splits into different listings becomes edition-level handles.
 Homebrew editions retain their manually assigned availability during shop availability refreshes.

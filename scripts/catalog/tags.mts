@@ -1,4 +1,4 @@
-import { catalogTemp } from "./paths.mts";
+import { catalogLocal } from "./paths.mts";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { Ajv2020 } from "ajv/dist/2020.js";
@@ -53,7 +53,7 @@ export function organizeTags(catalog: Catalog, tags: Tags) {
 }
 
 export async function loadTags(root: string) {
-  const text = await readFile(join(catalogTemp(root), "kdm-tags.json"), "utf8").catch((error: unknown) => {
+  const text = await readFile(join(catalogLocal(root), "kdm-tags.json"), "utf8").catch((error: unknown) => {
     if (error instanceof Error && "code" in error && error.code === "ENOENT") return undefined;
     throw error;
   });
@@ -68,7 +68,7 @@ export async function loadTags(root: string) {
     const vocabulary = [...new Set(categories.flatMap((category) => Object.values(tags[category]).flat()))].sort();
     return { tags, text: JSON.stringify(tags), schemaText: JSON.stringify(tagSchema(vocabulary)), local: false };
   }
-  const schemaText = await readFile(join(catalogTemp(root), "kdm-tags.schema.json"), "utf8");
+  const schemaText = await readFile(join(catalogLocal(root), "kdm-tags.schema.json"), "utf8");
   const value = JSON.parse(text);
   const ajv = new Ajv2020({ strict: false, allErrors: true });
   const check = ajv.compile<Record<string, unknown>>(JSON.parse(schemaText));

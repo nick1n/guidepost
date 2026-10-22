@@ -1,0 +1,1071 @@
+import { it, expect } from "@effect/vitest";
+import { Cause, Deferred, Effect, Exit, Fiber, Layer, Queue, Stream } from "effect";
+import { reportAction } from "#lib/kdm/collection/state/collection-actions.ts";
+import { Notifications } from "#lib/app/notifications.ts";
+import { Collection } from "#lib/kdm/collection/state/collection.svelte.ts";
+import { CollectionError } from "#lib/kdm/collection/state/collection-errors.ts";
+import { StoreError, type CollectionStore } from "#lib/kdm/collection/state/collection-store.ts";
+import { collectionKey, type Catalog, type CollectionSnapshot } from "#lib/types/index.ts";
+import { normalizeSnapshot } from "#lib/types/collection.ts";
+import { vi } from "vitest";
+import { FetchHttpClient } from "effect/http";
+import catalogJson from "#catalog/data.json";
+import workbookMap from "#catalog/workbook-map.json";
+
+vi.mock("$app/paths", () => ({ asset: (path: string) => `https://guidepost.test/test-base/${path}` }));
+const workbookFetch: typeof globalThis.fetch = async () => Response.json(workbookMap);
+
+const data = catalogJson as Catalog;
+const core = collectionKey("core", "1.6");
+const expansion = collectionKey("dragon-king", "1.6");
+const dice = collectionKey("dice", "1.6");
+
+function bundleCatalog(): Catalog {
+  return {
+    content: {
+      model: {
+        name: "Model",
+        tags: [],
+        editions: [
+          { id: "plastic", label: "Plastic", format: "physical", includedOnly: true, prices: [0] },
+          { id: "resin", label: "Resin", format: "physical", prices: [1250] },
+        ],
+      },
+    },
+    bundles: {
+      set: { name: "Set", tags: [], price: 2000, includes: [{ item: "model", editionId: "plastic" }] },
+    },
+    accessories: {},
+    homebrew: {},
+    "included-only": {},
+  };
+}
+
+function store(initial: CollectionSnapshot = {}) {
+  let state = initial;
+  let failLoad = false;
+  let failSave: StoreError["reason"] | undefined;
+  let writes = 0;
+  let beforeLoad: (() => Effect.Effect<void>) | undefined;
+  let waitForLoad: Effect.Effect<void> | undefined;
+  let beforeSave: (() => Effect.Effect<void>) | undefined;
+  let waitForSave: Effect.Effect<void> | undefined;
+  const api: CollectionStore = {
+    load: () =>
+      Effect.gen(function* () {
+        if (beforeLoad) yield* beforeLoad();
+        if (waitForLoad) yield* waitForLoad;
+        if (failLoad) return yield* Effect.fail(new StoreError({ operation: "load", reason: "invalid-data", cause: "bad JSON" }));
+        return state;
+      }),
+    save: (next) =>
+      Effect.gen(function* () {
+        writes += 1;
+        if (beforeSave) yield* beforeSave();
+        if (waitForSave) yield* waitForSave;
+        if (failSave) {
+          const reason = failSave;
+          failSave = undefined;
+          return yield* Effect.fail(new StoreError({ operation: "save", reason, cause: "Simulated save failure" }));
+        }
+        state = next;
+      }),
+    clear: () =>
+      Effect.sync(() => {
+        state = {};
+      }),
+  };
+  return {
+    api,
+    get state() {
+      return state;
+    },
+    failLoad: (fail: boolean) => {
+      failLoad = fail;
+    },
+    failNextSave: (reason: StoreError["reason"]) => {
+      failSave = reason;
+    },
+    replaceState: (next: CollectionSnapshot) => {
+      state = next;
+    },
+    get writes() {
+      return writes;
+    },
+    onLoadStarted: (effect: () => Effect.Effect<void>) => {
+      beforeLoad = effect;
+    },
+    waitForLoad: (effect: Effect.Effect<void>) => {
+      waitForLoad = effect;
+    },
+    onSaveStarted: (effect: () => Effect.Effect<void>) => {
+      beforeSave = effect;
+    },
+    waitForSave: (effect: Effect.Effect<void>) => {
+      waitForSave = effect;
+    },
+  };
+}
+
+it("pending edits are independent registrations with idempotent cleanup", () => {
+  const collection = new Collection();
+  let flushes = 0;
+  const flush = () => flushes++;
+  const first = collection.registerPendingEdit(flush);
+  const second = collection.registerPendingEdit(flush);
+  expect(collection.hasPendingChanges).toBe(true);
+  expect(collection.isSaving).toBe(false);
+  first();
+  first();
+  collection.flushPendingEdits();
+  expect(flushes).toBe(1);
+  expect(collection.hasPendingChanges).toBe(true);
+  second();
+  expect(collection.hasPendingChanges).toBe(false);
+});
+
+it("flushing skips discarded edits and leaves newly registered edits for the next batch", () => {
+  const collection = new Collection();
+  const flushed: string[] = [];
+  let discard = () => {};
+  let releaseNext = () => {};
+  const releaseFirst = collection.registerPendingEdit(() => {
+    flushed.push("first");
+    discard();
+    releaseFirst();
+    releaseNext = collection.registerPendingEdit(() => flushed.push("next"));
+  });
+  discard = collection.registerPendingEdit(() => flushed.push("discarded"));
+  collection.flushPendingEdits();
+  expect(flushed).toEqual(["first"]);
+  collection.flushPendingEdits();
+  expect(flushed).toEqual(["first", "next"]);
+  releaseNext();
+  expect(collection.hasPendingChanges).toBe(false);
+});
+
+it.effect("superseded registrations cannot clear a new session's pending edits", () =>
+  Effect.gen(function* () {
+    const collection = new Collection();
+    const unregister = collection.registerPendingEdit(() => {});
+    collection.setUser("next-owner");
+    expect(collection.hasPendingChanges).toBe(false);
+    const next = collection.registerPendingEdit(() => {});
+    unregister();
+    expect(collection.hasPendingChanges).toBe(true);
+    next();
+    collection.registerPendingEdit(() => {});
+    yield* collection.setStore(store().api);
+    expect(collection.hasPendingChanges).toBe(false);
+    collection.registerPendingEdit(() => {});
+    yield* collection.refresh();
+    expect(collection.hasPendingChanges).toBe(false);
+  }),
+);
+
+it.effect("a prepared copy-number save stays lazy and saves in its captured session", () =>
+  Effect.gen(function* () {
+    const collection = new Collection(data);
+    const f = store({ [core]: { owned: true } });
+    yield* collection.setStore(f.api);
+    const save = collection.forSession(collection.setCopyNumber(core, 123));
+    expect(f.writes).toBe(0);
+    expect(collection.get(core).copyNumber).toBeUndefined();
+    yield* save;
+    expect(f.state[core].copyNumber).toBe(123);
+    expect(f.writes).toBe(1);
+  }),
+);
+
+for (const switchOwner of [false, true]) {
+  it.effect(`a prepared copy-number save cannot write after ${switchOwner ? "an owner" : "a store"} change`, () =>
+    Effect.gen(function* () {
+      const collection = new Collection(data);
+      const first = store({ [core]: { owned: true } });
+      yield* collection.setStore(first.api);
+      const save = collection.forSession(collection.setCopyNumber(core, 123));
+      if (switchOwner) collection.setUser("next-owner");
+      const next = store({ [core]: { owned: true, copyNumber: 42 } });
+      yield* collection.setStore(next.api);
+      const result = yield* Effect.exit(save);
+      expect(Exit.isFailure(result) && Cause.hasInterrupts(result.cause)).toBe(true);
+      expect(first.writes).toBe(0);
+      expect(next.writes).toBe(0);
+      expect(collection.get(core).copyNumber).toBe(42);
+    }),
+  );
+}
+
+it.effect("backup replacement validates first, saves once, and rolls back on failure", () =>
+  Effect.gen(function* () {
+    const collection = new Collection(bundleCatalog());
+    const plastic = collectionKey("model", "plastic");
+    const resin = collectionKey("model", "resin");
+    const initial = { [plastic]: { owned: true, copyNumber: 5000 } };
+    const f = store(initial);
+    yield* collection.setStore(f.api);
+    const json = yield* collection.exportBackup();
+    expect(JSON.parse(json).entries).toEqual(initial);
+    yield* Effect.flip(collection.restoreBackup("{}"));
+    expect(f.writes).toBe(0);
+    const replacement = { [resin]: { wished: true, copyNumber: 9999 } };
+    const backup = JSON.stringify({ formatVersion: 1, entries: replacement });
+    f.failNextSave("unavailable");
+    yield* Effect.flip(collection.restoreBackup(backup));
+    expect(collection.state).toEqual(initial);
+    expect(collection.isSaving).toBe(false);
+    yield* collection.restoreBackup(backup);
+    expect(collection.state).toEqual(replacement);
+    expect(f.state).toEqual(replacement);
+    expect(f.writes).toBe(2);
+    expect(collection.saveError).toBeUndefined();
+  }),
+);
+
+it.effect("workbook preview is read-only and a validated import merges one batch", () =>
+  Effect.gen(function* () {
+    const collection = new Collection(data);
+    const unrelated = collectionKey("core", "unrelated-fixture");
+    const f = store({ [unrelated]: { owned: true } });
+    yield* collection.setStore(f.api);
+    const mapped = workbookMap.rows[0];
+    const rows = [{ sheet: mapped.sheet, row: mapped.row, name: mapped.name, wished: true, copyNumber: 5000 }];
+    const preview = yield* collection.previewWorkbook(rows);
+    expect(f.writes).toBe(0);
+    expect(collection.state).toEqual({ [unrelated]: { owned: true } });
+    yield* Effect.flip(collection.importWorkbook([...rows, { ...rows[0], name: "Wrong name", row: -1 }]));
+    expect(f.writes).toBe(0);
+    yield* collection.importWorkbook(rows);
+    expect(collection.state).toEqual({ [unrelated]: { owned: true }, ...normalizeSnapshot(preview) });
+    expect(f.writes).toBe(1);
+  }).pipe(Effect.provideService(FetchHttpClient.Fetch, workbookFetch)),
+);
+
+it.effect("collection instances stay isolated and copy numbers use both physical limits", () =>
+  Effect.gen(function* () {
+    const catalog = bundleCatalog();
+    catalog.content.model.editions![0].runSize = 5000;
+    const first = new Collection(catalog);
+    const second = new Collection(catalog);
+    const f = store();
+    yield* first.setStore(f.api);
+    yield* second.setStore(store().api);
+    const key = collectionKey("model", "plastic");
+    yield* first.setCopyNumber(key, 5000);
+    expect(first.get(key).copyNumber).toBe(5000);
+    expect(second.state).toEqual({});
+    for (const value of [5001, 10000, NaN, 1.5]) yield* Effect.flip(first.setCopyNumber(key, value));
+    expect(f.writes).toBe(1);
+    yield* first.setCopyNumber(key, undefined);
+    expect(first.get(key)).toEqual({});
+    expect(first.pendingSaves).toBe(0);
+  }),
+);
+
+it.effect("workbook omissions preserve existing fields while explicit false values remove them", () =>
+  Effect.gen(function* () {
+    const collection = new Collection(data);
+    const mapped = workbookMap.rows.find((row) => row.ownershipScope !== "source-row")!;
+    const key = collectionKey(mapped.primary.contentId, mapped.primary.editionId);
+    const f = store({ [key]: { wished: true, copyNumber: 7 } });
+    yield* collection.setStore(f.api);
+    const locator = { sheet: mapped.sheet, row: mapped.row, name: mapped.name };
+    yield* collection.importWorkbook([{ ...locator, copyNumber: 9 }]);
+    expect(collection.get(key)).toEqual({ wished: true, copyNumber: 9 });
+    yield* collection.importWorkbook([{ ...locator, wished: false }]);
+    expect(collection.get(key)).toEqual({ copyNumber: 9 });
+    yield* collection.setCopyNumber(key, undefined);
+    expect(collection.state[key]).toBeUndefined();
+    expect(f.state).toEqual({});
+  }).pipe(Effect.provideService(FetchHttpClient.Fetch, workbookFetch)),
+);
+
+it.effect("switching catalogs refreshes the index without changing snapshots or queued saves", () =>
+  Effect.gen(function* () {
+    const collection = new Collection();
+    const core = collectionKey("core", "1-6");
+    const initial = { [core]: { owned: false }, [expansion]: { wished: true } };
+    const f = store(initial);
+    const saveStarted = yield* Deferred.make<void>();
+    const releaseSave = yield* Deferred.make<void>();
+    f.onSaveStarted(() => Deferred.succeed(saveStarted, undefined));
+    f.waitForSave(Deferred.await(releaseSave));
+    yield* collection.setStore(f.api);
+
+    expect(collection.catalog.entries).toEqual([]);
+    const ownership = yield* Effect.forkChild(collection.setManyOwned([core], true), { startImmediately: true });
+    yield* Deferred.await(saveStarted);
+    const wishlist = yield* Effect.forkChild(collection.toggleWish(dice), { startImmediately: true });
+    expect(collection.pendingSaves).toBe(2);
+    expect(collection.isSaving).toBe(true);
+    const optimisticSnapshot = collection.state;
+    expect(f.state).toEqual(initial);
+
+    collection.setCatalog(data);
+
+    expect(collection.catalog.byId.has("white-lion")).toBe(true);
+    expect(collection.state).toBe(optimisticSnapshot);
+    expect(collection.ownedCount).toBe(1);
+    expect(collection.pendingSaves).toBe(2);
+    expect(f.writes).toBe(1);
+    yield* Deferred.succeed(releaseSave, undefined);
+    yield* Fiber.join(ownership);
+    yield* Fiber.join(wishlist);
+    expect(collection.isSaving).toBe(false);
+
+    expect(collection.state).toEqual({
+      [core]: { owned: true },
+      [expansion]: { wished: true },
+      [dice]: { wished: true },
+    });
+    expect(f.state).toEqual(collection.state);
+    expect(f.writes).toBe(2);
+  }),
+);
+
+it.effect("workbook ownership records a bundle directly and cannot wish an owned edition", () =>
+  Effect.gen(function* () {
+    const collection = new Collection(data);
+    const source = workbookMap.rows.find(
+      (row) =>
+        row.primary.category === "bundles" && collection.catalog.includedEditions(row.primary.contentId, row.primary.editionId).length,
+    )!;
+    const child = collection.catalog.includedEditions(source.primary.contentId, source.primary.editionId)[0];
+    const childKey = collectionKey(child.item.id, child.edition.id);
+    const parentKey = collectionKey(source.primary.contentId, source.primary.editionId);
+    const f = store({ [childKey]: { wished: true } });
+    yield* collection.setStore(f.api);
+    const row = { sheet: source.sheet, row: source.row, name: source.name, owned: true };
+    const preview = yield* collection.previewWorkbook([row]);
+    expect(preview).toEqual({ [parentKey]: { owned: true, wished: false, missing: false } });
+    expect(f.writes).toBe(0);
+    yield* collection.importWorkbook([row]);
+    expect(collection.get(parentKey)).toEqual({ owned: true });
+    expect(collection.get(childKey)).toEqual({ wished: true });
+    expect(f.writes).toBe(1);
+    yield* collection.importWorkbook([{ sheet: source.sheet, row: source.row, name: source.name, wished: true }]);
+    expect(collection.getEdition(source.primary.contentId, source.primary.editionId).wished).toBeUndefined();
+  }).pipe(Effect.provideService(FetchHttpClient.Fetch, workbookFetch)),
+);
+
+it.effect("bundle commands own included editions and clear their wishes in one save", () =>
+  Effect.gen(function* () {
+    const collection = new Collection(bundleCatalog());
+    const plastic = collectionKey("model", "plastic");
+    const resin = collectionKey("model", "resin");
+    const f = store({ [plastic]: { wished: true, copyNumber: 9 }, [resin]: { wished: true } });
+    yield* collection.setStore(f.api);
+    const item = collection.catalog.byId.get("set");
+    const edition = item?.editions?.[0];
+    if (!item || !edition) throw new Error("Missing bundle fixture");
+    const { setEditionsOwned } = collection;
+    const save = setEditionsOwned(
+      [
+        { item, edition },
+        { item, edition },
+      ],
+      true,
+    );
+    expect(f.writes).toBe(0);
+    expect(collection.wishlistCount).toBe(2);
+    yield* save;
+    expect(f.writes).toBe(1);
+    expect(Object.keys(f.state)).toHaveLength(3);
+    expect(f.state[collectionKey("set", "bundle")]).toEqual({ owned: true });
+    expect(collection.getEdition("model", "plastic")).toEqual({ owned: true, copyNumber: 9 });
+    expect(collection.ownedCount).toBe(0);
+    expect(collection.wishlistCount).toBe(1);
+    expect(collection.totals).toEqual({ USD: 2000 });
+    expect(collection.getOwners("model", "plastic")).toEqual([
+      { parentId: "set", parentEditionId: "bundle", parent: "Set", parentEdition: "Bundle", editionId: "plastic" },
+    ]);
+    expect(collection.getOwners("model", "resin")).toEqual([]);
+    yield* collection.reset();
+    expect(collection.ownedCount).toBe(0);
+    expect(collection.wishlistCount).toBe(0);
+    expect(collection.totals).toEqual({});
+    expect(collection.getOwners("model", "plastic")).toEqual([]);
+  }),
+);
+
+it.effect("bundle ownership clears included product wishes and removal clears their ownership", () =>
+  Effect.gen(function* () {
+    const catalog = bundleCatalog();
+    delete catalog.content.model.editions![0]!.includedOnly;
+    catalog.content.model.editions![0]!.prices = [500];
+    const collection = new Collection(catalog);
+    const childKey = collectionKey("model", "plastic");
+    const f = store({ [childKey]: { wished: true } });
+    yield* collection.setStore(f.api);
+    const set = collection.catalog.byId.get("set")!;
+    const edition = set.editions![0]!;
+
+    expect(collection.wishlistCount).toBe(1);
+    yield* collection.setEditionsOwned([{ item: set, edition }], true);
+    expect(collection.get(childKey)).toEqual({ owned: true });
+    expect(collection.wishlistCount).toBe(0);
+    expect(collection.ownedCount).toBe(1);
+
+    yield* collection.setEditionsOwned([{ item: set, edition }], false);
+    expect(collection.get(childKey)).toEqual({});
+    expect(collection.wishlistCount).toBe(0);
+    expect(collection.ownedCount).toBe(0);
+  }),
+);
+
+it.effect("failed bundle saves restore selections, totals, and coverage together", () =>
+  Effect.gen(function* () {
+    const collection = new Collection(bundleCatalog());
+    const initial = { [collectionKey("model", "plastic")]: { wished: true, copyNumber: 9 } };
+    const f = store(initial);
+    yield* collection.setStore(f.api);
+    const item = collection.catalog.byId.get("set");
+    const edition = item?.editions?.[0];
+    if (!item || !edition) throw new Error("Missing bundle fixture");
+    f.failNextSave("unavailable");
+    yield* Effect.flip(collection.setEditionsOwned([{ item, edition }], true));
+    expect(collection.state).toEqual(initial);
+    expect(f.state).toEqual(initial);
+    expect(f.writes).toBe(1);
+    expect(collection.ownedCount).toBe(0);
+    expect(collection.wishlistCount).toBe(1);
+    expect(collection.totals).toEqual({});
+    expect(collection.getOwners("model", "plastic")).toEqual([]);
+  }),
+);
+
+it.effect("removing one bundle clears component ownership while another bundle still supplies coverage", () =>
+  Effect.gen(function* () {
+    const catalog: Catalog = {
+      content: {
+        component: { name: "Component", tags: [], editions: [{ id: "plastic", label: "Plastic", format: "physical" }] },
+      },
+      bundles: {
+        first: { name: "First box", tags: [], includes: [{ item: "component", editionId: "plastic" }] },
+        second: { name: "Second box", tags: [], includes: [{ item: "component", editionId: "plastic" }] },
+      },
+      accessories: {},
+      homebrew: {},
+      "included-only": {},
+    };
+    const collection = new Collection(catalog);
+    yield* collection.setStore(store().api);
+    const first = collection.catalog.byId.get("first")!;
+    const second = collection.catalog.byId.get("second")!;
+    const component = collection.catalog.byId.get("component")!;
+    const targets = [
+      { item: first, edition: first.editions![0]! },
+      { item: second, edition: second.editions![0]! },
+      { item: component, edition: component.editions![0]! },
+    ];
+    yield* collection.setEditionsOwned(targets, true);
+    const firstKey = collectionKey("first", "bundle");
+    const secondKey = collectionKey("second", "bundle");
+    const componentKey = collectionKey("component", "plastic");
+    expect(collection.state).toEqual({
+      [firstKey]: { owned: true },
+      [secondKey]: { owned: true },
+      [componentKey]: { owned: true },
+    });
+    expect(collection.catalog.coverage(collection.state).edition("component", "plastic").available).toBe(true);
+
+    yield* collection.setEditionsOwned([{ item: first, edition: first.editions![0]! }], false);
+    expect(collection.state[firstKey]).toBeUndefined();
+    expect(collection.state[secondKey]).toEqual({ owned: true });
+    expect(collection.state[componentKey]).toBeUndefined();
+    expect(collection.catalog.coverage(collection.state).edition("component", "plastic").available).toBe(true);
+  }),
+);
+
+// This checks the real scheduling boundary before synchronous persistence runs.
+it.live("collection commands stay lazy and update optimistically with bound methods", () =>
+  Effect.gen(function* () {
+    const collection = new Collection(data);
+    collection.setUser("lazy-test");
+    const f = store();
+    const { setStore, toggleOwned } = collection;
+    const initialize = setStore(f.api);
+    expect(collection.loadStatus).toBe("pending");
+    yield* initialize;
+    const action = toggleOwned(core);
+    expect(collection.get(core)).toEqual({});
+    const fiber = yield* Effect.forkChild(action, { startImmediately: true });
+    expect(collection.get(core)).toEqual({ owned: true });
+    expect(f.state).toEqual({});
+    yield* Fiber.join(fiber);
+    expect(f.state).toEqual(collection.state);
+  }),
+);
+
+it.effect("initializing loads a store without writing or migrating snapshots", () =>
+  Effect.gen(function* () {
+    const collection = new Collection(data);
+    const f = store({ [core]: { owned: true }, [dice]: { wished: true } });
+    yield* collection.setStore(f.api);
+    expect(collection.state).toEqual(f.state);
+    expect(f.writes).toBe(0);
+  }),
+);
+
+it.effect("load failures stay typed and a retry clears the load error", () =>
+  Effect.gen(function* () {
+    const collection = new Collection(data);
+    collection.setUser("retry-test");
+    const f = store({ [core]: { owned: true } });
+    f.failLoad(true);
+    const error = yield* Effect.flip(collection.setStore(f.api));
+    expect(error).toBeInstanceOf(CollectionError);
+    expect(collection.loadError).toBe(error);
+    expect(collection.loadStatus).toBe("error");
+    f.failLoad(false);
+    yield* collection.refresh();
+    expect(collection.loadError).toBeUndefined();
+    expect(collection.loadStatus).toBe("ready");
+    expect(collection.state).toEqual(f.state);
+  }),
+);
+
+for (const operation of ["initialize", "refresh"] as const) {
+  for (const fails of [false, true]) {
+    it.effect(`superseded ${operation} ${fails ? "failure" : "success"} cancels without notifications`, () =>
+      Effect.gen(function* () {
+        const collection = new Collection(data);
+        const started = yield* Deferred.make<void>();
+        const release = yield* Deferred.make<void>();
+        const slow = store({ [core]: { owned: true } });
+        if (operation === "refresh") yield* collection.setStore(slow.api);
+        slow.onLoadStarted(() => Deferred.succeed(started, undefined));
+        slow.waitForLoad(Deferred.await(release));
+        slow.failLoad(fails);
+        const messages: string[] = [];
+        const notifications = Layer.succeed(Notifications, {
+          success: (message) =>
+            Effect.sync(() => {
+              messages.push(message);
+            }),
+          error: (message) =>
+            Effect.sync(() => {
+              messages.push(message);
+            }),
+        });
+        const action = operation === "initialize" ? collection.setStore(slow.api) : collection.refresh();
+        const first = yield* Effect.forkChild(
+          Effect.exit(reportAction(action).pipe(Effect.provide(notifications), Effect.provideService(FetchHttpClient.Fetch, fetch))),
+        );
+        yield* Deferred.await(started);
+        collection.setUser("new-user");
+        const fast = store({ [dice]: { wished: true } });
+        yield* collection.setStore(fast.api);
+        yield* Deferred.succeed(release, undefined);
+        const result = yield* Fiber.join(first);
+
+        expect(Exit.isFailure(result) && Cause.hasInterrupts(result.cause)).toBe(true);
+        expect(messages).toEqual([]);
+        expect(collection.state).toEqual(fast.state);
+        expect(collection.loadStatus).toBe("ready");
+        expect(collection.loadError).toBeUndefined();
+      }),
+    );
+  }
+}
+
+it.effect("a newer initialization supersedes an older load for the same user", () =>
+  Effect.gen(function* () {
+    const collection = new Collection(data);
+    const started = yield* Deferred.make<void>();
+    const release = yield* Deferred.make<void>();
+    const slow = store({ [core]: { owned: true } });
+    slow.onLoadStarted(() => Deferred.succeed(started, undefined));
+    slow.waitForLoad(Deferred.await(release));
+    const fast = store({ [dice]: { wished: true } });
+
+    const first = yield* Effect.forkChild(Effect.exit(collection.setStore(slow.api)));
+    yield* Deferred.await(started);
+    yield* collection.setStore(fast.api);
+    yield* Deferred.succeed(release, undefined);
+    const result = yield* Fiber.join(first);
+    expect(Exit.isFailure(result) && Cause.hasInterrupts(result.cause)).toBe(true);
+
+    expect(collection.state).toEqual(fast.state);
+    expect(collection.loadStatus).toBe("ready");
+    expect(collection.loadError).toBeUndefined();
+  }),
+);
+
+it.effect("bulk ownership writes dedupe keys, clear wishes when owning, and preserve details when unowning", () =>
+  Effect.gen(function* () {
+    const collection = new Collection(data);
+    const f = store({
+      [core]: { owned: true, wished: true, copyNumber: 11 },
+      [expansion]: { owned: true, copyNumber: 22 },
+      [dice]: { owned: true },
+    });
+    yield* collection.setStore(f.api);
+    yield* collection.setManyOwned([core, expansion, core], false);
+    expect(f.writes).toBe(1);
+    expect(collection.get(core)).toEqual({ wished: true, copyNumber: 11 });
+    expect(collection.get(expansion)).toEqual({ copyNumber: 22 });
+    yield* collection.setManyOwned([core, expansion, core], true);
+    expect(f.writes).toBe(2);
+    expect(collection.get(core)).toEqual({ owned: true, copyNumber: 11 });
+    expect(collection.get(expansion)).toEqual({ owned: true, copyNumber: 22 });
+    expect(collection.get(dice)).toEqual({ owned: true });
+    expect(f.state).toEqual(collection.state);
+  }),
+);
+
+it.effect("included checkboxes mark supplied contents missing and restore them without an acquisition", () =>
+  Effect.gen(function* () {
+    const collection = new Collection(bundleCatalog());
+    const parent = collectionKey("set", "bundle");
+    const child = collectionKey("model", "plastic");
+    const f = store({ [parent]: { owned: true } });
+    yield* collection.setStore(f.api);
+
+    yield* collection.toggleIncludedOwned(child);
+    expect(collection.get(child)).toMatchObject({ missing: true });
+    expect(collection.state[child]?.owned).not.toBe(true);
+    expect(collection.get(parent)).toEqual({ owned: true });
+    yield* collection.toggleIncludedOwned(child);
+    expect(collection.state[child]).toBeUndefined();
+    expect(collection.state[child]?.owned).not.toBe(true);
+    expect(collection.catalog.coverage(collection.state).edition("model", "plastic").available).toBe(true);
+    expect(f.state).toEqual(collection.state);
+  }),
+);
+
+it.effect("bundle checkboxes restore included contents and clear included acquisitions on removal", () =>
+  Effect.gen(function* () {
+    const collection = new Collection(bundleCatalog());
+    const parent = collectionKey("set", "bundle");
+    const child = collectionKey("model", "plastic");
+    const f = store({ [parent]: { owned: true, missing: true, copyNumber: 4 }, [child]: { owned: true } });
+    yield* collection.setStore(f.api);
+
+    yield* collection.toggleEditionOwned(parent);
+    expect(collection.get(parent)).toEqual({ copyNumber: 4 });
+    expect(f.state[parent]?.owned).toBeUndefined();
+    expect(collection.get(child)).toEqual({});
+    expect(collection.ownedCount).toBe(0);
+    expect(collection.coverage.edition("set", "bundle").available).toBe(false);
+    expect(collection.coverage.edition("model", "plastic").available).toBe(false);
+    yield* collection.toggleEditionOwned(parent, false);
+    expect(collection.get(parent).owned).toBeUndefined();
+    yield* collection.toggleEditionOwned(parent, true);
+    yield* collection.setEditionMissing(child, true);
+    const writes = f.writes;
+    yield* collection.toggleEditionOwned(parent, true);
+    expect(f.writes).toBe(writes + 1);
+    expect(collection.get(parent)).toEqual({ owned: true, copyNumber: 4 });
+    expect(collection.get(child)).toEqual({ owned: true });
+    expect(collection.catalog.coverage(collection.state).edition("set", "bundle").available).toBe(true);
+
+    yield* collection.setEditionOwned(parent, false);
+    expect(collection.get(parent)).toEqual({ copyNumber: 4 });
+    yield* collection.setEditionMissing(parent, true);
+    yield* collection.setEditionOwned(parent, true);
+    expect(collection.get(parent)).toEqual({ owned: true, copyNumber: 4 });
+    expect(f.state).toEqual(collection.state);
+  }),
+);
+
+it.effect("bundle ownership changes apply to exact nested contents without changing other editions", () =>
+  Effect.gen(function* () {
+    const catalog = bundleCatalog();
+    catalog.content.model.includes = [{ item: "part", editionId: "item", parentEditionIds: ["plastic"] }];
+    catalog.content.part = { name: "Part", tags: [] };
+    const collection = new Collection(catalog);
+    const parent = collectionKey("set", "bundle");
+    const child = collectionKey("model", "plastic");
+    const other = collectionKey("model", "resin");
+    const part = collectionKey("part", "item");
+    const f = store({ [child]: { missing: true, copyNumber: 4 }, [other]: { missing: true }, [part]: { missing: true } });
+    yield* collection.setStore(f.api);
+    yield* collection.toggleEditionOwned(parent, true);
+    expect(f.writes).toBe(1);
+    expect(collection.state).toEqual({
+      [parent]: { owned: true },
+      [child]: { owned: true, copyNumber: 4 },
+      [other]: { missing: true },
+      [part]: { owned: true },
+    });
+    expect(collection.coverage.edition("part", "item").available).toBe(true);
+    yield* collection.toggleIncludedOwned(child, false);
+    expect(collection.get(parent).owned).toBe(true);
+    expect(collection.get(child).missing).toBe(true);
+    yield* collection.toggleWish(child);
+    const writes = f.writes;
+    yield* collection.toggleEditionOwned(parent, false);
+    expect(f.writes).toBe(writes + 1);
+    expect(collection.state).toEqual({ [child]: { wished: true, copyNumber: 4 }, [other]: { missing: true } });
+    expect(collection.coverage.edition("part", "item").available).toBe(false);
+    expect(f.state).toEqual(collection.state);
+  }),
+);
+
+it.effect("ordinary product ownership restores included coverage without acquiring components", () =>
+  Effect.gen(function* () {
+    const catalog = bundleCatalog();
+    catalog.content.model.includes = [{ item: "part", editionId: "item", parentEditionIds: ["resin"] }];
+    catalog["included-only"].part = { name: "Part", tags: [] };
+    const collection = new Collection(catalog);
+    const parent = collectionKey("model", "resin");
+    const child = collectionKey("part", "item");
+    const f = store({ [child]: { missing: true } });
+    yield* collection.setStore(f.api);
+    yield* collection.toggleEditionOwned(parent);
+    expect(collection.state).toEqual({ [parent]: { owned: true } });
+    expect(collection.coverage.edition("part", "item").available).toBe(true);
+    expect(f.writes).toBe(1);
+    expect(f.state).toEqual(collection.state);
+  }),
+);
+
+it.effect("a failed bundle acquisition rolls back its ownership and included missing overrides together", () =>
+  Effect.gen(function* () {
+    const collection = new Collection(bundleCatalog());
+    const parent = collectionKey("set", "bundle");
+    const child = collectionKey("model", "plastic");
+    const initial = { [child]: { missing: true } };
+    const f = store(initial);
+    yield* collection.setStore(f.api);
+    f.failNextSave("unavailable");
+    yield* Effect.flip(collection.toggleEditionOwned(parent, true));
+    expect(f.writes).toBe(1);
+    expect(collection.state).toEqual(initial);
+    expect(f.state).toEqual(initial);
+  }),
+);
+
+it.effect("included controls keep missing overrides only while another source supplies the content", () =>
+  Effect.gen(function* () {
+    const collection = new Collection(bundleCatalog());
+    const parent = collectionKey("set", "bundle");
+    const child = collectionKey("model", "plastic");
+    const f = store({ [parent]: { owned: true }, [child]: { owned: true } });
+    yield* collection.setStore(f.api);
+
+    yield* collection.toggleIncludedOwned(child, false);
+    expect(collection.get(child)).toEqual({ missing: true });
+    expect(collection.get(parent)).toEqual({ owned: true });
+    yield* collection.toggleEditionOwned(parent, false);
+    yield* collection.toggleIncludedOwned(child, false);
+    expect(collection.state).toEqual({});
+    yield* collection.toggleIncludedOwned(child, true);
+    expect(collection.get(child)).toEqual({ owned: true });
+    yield* collection.toggleIncludedOwned(child, false);
+    expect(collection.state).toEqual({});
+    expect(f.state).toEqual({});
+  }),
+);
+
+it.effect("product ownership is independent of covered contents and clears its own wish and missing state", () =>
+  Effect.gen(function* () {
+    const collection = new Collection(bundleCatalog());
+    const parent = collectionKey("set", "bundle");
+    const child = collectionKey("model", "plastic");
+    const f = store({ [parent]: { owned: true }, [child]: { wished: true, missing: true } });
+    yield* collection.setStore(f.api);
+    yield* collection.toggleEditionOwned(child);
+    expect(collection.get(child)).toEqual({ owned: true });
+    yield* collection.toggleEditionOwned(child);
+    expect(collection.state[child]).toBeUndefined();
+    expect(collection.coverage.edition("model", "plastic").available).toBe(true);
+    expect(collection.get(parent)).toEqual({ owned: true });
+  }),
+);
+
+it.effect("Core 1.5 with upgrades supplies Core 1.6 contents without owning the Core 1.6 product", () =>
+  Effect.gen(function* () {
+    const collection = new Collection(data);
+    const previous = collectionKey("core", "1-5");
+    const current = collectionKey("core", "1-6");
+    const gameplay = collectionKey("core-upgrade", "1-6");
+    const rulebook = collectionKey("core-rulebook-upgrade", "1-6");
+    const f = store();
+    yield* collection.setStore(f.api);
+    yield* collection.toggleEditionOwned(previous, true);
+    expect(collection.coverage.edition("core", "1-6").available).toBe(false);
+    yield* collection.toggleEditionOwned(gameplay, true);
+    yield* collection.toggleEditionOwned(rulebook, true);
+    expect(collection.coverage.edition("core", "1-6").available).toBe(false);
+    expect(collection.coverage.edition("core-gameplay", "1-6").available).toBe(true);
+    expect(collection.coverage.edition("kingdom-death-monster-rulebook", "1-6").available).toBe(true);
+    expect(collection.get(current).owned).toBeUndefined();
+    expect(collection.owned.some(({ item, edition }) => item.id === "core" && edition.id === "1-6")).toBe(false);
+    yield* collection.toggleEditionOwned(current, true);
+    expect(collection.get(current).owned).toBe(true);
+
+    const writes = f.writes;
+    yield* collection.toggleEditionOwned(current, false);
+    expect(f.writes).toBe(writes + 1);
+    expect(collection.state[current]).toBeUndefined();
+    expect(collection.get(gameplay).owned).toBe(true);
+    expect(collection.get(rulebook).owned).toBe(true);
+    expect(collection.coverage.edition("core-gameplay", "1-6").available).toBe(true);
+    expect(collection.coverage.edition("kingdom-death-monster-rulebook", "1-6").available).toBe(true);
+    expect(collection.coverage.edition("core", "1-6").available).toBe(false);
+    expect(collection.get(previous).owned).toBe(true);
+    expect(collection.coverage.edition("core", "1-5").available).toBe(true);
+    expect(collection.coverage.edition("butcher", "plastic").available).toBe(true);
+    expect(f.state).toEqual(collection.state);
+  }),
+);
+
+it.effect("a failed bundle removal restores ownership of the bundle and its included editions", () =>
+  Effect.gen(function* () {
+    const collection = new Collection(bundleCatalog());
+    const parent = collectionKey("set", "bundle");
+    const child = collectionKey("model", "plastic");
+    const initial = { [parent]: { owned: true }, [child]: { owned: true, copyNumber: 4 } };
+    const f = store(initial);
+    yield* collection.setStore(f.api);
+    f.failNextSave("unavailable");
+    yield* Effect.flip(collection.toggleEditionOwned(parent, false));
+    expect(f.writes).toBe(1);
+    expect(collection.state).toEqual(initial);
+    expect(f.state).toEqual(initial);
+  }),
+);
+
+it.effect("a failed included restoration preserves the missing override and direct product ownership", () =>
+  Effect.gen(function* () {
+    const collection = new Collection(bundleCatalog());
+    const parent = collectionKey("set", "bundle");
+    const child = collectionKey("model", "plastic");
+    const initial = { [parent]: { owned: true }, [child]: { missing: true } };
+    const f = store(initial);
+    yield* collection.setStore(f.api);
+    f.failNextSave("unavailable");
+    yield* Effect.flip(collection.toggleIncludedOwned(child));
+    expect(f.writes).toBe(1);
+    expect(collection.state).toEqual(initial);
+    expect(f.state).toEqual(initial);
+  }),
+);
+
+it.effect("edition missing marks toggle without changing the ownership choice", () =>
+  Effect.gen(function* () {
+    const collection = new Collection(data);
+    const key = collectionKey("core", "1.6");
+    const f = store({ [key]: { owned: true, copyNumber: 4 } });
+    yield* collection.setStore(f.api);
+
+    yield* collection.setEditionMissing(key, true);
+    expect(collection.get(key)).toEqual({ owned: true, copyNumber: 4, missing: true });
+    yield* collection.setEditionMissing(key, false);
+    expect(collection.get(key)).toEqual({ owned: true, copyNumber: 4 });
+    expect(f.state).toEqual(collection.state);
+    expect(f.writes).toBe(2);
+  }),
+);
+
+it.effect("a failed save records the error and rolls back only its patch", () =>
+  Effect.gen(function* () {
+    const collection = new Collection(data);
+    const initial = { [core]: { owned: false, copyNumber: 7 }, [dice]: { wished: true } };
+    const f = store(initial);
+    yield* collection.setStore(f.api);
+    f.failNextSave("unavailable");
+
+    const error = yield* Effect.flip(collection.toggleOwned(core));
+    expect(error).toBeInstanceOf(CollectionError);
+    expect(collection.saveError).toBe(error);
+    expect(collection.canWrite).toBe(true);
+    expect(collection.state).toEqual(initial);
+    expect(f.state).toEqual(collection.state);
+  }),
+);
+
+it.effect("a stale save blocks edits until refresh succeeds", () =>
+  Effect.gen(function* () {
+    const collection = new Collection(data);
+    const initial = { [core]: { owned: false, copyNumber: 13 } };
+    const f = store(initial);
+    yield* collection.setStore(f.api);
+    f.failNextSave("stale");
+
+    const stale = yield* Effect.flip(collection.toggleOwned(core));
+    expect(stale).toBeInstanceOf(CollectionError);
+    expect(collection.saveError).toBe(stale);
+    expect(collection.needsRefresh).toBe(true);
+    expect(collection.canWrite).toBe(false);
+    expect(collection.state).toEqual(initial);
+
+    const guarded = yield* Effect.flip(collection.setCopyNumber(dice, 99));
+    expect(guarded).toBeInstanceOf(CollectionError);
+    expect(f.writes).toBe(1);
+    expect(collection.state).toEqual(initial);
+
+    f.failLoad(true);
+    const refreshError = yield* Effect.flip(collection.refresh());
+    expect(refreshError).toBeInstanceOf(CollectionError);
+    expect(collection.needsRefresh).toBe(true);
+    expect(collection.canWrite).toBe(false);
+
+    const remote = { [core]: { owned: true, copyNumber: 27 }, [dice]: { wished: true } };
+    f.replaceState(remote);
+    f.failLoad(false);
+    yield* collection.refresh();
+    expect(collection.needsRefresh).toBe(false);
+    expect(collection.canWrite).toBe(true);
+    expect(collection.saveError).toBeUndefined();
+    expect(collection.state).toEqual(remote);
+    yield* collection.setCopyNumber(dice, 42);
+    expect(collection.get(dice)).toEqual({ wished: true, copyNumber: 42 });
+  }),
+);
+
+it.effect("change notices block edits without replacing state, survive refresh races, and release their subscription", () =>
+  Effect.gen(function* () {
+    const collection = new Collection(data);
+    const f = store({ [core]: { owned: true } });
+    const events = yield* Queue.make<boolean>();
+    const delivered = yield* Queue.make<void>();
+    const released = yield* Deferred.make<void>();
+    const changes = Stream.fromQueue(events).pipe(Stream.ensuring(Deferred.succeed(released, undefined)));
+    // An acknowledgement after each stream element makes these race checks deterministic.
+    const watched = { ...f.api, changes: changes.pipe(Stream.tap(() => Queue.offer(delivered, undefined))) };
+    yield* collection.setStore(watched);
+    const active = yield* Effect.forkChild(collection.observeChanges());
+    yield* Queue.offer(events, true);
+    yield* Queue.take(delivered);
+    yield* Effect.yieldNow;
+    expect(collection.needsRefresh).toBe(true);
+    expect(collection.canWrite).toBe(false);
+    expect(collection.state).toEqual({ [core]: { owned: true } });
+    expect(collection.saveError).toBeUndefined();
+    expect((yield* Effect.flip(collection.toggleWish(dice))).operation).toBe("save");
+    expect(f.writes).toBe(0);
+    f.replaceState({ [dice]: { wished: true } });
+    yield* collection.refresh();
+    expect(collection.needsRefresh).toBe(false);
+    expect(collection.state).toEqual({ [dice]: { wished: true } });
+    const started = yield* Deferred.make<void>();
+    const finish = yield* Deferred.make<void>();
+    f.onLoadStarted(() => Deferred.succeed(started, undefined));
+    f.waitForLoad(Deferred.await(finish));
+    const refresh = yield* Effect.forkChild(collection.refresh());
+    yield* Deferred.await(started);
+    expect(collection.canObserve).toBe(true);
+    yield* Queue.offer(events, true);
+    yield* Queue.take(delivered);
+    yield* Effect.yieldNow;
+    yield* Deferred.succeed(finish, undefined);
+    yield* Fiber.join(refresh);
+    expect(collection.needsRefresh).toBe(true);
+    yield* collection.setStore(store().api);
+    yield* Queue.offer(events, true);
+    yield* Queue.take(delivered);
+    yield* Effect.yieldNow;
+    expect(collection.needsRefresh).toBe(false);
+    yield* Fiber.interrupt(active);
+    yield* Deferred.await(released);
+  }),
+);
+
+it.effect("an observer failure blocks editing, preserves the snapshot, and allows resubscription after refresh", () =>
+  Effect.gen(function* () {
+    const collection = new Collection(data);
+    const f = store({ [core]: { owned: true } });
+    const released = yield* Deferred.make<void>();
+    let subscriptions = 0;
+    const changes = Stream.unwrap(
+      Effect.sync(() => {
+        subscriptions += 1;
+        return subscriptions === 1
+          ? Stream.fail(new StoreError({ operation: "load", reason: "unavailable", cause: "Observer failed" }))
+          : Stream.succeed(true);
+      }),
+    ).pipe(Stream.ensuring(Deferred.succeed(released, undefined)));
+    yield* collection.setStore({ ...f.api, changes });
+    const error = yield* Effect.flip(collection.observeChanges());
+    expect(collection.loadError).toBe(error);
+    expect(collection.loadStatus).toBe("error");
+    expect(collection.canWrite).toBe(false);
+    expect(collection.canObserve).toBe(false);
+    expect(collection.state).toEqual(f.state);
+    expect(yield* Deferred.isDone(released)).toBe(true);
+    yield* Effect.flip(collection.toggleOwned(core));
+    expect(f.writes).toBe(0);
+    const loading = yield* Deferred.make<void>();
+    const release = yield* Deferred.make<void>();
+    f.onLoadStarted(() => Deferred.succeed(loading, undefined));
+    f.waitForLoad(Deferred.await(release));
+    const retry = yield* Effect.forkChild(collection.refresh());
+    yield* Deferred.await(loading);
+    expect(collection.canObserve).toBe(false);
+    yield* Deferred.succeed(release, undefined);
+    yield* Fiber.join(retry);
+    expect(collection.loadError).toBeUndefined();
+    expect(collection.canWrite).toBe(true);
+    yield* collection.observeChanges();
+    expect(subscriptions).toBe(2);
+    expect(collection.needsRefresh).toBe(true);
+  }),
+);
+
+it.effect("observer defects block edits without turning cancellation into a load failure", () =>
+  Effect.gen(function* () {
+    const collection = new Collection(data);
+    const f = store({ [core]: { owned: true } });
+    yield* collection.setStore({ ...f.api, changes: Stream.die("Observer defect") });
+    const result = yield* Effect.exit(collection.observeChanges());
+    expect(Exit.isFailure(result)).toBe(true);
+    expect(collection.loadError?.cause).toSatisfy(Cause.isCause);
+    expect(collection.canWrite).toBe(false);
+    yield* collection.setStore({ ...f.api, changes: Stream.fromEffect(Effect.interrupt) });
+    yield* Effect.exit(collection.observeChanges());
+    expect(collection.loadStatus).toBe("ready");
+    expect(collection.loadError).toBeUndefined();
+  }),
+);
+
+for (const operation of ["import", "export"] as const) {
+  for (const fails of [false, true]) {
+    it.effect(`a superseded workbook ${operation} download ${fails ? "failure" : "success"} cannot affect the next owner`, () =>
+      Effect.gen(function* () {
+        const collection = new Collection(data);
+        collection.setUser("first-owner");
+        const first = store();
+        yield* collection.setStore(first.api);
+        const started = yield* Deferred.make<void>();
+        const download = Promise.withResolvers<Response>();
+        const fetch = vi.fn<typeof globalThis.fetch>().mockImplementation(() => {
+          Effect.runSync(Deferred.succeed(started, undefined));
+          return download.promise;
+        });
+        const messages: string[] = [];
+        const notify = (message: string) =>
+          Effect.sync(() => {
+            messages.push(message);
+          });
+        const notifications = Layer.succeed(Notifications, { success: notify, error: notify });
+        const row = workbookMap.rows[0];
+        const action =
+          operation === "import"
+            ? collection.importWorkbook([{ sheet: row.sheet, row: row.row, name: row.name, owned: true }])
+            : collection.exportWorkbook();
+        const active = yield* Effect.forkChild(
+          Effect.exit(
+            reportAction<unknown>(action).pipe(Effect.provide(notifications), Effect.provideService(FetchHttpClient.Fetch, fetch)),
+          ),
+        );
+        yield* Deferred.await(started);
+        collection.setUser("second-owner");
+        const second = store();
+        yield* collection.setStore(second.api);
+        if (fails) download.reject(new TypeError("Failed to fetch"));
+        else download.resolve(Response.json(workbookMap));
+        const result = yield* Fiber.join(active);
+        expect(Exit.isFailure(result) && Cause.hasInterrupts(result.cause)).toBe(true);
+        expect(collection.state).toEqual({});
+        expect(first.writes).toBe(0);
+        expect(second.writes).toBe(0);
+        expect(collection.loadError).toBeUndefined();
+        expect(collection.saveError).toBeUndefined();
+        expect(messages).toEqual([]);
+      }).pipe(Effect.provideService(FetchHttpClient.Fetch, workbookFetch)),
+    );
+  }
+}

@@ -1,7 +1,7 @@
 <script lang="ts">
   import "../../ui/stats.css";
-  import MenuButton from "#lib/components/MenuButton.svelte";
-  import { getSiteMenu } from "#lib/state/site-menu.svelte.ts";
+  import MenuButton from "#lib/app/MenuButton.svelte";
+  import { getSiteMenu } from "#lib/app/site-menu.svelte.ts";
   import { getShowdownDisplay } from "../display.svelte.ts";
   import HoldRipple from "#lib/components/gestures/HoldRipple.svelte";
   import { sectionName } from "../../ui/sections/sections";
@@ -9,7 +9,7 @@
   import Monster from "./Monster.svelte";
   import Survivor from "./Survivor.svelte";
   import { setGearDrag } from "../../survivors/ui/gear-drag";
-  import QuickStatus from "../../ui/status/QuickStatus.svelte";
+  import QuickStatus from "./status/QuickStatus.svelte";
   import StatusIcon from "../../ui/status/StatusIcon.svelte";
   import { makeSheet, statusText, tokenTotal, availableActions, makeTokens, tokenNet, toggleActed, useDodge } from "../sheet";
   import { survivors } from "../fixtures";

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import ActionCost from "../../ui/actions/ActionCost.svelte";
+  import ActionCost from "./actions/ActionCost.svelte";
   import { attackOdds } from "../attack-odds";
   import { describeCost, type Cost } from "../sheet";
   import { type attackStats } from "../rules";

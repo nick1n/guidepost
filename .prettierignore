@@ -1,3 +1,6 @@
 **/.*/
 pnpm-lock.yaml
 src/app.html
+
+# Retained local catalog inputs and archives
+/local-data/

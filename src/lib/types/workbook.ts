@@ -1,45 +1,45 @@
-import { Schema as S } from "effect";
+import { Schema } from "effect";
 import { EntryStateSchema } from "./collection.ts";
 
-const SheetSchema = S.Literals(["KDM Miniatures", "Shirt Catalog", "Dice Catalog"]);
-const RowNumberSchema = S.Int.check(S.isGreaterThanOrEqualTo(2));
-const EditionIdSchema = S.String.check(S.isPattern(/^[a-z0-9]+(?:-[a-z0-9]+)*$/u));
+const SheetSchema = Schema.Literals(["KDM Miniatures", "Shirt Catalog", "Dice Catalog"]);
+const RowNumberSchema = Schema.Int.check(Schema.isGreaterThanOrEqualTo(2));
+const EditionIdSchema = Schema.String.check(Schema.isPattern(/^[a-z0-9]+(?:-[a-z0-9]+)*$/u));
 
-export const WorkbookTargetSchema = S.Struct({
-  category: S.Literals(["content", "accessories", "bundles", "included-only"]),
-  contentId: S.NonEmptyString,
+export const WorkbookTargetSchema = Schema.Struct({
+  category: Schema.Literals(["content", "accessories", "bundles", "included-only"]),
+  contentId: Schema.NonEmptyString,
   editionId: EditionIdSchema,
-  sourceEdition: S.optionalKey(S.NonEmptyString),
+  sourceEdition: Schema.optionalKey(Schema.NonEmptyString),
 }).annotate({ identifier: "target" });
-export interface WorkbookTarget extends S.Schema.Type<typeof WorkbookTargetSchema> {}
+export interface WorkbookTarget extends Schema.Schema.Type<typeof WorkbookTargetSchema> {}
 
-const AlternativesSchema = S.Array(WorkbookTargetSchema).check(
-  S.isMinLength(1),
-  S.makeFilter((targets) => new Set(targets.map((target) => JSON.stringify(target))).size === targets.length, {
+const AlternativesSchema = Schema.Array(WorkbookTargetSchema).check(
+  Schema.isMinLength(1),
+  Schema.makeFilter((targets) => new Set(targets.map((target) => JSON.stringify(target))).size === targets.length, {
     message: "Workbook alternatives must be unique.",
     toJsonSchema: () => ({ uniqueItems: true }),
   }),
 );
-const MapRowSchema = S.Struct({
+const MapRowSchema = Schema.Struct({
   sheet: SheetSchema,
   row: RowNumberSchema,
-  name: S.NonEmptyString,
+  name: Schema.NonEmptyString,
   primary: WorkbookTargetSchema,
-  related: S.optionalKey(AlternativesSchema),
-  ownershipScope: S.optionalKey(S.Literal("source-row")),
-  releaseEditions: S.optionalKey(
-    S.Struct({
-      M: S.optionalKey(AlternativesSchema),
-      N: S.optionalKey(AlternativesSchema),
-      O: S.optionalKey(AlternativesSchema),
-    }).check(S.isMinProperties(1)),
+  related: Schema.optionalKey(AlternativesSchema),
+  ownershipScope: Schema.optionalKey(Schema.Literal("source-row")),
+  releaseEditions: Schema.optionalKey(
+    Schema.Struct({
+      M: Schema.optionalKey(AlternativesSchema),
+      N: Schema.optionalKey(AlternativesSchema),
+      O: Schema.optionalKey(AlternativesSchema),
+    }).check(Schema.isMinProperties(1)),
   ),
 }).check(
-  S.makeFilter((row) => row.related === undefined || row.ownershipScope === "source-row", {
+  Schema.makeFilter((row) => row.related === undefined || row.ownershipScope === "source-row", {
     message: "Related workbook targets require source-row ownership.",
     toJsonSchema: () => ({ if: { required: ["related"] }, then: { required: ["ownershipScope"] } }),
   }),
-  S.makeFilter((row) => row.sheet === "KDM Miniatures" || row.primary.editionId === "item", {
+  Schema.makeFilter((row) => row.sheet === "KDM Miniatures" || row.primary.editionId === "item", {
     message: "Shirt and dice rows require the synthetic item edition.",
     toJsonSchema: () => ({
       if: { properties: { sheet: { enum: ["Shirt Catalog", "Dice Catalog"] } }, required: ["sheet"] },
@@ -47,16 +47,16 @@ const MapRowSchema = S.Struct({
     }),
   }),
 );
-export interface WorkbookMappingRow extends S.Schema.Type<typeof MapRowSchema> {}
+export interface WorkbookMappingRow extends Schema.Schema.Type<typeof MapRowSchema> {}
 
-export const WorkbookMapSchema = S.Struct({
-  $schema: S.Literal("./workbook-map.schema.json"),
-  formatVersion: S.Literal(1),
-  source: S.Struct({ id: S.Literal("kdm-collection-sheets"), workbook: S.NonEmptyString }),
-  rows: S.Array(MapRowSchema),
+export const WorkbookMapSchema = Schema.Struct({
+  $schema: Schema.Literal("./workbook-map.schema.json"),
+  formatVersion: Schema.Literal(1),
+  source: Schema.Struct({ id: Schema.Literal("kdm-collection-sheets"), workbook: Schema.NonEmptyString }),
+  rows: Schema.Array(MapRowSchema),
 })
   .check(
-    S.makeFilter((map) => new Set(map.rows.map(workbookLocator)).size === map.rows.length, {
+    Schema.makeFilter((map) => new Set(map.rows.map(workbookLocator)).size === map.rows.length, {
       message: "Workbook mapping repeats a sheet and row locator.",
       // JSON Schema cannot express uniqueness by selected fields of array objects.
       toJsonSchema: () => [{}, true],
@@ -66,23 +66,23 @@ export const WorkbookMapSchema = S.Struct({
     title: "KDM workbook to catalog edition mapping",
     description: "Product references for one workbook snapshot. Sheet and row locate a source record; they are not permanent IDs.",
   });
-export interface WorkbookMap extends S.Schema.Type<typeof WorkbookMapSchema> {}
+export interface WorkbookMap extends Schema.Schema.Type<typeof WorkbookMapSchema> {}
 
-export const WorkbookRowsSchema = S.Array(
-  S.Struct({
+export const WorkbookRowsSchema = Schema.Array(
+  Schema.Struct({
     ...EntryStateSchema.fields,
     sheet: SheetSchema,
     row: RowNumberSchema,
-    name: S.NonEmptyString,
-    releaseColumn: S.optionalKey(S.Literals(["M", "N", "O"])),
-    editionId: S.optionalKey(EditionIdSchema),
+    name: Schema.NonEmptyString,
+    releaseColumn: Schema.optionalKey(Schema.Literals(["M", "N", "O"])),
+    editionId: Schema.optionalKey(EditionIdSchema),
   }),
 );
-export type WorkbookRow = S.Schema.Type<typeof WorkbookRowsSchema>[number];
+export type WorkbookRow = Schema.Schema.Type<typeof WorkbookRowsSchema>[number];
 
 export function workbookLocator(row: { sheet: string; row: number }) {
   return JSON.stringify([row.sheet, row.row]);
 }
 
 // Untrusted maps and normalized rows reject personal cells and unknown fields at every depth.
-export const decodeWorkbookMap = S.decodeUnknownSync(WorkbookMapSchema, { onExcessProperty: "error" });
+export const decodeWorkbookMap = Schema.decodeUnknownSync(WorkbookMapSchema, { onExcessProperty: "error" });

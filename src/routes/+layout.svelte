@@ -4,16 +4,16 @@
   import { onMount } from "svelte";
   import { afterNavigate } from "$app/navigation";
   import { Effect, Fiber } from "effect";
-  import { Collection, setCollection } from "#lib/state/collection.svelte.ts";
-  import { createCollectionActions, setCollectionActions } from "#lib/state/collection-actions.ts";
-  import { CollectionSession } from "#lib/state/collection-session.ts";
-  import { Notifications } from "#lib/state/notifications.ts";
-  import { SiteMenu, setSiteMenu } from "#lib/state/site-menu.svelte.ts";
-  import { DatePreferences, setDatePreferences } from "#lib/state/date-preferences.svelte.ts";
-  import { NotificationLog, setNotificationLog } from "#lib/state/notification-log.svelte.ts";
+  import { Collection, setCollection } from "#lib/kdm/collection/state/collection.svelte.ts";
+  import { createCollectionActions, setCollectionActions } from "#lib/kdm/collection/state/collection-actions.ts";
+  import { CollectionSession } from "#lib/kdm/collection/state/collection-session.ts";
+  import { Notifications } from "#lib/app/notifications.ts";
+  import { SiteMenu, setSiteMenu } from "#lib/app/site-menu.svelte.ts";
+  import { DatePreferences, setDatePreferences } from "#lib/app/date-preferences.svelte.ts";
+  import { NotificationLog, setNotificationLog } from "#lib/app/notification-log.svelte.ts";
   import { ShowdownDisplay, setShowdownDisplay } from "#lib/kdm/showdown/display.svelte.ts";
-  import { CopyNumberEdits, setCopyNumberEdits } from "#lib/state/copy-number-edits.svelte.ts";
-  import SiteMenuPanel from "#lib/components/SiteMenu.svelte";
+  import { CopyNumberEdits, setCopyNumberEdits } from "#lib/kdm/collection/state/copy-number-edits.svelte.ts";
+  import SiteMenuPanel from "#lib/app/SiteMenu.svelte";
 
   let { children } = $props();
   const collection = setCollection(new Collection());

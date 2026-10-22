@@ -47,3 +47,31 @@ export class SectionControls {
 }
 
 export const [getSectionControls, setSectionControls] = createContext<SectionControls>();
+
+export const sectionIcons: Record<string, string> = {
+  "Survivor Attributes": "i-material-symbols:bar-chart",
+  "Monster Attributes": "i-material-symbols:bar-chart",
+  Actions: "i-material-symbols:swords",
+  "Basic Action": "i-material-symbols:swords",
+  "Common Actions": "i-material-symbols:menu-book",
+  "Instinct: **Sniff**": "i-material-symbols:air",
+  Status: "i-material-symbols:flag",
+  "Gear Grid": "i-material-symbols:grid-view",
+  Tokens: "i-material-symbols:token",
+  "Attribute Tokens": "i-material-symbols:token",
+  "Trinkets & Baubles": "i-material-symbols:diamond",
+  "Fighting Arts": "i-material-symbols:sports-martial-arts",
+  Disorders: "i-material-symbols:psychology",
+  Abilities: "i-material-symbols:auto-awesome",
+  "Impairments & Injuries": "i-material-symbols:healing",
+  Resources: "i-material-symbols:inventory-2",
+  "Resource Deck": "i-material-symbols:layers",
+  "Per Lifetimes": "i-material-symbols:hourglass-top",
+  "Cursed Gear": "i-material-symbols:skull",
+  "Showdown History": "i-material-symbols:history",
+  "Showdown Setup": "i-material-symbols:landscape",
+  "Armor & Bonuses": "i-material-symbols:shield",
+  Development: "i-material-symbols:trending-up",
+  Notes: "i-material-symbols:edit-note",
+  Miscellaneous: "i-material-symbols:person",
+};

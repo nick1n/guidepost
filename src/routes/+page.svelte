@@ -149,10 +149,10 @@
   import type { PointerEventHandler } from "svelte/elements";
   import ConfirmDialog from "#lib/components/ConfirmDialog.svelte";
   import TrailBackground from "#lib/components/TrailBackground.svelte";
-  import VersionPicker from "#lib/components/track/VersionPicker.svelte";
+  import VersionPicker from "#lib/kdm/catalog/ui/VersionPicker.svelte";
   import { navigate } from "#lib/navigation.ts";
-  import { getCollection } from "#lib/state/collection.svelte.ts";
-  import { getCollectionActions, editionName } from "#lib/state/collection-actions.ts";
+  import { getCollection } from "#lib/kdm/collection/state/collection.svelte.ts";
+  import { getCollectionActions, editionName } from "#lib/kdm/collection/state/collection-actions.ts";
   import { collectionKey } from "#lib/types/collection.ts";
   const collection = getCollection();
   const collectionActions = getCollectionActions();

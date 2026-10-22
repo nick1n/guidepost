@@ -1,6 +1,6 @@
 <script lang="ts">
   import { iconView } from "./statuses";
-  import type { Icon, IconContext } from "#lib/constants.ts";
+  import type { Icon, IconContext } from "./statuses";
   let { icon, active = false, context = "control" }: { icon: Icon; active?: boolean; context?: IconContext } = $props();
   let classes = $derived(iconView(icon, { active, context }));
 </script>

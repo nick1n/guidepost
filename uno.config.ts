@@ -1,5 +1,6 @@
 import { defineConfig, presetIcons } from "unocss";
-import { sectionIcons, statusIcons, statuses } from "#lib/constants.ts";
+import { sectionIcons } from "#lib/kdm/ui/sections/sections.ts";
+import { statusIcons, statuses } from "#lib/kdm/ui/status/statuses.ts";
 
 const statusIconSafelist = [
   ...new Set(

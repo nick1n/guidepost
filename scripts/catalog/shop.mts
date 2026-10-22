@@ -1,4 +1,4 @@
-import { catalogTemp } from "./paths.mts";
+import { catalogLocal } from "./paths.mts";
 import { formatLockConflict } from "./locks.mts";
 import { createHash } from "node:crypto";
 import { access, mkdir, open, readFile, unlink, writeFile } from "node:fs/promises";
@@ -9,12 +9,10 @@ import { decodeShopCache, decodeShopProduct, ShopResponse } from "./shop-schema.
 import type { Edition, Item, Mapping } from "./types.mts";
 
 export async function loadMappings(root: string, path?: string): Promise<Record<string, Mapping>> {
-  const text = await readFile(path ?? join(catalogTemp(root), "shopify-products/kdm-shop-mappings.json"), "utf8").catch(
-    (error: unknown) => {
-      if (!path && error instanceof Error && "code" in error && error.code === "ENOENT") return "{}";
-      throw error;
-    },
-  );
+  const text = await readFile(path ?? join(catalogLocal(root), "kdm-shop-mappings.json"), "utf8").catch((error: unknown) => {
+    if (!path && error instanceof Error && "code" in error && error.code === "ENOENT") return "{}";
+    throw error;
+  });
   return JSON.parse(text);
 }
 

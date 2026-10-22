@@ -1,4 +1,4 @@
-import { statusOrder, type SurvivorStatusIcons, type Icon } from "#lib/constants.ts";
+import { statusOrder, type SurvivorStatusIcons, type Icon } from "#lib/kdm/ui/status/statuses.ts";
 import { statusSummary } from "../ui/status/statuses";
 
 import { survivors } from "./fixtures";

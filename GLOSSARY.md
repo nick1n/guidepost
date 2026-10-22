@@ -2,7 +2,7 @@
 
 ## Catalog
 
-Products and editions in `static/kdm/catalog/data.json`. Stable item and edition IDs identify collection entries; display labels can change.
+Products and editions in [data.json](static/kdm/catalog/data.json). Stable item and edition IDs identify collection entries; display labels can change.
 
 ## Catalog publication
 
@@ -17,8 +17,9 @@ The archive retains the full change set; the merge report summarizes applied cha
 ## Collection browsing
 
 Catalog category, search, tags, ownership filter, per-category batches, and retained card results.
-`CollectionBrowsing` owns those transitions and URL restoration. `CollectionCards` owns collapse, deferred rendering, viewport
-observation, and held-card scroll anchoring. The collection page owns focus, gestures, and navigation; `Collection` owns collection commands.
+[CollectionBrowsing](src/lib/kdm/collection/collection-browsing.svelte.ts) owns those transitions and URL restoration.
+
+[CollectionCards](src/lib/kdm/collection/collection-cards.svelte.ts) owns collapse, deferred rendering, viewport observation, and held-card scroll anchoring. The collection page owns focus, gestures, and navigation. [Collection](src/lib/kdm/collection/state/collection.svelte.ts) owns collection commands.
 
 ## Catalog release resolution
 
@@ -27,10 +28,9 @@ Workflows own their publication and availability policies.
 
 ## Collection session
 
-The app's storage and monitoring lifetime. `CollectionSession` opens browser storage, retains it for load retries,
-and stops subscriptions before closing storage. The layout forwards reactive readiness; `Collection` owns state and commands.
+The app's storage and monitoring lifetime. [CollectionSession](src/lib/kdm/collection/state/collection-session.ts) opens browser storage, retains it for load retries, and stops subscriptions before closing storage. The layout forwards reactive readiness; `Collection` owns state and commands.
 
 ## Workbook contract
 
-Product mappings and normalized rows in `src/lib/types/workbook.ts`, shared by tooling and collection transfers.
+Product mappings and normalized rows in [workbook.ts](src/lib/types/workbook.ts), shared by tooling and collection transfers.
 `pnpm generate:types` derives the editor schema; identity and transfer workflows own reference checks.

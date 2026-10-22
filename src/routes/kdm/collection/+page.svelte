@@ -13,15 +13,15 @@
   import { page } from "$app/state";
   import { onDestroy, untrack } from "svelte";
   import { innerHeight, scrollY } from "svelte/reactivity/window";
-  import CollectionCard from "#lib/components/track/CollectionCard.svelte";
+  import CollectionCard from "#lib/kdm/collection/ui/CollectionCard.svelte";
   import { swipe, type SwipeDirection } from "#lib/swipe.ts";
   import { reviewTagLabel } from "#lib/catalog-view.ts";
-  import { CollectionBrowsing, browseCategories as categories } from "#lib/collection-browsing.svelte.ts";
-  import { CollectionCards } from "#lib/collection-cards.svelte.ts";
+  import { CollectionBrowsing, browseCategories as categories } from "#lib/kdm/collection/collection-browsing.svelte.ts";
+  import { CollectionCards } from "#lib/kdm/collection/collection-cards.svelte.ts";
   import { formatPriceTotals } from "#lib/kdm-data.ts";
-  import { getCollectionActions, ownershipMessage } from "#lib/state/collection-actions.ts";
+  import { getCollectionActions, ownershipMessage } from "#lib/kdm/collection/state/collection-actions.ts";
   import FloatingButton from "#lib/components/FloatingButton.svelte";
-  import { getCollection } from "#lib/state/collection.svelte.ts";
+  import { getCollection } from "#lib/kdm/collection/state/collection.svelte.ts";
   import type { PageProps } from "./$types";
 
   let { data }: PageProps = $props();

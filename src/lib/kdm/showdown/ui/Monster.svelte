@@ -1,7 +1,7 @@
 <script lang="ts">
   import Counter from "../../ui/Counter.svelte";
   import HoldRipple from "#lib/components/gestures/HoldRipple.svelte";
-  import AttributeTokens from "../../ui/status/AttributeTokens.svelte";
+  import AttributeTokens from "./status/AttributeTokens.svelte";
   import AttackProfile from "./AttackProfile.svelte";
   import InlineMarkdown from "#lib/components/InlineMarkdown.svelte";
   import KdIcon from "#lib/components/KdIcon.svelte";
