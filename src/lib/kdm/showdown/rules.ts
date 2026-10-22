@@ -7,7 +7,7 @@ const weaponStats = {
   "Fist & Tooth": { speed: 2, accuracy: 8, strength: 0, luck: 1, keywords: ["weapon", "melee", "fist & tooth"] },
 } satisfies Record<string, WeaponStats>;
 
-export type AttackWeapon = keyof typeof weaponStats;
+type AttackWeapon = keyof typeof weaponStats;
 
 const clampTarget = (value: number) => Math.max(2, Math.min(10, value));
 

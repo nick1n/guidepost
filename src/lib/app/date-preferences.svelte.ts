@@ -1,7 +1,7 @@
 import { createContext } from "svelte";
 import type { Notice } from "./notifications.ts";
 
-export const dateFormats = [{ value: "iso" }, { value: "day-first" }, { value: "month-first" }, { value: "written" }] as const;
+const dateFormats = [{ value: "iso" }, { value: "day-first" }, { value: "month-first" }, { value: "written" }] as const;
 type DateFormat = (typeof dateFormats)[number]["value"];
 const dateFormatKey = "guidepost.date-format";
 

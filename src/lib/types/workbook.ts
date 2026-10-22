@@ -5,7 +5,7 @@ const SheetSchema = Schema.Literals(["KDM Miniatures", "Shirt Catalog", "Dice Ca
 const RowNumberSchema = Schema.Int.check(Schema.isGreaterThanOrEqualTo(2));
 const EditionIdSchema = Schema.String.check(Schema.isPattern(/^[a-z0-9]+(?:-[a-z0-9]+)*$/u));
 
-export const WorkbookTargetSchema = Schema.Struct({
+const WorkbookTargetSchema = Schema.Struct({
   category: Schema.Literals(["content", "accessories", "bundles", "included-only"]),
   contentId: Schema.NonEmptyString,
   editionId: EditionIdSchema,

@@ -15,7 +15,7 @@ export interface EntryState extends Schema.Schema.Type<typeof EntryStateSchema> 
 const KeyPartsSchema = Schema.fromJsonString(Schema.Tuple([Schema.NonEmptyString, Schema.NonEmptyString]));
 const decodeKey = Schema.decodeUnknownResult(KeyPartsSchema);
 
-export const CollectionKeySchema = Schema.String.check(
+const CollectionKeySchema = Schema.String.check(
   Schema.makeFilter(
     (key) => {
       const decoded = decodeKey(key);

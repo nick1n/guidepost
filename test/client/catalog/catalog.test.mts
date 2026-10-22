@@ -2,7 +2,7 @@ import type { Catalog, Item } from "#lib/types/index.ts";
 import { describe, expect, it } from "vitest";
 import { collectionKey, type CollectionSnapshot } from "#lib/types/collection.ts";
 import catalog from "#catalog/data.json";
-import { catalogTags, editionGameplay, editionMaterials } from "#lib/kdm-data.ts";
+import { editionGameplay, editionMaterials } from "#lib/kdm-data.ts";
 import {
   reviewEditions,
   reviewEquivalentEditions,
@@ -418,9 +418,6 @@ describe("edition coverage", () => {
       source: "included",
       via: [{ item: { id: "set" }, edition: { id: "bundle" } }],
     });
-    expect(coverage.owners("upgrade-pack", "i")).toEqual([
-      { parentId: "set", parentEditionId: "bundle", parent: "Set", parentEdition: "Bundle", editionId: "i" },
-    ]);
     expect(coverage.contents("set", "bundle").exactCount).toBe(1);
     expect(snapshot[collectionKey("core", "1-6")]).toBeUndefined();
     expect(snapshot[collectionKey("upgrade-pack", "i")]).toBeUndefined();
@@ -440,8 +437,8 @@ describe("edition coverage", () => {
     expect(coverage.edition("set", "bundle")).toMatchObject({ available: true, source: "owned" });
     expect(coverage.edition("core", "1-6").available).toBe(false);
     expect(coverage.edition("upgrade-pack", "i").available).toBe(false);
-    expect(coverage.owners("core", "1-6")).toEqual([]);
-    expect(coverage.owners("upgrade-pack", "i")).toEqual([]);
+    expect(coverage.edition("core", "1-6").via).toEqual([]);
+    expect(coverage.edition("upgrade-pack", "i").via).toEqual([]);
     const contents = coverage.contents("set", "bundle");
     expect(contents).toMatchObject({ exactCount: 0, count: 1 });
     expect(contents.children[0]!.ownedEditions.map((edition) => edition.id)).toEqual(["1-5"]);
@@ -931,17 +928,6 @@ describe("review catalog facts", () => {
       ["component", "included-only"],
       ["shirt", "accessories"],
     ]);
-  });
-
-  it("restores material families and models-only bundle filters", () => {
-    const item: Parameters<typeof catalogTags>[0] = {
-      tags: ["naked"],
-      editions: [{ id: "model-first-run", label: "First Run", format: "physical", materials: ["Photoresin"] }],
-    };
-    expect(catalogTags(item, "bundles")).toEqual(["bundle", "models-only", "naked", "photoresin", "resin"]);
-    expect(catalogTags({ kind: "accessory", accessoryType: "shirt" }, "accessories")).toEqual(["accessory", "shirt"]);
-    expect(catalogTags({ kind: "armor-kit" }, "content")).toEqual(["armor-kit", "models-only"]);
-    expect(catalogTags({ kind: "naked" }, "content")).toEqual(["models-only", "naked"]);
   });
 });
 

@@ -118,12 +118,6 @@
   ];
   const setupDistance = 6;
   const setupTiles = tilesAtDistance(setupDistance);
-  // const survivorPositions = [
-  //   { column: 9, row: 13 },
-  //   { column: 10, row: 14 },
-  //   { column: 11, row: 14 },
-  //   { column: 12, row: 13 },
-  // ];
 
   const actions = [
     { name: "Intimidate - [star] brain damage", mood: false },

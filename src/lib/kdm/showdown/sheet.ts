@@ -6,7 +6,7 @@ import { survivors } from "./fixtures";
 export const attributes = ["Movement", "Speed", "Accuracy", "Strength", "Luck", "Evasion"];
 export const abbreviations = ["Mov", "Spd", "Acc", "Str", "Luck", "Eva"];
 export const survivorTypes = ["Survivor", "Savior", "Scout", "Arc Survivor", "Arc Savior", "Wanderer"] as const;
-export type SurvivorType = (typeof survivorTypes)[number];
+type SurvivorType = (typeof survivorTypes)[number];
 
 export function makeTokens(count: number) {
   return Array.from({ length: count }, () => ({ positive: 0, negative: 0 }));
@@ -101,10 +101,10 @@ export function toggleActed(sheet: Sheet) {
 export function isReady(sheet: Sheet) {
   return isAlive(sheet) && !sheet.statuses.includes("status:act") && !sheet.statuses.includes("status:knocked-down");
 }
-export function isAlive(sheet: Sheet) {
+function isAlive(sheet: Sheet) {
   return !sheet.statuses.includes("status:dead") && !sheet.statuses.includes("status:cease-to-exist");
 }
-export type LifeState = { label: string; icon: Icon | null; tone: "ready" | "unavailable" | null };
+type LifeState = { label: string; icon: Icon | null; tone: "ready" | "unavailable" | null };
 
 export function lifeState(sheet: Sheet): LifeState {
   if (sheet.statuses.includes("status:cease-to-exist")) return { label: "Gone", icon: "status:cease-to-exist", tone: "unavailable" };

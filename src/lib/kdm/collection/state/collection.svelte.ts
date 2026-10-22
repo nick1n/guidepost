@@ -69,13 +69,6 @@ export class Collection {
     ),
   );
   readonly ownedCount = $derived(this.owned.filter(({ item, edition }) => item.category !== "bundles" && !edition.includedOnly).length);
-  readonly available = $derived.by(() =>
-    this.catalog.entries.flatMap((item) =>
-      reviewEditions(item)
-        .filter((edition) => this.coverage.edition(item.id, edition.id).available)
-        .map((edition) => ({ item, edition })),
-    ),
-  );
   readonly wishlistCount = $derived(
     this.catalog.entries.reduce(
       (total, item) => total + reviewEditions(item).filter((edition) => this.getEdition(item.id, edition.id).wished).length,
@@ -272,10 +265,6 @@ export class Collection {
     return this.get(collectionKey(contentId, editionId));
   }
 
-  getOwners(contentId: string, editionId: string) {
-    return this.coverage.owners(contentId, editionId);
-  }
-
   private reportSave<A>(effect: Effect.Effect<A, StoreError>, keys: readonly string[]) {
     const generation = this.generation;
     return Effect.acquireUseRelease(
@@ -325,16 +314,12 @@ export class Collection {
     });
   }
 
-  toggleOwned = Effect.fn("Collection.toggleOwned")({ self: this }, function (key: string) {
-    return this.setEditionOwned(key, !this.get(key).owned);
-  });
-
-  setEditionOwned = Effect.fn("Collection.setEditionOwned")({ self: this }, function (key: string, owned: boolean) {
+  setOwned = Effect.fn("Collection.setOwned")({ self: this }, function (key: string, owned: boolean) {
     return this.setManyOwned([key], owned);
   });
 
-  toggleEditionOwned = Effect.fn("Collection.toggleEditionOwned")({ self: this }, function (key: string, owned?: boolean) {
-    return this.setEditionOwned(key, owned ?? !this.get(key).owned);
+  toggleOwned = Effect.fn("Collection.toggleOwned")({ self: this }, function (key: string, owned?: boolean) {
+    return this.setOwned(key, owned ?? !this.get(key).owned);
   });
 
   toggleIncludedOwned = Effect.fn("Collection.toggleIncludedOwned")({ self: this }, function (key: string, owned?: boolean) {
@@ -346,7 +331,7 @@ export class Collection {
     if (!shouldOwn) {
       return this.commitMany({ [key]: { owned: false, missing: supplied } });
     }
-    return supplied ? this.setEditionMissing(key, false) : this.setEditionOwned(key, true);
+    return supplied ? this.setMissing(key, false) : this.setOwned(key, true);
   });
 
   toggleWish = Effect.fn("Collection.toggleWish")({ self: this }, function (key: string) {
@@ -402,7 +387,7 @@ export class Collection {
     },
   );
 
-  setEditionMissing = Effect.fn("Collection.setEditionMissing")({ self: this }, function (key: string, missing: boolean) {
+  setMissing = Effect.fn("Collection.setMissing")({ self: this }, function (key: string, missing: boolean) {
     return this.commitMany({ [key]: { missing } });
   });
 

@@ -62,7 +62,6 @@
   },
   "imports": {
     "#catalog/*": "./static/kdm/catalog/*",
-    "#lib": "./src/lib/index.ts",
     "#lib/*": "./src/lib/*",
     "#scripts/*": "./scripts/*"
   }

@@ -37,7 +37,7 @@ const slug = (name: string) =>
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "");
 
-export function itemFamily(id: string, item: Item) {
+function itemFamily(id: string, item: Item) {
   if (/\bbust\b/i.test(item.name) || /^(?:set-)?bust-/.test(id)) return "bust";
   if (
     /painter['’]?s?\s+scale/i.test(item.name) ||

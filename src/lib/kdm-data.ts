@@ -32,18 +32,3 @@ export function editionMaterials(edition: Edition) {
 export function editionGameplay(item: Partial<Item>, edition: Edition) {
   return (Object.hasOwn(edition, "gameplay") ? edition.gameplay : item.gameplay) === true;
 }
-
-export function catalogTags(item: Partial<Item>, category: string) {
-  const tags = new Set(item.tags ?? []);
-  if (item.kind) tags.add(item.kind);
-  if (category === "bundles") tags.add("bundle");
-  if (category === "homebrew") tags.add("homebrew");
-  if (item.accessoryType) tags.add(item.accessoryType);
-  for (const material of (item.editions ?? []).flatMap(editionMaterials)) {
-    tags.add(material.toLowerCase());
-    if (["Photoresin", "Deathgrey", "Deathpink", "White Resin"].includes(material)) tags.add("resin");
-  }
-  if (item.gameplay !== true && (["model", "set", "armor-kit", "naked"].includes(item.kind ?? "") || category === "bundles"))
-    tags.add("models-only");
-  return [...tags].sort();
-}

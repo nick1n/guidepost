@@ -3,7 +3,7 @@ import { catalogLocal } from "./paths.mts";
 import { readFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { Ajv2020 } from "ajv/dist/2020.js";
-import { editionComparator } from "./order.mts";
+import { compareEditions } from "./order.mts";
 import { categories, type Catalog, type Category } from "./types.mts";
 import { normalizeItem } from "./normalize.mts";
 import { organizeCatalog } from "./order.mts";
@@ -46,7 +46,7 @@ export async function validateCatalog(catalog: Catalog, schemaPath = "static/kdm
       normalizeItem(normalized);
       if (JSON.stringify(normalized) !== JSON.stringify(item)) throw new Error("Untrimmed catalog facts or URLs: " + id);
       if (item.editions?.some((edition) => edition.simulator) && !item.editions[0]?.simulator) throw new Error("Sim must be first: " + id);
-      const sorted = item.editions?.toSorted(editionComparator(item, id));
+      const sorted = item.editions?.toSorted(compareEditions);
       if (item.editions?.some((edition, index) => edition.id !== sorted![index]!.id))
         throw new Error("Editions are out of release order: " + id);
       const editionIds = new Set<string>();

@@ -10,7 +10,7 @@ import { Effect } from "effect";
 import { FetchHttpClient } from "effect/http";
 import { planUpdate as prepareUpdate, productExclusion, releaseGaps } from "#scripts/catalog/update.mts";
 import { resolveReleases } from "#scripts/catalog/releases.mts";
-import { catalogListing, productUrl, ShopClient, shopProduct } from "#scripts/catalog/shop.mts";
+import { catalogListing, productUrl, ShopClient } from "#scripts/catalog/shop.mts";
 import { applyReview } from "#scripts/catalog/commands/update-catalog.mts";
 import { refreshAvailability } from "#scripts/catalog/commands/refresh-catalog-availability.mts";
 import { availabilityFromUrls } from "#scripts/catalog/availability.mts";

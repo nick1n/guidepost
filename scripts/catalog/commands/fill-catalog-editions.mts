@@ -5,7 +5,7 @@ import { Command } from "effect/cli";
 import { catalog, offline, fetch, offlineMode, runCommand, workflow } from "../cli.mts";
 import { publishFiles } from "../publication.mts";
 import { catalogTemp, catalogLocal, catalogCache } from "../paths.mts";
-import { editionComparator, organizeCatalog } from "../order.mts";
+import { compareEditions, organizeCatalog } from "../order.mts";
 import { clearChangedListings, listingSnapshot, normalizeItem } from "../normalize.mts";
 import { productUrl, ShopClient, shopProduct } from "../shop.mts";
 import { normalized } from "../update.mts";
@@ -62,7 +62,7 @@ export async function fillEditions(
       if (product.handle !== productUrl(listing).split("/").at(-1)) throw new Error("Response handle does not match listing");
       const listings = listingSnapshot(item);
       const result = productEditions(item, product);
-      item.editions = result.editions.sort(editionComparator(item, itemId));
+      item.editions = result.editions.sort(compareEditions);
       item.handle = product.handle;
       delete item.url;
       delete item.releaseDate;

@@ -132,7 +132,7 @@
     clearTimeout(feedbackTimer);
     feedback = undefined;
     const shouldOwn = owned ?? !collection.getEdition(target.id, edition.id).owned;
-    collectionActions.run(collection.toggleEditionOwned(collectionKey(target.id, edition.id), shouldOwn), {
+    collectionActions.run(collection.toggleOwned(collectionKey(target.id, edition.id), shouldOwn), {
       success: ownershipMessage([{ item: target, edition }], shouldOwn),
     });
   }

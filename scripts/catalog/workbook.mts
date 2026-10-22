@@ -9,7 +9,6 @@ import {
   type WorkbookTarget,
 } from "../../src/lib/types/workbook.ts";
 import { publishFiles } from "./publication.mts";
-export type { WorkbookMap, WorkbookMappingRow as WorkbookRow, WorkbookTarget } from "../../src/lib/types/workbook.ts";
 import type { Catalog } from "./types.mts";
 import { editionByLabel } from "./identity.mts";
 

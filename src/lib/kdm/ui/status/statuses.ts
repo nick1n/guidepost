@@ -5,9 +5,9 @@ export const statusIcons = {
   priority: "i-material-symbols:target",
 } as const;
 
-export type StatusIcons = keyof typeof statusIcons;
+type StatusIcons = keyof typeof statusIcons;
 
-export type StatusInfo = {
+type StatusInfo = {
   label: string;
   summary?: string;
   icon: string;

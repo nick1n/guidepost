@@ -2,7 +2,7 @@ import { mkdtemp, mkdir, readFile, rm, utimes, writeFile } from "node:fs/promise
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { validateCatalog } from "#scripts/catalog/validate.mts";
-import { catalogTemp, catalogCache } from "#scripts/catalog/paths.mts";
+import { catalogCache } from "#scripts/catalog/paths.mts";
 import { refreshAvailability } from "#scripts/catalog/commands/refresh-catalog-availability.mts";
 import { expect, test } from "vitest";
 import { applyTags, checkTags, sortCatalogTags, syncStockTag, tagSchema, type Tags } from "#scripts/catalog/tags.mts";

@@ -1,9 +1,9 @@
 import { isDeepStrictEqual } from "node:util";
-import { categories, type Catalog, type Category, type Evidence, type Item, type Mapping, type Product, type Variant } from "./types.mts";
+import { categories, type Catalog, type Category, type Evidence, type Mapping, type Product, type Variant } from "./types.mts";
 import { resolveReleases } from "./releases.mts";
 import { catalogListing, productUrl } from "./shop.mts";
 import { clearChangedListings, listingSnapshot, normalizeCatalog } from "./normalize.mts";
-import { organizeCatalog, editionComparator } from "./order.mts";
+import { organizeCatalog, compareEditions } from "./order.mts";
 import { editionId } from "./identity.mts";
 import { applyTags, type Tags } from "./tags.mts";
 
@@ -191,7 +191,7 @@ export function planUpdate(
       delete item.shopReachable;
       for (const edition of item.editions)
         if (Object.hasOwn(edition, "gameplay") && edition.gameplay === item.gameplay) delete edition.gameplay;
-      item.editions.sort(editionComparator(item, mapping.itemId));
+      item.editions.sort(compareEditions);
     }
     const announcements = news
       .filter((row) => {
@@ -220,8 +220,7 @@ export function planUpdate(
       if (previous) clearChangedListings(item, listingSnapshot(previous));
     }
   normalizeCatalog(catalog);
-  for (const category of categories)
-    for (const [id, item] of Object.entries(catalog[category])) item.editions?.sort(editionComparator(item, id));
+  for (const category of categories) for (const item of Object.values(catalog[category])) item.editions?.sort(compareEditions);
   applyTags(catalog, tags, mappings);
   organizeCatalog(catalog);
   const changes = categories.flatMap((category) =>
@@ -233,5 +232,3 @@ export function planUpdate(
   );
   return { catalog, changes, sources, unresolved, excluded, warnings: [...new Set(warnings)], releaseGaps: releaseGaps(catalog) };
 }
-
-export { compareEditions } from "./order.mts";

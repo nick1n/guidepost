@@ -2,14 +2,14 @@ import { recordAvailability, recordStock, invalidateListingEvidence, syncStockTa
 import { catalogListing, productUrl, shopLinkUrl } from "./shop.mts";
 import { categories, type Catalog, type Item } from "./types.mts";
 
-export function catalogUrl(value: string) {
+function catalogUrl(value: string) {
   const parsed = new URL(value, "https://shop.kingdomdeath.com");
   const url = parsed.hostname === "shop.kingdomdeath.com" ? shopLinkUrl(value) : parsed;
   url.searchParams.delete("variant");
   return value.startsWith("/") ? url.pathname + url.search + url.hash : url.href;
 }
 
-export function inheritEncoreDates(item: Item) {
+function inheritEncoreDates(item: Item) {
   const editions = item.editions ?? [];
   for (const prefix of ["", "Painters: ", "Bust: "]) {
     for (const encore of editions) {

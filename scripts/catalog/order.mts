@@ -63,10 +63,6 @@ function itemDate(item: Item | AppItem) {
   return [Infinity, 0, 0];
 }
 
-export function editionComparator(_item: Item, _id: string) {
-  return compareEditions;
-}
-
 function orderFields(record: object, first: readonly string[] = []) {
   const rank = (key: string) => {
     const index = first.indexOf(key);

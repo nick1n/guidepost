@@ -7,7 +7,6 @@ export type CatalogIndex = ReturnType<typeof reviewIndex>;
 export type EditionSelection = { item: CatalogEntry; edition: Edition };
 type Inclusion = Exclude<NonNullable<Item["includes"]>[number], string>;
 type IncludedEdition = EditionSelection & { name: string };
-type Owner = { parentId: string; parentEditionId: string; parent: string; parentEdition: string; editionId?: string };
 
 type CoverageNode = {
   selection: EditionSelection;
@@ -47,7 +46,7 @@ export function reviewTagCounts(items: readonly Pick<Item, "tags">[]) {
   return counts;
 }
 
-export function reviewTags(items: readonly Pick<Item, "tags">[]) {
+function reviewTags(items: readonly Pick<Item, "tags">[]) {
   return [...reviewTagCounts(items)]
     .map(([tag, count]) => ({ tag, count }))
     .sort((a, b) => b.count - a.count || a.tag.localeCompare(b.tag, "en"));
@@ -434,23 +433,5 @@ function resolveCoverage(nodes: ReadonlyMap<string, CoverageNode>, snapshot: Col
       count: children.filter((child) => child.owned).length,
     };
   }
-  function owners(id: string, editionId: string): Owner[] {
-    const key = collectionKey(id, editionId);
-    const node = nodes.get(key);
-    if (!node || snapshot[key]?.missing) return [];
-    const roots = new Map<string, EditionSelection>();
-    for (const equivalent of node.equivalents)
-      for (const root of supplied.get(equivalent) ?? []) {
-        if (root.item.id === id) continue;
-        roots.set(collectionKey(root.item.id, root.edition.id), root);
-      }
-    return [...roots.values()].map((root) => ({
-      parentId: root.item.id,
-      parentEditionId: root.edition.id,
-      parent: root.item.name,
-      parentEdition: root.edition.label,
-      editionId,
-    }));
-  }
-  return { edition, contents, owners };
+  return { edition, contents };
 }

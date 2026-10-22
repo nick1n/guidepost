@@ -10,7 +10,7 @@ import type { Catalog } from "../src/lib/types/index.ts";
 
 export const schemaPath = fileURLToPath(new URL("../static/kdm/catalog/data.schema.json", import.meta.url));
 export const catalogPath = fileURLToPath(new URL("../static/kdm/catalog/data.json", import.meta.url));
-export const workbookSchemaPath = fileURLToPath(new URL("../static/kdm/catalog/workbook-map.schema.json", import.meta.url));
+const workbookSchemaPath = fileURLToPath(new URL("../static/kdm/catalog/workbook-map.schema.json", import.meta.url));
 const outputPath = fileURLToPath(new URL("../src/lib/types/gen/kdm-data.d.ts", import.meta.url));
 const corePath = fileURLToPath(new URL("../src/lib/gen/core-editions.json", import.meta.url));
 
@@ -35,7 +35,7 @@ export async function generateCoreEditions() {
   return true;
 }
 
-export async function generateWorkbookSchema() {
+async function generateWorkbookSchema() {
   const document = Schema.toJsonSchemaDocument(WorkbookMapSchema, { onExcessProperty: "error" });
   const output = await format(
     JSON.stringify({ $schema: "https://json-schema.org/draft/2020-12/schema", ...document.schema, $defs: document.definitions }),

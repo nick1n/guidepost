@@ -376,15 +376,14 @@ it.effect("bundle commands own included editions and clear their wishes in one s
     expect(collection.ownedCount).toBe(0);
     expect(collection.wishlistCount).toBe(1);
     expect(collection.totals).toEqual({ USD: 2000 });
-    expect(collection.getOwners("model", "plastic")).toEqual([
-      { parentId: "set", parentEditionId: "bundle", parent: "Set", parentEdition: "Bundle", editionId: "plastic" },
-    ]);
-    expect(collection.getOwners("model", "resin")).toEqual([]);
+    expect(collection.coverage.edition("model", "plastic")).toMatchObject({ available: true, source: "owned" });
+    expect(collection.coverage.contents("set", "bundle").exactCount).toBe(1);
+    expect(collection.coverage.edition("model", "resin").available).toBe(false);
     yield* collection.reset();
     expect(collection.ownedCount).toBe(0);
     expect(collection.wishlistCount).toBe(0);
     expect(collection.totals).toEqual({});
-    expect(collection.getOwners("model", "plastic")).toEqual([]);
+    expect(collection.coverage.edition("model", "plastic").available).toBe(false);
   }),
 );
 
@@ -430,7 +429,7 @@ it.effect("failed bundle saves restore selections, totals, and coverage together
     expect(collection.ownedCount).toBe(0);
     expect(collection.wishlistCount).toBe(1);
     expect(collection.totals).toEqual({});
-    expect(collection.getOwners("model", "plastic")).toEqual([]);
+    expect(collection.coverage.edition("model", "plastic").available).toBe(false);
   }),
 );
 
@@ -483,11 +482,11 @@ it.live("collection commands stay lazy and update optimistically with bound meth
     const collection = new Collection(data);
     collection.setUser("lazy-test");
     const f = store();
-    const { setStore, toggleOwned } = collection;
+    const { setStore, toggleOwned: toggleEditionOwned } = collection;
     const initialize = setStore(f.api);
     expect(collection.loadStatus).toBe("pending");
     yield* initialize;
-    const action = toggleOwned(core);
+    const action = toggleEditionOwned(core);
     expect(collection.get(core)).toEqual({});
     const fiber = yield* Effect.forkChild(action, { startImmediately: true });
     expect(collection.get(core)).toEqual({ owned: true });
@@ -642,28 +641,28 @@ it.effect("bundle checkboxes restore included contents and clear included acquis
     const f = store({ [parent]: { owned: true, missing: true, copyNumber: 4 }, [child]: { owned: true } });
     yield* collection.setStore(f.api);
 
-    yield* collection.toggleEditionOwned(parent);
+    yield* collection.toggleOwned(parent);
     expect(collection.get(parent)).toEqual({ copyNumber: 4 });
     expect(f.state[parent]?.owned).toBeUndefined();
     expect(collection.get(child)).toEqual({});
     expect(collection.ownedCount).toBe(0);
     expect(collection.coverage.edition("set", "bundle").available).toBe(false);
     expect(collection.coverage.edition("model", "plastic").available).toBe(false);
-    yield* collection.toggleEditionOwned(parent, false);
+    yield* collection.toggleOwned(parent, false);
     expect(collection.get(parent).owned).toBeUndefined();
-    yield* collection.toggleEditionOwned(parent, true);
-    yield* collection.setEditionMissing(child, true);
+    yield* collection.toggleOwned(parent, true);
+    yield* collection.setMissing(child, true);
     const writes = f.writes;
-    yield* collection.toggleEditionOwned(parent, true);
+    yield* collection.toggleOwned(parent, true);
     expect(f.writes).toBe(writes + 1);
     expect(collection.get(parent)).toEqual({ owned: true, copyNumber: 4 });
     expect(collection.get(child)).toEqual({ owned: true });
     expect(collection.catalog.coverage(collection.state).edition("set", "bundle").available).toBe(true);
 
-    yield* collection.setEditionOwned(parent, false);
+    yield* collection.setOwned(parent, false);
     expect(collection.get(parent)).toEqual({ copyNumber: 4 });
-    yield* collection.setEditionMissing(parent, true);
-    yield* collection.setEditionOwned(parent, true);
+    yield* collection.setMissing(parent, true);
+    yield* collection.setOwned(parent, true);
     expect(collection.get(parent)).toEqual({ owned: true, copyNumber: 4 });
     expect(f.state).toEqual(collection.state);
   }),
@@ -681,7 +680,7 @@ it.effect("bundle ownership changes apply to exact nested contents without chang
     const part = collectionKey("part", "item");
     const f = store({ [child]: { missing: true, copyNumber: 4 }, [other]: { missing: true }, [part]: { missing: true } });
     yield* collection.setStore(f.api);
-    yield* collection.toggleEditionOwned(parent, true);
+    yield* collection.toggleOwned(parent, true);
     expect(f.writes).toBe(1);
     expect(collection.state).toEqual({
       [parent]: { owned: true },
@@ -695,7 +694,7 @@ it.effect("bundle ownership changes apply to exact nested contents without chang
     expect(collection.get(child).missing).toBe(true);
     yield* collection.toggleWish(child);
     const writes = f.writes;
-    yield* collection.toggleEditionOwned(parent, false);
+    yield* collection.toggleOwned(parent, false);
     expect(f.writes).toBe(writes + 1);
     expect(collection.state).toEqual({ [child]: { wished: true, copyNumber: 4 }, [other]: { missing: true } });
     expect(collection.coverage.edition("part", "item").available).toBe(false);
@@ -713,7 +712,7 @@ it.effect("ordinary product ownership restores included coverage without acquiri
     const child = collectionKey("part", "item");
     const f = store({ [child]: { missing: true } });
     yield* collection.setStore(f.api);
-    yield* collection.toggleEditionOwned(parent);
+    yield* collection.toggleOwned(parent);
     expect(collection.state).toEqual({ [parent]: { owned: true } });
     expect(collection.coverage.edition("part", "item").available).toBe(true);
     expect(f.writes).toBe(1);
@@ -730,7 +729,7 @@ it.effect("a failed bundle acquisition rolls back its ownership and included mis
     const f = store(initial);
     yield* collection.setStore(f.api);
     f.failNextSave("unavailable");
-    yield* Effect.flip(collection.toggleEditionOwned(parent, true));
+    yield* Effect.flip(collection.toggleOwned(parent, true));
     expect(f.writes).toBe(1);
     expect(collection.state).toEqual(initial);
     expect(f.state).toEqual(initial);
@@ -748,7 +747,7 @@ it.effect("included controls keep missing overrides only while another source su
     yield* collection.toggleIncludedOwned(child, false);
     expect(collection.get(child)).toEqual({ missing: true });
     expect(collection.get(parent)).toEqual({ owned: true });
-    yield* collection.toggleEditionOwned(parent, false);
+    yield* collection.toggleOwned(parent, false);
     yield* collection.toggleIncludedOwned(child, false);
     expect(collection.state).toEqual({});
     yield* collection.toggleIncludedOwned(child, true);
@@ -766,9 +765,9 @@ it.effect("product ownership is independent of covered contents and clears its o
     const child = collectionKey("model", "plastic");
     const f = store({ [parent]: { owned: true }, [child]: { wished: true, missing: true } });
     yield* collection.setStore(f.api);
-    yield* collection.toggleEditionOwned(child);
+    yield* collection.toggleOwned(child);
     expect(collection.get(child)).toEqual({ owned: true });
-    yield* collection.toggleEditionOwned(child);
+    yield* collection.toggleOwned(child);
     expect(collection.state[child]).toBeUndefined();
     expect(collection.coverage.edition("model", "plastic").available).toBe(true);
     expect(collection.get(parent)).toEqual({ owned: true });
@@ -784,20 +783,20 @@ it.effect("Core 1.5 with upgrades supplies Core 1.6 contents without owning the 
     const rulebook = collectionKey("core-rulebook-upgrade", "1-6");
     const f = store();
     yield* collection.setStore(f.api);
-    yield* collection.toggleEditionOwned(previous, true);
+    yield* collection.toggleOwned(previous, true);
     expect(collection.coverage.edition("core", "1-6").available).toBe(false);
-    yield* collection.toggleEditionOwned(gameplay, true);
-    yield* collection.toggleEditionOwned(rulebook, true);
+    yield* collection.toggleOwned(gameplay, true);
+    yield* collection.toggleOwned(rulebook, true);
     expect(collection.coverage.edition("core", "1-6").available).toBe(false);
     expect(collection.coverage.edition("core-gameplay", "1-6").available).toBe(true);
     expect(collection.coverage.edition("kingdom-death-monster-rulebook", "1-6").available).toBe(true);
     expect(collection.get(current).owned).toBeUndefined();
     expect(collection.owned.some(({ item, edition }) => item.id === "core" && edition.id === "1-6")).toBe(false);
-    yield* collection.toggleEditionOwned(current, true);
+    yield* collection.toggleOwned(current, true);
     expect(collection.get(current).owned).toBe(true);
 
     const writes = f.writes;
-    yield* collection.toggleEditionOwned(current, false);
+    yield* collection.toggleOwned(current, false);
     expect(f.writes).toBe(writes + 1);
     expect(collection.state[current]).toBeUndefined();
     expect(collection.get(gameplay).owned).toBe(true);
@@ -821,7 +820,7 @@ it.effect("a failed bundle removal restores ownership of the bundle and its incl
     const f = store(initial);
     yield* collection.setStore(f.api);
     f.failNextSave("unavailable");
-    yield* Effect.flip(collection.toggleEditionOwned(parent, false));
+    yield* Effect.flip(collection.toggleOwned(parent, false));
     expect(f.writes).toBe(1);
     expect(collection.state).toEqual(initial);
     expect(f.state).toEqual(initial);
@@ -851,9 +850,9 @@ it.effect("edition missing marks toggle without changing the ownership choice", 
     const f = store({ [key]: { owned: true, copyNumber: 4 } });
     yield* collection.setStore(f.api);
 
-    yield* collection.setEditionMissing(key, true);
+    yield* collection.setMissing(key, true);
     expect(collection.get(key)).toEqual({ owned: true, copyNumber: 4, missing: true });
-    yield* collection.setEditionMissing(key, false);
+    yield* collection.setMissing(key, false);
     expect(collection.get(key)).toEqual({ owned: true, copyNumber: 4 });
     expect(f.state).toEqual(collection.state);
     expect(f.writes).toBe(2);
