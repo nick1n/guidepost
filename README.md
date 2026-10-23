@@ -1,6 +1,6 @@
 # Guidepost
 
-A personal hub for board game companion tools, built with SvelteKit 3, Svelte 5, and UnoCSS. The Kingdom Death: Monster tools include a product catalog and a first-story showdown aid.
+A personal hub for board game companion tools, built with SvelteKit 3, Svelte 5, and UnoCSS. The Kingdom Death: Monster tools include a product catalog, hunt event cards, and a first-story showdown aid.
 
 ## Getting started
 
@@ -31,6 +31,10 @@ See [AGENTS.md](AGENTS.md) for coding conventions and required checks. Client te
 With a local development server running, `pnpm test:menu-browser -- http://127.0.0.1:5173` checks menu history, focus, preferences, and gestures in installed Chrome or Chromium (or `CHROME_PATH`). Screenshots and the report go to `temp/browser-verification/menu-*`.
 
 `pnpm test:collection-browser [URL]` runs isolated Chrome checks. Set `CHROME_PATH` if Chrome is not detected.
+
+`pnpm test:hunt-browser -- http://localhost:5173` checks card selection, artwork variants, flip and draw animations, and saved settings.
+`pnpm test:hunt-picker-browser -- http://localhost:5173` checks the event picker's gestures, focus, dismissal, and short-screen layout.
+Both require a running local server and installed Chrome or Chromium (or `CHROME_PATH`); screenshots and reports go to `temp/browser-verification/`.
 
 ## Where things live
 

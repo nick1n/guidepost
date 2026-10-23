@@ -59,6 +59,12 @@ The root layout provides app-scoped owners for menu state, date preferences, not
 
 [DatePreferences](../src/lib/app/date-preferences.svelte.ts) saves the date format on this device and reuses date/time formatters. Catalog calendar dates stay in UTC; notification timestamps use local time.
 
+[HuntPreferences](../src/lib/kdm/hunt/preferences.svelte.ts) applies device settings immediately and queues field patches for
+[DexieHuntStore](../src/lib/kdm/hunt/dexie-store.ts). Browser initialization opens the `guidepost-preferences` database, whose
+`preferences` table stores the four validated hunt settings under the `hunt` key. A read/write transaction merges each patch with
+the stored record to preserve unrelated changes from other tabs. The root layout interrupts the session and closes the connection
+on unmount, and guards navigation away while writes are pending. There are no localStorage reads, writes, or migrations for hunt settings.
+
 [NotificationLog](../src/lib/app/notification-log.svelte.ts) keeps the newest 100 entries in memory for the current session.
 
 [ShowdownDisplay](../src/lib/kdm/showdown/display.svelte.ts) shares session-only display settings across showdown themes. Active showdown summaries and alignment callbacks are released when their route unmounts.

@@ -3,6 +3,7 @@ export function isDeferredAsset(path: string) {
   return (
     path.startsWith("kdm/collection/") ||
     path.startsWith("kdm/catalog/") ||
+    path.startsWith("kdm/hunts/") ||
     path.startsWith("test/font/") ||
     path.startsWith("test/gesture/") ||
     path === "kdm/fonts/kd-icons-v1.woff"

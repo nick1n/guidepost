@@ -11,6 +11,8 @@
     "test:client": "vitest run --project client",
     "test:collection-browser": "node test/client/collection-browser.mts",
     "test:menu-browser": "node test/client/menu-browser.mts",
+    "test:hunt-browser": "node test/client/hunt-browser.mts",
+    "test:hunt-picker-browser": "node test/client/hunt-picker-browser.mts",
     "test:scripts": "vitest run --project scripts && node --test \"test/scripts/**/*-checks.mts\"",
     "generate:types": "node scripts/generate-types.mts",
     "check:shop-links": "node scripts/catalog/commands/check-shop-links.mts",

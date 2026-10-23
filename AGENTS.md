@@ -35,6 +35,8 @@ The window owns scrolling as the link list grows; do not add a navigation scroll
 
 Infer types unless annotations clarify public APIs or complex values, improve readability, or prevent incorrect widening. Prefer one- or two-word type names unless longer is clearer; function names may be longer.
 
+Use ternaries for simple choices. For more complex branching, prefer `if` / `else if` statements when they read more clearly, especially instead of nested ternaries.
+
 Before adding a constants-only module, check [constants.ts](src/lib/constants.ts) and existing modules. Keep single-component constants local and shared constants in the module serving their consumers. Create a new module only for a distinct feature with enough related data or behavior. Update imports and remove obsolete modules when consolidating.
 
 ## Svelte

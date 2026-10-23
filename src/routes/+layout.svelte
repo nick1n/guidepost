@@ -12,6 +12,7 @@
   import { DatePreferences, setDatePreferences } from "#lib/app/date-preferences.svelte.ts";
   import { NotificationLog, setNotificationLog } from "#lib/app/notification-log.svelte.ts";
   import { ShowdownDisplay, setShowdownDisplay } from "#lib/kdm/showdown/display.svelte.ts";
+  import { HuntPreferences, setHuntPreferences } from "#lib/kdm/hunt/preferences.svelte.ts";
   import { CopyNumberEdits, setCopyNumberEdits } from "#lib/kdm/collection/state/copy-number-edits.svelte.ts";
   import SiteMenuPanel from "#lib/app/SiteMenu.svelte";
 
@@ -22,11 +23,12 @@
   const log = setNotificationLog(new NotificationLog());
   const dates = setDatePreferences(new DatePreferences(log.record));
   setShowdownDisplay(new ShowdownDisplay());
+  const hunts = setHuntPreferences(new HuntPreferences(log.record));
   const collectionActions = setCollectionActions(createCollectionActions(Notifications.layerWith(log.record)));
   setCopyNumberEdits(new CopyNumberEdits(collection, collectionActions));
 
   function onbeforeunload(event: BeforeUnloadEvent) {
-    if (!collection.hasPendingChanges) return;
+    if (!collection.hasPendingChanges && !hunts.hasPendingChanges) return;
     collection.flushPendingEdits();
     // IndexedDB work is asynchronous; allow the user to stay until all queued writes finish.
     event.preventDefault();
@@ -52,9 +54,11 @@
 
   onMount(() => {
     dates.loadDateFormat();
+    const huntSession = Effect.runFork(hunts.run());
     const active = collectionActions.run(session.run("guest"), { success: false });
     return () => {
       Effect.runFork(Fiber.interrupt(active));
+      Effect.runFork(Fiber.interrupt(huntSession));
     };
   });
 </script>

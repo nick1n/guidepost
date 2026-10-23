@@ -14,10 +14,12 @@
   import { getCollection } from "#lib/kdm/collection/state/collection.svelte.ts";
   import { getCollectionActions } from "#lib/kdm/collection/state/collection-actions.ts";
   import ConfirmDialog from "../components/ConfirmDialog.svelte";
+  import Select from "../components/Select.svelte";
   import { MenuSession } from "./menu-session.ts";
-  import { swipeDismiss } from "../swipe.ts";
+  import { createSwipeDismiss } from "../swipe-dismiss.svelte.ts";
   import MenuButton from "./MenuButton.svelte";
   import ShowdownSettings from "../kdm/showdown/ui/ShowdownSettings.svelte";
+  import HuntSettings from "../kdm/hunt/HuntSettings.svelte";
 
   const menu = getSiteMenu();
   const dates = getDatePreferences();
@@ -38,9 +40,8 @@
   let updateAttempt = $state(0);
   let updateTimer: ReturnType<typeof setTimeout> | undefined;
   let online = $state(true);
-  let drag = $state(0);
   const latest = $derived(log.notices[0]);
-  const hasNavbar = $derived(page.route.id?.startsWith("/kdm/showdown"));
+  const hasNavbar = $derived(page.route.id?.startsWith("/kdm/showdown") || page.route.id === "/kdm/hunt");
 
   function record(message: string, kind: "info" | "error" = "info") {
     log.record({ kind, message, timestamp: Date.now() });
@@ -60,12 +61,12 @@
       if (open) view = "main";
       else {
         if (content) content.scrollTop = 0;
-        drag = 0;
+        dismissal.reset();
       }
     },
     report: (message) => record(message, "error"),
   });
-  const swipe = swipeDismiss({ dismiss: session.close, ondrag: (distance) => (drag = distance) });
+  const dismissal = createSwipeDismiss(session.close);
   const onnavigate = session.navigate;
 
   // Browser history owns visibility; the session synchronizes the drawer and its browser resources.
@@ -142,8 +143,17 @@
 {/if}
 
 <div class={["scrim", menu.open && "is-open"]} aria-hidden="true"></div>
-<dialog aria-labelledby={`${id}-heading`} data-swipe-ignore {@attach (dialog) => untrack(() => session.attach(dialog))} {@attach swipe}>
-  <div class="sheet" data-dragging={drag > 0} style:translate={drag > 0 ? `0 ${drag}px` : undefined}>
+<dialog
+  aria-labelledby={`${id}-heading`}
+  data-swipe-ignore
+  {@attach (dialog) => untrack(() => session.attach(dialog))}
+  {@attach dismissal.attach}
+>
+  <div
+    class="sheet"
+    data-dragging={dismissal.distance > 0}
+    style:translate={dismissal.distance > 0 ? `0 ${dismissal.distance}px` : undefined}
+  >
     <div class="grip" data-drag-handle aria-hidden="true"><span></span></div>
     <header>
       <h2 id={`${id}-heading`} bind:this={heading} tabindex="-1">
@@ -181,7 +191,7 @@
           </button>
           <button class="row" type="button" onclick={() => showView("settings")}>
             <span class="row-icon i-material-symbols:settings-outline" aria-hidden="true"></span>
-            <span class="copy"><strong>Settings</strong><span>Date format and showdown display</span></span>
+            <span class="copy"><strong>Settings</strong><span>Date format, hunt events, and showdown display</span></span>
             <span class="chevron i-material-symbols:chevron-right" aria-hidden="true"></span>
           </button>
           <button class="row" type="button" onclick={() => showView("notifications")}>
@@ -266,15 +276,13 @@
       {:else}
         <div class="date-settings">
           <label for={`${id}-date-format`}>Date format</label>
-          <div class="select-control">
-            <select id={`${id}-date-format`} value={dates.dateFormat} onchange={(event) => dates.setDateFormat(event.currentTarget.value)}>
-              {#each dates.formats as format (format.value)}
-                <option value={format.value}>{format.label}</option>
-              {/each}
-            </select>
-            <span class="select-chevron i-material-symbols:keyboard-arrow-down" aria-hidden="true"></span>
-          </div>
+          <Select id={`${id}-date-format`} value={dates.dateFormat} onchange={(event) => dates.setDateFormat(event.currentTarget.value)}>
+            {#each dates.formats as format (format.value)}
+              <option value={format.value}>{format.label}</option>
+            {/each}
+          </Select>
         </div>
+        <HuntSettings />
         <ShowdownSettings {onnavigate} />
         <div class="reset-settings">
           <button class="reset" type="button" disabled={!collection.canWrite || collection.isSaving} onclick={() => resetDialog.show()}>
@@ -470,30 +478,6 @@
       background: var(--destructive);
       color: var(--foreground);
     }
-  }
-  .select-control {
-    display: grid;
-    align-items: center;
-  }
-  .select-chevron {
-    --size-icon: 1.5rem;
-    grid-area: 1 / 1;
-    justify-self: end;
-    margin-inline-end: 0.75rem;
-    color: var(--muted-foreground);
-    pointer-events: none;
-  }
-  select {
-    grid-area: 1 / 1;
-    appearance: none;
-    inline-size: 100%;
-    min-block-size: 2.75rem;
-    padding: 0.5rem;
-    padding-inline-end: 2.75rem;
-    border: var(--border-width) solid var(--grey-7);
-    border-radius: var(--radius-control);
-    background: var(--card);
-    color: var(--foreground);
   }
   .brand {
     position: relative;

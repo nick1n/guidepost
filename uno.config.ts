@@ -31,6 +31,7 @@ export default defineConfig({
     "i-material-symbols:delete-outline",
     "i-material-symbols:fullscreen",
     "i-material-symbols:fullscreen-exit",
+    "i-material-symbols:playing-cards-outline",
     "i-material-symbols:unfold-less-double",
     "i-material-symbols:unfold-more-double",
     "i-material-symbols:close",

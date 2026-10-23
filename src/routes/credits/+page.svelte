@@ -17,6 +17,19 @@
       ],
     },
     {
+      id: "hunt-event-cards",
+      title: "Hunt event cards",
+      list: [
+        { name: "Fen", href: "https://patreon.com/FenPaints" },
+        { name: "Kekasi", href: "https://boardgamegeek.com/filepage/255740/kdm-15-hunt-event-reference-cards" },
+        {
+          name: "Custom Content Group",
+          href: "https://docs.google.com/spreadsheets/d/1hBB4sGEFVuzstsZvY0nyNlw1ocXa7y5wZNzCXJdAAwY/edit",
+        },
+        { name: "Adam Poots Games", href: "https://kingdomdeath.com/" },
+      ],
+    },
+    {
       id: "heat",
       title: "Heat: Pedal to the Metal",
       list: [

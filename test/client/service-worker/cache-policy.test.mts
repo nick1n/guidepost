@@ -7,6 +7,12 @@ it("defers collection HTML and catalog assets while keeping Quick Start and shel
   for (const path of ["", "kdm/start/", "_app/immutable/entry/start.js", "logo/guidepost.svg"]) expect(isDeferredAsset(path)).toBe(false);
 });
 
+it("defers hunt card images so the card library is only cached as used", () => {
+  for (const path of ["kdm/hunts/fen/fen-1.png", "kdm/hunts/kekasi/kekasi-11-back.jpg", "kdm/hunts/ccg/ccg-38-ce.png"])
+    expect(isDeferredAsset(path)).toBe(true);
+  expect(isDeferredAsset("kdm/hunt/")).toBe(false);
+});
+
 it("defers playground HTML and the legacy font fallback while keeping the modern font precached", () => {
   for (const path of ["test/font/", "test/font/__data.json", "test/gesture/", "test/gesture/__data.json", "kdm/fonts/kd-icons-v1.woff"])
     expect(isDeferredAsset(path)).toBe(true);

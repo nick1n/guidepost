@@ -80,6 +80,9 @@ Arc survivors with Disposition (heart, i-material-symbols:favorite).
 
 ## Future work
 
+- [ ] Show failed hunt preference saves inline with an unsaved state and a Retry action, alongside the notification log.
+- [ ] Move the date-format preference from localStorage to Dexie for consistent settings storage. Do not add a migration.
+- [ ] Add an optional "Download this deck" action for hunt artwork so every random draw in the selected deck is available offline.
 - [ ] Investigate recoverable copy-number drafts for forced browser shutdown. Preserve owner isolation, validate recovered values, and save through the collection queue.
 - [ ] Review `HoldRipple.svelte` press-listener setup and cleanup for simplification. Preserve cancellation, keyboard behavior, and performance with many controls.
 - [ ] Consider replacing `TagRail.svelte` attachment-managed pointer listeners with declarative event handlers while preserving drag scrolling and click suppression.
