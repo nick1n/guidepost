@@ -50,7 +50,7 @@ export class CollectionCards {
     const overflowAnchor = scrollStyle.overflowAnchor;
     // Our correction owns scrolling while the card layout settles.
     scrollStyle.overflowAnchor = "none";
-    let timer: ReturnType<typeof setTimeout> | undefined;
+    let timer: Timeout;
     const started = performance.now();
     let stableChecks = 0;
     const cancel = () => {

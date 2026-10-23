@@ -69,7 +69,7 @@
   let contentsOpen = $state(false);
   const animatingEditions = new SvelteSet<string>();
   let feedback = $state<OwnershipKind>();
-  let feedbackTimer: ReturnType<typeof setTimeout> | undefined;
+  let feedbackTimer: Timeout;
   onDestroy(() => {
     clearTimeout(feedbackTimer);
     copies.flush(item.id);

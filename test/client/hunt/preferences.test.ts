@@ -90,6 +90,7 @@ it.effect("loads saved choices, ignores invalid setters, and persists edits in o
     const values: HuntValues = { option: "ccg", bravadoBeta: true, devilSatan: false, gregalopeCE: true };
     const f = yield* memoryFixture(Effect.succeed(values));
     const active = yield* f.start();
+    expect(f.preferences.ready).toBe(true);
     expect(f.preferences).toMatchObject(values);
     f.preferences.setOption("invalid");
     expect(f.preferences.hasPendingChanges).toBe(false);
@@ -120,9 +121,11 @@ it.effect("preserves edits made before and during a delayed load and serializes 
     f.store.save = (patch) => Queue.offer(started, patch).pipe(Effect.andThen(Deferred.await(release)));
     f.preferences.setOption("fen");
     const active = yield* f.start();
+    expect(f.preferences.ready).toBe(false);
     f.preferences.setDevilSatan(true);
     yield* Deferred.succeed(load, { ...huntDefaults, option: "ccg", bravadoBeta: true } satisfies HuntValues);
     expect(yield* Queue.take(started)).toEqual({ option: "fen" });
+    expect(f.preferences.ready).toBe(true);
     expect(f.preferences).toMatchObject({ option: "fen", bravadoBeta: true, devilSatan: true });
     f.preferences.setOption("kekasi");
     yield* Effect.yieldNow;
@@ -143,6 +146,7 @@ it.effect("keeps edits in memory after failures and continues saving subsequent 
     const f = yield* memoryFixture(Effect.fail(new HuntStorageError({ operation: "load", cause: "unavailable" })));
     const active = yield* f.start();
     expect(f.preferences).toMatchObject(huntDefaults);
+    expect(f.preferences.ready).toBe(true);
     expect(f.record).toHaveBeenCalledWith(expect.objectContaining({ message: "Hunt preferences could not be loaded on this device." }));
     f.store.save = () => Effect.fail(error);
     f.preferences.setOption("fen");
@@ -190,6 +194,7 @@ it.effect("reports a storage startup failure without leaving later edits waiting
     const preferences = new HuntPreferences(record, Effect.fail(new HuntStorageError({ operation: "load", cause: "Module unavailable" })));
     preferences.setBravadoBeta(true);
     yield* preferences.run();
+    expect(preferences.ready).toBe(true);
     preferences.setOption("fen");
     yield* Effect.yieldNow;
     expect(preferences).toMatchObject({ option: "fen", bravadoBeta: true });

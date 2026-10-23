@@ -29,6 +29,7 @@
     border-radius: var(--radius-control);
     background: var(--card);
     color: var(--foreground);
+    cursor: pointer;
   }
   .chevron {
     --size-icon: 1.5rem;

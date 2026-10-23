@@ -114,7 +114,16 @@ await runBrowser(
     await evaluate(
       "(()=>{const select=document.querySelector('dialog[data-swipe-ignore] select');select.value='day-first';select.dispatchEvent(new Event('change',{bubbles:true}))})()",
     );
-    await waitFor("localStorage.getItem('guidepost.date-format') === 'day-first'");
+    await waitFor(`new Promise((resolve,reject)=>{
+      const request=indexedDB.open('guidepost-preferences');
+      request.onerror=()=>reject(request.error);
+      request.onsuccess=()=>{
+        const db=request.result,transaction=db.transaction('preferences'),row=transaction.objectStore('preferences').get('app');
+        row.onsuccess=()=>resolve(row.result?.dateFormat==='day-first');
+        row.onerror=()=>reject(row.error);
+        transaction.oncomplete=()=>db.close();
+      };
+    })`);
     await screenshot("desktop-settings");
     await escape();
     await evaluate("window.menuReloadSentinel = true");

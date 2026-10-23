@@ -144,7 +144,7 @@
     const terrain = createTerrain();
     contours = terrain.contours;
     const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
-    let timer: ReturnType<typeof setTimeout> | undefined;
+    let timer: Timeout;
 
     function syncMotion() {
       clearTimeout(timer);

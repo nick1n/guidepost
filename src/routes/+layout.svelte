@@ -10,6 +10,8 @@
   import { Notifications } from "#lib/app/notifications.ts";
   import { SiteMenu, setSiteMenu } from "#lib/app/site-menu.svelte.ts";
   import { DatePreferences, setDatePreferences } from "#lib/app/date-preferences.svelte.ts";
+  import { GlassPreferences, setGlassPreferences } from "#lib/app/glass-preferences.svelte.ts";
+  import { AppPreferences } from "#lib/app/preferences.svelte.ts";
   import { NotificationLog, setNotificationLog } from "#lib/app/notification-log.svelte.ts";
   import { ShowdownDisplay, setShowdownDisplay } from "#lib/kdm/showdown/display.svelte.ts";
   import { HuntPreferences, setHuntPreferences } from "#lib/kdm/hunt/preferences.svelte.ts";
@@ -21,14 +23,16 @@
   const session = new CollectionSession(collection);
   setSiteMenu(new SiteMenu());
   const log = setNotificationLog(new NotificationLog());
-  const dates = setDatePreferences(new DatePreferences(log.record));
+  const preferences = new AppPreferences(log.record);
+  setDatePreferences(new DatePreferences(preferences));
+  const glass = setGlassPreferences(new GlassPreferences(preferences));
   setShowdownDisplay(new ShowdownDisplay());
   const hunts = setHuntPreferences(new HuntPreferences(log.record));
   const collectionActions = setCollectionActions(createCollectionActions(Notifications.layerWith(log.record)));
   setCopyNumberEdits(new CopyNumberEdits(collection, collectionActions));
 
   function onbeforeunload(event: BeforeUnloadEvent) {
-    if (!collection.hasPendingChanges && !hunts.hasPendingChanges) return;
+    if (!collection.hasPendingChanges && !hunts.hasPendingChanges && !preferences.hasPendingChanges) return;
     collection.flushPendingEdits();
     // IndexedDB work is asynchronous; allow the user to stay until all queued writes finish.
     event.preventDefault();
@@ -52,11 +56,20 @@
     session.monitor(collection.canObserve);
   });
 
+  // Shared CSS must update when either the system preference or the user's override changes.
+  $effect(() => {
+    document.documentElement.dataset.glass = String(glass.enabled);
+    return () => delete document.documentElement.dataset.glass;
+  });
+
   onMount(() => {
-    dates.loadDateFormat();
+    const stopGlass = glass.start();
+    const preferenceSession = Effect.runFork(preferences.run());
     const huntSession = Effect.runFork(hunts.run());
     const active = collectionActions.run(session.run("guest"), { success: false });
     return () => {
+      stopGlass();
+      Effect.runFork(Fiber.interrupt(preferenceSession));
       Effect.runFork(Fiber.interrupt(active));
       Effect.runFork(Fiber.interrupt(huntSession));
     };

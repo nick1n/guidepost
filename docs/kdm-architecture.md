@@ -59,6 +59,21 @@ The root layout provides app-scoped owners for menu state, date preferences, not
 
 [DatePreferences](../src/lib/app/date-preferences.svelte.ts) saves the date format on this device and reuses date/time formatters. Catalog calendar dates stay in UTC; notification timestamps use local time.
 
+[AppPreferences](../src/lib/app/preferences.svelte.ts) owns date format and the glass-effects override. Date and glass controls apply
+changes immediately and queue field patches for [DexieAppStore](../src/lib/app/dexie-preference-store.ts). The root layout starts this
+browser-only session, guards pending writes on unload, and interrupts it on unmount. Load/save errors go to the notification log;
+failed writes preserve the selected appearance in memory. Glass follows the system transparency preference when its override is
+`null`; only user interaction can clear an override that matches the system.
+
+App and hunt adapters share [PreferenceDatabase](../src/lib/app/preference-database.ts), the existing version-one
+`guidepost-preferences` database and its unindexed, externally keyed `preferences` table. The `app` record stores validated date and
+glass values; the `hunt` record retains its existing shape. Each adapter merges changed fields within one read/write transaction.
+No table or index upgrade is needed. Startup reads once into reactive app state; other tabs' unrelated fields survive transactional
+patches, but preferences do not subscribe to live cross-tab updates.
+
+An absent `app` record uses ISO dates and follows the system transparency preference. Loads are read-only. App preferences do not
+read, write, or migrate localStorage values.
+
 [HuntPreferences](../src/lib/kdm/hunt/preferences.svelte.ts) applies device settings immediately and queues field patches for
 [DexieHuntStore](../src/lib/kdm/hunt/dexie-store.ts). Browser initialization opens the `guidepost-preferences` database, whose
 `preferences` table stores the four validated hunt settings under the `hunt` key. A read/write transaction merges each patch with

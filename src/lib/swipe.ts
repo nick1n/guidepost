@@ -41,7 +41,7 @@ function listen(element: HTMLElement, policy: Policy) {
   let start: Gesture | undefined;
   let suppressUntil = 0;
   let distance = 0;
-  let readinessTimer: ReturnType<typeof setTimeout> | undefined;
+  let readinessTimer: Timeout;
 
   function cancel() {
     clearTimeout(readinessTimer);

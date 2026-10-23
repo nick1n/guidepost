@@ -4,6 +4,7 @@
 // for information about these interfaces
 declare global {
   type Noop = () => void;
+  type Timeout = ReturnType<typeof setTimeout> | undefined;
 
   namespace App {
     // interface Error {}

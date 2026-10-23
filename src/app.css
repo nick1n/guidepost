@@ -62,6 +62,8 @@
   --muted-foreground: #a29c9a;
 
   --panel: var(--grey-9);
+  --surface-glass: color-mix(var(--panel) 67%, transparent);
+  --filter-glass: blur(4px);
   --border: var(--grey-9);
   --color-divider: color-mix(var(--foreground) 15%, transparent);
 
@@ -206,6 +208,11 @@
 
 html:has(.scrollbar-stable) {
   scrollbar-gutter: stable both-edges;
+}
+
+:root[data-glass="false"] {
+  --surface-glass: var(--panel);
+  --filter-glass: none;
 }
 
 body {

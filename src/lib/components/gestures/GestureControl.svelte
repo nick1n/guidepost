@@ -42,8 +42,8 @@
   let input = $state<HTMLInputElement>();
   const buttons: HTMLButtonElement[] = [];
   let pointer: { id: number; x: number; y: number; moved: boolean } | undefined;
-  let holdTimer: ReturnType<typeof setTimeout> | undefined;
-  let previewTimer: ReturnType<typeof setTimeout> | undefined;
+  let holdTimer: Timeout;
+  let previewTimer: Timeout;
   let suppressClick = false;
   let spaceDown = false;
 

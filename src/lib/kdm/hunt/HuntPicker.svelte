@@ -1,3 +1,7 @@
+<script module lang="ts">
+  const digits = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
+</script>
+
 <script lang="ts">
   import { onDestroy, tick } from "svelte";
   import { prefersReducedMotion as reducedMotion } from "svelte/motion";
@@ -8,18 +12,23 @@
 
   let { card, onselect }: { card: number; onselect: (card: number) => void } = $props();
   const id = $props.id();
-  const digits = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
   let dialog: HTMLDialogElement;
+  let open = $state(false);
+  let keyboard = $state(false);
   let closing = false;
-  let closeTimer: ReturnType<typeof setTimeout> | undefined;
+  let closeTimer: Timeout;
+  let numberPlace = 10;
   const dismissal = createSwipeDismiss(close);
 
   onDestroy(() => clearTimeout(closeTimer));
 
   export function show() {
     if (dialog.open || closing) return;
+    numberPlace = 10;
+    keyboard = false;
     dismissal.reset();
     dialog.showModal();
+    open = true;
     dialog.querySelector<HTMLButtonElement>('[aria-pressed="true"]')?.focus();
   }
 
@@ -31,6 +40,7 @@
     await tick();
     if (!dialog.isConnected) return;
     dialog.close();
+    open = false;
     closeTimer = setTimeout(finishClose, reducedMotion.current ? 0 : DURATION_FAST + 50);
   }
 
@@ -40,7 +50,7 @@
   }
 
   function ontransitionend(event: TransitionEvent) {
-    if (closing && !dialog.open && event.target === dialog && event.propertyName === "translate") finishClose();
+    if (closing && !dialog.open && event.target === dialog.firstElementChild && event.propertyName === "translate") finishClose();
   }
 
   function onclick(event: MouseEvent) {
@@ -51,79 +61,178 @@
     event.preventDefault();
     close();
   }
+
+  function onpointerdown() {
+    keyboard = false;
+  }
+
+  function focusDigit(place: number, digit: number) {
+    dialog.querySelector<HTMLButtonElement>(`[data-place="${place}"] [data-digit="${digit}"]`)?.focus();
+  }
+
+  function chooseDigit(place: number, digit: number) {
+    onselect(selectDigit(card, place, digit));
+    focusDigit(place, digit);
+  }
+
+  function onkeydown(event: KeyboardEvent) {
+    if (!dialog.open || closing || event.altKey || event.ctrlKey || event.metaKey || event.isComposing) return;
+    if (event.key === "Tab" || event.key.startsWith("Arrow") || event.key === "Home" || event.key === "End" || /^[0-9]$/.test(event.key)) {
+      keyboard = true;
+    }
+    if (/^[0-9]$/.test(event.key)) {
+      event.preventDefault();
+      if (event.repeat) return;
+      chooseDigit(numberPlace, Number(event.key));
+      numberPlace = numberPlace === 10 ? 1 : 10;
+      return;
+    }
+    const button = (event.target as Element).closest<HTMLButtonElement>("button[data-digit]");
+    if (!button) return;
+    const place = Number(button.closest<HTMLElement>("[data-place]")?.dataset.place);
+    const index = digits.indexOf(Number(button.dataset.digit));
+    let digit: number;
+    switch (event.key) {
+      case "ArrowUp":
+        digit = digits[(index + digits.length - 1) % digits.length];
+        break;
+      case "ArrowDown":
+        digit = digits[(index + 1) % digits.length];
+        break;
+      case "Home":
+        digit = digits[0];
+        break;
+      case "End":
+        digit = digits[digits.length - 1];
+        break;
+      case "ArrowLeft":
+      case "ArrowRight": {
+        event.preventDefault();
+        const next = event.key === "ArrowLeft" ? 10 : 1;
+        focusDigit(next, next === 10 ? Math.floor(card / 10) % 10 : card % 10);
+        return;
+      }
+      default:
+        return;
+    }
+    event.preventDefault();
+    chooseDigit(place, digit);
+  }
 </script>
 
+<div class={["scrim", open && "is-open"]} aria-hidden="true"></div>
 <dialog
   bind:this={dialog}
   aria-labelledby={`${id}-title`}
+  aria-describedby={`${id}-keys`}
   data-dragging={dismissal.distance > 0}
   style:--drag={`${dismissal.distance}px`}
   {onclick}
   {oncancel}
+  {onkeydown}
+  {onpointerdown}
   {ontransitionend}
   {@attach dismissal.attach}
 >
-  <header data-drag-handle>
-    <span class="grip" aria-hidden="true"></span>
-    <h2 id={`${id}-title`}>Select hunt event</h2>
-  </header>
-  <div class="dice">
-    {#each [10, 1] as place (place)}
-      <fieldset class={place === 1 ? "ones" : undefined}>
-        <legend>{place === 10 ? "Tens" : "Ones"}</legend>
-        <div class="stack">
-          {#each digits as digit (digit)}
-            <button
-              class={["die", place === 10 && "light"]}
-              type="button"
-              aria-label={`${place === 10 ? "Tens" : "Ones"} ${digit}`}
-              aria-pressed={(place === 10 ? Math.floor(card / 10) % 10 : card % 10) === digit}
-              onclick={() => onselect(selectDigit(card, place, digit))}
-            >
-              <span>
-                {#if digit === 0}<KdIcon i="lantern" />{:else}{digit}{/if}
-              </span>
-            </button>
-          {/each}
-        </div>
-      </fieldset>
-    {/each}
+  <div class="sheet">
+    <header data-drag-handle>
+      <span class="grip" aria-hidden="true"></span>
+      <h2 id={`${id}-title`}>Select hunt event</h2>
+      <p id={`${id}-keys`} class="visually-hidden">
+        Use Up and Down to select a digit and Left and Right to switch columns. Number keys alternate between tens and ones.
+      </p>
+    </header>
+    <div class={["dice", keyboard && "keyboard"]}>
+      {#each [10, 1] as place (place)}
+        {@const selected = place === 10 ? Math.floor(card / 10) % 10 : card % 10}
+        <fieldset class={place === 1 ? "ones" : undefined} data-place={place}>
+          <legend>{place === 10 ? "tens" : "ones"}</legend>
+          <div class="stack">
+            {#each digits as digit (digit)}
+              <button
+                class={["die", place === 10 && "light"]}
+                type="button"
+                aria-label={`${place === 10 ? "tens" : "ones"} ${digit}`}
+                aria-pressed={selected === digit}
+                tabindex={selected === digit ? 0 : -1}
+                data-digit={digit}
+                onclick={() => onselect(selectDigit(card, place, digit))}
+              >
+                <span>
+                  {#if digit === 0}<KdIcon i="lantern" />{:else}{digit}{/if}
+                </span>
+              </button>
+            {/each}
+          </div>
+        </fieldset>
+      {/each}
+    </div>
+    <footer><button class="close" type="button" onclick={close}>Close</button></footer>
   </div>
-  <footer><button class="close" type="button" onclick={close}>Close</button></footer>
 </dialog>
 
 <style>
+  .scrim {
+    z-index: 4;
+    position: fixed;
+    inset: 0;
+    background: #00000080;
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity var(--duration-fast),
+      visibility var(--duration-fast);
+
+    &.is-open {
+      opacity: 1;
+      visibility: visible;
+    }
+  }
   dialog {
-    grid-template-rows: auto minmax(0, 1fr) auto;
     inline-size: max-content;
     max-inline-size: calc(100% - 2rem);
     max-block-size: calc(100dvh - 2rem);
     margin: auto;
     padding: 0;
-    translate: 0 calc(50dvh + 50%);
-    border: var(--border-width) solid var(--grey-6);
-    border-radius: var(--radius-card);
-    background: var(--panel);
-    box-shadow: 0 1.5rem 4rem #00000099;
+    overflow: visible;
+    border: 0;
+    background: transparent;
     color: var(--foreground);
-    opacity: 0;
     transition:
-      opacity var(--duration-fast) var(--ease-standard),
-      translate var(--duration-fast) var(--ease-standard),
       display var(--duration-fast),
       overlay var(--duration-fast);
     transition-behavior: allow-discrete;
     &[open] {
       display: grid;
-      translate: 0 var(--drag);
-      opacity: 1;
-    }
-    &[data-dragging="true"] {
-      transition: none;
     }
     &::backdrop {
-      background: #000000b3;
+      background: transparent;
     }
+  }
+  .sheet {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    min-block-size: 0;
+    max-block-size: inherit;
+    translate: 0 calc(50dvh + 50%);
+    border: var(--border-width) solid var(--grey-7);
+    border-radius: var(--radius-card);
+    background: var(--surface-glass);
+    backdrop-filter: var(--filter-glass);
+    box-shadow:
+      0 1rem 4rem #00000099,
+      inset 0 1px #ffffff0a;
+    opacity: 0;
+    transition:
+      opacity var(--duration-fast) var(--ease-standard),
+      translate var(--duration-fast) var(--ease-standard);
+  }
+  dialog[open] .sheet {
+    translate: 0 var(--drag);
+    opacity: 1;
+  }
+  dialog[data-dragging="true"] .sheet {
+    transition: none;
   }
   header {
     display: grid;
@@ -176,6 +285,38 @@
     display: grid;
     justify-items: center;
     min-inline-size: 0;
+  }
+  .keyboard fieldset:focus-within legend {
+    position: relative;
+    isolation: isolate;
+    color: var(--accent-foreground);
+    &::before,
+    &::after {
+      content: "";
+      position: absolute;
+      z-index: -1;
+    }
+    &::before {
+      inset: 0 -0.75rem;
+      background: var(--blue-4);
+    }
+    &::after {
+      z-index: -2;
+      inset: 0.25rem -1.25rem -0.25rem;
+      background: var(--blue-5);
+      clip-path: polygon(
+        0 0,
+        100% 0,
+        calc(100% - 0.375rem) 50%,
+        100% 100%,
+        calc(100% - 0.5rem) 100%,
+        calc(100% - 0.5rem) calc(100% - 0.25rem),
+        0.5rem calc(100% - 0.25rem),
+        0.5rem 100%,
+        0 100%,
+        0.375rem 50%
+      );
+    }
   }
   legend {
     margin-block-end: 1rem;
@@ -238,14 +379,14 @@
     }
   }
   @starting-style {
-    dialog[open] {
+    dialog[open] .sheet {
       translate: 0 calc(50dvh + 50%);
       opacity: 0;
     }
   }
   @media (prefers-reduced-motion: reduce) {
-    dialog,
-    dialog[open] {
+    .sheet,
+    dialog[open] .sheet {
       translate: 0 var(--drag);
     }
   }

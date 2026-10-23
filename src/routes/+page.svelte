@@ -168,7 +168,7 @@
   let brighter = $state(false);
   let ready = $state(false);
   const relightDuration = 3600;
-  let relightTimer: ReturnType<typeof setTimeout> | undefined;
+  let relightTimer: Timeout;
   let onpointermove = $state<PointerEventHandler<Window> | null>(moveLightingFromPointer);
 
   onMount(() => {

@@ -2,21 +2,32 @@
   import { asset } from "$app/paths";
   import type { AssetPath } from "$app/types";
   import { backOut, cubicOut } from "svelte/easing";
+  import { prefersReducedMotion as reducedMotion } from "svelte/motion";
+  import { huntDefaults } from "#lib/kdm/hunt/preference-store.ts";
+  import { huntImages } from "#lib/kdm/hunt/cards.ts";
 
   const duration = 500;
+  const selectionDelay = 250;
+  const defaultBack = huntImages(1, huntDefaults).back;
 
   // Card paths are constructed from the local deck definitions and verified against static assets in tests.
   function cardAsset(path: string) {
     return asset(path as AssetPath);
+  }
+
+  function slide(_node: Element, { direction }: { direction: 1 | -1 }) {
+    return {
+      duration: reducedMotion.current ? 0 : duration,
+      easing: direction === -1 ? backOut : cubicOut,
+      css: (t: number, u: number) => `transform: translateX(${direction * u * 150}%) rotateZ(${direction * u * 15}deg); opacity: ${t}`,
+    };
   }
 </script>
 
 <script lang="ts">
   import { onDestroy } from "svelte";
   import { SvelteSet } from "svelte/reactivity";
-  import { prefersReducedMotion as reducedMotion } from "svelte/motion";
   import { getHuntPreferences } from "#lib/kdm/hunt/preferences.svelte.ts";
-  import { huntImages } from "#lib/kdm/hunt/cards.ts";
   import HuntPicker from "#lib/kdm/hunt/HuntPicker.svelte";
   import KdIcon from "#lib/components/KdIcon.svelte";
   import MenuButton from "#lib/app/MenuButton.svelte";
@@ -30,43 +41,41 @@
   let rotation = $state(0);
   let hasClicked = $state(false);
   let drawing = $state(false);
+  let selecting = $state(false);
+  let selectionTimer: Timeout;
   let flipping = $state(false);
   let firstRand = $state(0);
   let secondRand = $state(0);
   let retry = $state(0);
   let picker: HuntPicker;
-  let drawTimer: ReturnType<typeof setTimeout> | undefined;
-  let flipTimer: ReturnType<typeof setTimeout> | undefined;
+  let slideElement = $state<HTMLDivElement>();
+  let drawingElement: HTMLDivElement | undefined;
+  let selectionElement = $state<HTMLDivElement>();
+  let cardElement: HTMLButtonElement | undefined;
+  let flipSource: { element: HTMLButtonElement; front: string } | undefined;
+  let retryFocus: { front: string; retry: number } | undefined;
 
   const images = $derived(huntImages(card, preferences));
   const frontSrc = $derived(images.front);
   const backSrc = $derived(images.back);
   // Selecting different artwork restores its deck back; a completed flip can override this face.
   let backFace = $derived({ front: frontSrc, src: backSrc });
-  const sources = $derived([images.front, images.back, ...(images.reverse ? [images.reverse] : [])]);
-  const loading = $derived(sources.some((src) => !loaded.has(src)));
+  const sources = $derived(preferences.ready ? [images.front, images.back, ...(images.reverse ? [images.reverse] : [])] : []);
+  const loading = $derived(!preferences.ready || sources.some((src) => !loaded.has(src)));
   const loadError = $derived(sources.some((src) => failed.has(src)));
-  const busy = $derived(drawing || loading);
+  const busy = $derived(drawing || loading || selecting || !!selectionElement);
   const showReverse = $derived(backFace.src === images.reverse);
-  const first = $derived(busy ? firstRand : Math.floor(card / 10) % 10);
-  const second = $derived(busy ? secondRand : card % 10);
+  const first = $derived(drawing ? firstRand : Math.floor(card / 10) % 10);
+  const second = $derived(drawing ? secondRand : card % 10);
   const face = $derived.by(() => {
     if (showCard) return "front";
     if (showReverse) return "reverse";
     return "card back";
   });
 
-  function slide(_node: Element, { direction }: { direction: 1 | -1 }) {
-    return {
-      duration: reducedMotion.current ? 0 : duration,
-      easing: direction === -1 ? backOut : cubicOut,
-      css: (t: number, u: number) => `transform: translateX(${direction * u * 150}%) rotateZ(${direction * u * 15}deg); opacity: ${t}`,
-    };
-  }
-
-  // The rolling timer must follow image loading as well as draws, including image-set changes in the drawer.
+  // Random draws need changing dice values while the outgoing card animates.
   $effect(() => {
-    if (!busy || loadError || reducedMotion.current) return;
+    if (!drawing || loadError || reducedMotion.current) return;
     const interval = setInterval(() => {
       firstRand = Math.floor(Math.random() * 10);
       secondRand = Math.floor(Math.random() * 10);
@@ -74,26 +83,43 @@
     return () => clearInterval(interval);
   });
 
-  onDestroy(() => {
-    clearTimeout(drawTimer);
-    clearTimeout(flipTimer);
-  });
+  onDestroy(() => clearTimeout(selectionTimer));
 
   function flip(direction?: SwipeDirection) {
     hasClicked = true;
-    if (flipping || busy || loadError) return;
+    if (flipping || busy || loadError || !cardElement) return;
     const turn = direction ?? (showCard ? "left" : "right");
+    flipSource = { element: cardElement, front: frontSrc };
     rotation += turn === "left" ? -180 : 180;
     showCard = !showCard;
     flipping = true;
-    const front = backFace.front;
-    flipTimer = setTimeout(
-      () => {
-        if (frontSrc === front && images.reverse) backFace = { front, src: images.reverse };
-        flipping = false;
-      },
-      reducedMotion.current ? 0 : duration,
-    );
+    if (reducedMotion.current) finishFlip(cardElement);
+  }
+
+  function finishFlip(element: HTMLButtonElement) {
+    if (flipSource?.element !== element) return;
+    if (frontSrc === flipSource.front && images.reverse) backFace = { front: frontSrc, src: images.reverse };
+    flipSource = undefined;
+    flipping = false;
+  }
+
+  function finishTransition(event: TransitionEvent) {
+    if (event.target === event.currentTarget && event.propertyName === "transform") finishFlip(event.currentTarget as HTMLButtonElement);
+  }
+
+  function trackCard(element: HTMLButtonElement) {
+    cardElement = element;
+    const focus = retryFocus;
+    retryFocus = undefined;
+    const document = element.ownerDocument;
+    if (focus?.front === frontSrc && focus.retry === retry && document.activeElement === document.body && document.hasFocus()) {
+      element.focus({ preventScroll: true });
+    }
+    return () => {
+      if (cardElement === element) cardElement = undefined;
+      // A deck change can remove the card before its rotation emits a completion event.
+      finishFlip(element);
+    };
   }
 
   function onclick(event: MouseEvent) {
@@ -106,7 +132,8 @@
   }
 
   function conceal() {
-    clearTimeout(flipTimer);
+    retryFocus = undefined;
+    flipSource = undefined;
     flipping = false;
     rotation = Math.round(rotation / 360) * 360;
     showCard = false;
@@ -115,15 +142,24 @@
 
   function draw() {
     if (flipping || drawing) return;
+    drawingElement = !busy && !loadError ? slideElement : undefined;
+    clearTimeout(selectionTimer);
+    selecting = false;
     drawing = true;
-    drawTimer = setTimeout(
-      () => {
-        conceal();
-        card = Math.floor(Math.random() * 100) + 1;
-        drawing = false;
-      },
-      reducedMotion.current ? 0 : duration,
-    );
+    if (!drawingElement) finishDraw();
+  }
+
+  function finishDraw() {
+    drawingElement = undefined;
+    conceal();
+    card = Math.floor(Math.random() * 100) + 1;
+    drawing = false;
+  }
+
+  function onoutroend(event: Event) {
+    if (event.target === selectionElement) selectionElement = undefined;
+    // Artwork changes can leave an older card animating alongside this draw.
+    if (event.target === drawingElement) finishDraw();
   }
 
   function selectHunt() {
@@ -133,9 +169,13 @@
   }
 
   function select(cardNumber: number) {
-    if (cardNumber === card) return;
+    if (cardNumber === card && !selecting && !selectionElement) return;
+    if (!busy && !loadError) selectionElement = slideElement;
+    selecting = true;
     conceal();
     card = cardNumber;
+    clearTimeout(selectionTimer);
+    selectionTimer = setTimeout(() => (selecting = false), selectionDelay);
   }
 
   function imageEvents(path: string) {
@@ -150,17 +190,28 @@
     };
   }
 
-  function retryImages() {
+  function retryImages(event: MouseEvent) {
+    const button = event.currentTarget as HTMLButtonElement;
+    retryFocus = button.ownerDocument.activeElement === button ? { front: frontSrc, retry: retry + 1 } : undefined;
     for (const src of sources) {
       loaded.delete(src);
       failed.delete(src);
     }
     retry += 1;
   }
+
+  function cancelRetryFocus(event: Event) {
+    if (event.type !== "focusin" || event.target !== document.body) retryFocus = undefined;
+  }
 </script>
+
+<svelte:document onfocusin={cancelRetryFocus} onpointerdown={cancelRetryFocus} />
 
 <svelte:head>
   <title>Hunt Events | Guidepost</title>
+  {#if !preferences.ready || images.back === defaultBack}
+    <link rel="prefetch" as="image" href={cardAsset(defaultBack)} />
+  {/if}
   <meta name="description" content="Draw and select all 100 Kingdom Death: Monster hunt events with card images by Fen, Kekasi, and CCG." />
 </svelte:head>
 
@@ -176,14 +227,17 @@
   <div class="stage" style:--aspect={images.aspectRatio}>
     {#if !busy && !loadError}
       {#key `${images.front}:${retry}`}
-        <div class="slide" in:slide|global={{ direction: -1 }} out:slide|global={{ direction: 1 }}>
+        <div class="slide" bind:this={slideElement} {onoutroend} in:slide|global={{ direction: -1 }} out:slide|global={{ direction: 1 }}>
           <button
-            class={["card", showCard && "is-front"]}
+            class="card"
             type="button"
             aria-label={`Flip hunt event ${card}, showing ${face}`}
             aria-disabled={flipping || undefined}
             style:--rotation={`${rotation}deg`}
             {onclick}
+            ontransitionend={finishTransition}
+            ontransitioncancel={finishTransition}
+            {@attach trackCard}
             {@attach swipe({ onSwipe: flip })}
           >
             <img class={["back", showReverse && "is-hidden"]} src={cardAsset(images.back)} alt="" aria-hidden="true" />
@@ -213,12 +267,12 @@
       aria-label={`Select hunt event, current event ${card}`}
     >
       <span class="dice" aria-hidden="true">
-        <span class="die light" style:--roll={busy && !reducedMotion.current ? `${-(secondRand / 9) * 360}deg` : "-45deg"}>
+        <span class="die light" style:--roll={drawing && !reducedMotion.current ? `${-45 - (secondRand / 9) * 360}deg` : "-45deg"}>
           <span>
             {#if first === 0}<KdIcon i="lantern" />{:else}{first}{/if}
           </span>
         </span>
-        <span class="die" style:--roll={busy && !reducedMotion.current ? `${(firstRand / 9) * 360}deg` : "45deg"}>
+        <span class="die" style:--roll={drawing && !reducedMotion.current ? `${45 + (firstRand / 9) * 360}deg` : "45deg"}>
           <span>
             {#if second === 0}<KdIcon i="lantern" />{:else}{second}{/if}
           </span>
@@ -227,7 +281,7 @@
       <span class="selection-label">Event {card}<span>Select event</span></span>
     </button>
     <button class="random" type="button" onclick={draw} disabled={drawing || flipping}>
-      {busy ? "Drawing" : "Random"}<span class="control-icon i-material-symbols:playing-cards-outline" aria-hidden="true"></span>
+      {drawing ? "Drawing" : "Random"}<span class="control-icon i-material-symbols:playing-cards-outline" aria-hidden="true"></span>
     </button>
     <div class="menu"><MenuButton /></div>
   </footer>
@@ -391,7 +445,8 @@
     --accent: var(--grey-4);
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
+    inline-size: 8rem;
     min-block-size: 2.75rem;
     padding: 0.5rem;
     gap: 0.5rem;

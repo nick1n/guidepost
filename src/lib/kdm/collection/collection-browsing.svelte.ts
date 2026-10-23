@@ -39,7 +39,7 @@ export class CollectionBrowsing {
   #limits = $state<Partial<Record<Category, number>>>({});
   #resultLimit = $state(batchSize);
   #retained = $state.raw<Partial<Record<Category, CatalogEntry[]>>>({});
-  #urlTimer: ReturnType<typeof setTimeout> | undefined;
+  #urlTimer: Timeout;
 
   constructor(catalog: CatalogIndex, getEdition: EditionReader, navigation: Navigation) {
     this.#catalog = catalog;

@@ -10,6 +10,7 @@
   import { version } from "../../../package.json";
   import { getSiteMenu } from "#lib/app/site-menu.svelte.ts";
   import { getDatePreferences } from "#lib/app/date-preferences.svelte.ts";
+  import { getGlassPreferences } from "#lib/app/glass-preferences.svelte.ts";
   import { getNotificationLog } from "#lib/app/notification-log.svelte.ts";
   import { getCollection } from "#lib/kdm/collection/state/collection.svelte.ts";
   import { getCollectionActions } from "#lib/kdm/collection/state/collection-actions.ts";
@@ -23,6 +24,7 @@
 
   const menu = getSiteMenu();
   const dates = getDatePreferences();
+  const glass = getGlassPreferences();
   const log = getNotificationLog();
   const collection = getCollection();
   const collectionActions = getCollectionActions();
@@ -38,7 +40,7 @@
   let updateStatus = $state("");
   let updating = $state(false);
   let updateAttempt = $state(0);
-  let updateTimer: ReturnType<typeof setTimeout> | undefined;
+  let updateTimer: Timeout;
   let online = $state(true);
   const latest = $derived(log.notices[0]);
   const hasNavbar = $derived(page.route.id?.startsWith("/kdm/showdown") || page.route.id === "/kdm/hunt");
@@ -274,6 +276,9 @@
           </div>
         {/if}
       {:else}
+        <button class="glass-setting" type="button" aria-pressed={glass.enabled} onclick={() => glass.setEnabled(!glass.enabled)}>
+          Glass effects
+        </button>
         <div class="date-settings">
           <label for={`${id}-date-format`}>Date format</label>
           <Select id={`${id}-date-format`} value={dates.dateFormat} onchange={(event) => dates.setDateFormat(event.currentTarget.value)}>
@@ -380,8 +385,8 @@
     border-inline-end: 0;
     border-block-end: 0;
     border-start-start-radius: var(--radius-card);
-    background: color-mix(var(--panel) 67%, transparent);
-    backdrop-filter: blur(4px);
+    background: var(--surface-glass);
+    backdrop-filter: var(--filter-glass);
     box-shadow:
       0 1rem 4rem #00000099,
       inset 0 1px #ffffff0a;
@@ -456,6 +461,23 @@
 
     & label {
       font-weight: var(--font-bold);
+    }
+  }
+  .glass-setting {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-block-size: 2.75rem;
+    margin-block-end: 0.75rem;
+    padding: 0.5rem;
+    border: var(--border-width) solid var(--grey-7);
+    border-radius: var(--radius-control);
+    background: var(--card);
+    font-size: var(--text-sm);
+
+    &[aria-pressed="true"] {
+      border-color: var(--accent);
+      background: var(--blue-7);
     }
   }
   .reset-settings {
@@ -772,6 +794,10 @@
     transition: var(--transition-colors);
   }
   @media (hover: hover) {
+    .glass-setting:hover {
+      border-color: var(--accent);
+      background: var(--blue-8);
+    }
     :is(.row, .back):hover:not(:disabled),
     .navigation :is(a, button):hover {
       background: var(--blue-9);

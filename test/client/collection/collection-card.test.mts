@@ -19,7 +19,8 @@ vi.mock("#lib/kdm/collection/state/copy-number-edits.svelte.ts", () => ({
 }));
 vi.mock("#lib/app/date-preferences.svelte.ts", async (importOriginal) => {
   const actual = await importOriginal<typeof import("#lib/app/date-preferences.svelte.ts")>();
-  const dates = new actual.DatePreferences();
+  const { AppPreferences } = await import("#lib/app/preferences.svelte.ts");
+  const dates = new actual.DatePreferences(new AppPreferences());
   return { ...actual, getDatePreferences: () => dates };
 });
 // SSR assertions do not need UnoCSS output. Its shared virtual CSS cache can miss entries across Vitest projects.

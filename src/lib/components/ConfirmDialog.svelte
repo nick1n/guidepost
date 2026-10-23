@@ -30,7 +30,7 @@
   const id = $props.id();
   let dialog: HTMLDialogElement;
   let closing = false;
-  let closeTimer: ReturnType<typeof setTimeout> | undefined;
+  let closeTimer: Timeout;
 
   onDestroy(() => clearTimeout(closeTimer));
 

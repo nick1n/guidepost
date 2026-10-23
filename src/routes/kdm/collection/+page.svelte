@@ -48,7 +48,7 @@
   let categoriesVisible = $state(true);
   let categoryBar: HTMLElement | undefined;
   let swipeFeedback = $state(false);
-  let swipeFeedbackTimer: ReturnType<typeof setTimeout> | undefined;
+  let swipeFeedbackTimer: Timeout;
   const showSwipeTabs = $derived((dragDistance !== 0 || swipeFeedback) && !categoriesVisible);
   let searchInput: HTMLInputElement | undefined;
 

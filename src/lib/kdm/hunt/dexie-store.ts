@@ -1,16 +1,6 @@
-import Dexie, { type Table } from "dexie";
 import { Effect, Schema } from "effect";
+import { PreferenceDatabase } from "#lib/app/preference-database.ts";
 import { huntDefaults, HuntStorageError, HuntValues, type HuntPreferenceStore } from "./preference-store.ts";
-
-class PreferenceDatabase extends Dexie {
-  readonly preferences: Table<HuntValues, string>;
-
-  constructor(name: string) {
-    super(name, { autoOpen: false });
-    this.version(1).stores({ preferences: "" });
-    this.preferences = this.table("preferences");
-  }
-}
 
 const decode = Schema.decodeUnknownSync(HuntValues);
 

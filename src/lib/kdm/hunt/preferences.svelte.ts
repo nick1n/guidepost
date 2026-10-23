@@ -12,6 +12,7 @@ const openStore = Effect.fn("HuntPreferences.openStore")(function* () {
 });
 
 export class HuntPreferences {
+  ready = $state(false);
   option = $state<HuntOption>(huntDefaults.option);
   bravadoBeta = $state(huntDefaults.bravadoBeta);
   devilSatan = $state(huntDefaults.devilSatan);
@@ -45,6 +46,7 @@ export class HuntPreferences {
         const saved = yield* this.report(store.load());
         // Edits made during startup take precedence over the older stored snapshot.
         Object.assign(this, saved, ...this.#pending);
+        this.ready = true;
         for (const patch of this.#pending) Queue.offerUnsafe(updates, patch);
         this.#pending = [];
         this.#updates = updates;
@@ -56,6 +58,7 @@ export class HuntPreferences {
       }),
     ).pipe(
       (session) => this.report(session),
+      Effect.tap(() => Effect.sync(() => (this.ready = true))),
       Effect.ensuring(
         Effect.sync(() => {
           this.#closed = true;

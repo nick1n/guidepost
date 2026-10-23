@@ -1,43 +1,25 @@
 import { createContext } from "svelte";
-import type { Notice } from "./notifications.ts";
-
-const dateFormats = [{ value: "iso" }, { value: "day-first" }, { value: "month-first" }, { value: "written" }] as const;
-type DateFormat = (typeof dateFormats)[number]["value"];
-const dateFormatKey = "guidepost.date-format";
+import type { AppPreferences } from "./preferences.svelte.ts";
+import { dateFormats } from "./preference-store.ts";
 
 export class DatePreferences {
-  dateFormat = $state<DateFormat>("iso");
-  #record: (notice: Notice) => void;
   #formatters = new Map<string, Intl.DateTimeFormat>();
 
-  constructor(record: (notice: Notice) => void = () => {}) {
-    this.#record = record;
+  constructor(private readonly preferences: AppPreferences) {}
+
+  get dateFormat() {
+    return this.preferences.dateFormat;
   }
 
   get formats() {
     const today = Date.now();
-    return dateFormats.map(({ value }) => ({ value, label: this.formatDate(today, value) }));
-  }
-
-  loadDateFormat() {
-    try {
-      const saved = localStorage.getItem(dateFormatKey);
-      const format = dateFormats.find(({ value }) => value === saved);
-      if (format) this.dateFormat = format.value;
-    } catch {
-      // Keep the default when browser storage is unavailable.
-    }
+    return dateFormats.map((value) => ({ value, label: this.formatDate(today, value) }));
   }
 
   setDateFormat(value: string) {
-    const format = dateFormats.find((format) => format.value === value);
+    const format = dateFormats.find((format) => format === value);
     if (!format) return;
-    this.dateFormat = format.value;
-    try {
-      localStorage.setItem(dateFormatKey, format.value);
-    } catch {
-      this.#record({ kind: "error", message: "Date format changed, but could not be saved on this device.", timestamp: Date.now() });
-    }
+    this.preferences.save({ dateFormat: format });
   }
 
   #formatter(key: string, locale: string | undefined, options: Intl.DateTimeFormatOptions) {

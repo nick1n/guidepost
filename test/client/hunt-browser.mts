@@ -22,8 +22,8 @@ await runBrowser(
       await evaluate("document.querySelector('.selection').focus();document.querySelector('.selection').click()");
       await waitFor(`${picker}?.open`);
       await evaluate(`Promise.all(${picker}.getAnimations().map(a=>a.finished))`);
-      await click(`Tens ${Math.floor(value / 10) % 10}`);
-      await click(`Ones ${value % 10}`);
+      await click(`tens ${Math.floor(value / 10) % 10}`);
+      await click(`ones ${value % 10}`);
       await physicalClick("dialog:has(.dice) .close");
       await waitFor(`getComputedStyle(${picker}).display==='none'`);
       await ready();
@@ -65,7 +65,7 @@ await runBrowser(
       for (const side of ["left", "left", "right", "right"]) {
         await ready();
         const before = await evaluate<{ transform: string; front: boolean; x: number; y: number }>(
-          `(()=>{const e=${card},r=e.getBoundingClientRect();return {transform:getComputedStyle(e).transform,front:e.classList.contains('is-front'),x:r.left+r.width*${side === "left" ? 0.25 : 0.75},y:r.top+r.height/2}})()`,
+          `(()=>{const e=${card},r=e.getBoundingClientRect();return {transform:getComputedStyle(e).transform,front:e.getAttribute('aria-label').endsWith('showing front'),x:r.left+r.width*${side === "left" ? 0.25 : 0.75},y:r.top+r.height/2}})()`,
         );
         const point = { x: before.x, y: before.y };
         if (input === "touch") {
@@ -91,7 +91,10 @@ await runBrowser(
         );
         assert(direction === (side === "left" ? -1 : 1), `${input}: clicking the ${side} half rotates ${side} on either face`);
         await ready();
-        assert(await evaluate(`${card}.classList.contains('is-front')!==${before.front}`), `${input}: a side click flips exactly once`);
+        assert(
+          await evaluate(`${card}.getAttribute('aria-label').endsWith('showing front')!==${before.front}`),
+          `${input}: a side click flips exactly once`,
+        );
       }
     };
     const swipeCard = async (dx: number, dy = 0, input: "touch" | "mouse" = "touch", cancel = false) => {
@@ -133,6 +136,63 @@ await runBrowser(
         );
         if (direction !== null) assert(direction === Math.sign(dx), `${input}: card rotates in the swipe direction (${dx})`);
       }
+      await ready();
+    };
+    const startPausedFlip = async () => {
+      await ready();
+      await evaluate(`${card}.click()`);
+      await waitFor(`${card}.getAnimations().some(a=>a.transitionProperty==='transform')`);
+      await evaluate(
+        `window.flipAnimation=${card}.getAnimations().find(a=>a.transitionProperty==='transform');window.flipAnimation.pause()`,
+      );
+    };
+    const verifyFlipCompletion = async () => {
+      await startPausedFlip();
+      await evaluate(`(async()=>{
+        await new Promise(resolve=>setTimeout(resolve,600));
+        ${card}.querySelector('.front').dispatchEvent(new TransitionEvent('transitionend',{propertyName:'transform',bubbles:true}));
+        ${card}.dispatchEvent(new TransitionEvent('transitionend',{propertyName:'opacity'}));
+      })()`);
+      assert(
+        await evaluate(`${card}.getAttribute('aria-disabled')==='true'&&document.querySelector('.random').disabled`),
+        "A paused flip stays locked beyond 500ms and ignores unrelated transition events",
+      );
+      await evaluate("window.flipAnimation.finish()");
+      await ready();
+      assert(await evaluate(`${card}.getAttribute('aria-label').endsWith('showing front')`), "Finishing the rotation unlocks the card");
+
+      await startPausedFlip();
+      await evaluate(`${card}.style.transition='none'`);
+      await ready();
+      await evaluate(`${card}.style.removeProperty('transition')`);
+      assert(await evaluate(`!document.querySelector('.random').disabled`), "Canceling the rotation unlocks drawing");
+
+      await startPausedFlip();
+      await send("Emulation.setEmulatedMedia", { features: [{ name: "prefers-reduced-motion", value: "reduce" }] });
+      await ready();
+      await evaluate(`${card}.click()`);
+      await ready();
+      assert(
+        await evaluate(`${card}.getAttribute('aria-label').endsWith('showing card back')&&!document.querySelector('.random').disabled`),
+        "Enabling reduced motion during a flip unlocks the card and subsequent flips finish immediately",
+      );
+      await send("Emulation.setEmulatedMedia", { features: [{ name: "prefers-reduced-motion", value: "no-preference" }] });
+    };
+    const verifyRemovedFlip = async () => {
+      await settings();
+      await startPausedFlip();
+      await evaluate(`(()=>{
+        const select=document.querySelector('select[id$="-option"]');
+        select.value='fen';select.dispatchEvent(new Event('change',{bubbles:true}));
+      })()`);
+      await closeMenu();
+      await ready();
+      assert(
+        await evaluate(`!document.querySelector('.random').disabled`),
+        "Removing a flipping card during a deck change unlocks drawing",
+      );
+      await setOption("kekasi");
+      await physicalClick(".card");
       await ready();
     };
     const verifyLayout = async (label: string) => {
@@ -192,6 +252,7 @@ await runBrowser(
         const result = await evaluate<{
           duration: number;
           src: string;
+          awaitingExit: boolean;
           samples: { x: number; angle: number; opacity: number; overflow: boolean }[];
         }>(
           `(async()=>{
@@ -199,6 +260,11 @@ await runBrowser(
             const animation=s.getAnimations().find(a=>a.effect.getKeyframes().some(k=>k.transform));
             animation.pause();
             const duration=Number(animation.effect.getTiming().duration);
+            let awaitingExit=true;
+            if(${phase === "out"}){
+              await new Promise(resolve=>setTimeout(resolve,600));
+              awaitingExit=document.querySelector('.random').disabled;
+            }
             const samples=[];
             for(const progress of [0,0.25,0.5,0.75,1]){
               animation.currentTime=duration*progress;
@@ -208,11 +274,12 @@ await runBrowser(
                 opacity:Number(style.opacity),
                 overflow:document.documentElement.scrollWidth>innerWidth||document.documentElement.scrollHeight>innerHeight+1});
             }
-            const result={duration,src:c.querySelector('.front').src,samples};
+            const result={duration,src:c.querySelector('.front').src,awaitingExit,samples};
             animation.finish();
             return result;
           })()`,
         );
+        if (phase === "out") assert(result.awaitingExit, "Drawing waits for the outgoing animation even when it takes longer than 500ms");
         assert(
           result.duration === 500 &&
             Math.abs(result.samples[0].x - (phase === "in" ? -1.5 : 0)) < 0.005 &&
@@ -258,6 +325,40 @@ await runBrowser(
       await evaluate("Math.random=window.originalRandom");
       assert(await evaluate(`${card}.getAttribute('aria-label').includes('card back')`), "Drawing the same event restores its deck back");
     };
+    const verifyOverlappingDraw = async () => {
+      await settings();
+      await evaluate(`(()=>{
+        window.olderSlide=document.querySelector('.slide');
+        const e=document.querySelector('select[id$="-option"]');
+        e.value='fen';e.dispatchEvent(new Event('change',{bubbles:true}));
+      })()`);
+      await waitFor("window.olderSlide.getAnimations().some(a=>a.effect.getKeyframes().some(k=>k.transform))");
+      await evaluate(
+        "window.olderExit=window.olderSlide.getAnimations().find(a=>a.effect.getKeyframes().some(k=>k.transform));window.olderExit.pause()",
+      );
+      await closeMenu();
+      await waitFor(`(()=>{
+        const s=document.querySelector('.slide:not([inert])');
+        return s&&s!==window.olderSlide&&getComputedStyle(s).transform==='none'&&!s.getAnimations().some(a=>a.playState==='running');
+      })()`);
+      await evaluate(
+        "window.currentSlide=document.querySelector('.slide:not([inert])');window.originalRandom=Math.random;Math.random=()=>0.99999;document.querySelector('.random').click()",
+      );
+      await waitFor("window.currentSlide.getAnimations().some(a=>a.effect.getKeyframes().some(k=>k.transform))");
+      await evaluate(`(async()=>{
+        window.currentExit=window.currentSlide.getAnimations().find(a=>a.effect.getKeyframes().some(k=>k.transform));
+        window.currentExit.pause();window.olderExit.finish();
+        await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
+      })()`);
+      assert(
+        await evaluate("document.querySelector('.random').disabled"),
+        "An older artwork-change outro cannot complete the current draw",
+      );
+      await evaluate("window.currentExit.finish()");
+      await ready();
+      await evaluate("Math.random=window.originalRandom");
+      await setOption("kekasi");
+    };
     await send("Page.addScriptToEvaluateOnNewDocument", {
       source: `
       window.huntLocalStorageCalls=[];
@@ -272,6 +373,26 @@ await runBrowser(
     `,
     });
     await send("Emulation.setDeviceMetricsOverride", { width: 1280, height: 900, deviceScaleFactor: 1, mobile: false });
+    await send("Emulation.setScriptExecutionDisabled", { value: true });
+    await send("Page.navigate", { url: new URL("/kdm/hunt/", base).href });
+    await waitFor("document.querySelector('.selection .die') && document.querySelector('.load-status')");
+    assert(
+      await evaluate("document.querySelector('link[rel=prefetch][as=image]')?.getAttribute('href').endsWith('kekasi-back.jpg')"),
+      "Initial HTML prefetches the default card back before preferences load",
+    );
+    assert(
+      await evaluate(`(()=>{
+        const dice=[...document.querySelectorAll('.selection .die')];
+        return dice.length===2&&dice.every((die,index)=>{
+          const angle=Number.parseFloat(getComputedStyle(die).rotate);
+          const face=Number.parseFloat(getComputedStyle(die.firstElementChild).rotate);
+          return angle===(index===0?-45:45)&&angle+face===0;
+        })&&dice[1].textContent.trim()==='1';
+      })()`),
+      "Initial loading keeps diamond-shaped dice with upright faces and the current event",
+    );
+    await saveScreenshot("temp/browser-verification/hunt-initial-loading.png");
+    await send("Emulation.setScriptExecutionDisabled", { value: false });
     await send("Page.navigate", { url: new URL("/kdm/hunt/", base).href });
     await ready();
     assert(
@@ -305,22 +426,33 @@ await runBrowser(
     await saveScreenshot("temp/browser-verification/hunt-desktop-back.png");
     await physicalClick(".card");
     await ready();
-    assert(await evaluate(`${card}.classList.contains('is-front')`), "Card flips to its front");
+    assert(await evaluate(`${card}.getAttribute('aria-label').endsWith('showing front')`), "Card flips to its front");
     assert(await evaluate("document.activeElement.matches('.card')"), "Flipping keeps keyboard focus on the card");
     await saveScreenshot("temp/browser-verification/hunt-desktop-front.png");
     await send("Input.dispatchKeyEvent", { type: "keyDown", key: " ", code: "Space", windowsVirtualKeyCode: 32 });
     await send("Input.dispatchKeyEvent", { type: "keyUp", key: " ", code: "Space", windowsVirtualKeyCode: 32 });
     await ready();
-    assert(await evaluate(`!${card}.classList.contains('is-front')`), "Space flips the focused card back");
+    assert(await evaluate(`!${card}.getAttribute('aria-label').endsWith('showing front')`), "Space flips the focused card back");
     await clickCardSides("mouse");
     await swipeCard(-100, 0, "mouse");
-    assert(await evaluate(`${card}.classList.contains('is-front')`), "Mouse swipe left flips once without a duplicate click");
+    assert(
+      await evaluate(`${card}.getAttribute('aria-label').endsWith('showing front')`),
+      "Mouse swipe left flips once without a duplicate click",
+    );
     await swipeCard(-100, 0, "mouse");
-    assert(await evaluate(`!${card}.classList.contains('is-front')`), "A second mouse swipe left keeps turning left to the back");
+    assert(
+      await evaluate(`!${card}.getAttribute('aria-label').endsWith('showing front')`),
+      "A second mouse swipe left keeps turning left to the back",
+    );
     await swipeCard(100, 0, "mouse");
-    assert(await evaluate(`${card}.classList.contains('is-front')`), "Mouse swipe right reverses direction to the front");
+    assert(
+      await evaluate(`${card}.getAttribute('aria-label').endsWith('showing front')`),
+      "Mouse swipe right reverses direction to the front",
+    );
     await swipeCard(100, 0, "mouse");
-    assert(await evaluate(`!${card}.classList.contains('is-front')`), "Mouse swipe right flips back once");
+    assert(await evaluate(`!${card}.getAttribute('aria-label').endsWith('showing front')`), "Mouse swipe right flips back once");
+    await verifyFlipCompletion();
+    await verifyRemovedFlip();
     await select(11);
     assert(await evaluate(`${card}.getAttribute('aria-label').includes('card back')`), "Selection conceals the prior front");
     await physicalClick(".card");
@@ -338,6 +470,7 @@ await runBrowser(
     await select(100);
     assert(await evaluate("[...document.querySelectorAll('.selection .kd-icon')].length===2"), "Event 100 displays two lanterns");
     await verifyDrawSlide();
+    await verifyOverlappingDraw();
     assert(
       await evaluate(`${card}.getAttribute('aria-label').includes('event 100,')`),
       "Drawing an already-cached event 100 finishes loading",
@@ -390,6 +523,10 @@ await runBrowser(
       ),
       "Image choice and all expansion settings survive reload in IndexedDB",
     );
+    assert(
+      await evaluate("!document.querySelector('link[rel=prefetch][as=image]')"),
+      "Saved alternate artwork removes the default card-back prefetch hint",
+    );
     await settings();
     assert(
       await evaluate(
@@ -410,43 +547,88 @@ await runBrowser(
     await closeMenu();
     await waitFor("document.body.innerText.includes('Could not load this hunt card')");
     await evaluate("document.querySelector('.selection').focus();document.querySelector('.selection').click()");
-    await click("Tens 7");
-    await click("Ones 9");
+    await click("tens 7");
+    await click("ones 9");
     await physicalClick("dialog:has(.dice) .close");
     await waitFor("document.body.innerText.includes('Could not load this hunt card')");
     assert(true, "Missing artwork exposes a recoverable error");
+    assert(
+      await evaluate("document.querySelector('.random').textContent.trim()==='Random'&&!document.querySelector('.random').disabled"),
+      "Missing artwork leaves Random correctly labeled and available",
+    );
     await send("Network.setBlockedURLs", { urls: [] });
-    await evaluate("document.querySelector('.retry').click()");
+    await evaluate("document.querySelector('.retry').focus()");
+    await waitFor("document.activeElement.matches('.retry')");
+    await send("Input.dispatchKeyEvent", { type: "keyDown", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13, text: "\r" });
+    await send("Input.dispatchKeyEvent", { type: "keyUp", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13 });
     await ready();
     assert(
       await evaluate("!document.body.innerText.includes('Could not load this hunt card')"),
       "Retry reloads failed artwork successfully",
     );
+    assert(await evaluate("document.activeElement.matches('.card')"), "A keyboard retry restores focus to the loaded card");
     assert(
       await evaluate(
         `${card}.getAttribute('aria-label').includes('card back') && new DOMMatrix(getComputedStyle(${card}).transform).m11>0.99`,
       ),
       "Selecting after an artwork load failure conceals the new event",
     );
+    await send("Network.setBlockedURLs", { urls: ["*kekasi-80.jpg"] });
+    await evaluate("document.querySelector('.selection').click()");
+    await click("tens 8");
+    await click("ones 0");
+    await physicalClick("dialog:has(.dice) .close");
+    await waitFor("document.body.innerText.includes('Could not load this hunt card')");
+    await send("Network.setBlockedURLs", { urls: [] });
+    await evaluate(
+      "document.querySelector('.retry').focus();document.querySelector('.retry').click();document.querySelector('.selection').focus()",
+    );
+    await ready();
+    assert(await evaluate("document.activeElement.matches('.selection')"), "Retry completion preserves focus moved to another control");
+    await send("Network.setBlockedURLs", { urls: ["*kekasi-81.jpg"] });
+    await evaluate("document.querySelector('.selection').click()");
+    await click("ones 1");
+    await physicalClick("dialog:has(.dice) .close");
+    await waitFor("document.body.innerText.includes('Could not load this hunt card')");
+    await evaluate("window.originalRandom=Math.random;Math.random=()=>0.99999;document.querySelector('.random').click()");
+    await ready();
+    await evaluate("Math.random=window.originalRandom");
+    assert(
+      await evaluate(`${card}.getAttribute('aria-label').includes('event 100,')`),
+      "Drawing with no visible card completes without waiting for an outro",
+    );
+    await send("Network.setBlockedURLs", { urls: [] });
     await send("Emulation.setDeviceMetricsOverride", { width: 390, height: 844, deviceScaleFactor: 1, mobile: true });
     await select(85);
     await physicalClick(".card");
     await ready();
     await clickCardSides("touch");
     await swipeCard(-100);
-    assert(await evaluate(`!${card}.classList.contains('is-front')`), "Touch swipe left flips once without a duplicate tap");
+    assert(
+      await evaluate(`!${card}.getAttribute('aria-label').endsWith('showing front')`),
+      "Touch swipe left flips once without a duplicate tap",
+    );
     await swipeCard(-100);
-    assert(await evaluate(`${card}.classList.contains('is-front')`), "A second touch swipe left keeps turning left to the front");
+    assert(
+      await evaluate(`${card}.getAttribute('aria-label').endsWith('showing front')`),
+      "A second touch swipe left keeps turning left to the front",
+    );
     await swipeCard(100);
-    assert(await evaluate(`!${card}.classList.contains('is-front')`), "Touch swipe right reverses direction to the back");
+    assert(
+      await evaluate(`!${card}.getAttribute('aria-label').endsWith('showing front')`),
+      "Touch swipe right reverses direction to the back",
+    );
     await swipeCard(100);
-    assert(await evaluate(`${card}.classList.contains('is-front')`), "Touch swipe right flips the card back");
+    assert(await evaluate(`${card}.getAttribute('aria-label').endsWith('showing front')`), "Touch swipe right flips the card back");
     await swipeCard(20);
-    assert(await evaluate(`${card}.classList.contains('is-front')`), "A short touch drag does not flip the card");
+    assert(await evaluate(`${card}.getAttribute('aria-label').endsWith('showing front')`), "A short touch drag does not flip the card");
     await swipeCard(0, 100);
-    assert(await evaluate(`${card}.classList.contains('is-front')`), "A vertical touch gesture does not flip the card");
+    assert(
+      await evaluate(`${card}.getAttribute('aria-label').endsWith('showing front')`),
+      "A vertical touch gesture does not flip the card",
+    );
     await swipeCard(-100, 0, "touch", true);
-    assert(await evaluate(`${card}.classList.contains('is-front')`), "A canceled touch swipe does not flip the card");
+    assert(await evaluate(`${card}.getAttribute('aria-label').endsWith('showing front')`), "A canceled touch swipe does not flip the card");
     await saveScreenshot("temp/browser-verification/hunt-mobile-front.png");
     assert(
       await evaluate("document.documentElement.scrollWidth<=innerWidth && document.documentElement.scrollHeight<=innerHeight+2"),
@@ -459,7 +641,7 @@ await runBrowser(
     await evaluate(`Promise.all(${picker}.getAnimations().map(a=>a.finished))`);
     assert(
       await evaluate(
-        `(()=>{const d=${picker},header=d.querySelector('header');
+        `(()=>{const d=${picker}.querySelector('.sheet'),header=d.querySelector('header');
           const heading=header.querySelector('h2').getBoundingClientRect(),close=d.querySelector('.close').getBoundingClientRect();
           const dice=d.querySelector('.dice'),style=getComputedStyle(dice),columns=[...dice.querySelectorAll('fieldset')];
           const diceWidth=columns.reduce((sum,c)=>sum+c.getBoundingClientRect().width,0)+parseFloat(getComputedStyle(dice).columnGap);
@@ -495,7 +677,17 @@ await runBrowser(
       "Swiping reaches the event-specific reverse with reduced motion",
     );
     await swipeCard(100);
-    assert(await evaluate(`${card}.classList.contains('is-front')`), "Swiping back from the reverse restores the front");
+    assert(
+      await evaluate(`${card}.getAttribute('aria-label').endsWith('showing front')`),
+      "Swiping back from the reverse restores the front",
+    );
+    await evaluate("window.originalRandom=Math.random;Math.random=()=>0.1;document.querySelector('.random').click()");
+    await ready();
+    await evaluate("Math.random=window.originalRandom");
+    assert(
+      await evaluate(`${card}.getAttribute('aria-label').includes('event 11, showing card back')`),
+      "Reduced-motion drawing completes without a timer or visible animation",
+    );
     await send("Emulation.setDeviceMetricsOverride", { width: 844, height: 390, deviceScaleFactor: 1, mobile: true });
     await saveScreenshot("temp/browser-verification/hunt-landscape.png");
     assert(

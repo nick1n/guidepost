@@ -45,8 +45,8 @@
   let suppressClick = false;
   let completed = false;
   let rippleStarted = 0;
-  let holdTimer: ReturnType<typeof setTimeout> | undefined;
-  let fadeTimer: ReturnType<typeof setTimeout> | undefined;
+  let holdTimer: Timeout;
+  let fadeTimer: Timeout;
   let watching = false;
 
   function showRipple(button: HTMLButtonElement, point?: Point) {
