@@ -4,7 +4,7 @@ import type { EditionSelection } from "#lib/catalog-view.ts";
 import { createCollectionActions } from "#lib/kdm/collection/state/collection-actions.ts";
 import { Collection } from "#lib/kdm/collection/state/collection.svelte.ts";
 import { CopyNumberEdits } from "#lib/kdm/collection/state/copy-number-edits.svelte.ts";
-import { Notifications, type Notice } from "#lib/app/notifications.ts";
+import { Notifications, type Notice } from "#lib/app/notifications/notifications.ts";
 import { StoreError, type CollectionStore } from "#lib/kdm/collection/state/collection-store.ts";
 import { collectionKey, type Catalog, type CollectionSnapshot } from "#lib/types/index.ts";
 

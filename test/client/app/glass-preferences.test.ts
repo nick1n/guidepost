@@ -1,6 +1,6 @@
 import { afterEach, expect, it, vi } from "vitest";
-import { GlassPreferences } from "#lib/app/glass-preferences.svelte.ts";
-import { AppPreferences } from "#lib/app/preferences.svelte.ts";
+import { GlassPreferences } from "#lib/app/preferences/glass-preferences.svelte.ts";
+import { AppPreferences } from "#lib/app/preferences/preferences.svelte.ts";
 
 afterEach(() => vi.unstubAllGlobals());
 
@@ -13,7 +13,7 @@ function fixture(reduced = false, saved: boolean | null = null) {
   };
   vi.stubGlobal("window", { matchMedia: () => query });
   const app = new AppPreferences();
-  app.glass = saved;
+  if (saved !== null) app.save({ glass: saved });
   const preferences = new GlassPreferences(app);
   const stop = preferences.start();
   const system = (reduce: boolean) => {

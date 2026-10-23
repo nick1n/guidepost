@@ -1,6 +1,19 @@
+<script module lang="ts">
+  import type { Direction } from "./gesture";
+
+  const initialValues = [6, 3, 8, 2, 5, 1];
+  const directions: Direction[] = ["up", "down", "right", "left"];
+  const menuLabels = { up: "+5", down: "−5", right: "Edit", left: "Reset" };
+  const keyDirections: Record<string, Direction> = { ArrowUp: "up", ArrowRight: "right", ArrowDown: "down", ArrowLeft: "left" };
+
+  function indexOf(event: Event) {
+    return Number((event.currentTarget as HTMLButtonElement).dataset.index);
+  }
+</script>
+
 <script lang="ts">
   import { onDestroy, tick } from "svelte";
-  import { swipeDelta, swipeDirection, type ControlSize, type Direction, type GestureMode, type GestureStyle } from "./gesture";
+  import { swipeDelta, swipeDirection, type ControlSize, type GestureMode, type GestureStyle } from "./gesture";
 
   let {
     name,
@@ -16,10 +29,6 @@
     size?: ControlSize;
   } = $props();
 
-  const initialValues = [6, 3, 8, 2, 5, 1];
-  const directions: Direction[] = ["up", "down", "right", "left"];
-  const menuLabels = { up: "+5", down: "−5", right: "Edit", left: "Reset" };
-  const keyDirections: Record<string, Direction> = { ArrowUp: "up", ArrowRight: "right", ArrowDown: "down", ArrowLeft: "left" };
   const id = $props.id();
 
   let values = $state([...initialValues]);
@@ -61,10 +70,6 @@
   let previewMenu = $derived(preview && pathMenu);
   let previewValue = $derived(direction && !menuOpen ? Math.max(0, Math.min(99, values[active] + swipeDelta(direction))) : values[active]);
   let loopDistance = $derived(swipeTravel <= 0 ? -swipeTravel * 25 : 100 - swipeTravel * 25);
-
-  function indexOf(event: Event) {
-    return Number((event.currentTarget as HTMLButtonElement).dataset.index);
-  }
 
   function announce(action: string) {
     result = `${labels[active]}: ${action}`;

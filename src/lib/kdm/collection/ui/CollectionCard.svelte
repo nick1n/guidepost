@@ -48,7 +48,7 @@
   import { onDestroy } from "svelte";
   import { SvelteSet } from "svelte/reactivity";
   import { getCollection } from "#lib/kdm/collection/state/collection.svelte.ts";
-  import { getDatePreferences } from "#lib/app/date-preferences.svelte.ts";
+  import { getDatePreferences } from "#lib/app/preferences/date-preferences.svelte.ts";
   import { getCollectionActions, ownershipMessage, wishMessage, includedMessage } from "#lib/kdm/collection/state/collection-actions.ts";
   import { getCopyNumberEdits } from "#lib/kdm/collection/state/copy-number-edits.svelte.ts";
   import { collectionKey, copyNumberMaximum } from "#lib/types/collection.ts";

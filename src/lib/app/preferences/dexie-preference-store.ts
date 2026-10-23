@@ -1,8 +1,8 @@
-import { Effect, Schema } from "effect";
+import { Effect } from "effect";
 import { PreferenceDatabase } from "./preference-database.ts";
-import { appDefaults, AppStorageError, AppValues, type AppPreferenceStore } from "./preference-store.ts";
+import { decodeAppRecord, appDefaults, AppStorageError, AppValues, type AppPreferenceStore } from "./preference-store.ts";
 
-const decode = Schema.decodeUnknownSync(AppValues);
+const decode = decodeAppRecord;
 
 export class DexieAppStore implements AppPreferenceStore {
   private readonly database: PreferenceDatabase;

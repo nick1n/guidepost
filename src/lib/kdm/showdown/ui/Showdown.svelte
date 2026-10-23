@@ -1,7 +1,7 @@
 <script lang="ts">
   import "../../ui/stats.css";
-  import MenuButton from "#lib/app/MenuButton.svelte";
-  import { getSiteMenu } from "#lib/app/site-menu.svelte.ts";
+  import MenuButton from "#lib/app/menu/MenuButton.svelte";
+  import { getSiteMenu } from "#lib/app/menu/site-menu.svelte.ts";
   import { getShowdownDisplay } from "../display.svelte.ts";
   import HoldRipple from "#lib/components/gestures/HoldRipple.svelte";
   import { sectionName } from "../../ui/sections/sections";

@@ -1,7 +1,7 @@
 import { expect, it, vi } from "vitest";
 import type { Snippet } from "svelte";
-import { NotificationLog } from "#lib/app/notification-log.svelte.ts";
-import { SiteMenu } from "#lib/app/site-menu.svelte.ts";
+import { NotificationLog } from "#lib/app/notifications/notification-log.svelte.ts";
+import { SiteMenu } from "#lib/app/menu/site-menu.svelte.ts";
 import { ShowdownDisplay } from "#lib/kdm/showdown/display.svelte.ts";
 
 it("retains only the newest 100 notices with stable distinct IDs and an app-scoped history", () => {

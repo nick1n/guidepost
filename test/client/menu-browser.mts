@@ -15,9 +15,7 @@ await runBrowser(
     const open = async () => {
       await evaluate("document.querySelector('[data-menu-trigger]').focus()");
       await click("Open menu");
-      await waitFor(
-        "document.querySelector('dialog[data-swipe-ignore]')?.open && document.activeElement?.closest('dialog[data-swipe-ignore]')",
-      );
+      await waitFor("document.querySelector('dialog[data-swipe-ignore]')?.open && document.activeElement?.matches('[data-menu-trigger]')");
       await evaluate("Promise.all(document.querySelector('dialog[data-swipe-ignore] .sheet').getAnimations().map(a=>a.finished))");
     };
     const closed = async () => {
@@ -58,8 +56,50 @@ await runBrowser(
 
     await send("Emulation.setEmulatedMedia", { features: [{ name: "prefers-reduced-motion", value: "reduce" }] });
     await send("Emulation.setDeviceMetricsOverride", { width: 1280, height: 900, deviceScaleFactor: 1, mobile: false });
+    for (const path of ["/", "/credits/", "/kdm/hunt/", "/kdm/start/", "/kdm/showdown1/", "/kdm/showdown2/", "/kdm/showdown3/"]) {
+      await send("Page.navigate", { url: new URL(path, base).href });
+      await waitFor("document.querySelector('[data-menu-trigger]') && document.querySelector('dialog[data-swipe-ignore]')");
+      await waitFor("document.documentElement.hasAttribute('data-glass')");
+      await evaluate("document.fonts.ready");
+      await evaluate(`document.querySelector('[data-menu-trigger]').focus()`);
+      await send("Input.dispatchKeyEvent", { type: "keyDown", key: "Escape", code: "Escape", windowsVirtualKeyCode: 27 });
+      await send("Input.dispatchKeyEvent", { type: "keyUp", key: "Escape", code: "Escape", windowsVirtualKeyCode: 27 });
+      await waitFor("document.querySelector('dialog[data-swipe-ignore]').open");
+      assert(
+        await evaluate("document.activeElement?.matches('[data-menu-trigger][aria-label=\"Close menu\"]')"),
+        `${path}: Escape focuses the close button`,
+      );
+      await evaluate("window.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',repeat:true}))");
+      assert(
+        await evaluate("document.querySelector('dialog[data-swipe-ignore]').open"),
+        `${path}: Escape opens the menu and ignores held-key repeats`,
+      );
+      await evaluate("window.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape'}))");
+      await closed();
+      assert(true, `${path}: Escape closes the menu`);
+      if (path === "/kdm/hunt/") {
+        await evaluate("document.querySelector('.selection').click()");
+        await waitFor("document.querySelector('dialog:has(.dice)').open");
+        await send("Input.dispatchKeyEvent", { type: "keyDown", key: "Escape", code: "Escape", windowsVirtualKeyCode: 27 });
+        await send("Input.dispatchKeyEvent", { type: "keyUp", key: "Escape", code: "Escape", windowsVirtualKeyCode: 27 });
+        await waitFor("!document.querySelector('dialog:has(.dice)').open");
+        assert(
+          await evaluate("!document.querySelector('dialog[data-swipe-ignore]').open"),
+          "Escape dismisses the active picker without opening the menu",
+        );
+      }
+    }
     await send("Page.navigate", { url: new URL("/kdm/collection/?q=kingdom%20death%20monster", base).href });
     await waitFor("document.querySelector('article input[type=checkbox]:not(:disabled)') !== null");
+    await evaluate(`(()=>{
+      const input=document.querySelector('input[type=search]');
+      input.focus();input.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true}));
+      for(const modifier of ['ctrlKey','altKey','metaKey','isComposing'])window.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',[modifier]:true}));
+    })()`);
+    assert(
+      await evaluate("!document.querySelector('dialog[data-swipe-ignore]').open"),
+      "Escape in a search field and modified shortcuts leave the menu closed",
+    );
     await evaluate("document.querySelector('[data-menu-trigger]').focus()");
     await evaluate("window.menuButtonIdentity = document.querySelector('[data-menu-trigger]')");
     await open();

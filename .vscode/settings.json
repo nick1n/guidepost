@@ -164,6 +164,7 @@
     "onexpand",
     "onhold",
     "onnavigate",
+    "onoutroend",
     "onspend",
     "ontap",
     "ontogglesection",

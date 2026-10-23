@@ -1,15 +1,7 @@
-<script lang="ts">
-  import { browser } from "$app/env";
-  import { goto } from "$app/navigation";
-  import { resolve } from "$app/paths";
-  import { page } from "$app/state";
-  import { blueReferences, defaultBlueHue, exportCss, lightnessLevels, makePalette, matchReferences, type Shade } from "./palette.ts";
+<script module lang="ts">
+  import { defaultBlueHue } from "./palette.ts";
 
   const hueRange = { min: 225, max: 300 };
-  // Static prerendering has no query string; the browser reads the current URL.
-  let blueHue = $derived(browser ? normalizeHue((page.shallow?.url ?? page.url).searchParams.get("hue")) : defaultBlueHue);
-  let surface = $state("dark");
-  let selected = $state({ family: "blue", level: 3 });
   const surfaces = [
     { id: "dark", name: "Dark grid" },
     { id: "light", name: "Light grid" },
@@ -18,18 +10,31 @@
     { id: "light", name: "On light" },
     { id: "dark", name: "On dark" },
   ];
-  let palette = $derived(makePalette(blueHue));
-  let blue = $derived(palette.rows[0].shades[3]);
-  let green = $derived(palette.rows[1].shades[3]);
-  let red = $derived(palette.rows[2].shades[4]);
-  let chosen = $derived(palette.rows.find((row) => row.family === selected.family)?.shades[selected.level] ?? blue);
-  let matches = $derived(matchReferences(palette.rows[0].shades));
 
   function normalizeHue(value: string | number | null | undefined) {
     if (value == null || (typeof value === "string" && !value.trim())) return defaultBlueHue;
     const hue = Number(value);
     return Number.isFinite(hue) ? Math.min(hueRange.max, Math.max(hueRange.min, Math.round(hue))) : defaultBlueHue;
   }
+</script>
+
+<script lang="ts">
+  import { browser } from "$app/env";
+  import { goto } from "$app/navigation";
+  import { resolve } from "$app/paths";
+  import { page } from "$app/state";
+  import { blueReferences, exportCss, lightnessLevels, makePalette, matchReferences, type Shade } from "./palette.ts";
+
+  // Static prerendering has no query string; the browser reads the current URL.
+  let blueHue = $derived(browser ? normalizeHue((page.shallow?.url ?? page.url).searchParams.get("hue")) : defaultBlueHue);
+  let surface = $state("dark");
+  let selected = $state({ family: "blue", level: 3 });
+  let palette = $derived(makePalette(blueHue));
+  let blue = $derived(palette.rows[0].shades[3]);
+  let green = $derived(palette.rows[1].shades[3]);
+  let red = $derived(palette.rows[2].shades[4]);
+  let chosen = $derived(palette.rows.find((row) => row.family === selected.family)?.shades[selected.level] ?? blue);
+  let matches = $derived(matchReferences(palette.rows[0].shades));
 
   function setBlueHue(value: number | undefined) {
     const hue = normalizeHue(value);

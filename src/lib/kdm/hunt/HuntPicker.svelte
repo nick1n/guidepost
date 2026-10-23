@@ -18,6 +18,7 @@
   let closing = false;
   let closeTimer: Timeout;
   let numberPlace = 10;
+  let activePlace = 10;
   const dismissal = createSwipeDismiss(close);
 
   onDestroy(() => clearTimeout(closeTimer));
@@ -25,6 +26,7 @@
   export function show() {
     if (dialog.open || closing) return;
     numberPlace = 10;
+    activePlace = 10;
     keyboard = false;
     dismissal.reset();
     dialog.showModal();
@@ -66,6 +68,11 @@
     keyboard = false;
   }
 
+  function onfocusin(event: FocusEvent) {
+    const column = (event.target as Element).closest<HTMLElement>("[data-place]");
+    if (column) activePlace = Number(column.dataset.place);
+  }
+
   function focusDigit(place: number, digit: number) {
     dialog.querySelector<HTMLButtonElement>(`[data-place="${place}"] [data-digit="${digit}"]`)?.focus();
   }
@@ -77,6 +84,11 @@
 
   function onkeydown(event: KeyboardEvent) {
     if (!dialog.open || closing || event.altKey || event.ctrlKey || event.metaKey || event.isComposing) return;
+    if (event.key === "Enter") {
+      event.preventDefault();
+      if (!event.repeat) void close();
+      return;
+    }
     if (event.key === "Tab" || event.key.startsWith("Arrow") || event.key === "Home" || event.key === "End" || /^[0-9]$/.test(event.key)) {
       keyboard = true;
     }
@@ -88,9 +100,9 @@
       return;
     }
     const button = (event.target as Element).closest<HTMLButtonElement>("button[data-digit]");
-    if (!button) return;
-    const place = Number(button.closest<HTMLElement>("[data-place]")?.dataset.place);
-    const index = digits.indexOf(Number(button.dataset.digit));
+    const place = button ? Number(button.closest<HTMLElement>("[data-place]")?.dataset.place) : activePlace;
+    const selected = place === 10 ? Math.floor(card / 10) % 10 : card % 10;
+    const index = digits.indexOf(selected);
     let digit: number;
     switch (event.key) {
       case "ArrowUp":
@@ -131,6 +143,7 @@
   {oncancel}
   {onkeydown}
   {onpointerdown}
+  {onfocusin}
   {ontransitionend}
   {@attach dismissal.attach}
 >
@@ -139,7 +152,8 @@
       <span class="grip" aria-hidden="true"></span>
       <h2 id={`${id}-title`}>Select hunt event</h2>
       <p id={`${id}-keys`} class="visually-hidden">
-        Use Up and Down to select a digit and Left and Right to switch columns. Number keys alternate between tens and ones.
+        Use Up and Down to select a digit and Left and Right to switch columns. Number keys alternate between tens and ones. Enter or Escape
+        closes the dialog.
       </p>
     </header>
     <div class={["dice", keyboard && "keyboard"]}>
@@ -357,7 +371,7 @@
     &[aria-pressed="true"] {
       border-color: var(--accent);
       outline: var(--border-width) solid var(--accent);
-      outline-offset: 0.25rem;
+      outline-offset: 0.125rem;
       box-shadow: 0 0 1rem color-mix(var(--accent) 40%, transparent);
     }
     &:is(:hover, :focus-visible) {

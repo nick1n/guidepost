@@ -7,20 +7,20 @@
   import { goto } from "$app/navigation";
   import { page } from "$app/state";
   import { asset, resolve } from "$app/paths";
-  import { version } from "../../../package.json";
-  import { getSiteMenu } from "#lib/app/site-menu.svelte.ts";
-  import { getDatePreferences } from "#lib/app/date-preferences.svelte.ts";
-  import { getGlassPreferences } from "#lib/app/glass-preferences.svelte.ts";
-  import { getNotificationLog } from "#lib/app/notification-log.svelte.ts";
+  import { version } from "../../../../package.json";
+  import { getSiteMenu } from "#lib/app/menu/site-menu.svelte.ts";
+  import { getDatePreferences } from "#lib/app/preferences/date-preferences.svelte.ts";
+  import { getGlassPreferences } from "#lib/app/preferences/glass-preferences.svelte.ts";
+  import { getNotificationLog } from "#lib/app/notifications/notification-log.svelte.ts";
   import { getCollection } from "#lib/kdm/collection/state/collection.svelte.ts";
   import { getCollectionActions } from "#lib/kdm/collection/state/collection-actions.ts";
-  import ConfirmDialog from "../components/ConfirmDialog.svelte";
-  import Select from "../components/Select.svelte";
+  import ConfirmDialog from "../../components/ConfirmDialog.svelte";
+  import Select from "../../components/Select.svelte";
   import { MenuSession } from "./menu-session.ts";
-  import { createSwipeDismiss } from "../swipe-dismiss.svelte.ts";
+  import { createSwipeDismiss } from "../../swipe-dismiss.svelte.ts";
   import MenuButton from "./MenuButton.svelte";
-  import ShowdownSettings from "../kdm/showdown/ui/ShowdownSettings.svelte";
-  import HuntSettings from "../kdm/hunt/HuntSettings.svelte";
+  import ShowdownSettings from "../../kdm/showdown/ui/ShowdownSettings.svelte";
+  import HuntSettings from "../../kdm/hunt/HuntSettings.svelte";
 
   const menu = getSiteMenu();
   const dates = getDatePreferences();
@@ -32,7 +32,6 @@
   const id = $props.id();
   let view = $state<keyof typeof titles>("main");
   let content: HTMLDivElement;
-  let heading: HTMLHeadingElement;
   let fullscreen = $state(false);
   let fullscreenAvailable = $state(false);
   let fullscreenPending = $state(false);
@@ -93,7 +92,8 @@
     menu.onback = next === "main" ? undefined : back;
     await tick();
     content.scrollTop = 0;
-    heading.focus({ preventScroll: true });
+    const target = next === "main" ? content.querySelector("button") : content.previousElementSibling?.querySelector("button");
+    target?.focus({ preventScroll: true });
   }
 
   function back() {
@@ -103,6 +103,25 @@
   function onfullscreenchange() {
     fullscreen = Boolean(document.fullscreenElement);
     fullscreenError = "";
+  }
+
+  function onkeydown(event: KeyboardEvent) {
+    if (
+      event.key !== "Escape" ||
+      event.defaultPrevented ||
+      event.repeat ||
+      event.isComposing ||
+      event.altKey ||
+      event.ctrlKey ||
+      event.metaKey ||
+      document.querySelector("dialog:modal")
+    )
+      return;
+    const target = event.composedPath()[0];
+    if (target instanceof HTMLElement && (target.isContentEditable || target.closest("input, textarea, select, [role=textbox]"))) return;
+    event.preventDefault();
+    if (menu.open) session.close();
+    else void session.open();
   }
 
   async function toggleFullscreen() {
@@ -137,7 +156,7 @@
 </script>
 
 <svelte:document {onfullscreenchange} />
-<svelte:window ononline={() => (online = true)} onoffline={() => (online = false)} />
+<svelte:window {onkeydown} ononline={() => (online = true)} onoffline={() => (online = false)} />
 
 {#if !hasNavbar}
   <div class="clearance" aria-hidden="true"></div>
@@ -158,7 +177,7 @@
   >
     <div class="grip" data-drag-handle aria-hidden="true"><span></span></div>
     <header>
-      <h2 id={`${id}-heading`} bind:this={heading} tabindex="-1">
+      <h2 id={`${id}-heading`}>
         {#if view !== "main"}
           <button class="back" type="button" onclick={back}>
             {titles[view]}<span class="visually-hidden">, back to menu</span>

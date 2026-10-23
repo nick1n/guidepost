@@ -13,7 +13,7 @@ import {
   wishMessage,
 } from "#lib/kdm/collection/state/collection-actions.ts";
 import type { EditionSelection } from "#lib/catalog-view.ts";
-import { Notifications, type Notice } from "#lib/app/notifications.ts";
+import { Notifications, type Notice } from "#lib/app/notifications/notifications.ts";
 import { TransferError } from "#lib/kdm/collection/state/collection-transfer.ts";
 
 function notifications() {

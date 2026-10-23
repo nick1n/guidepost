@@ -1,7 +1,7 @@
 import { it, expect } from "@effect/vitest";
 import { Cause, Deferred, Effect, Exit, Fiber, Layer, Queue, Stream } from "effect";
 import { reportAction } from "#lib/kdm/collection/state/collection-actions.ts";
-import { Notifications } from "#lib/app/notifications.ts";
+import { Notifications } from "#lib/app/notifications/notifications.ts";
 import { Collection } from "#lib/kdm/collection/state/collection.svelte.ts";
 import { CollectionError } from "#lib/kdm/collection/state/collection-errors.ts";
 import { StoreError, type CollectionStore } from "#lib/kdm/collection/state/collection-store.ts";

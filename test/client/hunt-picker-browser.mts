@@ -79,8 +79,9 @@ await runBrowser(
       assert(await evaluate("document.activeElement.matches('.selection')"), "Closing restores focus to event selection");
     const key = async (key: string, code = key, modifiers = 0) => {
       const windowsVirtualKeyCode =
-        ({ Tab: 9, ArrowLeft: 37, ArrowUp: 38, ArrowRight: 39, ArrowDown: 40, Home: 36, End: 35 } as Record<string, number>)[key] ??
-        key.charCodeAt(0);
+        ({ Enter: 13, Tab: 9, ArrowLeft: 37, ArrowUp: 38, ArrowRight: 39, ArrowDown: 40, Home: 36, End: 35 } as Record<string, number>)[
+          key
+        ] ?? key.charCodeAt(0);
       await send("Input.dispatchKeyEvent", { type: "keyDown", key, code, windowsVirtualKeyCode, modifiers });
       await send("Input.dispatchKeyEvent", { type: "keyUp", key, code, windowsVirtualKeyCode, modifiers });
       await frames();
@@ -119,6 +120,7 @@ await runBrowser(
       gap = 40,
     ) => {
       await cardReady();
+      await evaluate("performance.clearResourceTimings()");
       const during = await evaluate<{ out: number; in: number }>(`(async()=>{
         const stage=document.querySelector('.stage'),counts={out:0,in:0};
         const count=event=>{if(event.target.matches('.slide'))counts[event.type==='outrostart'?'out':'in']++};
@@ -152,6 +154,15 @@ await runBrowser(
       assert(
         final.out === 1 && final.in === 1 && final.src.endsWith(`-${expected}.jpg`),
         `${input} (${gap}ms gaps): only the final selected card slides in after input pauses, got ${JSON.stringify(final)}`,
+      );
+      const requests = await evaluate<string[]>(
+        "performance.getEntriesByType('resource').map(entry=>entry.name).filter(url=>url.includes('/hunts/'))",
+      );
+      assert(
+        requests.every(
+          (url) => url.endsWith(`-${expected}.jpg`) || url.endsWith(`-${expected}-back.jpg`) || url.endsWith("/kekasi-back.jpg"),
+        ),
+        `${input} (${gap}ms gaps): image requests wait for the final selection, got ${JSON.stringify(requests)}`,
       );
       await evaluate("window.stopCountingSelection()");
     };
@@ -220,6 +231,21 @@ await runBrowser(
     await key("Tab");
     assert(await evaluate("document.activeElement.matches('dialog:has(.dice) .close')"), "Tab skips unselected dice and reaches Close");
     await assertColumn();
+    for (const [arrow, event, place, digit] of [
+      ["ArrowDown", 2, "Ones", 2],
+      ["ArrowUp", 1, "Ones", 1],
+      ["ArrowLeft", 1, "Tens", 0],
+      ["ArrowUp", 91, "Tens", 9],
+      ["ArrowDown", 1, "Tens", 0],
+      ["ArrowRight", 1, "Ones", 1],
+    ] as const) {
+      await evaluate(`${picker}.querySelector('.close').focus()`);
+      await key(arrow);
+      await assertEvent(event);
+      await assertDigitFocus(place, digit);
+      await assertColumn(place === "Tens" ? 10 : 1);
+    }
+    await evaluate(`${picker}.querySelector('.close').focus()`);
     for (const [digit, event, column] of [
       [3, 31, 10],
       [7, 37, 1],
@@ -266,6 +292,18 @@ await runBrowser(
     await assertEvent(1);
     await closeButton();
     await assertFocus();
+    for (const selector of ['[data-place="10"] [aria-pressed="true"]', '[data-place="1"] [aria-pressed="true"]', ".close"]) {
+      await open();
+      await evaluate(`${picker}.querySelector(${JSON.stringify(selector)}).focus()`);
+      const selected = await evaluate("document.querySelector('.selection').getAttribute('aria-label')");
+      await key("Enter");
+      await closed();
+      await assertFocus();
+      assert(
+        await evaluate(`document.querySelector('.selection').getAttribute('aria-label')===${JSON.stringify(selected)}`),
+        `Enter closes from ${selector} without changing the event`,
+      );
+    }
     await open();
     await gesture("header", 0, 32, "mouse");
     await assertOpen("A short mouse drag snaps back without dismissing");

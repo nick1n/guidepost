@@ -1,8 +1,8 @@
-import { Effect, Schema } from "effect";
-import { PreferenceDatabase } from "#lib/app/preference-database.ts";
-import { huntDefaults, HuntStorageError, HuntValues, type HuntPreferenceStore } from "./preference-store.ts";
+import { Effect } from "effect";
+import { PreferenceDatabase } from "#lib/app/preferences/preference-database.ts";
+import { decodeHuntRecord, huntDefaults, HuntStorageError, HuntValues, type HuntPreferenceStore } from "./preference-store.ts";
 
-const decode = Schema.decodeUnknownSync(HuntValues);
+const decode = decodeHuntRecord;
 
 /** Device preferences are separate from owner-scoped collection snapshots. */
 export class DexieHuntStore implements HuntPreferenceStore {

@@ -17,9 +17,9 @@ vi.mock("#lib/kdm/collection/state/collection-actions.ts", () => ({ getCollectio
 vi.mock("#lib/kdm/collection/state/copy-number-edits.svelte.ts", () => ({
   getCopyNumberEdits: () => ({ value: () => undefined, flush: vi.fn() }),
 }));
-vi.mock("#lib/app/date-preferences.svelte.ts", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("#lib/app/date-preferences.svelte.ts")>();
-  const { AppPreferences } = await import("#lib/app/preferences.svelte.ts");
+vi.mock("#lib/app/preferences/date-preferences.svelte.ts", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("#lib/app/preferences/date-preferences.svelte.ts")>();
+  const { AppPreferences } = await import("#lib/app/preferences/preferences.svelte.ts");
   const dates = new actual.DatePreferences(new AppPreferences());
   return { ...actual, getDatePreferences: () => dates };
 });

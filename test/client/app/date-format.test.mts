@@ -1,6 +1,6 @@
 import { expect, it, vi } from "vitest";
-import { DatePreferences } from "#lib/app/date-preferences.svelte.ts";
-import { AppPreferences } from "#lib/app/preferences.svelte.ts";
+import { DatePreferences } from "#lib/app/preferences/date-preferences.svelte.ts";
+import { AppPreferences } from "#lib/app/preferences/preferences.svelte.ts";
 
 it("formats catalog dates without shifting the calendar day and uses the same format for log dates", () => {
   const dates = new DatePreferences(new AppPreferences());

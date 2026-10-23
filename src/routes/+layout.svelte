@@ -7,16 +7,16 @@
   import { Collection, setCollection } from "#lib/kdm/collection/state/collection.svelte.ts";
   import { createCollectionActions, setCollectionActions } from "#lib/kdm/collection/state/collection-actions.ts";
   import { CollectionSession } from "#lib/kdm/collection/state/collection-session.ts";
-  import { Notifications } from "#lib/app/notifications.ts";
-  import { SiteMenu, setSiteMenu } from "#lib/app/site-menu.svelte.ts";
-  import { DatePreferences, setDatePreferences } from "#lib/app/date-preferences.svelte.ts";
-  import { GlassPreferences, setGlassPreferences } from "#lib/app/glass-preferences.svelte.ts";
-  import { AppPreferences } from "#lib/app/preferences.svelte.ts";
-  import { NotificationLog, setNotificationLog } from "#lib/app/notification-log.svelte.ts";
+  import { Notifications } from "#lib/app/notifications/notifications.ts";
+  import { SiteMenu, setSiteMenu } from "#lib/app/menu/site-menu.svelte.ts";
+  import { DatePreferences, setDatePreferences } from "#lib/app/preferences/date-preferences.svelte.ts";
+  import { GlassPreferences, setGlassPreferences } from "#lib/app/preferences/glass-preferences.svelte.ts";
+  import { AppPreferences } from "#lib/app/preferences/preferences.svelte.ts";
+  import { NotificationLog, setNotificationLog } from "#lib/app/notifications/notification-log.svelte.ts";
   import { ShowdownDisplay, setShowdownDisplay } from "#lib/kdm/showdown/display.svelte.ts";
   import { HuntPreferences, setHuntPreferences } from "#lib/kdm/hunt/preferences.svelte.ts";
   import { CopyNumberEdits, setCopyNumberEdits } from "#lib/kdm/collection/state/copy-number-edits.svelte.ts";
-  import SiteMenuPanel from "#lib/app/SiteMenu.svelte";
+  import SiteMenuPanel from "#lib/app/menu/SiteMenu.svelte";
 
   let { children } = $props();
   const collection = setCollection(new Collection());

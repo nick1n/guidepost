@@ -55,34 +55,32 @@ compatibility or migration policy with preservation tests.
 
 ## App and route settings
 
-The root layout provides app-scoped owners for menu state, date preferences, notification history, and showdown display settings.
+The root layout provides app-scoped Svelte contexts and owns browser startup, pending-write unload guards, and teardown.
+App modules live under `src/lib/app/preferences/`, `menu/`, and `notifications/`; feature settings stay with their feature.
 
-[DatePreferences](../src/lib/app/date-preferences.svelte.ts) saves the date format on this device and reuses date/time formatters. Catalog calendar dates stay in UTC; notification timestamps use local time.
+[AppPreferences](../src/lib/app/preferences/preferences.svelte.ts) and [HuntPreferences](../src/lib/kdm/hunt/preferences.svelte.ts)
+expose getter-only values and explicit commands. Both use [PreferenceSession](../src/lib/app/preferences/preference-session.svelte.ts)
+for immediate in-memory edits, startup buffering, sequential writes, and storage cleanup. Each session starts once.
 
-[AppPreferences](../src/lib/app/preferences.svelte.ts) owns date format and the glass-effects override. Date and glass controls apply
-changes immediately and queue field patches for [DexieAppStore](../src/lib/app/dexie-preference-store.ts). The root layout starts this
-browser-only session, guards pending writes on unload, and interrupts it on unmount. Load/save errors go to the notification log;
-failed writes preserve the selected appearance in memory. Glass follows the system transparency preference when its override is
-`null`; only user interaction can clear an override that matches the system.
+`ready` means initialization finished, even after a load failure. `loadError` and `saveError` expose failures, also recorded in the
+notification log. Failed writes retain choices in memory without automatic retry. `saveError` clears only after every failed field
+is explicitly saved successfully; unrelated writes cannot clear it. `hasPendingChanges` counts queued or active writes.
+A storage-module startup failure requires a reload.
 
-App and hunt adapters share [PreferenceDatabase](../src/lib/app/preference-database.ts), the existing version-one
-`guidepost-preferences` database and its unindexed, externally keyed `preferences` table. The `app` record stores validated date and
-glass values; the `hunt` record retains its existing shape. Each adapter merges changed fields within one read/write transaction.
-No table or index upgrade is needed. Startup reads once into reactive app state; other tabs' unrelated fields survive transactional
-patches, but preferences do not subscribe to live cross-tab updates.
+Both adapters use [PreferenceDatabase](../src/lib/app/preferences/preference-database.ts): the version-one `guidepost-preferences`
+database, with `app` and `hunt` records in the `preferences` table. Loads are read-only; transactional patches preserve other tabs'
+unrelated fields. There are no live cross-tab subscriptions or localStorage migrations.
 
-An absent `app` record uses ISO dates and follows the system transparency preference. Loads are read-only. App preferences do not
-read, write, or migrate localStorage values.
+Decoding accepts plain records, defaults absent known fields, and rejects malformed present values, including `undefined`.
+Saves preserve unknown fields. Field renames or meaning changes need explicit migration rules.
 
-[HuntPreferences](../src/lib/kdm/hunt/preferences.svelte.ts) applies device settings immediately and queues field patches for
-[DexieHuntStore](../src/lib/kdm/hunt/dexie-store.ts). Browser initialization opens the `guidepost-preferences` database, whose
-`preferences` table stores the four validated hunt settings under the `hunt` key. A read/write transaction merges each patch with
-the stored record to preserve unrelated changes from other tabs. The root layout interrupts the session and closes the connection
-on unmount, and guards navigation away while writes are pending. There are no localStorage reads, writes, or migrations for hunt settings.
+[DatePreferences](../src/lib/app/preferences/date-preferences.svelte.ts) defaults to ISO formatting and caches formatters.
+Catalog calendar dates stay in UTC; timestamps use local time. [GlassPreferences](../src/lib/app/preferences/glass-preferences.svelte.ts)
+follows the system when its override is `null`. Only user interaction can clear an override that matches the system.
 
-[NotificationLog](../src/lib/app/notification-log.svelte.ts) keeps the newest 100 entries in memory for the current session.
-
-[ShowdownDisplay](../src/lib/kdm/showdown/display.svelte.ts) shares session-only display settings across showdown themes. Active showdown summaries and alignment callbacks are released when their route unmounts.
+[NotificationLog](../src/lib/app/notifications/notification-log.svelte.ts) retains the newest 100 notices for the session.
+[ShowdownDisplay](../src/lib/kdm/showdown/display.svelte.ts) shares session-only settings across themes and releases route-owned
+summaries and alignment callbacks on unmount.
 
 ## Product ownership and content coverage
 

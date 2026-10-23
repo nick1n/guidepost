@@ -30,13 +30,14 @@
   import { getHuntPreferences } from "#lib/kdm/hunt/preferences.svelte.ts";
   import HuntPicker from "#lib/kdm/hunt/HuntPicker.svelte";
   import KdIcon from "#lib/components/KdIcon.svelte";
-  import MenuButton from "#lib/app/MenuButton.svelte";
+  import MenuButton from "#lib/app/menu/MenuButton.svelte";
   import { swipe, type SwipeDirection } from "#lib/swipe.ts";
 
   const preferences = getHuntPreferences();
   const loaded = new SvelteSet<string>();
   const failed = new SvelteSet<string>();
   let card = $state(1);
+  let artworkCard = $state(1);
   let showCard = $state(false);
   let rotation = $state(0);
   let hasClicked = $state(false);
@@ -55,7 +56,7 @@
   let flipSource: { element: HTMLButtonElement; front: string } | undefined;
   let retryFocus: { front: string; retry: number } | undefined;
 
-  const images = $derived(huntImages(card, preferences));
+  const images = $derived(huntImages(artworkCard, preferences));
   const frontSrc = $derived(images.front);
   const backSrc = $derived(images.back);
   // Selecting different artwork restores its deck back; a completed flip can override this face.
@@ -153,6 +154,7 @@
     drawingElement = undefined;
     conceal();
     card = Math.floor(Math.random() * 100) + 1;
+    artworkCard = card;
     drawing = false;
   }
 
@@ -175,7 +177,10 @@
     conceal();
     card = cardNumber;
     clearTimeout(selectionTimer);
-    selectionTimer = setTimeout(() => (selecting = false), selectionDelay);
+    selectionTimer = setTimeout(() => {
+      artworkCard = card;
+      selecting = false;
+    }, selectionDelay);
   }
 
   function imageEvents(path: string) {
@@ -203,9 +208,45 @@
   function cancelRetryFocus(event: Event) {
     if (event.type !== "focusin" || event.target !== document.body) retryFocus = undefined;
   }
+
+  function onkeydown(event: KeyboardEvent) {
+    if (
+      event.defaultPrevented ||
+      event.repeat ||
+      event.isComposing ||
+      event.altKey ||
+      event.ctrlKey ||
+      event.metaKey ||
+      document.querySelector("dialog[open]")
+    )
+      return;
+    const target = event.composedPath()[0];
+    if (target instanceof HTMLElement && (target.isContentEditable || target.closest("input, textarea, select, [role=textbox]"))) return;
+    switch (event.key) {
+      case "r":
+      case "R":
+        event.preventDefault();
+        draw();
+        break;
+      case "/":
+      case "ArrowUp":
+      case "ArrowDown":
+        event.preventDefault();
+        selectHunt();
+        break;
+      case "f":
+      case "F":
+      case "ArrowLeft":
+      case "ArrowRight":
+        event.preventDefault();
+        flip(event.key === "ArrowLeft" ? "left" : "right");
+        break;
+    }
+  }
 </script>
 
 <svelte:document onfocusin={cancelRetryFocus} onpointerdown={cancelRetryFocus} />
+<svelte:window {onkeydown} />
 
 <svelte:head>
   <title>Hunt Events | Guidepost</title>
@@ -232,6 +273,8 @@
             class="card"
             type="button"
             aria-label={`Flip hunt event ${card}, showing ${face}`}
+            aria-keyshortcuts="ArrowLeft ArrowRight"
+            title="Flip card (Left/Right arrows)"
             aria-disabled={flipping || undefined}
             style:--rotation={`${rotation}deg`}
             {onclick}
@@ -265,6 +308,8 @@
       disabled={drawing}
       aria-disabled={flipping || undefined}
       aria-label={`Select hunt event, current event ${card}`}
+      aria-keyshortcuts="/ ArrowUp ArrowDown"
+      title="Select event (/, Up/Down arrows)"
     >
       <span class="dice" aria-hidden="true">
         <span class="die light" style:--roll={drawing && !reducedMotion.current ? `${-45 - (secondRand / 9) * 360}deg` : "-45deg"}>
@@ -280,8 +325,11 @@
       </span>
       <span class="selection-label">Event {card}<span>Select event</span></span>
     </button>
-    <button class="random" type="button" onclick={draw} disabled={drawing || flipping}>
-      {drawing ? "Drawing" : "Random"}<span class="control-icon i-material-symbols:playing-cards-outline" aria-hidden="true"></span>
+    <button class="random" type="button" onclick={draw} disabled={drawing || flipping} aria-keyshortcuts="r" title="Random event (R)">
+      <span>
+        {#if drawing}Drawing{:else}Random{/if}
+      </span>
+      <span class="control-icon i-material-symbols:playing-cards-outline" aria-hidden="true"></span>
     </button>
     <div class="menu"><MenuButton /></div>
   </footer>
@@ -449,7 +497,6 @@
     inline-size: 8rem;
     min-block-size: 2.75rem;
     padding: 0.5rem;
-    gap: 0.5rem;
     border: var(--border-width) solid var(--grey-7);
     border-radius: var(--radius-control);
     background: var(--panel);
@@ -462,8 +509,7 @@
       background: var(--card);
     }
     & .control-icon {
-      rotate: -180deg;
-      scale: -1 1;
+      scale: 1 -1;
     }
   }
   :is(.selection, .random):disabled {

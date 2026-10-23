@@ -1,3 +1,10 @@
+<script module lang="ts">
+  const percent = new Intl.NumberFormat("en", { style: "percent", maximumFractionDigits: 1, minimumFractionDigits: 1 });
+  const gaugeNumber = new Intl.NumberFormat("en", { maximumFractionDigits: 1, minimumFractionDigits: 1 });
+  const diePercent = new Intl.NumberFormat("en", { style: "percent" });
+  const average = new Intl.NumberFormat("en", { maximumFractionDigits: 2, minimumFractionDigits: 2 });
+</script>
+
 <script lang="ts">
   import ActionCost from "./actions/ActionCost.svelte";
   import { attackOdds } from "../attack-odds";
@@ -28,10 +35,6 @@
   } = $props();
 
   const oddsId = $props.id();
-  const percent = new Intl.NumberFormat("en", { style: "percent", maximumFractionDigits: 1, minimumFractionDigits: 1 });
-  const gaugeNumber = new Intl.NumberFormat("en", { maximumFractionDigits: 1, minimumFractionDigits: 1 });
-  const diePercent = new Intl.NumberFormat("en", { style: "percent" });
-  const average = new Intl.NumberFormat("en", { maximumFractionDigits: 2, minimumFractionDigits: 2 });
   let open = $state(false);
   let odds = $derived(attack ? attackOdds(attack) : null);
   let marked = $derived(variant === 3 && (title === "Founding Stone" || title === "Fist & Tooth"));

@@ -38,7 +38,18 @@ export class MenuSession {
       if (!path.includes(dialog) && (!trigger || !path.includes(trigger))) this.close();
     };
     const onkeydown = (event: KeyboardEvent) => {
-      if (event.key !== "Escape" || !this.#open || event.defaultPrevented || dialog.ownerDocument.querySelector("dialog:modal")) return;
+      if (
+        event.key !== "Escape" ||
+        !this.#open ||
+        event.defaultPrevented ||
+        event.repeat ||
+        event.isComposing ||
+        event.altKey ||
+        event.ctrlKey ||
+        event.metaKey ||
+        dialog.ownerDocument.querySelector("dialog:modal")
+      )
+        return;
       event.preventDefault();
       this.close();
     };
@@ -103,6 +114,7 @@ export class MenuSession {
         this.#lock();
         this.#options.onchange(true);
         dialog.show();
+        this.#trigger()?.focus({ preventScroll: true });
       }
       this.#align();
       return;

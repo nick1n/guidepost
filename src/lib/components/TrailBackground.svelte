@@ -1,4 +1,6 @@
 <script module lang="ts">
+  import { draw } from "svelte/transition";
+
   type Point = { x: number; y: number };
   type Trail = { id: number; d: string; marker: string };
 
@@ -80,17 +82,6 @@
     };
     return { contours, openingTrail };
   }
-</script>
-
-<script lang="ts">
-  import { onMount } from "svelte";
-  import { draw, fade } from "svelte/transition";
-
-  const maskId = $props.id();
-  let contours = $state.raw<string[]>([]);
-  let trails = $state.raw<Trail[]>([]);
-  let reducedMotion = $state(false);
-  let nextId = $state(0);
 
   function drawTrail(node: SVGGElement, { duration, marker }: { duration: number; marker: string }) {
     const path = node.querySelector("mask path") as SVGPathElement;
@@ -139,6 +130,17 @@
     const midpoint = points[Math.floor(points.length / 2)];
     return { id, d, marker: point(midpoint.along, midpoint.across) };
   }
+</script>
+
+<script lang="ts">
+  import { onMount } from "svelte";
+  import { fade } from "svelte/transition";
+
+  const maskId = $props.id();
+  let contours = $state.raw<string[]>([]);
+  let trails = $state.raw<Trail[]>([]);
+  let reducedMotion = $state(false);
+  let nextId = $state(0);
 
   onMount(() => {
     const terrain = createTerrain();

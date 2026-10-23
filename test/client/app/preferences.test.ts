@@ -3,11 +3,11 @@ import Dexie from "dexie";
 import { afterEach, vi } from "vitest";
 import { it, expect } from "@effect/vitest";
 import { Cause, Deferred, Effect, Exit, Fiber, Queue } from "effect";
-import { AppPreferences } from "#lib/app/preferences.svelte.ts";
-import { DatePreferences } from "#lib/app/date-preferences.svelte.ts";
-import { DexieAppStore } from "#lib/app/dexie-preference-store.ts";
-import { PreferenceDatabase } from "#lib/app/preference-database.ts";
-import { appDefaults, AppStorageError, type AppPreferenceStore, type AppValues } from "#lib/app/preference-store.ts";
+import { AppPreferences } from "#lib/app/preferences/preferences.svelte.ts";
+import { DatePreferences } from "#lib/app/preferences/date-preferences.svelte.ts";
+import { DexieAppStore } from "#lib/app/preferences/dexie-preference-store.ts";
+import { PreferenceDatabase } from "#lib/app/preferences/preference-database.ts";
+import { appDefaults, AppStorageError, type AppPreferenceStore, type AppValues } from "#lib/app/preferences/preference-store.ts";
 import { DexieHuntStore } from "#lib/kdm/hunt/dexie-store.ts";
 import { huntDefaults } from "#lib/kdm/hunt/preference-store.ts";
 

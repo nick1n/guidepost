@@ -1,7 +1,8 @@
 import { createContext } from "svelte";
-import { Cause, Clock, Effect, Queue, Result } from "effect";
-import type { Notice } from "#lib/app/notifications.ts";
-import { huntDefaults, HuntStorageError, type HuntOption, type HuntPreferenceStore, type HuntValues } from "./preference-store.ts";
+import { Effect } from "effect";
+import type { Notice } from "#lib/app/notifications/notifications.ts";
+import { PreferenceSession } from "#lib/app/preferences/preference-session.svelte.ts";
+import { huntDefaults, HuntStorageError, type HuntPreferenceStore, type HuntValues } from "./preference-store.ts";
 
 const openStore = Effect.fn("HuntPreferences.openStore")(function* () {
   const { DexieHuntStore } = yield* Effect.tryPromise({
@@ -12,106 +13,69 @@ const openStore = Effect.fn("HuntPreferences.openStore")(function* () {
 });
 
 export class HuntPreferences {
-  ready = $state(false);
-  option = $state<HuntOption>(huntDefaults.option);
-  bravadoBeta = $state(huntDefaults.bravadoBeta);
-  devilSatan = $state(huntDefaults.devilSatan);
-  gregalopeCE = $state(huntDefaults.gregalopeCE);
-  #waiting = $state(0);
-  #pending: Partial<HuntValues>[] = [];
-  #updates?: Queue.Queue<Partial<HuntValues>>;
-  #closed = false;
+  #session: PreferenceSession<HuntValues, HuntStorageError>;
 
-  constructor(
-    private readonly record: (notice: Notice) => void = () => {},
-    private readonly open: Effect.Effect<HuntPreferenceStore, HuntStorageError> = openStore(),
-  ) {}
-
-  get hasPendingChanges() {
-    return this.#waiting > 0;
+  constructor(record: (notice: Notice) => void = () => {}, open: Effect.Effect<HuntPreferenceStore, HuntStorageError> = openStore()) {
+    this.#session = new PreferenceSession({
+      defaults: huntDefaults,
+      open,
+      record,
+      name: "hunt preferences",
+      closedError: () => new HuntStorageError({ operation: "save", cause: "Storage session is closed" }),
+    });
   }
 
-  /** The root layout owns this browser-only session and interrupts it on unmount. */
+  get option() {
+    return this.#session.values.option;
+  }
+
+  get bravadoBeta() {
+    return this.#session.values.bravadoBeta;
+  }
+
+  get devilSatan() {
+    return this.#session.values.devilSatan;
+  }
+
+  get gregalopeCE() {
+    return this.#session.values.gregalopeCE;
+  }
+
+  get ready() {
+    return this.#session.ready;
+  }
+
+  get hasPendingChanges() {
+    return this.#session.hasPendingChanges;
+  }
+
+  get loadError() {
+    return this.#session.loadError;
+  }
+
+  get saveError() {
+    return this.#session.saveError;
+  }
+
   run = Effect.fn("HuntPreferences.run")({ self: this }, function () {
-    return Effect.scoped(
-      Effect.gen({ self: this }, function* () {
-        const store = yield* Effect.acquireRelease(this.open, (store) => Effect.sync(() => store.close()));
-        const updates = yield* Queue.make<Partial<HuntValues>>();
-        yield* Effect.addFinalizer(() =>
-          Effect.sync(() => {
-            this.#updates = undefined;
-            Queue.shutdownUnsafe(updates);
-          }),
-        );
-        const saved = yield* this.report(store.load());
-        // Edits made during startup take precedence over the older stored snapshot.
-        Object.assign(this, saved, ...this.#pending);
-        this.ready = true;
-        for (const patch of this.#pending) Queue.offerUnsafe(updates, patch);
-        this.#pending = [];
-        this.#updates = updates;
-        while (true) {
-          const patch = yield* Queue.take(updates);
-          yield* this.report(store.save(patch));
-          this.#waiting -= 1;
-        }
-      }),
-    ).pipe(
-      (session) => this.report(session),
-      Effect.tap(() => Effect.sync(() => (this.ready = true))),
-      Effect.ensuring(
-        Effect.sync(() => {
-          this.#closed = true;
-          this.#waiting = 0;
-        }),
-      ),
-    );
+    return this.#session.run();
   });
 
   setOption(value: string) {
     if (value !== "fen" && value !== "kekasi" && value !== "ccg") return;
-    this.save({ option: value });
+    this.#session.save({ option: value });
   }
 
   setBravadoBeta(value: boolean) {
-    this.save({ bravadoBeta: value });
+    this.#session.save({ bravadoBeta: value });
   }
 
   setDevilSatan(value: boolean) {
-    this.save({ devilSatan: value });
+    this.#session.save({ devilSatan: value });
   }
 
   setGregalopeCE(value: boolean) {
-    this.save({ gregalopeCE: value });
-  }
-
-  private save(patch: Partial<HuntValues>) {
-    Object.assign(this, patch);
-    if (this.#closed) {
-      Effect.runFork(this.report(Effect.fail(new HuntStorageError({ operation: "save", cause: "Storage session is closed" }))));
-      return;
-    }
-    this.#waiting += 1;
-    if (this.#updates) Queue.offerUnsafe(this.#updates, patch);
-    else this.#pending.push(patch);
-  }
-
-  private report<A>(action: Effect.Effect<A, HuntStorageError>) {
-    return action.pipe(
-      Effect.catchCause((cause) => {
-        if (Cause.hasInterrupts(cause)) return Effect.failCause(cause);
-        const error = Cause.findError(cause);
-        return Effect.gen({ self: this }, function* () {
-          const expected = Result.isSuccess(error) && !Cause.hasDies(cause);
-          this.record({
-            kind: "error",
-            message: expected ? error.success.message : "Something unexpected prevented saving hunt preferences. Please try again.",
-            timestamp: yield* Clock.currentTimeMillis,
-          });
-          yield* Effect.logError("Hunt preferences storage failed", cause);
-        });
-      }),
-    );
+    this.#session.save({ gregalopeCE: value });
   }
 }
 

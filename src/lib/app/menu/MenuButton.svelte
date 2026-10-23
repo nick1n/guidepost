@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { getSiteMenu } from "#lib/app/site-menu.svelte.ts";
-  import FloatingButton from "../components/FloatingButton.svelte";
+  import { getSiteMenu } from "#lib/app/menu/site-menu.svelte.ts";
+  import FloatingButton from "../../components/FloatingButton.svelte";
 
   const menu = getSiteMenu();
   const action = $derived(

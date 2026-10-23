@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { MenuSession } from "#lib/app/menu-session.ts";
+import { MenuSession } from "#lib/app/menu/menu-session.ts";
 
 function fixture({ attach = true, gutter = "auto" } = {}) {
   const root = { clientWidth: 980, style: { overflow: "scroll", scrollbarGutter: "" } };
@@ -108,6 +108,7 @@ describe("menu session", () => {
     await view.session.open();
     view.synchronize(true);
     expect(view.dialog.show).toHaveBeenCalledOnce();
+    expect(view.trigger.focus).toHaveBeenCalledWith({ preventScroll: true });
     view.synchronize(false);
     expect(view.onchange).toHaveBeenLastCalledWith(false);
     await Promise.resolve();
@@ -270,6 +271,7 @@ describe("menu session", () => {
     const view = fixture();
     await view.session.open();
     view.synchronize(true);
+    view.trigger.focus.mockClear();
     view.synchronize(false);
     view.detach!();
     await Promise.resolve();
