@@ -1,4 +1,4 @@
-import type * as Schema from "../../src/lib/types/gen/kdm-data.d.ts";
+import type * as Schema from "#lib/types/gen/kdm-data.d.ts";
 
 // Staging accepts source labels and extra fields before normalization and schema validation.
 export type Edition = Omit<Schema.Edition, "id" | "label" | "format"> & {

@@ -1,16 +1,16 @@
 <script lang="ts">
-  import Counter from "../../ui/Counter.svelte";
+  import Counter from "#lib/kdm/ui/Counter.svelte";
   import HoldRipple from "#lib/components/gestures/HoldRipple.svelte";
   import AttributeTokens from "./status/AttributeTokens.svelte";
   import AttackProfile from "./AttackProfile.svelte";
   import InlineMarkdown from "#lib/components/InlineMarkdown.svelte";
   import KdIcon from "#lib/components/KdIcon.svelte";
-  import Section from "../../ui/sections/Section.svelte";
+  import Section from "#lib/kdm/ui/sections/Section.svelte";
   import ShowdownEmblem from "./ShowdownEmblem.svelte";
-  import StatusIcon from "../../ui/status/StatusIcon.svelte";
-  import { type TokenCount } from "../sheet";
-  import { survivors } from "../fixtures";
-  import { SectionControls, setSectionControls } from "../../ui/sections/sections";
+  import StatusIcon from "#lib/kdm/ui/status/StatusIcon.svelte";
+  import { type TokenCount } from "#lib/kdm/showdown/sheet.ts";
+  import { survivors } from "#lib/kdm/showdown/fixtures.ts";
+  import { SectionControls, setSectionControls } from "#lib/kdm/ui/sections/sections.ts";
 
   type Stats = { life: number; movement: number; toughness: number; damage: number; speed: number };
 

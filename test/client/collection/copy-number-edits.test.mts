@@ -5,8 +5,9 @@ import { createCollectionActions } from "#lib/kdm/collection/state/collection-ac
 import { Collection } from "#lib/kdm/collection/state/collection.svelte.ts";
 import { CopyNumberEdits } from "#lib/kdm/collection/state/copy-number-edits.svelte.ts";
 import { Notifications, type Notice } from "#lib/app/notifications/notifications.ts";
-import { StoreError, type CollectionStore } from "#lib/kdm/collection/state/collection-store.ts";
+import { type CollectionStore } from "#lib/kdm/collection/state/collection-store.ts";
 import { collectionKey, type Catalog, type CollectionSnapshot } from "#lib/types/index.ts";
+import { makeTestStore } from "./test-store.ts";
 
 const catalog: Catalog = {
   content: {
@@ -58,23 +59,9 @@ function keyboard(key: string, isComposing = false) {
 }
 
 async function fixture(initial: CollectionSnapshot = {}) {
-  let state = initial;
-  let wait: Effect.Effect<void> = Effect.void;
-  let failure = false;
-  const writes: CollectionSnapshot[] = [];
+  const store = makeTestStore(initial);
   const started = Effect.runSync(Deferred.make<void>());
-  const store: CollectionStore = {
-    load: () => Effect.succeed(state),
-    save: (next) =>
-      Effect.gen(function* () {
-        writes.push(next);
-        yield* Deferred.succeed(started, undefined);
-        yield* wait;
-        if (failure) return yield* new StoreError({ operation: "save", reason: "unavailable", cause: "quota" });
-        state = next;
-      }),
-    clear: () => Effect.void,
-  };
+  store.onSaveStarted(() => Deferred.succeed(started, undefined));
   const collection = new Collection(catalog);
   await Effect.runPromise(collection.setStore(store));
   const notices: Notice[] = [];
@@ -85,16 +72,18 @@ async function fixture(initial: CollectionSnapshot = {}) {
     collection,
     edits,
     notices,
-    writes,
+    get writes() {
+      return store.saved;
+    },
     run,
     started: () => Effect.runPromise(Deferred.await(started)),
     pause: () => {
       const gate = Effect.runSync(Deferred.make<void>());
-      wait = Deferred.await(gate);
+      store.waitForSave(Deferred.await(gate));
       return () => Effect.runPromise(Deferred.succeed(gate, undefined));
     },
     fail: () => {
-      failure = true;
+      store.failNextSave("unavailable");
     },
     settled: async () => {
       for (const result of run.mock.results) {

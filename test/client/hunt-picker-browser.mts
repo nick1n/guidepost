@@ -102,9 +102,7 @@ await runBrowser(
         .map(column=>Number(column.dataset.place))`);
       assert(
         JSON.stringify(highlighted) === JSON.stringify(place ? [place] : []),
-        place
-          ? `Only the ${place === 10 ? "tens" : "ones"} column has a keyboard indicator`
-          : "No column indicator is shown for pointer input or Close",
+        place ? `Only the ${place === 10 ? "tens" : "ones"} column has a keyboard indicator` : "No column indicator is shown for Close",
       );
     };
     const cardReady = () =>
@@ -183,7 +181,8 @@ await runBrowser(
       "The dice do not scroll when all ten rows fit",
     );
     await saveScreenshot("temp/browser-verification/hunt-picker-desktop.png");
-    await assertColumn();
+    await assertColumn(10);
+    assert(await evaluate(`getComputedStyle(${picker}.querySelector('legend')).fontSize==='16px'`), "Column labels use 1rem text");
     await key("Tab");
     await assertColumn(1);
     await key("Tab", "Tab", 8);
@@ -202,7 +201,7 @@ await runBrowser(
       return {x:r.x+r.width/2,y:r.y+r.height/2};
     })()`),
     );
-    await assertColumn();
+    await assertColumn(10);
     await assertDigitFocus("Tens", 0);
     await key("ArrowDown");
     await assertColumn(10);
@@ -256,7 +255,7 @@ await runBrowser(
     ]) {
       await key(String(digit), `Digit${digit}`);
       await assertEvent(event);
-      await assertColumn(column);
+      await assertColumn(column === 10 ? 1 : 10);
     }
     await saveScreenshot("temp/browser-verification/hunt-column-ones.png");
     await key("8", "Numpad8");
@@ -273,7 +272,7 @@ await runBrowser(
     await key("8", "Digit8");
     await assertEvent(65);
     await open();
-    await assertColumn();
+    await assertColumn(10);
     await key("2", "Digit2");
     await assertEvent(25);
     await closeButton();
@@ -349,7 +348,7 @@ await runBrowser(
     await send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ ...diePoint, id: 1 }] });
     await send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
     await frames();
-    await assertColumn();
+    await assertColumn(10);
     await evaluate(
       `${picker}.querySelector('[data-place="10"] [data-digit="1"]').click();${picker}.querySelector('[data-place="1"] [data-digit="7"]').click()`,
     );

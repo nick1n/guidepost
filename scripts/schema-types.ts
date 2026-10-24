@@ -24,7 +24,8 @@ export function schemaTypes(): Plugin {
           pending = pending
             .then(async () => {
               if (regenerateTypes) {
-                if (await generateTypes()) server.config.logger.info("[schema-types] Regenerated catalog types and core editions");
+                if (await generateTypes())
+                  server.config.logger.info("[schema-types] Regenerated catalog types, validator, and core editions");
               } else if (await generateCoreEditions()) server.config.logger.info("[schema-types] Regenerated core editions");
             })
             .catch((error) => {

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { tick } from "svelte";
-  import Counter from "../../../ui/Counter.svelte";
-  import { tokenNet, type TokenCount } from "../../sheet";
+  import Counter from "#lib/kdm/ui/Counter.svelte";
+  import { tokenNet, type TokenCount } from "#lib/kdm/showdown/sheet.ts";
 
   let { owner, names, labels, counts = $bindable() }: { owner: string; names: string[]; labels: string[]; counts: TokenCount[] } = $props();
 

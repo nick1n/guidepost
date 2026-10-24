@@ -15,6 +15,31 @@ it("retains only the newest 100 notices with stable distinct IDs and an app-scop
   expect(new NotificationLog().notices).toEqual([]);
 });
 
+it("signals each new error until acknowledged without retriggering for other notices", () => {
+  const log = new NotificationLog();
+  log.record({ kind: "info", message: "Information", timestamp: 0 });
+  expect(log.unreadError).toBeUndefined();
+  const now = vi.spyOn(Date, "now").mockReturnValue(1000);
+  try {
+    log.record({ kind: "error", message: "First error", timestamp: 0 });
+    expect(log.unreadError).toEqual({ id: 1, recordedAt: 1000 });
+    const first = log.unreadError;
+    log.record({ kind: "success", message: "Saved", timestamp: 0 });
+    expect(log.unreadError).toBe(first);
+    now.mockReturnValue(2000);
+    log.record({ kind: "error", message: "Second error", timestamp: 0 });
+    expect(log.unreadError).toEqual({ id: 3, recordedAt: 2000 });
+    log.acknowledgeErrors();
+    expect(log.unreadError).toBeUndefined();
+    expect(log.notices).toHaveLength(4);
+    log.record({ kind: "error", message: "Later error", timestamp: 0 });
+    expect(log.unreadError?.id).toBe(4);
+    expect(new NotificationLog().unreadError).toBeUndefined();
+  } finally {
+    now.mockRestore();
+  }
+});
+
 it("releases only the active menu action registration", () => {
   const menu = new SiteMenu();
   const first = vi.fn();

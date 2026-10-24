@@ -1,8 +1,8 @@
 <script lang="ts">
   import KdIcon from "#lib/components/KdIcon.svelte";
-  import { availableActions, lifeState, type Sheet } from "../../sheet";
+  import { availableActions, lifeState, type Sheet } from "#lib/kdm/showdown/sheet.ts";
   import { statusFlags } from "#lib/kdm/ui/status/statuses.ts";
-  import StatusIcon from "../../../ui/status/StatusIcon.svelte";
+  import StatusIcon from "#lib/kdm/ui/status/StatusIcon.svelte";
   let { sheet, showResources = false }: { sheet: Sheet; showResources?: boolean } = $props();
   let life = $derived(lifeState(sheet));
 </script>

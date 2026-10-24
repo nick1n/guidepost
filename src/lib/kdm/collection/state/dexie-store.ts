@@ -155,7 +155,7 @@ export class DexieStore implements CollectionStore {
     const decoded = Schema.decodeUnknownResult(Schema.Array(EntryRow))(rows);
     if (Result.isFailure(decoded)) throw new StoreError({ operation, reason: "invalid-data", cause: decoded.failure });
     for (const row of decoded.success) {
-      if (row.ownerId !== this.ownerId || row.id !== entryId(this.ownerId, collectionKey(row.contentId, row.editionId))) {
+      if (row.ownerId !== this.ownerId || row.id !== entryId(this.ownerId, row.contentId, row.editionId)) {
         throw new StoreError({ operation, reason: "invalid-data", cause: "Collection row identity is inconsistent" });
       }
     }
@@ -164,8 +164,10 @@ export class DexieStore implements CollectionStore {
 
   private rows(state: CollectionSnapshot): EntryRow[] {
     return Object.entries(state).map(([key, selection]) => {
-      const [contentId, editionId] = parseCollectionKey(key);
-      return { id: entryId(this.ownerId, key), ownerId: this.ownerId, contentId, editionId, state: selection };
+      const decoded = parseCollectionKey(key);
+      if (Result.isFailure(decoded)) throw new StoreError({ operation: "save", reason: "invalid-data", cause: decoded.failure });
+      const [contentId, editionId] = decoded.success;
+      return { id: entryId(this.ownerId, contentId, editionId), ownerId: this.ownerId, contentId, editionId, state: selection };
     });
   }
 

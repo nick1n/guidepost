@@ -65,7 +65,9 @@ const validateSnapshot = Effect.fn("CollectionTransfer.validateSnapshot")(functi
   const hasTarget = knownTarget(catalog);
   for (const [key, entry] of Object.entries(snapshot)) {
     if (entry.owned && entry.wished) return yield* invalid(operation, `Collection entry ${key} cannot be both owned and wished.`, key);
-    const [contentId, editionId] = parseCollectionKey(key);
+    const [contentId, editionId] = yield* Effect.fromResult(parseCollectionKey(key)).pipe(
+      Effect.mapError(() => invalid(operation, "Collection entry has an invalid key.", key)),
+    );
     const edition = hasTarget(contentId, editionId);
     if (!edition) {
       return yield* new TransferError({

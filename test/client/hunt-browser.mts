@@ -15,7 +15,7 @@ await runBrowser(
     })()`;
     const ready = () =>
       waitFor(
-        `${card} && !${card}.closest('[inert]') && !${card}.disabled && ${card}.getAttribute('aria-disabled')!=='true' && getComputedStyle(${card}.parentElement).transform==='none' && ![...${card}.getAnimations(),...${card}.parentElement.getAnimations()].some(a=>a.playState==='running')`,
+        `${card} && !${card}.closest('[inert]') && !${card}.disabled && ${card}.getAttribute('aria-disabled')!=='true' && ![...${card}.getAnimations(),...${card}.parentElement.getAnimations()].some(a=>a.playState==='running')`,
       );
     const select = async (value: number) => {
       await waitFor(`getComputedStyle(${picker}).display==='none'`);
@@ -247,7 +247,7 @@ await runBrowser(
       await evaluate("window.originalRandom=Math.random;Math.random=()=>0.99999;document.querySelector('.random').click()");
       for (const phase of ["out", "in"] as const) {
         await waitFor(
-          `(()=>{const s=document.querySelector('.slide${phase === "in" ? ":not([inert])" : ""}');return s?.getAnimations().some(a=>a.effect.getKeyframes().some(k=>k.transform))})()`,
+          `(()=>{const s=document.querySelector('.slide${phase === "in" ? ":not([inert])" : ""}');return s?.getAnimations().some(a=>Number(a.effect.getTiming().duration)>0&&a.effect.getKeyframes().some(k=>k.translate))})()`,
         );
         const result = await evaluate<{
           duration: number;
@@ -257,7 +257,7 @@ await runBrowser(
         }>(
           `(async()=>{
             const s=document.querySelector('.slide${phase === "in" ? ":not([inert])" : ""}'),c=s.querySelector('.card');
-            const animation=s.getAnimations().find(a=>a.effect.getKeyframes().some(k=>k.transform));
+            const animation=s.getAnimations().find(a=>Number(a.effect.getTiming().duration)>0&&a.effect.getKeyframes().some(k=>k.translate));
             animation.pause();
             const duration=Number(animation.effect.getTiming().duration);
             let awaitingExit=true;
@@ -269,8 +269,9 @@ await runBrowser(
             for(const progress of [0,0.25,0.5,0.75,1]){
               animation.currentTime=duration*progress;
               await new Promise(requestAnimationFrame);
-              const style=getComputedStyle(s),matrix=new DOMMatrix(style.transform);
-              samples.push({x:matrix.m41/parseFloat(style.width),angle:Math.atan2(matrix.m12,matrix.m11)*180/Math.PI,
+              const style=getComputedStyle(s);
+              const x=style.translate==='none'?0:parseFloat(style.translate)/(style.translate.includes('%')?100:parseFloat(style.width));
+              samples.push({x,angle:parseFloat(style.rotate)||0,
                 opacity:Number(style.opacity),
                 overflow:document.documentElement.scrollWidth>innerWidth||document.documentElement.scrollHeight>innerHeight+1});
             }
@@ -313,12 +314,12 @@ await runBrowser(
       await evaluate("Math.random=window.originalRandom");
     };
     const verifyReverseDraw = async () => {
-      const reverse = await evaluate<string>("document.querySelector('.card .back:not(.is-hidden)').src");
+      const reverse = await evaluate<string>("document.querySelector('.card .back').src");
       await saveScreenshot("temp/browser-verification/hunt-reverse-before-draw.png");
       await evaluate("window.originalRandom=Math.random;Math.random=()=>0.1;document.querySelector('.random').click()");
       await waitFor("document.querySelector('.slide')?.getAnimations().some(a=>a.playState==='running')");
       assert(
-        await evaluate(`document.querySelector('.card .back:not(.is-hidden)').src===${JSON.stringify(reverse)}`),
+        await evaluate(`document.querySelector('.card .back').src===${JSON.stringify(reverse)}`),
         "Drawing preserves the visible reverse while the old card slides out",
       );
       await ready();
@@ -332,30 +333,27 @@ await runBrowser(
         const e=document.querySelector('select[id$="-option"]');
         e.value='fen';e.dispatchEvent(new Event('change',{bubbles:true}));
       })()`);
-      await waitFor("window.olderSlide.getAnimations().some(a=>a.effect.getKeyframes().some(k=>k.transform))");
+      await waitFor(
+        "window.olderSlide.getAnimations().some(a=>Number(a.effect.getTiming().duration)>0&&a.effect.getKeyframes().some(k=>k.translate))",
+      );
       await evaluate(
-        "window.olderExit=window.olderSlide.getAnimations().find(a=>a.effect.getKeyframes().some(k=>k.transform));window.olderExit.pause()",
+        "window.olderExit=window.olderSlide.getAnimations().find(a=>Number(a.effect.getTiming().duration)>0&&a.effect.getKeyframes().some(k=>k.translate));window.olderExit.pause()",
       );
       await closeMenu();
-      await waitFor(`(()=>{
-        const s=document.querySelector('.slide:not([inert])');
-        return s&&s!==window.olderSlide&&getComputedStyle(s).transform==='none'&&!s.getAnimations().some(a=>a.playState==='running');
-      })()`);
-      await evaluate(
-        "window.currentSlide=document.querySelector('.slide:not([inert])');window.originalRandom=Math.random;Math.random=()=>0.99999;document.querySelector('.random').click()",
-      );
-      await waitFor("window.currentSlide.getAnimations().some(a=>a.effect.getKeyframes().some(k=>k.transform))");
-      await evaluate(`(async()=>{
-        window.currentExit=window.currentSlide.getAnimations().find(a=>a.effect.getKeyframes().some(k=>k.transform));
-        window.currentExit.pause();window.olderExit.finish();
-        await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
-      })()`);
+      await evaluate("window.originalRandom=Math.random;Math.random=()=>0.99999;document.querySelector('.random').click()");
+      await evaluate("new Promise(resolve=>setTimeout(resolve,600))");
       assert(
-        await evaluate("document.querySelector('.random').disabled"),
-        "An older artwork-change outro cannot complete the current draw",
+        await evaluate(
+          "window.olderSlide.isConnected && document.querySelectorAll('.card').length===1 && !document.querySelector('.card .front').src.endsWith('fen-100.png')",
+        ),
+        "Drawing during an artwork change waits for the retiring card's actual exit",
       );
-      await evaluate("window.currentExit.finish()");
+      await evaluate("window.olderExit.finish()");
       await ready();
+      assert(
+        await evaluate("document.querySelector('.card .front').src.endsWith('fen-100.png')"),
+        "The latest draw replaces the retiring artwork after its exit",
+      );
       await evaluate("Math.random=window.originalRandom");
       await setOption("kekasi");
     };
@@ -377,7 +375,7 @@ await runBrowser(
     await send("Page.navigate", { url: new URL("/kdm/hunt/", base).href });
     await waitFor("document.querySelector('.selection .die') && document.querySelector('.load-status')");
     assert(
-      await evaluate("document.querySelector('link[rel=prefetch][as=image]')?.getAttribute('href').endsWith('kekasi-back.jpg')"),
+      await evaluate("document.querySelector('link[rel=prefetch][as=image]')?.getAttribute('href').endsWith('ccg-back.png')"),
       "Initial HTML prefetches the default card back before preferences load",
     );
     assert(
@@ -415,15 +413,13 @@ await runBrowser(
     );
     await verifyLayout("Desktop");
     await verifyFlipOverflow("Desktop");
-    assert(
-      await evaluate("document.querySelector('.front').src.endsWith('kekasi-1.jpg')"),
-      "Default deck is Kekasi and initial event is 1",
-    );
+    assert(await evaluate("document.querySelector('.front').src.endsWith('ccg-1.png')"), "Default deck is CCG and initial event is 1");
     assert(
       await evaluate("window.huntLocalStorageCalls.length===0"),
       "Fresh hunt settings ignore legacy localStorage without migrating it",
     );
     await saveScreenshot("temp/browser-verification/hunt-desktop-back.png");
+    await setOption("kekasi");
     await physicalClick(".card");
     await ready();
     assert(await evaluate(`${card}.getAttribute('aria-label').endsWith('showing front')`), "Card flips to its front");

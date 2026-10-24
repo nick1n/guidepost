@@ -1,5 +1,5 @@
 import { expect, it } from "vitest";
-import { Schema } from "effect";
+import { Result, Schema } from "effect";
 import {
   CollectionSnapshotSchema,
   CopyNumberSchema,
@@ -11,16 +11,17 @@ import {
 
 it("uses collision-safe keys and stable owner-scoped entry IDs", () => {
   const key = collectionKey('item:"id', "First Run:2");
-  expect(parseCollectionKey(key)).toEqual(['item:"id', "First Run:2"]);
+  expect(parseCollectionKey(key)).toEqual(Result.succeed(['item:"id', "First Run:2"]));
   expect(collectionKey("a:b", "c")).not.toBe(collectionKey("a", "b:c"));
-  expect(entryId("guest", key)).toBe(entryId("guest", JSON.parse(JSON.stringify(key))));
-  expect(entryId("guest", key)).not.toBe(entryId("account", key));
-  expect(entryId("guest", collectionKey("core", "core-16"))).toBe('["guest","core","core-16"]');
+  expect(entryId("guest", 'item:"id', "First Run:2")).toBe(JSON.stringify(["guest", 'item:"id', "First Run:2"]));
+  expect(entryId("guest", "a:b", "c")).not.toBe(entryId("guest", "a", "b:c"));
+  expect(entryId("guest", 'item:"id', "First Run:2")).not.toBe(entryId("account", 'item:"id', "First Run:2"));
+  expect(entryId("guest", "core", "core-16")).toBe('["guest","core","core-16"]');
 });
 
 it("rejects malformed or noncanonical keys and invalid state", () => {
   for (const key of ["item:edition", '["item"]', '["item",1]', '["", "edition"]', '["item","edition","extra"]', '[ "item", "edition" ]']) {
-    expect(() => parseCollectionKey(key)).toThrow();
+    expect(Result.isFailure(parseCollectionKey(key))).toBe(true);
     expect(() => Schema.decodeUnknownSync(CollectionSnapshotSchema)({ [key]: { owned: true } })).toThrow();
   }
   for (const invalid of ["42", 0, 1.5, 10000, Number.NaN]) {

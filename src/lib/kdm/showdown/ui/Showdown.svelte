@@ -1,18 +1,28 @@
 <script lang="ts">
-  import "../../ui/stats.css";
+  import { prefersReducedMotion } from "svelte/motion";
+  import "#lib/kdm/ui/stats.css";
   import MenuButton from "#lib/app/menu/MenuButton.svelte";
   import { getSiteMenu } from "#lib/app/menu/site-menu.svelte.ts";
-  import { getShowdownDisplay } from "../display.svelte.ts";
+  import { getShowdownDisplay } from "#lib/kdm/showdown/display.svelte.ts";
   import HoldRipple from "#lib/components/gestures/HoldRipple.svelte";
-  import { sectionName } from "../../ui/sections/sections";
+  import { sectionName } from "#lib/kdm/ui/sections/sections.ts";
   import { dragScroll } from "./drag-scroll";
   import Monster from "./Monster.svelte";
   import Survivor from "./Survivor.svelte";
-  import { setGearDrag } from "../../survivors/ui/gear-drag";
+  import { setGearDrag } from "#lib/kdm/survivors/ui/gear-drag.ts";
   import QuickStatus from "./status/QuickStatus.svelte";
-  import StatusIcon from "../../ui/status/StatusIcon.svelte";
-  import { makeSheet, statusText, tokenTotal, availableActions, makeTokens, tokenNet, toggleActed, useDodge } from "../sheet";
-  import { survivors } from "../fixtures";
+  import StatusIcon from "#lib/kdm/ui/status/StatusIcon.svelte";
+  import {
+    makeSheet,
+    statusText,
+    tokenTotal,
+    availableActions,
+    makeTokens,
+    tokenNet,
+    toggleActed,
+    useDodge,
+  } from "#lib/kdm/showdown/sheet.ts";
+  import { survivors } from "#lib/kdm/showdown/fixtures.ts";
 
   const designs = [
     { name: "Obsidian", subtitle: "The Command Table", className: "obsidian", href: "/kdm/showdown1" },
@@ -122,14 +132,13 @@
   function jump(index: number) {
     active = index;
     const panel = rail.children[index] as HTMLElement;
-    const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
     panel.getAnimations().forEach((animation) => animation.cancel());
     panel.animate(
       [
         { backgroundColor: getComputedStyle(panel).getPropertyValue("--identity-7") },
         { backgroundColor: getComputedStyle(panel).backgroundColor },
       ],
-      { duration: reduced ? 0 : 800, easing: "ease-out" },
+      { duration: prefersReducedMotion.current ? 0 : 800, easing: "ease-out" },
     );
     alignDashboard(index);
   }

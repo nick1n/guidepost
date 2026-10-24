@@ -133,26 +133,30 @@
 </script>
 
 <script lang="ts">
-  import { onMount } from "svelte";
+  import { onMount, untrack } from "svelte";
+  import { prefersReducedMotion } from "svelte/motion";
   import { fade } from "svelte/transition";
 
   const maskId = $props.id();
-  let contours = $state.raw<string[]>([]);
+  let terrain = $state.raw<ReturnType<typeof createTerrain>>();
+  let contours = $derived(terrain?.contours ?? []);
   let trails = $state.raw<Trail[]>([]);
-  let reducedMotion = $state(false);
   let nextId = $state(0);
 
   onMount(() => {
-    const terrain = createTerrain();
-    contours = terrain.contours;
-    const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
-    let timer: Timeout;
+    terrain = createTerrain();
+  });
 
-    function syncMotion() {
-      clearTimeout(timer);
-      reducedMotion = motion.matches;
+  // Restart the external timer when the system motion preference changes.
+  $effect(() => {
+    const currentTerrain = terrain;
+    const reducedMotion = prefersReducedMotion.current;
+    if (!currentTerrain) return;
+
+    return untrack(() => {
+      let timer: Timeout;
       trails = [
-        { id: ++nextId, ...terrain.openingTrail },
+        { id: ++nextId, ...currentTerrain.openingTrail },
         ...Array.from({ length: reducedMotion ? maxTrails - 1 : 0 }, () => createTrail(++nextId)),
       ];
       if (!reducedMotion) {
@@ -161,14 +165,8 @@
           timer = setTimeout(addTrail, 14000);
         }, 22000);
       }
-    }
-
-    syncMotion();
-    motion.addEventListener("change", syncMotion);
-    return () => {
-      clearTimeout(timer);
-      motion.removeEventListener("change", syncMotion);
-    };
+      return () => clearTimeout(timer);
+    });
   });
 </script>
 
@@ -179,7 +177,10 @@
     {/each}
     {#each trails as trail (trail.id)}
       {@const trailMask = `${maskId}-${trail.id}`}
-      <g in:drawTrail={{ duration: reducedMotion ? 0 : 22000, marker: trail.marker }} out:fade={{ duration: reducedMotion ? 0 : 4000 }}>
+      <g
+        in:drawTrail={{ duration: prefersReducedMotion.current ? 0 : 22000, marker: trail.marker }}
+        out:fade={{ duration: prefersReducedMotion.current ? 0 : 4000 }}
+      >
         <defs>
           <mask id={trailMask} maskUnits="userSpaceOnUse" x="-100" y="-100" width="1800" height="1200">
             <path class="reveal" d={trail.d} />

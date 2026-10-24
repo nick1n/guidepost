@@ -1,5 +1,5 @@
 import { Effect } from "effect";
-import type { Notice } from "../notifications/notifications.ts";
+import type { Notice } from "#lib/app/notifications/notifications.ts";
 import { PreferenceSession } from "./preference-session.svelte.ts";
 import { appDefaults, AppStorageError, type AppPreferenceStore, type AppValues } from "./preference-store.ts";
 

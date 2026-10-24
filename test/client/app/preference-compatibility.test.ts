@@ -2,7 +2,7 @@ import "fake-indexeddb/auto";
 import Dexie from "dexie";
 import { afterEach } from "vitest";
 import { expect, it } from "@effect/vitest";
-import { Effect } from "effect";
+import { Effect, Result } from "effect";
 import { DexieAppStore } from "#lib/app/preferences/dexie-preference-store.ts";
 import { PreferenceDatabase } from "#lib/app/preferences/preference-database.ts";
 import { appDefaults, decodeAppRecord } from "#lib/app/preferences/preference-store.ts";
@@ -30,23 +30,23 @@ function fixture() {
 }
 
 it("defaults absent known fields while validating every present field", () => {
-  expect(decodeAppRecord({})).toEqual(appDefaults);
-  expect(decodeAppRecord({ dateFormat: "written" })).toEqual({ ...appDefaults, dateFormat: "written" });
-  expect(decodeAppRecord({ glass: false })).toEqual({ ...appDefaults, glass: false });
-  expect(decodeHuntRecord({})).toEqual(huntDefaults);
+  expect(decodeAppRecord({})).toEqual(Result.succeed(appDefaults));
+  expect(decodeAppRecord({ dateFormat: "written" })).toEqual(Result.succeed({ ...appDefaults, dateFormat: "written" }));
+  expect(decodeAppRecord({ glass: false })).toEqual(Result.succeed({ ...appDefaults, glass: false }));
+  expect(decodeHuntRecord({})).toEqual(Result.succeed(huntDefaults));
   for (const [key, value] of Object.entries(huntDefaults)) {
-    expect(decodeHuntRecord({ [key]: value })).toEqual(huntDefaults);
+    expect(decodeHuntRecord({ [key]: value })).toEqual(Result.succeed(huntDefaults));
   }
   for (const input of [null, true, 1, "preferences", [], ["ccg"], ...nonRecords]) {
-    expect(() => decodeAppRecord(input)).toThrow();
-    expect(() => decodeHuntRecord(input)).toThrow();
+    expect(Result.isFailure(decodeAppRecord(input))).toBe(true);
+    expect(Result.isFailure(decodeHuntRecord(input))).toBe(true);
   }
   for (const input of [{ dateFormat: undefined }, { dateFormat: "future" }, { glass: undefined }, { glass: "false" }]) {
-    expect(() => decodeAppRecord(input)).toThrow();
+    expect(Result.isFailure(decodeAppRecord(input))).toBe(true);
   }
   for (const key of Object.keys(huntDefaults)) {
     for (const value of [undefined, null, 1, "invalid"]) {
-      expect(() => decodeHuntRecord({ [key]: value })).toThrow();
+      expect(Result.isFailure(decodeHuntRecord({ [key]: value }))).toBe(true);
     }
   }
 });

@@ -71,12 +71,14 @@ it.effect("writes only changed entries and removes only entries absent from the 
     expect(puts).toEqual([]);
     expect(deletes).toEqual([]);
     yield* store.save({ [core]: { owned: true }, [resin]: { wished: true, copyNumber: 15 } });
-    expect(puts).toEqual([expect.objectContaining({ id: entryId("guest", resin), state: { wished: true, copyNumber: 15 } })]);
+    expect(puts).toEqual([
+      expect.objectContaining({ id: entryId("guest", "core", "test-resin-edition-id"), state: { wished: true, copyNumber: 15 } }),
+    ]);
     expect(deletes).toEqual([]);
     puts.length = 0;
     yield* store.save({ [core]: { owned: true } });
     expect(puts).toEqual([]);
-    expect(deletes).toEqual([entryId("guest", resin)]);
+    expect(deletes).toEqual([entryId("guest", "core", "test-resin-edition-id")]);
     expect(yield* store.load()).toEqual({ [core]: { owned: true } });
     const db = yield* f.inspect();
     expect(db.table("entries").schema.indexes.map((index) => index.name)).toEqual(["ownerId"]);
@@ -172,8 +174,8 @@ it.effect("isolates owners and retains stable entry identities when selections c
     yield* account.save({ [core]: { wished: true } });
     const db = yield* f.inspect();
     const firstIds = yield* Effect.promise(() => db.table("entries").toCollection().primaryKeys());
-    expect(firstIds.sort()).toEqual([entryId("guest", core), entryId("account", core)].sort());
-    expect(yield* Effect.promise(() => db.table("entries").get(entryId("guest", core)))).toMatchObject({
+    expect(firstIds.sort()).toEqual([entryId("guest", "core", coreEdition.id), entryId("account", "core", coreEdition.id)].sort());
+    expect(yield* Effect.promise(() => db.table("entries").get(entryId("guest", "core", coreEdition.id)))).toMatchObject({
       contentId: "core",
       editionId: coreEdition.id,
     });
@@ -294,7 +296,7 @@ it.effect("rejects inconsistent persisted row identities", () =>
     yield* store.load();
     yield* store.save({ [core]: { owned: true } });
     const db = yield* f.inspect();
-    yield* Effect.promise(() => db.table("entries").update(entryId("guest", core), { editionId: "wrong-edition" }));
+    yield* Effect.promise(() => db.table("entries").update(entryId("guest", "core", coreEdition.id), { editionId: "wrong-edition" }));
     expect((yield* Effect.flip(store.save({ [core]: { owned: false } }))).reason).toBe("invalid-data");
     expect((yield* Effect.flip(store.load())).reason).toBe("invalid-data");
     expect((yield* Effect.flip(store.clear())).reason).toBe("stale");

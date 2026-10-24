@@ -33,6 +33,8 @@ With a local development server running, `pnpm test:menu-browser -- http://127.0
 `pnpm test:collection-browser [URL]` runs isolated Chrome checks. Set `CHROME_PATH` if Chrome is not detected.
 
 `pnpm test:hunt-browser -- http://localhost:5173` checks card selection, artwork variants, flip and draw animations, and saved settings.
+`pnpm test:hunt-artwork-browser -- http://localhost:5173` checks artwork exit sequencing, rapid changes, image loading, and the rendered face during entry.
+`pnpm test:hunt-navigation-browser -- http://localhost:5173` checks that navigating Home removes hunt controls immediately, on mobile and desktop with both motion preferences.
 `pnpm test:hunt-picker-browser -- http://localhost:5173` checks the event picker's gestures, focus, dismissal, and short-screen layout.
 Both require a running local server and installed Chrome or Chromium (or `CHROME_PATH`); screenshots and reports go to `temp/browser-verification/`.
 
@@ -69,11 +71,12 @@ Keep `local-data/kdm-catalog/` backed up because it holds reviewed imports, `kdm
 | Generated output                                                                           | Authoritative input and command                                                                       |
 | ------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------- |
 | [src/lib/types/gen/kdm-data.d.ts](src/lib/types/gen/kdm-data.d.ts)                         | [static/kdm/catalog/data.schema.json](static/kdm/catalog/data.schema.json); run `pnpm generate:types` |
+| [src/lib/gen/catalog-validator.js](src/lib/gen/catalog-validator.js) and its `.d.ts`       | [static/kdm/catalog/data.schema.json](static/kdm/catalog/data.schema.json); run `pnpm generate:types` |
 | [src/lib/gen/core-editions.json](src/lib/gen/core-editions.json)                           | [static/kdm/catalog/data.json](static/kdm/catalog/data.json); run `pnpm generate:types`               |
 | [static/kdm/catalog/workbook-map.schema.json](static/kdm/catalog/workbook-map.schema.json) | [src/lib/types/workbook.ts](src/lib/types/workbook.ts); run `pnpm generate:types`                     |
 | [static/kdm/catalog/workbook-map.json](static/kdm/catalog/workbook-map.json)               | Live catalog plus local workbook import records; run `pnpm catalog:workbook`                          |
 
-Edit authoritative inputs, not generated outputs. Development, checks, and builds may regenerate generated types and core editions. See [catalog workflows](docs/catalog-workflows.md#workbook-map) and the [catalog guide](docs/kdm-catalog.md).
+Edit authoritative inputs, not generated outputs. Development, checks, and builds may regenerate generated types, the browser validator, and core editions. The validator bundles Ajv standalone code and its runtime helpers as self-contained ESM; the browser does not compile schemas. Tooling-only semantic and cross-reference checks remain in `catalog:validate`. See [catalog workflows](docs/catalog-workflows.md#workbook-map) and the [catalog guide](docs/kdm-catalog.md).
 
 ## Catalog
 

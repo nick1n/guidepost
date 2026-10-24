@@ -14,14 +14,14 @@
   import { getNotificationLog } from "#lib/app/notifications/notification-log.svelte.ts";
   import { getCollection } from "#lib/kdm/collection/state/collection.svelte.ts";
   import { getCollectionActions } from "#lib/kdm/collection/state/collection-actions.ts";
-  import ConfirmDialog from "../../components/ConfirmDialog.svelte";
-  import Select from "../../components/Select.svelte";
-  import ToggleButton from "../../components/ToggleButton.svelte";
+  import ConfirmDialog from "#lib/components/ConfirmDialog.svelte";
+  import Select from "#lib/components/Select.svelte";
+  import ToggleButton from "#lib/components/ToggleButton.svelte";
   import { MenuSession } from "./menu-session.ts";
-  import { createSwipeDismiss } from "../../swipe-dismiss.svelte.ts";
+  import { createSwipeDismiss } from "#lib/swipe-dismiss.svelte.ts";
   import MenuButton from "./MenuButton.svelte";
-  import ShowdownSettings from "../../kdm/showdown/ui/ShowdownSettings.svelte";
-  import HuntSettings from "../../kdm/hunt/HuntSettings.svelte";
+  import ShowdownSettings from "#lib/kdm/showdown/ui/ShowdownSettings.svelte";
+  import HuntSettings from "#lib/kdm/hunt/HuntSettings.svelte";
 
   const menu = getSiteMenu();
   const dates = getDatePreferences();
@@ -90,6 +90,7 @@
 
   async function showView(next: typeof view) {
     view = next;
+    if (next === "notifications") log.acknowledgeErrors();
     menu.onback = next === "main" ? undefined : back;
     await tick();
     content.scrollTop = 0;

@@ -7,7 +7,7 @@ import {
   type WorkbookMap,
   type WorkbookMappingRow as WorkbookRow,
   type WorkbookTarget,
-} from "../../src/lib/types/workbook.ts";
+} from "#lib/types/workbook.ts";
 import { publishFiles } from "./publication.mts";
 import type { Catalog } from "./types.mts";
 import { editionByLabel } from "./identity.mts";

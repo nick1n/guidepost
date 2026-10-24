@@ -1,4 +1,4 @@
-import { Effect, Predicate, Schema } from "effect";
+import { Effect, Predicate, Result, Schema } from "effect";
 
 export const HuntValues = Schema.Struct({
   option: Schema.Literals(["fen", "kekasi", "ccg"]),
@@ -9,7 +9,7 @@ export const HuntValues = Schema.Struct({
 export interface HuntValues extends Schema.Schema.Type<typeof HuntValues> {}
 export type HuntOption = HuntValues["option"];
 
-export const huntDefaults: HuntValues = { option: "kekasi", bravadoBeta: false, devilSatan: false, gregalopeCE: false };
+export const huntDefaults: HuntValues = { option: "ccg", bravadoBeta: false, devilSatan: false, gregalopeCE: false };
 
 /**
  * Compatibility policy: absent known fields use current defaults; present values
@@ -23,7 +23,7 @@ const recordContainer = Schema.Unknown.check(
     { expected: "a plain preference record" },
   ),
 );
-const decodeRecord = Schema.decodeUnknownSync(
+const decodeRecord = Schema.decodeUnknownResult(
   recordContainer.pipe(
     Schema.decodeTo(
       Schema.StructWithRest(
@@ -40,7 +40,7 @@ const decodeRecord = Schema.decodeUnknownSync(
 );
 
 export function decodeHuntRecord(input: unknown) {
-  return { ...huntDefaults, ...decodeRecord(input) };
+  return Result.map(decodeRecord(input), (record) => ({ ...huntDefaults, ...record }));
 }
 export class HuntStorageError extends Schema.TaggedError<HuntStorageError>()("HuntStorageError", {
   operation: Schema.Literals(["load", "save"]),

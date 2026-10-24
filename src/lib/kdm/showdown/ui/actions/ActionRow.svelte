@@ -1,7 +1,7 @@
 <script lang="ts">
   import InlineMarkdown from "#lib/components/InlineMarkdown.svelte";
   import ActionCost from "./ActionCost.svelte";
-  import { describeCost, type Cost } from "../../sheet";
+  import { describeCost, type Cost } from "#lib/kdm/showdown/sheet.ts";
 
   let {
     title,

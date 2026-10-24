@@ -58,10 +58,9 @@ export function collectionKey(contentId: string, editionId: string) {
 }
 
 export function parseCollectionKey(key: string) {
-  Schema.decodeUnknownSync(CollectionKeySchema)(key);
-  return Schema.decodeUnknownSync(KeyPartsSchema)(key);
+  return Result.flatMap(decodeCollectionKey(key), decodeKey);
 }
 
-export function entryId(ownerId: string, key: string) {
-  return JSON.stringify([ownerId, ...parseCollectionKey(key)]);
+export function entryId(ownerId: string, contentId: string, editionId: string) {
+  return JSON.stringify([ownerId, contentId, editionId]);
 }

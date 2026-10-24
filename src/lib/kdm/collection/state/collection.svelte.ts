@@ -51,6 +51,20 @@ function ownershipPatch(owned: boolean): EntryState {
   return owned ? { owned: true, wished: false, missing: false } : { owned: false, missing: false };
 }
 
+function decodeKey(key: string) {
+  return Effect.fromResult(parseCollectionKey(key)).pipe(
+    Effect.mapError(
+      (cause) =>
+        new CollectionError({
+          operation: "save",
+          itemIds: [key],
+          message: "Collection entry has an invalid key.",
+          cause,
+        }),
+    ),
+  );
+}
+
 export class Collection {
   state = $state.raw<CollectionSnapshot>({});
   loadStatus = $state<LoadStatus>("pending");
@@ -298,6 +312,7 @@ export class Collection {
   private commitMany = Effect.fn("Collection.commitMany")({ self: this }, function* (patch: CollectionPatch) {
     const keys = Object.keys(patch);
     if (!keys.length) return false;
+    for (const key of keys) yield* decodeKey(key);
     const writer = yield* this.requireWriter("save", keys);
     return yield* this.reportSave(writer.saveMany(patch), keys);
   });
@@ -322,16 +337,16 @@ export class Collection {
     return this.setOwned(key, owned ?? !this.get(key).owned);
   });
 
-  toggleIncludedOwned = Effect.fn("Collection.toggleIncludedOwned")({ self: this }, function (key: string, owned?: boolean) {
+  toggleIncludedOwned = Effect.fn("Collection.toggleIncludedOwned")({ self: this }, function* (key: string, owned?: boolean) {
     const entry = this.get(key);
-    const [itemId, editionId] = parseCollectionKey(key);
+    const [itemId, editionId] = yield* decodeKey(key);
     const shouldOwn = owned ?? !this.coverage.edition(itemId, editionId).covered;
     const restored = { ...this.state, [key]: { ...entry, owned: false, missing: false } };
     const supplied = this.catalog.coverage(restored).edition(itemId, editionId).covered;
     if (!shouldOwn) {
-      return this.commitMany({ [key]: { owned: false, missing: supplied } });
+      return yield* this.commitMany({ [key]: { owned: false, missing: supplied } });
     }
-    return supplied ? this.setMissing(key, false) : this.setOwned(key, true);
+    return yield* supplied ? this.setMissing(key, false) : this.setOwned(key, true);
   });
 
   toggleWish = Effect.fn("Collection.toggleWish")({ self: this }, function (key: string) {
@@ -352,7 +367,7 @@ export class Collection {
             }),
         ),
       );
-      const [contentId, editionId] = parseCollectionKey(key);
+      const [contentId, editionId] = yield* decodeKey(key);
       const runSize = this.catalog.byId.get(contentId)?.editions?.find((edition) => edition.id === editionId)?.runSize;
       if (runSize !== undefined && copyNumber > runSize)
         return yield* new CollectionError({
@@ -365,10 +380,10 @@ export class Collection {
     return yield* this.commitMany({ [key]: { copyNumber } });
   });
 
-  setManyOwned = Effect.fn("Collection.setManyOwned")({ self: this }, function (keys: readonly string[], owned: boolean) {
+  setManyOwned = Effect.fn("Collection.setManyOwned")({ self: this }, function* (keys: readonly string[], owned: boolean) {
     const patch: CollectionPatch = Object.fromEntries(keys.map((key) => [key, ownershipPatch(owned)]));
     for (const key of keys) {
-      const [itemId, editionId] = parseCollectionKey(key);
+      const [itemId, editionId] = yield* decodeKey(key);
       const bundle = this.catalog.byId.get(itemId)?.category === "bundles";
       if (!owned && !bundle) continue;
       for (const child of this.catalog.includedEditions(itemId, editionId)) {
@@ -377,7 +392,7 @@ export class Collection {
         else if (this.get(childKey).missing) patch[childKey] = { ...patch[childKey], missing: false };
       }
     }
-    return this.commitMany(patch);
+    return yield* this.commitMany(patch);
   });
 
   setEditionsOwned = Effect.fn("Collection.setEditionsOwned")(

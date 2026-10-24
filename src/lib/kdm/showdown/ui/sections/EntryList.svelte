@@ -1,6 +1,6 @@
 <script lang="ts">
-  import type { ListEntry } from "../../sheet";
-  import Section from "../../../ui/sections/Section.svelte";
+  import type { ListEntry } from "#lib/kdm/showdown/sheet.ts";
+  import Section from "#lib/kdm/ui/sections/Section.svelte";
 
   let {
     title,

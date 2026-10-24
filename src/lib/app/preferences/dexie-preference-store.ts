@@ -1,8 +1,13 @@
-import { Effect } from "effect";
+import { Effect, Result } from "effect";
 import { PreferenceDatabase } from "./preference-database.ts";
 import { decodeAppRecord, appDefaults, AppStorageError, AppValues, type AppPreferenceStore } from "./preference-store.ts";
 
-const decode = decodeAppRecord;
+// Dexie transactions need synchronous validation so no unrelated async work can close them.
+function decode(input: unknown) {
+  const result = decodeAppRecord(input);
+  if (Result.isFailure(result)) throw new AppStorageError({ operation: "save", cause: result.failure });
+  return result.success;
+}
 
 export class DexieAppStore implements AppPreferenceStore {
   private readonly database: PreferenceDatabase;
@@ -23,13 +28,15 @@ export class DexieAppStore implements AppPreferenceStore {
 
   load = Effect.fn("DexieAppStore.load")({ self: this }, function* () {
     const db = yield* this.open("load");
-    return yield* Effect.tryPromise({
-      try: async () => {
-        const saved = await db.preferences.get("app");
-        return saved === undefined ? { ...appDefaults } : decode(saved);
-      },
+    const saved = yield* Effect.tryPromise({
+      try: () => db.preferences.get("app"),
       catch: (cause) => new AppStorageError({ operation: "load", cause }),
     });
+    return saved === undefined
+      ? { ...appDefaults }
+      : yield* Effect.fromResult(decodeAppRecord(saved)).pipe(
+          Effect.mapError((cause) => new AppStorageError({ operation: "load", cause })),
+        );
   });
 
   save = Effect.fn("DexieAppStore.save")({ self: this }, function* (patch: Partial<AppValues>) {

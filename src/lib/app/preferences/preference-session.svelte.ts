@@ -1,5 +1,5 @@
 import { Cause, Clock, Effect, Queue, Result } from "effect";
-import type { Notice } from "../notifications/notifications.ts";
+import type { Notice } from "#lib/app/notifications/notifications.ts";
 
 type StorageError = { readonly message: string };
 type Store<T, E> = {

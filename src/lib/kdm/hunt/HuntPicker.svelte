@@ -14,7 +14,6 @@
   const id = $props.id();
   let dialog: HTMLDialogElement;
   let open = $state(false);
-  let keyboard = $state(false);
   let closing = false;
   let closeTimer: Timeout;
   let numberPlace = 10;
@@ -27,7 +26,6 @@
     if (dialog.open || closing) return;
     numberPlace = 10;
     activePlace = 10;
-    keyboard = false;
     dismissal.reset();
     dialog.showModal();
     open = true;
@@ -64,13 +62,12 @@
     close();
   }
 
-  function onpointerdown() {
-    keyboard = false;
-  }
-
   function onfocusin(event: FocusEvent) {
     const column = (event.target as Element).closest<HTMLElement>("[data-place]");
-    if (column) activePlace = Number(column.dataset.place);
+    if (column) {
+      activePlace = Number(column.dataset.place);
+      numberPlace = activePlace;
+    }
   }
 
   function focusDigit(place: number, digit: number) {
@@ -89,14 +86,12 @@
       if (!event.repeat) void close();
       return;
     }
-    if (event.key === "Tab" || event.key.startsWith("Arrow") || event.key === "Home" || event.key === "End" || /^[0-9]$/.test(event.key)) {
-      keyboard = true;
-    }
     if (/^[0-9]$/.test(event.key)) {
       event.preventDefault();
       if (event.repeat) return;
       chooseDigit(numberPlace, Number(event.key));
       numberPlace = numberPlace === 10 ? 1 : 10;
+      focusDigit(numberPlace, numberPlace === 10 ? Math.floor(card / 10) % 10 : card % 10);
       return;
     }
     const button = (event.target as Element).closest<HTMLButtonElement>("button[data-digit]");
@@ -142,7 +137,6 @@
   {onclick}
   {oncancel}
   {onkeydown}
-  {onpointerdown}
   {onfocusin}
   {ontransitionend}
   {@attach dismissal.attach}
@@ -156,7 +150,7 @@
         closes the dialog.
       </p>
     </header>
-    <div class={["dice", keyboard && "keyboard"]}>
+    <div class="dice">
       {#each [10, 1] as place (place)}
         {@const selected = place === 10 ? Math.floor(card / 10) % 10 : card % 10}
         <fieldset class={place === 1 ? "ones" : undefined} data-place={place}>
@@ -170,7 +164,7 @@
                 aria-pressed={selected === digit}
                 tabindex={selected === digit ? 0 : -1}
                 data-digit={digit}
-                onclick={() => onselect(selectDigit(card, place, digit))}
+                onclick={() => chooseDigit(place, digit)}
               >
                 <span>
                   {#if digit === 0}<KdIcon i="lantern" />{:else}{digit}{/if}
@@ -300,7 +294,7 @@
     justify-items: center;
     min-inline-size: 0;
   }
-  .keyboard fieldset:focus-within legend {
+  fieldset:focus-within legend {
     position: relative;
     isolation: isolate;
     color: var(--accent-foreground);
@@ -335,7 +329,7 @@
   legend {
     margin-block-end: 1rem;
     font-weight: var(--font-bold);
-    font-size: var(--text-sm);
+    font-size: 1rem;
     text-align: center;
   }
   .stack {

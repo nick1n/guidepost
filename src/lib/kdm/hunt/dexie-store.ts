@@ -1,8 +1,13 @@
-import { Effect } from "effect";
+import { Effect, Result } from "effect";
 import { PreferenceDatabase } from "#lib/app/preferences/preference-database.ts";
 import { decodeHuntRecord, huntDefaults, HuntStorageError, HuntValues, type HuntPreferenceStore } from "./preference-store.ts";
 
-const decode = decodeHuntRecord;
+// Dexie transactions need synchronous validation so no unrelated async work can close them.
+function decode(input: unknown) {
+  const result = decodeHuntRecord(input);
+  if (Result.isFailure(result)) throw new HuntStorageError({ operation: "save", cause: result.failure });
+  return result.success;
+}
 
 /** Device preferences are separate from owner-scoped collection snapshots. */
 export class DexieHuntStore implements HuntPreferenceStore {
@@ -24,13 +29,15 @@ export class DexieHuntStore implements HuntPreferenceStore {
 
   load = Effect.fn("DexieHuntStore.load")({ self: this }, function* () {
     const db = yield* this.open("load");
-    return yield* Effect.tryPromise({
-      try: async () => {
-        const saved = await db.preferences.get("hunt");
-        return saved === undefined ? { ...huntDefaults } : decode(saved);
-      },
+    const saved = yield* Effect.tryPromise({
+      try: () => db.preferences.get("hunt"),
       catch: (cause) => new HuntStorageError({ operation: "load", cause }),
     });
+    return saved === undefined
+      ? { ...huntDefaults }
+      : yield* Effect.fromResult(decodeHuntRecord(saved)).pipe(
+          Effect.mapError((cause) => new HuntStorageError({ operation: "load", cause })),
+        );
   });
 
   save = Effect.fn("DexieHuntStore.save")({ self: this }, function* (patch: Partial<HuntValues>) {

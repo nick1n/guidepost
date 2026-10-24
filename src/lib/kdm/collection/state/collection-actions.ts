@@ -5,7 +5,7 @@ import type { CollectionError } from "./collection-errors.ts";
 import type { TransferError } from "./collection-transfer.ts";
 import type { EditionSelection } from "#lib/catalog-view.ts";
 import { collectionKey } from "#lib/types/collection.ts";
-import { Notifications } from "../../../app/notifications/notifications.ts";
+import { Notifications } from "#lib/app/notifications/notifications.ts";
 
 type ActionError = CollectionError | NavigationError | TransferError;
 type ActionOptions = { success?: string | false | { message: string; details?: readonly string[] } };

@@ -1,4 +1,4 @@
-import { Effect, Predicate, Schema } from "effect";
+import { Effect, Predicate, Result, Schema } from "effect";
 
 export const dateFormats = ["iso", "day-first", "month-first", "written"] as const;
 export const DateFormat = Schema.Literals(dateFormats);
@@ -24,7 +24,7 @@ const recordContainer = Schema.Unknown.check(
     { expected: "a plain preference record" },
   ),
 );
-const decodeRecord = Schema.decodeUnknownSync(
+const decodeRecord = Schema.decodeUnknownResult(
   recordContainer.pipe(
     Schema.decodeTo(
       Schema.StructWithRest(
@@ -39,7 +39,7 @@ const decodeRecord = Schema.decodeUnknownSync(
 );
 
 export function decodeAppRecord(input: unknown) {
-  return { ...appDefaults, ...decodeRecord(input) };
+  return Result.map(decodeRecord(input), (record) => ({ ...appDefaults, ...record }));
 }
 export class AppStorageError extends Schema.TaggedError<AppStorageError>()("AppStorageError", {
   operation: Schema.Literals(["load", "save"]),

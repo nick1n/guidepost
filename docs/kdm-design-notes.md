@@ -80,6 +80,9 @@ Arc survivors with Disposition (heart, i-material-symbols:favorite).
 
 ## Future work
 
+- [ ] Add an "Update available" prompt when a new app version is ready. Offer a reload after pending collection saves succeed; preserve filters and consider restoring scroll position and expanded cards.
+- [ ] Explore automatic refresh when the app returns to the foreground. Defer reloads while saves, active inputs, or dialogs need attention.
+- [ ] Consider refreshing the catalog in place without reloading. Fetch and validate fresh data, refresh the service-worker cache, and update the existing Collection while preserving owner state, pending writes, and browsing state. Retain saved ownership for removed items or editions.
 - [ ] Show failed hunt preference saves inline with an unsaved state and a Retry action, alongside the notification log.
 - [ ] Move the date-format preference from localStorage to Dexie for consistent settings storage. Do not add a migration.
 - [ ] Add an optional "Download this deck" action for hunt artwork so every random draw in the selected deck is available offline.

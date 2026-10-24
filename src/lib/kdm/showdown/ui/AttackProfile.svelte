@@ -7,9 +7,9 @@
 
 <script lang="ts">
   import ActionCost from "./actions/ActionCost.svelte";
-  import { attackOdds } from "../attack-odds";
-  import { describeCost, type Cost } from "../sheet";
-  import { type attackStats } from "../rules";
+  import { attackOdds } from "#lib/kdm/showdown/attack-odds.ts";
+  import { describeCost, type Cost } from "#lib/kdm/showdown/sheet.ts";
+  import { type attackStats } from "#lib/kdm/showdown/rules.ts";
   import type { Snippet } from "svelte";
 
   type RollSpread = ReturnType<typeof attackOdds>["hits"];

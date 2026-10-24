@@ -1,4 +1,4 @@
-import { Effect, Schema, Stream } from "effect";
+import { Context, Effect, Schema, Stream } from "effect";
 import type { CollectionSnapshot } from "#lib/types/index.ts";
 
 export class StoreError extends Schema.TaggedError<StoreError>()("StoreError", {
@@ -20,3 +20,5 @@ export interface CollectionStore {
   save(state: CollectionSnapshot): Effect.Effect<void, StoreError>;
   clear(): Effect.Effect<void, StoreError>;
 }
+
+export class CollectionStorage extends Context.Service<CollectionStorage, CollectionStore>()("guidepost/CollectionStorage") {}

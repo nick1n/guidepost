@@ -1,6 +1,6 @@
 <script lang="ts">
   import KdIcon from "#lib/components/KdIcon.svelte";
-  import { describeCost, type Cost } from "../../sheet";
+  import { describeCost, type Cost } from "#lib/kdm/showdown/sheet.ts";
 
   let { cost }: { cost: readonly Cost[] } = $props();
   let label = $derived(cost.length ? `Costs ${describeCost(cost)}` : undefined);

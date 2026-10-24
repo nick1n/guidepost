@@ -15,11 +15,11 @@
     return asset(path as AssetPath);
   }
 
-  function slide(_node: Element, { direction }: { direction: 1 | -1 }) {
+  function slide(_node: Element, { dir }: { dir: 1 | -1 }) {
     return {
       duration: reducedMotion.current ? 0 : duration,
-      easing: direction === -1 ? backOut : cubicOut,
-      css: (t: number, u: number) => `transform: translateX(${direction * u * 150}%) rotateZ(${direction * u * 15}deg); opacity: ${t}`,
+      easing: dir === -1 ? backOut : cubicOut,
+      css: (t: number, u: number) => `translate: ${dir * u * 150}%; rotate: ${dir * u * 15}deg; opacity: ${t}`,
     };
   }
 </script>
@@ -38,39 +38,39 @@
   const failed = new SvelteSet<string>();
   let card = $state(1);
   let artworkCard = $state(1);
-  let showCard = $state(false);
   let rotation = $state(0);
+  const showCard = $derived(rotation % 360 !== 0);
   let hasClicked = $state(false);
   let drawing = $state(false);
   let selecting = $state(false);
   let selectionTimer: Timeout;
-  let flipping = $state(false);
   let firstRand = $state(0);
   let secondRand = $state(0);
   let retry = $state(0);
   let picker: HuntPicker;
   let slideElement = $state<HTMLDivElement>();
-  let drawingElement: HTMLDivElement | undefined;
-  let selectionElement = $state<HTMLDivElement>();
+  let exitingElement = $state<HTMLDivElement>();
   let cardElement: HTMLButtonElement | undefined;
-  let flipSource: { element: HTMLButtonElement; front: string } | undefined;
+  let flipSource = $state.raw<{ element: HTMLButtonElement; front: string }>();
+  const flipping = $derived(flipSource !== undefined);
   let retryFocus: { front: string; retry: number } | undefined;
 
-  const images = $derived(huntImages(artworkCard, preferences));
-  const frontSrc = $derived(images.front);
-  const backSrc = $derived(images.back);
+  const requestedImages = $derived(huntImages(artworkCard, preferences));
+  // Keep the outgoing artwork unchanged until its slide has actually finished.
+  let images = $state.raw(huntImages(1, huntDefaults));
   // Selecting different artwork restores its deck back; a completed flip can override this face.
-  let backFace = $derived({ front: frontSrc, src: backSrc });
-  const sources = $derived(preferences.ready ? [images.front, images.back, ...(images.reverse ? [images.reverse] : [])] : []);
+  let backFace = $derived(images.back);
+  const sources = $derived(
+    preferences.ready ? [requestedImages.front, requestedImages.back, ...(requestedImages.reverse ? [requestedImages.reverse] : [])] : [],
+  );
   const loading = $derived(!preferences.ready || sources.some((src) => !loaded.has(src)));
   const loadError = $derived(sources.some((src) => failed.has(src)));
-  const busy = $derived(drawing || loading || selecting || !!selectionElement);
-  const showReverse = $derived(backFace.src === images.reverse);
+  const busy = $derived(drawing || loading || selecting || !!exitingElement || images.front !== requestedImages.front);
   const first = $derived(drawing ? firstRand : Math.floor(card / 10) % 10);
   const second = $derived(drawing ? secondRand : card % 10);
   const face = $derived.by(() => {
     if (showCard) return "front";
-    if (showReverse) return "reverse";
+    if (backFace === images.reverse) return "reverse";
     return "card back";
   });
 
@@ -90,18 +90,15 @@
     hasClicked = true;
     if (flipping || busy || loadError || !cardElement) return;
     const turn = direction ?? (showCard ? "left" : "right");
-    flipSource = { element: cardElement, front: frontSrc };
+    flipSource = { element: cardElement, front: images.front };
     rotation += turn === "left" ? -180 : 180;
-    showCard = !showCard;
-    flipping = true;
     if (reducedMotion.current) finishFlip(cardElement);
   }
 
   function finishFlip(element: HTMLButtonElement) {
     if (flipSource?.element !== element) return;
-    if (frontSrc === flipSource.front && images.reverse) backFace = { front: frontSrc, src: images.reverse };
+    if (images.front === flipSource.front && images.reverse) backFace = images.reverse;
     flipSource = undefined;
-    flipping = false;
   }
 
   function finishTransition(event: TransitionEvent) {
@@ -113,7 +110,7 @@
     const focus = retryFocus;
     retryFocus = undefined;
     const document = element.ownerDocument;
-    if (focus?.front === frontSrc && focus.retry === retry && document.activeElement === document.body && document.hasFocus()) {
+    if (focus?.front === images.front && focus.retry === retry && document.activeElement === document.body && document.hasFocus()) {
       element.focus({ preventScroll: true });
     }
     return () => {
@@ -135,33 +132,35 @@
   function conceal() {
     retryFocus = undefined;
     flipSource = undefined;
-    flipping = false;
     rotation = Math.round(rotation / 360) * 360;
-    showCard = false;
-    backFace = { front: frontSrc, src: backSrc };
+    backFace = images.back;
   }
 
   function draw() {
     if (flipping || drawing) return;
-    drawingElement = !busy && !loadError ? slideElement : undefined;
+    const waitForExit = !busy && !loadError && slideElement !== undefined;
     clearTimeout(selectionTimer);
     selecting = false;
     drawing = true;
-    if (!drawingElement) finishDraw();
+    if (!waitForExit) finishDraw();
   }
 
   function finishDraw() {
-    drawingElement = undefined;
     conceal();
     card = Math.floor(Math.random() * 100) + 1;
     artworkCard = card;
     drawing = false;
   }
 
+  function onoutrostart(event: Event) {
+    if (event.target === slideElement) exitingElement = slideElement;
+  }
+
   function onoutroend(event: Event) {
-    if (event.target === selectionElement) selectionElement = undefined;
-    // Artwork changes can leave an older card animating alongside this draw.
-    if (event.target === drawingElement) finishDraw();
+    if (event.target !== exitingElement) return;
+    exitingElement = undefined;
+    if (drawing) finishDraw();
+    images = requestedImages;
   }
 
   function selectHunt() {
@@ -171,8 +170,8 @@
   }
 
   function select(cardNumber: number) {
-    if (cardNumber === card && !selecting && !selectionElement) return;
-    if (!busy && !loadError) selectionElement = slideElement;
+    if (cardNumber === card && !selecting && !exitingElement) return;
+    if (!busy && !loadError) exitingElement = slideElement;
     selecting = true;
     conceal();
     card = cardNumber;
@@ -188,6 +187,8 @@
       onload() {
         failed.delete(path);
         loaded.add(path);
+        // Initial loads and retries have no visible card whose outro can commit the artwork.
+        if (!slideElement && !exitingElement) images = requestedImages;
       },
       onerror() {
         failed.add(path);
@@ -197,7 +198,7 @@
 
   function retryImages(event: MouseEvent) {
     const button = event.currentTarget as HTMLButtonElement;
-    retryFocus = button.ownerDocument.activeElement === button ? { front: frontSrc, retry: retry + 1 } : undefined;
+    retryFocus = button.ownerDocument.activeElement === button ? { front: requestedImages.front, retry: retry + 1 } : undefined;
     for (const src of sources) {
       loaded.delete(src);
       failed.delete(src);
@@ -250,7 +251,7 @@
 
 <svelte:head>
   <title>Hunt Events | Guidepost</title>
-  {#if !preferences.ready || images.back === defaultBack}
+  {#if !preferences.ready || requestedImages.back === defaultBack}
     <link rel="prefetch" as="image" href={cardAsset(defaultBack)} />
   {/if}
   <meta name="description" content="Draw and select all 100 Kingdom Death: Monster hunt events with card images by Fen, Kekasi, and CCG." />
@@ -267,31 +268,26 @@
   </div>
   <div class="stage" style:--aspect={images.aspectRatio}>
     {#if !busy && !loadError}
-      {#key `${images.front}:${retry}`}
-        <div class="slide" bind:this={slideElement} {onoutroend} in:slide|global={{ direction: -1 }} out:slide|global={{ direction: 1 }}>
-          <button
-            class="card"
-            type="button"
-            aria-label={`Flip hunt event ${card}, showing ${face}`}
-            aria-keyshortcuts="ArrowLeft ArrowRight"
-            title="Flip card (Left/Right arrows)"
-            aria-disabled={flipping || undefined}
-            style:--rotation={`${rotation}deg`}
-            {onclick}
-            ontransitionend={finishTransition}
-            ontransitioncancel={finishTransition}
-            {@attach trackCard}
-            {@attach swipe({ onSwipe: flip })}
-          >
-            <img class={["back", showReverse && "is-hidden"]} src={cardAsset(images.back)} alt="" aria-hidden="true" />
-            {#if images.reverse}
-              <img class={["back", !showReverse && "is-hidden"]} src={cardAsset(images.reverse)} alt="" aria-hidden="true" />
-            {/if}
-            <img class="front" src={cardAsset(images.front)} alt="" aria-hidden="true" />
-            {#if !hasClicked && !showCard}<span class="ripple" aria-hidden="true"></span>{/if}
-          </button>
-        </div>
-      {/key}
+      <div class="slide" bind:this={slideElement} {onoutrostart} {onoutroend} in:slide={{ dir: -1 }} out:slide={{ dir: 1 }}>
+        <button
+          class="card"
+          type="button"
+          aria-label={`Flip hunt event ${card}, showing ${face}`}
+          aria-keyshortcuts="ArrowLeft ArrowRight"
+          title="Flip card (Left/Right arrows)"
+          aria-disabled={flipping || undefined}
+          style:--rotation={`${rotation}deg`}
+          {onclick}
+          ontransitionend={finishTransition}
+          ontransitioncancel={finishTransition}
+          {@attach trackCard}
+          {@attach swipe({ onSwipe: flip })}
+        >
+          <img class="back" src={cardAsset(backFace)} alt="" aria-hidden="true" />
+          <img class="front" src={cardAsset(images.front)} alt="" aria-hidden="true" />
+          {#if !hasClicked && !showCard}<span class="ripple" aria-hidden="true"></span>{/if}
+        </button>
+      </div>
     {/if}
     {#if loadError}
       <div class="load-status" role="alert">
@@ -362,13 +358,12 @@
     display: grid;
     z-index: 1;
     grid-area: 1 / 1;
-    perspective: 1000px;
   }
   .card {
     position: relative;
     aspect-ratio: var(--aspect);
     inline-size: min(100cqw, calc(100cqh * var(--aspect)));
-    transform: rotateY(var(--rotation));
+    transform: perspective(1000px) rotateY(var(--rotation));
     transform-style: preserve-3d;
     border-radius: var(--radius-card);
     box-shadow: 0 0.75rem 3rem #00000080;
@@ -382,9 +377,6 @@
     inset: 0;
     border-radius: inherit;
     backface-visibility: hidden;
-    &.is-hidden {
-      visibility: hidden;
-    }
   }
   .front {
     transform: rotateY(180deg);
