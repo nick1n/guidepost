@@ -76,7 +76,7 @@
   });
   const editions = $derived(
     reviewEditions(item).filter(
-      (edition) => !edition.includedOnly || selection(edition).owned || collection.coverage.edition(item.id, edition.id).available,
+      (edition) => !edition.includedOnly || selection(edition).owned || collection.coverage.edition(item.id, edition.id).covered,
     ),
   );
   const selected = $derived(
@@ -90,7 +90,7 @@
   const requirements = $derived(reviewRequirements(item, catalog.byId));
   const numberedEditions = $derived(editions.filter((edition) => edition.numbered === true && selection(edition).owned));
   const hasOwned = $derived(editions.some((edition) => selection(edition).owned));
-  const hasPartial = $derived(!hasOwned && editions.some((edition) => includedOwnership(edition).exactCount > 0));
+  const hasPartial = $derived(!hasOwned && editions.some((edition) => includedCoverage(edition).exactCount > 0));
 
   function selection(edition: Edition) {
     return collection.getEdition(item.id, edition.id);
@@ -100,7 +100,7 @@
     if (event.type === "transitionrun") animatingEditions.add(editionId);
     else animatingEditions.delete(editionId);
   }
-  function includedOwnership(edition: Edition, target = item) {
+  function includedCoverage(edition: Edition, target = item) {
     return collection.coverage.contents(target.id, edition.id);
   }
   function showOwnershipFeedback(kind: OwnershipKind) {
@@ -146,7 +146,7 @@
   }
   function toggleIncludedOwned(edition: Edition, target: Entry, owned?: boolean) {
     if (!writable) return;
-    const shouldOwn = owned ?? !collection.coverage.edition(target.id, edition.id).available;
+    const shouldOwn = owned ?? !collection.coverage.edition(target.id, edition.id).covered;
     const restoring = collection.getEdition(target.id, edition.id).missing;
     collectionActions.run(collection.toggleIncludedOwned(collectionKey(target.id, edition.id), shouldOwn), {
       success: includedMessage({ item: target, edition }, shouldOwn, restoring),
@@ -328,7 +328,7 @@
 {/snippet}
 
 {#snippet editionDetail(edition: Edition)}
-  {@const { children, exactCount } = includedOwnership(edition)}
+  {@const { children, exactCount } = includedCoverage(edition)}
   {#if children.length}
     <details class="contents" bind:open={contentsOpen}>
       <summary>
@@ -351,10 +351,10 @@
               <label class="own">
                 <input
                   type="checkbox"
-                  aria-label={child.status.available ? `Mark ${name}, ${label} missing` : `Have ${name}, ${label}`}
-                  checked={child.exactOwned}
+                  aria-label={child.status.covered ? `Mark ${name}, ${label} missing` : `Have ${name}, ${label}`}
+                  checked={child.exactCovered}
                   disabled={!writable}
-                  aria-describedby={child.owned && !child.exactOwned
+                  aria-describedby={child.covered && !child.exactCovered
                     ? `other-owned-${item.id}-${edition.id}-${child.item.id}-${child.edition.id}`
                     : undefined}
                   onchange={(event) => toggleIncludedOwned(child.edition, child.item, event.currentTarget.checked)}
@@ -363,15 +363,15 @@
               <button
                 class="edition-label"
                 type="button"
-                aria-label={child.status.available ? `Mark ${name}, ${label} missing` : `Have ${name}, ${label}`}
-                aria-pressed={child.exactOwned}
+                aria-label={child.status.covered ? `Mark ${name}, ${label} missing` : `Have ${name}, ${label}`}
+                aria-pressed={child.exactCovered}
                 disabled={!writable}
                 onclick={() => toggleIncludedOwned(child.edition, child.item)}
               >
                 <span>{child.name} <small>{label}</small></span>
-                {#if child.owned && !child.exactOwned}
+                {#if child.covered && !child.exactCovered}
                   <span class="included-owned" id={`other-owned-${item.id}-${edition.id}-${child.item.id}-${child.edition.id}`}>
-                    Owned: {[...new Set(child.ownedEditions.map((edition) => reviewIncludedEditionLabel(item, edition)))].join(", ")}
+                    Owned: {[...new Set(child.coveredEditions.map((edition) => reviewIncludedEditionLabel(item, edition)))].join(", ")}
                   </span>
                 {:else if child.status.source === "upgrade"}
                   <span class="included-owned">
@@ -421,8 +421,8 @@
 
 {#snippet editionRow(edition: Edition, active: boolean)}
   {@const value = selection(edition)}
-  {@const ownership = includedOwnership(edition)}
-  {@const hasContents = ownership.children.length > 0}
+  {@const contents = includedCoverage(edition)}
+  {@const hasContents = contents.children.length > 0}
   {@const gameplay = editionGameplay(item, edition)}
   {@const price = reviewPrice(item, edition)}
   {@const detail = [...new Set([edition.name, ...(edition.format === "digital" ? ["Digital"] : editionMaterials(edition))])]
@@ -430,7 +430,7 @@
     .join(", ")}
   <div
     class={["edition", active && "inspected", hasContents && "contents-progress", animatingEditions.has(edition.id) && "is-animating"]}
-    style:--ownership-progress={hasContents ? `${(ownership.exactCount / ownership.children.length) * 100}%` : undefined}
+    style:--ownership-progress={hasContents ? `${(contents.exactCount / contents.children.length) * 100}%` : undefined}
     ontransitionrun={(event) => updateProgressAnimation(event, edition.id)}
     ontransitionend={(event) => updateProgressAnimation(event, edition.id)}
     ontransitioncancel={(event) => updateProgressAnimation(event, edition.id)}
@@ -446,7 +446,7 @@
       />
       {#if hasContents}
         <span class="visually-hidden" id={`ownership-${item.id}-${edition.id}`}>
-          {ownership.exactCount} of {ownership.children.length} included items owned.
+          {contents.exactCount} of {contents.children.length} included items owned.
         </span>
       {/if}
     </label>

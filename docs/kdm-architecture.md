@@ -53,6 +53,13 @@ Metadata schema version 1 validates records; it is separate from Dexie's databas
 The collection queue has no durable undo. After release, table/index changes need Dexie upgrades, and incompatible records need a
 compatibility or migration policy with preservation tests.
 
+## Collection browsing
+
+[CollectionBrowsing](../src/lib/kdm/collection/collection-browsing.svelte.ts) owns catalog category, search, tags, ownership filters,
+per-category batches, retained card results, and URL restoration.
+[CollectionCards](../src/lib/kdm/collection/collection-cards.svelte.ts) owns collapse, deferred rendering, viewport observation,
+and held-card scroll anchoring. The collection page owns focus, gestures, and navigation; `Collection` owns collection commands.
+
 ## App and route settings
 
 The root layout provides app-scoped Svelte contexts and owns browser startup, pending-write unload guards, and teardown.

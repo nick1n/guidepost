@@ -16,7 +16,7 @@ type CoverageNode = {
 };
 
 type CoverageStatus = {
-  available: boolean;
+  covered: boolean;
   source: "owned" | "included" | "equivalent" | "upgrade" | "missing";
   via: EditionSelection[];
 };
@@ -267,7 +267,7 @@ function indexRelationships(entries: readonly CatalogEntry[], byId: ReadonlyMap<
     let total = 0;
     let missing = 0;
     let unavailable = 0;
-    const ownership = snapshot && coverage(snapshot);
+    const contentCoverage = snapshot && coverage(snapshot);
     const children = includedEditions(id, editionId, false);
     for (const reference of inclusions(id, editionId))
       if (
@@ -279,7 +279,7 @@ function indexRelationships(entries: readonly CatalogEntry[], byId: ReadonlyMap<
         )
       )
         missing += 1;
-    const needed = children.filter((child) => !ownership?.edition(child.item.id, child.edition.id).available);
+    const needed = children.filter((child) => !contentCoverage?.edition(child.item.id, child.edition.id).covered);
     const priced = new Set<string>();
     for (const child of needed) {
       const canonical = collectionKey(child.item.id, child.edition.equivalentTo ?? child.edition.id);
@@ -395,7 +395,7 @@ function resolveCoverage(nodes: ReadonlyMap<string, CoverageNode>, snapshot: Col
     const cached = cache.get(key);
     if (cached) return cached;
     const node = nodes.get(key);
-    if (!node || visiting.has(key) || snapshot[key]?.missing) return { available: false, source: "missing", via: [] };
+    if (!node || visiting.has(key) || snapshot[key]?.missing) return { covered: false, source: "missing", via: [] };
     visiting.add(key);
     const result = resolveStatus(key, node);
     visiting.delete(key);
@@ -404,18 +404,18 @@ function resolveCoverage(nodes: ReadonlyMap<string, CoverageNode>, snapshot: Col
   }
   function resolveStatus(key: string, node: CoverageNode): CoverageStatus {
     const sources = supplied.get(key);
-    if (sources?.length) return { available: true, source: snapshot[key]?.owned ? "owned" : "included", via: sources };
+    if (sources?.length) return { covered: true, source: snapshot[key]?.owned ? "owned" : "included", via: sources };
 
     const equivalents = node.equivalents.filter((candidate) => !snapshot[candidate]?.missing);
     const equivalent = equivalents.find((candidate) => candidate !== key && supplied.has(candidate));
-    if (equivalent) return { available: true, source: "equivalent", via: [nodes.get(equivalent)!.selection] };
+    if (equivalent) return { covered: true, source: "equivalent", via: [nodes.get(equivalent)!.selection] };
 
     for (const recipe of equivalents.flatMap((candidate) => nodes.get(candidate)!.recipes)) {
-      if (!recipe.every((key) => status(key).available)) continue;
+      if (!recipe.every((key) => status(key).covered)) continue;
       const via = recipe.map((key) => nodes.get(key)!.selection);
-      return { available: true, source: "upgrade", via };
+      return { covered: true, source: "upgrade", via };
     }
-    return { available: false, source: "missing", via: [] };
+    return { covered: false, source: "missing", via: [] };
   }
   function edition(id: string, editionId: string) {
     return status(collectionKey(id, editionId));
@@ -424,13 +424,13 @@ function resolveCoverage(nodes: ReadonlyMap<string, CoverageNode>, snapshot: Col
     const children = (nodes.get(collectionKey(id, editionId))?.children ?? []).map(({ key, name }) => {
       const child = nodes.get(key)!.selection;
       const status = edition(child.item.id, child.edition.id);
-      const ownedEditions = reviewEditions(child.item).filter((release) => edition(child.item.id, release.id).available);
-      return { ...child, name, status, exactOwned: status.available, owned: ownedEditions.length > 0, ownedEditions };
+      const coveredEditions = reviewEditions(child.item).filter((release) => edition(child.item.id, release.id).covered);
+      return { ...child, name, status, exactCovered: status.covered, covered: coveredEditions.length > 0, coveredEditions };
     });
     return {
       children,
-      exactCount: children.filter((child) => child.exactOwned).length,
-      count: children.filter((child) => child.owned).length,
+      exactCount: children.filter((child) => child.exactCovered).length,
+      count: children.filter((child) => child.covered).length,
     };
   }
   return { edition, contents };

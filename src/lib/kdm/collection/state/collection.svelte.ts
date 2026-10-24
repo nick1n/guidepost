@@ -325,9 +325,9 @@ export class Collection {
   toggleIncludedOwned = Effect.fn("Collection.toggleIncludedOwned")({ self: this }, function (key: string, owned?: boolean) {
     const entry = this.get(key);
     const [itemId, editionId] = parseCollectionKey(key);
-    const shouldOwn = owned ?? !this.coverage.edition(itemId, editionId).available;
+    const shouldOwn = owned ?? !this.coverage.edition(itemId, editionId).covered;
     const restored = { ...this.state, [key]: { ...entry, owned: false, missing: false } };
-    const supplied = this.catalog.coverage(restored).edition(itemId, editionId).available;
+    const supplied = this.catalog.coverage(restored).edition(itemId, editionId).covered;
     if (!shouldOwn) {
       return this.commitMany({ [key]: { owned: false, missing: supplied } });
     }

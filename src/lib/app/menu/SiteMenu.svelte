@@ -16,6 +16,7 @@
   import { getCollectionActions } from "#lib/kdm/collection/state/collection-actions.ts";
   import ConfirmDialog from "../../components/ConfirmDialog.svelte";
   import Select from "../../components/Select.svelte";
+  import ToggleButton from "../../components/ToggleButton.svelte";
   import { MenuSession } from "./menu-session.ts";
   import { createSwipeDismiss } from "../../swipe-dismiss.svelte.ts";
   import MenuButton from "./MenuButton.svelte";
@@ -295,9 +296,9 @@
           </div>
         {/if}
       {:else}
-        <button class="glass-setting" type="button" aria-pressed={glass.enabled} onclick={() => glass.setEnabled(!glass.enabled)}>
+        <ToggleButton pressed={glass.enabled} onclick={() => glass.setEnabled(!glass.enabled)} style="margin-block-end: 0.75rem">
           Glass effects
-        </button>
+        </ToggleButton>
         <div class="date-settings">
           <label for={`${id}-date-format`}>Date format</label>
           <Select id={`${id}-date-format`} value={dates.dateFormat} onchange={(event) => dates.setDateFormat(event.currentTarget.value)}>
@@ -480,23 +481,6 @@
 
     & label {
       font-weight: var(--font-bold);
-    }
-  }
-  .glass-setting {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-block-size: 2.75rem;
-    margin-block-end: 0.75rem;
-    padding: 0.5rem;
-    border: var(--border-width) solid var(--grey-7);
-    border-radius: var(--radius-control);
-    background: var(--card);
-    font-size: var(--text-sm);
-
-    &[aria-pressed="true"] {
-      border-color: var(--accent);
-      background: var(--blue-7);
     }
   }
   .reset-settings {
@@ -813,10 +797,6 @@
     transition: var(--transition-colors);
   }
   @media (hover: hover) {
-    .glass-setting:hover {
-      border-color: var(--accent);
-      background: var(--blue-8);
-    }
     :is(.row, .back):hover:not(:disabled),
     .navigation :is(a, button):hover {
       background: var(--blue-9);

@@ -1,36 +1,96 @@
 # Domain glossary
 
+Terms for the KDM catalog and personal collection. Ownership records acquisitions; coverage describes the content those acquisitions provide.
+
 ## Catalog
 
-Products and editions in [data.json](static/kdm/catalog/data.json). Stable item and edition IDs identify collection entries; display labels can change.
+**Catalog**:
+The reference collection of KDM products, components, editions, and their relationships.
 
-## Catalog publication
+**Item**:
+A catalog identity grouping a product or component and its editions. An item can represent a separately sold product or an included-only component.
 
-Replacing staged catalog files, mappings, tags, archives, and reports after checking captured inputs. Files publish separately;
-partial writes are reported, and completion reports publish last.
+**Edition**:
+A particular release of an item, distinguished by facts such as format, production run, or rules version. Its identity remains stable when its label or other descriptive facts change.
+_Avoid_: Label as identity.
 
-## Review
+**Product**:
+A catalog offering that can be acquired in its own right, including a box, bundle, model, or digital release.
 
-A catalog change set with input hashes and unresolved matches. Application validates inputs and proposed data before publication.
-The archive retains the full change set; the merge report summarizes applied changes.
+**Included-only component**:
+Content supplied within another product, with no standalone sale represented in the catalog.
 
-## Collection browsing
+**Inclusion**:
+A relationship stating that a parent product supplies a specified child item or edition. Listed inclusions may describe only part of the parent's contents.
 
-Catalog category, search, tags, ownership filter, per-category batches, and retained card results.
-[CollectionBrowsing](src/lib/kdm/collection/collection-browsing.svelte.ts) owns those transitions and URL restoration.
+**Equivalence**:
+A reviewed relationship allowing one edition to satisfy another edition's content coverage. It does not establish ownership of the other edition or supply that edition's additional contents.
 
-[CollectionCards](src/lib/kdm/collection/collection-cards.svelte.ts) owns collapse, deferred rendering, viewport observation, and held-card scroll anchoring. The collection page owns focus, gestures, and navigation. [Collection](src/lib/kdm/collection/state/collection.svelte.ts) owns collection commands.
+**Upgrade recipe**:
+A combination of referenced editions that together satisfy a target edition's content coverage. Every reference in one recipe is required; separate recipes are alternatives.
 
-## Catalog release resolution
+**Shop stock**:
+The observed state of an edition's current shop listing: in stock, out of stock, or missing from the shop snapshot. Absent stock evidence is unknown.
 
-Matching shop variants to catalog editions using curated selectors, warehouse groups, materials, and prices.
-Workflows own their publication and availability policies.
+**Availability**:
+Whether an edition is recorded as currently obtainable through its listing. Availability is independent of the collector's ownership and content coverage.
+_Avoid_: Availability as a synonym for coverage.
 
-## Collection session
+## Collection
 
-The app's storage and monitoring lifetime. [CollectionSession](src/lib/kdm/collection/state/collection-session.ts) opens browser storage, retains it for load retries, and stops subscriptions before closing storage. The layout forwards reactive readiness; `Collection` owns state and commands.
+**Collection entry**:
+A collector's recorded ownership, wish, missing override, or copy number for one item and edition.
 
-## Workbook contract
+**Product ownership**:
+An explicitly recorded acquisition of an edition. It is not inferred from inclusion, equivalence, or upgrade coverage.
+_Avoid_: Owned as a synonym for covered content.
 
-Product mappings and normalized rows in [workbook.ts](src/lib/types/workbook.ts), shared by tooling and collection transfers.
-`pnpm generate:types` derives the editor schema; identity and transfer workflows own reference checks.
+**Coverage**:
+Whether an edition's content is supplied by recorded acquisitions, inclusions, equivalences, or upgrade recipes, subject to missing overrides. Coverage alone does not record ownership or supply additional contents.
+
+**Missing override**:
+A collector's declaration that a particular edition's content is absent despite sources that would otherwise cover it. It blocks that edition and the contents it supplies, while independent sources may still cover those contents.
+
+**Wish**:
+A collector's recorded desire to acquire an edition, separate from ownership and coverage.
+
+**Copy number**:
+The serial number assigned to a particular copy of a numbered release.
+_Avoid_: Quantity owned, copy count.
+
+**Listed-content progress**:
+Coverage of the contents explicitly listed for a product. It does not establish completeness of contents absent from that list.
+
+## Catalog workflows
+
+**Catalog review**:
+A proposed catalog change set with its source evidence and unresolved matches.
+
+**Catalog publication**:
+Applying a prepared catalog change set and its related mappings, tags, archives, and reports.
+
+**Release resolution**:
+Matching a shop listing's variants to catalog editions using reviewed release characteristics.
+
+**Workbook mapping**:
+A correspondence between rows and release choices in a particular workbook snapshot and stable catalog item and edition identities. Row locations identify that snapshot's source cells, not permanent product identities.
+
+## Campaign (proposed)
+
+**Content selection**:
+Gameplay chosen for a campaign from content covered by a user's collection at selection time. The selection retains its edition and rules version independently of later collection changes.
+
+**Command**:
+A request to change campaign gameplay, expressing the player's intent.
+
+**Event**:
+An accepted gameplay change resulting from a command.
+
+**Action**:
+The complete group of events from one accepted gameplay command, forming one atomic undo step.
+
+**Campaign rules version**:
+The rules version recorded for a campaign, independent of subsequent changes to the players' collections.
+
+**Sequential undo**:
+Reversal of only the latest active action in the shared campaign timeline, regardless of actor or phase. Reaching an earlier action requires undoing every later action first.

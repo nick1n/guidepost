@@ -153,34 +153,34 @@ describe("edition coverage", () => {
     const base = Object.fromEntries(
       [...keys("core", "1-5"), ...keys("expansion-dung-beetle-knight", "1-3")].map((key) => [key, { owned: true }]),
     );
-    expect(index.coverage(base).edition("core", "1-6").available).toBe(false);
+    expect(index.coverage(base).edition("core", "1-6").covered).toBe(false);
     const upgraded = { ...base, ...Object.fromEntries(keys("legendary-card-pack", "1").map((key) => [key, { owned: true }])) };
     const result = index.coverage(upgraded);
-    expect(result.edition("core", "1-5").available).toBe(true);
-    expect(result.edition("core", "1-6").available).toBe(false);
-    expect(result.edition("core-gameplay", "1-6").available).toBe(true);
-    expect(result.edition("expansion-dung-beetle-knight", "1-3").available).toBe(true);
-    expect(result.edition("expansion-dung-beetle-knight", "1-6").available).toBe(false);
-    expect(result.edition("dung-beetle-knight-gameplay", "1-6").available).toBe(true);
-    expect(result.edition("expansion-dung-beetle-knight", "1-7").available).toBe(false);
-    expect(result.edition("core", "sim").available).toBe(false);
+    expect(result.edition("core", "1-5").covered).toBe(true);
+    expect(result.edition("core", "1-6").covered).toBe(false);
+    expect(result.edition("core-gameplay", "1-6").covered).toBe(true);
+    expect(result.edition("expansion-dung-beetle-knight", "1-3").covered).toBe(true);
+    expect(result.edition("expansion-dung-beetle-knight", "1-6").covered).toBe(false);
+    expect(result.edition("dung-beetle-knight-gameplay", "1-6").covered).toBe(true);
+    expect(result.edition("expansion-dung-beetle-knight", "1-7").covered).toBe(false);
+    expect(result.edition("core", "sim").covered).toBe(false);
     expect(upgraded[collectionKey("core", "1-6")]).toBeUndefined();
     const missingUpdate = index.coverage({
       ...upgraded,
       [collectionKey("dung-beetle-knight-upgrade", "1-6")]: { owned: true, missing: true },
     });
-    expect(missingUpdate.edition("expansion-dung-beetle-knight", "1-6").available).toBe(false);
-    expect(missingUpdate.edition("expansion-dung-beetle-knight", "1-3").available).toBe(true);
-    expect(missingUpdate.edition("core-gameplay", "1-6").available).toBe(true);
+    expect(missingUpdate.edition("expansion-dung-beetle-knight", "1-6").covered).toBe(false);
+    expect(missingUpdate.edition("expansion-dung-beetle-knight", "1-3").covered).toBe(true);
+    expect(missingUpdate.edition("core-gameplay", "1-6").covered).toBe(true);
     const missingBookUpdate = index.coverage({
       ...upgraded,
       [collectionKey("core-rulebook-upgrade", "1-6")]: { owned: true, missing: true },
     });
-    expect(missingBookUpdate.edition("core", "1-6").available).toBe(false);
-    expect(missingBookUpdate.edition("core-gameplay", "1-6").available).toBe(true);
-    expect(missingBookUpdate.edition("kingdom-death-monster-rulebook", "1-6-included").available).toBe(false);
-    expect(result.edition("kingdom-death-monster-rulebook", "1-6").available).toBe(true);
-    expect(result.edition("kingdom-death-monster-rulebook", "1-6-included").available).toBe(false);
+    expect(missingBookUpdate.edition("core", "1-6").covered).toBe(false);
+    expect(missingBookUpdate.edition("core-gameplay", "1-6").covered).toBe(true);
+    expect(missingBookUpdate.edition("kingdom-death-monster-rulebook", "1-6-included").covered).toBe(false);
+    expect(result.edition("kingdom-death-monster-rulebook", "1-6").covered).toBe(true);
+    expect(result.edition("kingdom-death-monster-rulebook", "1-6-included").covered).toBe(false);
   });
 
   it("limits Legendary Card Pack I expansion updates to the six reviewed gameplay differences", () => {
@@ -196,12 +196,12 @@ describe("edition coverage", () => {
     for (const name of [...changed, ...unchanged]) {
       const id = `${name}-gameplay`;
       const base = { [collectionKey(id, "1-3")]: { owned: true } };
-      expect(index.coverage(base).edition(id, "1-6").available, name).toBe(!changed.has(name));
-      expect(index.coverage({ ...base, ...updates }).edition(id, "1-6").available, name).toBe(true);
-      expect(index.coverage(updates).edition(id, "1-6").available, name).toBe(false);
+      expect(index.coverage(base).edition(id, "1-6").covered, name).toBe(!changed.has(name));
+      expect(index.coverage({ ...base, ...updates }).edition(id, "1-6").covered, name).toBe(true);
+      expect(index.coverage(updates).edition(id, "1-6").covered, name).toBe(false);
       if (!changed.has(name)) {
         expect(index.byId.has(`${name}-upgrade`)).toBe(false);
-        expect(index.coverage({ [collectionKey(id, "1-6")]: { owned: true } }).edition(id, "1-3").available).toBe(true);
+        expect(index.coverage({ [collectionKey(id, "1-6")]: { owned: true } }).edition(id, "1-3").covered).toBe(true);
       }
     }
     expect(index.includedEditions(pack.id, "1", false)).toHaveLength(13);
@@ -225,8 +225,8 @@ describe("edition coverage", () => {
     ];
     for (const id of ids) {
       const gameplayId = `${id.replace(/^set-/, "")}-gameplay`;
-      expect(result.edition(gameplayId, "original").available, id).toBe(true);
-      expect(result.edition(id, "box").available, id).toBe(false);
+      expect(result.edition(gameplayId, "original").covered, id).toBe(true);
+      expect(result.edition(id, "box").covered, id).toBe(false);
       const children = result.contents(id, "box");
       expect(children.exactCount, id).toBe(1);
       expect(children.children.length, id).toBeGreaterThan(1);
@@ -245,8 +245,8 @@ describe("edition coverage", () => {
       ...owned,
       [collectionKey("allison-the-twilight-knight-gameplay", "original")]: { owned: true, missing: true },
     });
-    expect(missing.edition("allison-the-twilight-knight-gameplay", "original").available).toBe(false);
-    expect(missing.edition("white-speaker-koshka-gameplay", "original").available).toBe(true);
+    expect(missing.edition("allison-the-twilight-knight-gameplay", "original").covered).toBe(false);
+    expect(missing.edition("white-speaker-koshka-gameplay", "original").covered).toBe(true);
   });
   it("requires every listed recipe component without substituting unrelated ownership", () => {
     const index = reviewIndex(coverageFixture());
@@ -257,26 +257,26 @@ describe("edition coverage", () => {
       [collectionKey("upgrade-pack", "i")]: { owned: true },
     };
 
-    expect(inspect(packOnly)).toMatchObject({ available: false, source: "missing" });
-    expect(inspect(complete)).toMatchObject({ available: true, source: "upgrade" });
-    expect(inspect({ [collectionKey("core", "1-5")]: { owned: true } })).toMatchObject({ available: false, source: "missing" });
+    expect(inspect(packOnly)).toMatchObject({ covered: false, source: "missing" });
+    expect(inspect(complete)).toMatchObject({ covered: true, source: "upgrade" });
+    expect(inspect({ [collectionKey("core", "1-5")]: { owned: true } })).toMatchObject({ covered: false, source: "missing" });
     const unrelated = {
       [collectionKey("core", "1-5")]: { owned: true },
       [collectionKey("book", "1-6")]: { owned: true },
     };
-    expect(inspect(unrelated)).toMatchObject({ available: false, source: "missing" });
-    expect(inspect({ ...unrelated, ...packOnly })).toMatchObject({ available: true, source: "upgrade" });
+    expect(inspect(unrelated)).toMatchObject({ covered: false, source: "missing" });
+    expect(inspect({ ...unrelated, ...packOnly })).toMatchObject({ covered: true, source: "upgrade" });
   });
 
   it("lets an explicit missing mark override ownership and restores availability when cleared", () => {
     const index = reviewIndex(coverageFixture());
     const key = collectionKey("core", "1-6");
     expect(index.coverage({ [key]: { owned: true, missing: true } }).edition("core", "1-6")).toMatchObject({
-      available: false,
+      covered: false,
       source: "missing",
     });
     expect(index.coverage({ [key]: { owned: true, missing: false } }).edition("core", "1-6")).toMatchObject({
-      available: true,
+      covered: true,
       source: "owned",
     });
   });
@@ -288,8 +288,8 @@ describe("edition coverage", () => {
       [collectionKey("upgrade-pack", "ii")]: { owned: true },
     };
     const coverage = index.coverage(snapshot);
-    expect(coverage.edition("core", "1-6")).toMatchObject({ available: false, source: "missing" });
-    expect(coverage.edition("core", "sim")).toMatchObject({ available: false, source: "missing" });
+    expect(coverage.edition("core", "1-6")).toMatchObject({ covered: false, source: "missing" });
+    expect(coverage.edition("core", "sim")).toMatchObject({ covered: false, source: "missing" });
   });
 
   it.each([
@@ -319,7 +319,7 @@ describe("edition coverage", () => {
       [...owned, ["upgrade-pack", "i"] as const].map(([id, editionId]) => [collectionKey(id, editionId), { owned: true }]),
     );
     const result = reviewIndex(data).coverage(snapshot).edition("book", "1-6");
-    expect(result).toMatchObject({ available: true, source });
+    expect(result).toMatchObject({ covered: true, source });
     expect(result.via.map(({ item, edition }) => [item.id, edition.id])).toEqual([via]);
   });
 
@@ -332,9 +332,9 @@ describe("edition coverage", () => {
       { all: [{ item: "upgrade-pack", editionId: "i" }] },
     ];
     const index = reviewIndex(data);
-    expect(index.coverage({}).edition("book", "1-6")).toMatchObject({ available: false, source: "missing" });
+    expect(index.coverage({}).edition("book", "1-6")).toMatchObject({ covered: false, source: "missing" });
     const result = index.coverage({ [collectionKey("upgrade-pack", "i")]: { owned: true } }).edition("book", "1-6");
-    expect(result).toMatchObject({ available: true, source: "upgrade" });
+    expect(result).toMatchObject({ covered: true, source: "upgrade" });
     expect(result.via.map(({ item, edition }) => [item.id, edition.id])).toEqual([["upgrade-pack", "i"]]);
   });
 
@@ -345,9 +345,9 @@ describe("edition coverage", () => {
       [collectionKey("set", "bundle")]: { owned: true },
       [collectionKey("core", "1-6")]: { missing: true },
     });
-    expect(coverage.edition("core", "1-6").available).toBe(false);
+    expect(coverage.edition("core", "1-6").covered).toBe(false);
     const child = coverage.edition("upgrade-pack", "i");
-    expect(child).toMatchObject({ available: true, source: "included" });
+    expect(child).toMatchObject({ covered: true, source: "included" });
     expect(child.via.map(({ item, edition }) => [item.id, edition.id])).toEqual([["set", "bundle"]]);
   });
 
@@ -356,9 +356,9 @@ describe("edition coverage", () => {
     data.content.book.editions![1]!.completedBy = [{ all: [{ item: "upgrade-pack", editionId: "i" }] }];
     const index = reviewIndex(data);
     const snapshot = { [collectionKey("upgrade-pack", "i")]: { owned: true } };
-    expect(index.coverage(snapshot).edition("book", "1-6-included").available).toBe(true);
+    expect(index.coverage(snapshot).edition("book", "1-6-included").covered).toBe(true);
     expect(
-      index.coverage({ ...snapshot, [collectionKey("book", "1-6-included")]: { missing: true } }).edition("book", "1-6-included").available,
+      index.coverage({ ...snapshot, [collectionKey("book", "1-6-included")]: { missing: true } }).edition("book", "1-6-included").covered,
     ).toBe(false);
   });
 
@@ -369,18 +369,18 @@ describe("edition coverage", () => {
     const parent = collectionKey("book", "1-6");
     const children = { [child]: { owned: true } };
     const index = reviewIndex(data);
-    expect(index.coverage(children).edition("book", "1-6").available).toBe(false);
+    expect(index.coverage(children).edition("book", "1-6").covered).toBe(false);
     expect(index.coverage(children).contents("book", "1-6")).toMatchObject({ exactCount: 1, count: 1 });
-    expect(index.coverage({ [parent]: { owned: true } }).edition("book", "1-6").available).toBe(true);
-    expect(index.coverage({ [parent]: { owned: true }, [child]: { missing: true } }).edition("book", "1-6").available).toBe(true);
-    expect(index.coverage(children).edition("book", "1-6-included").available).toBe(false);
+    expect(index.coverage({ [parent]: { owned: true } }).edition("book", "1-6").covered).toBe(true);
+    expect(index.coverage({ [parent]: { owned: true }, [child]: { missing: true } }).edition("book", "1-6").covered).toBe(true);
+    expect(index.coverage(children).edition("book", "1-6-included").covered).toBe(false);
 
     const fullSet = {
       [collectionKey("core", "1-6")]: { owned: true },
       [child]: { owned: true },
     };
     expect(index.coverage(fullSet).contents("set", "bundle")).toMatchObject({ exactCount: 2, count: 2 });
-    expect(index.coverage(fullSet).edition("set", "bundle").available).toBe(false);
+    expect(index.coverage(fullSet).edition("set", "bundle").covered).toBe(false);
   });
 
   it("resolves nested bundle contents without writing derived ownership into the snapshot", () => {
@@ -393,8 +393,8 @@ describe("edition coverage", () => {
     };
     const before = structuredClone(snapshot);
     const coverage = index.coverage(snapshot);
-    expect(coverage.edition("core", "1-6")).toMatchObject({ available: true, source: "upgrade" });
-    expect(coverage.edition("set", "bundle")).toMatchObject({ available: false, source: "missing" });
+    expect(coverage.edition("core", "1-6")).toMatchObject({ covered: true, source: "upgrade" });
+    expect(coverage.edition("set", "bundle")).toMatchObject({ covered: false, source: "missing" });
     expect(coverage.contents("set", "bundle")).toMatchObject({ exactCount: 2, count: 2 });
     expect(snapshot).toEqual(before);
     expect(snapshot[collectionKey("set", "bundle")]).toBeUndefined();
@@ -412,9 +412,9 @@ describe("edition coverage", () => {
 
     const snapshot = { [selected[0]!]: { owned: true } };
     const coverage = index.coverage(snapshot);
-    expect(coverage.edition("core", "1-6").available).toBe(true);
+    expect(coverage.edition("core", "1-6").covered).toBe(true);
     expect(coverage.edition("upgrade-pack", "i")).toMatchObject({
-      available: true,
+      covered: true,
       source: "included",
       via: [{ item: { id: "set" }, edition: { id: "bundle" } }],
     });
@@ -434,14 +434,14 @@ describe("edition coverage", () => {
       [collectionKey("core", "1-5")]: { owned: true },
     };
     const coverage = index.coverage(snapshot);
-    expect(coverage.edition("set", "bundle")).toMatchObject({ available: true, source: "owned" });
-    expect(coverage.edition("core", "1-6").available).toBe(false);
-    expect(coverage.edition("upgrade-pack", "i").available).toBe(false);
+    expect(coverage.edition("set", "bundle")).toMatchObject({ covered: true, source: "owned" });
+    expect(coverage.edition("core", "1-6").covered).toBe(false);
+    expect(coverage.edition("upgrade-pack", "i").covered).toBe(false);
     expect(coverage.edition("core", "1-6").via).toEqual([]);
     expect(coverage.edition("upgrade-pack", "i").via).toEqual([]);
     const contents = coverage.contents("set", "bundle");
     expect(contents).toMatchObject({ exactCount: 0, count: 1 });
-    expect(contents.children[0]!.ownedEditions.map((edition) => edition.id)).toEqual(["1-5"]);
+    expect(contents.children[0]!.coveredEditions.map((edition) => edition.id)).toEqual(["1-5"]);
   });
 
   it("blocks a missing included branch and restores its derived coverage when cleared", () => {
@@ -454,13 +454,13 @@ describe("edition coverage", () => {
       [collectionKey("upgrade-pack", "i")]: { owned: true, missing: true },
     };
     const blocked = index.coverage(snapshot);
-    expect(blocked.edition("core", "1-6").available).toBe(false);
-    expect(blocked.edition("upgrade-pack", "i").available).toBe(false);
-    expect(blocked.edition("set", "bundle").available).toBe(false);
+    expect(blocked.edition("core", "1-6").covered).toBe(false);
+    expect(blocked.edition("upgrade-pack", "i").covered).toBe(false);
+    expect(blocked.edition("set", "bundle").covered).toBe(false);
 
     const restored = index.coverage({ ...snapshot, [collectionKey("upgrade-pack", "i")]: { owned: true, missing: false } });
-    expect(restored.edition("core", "1-6").available).toBe(true);
-    expect(restored.edition("upgrade-pack", "i").available).toBe(true);
+    expect(restored.edition("core", "1-6").covered).toBe(true);
+    expect(restored.edition("upgrade-pack", "i").covered).toBe(true);
   });
 
   it("keeps direct included contents and missing overrides separate from automatic upgrade recipes", () => {
@@ -468,16 +468,16 @@ describe("edition coverage", () => {
     data.content.core.includes = [{ item: "upgrade-pack", editionId: "i", parentEditionIds: ["1-6"] }];
     const index = reviewIndex(data);
     const rawParent = { [collectionKey("core", "1-6")]: { owned: true } };
-    expect(index.coverage(rawParent).edition("core", "1-6").available).toBe(true);
+    expect(index.coverage(rawParent).edition("core", "1-6").covered).toBe(true);
     expect(
       index.coverage({ ...rawParent, [collectionKey("upgrade-pack", "i")]: { owned: false, missing: false } }).edition("core", "1-6")
-        .available,
+        .covered,
     ).toBe(true);
     const missingChild = index.coverage({ ...rawParent, [collectionKey("upgrade-pack", "i")]: { owned: true, missing: true } });
-    expect(missingChild.edition("core", "1-6").available).toBe(true);
-    expect(missingChild.edition("upgrade-pack", "i").available).toBe(false);
+    expect(missingChild.edition("core", "1-6").covered).toBe(true);
+    expect(missingChild.edition("upgrade-pack", "i").covered).toBe(false);
     expect(missingChild.contents("core", "1-6").exactCount).toBe(0);
-    expect(index.coverage({ [collectionKey("core", "1-5")]: { owned: true } }).edition("core", "1-6").available).toBe(false);
+    expect(index.coverage({ [collectionKey("core", "1-5")]: { owned: true } }).edition("core", "1-6").covered).toBe(false);
   });
 });
 
@@ -648,8 +648,8 @@ describe("review catalog facts", () => {
     });
     expect(reviewPrice(item, edition)).toBeUndefined();
     if (editionId === "included") {
-      expect(index.coverage({ [collectionKey("model", "sold")]: { owned: true } }).edition("model", editionId).available).toBe(false);
-      expect(index.coverage({ [collectionKey("model", editionId)]: { owned: true } }).edition("model", "sold").available).toBe(false);
+      expect(index.coverage({ [collectionKey("model", "sold")]: { owned: true } }).edition("model", editionId).covered).toBe(false);
+      expect(index.coverage({ [collectionKey("model", editionId)]: { owned: true } }).edition("model", "sold").covered).toBe(false);
     }
   });
 

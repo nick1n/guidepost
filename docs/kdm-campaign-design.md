@@ -29,7 +29,7 @@ erDiagram
   Campaign ||--o{ Departure : records
   Departure ||--o{ Hunter : includes
   Campaign ||--o{ ContentSelection : selects
-  CollectionEntry ||--o{ ContentSelection : supplies
+  CollectionEntry }o--o{ ContentSelection : supplies
   Campaign ||--o{ Phase : progresses_through
   Campaign ||--o{ Action : records
   Phase |o--o{ Action : groups
@@ -39,7 +39,7 @@ Gameplay entities may be history projections rather than separate synchronized t
 
 - Each campaign has exactly one owner, who is also a member, and exactly one settlement.
 - Users can belong to many campaigns; campaigns can have many members.
-- Each ContentSelection belongs to one campaign and derives from an owned CollectionEntry in a user's collection.
+- Each ContentSelection belongs to one campaign and identifies gameplay covered by a user's collection, with references to its supplying acquisitions.
 - A settlement belongs to one campaign and contains its survivors, including historical survivors.
 - A survivor belongs to one settlement. Player control of a survivor does not confer record or campaign ownership.
 - Each Hunter references one settlement survivor and one departure in the same campaign. A departure has at most one Hunter per survivor.
@@ -93,10 +93,14 @@ gameplay undo. Rewind must never restore an old access grant.
 
 ## Collection, campaign content, and preferences
 
-Campaign setup offers owned CollectionEntry records. Store choices as ContentSelection records with campaign, source user,
-collection-entry reference, content ID, edition ID, and rules version. One collection entry can supply multiple campaigns.
+Campaign setup offers gameplay covered by the user's collection, including coverage through inclusions, equivalences, and upgrade recipes.
+Owning Core 1.5 plus Legendary Card Pack I qualifies the covered 1.6 gameplay and rules for selection without recording ownership of the Core 1.6 box.
+Store choices as ContentSelection records with campaign, source user, source collection-entry references, selected content ID, edition ID,
+and rules version. Coverage can depend on several acquisitions; one collection entry can supply multiple campaigns.
 
-Selections survive collection edits, removals, and membership changes, retaining content and source references.
+The campaign records its own rules version and selected content. A campaign marked 1.6 stays on 1.6 regardless of later collection edits,
+removals, or lost coverage; collection changes do not invalidate campaign selections or require a coverage warning. Source references
+record selection provenance rather than an ongoing eligibility requirement. Selections also survive membership changes.
 Define a policy before allowing other members' content. Sharing exposes campaign selections without exposing personal collections.
 
 Setup remains editable before play. Starting play records the selected rules and initial settlement and survivors as a versioned
@@ -181,14 +185,17 @@ Navigation only changes the view. The persisted active phase controls gameplay, 
 ## Commands, events, and projected state
 
 Commands describe intent; accepted events record changes. Serializable commands include stable ID, campaign ID, optional phase ID,
-actor, schema version, payload, and dependencies. Events reference their command and commit together as one undo step.
+actor, schema version, payload, and dependencies. Each accepted command creates exactly one action containing all of its events;
+the action commits atomically and forms one undo step. Events reference their command and action.
+Resolving a showdown groups rewards, phase transitions, and lantern-year advancement in that same action.
 
-Create IDs and random outcomes once. Retries reuse IDs; replay and redo reuse recorded rolls and draws.
+Create IDs and random outcomes once per command. Retries reuse IDs; history replay reuses recorded rolls and draws.
+Performing an undone action again creates a new command with a new ID and new random outcomes where applicable.
 
 Keep game rules in ordinary pure functions:
 
 - `decide(state, command)` validates the command and returns events or a domain failure.
-- `project(history)` derives gameplay state from the baseline, events, and undo/redo entries.
+- `project(history)` derives gameplay state from the baseline, events, and undo entries.
 
 All edits to replayed state pass through commands, regardless of their screen. Display names, memberships, and preferences use current
 records. Receiving remote events updates the projection without rerunning commands or external effects. Validate persisted records
@@ -198,24 +205,31 @@ If replay needs optimization, add rebuildable checkpoints keyed by history and p
 departure and phase lifecycle, return references, outcomes, and lantern year. Invalidate affected checkpoints after earlier edits;
 retain enough history for the promised rewind depth.
 
-## Undo, redo, and rewind
+## Undo and rewind
 
 Gameplay undo spans showdown, settlement, and hunt. Group drags and confirmed edits into useful steps; exclude view state,
 authentication, and management.
 
-Append undo/redo entries targeting an action while preserving its original events. Undo removes only that action's contribution. If
-Nick and Sam each add a wound, undoing Nick's action leaves Sam's wound.
+Undo is sequential across the campaign's shared gameplay timeline. Only the latest active action can be undone, regardless of its
+actor or phase; earlier actions cannot be selected while later actions remain active. Repeated undo walks backward one action at a time.
+Append undo entries while preserving the original events. There is no redo operation or redo stack; users can perform an undone
+action again through the normal gameplay controls as a new action.
+
+If Nick adds a wound and Sam then adds another, Sam's action must be undone before Nick's. If a showdown awards resources later spent
+on crafting, undo crafting and every other later action before undoing the showdown reward. There is no selective or cascading undo.
 
 | Action                                | Undo behavior                                                      |
 | ------------------------------------- | ------------------------------------------------------------------ |
-| Independent counter change            | Remove its contribution                                            |
-| Position, equipment, or status change | Restore prior state and account for later dependencies             |
-| Resource spending or survivor changes | Reverse grouped effects and dependent actions                      |
+| Counter change                        | Restore the value before the latest action                         |
+| Position, equipment, or status change | Restore the state before the latest action                         |
+| Resource spending or survivor changes | Reverse the latest action's grouped effects                        |
 | Phase resolution                      | Reverse consequences, phase changes, and year advancement together |
-| Random result                         | Undo its effects; redo restores the recorded result                |
+| Random result                         | Undo its effects; repeating the action generates a new result      |
 
-Proposed UI policy: undo/redo targets the player's latest applicable action in the current phase. An authorized controller can rewind
-across phases after reviewing affected actions. Reversing a reward must also address crafting that consumed it.
+Rewind means repeated sequential undo, including across phase boundaries. Any active campaign member can undo the latest action,
+including another member's action; ownership, controller status, and survivor assignment do not restrict undo. Pending invitations
+and former members grant no access. Archived campaigns remain read-only. Navigation does not select an undo target, and no member
+can skip a later action.
 
 Rewinding encounter defeat restores the hunt and reverses the new settlement phase and year advancement. Rewinding interruption or
 resumption restores phase lifecycle and progress. Dependencies can cross phase IDs, including actions before an interrupted showdown.
@@ -224,8 +238,9 @@ Completing a phase preserves its history.
 Rewind must also restore Hunter creation, temporary fields, and departure lifecycle. Reversing return processing must address lasting
 survivor changes and restore the returning Hunters together.
 
-Concurrent undo requests must remove a contribution once. Undo references the action activation; redo references its reversal. A delayed
-undo must not cancel a later redo. The representation, conflict policy, rewind depth, and permissions remain open decisions.
+Concurrent undo requests must reverse the same latest action at most once. Reject stale targets if the timeline has advanced;
+a retry must not silently undo a different action. Undo references the exact action being reversed. A delayed undo must not affect
+a new action performed after an earlier undo. The representation, conflict policy, and rewind depth remain open decisions.
 
 ## Effect services and persistence contract
 
@@ -314,15 +329,17 @@ browser, IndexedDB, Dexie imports, credentials, or network.
 
 Current collection tests also cover monitoring failures, retry readiness, changes during refresh, and owner changes during workbook operations. Action tests cover typed failures, mixed causes, defects, and cancellation; transfer tests cover validated backups and workbook representation limits. Keep this coverage when simplifying Effect workflows.
 
-| Test layer                                           | Coverage                                                                                                                                                                      |
-| ---------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Pure rules and commands with memory services         | Relationships, content stability, phase routes, undo dependencies, random replay, deduplication, stale inputs, malformed versions, failures, cancellation, and conflict rules |
-| Shared memory/Dexie contract suite and browser tests | Adapter guarantees, transactions, reloads, checkpoints, and competing tabs                                                                                                    |
-| Cloud integration                                    | Two devices, offline reconnects, sharing permissions, guest adoption, and rejected writes                                                                                     |
+| Test layer                                           | Coverage                                                                                                                                                                    |
+| ---------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Pure rules and commands with memory services         | Relationships, content stability, phase routes, sequential undo, random replay, deduplication, stale inputs, malformed versions, failures, cancellation, and conflict rules |
+| Shared memory/Dexie contract suite and browser tests | Adapter guarantees, transactions, reloads, checkpoints, and competing tabs                                                                                                  |
+| Cloud integration                                    | Two devices, offline reconnects, sharing permissions, guest adoption, and rejected writes                                                                                   |
 
 Test every transition in the phase table, including year advancement exactly once and parent progress on resume. Rewind must restore
 outcomes, phase lifecycle, and year consistently. Also test campaign isolation, membership-based lists, and management/preferences
-remaining outside undo. Use `Deferred` for concurrency and `TestClock` for time; control failures through test services.
+remaining outside undo. Verify that earlier actions cannot be undone while later actions remain active, including actions by another
+player or in another phase. Verify that any active member can undo another member's latest action, while pending invitees and former
+members cannot undo and archived campaigns remain read-only. Use `Deferred` for concurrency and `TestClock` for time; control failures through test services.
 
 Test Hunter references, field resets, stable IDs through interrupted hunts, return processing, and fresh state on later departures.
 Reload and sync must preserve active Hunters; rewind must restore them after departure closure.
@@ -341,7 +358,7 @@ interruption/resumption. Include offline edits and a rejected write. Preference 
 ## Open decisions
 
 - Physical schema and local version token.
-- Undo/redo conflict representation, rewind depth, and permissions.
+- Undo conflict representation and rewind depth.
 - Controller handoff, event ordering, and offline reconciliation.
 - Management permissions, archive behavior, and ownership transfer.
 - Guest adoption, upload opt-in, and unsynced work during account changes.

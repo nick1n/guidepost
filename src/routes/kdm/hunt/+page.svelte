@@ -535,9 +535,7 @@
     }
   }
   @media (prefers-reduced-motion: reduce) {
-    .card {
-      transition: none;
-    }
+    .card,
     .die {
       transition: none;
     }

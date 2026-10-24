@@ -27,6 +27,7 @@
   import { resolve } from "$app/paths";
   import { page } from "$app/state";
   import { getShowdownDisplay } from "#lib/kdm/showdown/display.svelte.ts";
+  import ToggleButton from "#lib/components/ToggleButton.svelte";
   import StatusIcon from "#lib/kdm/ui/status/StatusIcon.svelte";
 
   let { onnavigate }: { onnavigate: (event: MouseEvent, href: string) => void } = $props();
@@ -42,20 +43,20 @@
   {/if}
   <fieldset>
     <legend>Survivor colors</legend>
-    <button
-      aria-pressed={display.settings.brightenZachary}
+    <ToggleButton
+      pressed={display.settings.brightenZachary}
       onclick={() => (display.settings.brightenZachary = !display.settings.brightenZachary)}
     >
       Brighten Zachary
-    </button>
+    </ToggleButton>
   </fieldset>
   <fieldset>
     <legend>Dashboard snap</legend>
     <div class="options snap">
       {#each snaps as value (value)}
-        <button aria-pressed={display.settings.snap === value} onclick={() => display.setSnap(value)}>
+        <ToggleButton pressed={display.settings.snap === value} onclick={() => display.setSnap(value)}>
           {value[0].toUpperCase() + value.slice(1)}
-        </button>
+        </ToggleButton>
       {/each}
     </div>
   </fieldset>
@@ -63,11 +64,10 @@
     <legend>Interface density</legend>
     <div class="options">
       {#each densities as option (option.value)}
-        <button
-          class="density"
-          style:--size-preview={option.size}
-          aria-pressed={display.settings.density === option.value}
-          onclick={() => (display.settings.density = option.value)}>{option.label}</button
+        <ToggleButton
+          style={`min-block-size: ${option.size}`}
+          pressed={display.settings.density === option.value}
+          onclick={() => (display.settings.density = option.value)}>{option.label}</ToggleButton
         >
       {/each}
     </div>
@@ -157,7 +157,6 @@
     font-size: var(--text-md);
     font-weight: var(--font-bold);
   }
-  button,
   a {
     display: flex;
     align-items: center;
@@ -171,7 +170,6 @@
     font-size: var(--text-sm);
     transition: var(--transition-colors);
 
-    &[aria-pressed="true"],
     &[aria-current="page"] {
       border-color: var(--accent);
       background: var(--blue-7);
@@ -185,9 +183,6 @@
   }
   .snap {
     grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-  .density {
-    min-block-size: var(--size-preview);
   }
   label {
     display: grid;
@@ -233,7 +228,7 @@
     --size-icon: 1rem;
   }
   @media (hover: hover) {
-    :is(button, a):hover {
+    a:hover {
       border-color: var(--accent);
       background: var(--blue-8);
     }

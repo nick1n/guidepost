@@ -376,14 +376,14 @@ it.effect("bundle commands own included editions and clear their wishes in one s
     expect(collection.ownedCount).toBe(0);
     expect(collection.wishlistCount).toBe(1);
     expect(collection.totals).toEqual({ USD: 2000 });
-    expect(collection.coverage.edition("model", "plastic")).toMatchObject({ available: true, source: "owned" });
+    expect(collection.coverage.edition("model", "plastic")).toMatchObject({ covered: true, source: "owned" });
     expect(collection.coverage.contents("set", "bundle").exactCount).toBe(1);
-    expect(collection.coverage.edition("model", "resin").available).toBe(false);
+    expect(collection.coverage.edition("model", "resin").covered).toBe(false);
     yield* collection.reset();
     expect(collection.ownedCount).toBe(0);
     expect(collection.wishlistCount).toBe(0);
     expect(collection.totals).toEqual({});
-    expect(collection.coverage.edition("model", "plastic").available).toBe(false);
+    expect(collection.coverage.edition("model", "plastic").covered).toBe(false);
   }),
 );
 
@@ -429,7 +429,7 @@ it.effect("failed bundle saves restore selections, totals, and coverage together
     expect(collection.ownedCount).toBe(0);
     expect(collection.wishlistCount).toBe(1);
     expect(collection.totals).toEqual({});
-    expect(collection.coverage.edition("model", "plastic").available).toBe(false);
+    expect(collection.coverage.edition("model", "plastic").covered).toBe(false);
   }),
 );
 
@@ -466,13 +466,13 @@ it.effect("removing one bundle clears component ownership while another bundle s
       [secondKey]: { owned: true },
       [componentKey]: { owned: true },
     });
-    expect(collection.catalog.coverage(collection.state).edition("component", "plastic").available).toBe(true);
+    expect(collection.catalog.coverage(collection.state).edition("component", "plastic").covered).toBe(true);
 
     yield* collection.setEditionsOwned([{ item: first, edition: first.editions![0]! }], false);
     expect(collection.state[firstKey]).toBeUndefined();
     expect(collection.state[secondKey]).toEqual({ owned: true });
     expect(collection.state[componentKey]).toBeUndefined();
-    expect(collection.catalog.coverage(collection.state).edition("component", "plastic").available).toBe(true);
+    expect(collection.catalog.coverage(collection.state).edition("component", "plastic").covered).toBe(true);
   }),
 );
 
@@ -628,7 +628,7 @@ it.effect("included checkboxes mark supplied contents missing and restore them w
     yield* collection.toggleIncludedOwned(child);
     expect(collection.state[child]).toBeUndefined();
     expect(collection.state[child]?.owned).not.toBe(true);
-    expect(collection.catalog.coverage(collection.state).edition("model", "plastic").available).toBe(true);
+    expect(collection.catalog.coverage(collection.state).edition("model", "plastic").covered).toBe(true);
     expect(f.state).toEqual(collection.state);
   }),
 );
@@ -646,8 +646,8 @@ it.effect("bundle checkboxes restore included contents and clear included acquis
     expect(f.state[parent]?.owned).toBeUndefined();
     expect(collection.get(child)).toEqual({});
     expect(collection.ownedCount).toBe(0);
-    expect(collection.coverage.edition("set", "bundle").available).toBe(false);
-    expect(collection.coverage.edition("model", "plastic").available).toBe(false);
+    expect(collection.coverage.edition("set", "bundle").covered).toBe(false);
+    expect(collection.coverage.edition("model", "plastic").covered).toBe(false);
     yield* collection.toggleOwned(parent, false);
     expect(collection.get(parent).owned).toBeUndefined();
     yield* collection.toggleOwned(parent, true);
@@ -657,7 +657,7 @@ it.effect("bundle checkboxes restore included contents and clear included acquis
     expect(f.writes).toBe(writes + 1);
     expect(collection.get(parent)).toEqual({ owned: true, copyNumber: 4 });
     expect(collection.get(child)).toEqual({ owned: true });
-    expect(collection.catalog.coverage(collection.state).edition("set", "bundle").available).toBe(true);
+    expect(collection.catalog.coverage(collection.state).edition("set", "bundle").covered).toBe(true);
 
     yield* collection.setOwned(parent, false);
     expect(collection.get(parent)).toEqual({ copyNumber: 4 });
@@ -688,7 +688,7 @@ it.effect("bundle ownership changes apply to exact nested contents without chang
       [other]: { missing: true },
       [part]: { owned: true },
     });
-    expect(collection.coverage.edition("part", "item").available).toBe(true);
+    expect(collection.coverage.edition("part", "item").covered).toBe(true);
     yield* collection.toggleIncludedOwned(child, false);
     expect(collection.get(parent).owned).toBe(true);
     expect(collection.get(child).missing).toBe(true);
@@ -697,7 +697,7 @@ it.effect("bundle ownership changes apply to exact nested contents without chang
     yield* collection.toggleOwned(parent, false);
     expect(f.writes).toBe(writes + 1);
     expect(collection.state).toEqual({ [child]: { wished: true, copyNumber: 4 }, [other]: { missing: true } });
-    expect(collection.coverage.edition("part", "item").available).toBe(false);
+    expect(collection.coverage.edition("part", "item").covered).toBe(false);
     expect(f.state).toEqual(collection.state);
   }),
 );
@@ -714,7 +714,7 @@ it.effect("ordinary product ownership restores included coverage without acquiri
     yield* collection.setStore(f.api);
     yield* collection.toggleOwned(parent);
     expect(collection.state).toEqual({ [parent]: { owned: true } });
-    expect(collection.coverage.edition("part", "item").available).toBe(true);
+    expect(collection.coverage.edition("part", "item").covered).toBe(true);
     expect(f.writes).toBe(1);
     expect(f.state).toEqual(collection.state);
   }),
@@ -769,7 +769,7 @@ it.effect("product ownership is independent of covered contents and clears its o
     expect(collection.get(child)).toEqual({ owned: true });
     yield* collection.toggleOwned(child);
     expect(collection.state[child]).toBeUndefined();
-    expect(collection.coverage.edition("model", "plastic").available).toBe(true);
+    expect(collection.coverage.edition("model", "plastic").covered).toBe(true);
     expect(collection.get(parent)).toEqual({ owned: true });
   }),
 );
@@ -784,12 +784,12 @@ it.effect("Core 1.5 with upgrades supplies Core 1.6 contents without owning the 
     const f = store();
     yield* collection.setStore(f.api);
     yield* collection.toggleOwned(previous, true);
-    expect(collection.coverage.edition("core", "1-6").available).toBe(false);
+    expect(collection.coverage.edition("core", "1-6").covered).toBe(false);
     yield* collection.toggleOwned(gameplay, true);
     yield* collection.toggleOwned(rulebook, true);
-    expect(collection.coverage.edition("core", "1-6").available).toBe(false);
-    expect(collection.coverage.edition("core-gameplay", "1-6").available).toBe(true);
-    expect(collection.coverage.edition("kingdom-death-monster-rulebook", "1-6").available).toBe(true);
+    expect(collection.coverage.edition("core", "1-6").covered).toBe(false);
+    expect(collection.coverage.edition("core-gameplay", "1-6").covered).toBe(true);
+    expect(collection.coverage.edition("kingdom-death-monster-rulebook", "1-6").covered).toBe(true);
     expect(collection.get(current).owned).toBeUndefined();
     expect(collection.owned.some(({ item, edition }) => item.id === "core" && edition.id === "1-6")).toBe(false);
     yield* collection.toggleOwned(current, true);
@@ -801,12 +801,12 @@ it.effect("Core 1.5 with upgrades supplies Core 1.6 contents without owning the 
     expect(collection.state[current]).toBeUndefined();
     expect(collection.get(gameplay).owned).toBe(true);
     expect(collection.get(rulebook).owned).toBe(true);
-    expect(collection.coverage.edition("core-gameplay", "1-6").available).toBe(true);
-    expect(collection.coverage.edition("kingdom-death-monster-rulebook", "1-6").available).toBe(true);
-    expect(collection.coverage.edition("core", "1-6").available).toBe(false);
+    expect(collection.coverage.edition("core-gameplay", "1-6").covered).toBe(true);
+    expect(collection.coverage.edition("kingdom-death-monster-rulebook", "1-6").covered).toBe(true);
+    expect(collection.coverage.edition("core", "1-6").covered).toBe(false);
     expect(collection.get(previous).owned).toBe(true);
-    expect(collection.coverage.edition("core", "1-5").available).toBe(true);
-    expect(collection.coverage.edition("butcher", "plastic").available).toBe(true);
+    expect(collection.coverage.edition("core", "1-5").covered).toBe(true);
+    expect(collection.coverage.edition("butcher", "plastic").covered).toBe(true);
     expect(f.state).toEqual(collection.state);
   }),
 );

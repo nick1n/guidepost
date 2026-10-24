@@ -35,6 +35,8 @@ pnpm catalog:update --apply-review temp/kdm-catalog/reports/kdm-update-review.js
 pnpm catalog:validate
 ```
 
+The review captures input hashes and unresolved matches. Applying validates the captured inputs and proposed data before publication;
+the archive retains the full change set, and the merge report summarizes applied changes.
 Applying writes the live catalog and reports. Changed inputs invalidate the review; prepare a new one.
 Validation checks schemas, references, ordering, and local tag assignments without modifying them.
 
