@@ -23,7 +23,7 @@ export function huntImages(card: number, options: HuntValues) {
 }
 
 export function selectDigit(card: number, place: number, digit: number) {
-  const tens = Math.floor(card / 10) % 10;
+  const tens = Math.floor(card / 10);
   const ones = card % 10;
-  return (place === 10 ? digit * 10 + ones : tens * 10 + digit) || 100;
+  return place === 10 ? digit * 10 + ones : tens * 10 + digit;
 }

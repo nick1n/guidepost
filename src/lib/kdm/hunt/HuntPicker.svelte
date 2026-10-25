@@ -89,12 +89,12 @@
       if (event.repeat) return;
       chooseDigit(numberPlace, Number(event.key));
       numberPlace = numberPlace === 10 ? 1 : 10;
-      focusDigit(numberPlace, numberPlace === 10 ? Math.floor(card / 10) % 10 : card % 10);
+      focusDigit(numberPlace, numberPlace === 10 ? Math.floor(card / 10) : card % 10);
       return;
     }
     const button = (event.target as Element).closest<HTMLButtonElement>("button[data-digit]");
     const place = button ? Number(button.closest<HTMLElement>("[data-place]")?.dataset.place) : activePlace;
-    const selected = place === 10 ? Math.floor(card / 10) % 10 : card % 10;
+    const selected = place === 10 ? Math.floor(card / 10) : card % 10;
     const index = digits.indexOf(selected);
     let digit: number;
     switch (event.key) {
@@ -114,7 +114,7 @@
       case "ArrowRight": {
         event.preventDefault();
         const next = event.key === "ArrowLeft" ? 10 : 1;
-        focusDigit(next, next === 10 ? Math.floor(card / 10) % 10 : card % 10);
+        focusDigit(next, next === 10 ? Math.floor(card / 10) : card % 10);
         return;
       }
       default:
@@ -150,7 +150,7 @@
     </header>
     <div class="dice">
       {#each [10, 1] as place (place)}
-        {@const selected = place === 10 ? Math.floor(card / 10) % 10 : card % 10}
+        {@const selected = place === 10 ? Math.floor(card / 10) : card % 10}
         <fieldset class={place === 1 ? "ones" : undefined} data-place={place}>
           <legend>{place === 10 ? "tens" : "ones"}</legend>
           <div class="stack">

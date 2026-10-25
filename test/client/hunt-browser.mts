@@ -248,7 +248,7 @@ await runBrowser(
     };
     const verifyDrawSlide = async () => {
       const initialSrc = await evaluate<string>("document.querySelector('.card .front').src");
-      await evaluate("window.originalRandom=Math.random;Math.random=()=>0.99999;document.querySelector('.random').click()");
+      await evaluate("window.originalRandom=Math.random;Math.random=()=>0;document.querySelector('.random').click()");
       for (const phase of ["out", "in"] as const) {
         await waitFor(
           `(()=>{const s=document.querySelector('.slide${phase === "in" ? ":not([inert])" : ""}');return s?.getAnimations().some(a=>Number(a.effect.getTiming().duration)>0&&a.effect.getKeyframes().some(k=>k.translate))})()`,
@@ -320,7 +320,7 @@ await runBrowser(
     const verifyReverseDraw = async () => {
       const reverse = await evaluate<string>("document.querySelector('.card .back').src");
       await saveScreenshot("temp/browser-verification/hunt-reverse-before-draw.png");
-      await evaluate("window.originalRandom=Math.random;Math.random=()=>0.1;document.querySelector('.random').click()");
+      await evaluate("window.originalRandom=Math.random;Math.random=()=>0.11;document.querySelector('.random').click()");
       await waitFor("document.querySelector('.slide')?.getAnimations().some(a=>a.playState==='running')");
       assert(
         await evaluate(`document.querySelector('.card .back').src===${JSON.stringify(reverse)}`),
@@ -344,18 +344,18 @@ await runBrowser(
         "window.olderExit=window.olderSlide.getAnimations().find(a=>Number(a.effect.getTiming().duration)>0&&a.effect.getKeyframes().some(k=>k.translate));window.olderExit.pause()",
       );
       await closeMenu();
-      await evaluate("window.originalRandom=Math.random;Math.random=()=>0.99999;document.querySelector('.random').click()");
+      await evaluate("window.originalRandom=Math.random;Math.random=()=>0;document.querySelector('.random').click()");
       await evaluate("new Promise(resolve=>setTimeout(resolve,600))");
       assert(
         await evaluate(
-          "window.olderSlide.isConnected && document.querySelectorAll('.card').length===1 && !document.querySelector('.card .front').src.endsWith('fen-100.png')",
+          "window.olderSlide.isConnected && document.querySelectorAll('.card').length===1 && !document.querySelector('.card .front').src.endsWith('fen-0.png')",
         ),
         "Drawing during an artwork change waits for the retiring card's actual exit",
       );
       await evaluate("window.olderExit.finish()");
       await ready();
       assert(
-        await evaluate("document.querySelector('.card .front').src.endsWith('fen-100.png')"),
+        await evaluate("document.querySelector('.card .front').src.endsWith('fen-0.png')"),
         "The latest draw replaces the retiring artwork after its exit",
       );
       await evaluate("Math.random=window.originalRandom");
@@ -467,14 +467,11 @@ await runBrowser(
     await physicalClick(".card");
     await ready();
     assert(await evaluate(`${card}.getAttribute('aria-label').includes('reverse')`), "Kekasi event 73 has its reverse");
-    await select(100);
-    assert(await evaluate("[...document.querySelectorAll('.selection .kd-icon')].length===2"), "Event 100 displays two lanterns");
+    await select(0);
+    assert(await evaluate("[...document.querySelectorAll('.selection .kd-icon')].length===2"), "Event 0 displays two lanterns");
     await verifyDrawSlide();
     await verifyOverlappingDraw();
-    assert(
-      await evaluate(`${card}.getAttribute('aria-label').includes('event 100,')`),
-      "Drawing an already-cached event 100 finishes loading",
-    );
+    assert(await evaluate(`${card}.getAttribute('aria-label').includes('event 0,')`), "Drawing an already-cached event 0 finishes loading");
     await settings();
     await saveScreenshot("temp/browser-verification/hunt-desktop-settings.png");
     for (const suffix of ["devil-satan", "bravado-beta", "gregalope-ce"])
@@ -595,7 +592,7 @@ await runBrowser(
     await ready();
     await evaluate("Math.random=window.originalRandom");
     assert(
-      await evaluate(`${card}.getAttribute('aria-label').includes('event 100,')`),
+      await evaluate(`${card}.getAttribute('aria-label').includes('event 99,')`),
       "Drawing with no visible card completes without waiting for an outro",
     );
     await send("Network.setBlockedURLs", { urls: [] });
@@ -682,7 +679,7 @@ await runBrowser(
       await evaluate(`${card}.getAttribute('aria-label').endsWith('showing front')`),
       "Swiping back from the reverse restores the front",
     );
-    await evaluate("window.originalRandom=Math.random;Math.random=()=>0.1;document.querySelector('.random').click()");
+    await evaluate("window.originalRandom=Math.random;Math.random=()=>0.11;document.querySelector('.random').click()");
     await ready();
     await evaluate("Math.random=window.originalRandom");
     assert(

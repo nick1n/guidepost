@@ -257,7 +257,7 @@ await runBrowser(
       [4, 47, 10],
       [2, 42, 1],
       [0, 2, 10],
-      [0, 100, 1],
+      [0, 0, 1],
     ]) {
       await key(String(digit), `Digit${digit}`);
       await assertEvent(event);

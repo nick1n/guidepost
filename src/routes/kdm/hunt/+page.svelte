@@ -66,7 +66,7 @@
   const loading = $derived(!preferences.ready || sources.some((src) => !loaded.has(src)));
   const loadError = $derived(sources.some((src) => failed.has(src)));
   const busy = $derived(drawing || loading || selecting || !!exitingElement || images.front !== requestedImages.front);
-  const first = $derived(drawing ? firstRand : Math.floor(card / 10) % 10);
+  const first = $derived(drawing ? firstRand : Math.floor(card / 10));
   const second = $derived(drawing ? secondRand : card % 10);
   const face = $derived.by(() => {
     if (showCard) return "front";
@@ -147,7 +147,7 @@
 
   function finishDraw() {
     conceal();
-    card = Math.floor(Math.random() * 100) + 1;
+    card = Math.floor(Math.random() * 100);
     artworkCard = card;
     drawing = false;
   }
