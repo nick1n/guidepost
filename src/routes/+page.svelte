@@ -488,6 +488,7 @@
     z-index: 1;
     inline-size: fit-content;
     margin-inline-start: auto;
+    padding-block-start: var(--space-page);
     padding-inline: var(--space-page);
     line-height: var(--line-height-none);
     text-align: right;
@@ -938,6 +939,7 @@
     header {
       position: fixed;
       inset-block-end: var(--space-page);
+      padding-block-start: 0;
     }
   }
 

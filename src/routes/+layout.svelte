@@ -2,6 +2,7 @@
   import "@unocss/reset/tailwind-v4.css";
   import "../app.css";
   import { onMount } from "svelte";
+  import { createHashNavigation, setHashNavigation } from "#lib/app/navigation/hash-route.svelte.ts";
   import { afterNavigate } from "$app/navigation";
   import { Effect, Fiber } from "effect";
   import { resetSavedData } from "#lib/app/delete-data.ts";
@@ -42,6 +43,7 @@
   setShowdownDisplay(new ShowdownDisplay());
   const hunts = setHuntPreferences(new HuntPreferences(log.record));
   const collectionActions = setCollectionActions(createCollectionActions(Notifications.layerWith(log.record)));
+  setHashNavigation(createHashNavigation(collectionActions.run));
   setCopyNumberEdits(new CopyNumberEdits(collection, collectionActions));
 
   function onbeforeunload(event: BeforeUnloadEvent) {

@@ -13,41 +13,51 @@ pnpm dev
 
 On Windows, if `pnpm` is missing, install the pnpm 12 bootstrap with `npm.cmd install --global pnpm@12`. The `packageManager` field in [package.json](package.json) pins the exact pnpm version used by this project.
 
-| Command                 | Purpose                            |
-| ----------------------- | ---------------------------------- |
-| `pnpm check`            | Check Svelte and TypeScript        |
-| `pnpm test:run`         | Run all Vitest tests once          |
-| `pnpm test:client`      | Run client-facing app tests        |
-| `pnpm test:scripts`     | Run build and catalog script tests |
-| `pnpm test:catalog`     | Alias for script tests             |
-| `pnpm catalog:workbook` | Regenerate workbook row mappings   |
-| `pnpm build`            | Build the static site              |
-| `pnpm preview`          | Serve the production build locally |
-| `pnpm format`           | Format project files               |
-| `pnpm format:check`     | Check formatting                   |
+| Command             | Purpose                            |
+| ------------------- | ---------------------------------- |
+| `pnpm check`        | Check Svelte and TypeScript        |
+| `pnpm test:run`     | Run all Vitest tests once          |
+| `pnpm test:client`  | Run client-facing app tests        |
+| `pnpm test:scripts` | Run build and catalog script tests |
+| `pnpm test:catalog` | Alias for script tests             |
+| `pnpm build`        | Build the static site              |
+| `pnpm preview`      | Serve the production build locally |
+| `pnpm format`       | Format project files               |
+| `pnpm format:check` | Check formatting                   |
 
-See [AGENTS.md](AGENTS.md) for coding conventions and required checks. Client tests live in feature directories under `test/client/`; script and build tests live in feature directories under `test/scripts/`. `pnpm test` watches both Vitest projects; `pnpm test:scripts` also runs `*-checks.mts` with Node's test runner. Tests import tooling through `#scripts/*` and catalog JSON through `#catalog/*`, including file extensions.
+Use `pnpm test` for watch mode. See [AGENTS.md](AGENTS.md) for coding conventions and required checks.
 
-With a local development server running, `pnpm test:menu-browser -- http://127.0.0.1:5173` checks menu history, focus, preferences, and gestures in installed Chrome or Chromium (or `CHROME_PATH`). Screenshots and the report go to `temp/browser-verification/menu-*`.
+### Browser tests
 
-`pnpm test:collection-browser [URL]` runs isolated Chrome checks. Set `CHROME_PATH` if Chrome is not detected.
+Start a local development server and install Chrome or Chromium. Set `CHROME_PATH` if it is not detected.
 
-`pnpm test:hunt-browser -- http://localhost:5173` checks card selection, artwork variants, flip and draw animations, and saved settings.
-`pnpm test:hunt-artwork-browser -- http://localhost:5173` checks artwork exit sequencing, rapid changes, image loading, and the rendered face during entry.
-`pnpm test:hunt-navigation-browser -- http://localhost:5173` checks that navigating Home removes hunt controls immediately, on mobile and desktop with both motion preferences.
-`pnpm test:hunt-picker-browser -- http://localhost:5173` checks the event picker's gestures, focus, dismissal, and short-screen layout.
-Both require a running local server and installed Chrome or Chromium (or `CHROME_PATH`); screenshots and reports go to `temp/browser-verification/`.
+```bash
+pnpm test:menu-browser -- http://localhost:5173
+pnpm test:collection-browser -- http://localhost:5173
+pnpm test:hunt-browser -- http://localhost:5173
+```
+
+These check menu interactions, collection controls, and hunt cards. Screenshots and reports go to `temp/browser-verification/`.
+
+## Hunt links
+
+Share a hunt card using `/kdm/hunt/#/event/art/face`, for example `/kdm/hunt/#/1/fen/front`.
+
+- Events: `0` through `99` (`0` is event 100).
+- Artwork: `ccg`, `fen`, or `kekasi`.
+- Face: `front`, `back`, or `reverse` for cards with a special reverse.
+
+Links default to event 1, CCG artwork, and the back face, so `#/1` is enough. Opening a link leaves saved artwork preferences unchanged.
+Card controls update the URL without adding browser history entries.
+
+Pages share [hash navigation](src/lib/app/navigation/hash-route.svelte.ts) through `createHashRoute`, which handles URL changes and Back/Forward.
 
 ## Where things live
 
 | Path                                | Purpose                                                         |
 | ----------------------------------- | --------------------------------------------------------------- |
 | `src/routes/`                       | Pages and route loaders                                         |
-| `src/lib/kdm/collection/`           | Collection browsing, cards, commands, and persistence           |
-| `src/lib/kdm/showdown/`             | Showdown rules, display state, and UI                           |
-| `src/lib/kdm/survivors/`            | Survivor gear and progress controls                             |
-| `src/lib/kdm/catalog/ui/`           | Catalog UI shared with Quick Start                              |
-| `src/lib/kdm/ui/`                   | Shared KDM presentation and status definitions                  |
+| `src/lib/kdm/`                      | KDM features and shared UI                                      |
 | `src/lib/app/`                      | Menu, date preferences, and notifications                       |
 | `src/lib/components/`               | Reusable controls, dialogs, and gestures                        |
 | `src/lib/types/`                    | Catalog, collection, and workbook contracts shared with tooling |
@@ -61,22 +71,22 @@ Both require a running local server and installed Chrome or Chromium (or `CHROME
 | `temp/`                             | Reports, browser verification, and scratch output               |
 
 Shared catalog calculations stay in [kdm-data.ts](src/lib/kdm-data.ts) and [catalog-view.ts](src/lib/catalog-view.ts).
-See the [collection architecture](docs/kdm-architecture.md), [campaign proposal](docs/kdm-campaign-design.md),
-[catalog guide](docs/kdm-catalog.md), [catalog workflows](docs/catalog-workflows.md), and [design notes](docs/kdm-design-notes.md).
+See [design notes](docs/kdm-design-notes.md) for UI decisions.
 
-Keep `local-data/kdm-catalog/` backed up because it holds reviewed imports, `kdm-tags.json`, `kdm-tags.schema.json`, `kdm-shop-mappings.json`, and archives required to reproduce catalog work. It is Git-ignored; do not commit personal workbook cells. Shopify caches live in `.cache/kdm-catalog/shopify-products/`. Reports remain under `temp/kdm-catalog/reports/`, and request coordination remains in `.cache/kdm-shop/`.
+Back up `local-data/kdm-catalog/`. Its reviewed imports, tags, shop mappings, and archives are needed to reproduce catalog work.
+The folder is Git-ignored; do not commit personal workbook cells.
 
 ## Generated files
 
-| Generated output                                                                           | Authoritative input and command                                                                       |
-| ------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------- |
-| [src/lib/types/gen/kdm-data.d.ts](src/lib/types/gen/kdm-data.d.ts)                         | [static/kdm/catalog/data.schema.json](static/kdm/catalog/data.schema.json); run `pnpm generate:types` |
-| [src/lib/gen/catalog-validator.js](src/lib/gen/catalog-validator.js) and its `.d.ts`       | [static/kdm/catalog/data.schema.json](static/kdm/catalog/data.schema.json); run `pnpm generate:types` |
-| [src/lib/gen/core-editions.json](src/lib/gen/core-editions.json)                           | [static/kdm/catalog/data.json](static/kdm/catalog/data.json); run `pnpm generate:types`               |
-| [static/kdm/catalog/workbook-map.schema.json](static/kdm/catalog/workbook-map.schema.json) | [src/lib/types/workbook.ts](src/lib/types/workbook.ts); run `pnpm generate:types`                     |
-| [static/kdm/catalog/workbook-map.json](static/kdm/catalog/workbook-map.json)               | Live catalog plus local workbook import records; run `pnpm catalog:workbook`                          |
+Edit the source files, then run `pnpm generate:types` to refresh these outputs. Development, checks, and builds also run this command.
 
-Edit authoritative inputs, not generated outputs. Development, checks, and builds may regenerate generated types, the browser validator, and core editions. The validator bundles Ajv standalone code and its runtime helpers as self-contained ESM; the browser does not compile schemas. Tooling-only semantic and cross-reference checks remain in `catalog:validate`. See [catalog workflows](docs/catalog-workflows.md#workbook-map) and the [catalog guide](docs/kdm-catalog.md).
+| Generated output                                                                                                          | Source                                                  |
+| ------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- |
+| [Catalog types](src/lib/types/gen/kdm-data.d.ts) and [browser validator](src/lib/gen/catalog-validator.js) (with `.d.ts`) | [data.schema.json](static/kdm/catalog/data.schema.json) |
+| [Core editions](src/lib/gen/core-editions.json)                                                                           | [data.json](static/kdm/catalog/data.json)               |
+| [Workbook map schema](static/kdm/catalog/workbook-map.schema.json)                                                        | [workbook.ts](src/lib/types/workbook.ts)                |
+
+The [workbook map](static/kdm/catalog/workbook-map.json) uses a separate command, `pnpm catalog:workbook`, and requires the live catalog and local workbook import records.
 
 ## Catalog
 
@@ -101,9 +111,12 @@ See the [implemented collection architecture](docs/kdm-architecture.md) for pers
 
 ## Known warnings
 
-The pnpm patch for `@unocss/svelte-scoped` preserves source maps when inserting the global stylesheet link and unregisters its unused `transformIndexHtml` hook in SvelteKit. Standalone Vite retains that hook. It also checks the complete streamed HTML head, including `res.end()` content, so split chunks do not trigger false missing-stylesheet errors. Error and non-HTML responses are excluded. When updating UnoCSS, remove the patch only after verifying upstream handles source maps, hook registration, and streamed response checks. After integration upgrades, verify the global stylesheet, safelisted icons, and absence of `%unocss-svelte-scoped.global%` placeholders in generated HTML.
+Keep the `@unocss/svelte-scoped` patch until upstream fixes source maps, SvelteKit hook registration, and streamed HTML checks.
+After integration upgrades, verify that pages link to an existing global stylesheet, safelisted icons have CSS rules, and generated HTML
+contains no `%unocss-svelte-scoped.global%` placeholders.
 
-- The CSS validator may report `Unknown property: 'corner-shape'` in [AttackProfile.svelte](src/lib/kdm/showdown/ui/AttackProfile.svelte). Supporting browsers use `corner-shape: squircle`; others keep the `border-radius` fallback.
+The CSS validator may report `Unknown property: 'corner-shape'` in [AttackProfile.svelte](src/lib/kdm/showdown/ui/AttackProfile.svelte).
+Supporting browsers use `corner-shape: squircle`; others keep the `border-radius` fallback.
 
 Investigate other warnings separately.
 

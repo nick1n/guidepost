@@ -79,7 +79,7 @@
 </script>
 
 <script lang="ts">
-  import { resolve } from "$app/paths";
+  import Header from "#lib/app/Header.svelte";
 </script>
 
 <svelte:head>
@@ -90,14 +90,7 @@
 <main>
   <span id="new-tab-description" hidden>Opens in a new tab</span>
 
-  <a class="home-link" href={resolve("/")}>
-    <span class="back-icon i-material-symbols:arrow-back" aria-hidden="true"></span>back
-  </a>
-
-  <header>
-    <h1>Credits</h1>
-    <p class="intro">Creators, artists, groups, and tools that helped shape this site</p>
-  </header>
+  <Header title="Credits" subtitle="Creators, artists, groups, and tools that helped shape this site" />
 
   <div class="groups">
     {#each credits as { id, title, list } (id)}
@@ -131,42 +124,17 @@
     justify-self: center;
   }
 
-  .home-link {
-    display: inline-flex;
-    align-items: center;
-    padding: 1rem;
-    gap: 0.5rem;
-    color: var(--muted-foreground);
-    font-weight: var(--font-bold);
-    font-size: var(--text-sm);
-  }
-
-  :is(.home-link, .credit):is(:hover, :focus-visible) {
+  .credit:is(:hover, :focus-visible) {
     color: var(--accent);
   }
 
-  :is(.back-icon, .heart-icon) {
+  .heart-icon {
     --size-icon: 1rem;
   }
 
-  header {
-    padding-inline: 1rem;
-    text-align: center;
-  }
-
-  :is(h1, h2) {
+  h2 {
     font-weight: var(--font-bold);
     font-family: var(--font-display);
-  }
-
-  h1 {
-    font-size: 5rem;
-    line-height: var(--line-height-none);
-    letter-spacing: var(--letter-spacing-tight);
-  }
-
-  .intro {
-    color: var(--muted-foreground);
   }
 
   section {

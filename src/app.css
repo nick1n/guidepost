@@ -217,7 +217,6 @@ html:has(.scrollbar-stable) {
 
 body {
   min-block-size: 100dvh;
-  border-top: var(--border-width) solid transparent;
   color: var(--foreground);
   font-family: var(--font-sans);
   text-wrap-style: pretty;

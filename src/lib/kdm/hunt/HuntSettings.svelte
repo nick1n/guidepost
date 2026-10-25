@@ -1,15 +1,28 @@
 <script lang="ts">
+  import { page } from "$app/state";
+  import { createHashRoute } from "#lib/app/navigation/hash-route.svelte.ts";
+  import { huntHash } from "./url.ts";
   import { getHuntPreferences } from "#lib/kdm/hunt/preferences.svelte.ts";
   import Select from "#lib/components/Select.svelte";
 
   const preferences = getHuntPreferences();
+  const route = createHashRoute(huntHash);
+  const inHunt = $derived(page.route.id === "/kdm/hunt");
+  const option = $derived(inHunt ? (route.value.art ?? preferences.option) : preferences.option);
   const id = $props.id();
+
+  function onchange(event: Event & { currentTarget: HTMLSelectElement }) {
+    const art = event.currentTarget.value;
+    if (art !== "ccg" && art !== "fen" && art !== "kekasi") return;
+    preferences.setOption(art);
+    if (inHunt) route.replace({ ...route.value, art });
+  }
 </script>
 
 <section aria-labelledby={`${id}-heading`}>
   <h3 id={`${id}-heading`}>Hunt events</h3>
   <label for={`${id}-option`}>Card images by</label>
-  <Select id={`${id}-option`} value={preferences.option} onchange={(event) => preferences.setOption(event.currentTarget.value)}>
+  <Select id={`${id}-option`} value={option} {onchange}>
     <option value="ccg">Custom Content Group</option>
     <option value="fen">Fen</option>
     <option value="kekasi">Kekasi</option>

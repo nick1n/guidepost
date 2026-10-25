@@ -361,12 +361,10 @@
       color: var(--contrast);
     }
     &[aria-pressed="true"] {
-      border-color: var(--accent);
       outline: var(--border-width) solid var(--accent);
       outline-offset: 0.125rem;
-      box-shadow: 0 0 1rem color-mix(var(--accent) 40%, transparent);
     }
-    &:is(:hover, :focus-visible) {
+    &:is([aria-pressed="true"], :hover, :focus-visible) {
       border-color: var(--accent);
       box-shadow: 0 0 1rem color-mix(var(--accent) 40%, transparent);
     }

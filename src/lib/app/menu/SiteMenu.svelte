@@ -55,8 +55,12 @@
   const session = new MenuSession({
     history: {
       isOpen: () => Boolean(page.state.siteMenu),
-      open: () =>
-        goto((page.shallow?.url ?? page.url).href, { shallow: true, persistState: true, state: { ...page.state, siteMenu: true } }),
+      open: async () => {
+        const href = window.location.href;
+        // Native hash entries have no framework state for Back to restore when the menu closes.
+        if (history.state === null) await goto(href, { shallow: true, replace: true, state: page.state });
+        await goto(href, { shallow: true, persistState: true, state: { ...page.state, siteMenu: true } });
+      },
       back: () => history.back(),
       navigate: (href) => goto(href),
     },
@@ -102,11 +106,22 @@
   }
 
   function alignControls(element: HTMLDivElement) {
+    let frame = 0;
+    function measure() {
+      frame = 0;
+      const width = `${element.offsetWidth - element.clientWidth}px`;
+      if (element.style.getPropertyValue("--width-scrollbar") !== width) element.style.setProperty("--width-scrollbar", width);
+    }
+    // Scrollbar padding can resize the body, so write outside the observer's delivery cycle.
     const observer = new ResizeObserver(() => {
-      element.style.setProperty("--width-scrollbar", `${element.offsetWidth - element.clientWidth}px`);
+      if (!frame) frame = requestAnimationFrame(measure);
     });
     observer.observe(element);
-    return () => observer.disconnect();
+    measure();
+    return () => {
+      observer.disconnect();
+      cancelAnimationFrame(frame);
+    };
   }
 
   function back() {

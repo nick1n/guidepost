@@ -25,19 +25,25 @@
 </script>
 
 <script lang="ts">
-  import { onDestroy } from "svelte";
+  import { onDestroy, untrack } from "svelte";
   import { SvelteSet } from "svelte/reactivity";
+  import { createHashRoute } from "#lib/app/navigation/hash-route.svelte.ts";
   import { getHuntPreferences } from "#lib/kdm/hunt/preferences.svelte.ts";
   import HuntPicker from "#lib/kdm/hunt/HuntPicker.svelte";
   import KdIcon from "#lib/components/KdIcon.svelte";
   import MenuButton from "#lib/app/menu/MenuButton.svelte";
   import { swipe, type SwipeDirection } from "#lib/swipe.ts";
+  import { huntHash, type HuntFace } from "#lib/kdm/hunt/url.ts";
 
   const preferences = getHuntPreferences();
+  const route = createHashRoute(huntHash);
+  const card = $derived(route.value.event);
+  const art = $derived(route.value.art ?? preferences.option);
+  const wantedFace = $derived(route.value.show);
+  const target = $derived({ event: card, art, show: wantedFace });
   const loaded = new SvelteSet<string>();
   const failed = new SvelteSet<string>();
-  let card = $state(1);
-  let artworkCard = $state(1);
+  let artworkCard = $state<number>();
   let rotation = $state(0);
   const showCard = $derived(rotation % 360 !== 0);
   let hasClicked = $state(false);
@@ -51,19 +57,29 @@
   let slideElement = $state<HTMLDivElement>();
   let exitingElement = $state<HTMLDivElement>();
   let cardElement: HTMLButtonElement | undefined;
-  let flipSource = $state.raw<{ element: HTMLButtonElement; front: string }>();
+  let flipSource = $state.raw<HTMLButtonElement>();
   const flipping = $derived(flipSource !== undefined);
   let retryFocus: { front: string; retry: number } | undefined;
+  let flipDirection: "left" | "right" | undefined;
 
-  const requestedImages = $derived(huntImages(artworkCard, preferences));
+  const requestedImages = $derived(
+    huntImages(artworkCard ?? card, {
+      option: art,
+      bravadoBeta: preferences.bravadoBeta,
+      devilSatan: preferences.devilSatan,
+      gregalopeCE: preferences.gregalopeCE,
+    }),
+  );
   // Keep the outgoing artwork unchanged until its slide has actually finished.
   let images = $state.raw(huntImages(1, huntDefaults));
-  // Selecting different artwork restores its deck back; a completed flip can override this face.
+  // The rendered face stays with the outgoing artwork until the requested images can enter.
   let backFace = $derived(images.back);
   const sources = $derived(
-    preferences.ready ? [requestedImages.front, requestedImages.back, ...(requestedImages.reverse ? [requestedImages.reverse] : [])] : [],
+    preferences.ready && artworkCard !== undefined
+      ? [requestedImages.front, requestedImages.back, ...(requestedImages.reverse ? [requestedImages.reverse] : [])]
+      : [],
   );
-  const loading = $derived(!preferences.ready || sources.some((src) => !loaded.has(src)));
+  const loading = $derived(!preferences.ready || artworkCard === undefined || sources.some((src) => !loaded.has(src)));
   const loadError = $derived(sources.some((src) => failed.has(src)));
   const busy = $derived(drawing || loading || selecting || !!exitingElement || images.front !== requestedImages.front);
   const first = $derived(drawing ? firstRand : Math.floor(card / 10));
@@ -84,20 +100,46 @@
     return () => clearInterval(interval);
   });
 
+  // URL navigation, including Back/Forward, must retarget the browser's card transitions. Animation state never writes the URL.
+  $effect(() => {
+    if (!route.ready) return;
+    const nextCard = card;
+    const nextFace = wantedFace;
+    const nextFront = requestedImages.front;
+    untrack(() => {
+      if (artworkCard === undefined) {
+        artworkCard = nextCard;
+        commitImages();
+      } else if (nextCard !== artworkCard && !drawing) beginSelection();
+      else if (!busy && !loadError && images.front === nextFront) {
+        presentFace(nextFace);
+      }
+    });
+  });
+
   onDestroy(() => clearTimeout(selectionTimer));
 
   function flip(direction?: "left" | "right") {
     hasClicked = true;
     if (flipping || busy || loadError || !cardElement) return;
-    const turn = direction ?? (showCard ? "left" : "right");
-    flipSource = { element: cardElement, front: images.front };
+    flipDirection = direction ?? (showCard ? "left" : "right");
+    const concealedFace: HuntFace = images.reverse ? "reverse" : "back";
+    const show = showCard ? concealedFace : "front";
+    route.replace({ ...target, show });
+  }
+
+  function presentFace(show: HuntFace) {
+    if (show !== "front") backFace = show === "reverse" ? (images.reverse ?? images.back) : images.back;
+    if ((show === "front") === showCard || !cardElement) return;
+    const turn = flipDirection ?? (showCard ? "left" : "right");
+    flipDirection = undefined;
+    flipSource = cardElement;
     rotation += turn === "left" ? -180 : 180;
     if (reducedMotion.current) finishFlip(cardElement);
   }
 
   function finishFlip(element: HTMLButtonElement) {
-    if (flipSource?.element !== element) return;
-    if (images.front === flipSource.front && images.reverse) backFace = images.reverse;
+    if (flipSource !== element) return;
     flipSource = undefined;
   }
 
@@ -142,12 +184,12 @@
     clearTimeout(selectionTimer);
     selecting = false;
     drawing = true;
+    route.replace({ ...target, event: Math.floor(Math.random() * 100), show: "back" });
     if (!waitForExit) finishDraw();
   }
 
   function finishDraw() {
     conceal();
-    card = Math.floor(Math.random() * 100);
     artworkCard = card;
     drawing = false;
   }
@@ -160,7 +202,13 @@
     if (event.target !== exitingElement) return;
     exitingElement = undefined;
     if (drawing) finishDraw();
+    commitImages();
+  }
+
+  function commitImages() {
     images = requestedImages;
+    rotation = wantedFace === "front" ? 180 : 0;
+    backFace = wantedFace === "reverse" ? (images.reverse ?? images.back) : images.back;
   }
 
   function selectHunt() {
@@ -176,10 +224,13 @@
 
   function select(cardNumber: number) {
     if (cardNumber === card && !selecting && !exitingElement) return;
+    route.replace({ ...target, event: cardNumber, show: "back" });
+  }
+
+  function beginSelection() {
     if (!busy && !loadError) exitingElement = slideElement;
     selecting = true;
     conceal();
-    card = cardNumber;
     clearTimeout(selectionTimer);
     selectionTimer = setTimeout(() => {
       artworkCard = card;
@@ -193,7 +244,7 @@
         failed.delete(path);
         loaded.add(path);
         // Initial loads and retries have no visible card whose outro can commit the artwork.
-        if (!slideElement && !exitingElement) images = requestedImages;
+        if (!slideElement && !exitingElement) commitImages();
       },
       onerror() {
         failed.add(path);

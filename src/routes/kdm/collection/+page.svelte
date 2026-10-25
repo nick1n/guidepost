@@ -8,8 +8,8 @@
 </script>
 
 <script lang="ts">
+  import Header from "#lib/app/Header.svelte";
   import { afterNavigate, beforeNavigate, goto } from "$app/navigation";
-  import { resolve } from "$app/paths";
   import { page } from "$app/state";
   import { onDestroy, untrack } from "svelte";
   import { innerHeight, scrollY } from "svelte/reactivity/window";
@@ -167,13 +167,7 @@
   {@attach swipe({ directions: ["left", "right"], onSwipe: swipeCategory, onDrag: dragCatalog, scope: "page" })}
   class="scrollbar-stable"
 >
-  <a class="back" href={resolve("/")}>
-    <span class="back-icon i-material-symbols:arrow-back" aria-hidden="true"></span>Guidepost
-  </a>
-  <header>
-    <h1>Collection</h1>
-    <p class="subtitle">Kingdom Death: Monster collection tracker</p>
-  </header>
+  <Header title="Collection" subtitle="Kingdom Death: Monster collection tracker" />
 
   {#if collection.loadStatus === "pending"}
     <p class="collection-status loading" role="status">Loading your saved collection...</p>
@@ -554,30 +548,6 @@
     scale: 1.12;
     color: var(--accent);
   }
-  header {
-    /* Keep font-metric fractions from shifting the content below the trimmed heading. */
-    block-size: calc-size(auto, round(up, size, 1px));
-    margin-block-end: 0.75rem;
-    text-align: center;
-  }
-  h1 {
-    font-weight: var(--font-bold);
-    font-size: 5rem;
-    line-height: var(--line-height-none);
-    font-family: var(--font-display);
-    text-box: trim-both cap alphabetic;
-    letter-spacing: var(--letter-spacing-tight);
-  }
-  .back {
-    display: inline-flex;
-    align-items: center;
-    padding: 1rem;
-    gap: 0.5rem;
-    color: var(--muted-foreground);
-    font-weight: var(--font-bold);
-    font-size: var(--text-sm);
-  }
-  .back-icon,
   .remove-icon {
     --size-icon: 1rem;
   }
@@ -600,7 +570,6 @@
   .show-more {
     color: var(--foreground);
   }
-  .subtitle,
   footer,
   .results {
     color: var(--muted-foreground);
@@ -1009,7 +978,6 @@
     opacity: 0.4;
   }
   button,
-  a,
   summary,
   input {
     transition: var(--transition-colors);
@@ -1036,11 +1004,6 @@
     .tag-heading:hover :is(.tag-icon, .tag-chevron),
     summary:hover .more-chevron {
       color: var(--accent);
-    }
-    .back:hover {
-      color: var(--accent);
-      text-decoration: underline;
-      text-underline-offset: 0.2em;
     }
     .cloud-tag:not(:disabled):hover {
       z-index: 1;

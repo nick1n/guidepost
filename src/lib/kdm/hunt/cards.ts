@@ -2,7 +2,7 @@ import type { HuntValues } from "./preference-store.ts";
 
 const decks = {
   ccg: { aspectRatio: 1122 / 1797, doubleSided: [73], ext: "png" },
-  fen: { aspectRatio: 1059 / 1500, doubleSided: [], ext: "png" },
+  fen: { aspectRatio: 1059 / 1500, doubleSided: [], ext: "png" }, // TODO: `doubleSided: [0]` once I get the back of event 100
   kekasi: { aspectRatio: 958 / 1504, doubleSided: [11, 73], ext: "jpg" },
 };
 

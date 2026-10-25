@@ -238,7 +238,7 @@ await runBrowser(
     await open();
     await escape();
     assert(await evaluate("document.activeElement?.matches('[data-menu-trigger]')"), "Mobile Escape restores launcher focus");
-    assert(errors.length === 0, "No browser runtime exceptions, window errors, or error logs");
+    assert(errors.length === 0, `No browser runtime exceptions, window errors, or error logs: ${JSON.stringify(errors)}`);
     await writeFile("temp/browser-verification/menu-report.json", JSON.stringify({ report, errors }, null, 2));
   },
 );

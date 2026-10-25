@@ -33,6 +33,9 @@ The window owns scrolling as the link list grows; do not add a navigation scroll
 
 ## TypeScript
 
+Avoid redundant context in file, component, and symbol names when the containing folder already supplies it. For example, use
+`app/Header.svelte` and import it as `Header`, rather than `app/AppHeader.svelte`. Add a qualifier only when it distinguishes a meaningful role or resolves an actual ambiguity.
+
 Infer types unless annotations clarify public APIs or complex values, improve readability, or prevent incorrect widening. Prefer one- or two-word type names unless longer is clearer; function names may be longer.
 
 Use ternaries for simple choices. For more complex branching, prefer `if` / `else if` statements when they read more clearly, especially instead of nested ternaries.
