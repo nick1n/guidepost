@@ -21,7 +21,7 @@ await runBrowser(
       await waitFor(`getComputedStyle(${picker}).display==='none'`);
       await evaluate("document.querySelector('.selection').focus();document.querySelector('.selection').click()");
       await waitFor(`${picker}?.open`);
-      await evaluate(`Promise.all(${picker}.getAnimations().map(a=>a.finished))`);
+      await evaluate(`Promise.all(${picker}.getAnimations({subtree:true}).map(a=>a.finished.catch(()=>{})))`);
       await click(`tens ${Math.floor(value / 10) % 10}`);
       await click(`ones ${value % 10}`);
       await physicalClick("dialog:has(.dice) .close");
@@ -52,6 +52,10 @@ await runBrowser(
       await ready();
     };
     const physicalClick = async (selector: string) => {
+      // Modal buttons move with their sheet, so wait for descendant transitions before sampling coordinates.
+      await evaluate(
+        `Promise.all((document.querySelector(${JSON.stringify(selector)})?.closest('dialog')?.getAnimations({subtree:true})??[]).map(animation=>animation.finished.catch(()=>{})))`,
+      );
       await waitFor(
         `(()=>{const e=document.querySelector(${JSON.stringify(selector)});const r=e.getBoundingClientRect();return e.contains(document.elementFromPoint(r.x+r.width/2,r.y+r.height/2))})()`,
       );
@@ -546,7 +550,8 @@ await runBrowser(
     await click("tens 7");
     await click("ones 9");
     await physicalClick("dialog:has(.dice) .close");
-    await waitFor("document.body.innerText.includes('Could not load this hunt card')");
+    // The previous event's error remains visible until selection debouncing requests the new image.
+    await waitFor("document.querySelector('main>div[hidden] img[src$=\"kekasi-79.jpg\"]') && document.querySelector('.retry')");
     assert(true, "Missing artwork exposes a recoverable error");
     assert(
       await evaluate("document.querySelector('.random').textContent.trim()==='Random'&&!document.querySelector('.random').disabled"),

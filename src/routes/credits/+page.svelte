@@ -11,22 +11,10 @@
         { name: "Quackalope", href: "https://www.youtube.com/@Quackalope" },
         { name: "BoardGameGeek", href: "https://boardgamegeek.com/" },
         { name: "CCG Team", href: "https://www.patreon.com/ccgteam" },
+        { name: "Kekasi", href: "https://boardgamegeek.com/filepage/255740/kdm-15-hunt-event-reference-cards" },
         { name: "RevampedGame", href: "https://ko-fi.com/revampedgame" },
         { name: "Craft of Death", href: "https://ko-fi.com/craftofdeath" },
         { name: "Scribe for KD:M @taboobat", href: "https://gitlab.com/taboobat/kdm-app" },
-      ],
-    },
-    {
-      id: "hunt-event-cards",
-      title: "Hunt event cards",
-      list: [
-        { name: "Fen", href: "https://patreon.com/FenPaints" },
-        { name: "Kekasi", href: "https://boardgamegeek.com/filepage/255740/kdm-15-hunt-event-reference-cards" },
-        {
-          name: "Custom Content Group",
-          href: "https://docs.google.com/spreadsheets/d/1hBB4sGEFVuzstsZvY0nyNlw1ocXa7y5wZNzCXJdAAwY/edit",
-        },
-        { name: "Adam Poots Games", href: "https://kingdomdeath.com/" },
       ],
     },
     {

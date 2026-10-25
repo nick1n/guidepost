@@ -86,7 +86,7 @@
 
   onDestroy(() => clearTimeout(selectionTimer));
 
-  function flip(direction?: SwipeDirection) {
+  function flip(direction?: "left" | "right") {
     hasClicked = true;
     if (flipping || busy || loadError || !cardElement) return;
     const turn = direction ?? (showCard ? "left" : "right");
@@ -167,6 +167,11 @@
     if (drawing || flipping) return;
     if (showCard) flip();
     picker.show();
+  }
+
+  function swipeHunt(direction: SwipeDirection) {
+    if (direction === "up") selectHunt();
+    else if (direction === "left" || direction === "right") flip(direction);
   }
 
   function select(cardNumber: number) {
@@ -257,7 +262,7 @@
   <meta name="description" content="Draw and select all 100 Kingdom Death: Monster hunt events with card images by Fen, Kekasi, and CCG." />
 </svelte:head>
 
-<main style:--duration-flip={`${duration}ms`}>
+<main style:--duration-flip={`${duration}ms`} {@attach swipe({ directions: ["left", "right", "up"], onSwipe: swipeHunt })}>
   <h1 class="visually-hidden">Hunt events</h1>
   <div hidden>
     {#key retry}
@@ -281,7 +286,6 @@
           ontransitionend={finishTransition}
           ontransitioncancel={finishTransition}
           {@attach trackCard}
-          {@attach swipe({ onSwipe: flip })}
         >
           <img class="back" src={cardAsset(backFace)} alt="" aria-hidden="true" />
           <img class="front" src={cardAsset(images.front)} alt="" aria-hidden="true" />
@@ -343,6 +347,7 @@
       max(0.5rem, env(safe-area-inset-left));
     /* Keep animations within the viewport while allowing the card to cross the footer. */
     overflow: clip;
+    touch-action: pinch-zoom;
     gap: 0.5rem;
     background:
       radial-gradient(ellipse at 50% 40%, color-mix(var(--hunt-event-background) 15%, transparent), transparent 70%), var(--background);
@@ -367,7 +372,6 @@
     transform-style: preserve-3d;
     border-radius: var(--radius-card);
     box-shadow: 0 0.75rem 3rem #00000080;
-    touch-action: pan-y pinch-zoom;
     transition: transform var(--duration-flip) cubic-bezier(0.3, 1.4, 0.6, 1);
   }
   img {
@@ -421,6 +425,7 @@
   }
   .menu {
     justify-self: end;
+    margin-inline-end: calc(max(0.75rem, env(safe-area-inset-right)) - max(0.5rem, env(safe-area-inset-right)));
   }
   .selection {
     display: flex;

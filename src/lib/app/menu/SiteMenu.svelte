@@ -4,6 +4,9 @@
 
 <script lang="ts">
   import { onMount, tick, untrack } from "svelte";
+  import { Effect } from "effect";
+  import type { ResetError } from "#lib/app/delete-data.ts";
+  import { getCollectionActions } from "#lib/kdm/collection/state/collection-actions.ts";
   import { goto } from "$app/navigation";
   import { page } from "$app/state";
   import { asset, resolve } from "$app/paths";
@@ -12,8 +15,6 @@
   import { getDatePreferences } from "#lib/app/preferences/date-preferences.svelte.ts";
   import { getGlassPreferences } from "#lib/app/preferences/glass-preferences.svelte.ts";
   import { getNotificationLog } from "#lib/app/notifications/notification-log.svelte.ts";
-  import { getCollection } from "#lib/kdm/collection/state/collection.svelte.ts";
-  import { getCollectionActions } from "#lib/kdm/collection/state/collection-actions.ts";
   import ConfirmDialog from "#lib/components/ConfirmDialog.svelte";
   import Select from "#lib/components/Select.svelte";
   import ToggleButton from "#lib/components/ToggleButton.svelte";
@@ -27,8 +28,10 @@
   const dates = getDatePreferences();
   const glass = getGlassPreferences();
   const log = getNotificationLog();
-  const collection = getCollection();
-  const collectionActions = getCollectionActions();
+  const actions = getCollectionActions();
+  let { onreset }: { onreset: () => Effect.Effect<void, ResetError> } = $props();
+  let resetting = $state(false);
+  let resetError = $state("");
   let resetDialog: ConfirmDialog;
   const id = $props.id();
   let view = $state<keyof typeof titles>("main");
@@ -98,6 +101,14 @@
     target?.focus({ preventScroll: true });
   }
 
+  function alignControls(element: HTMLDivElement) {
+    const observer = new ResizeObserver(() => {
+      element.style.setProperty("--width-scrollbar", `${element.offsetWidth - element.clientWidth}px`);
+    });
+    observer.observe(element);
+    return () => observer.disconnect();
+  }
+
   function back() {
     void showView("main");
   }
@@ -151,9 +162,16 @@
   }
 
   function resetData() {
-    if (!collection.canWrite || collection.isSaving) return;
-    collection.flushPendingEdits();
-    collectionActions.run(collection.reset(), { success: "Saved collection data reset." });
+    if (resetting) return;
+    resetting = true;
+    resetError = "";
+    actions.run(
+      Effect.suspend(onreset).pipe(
+        Effect.tapError((error) => Effect.sync(() => (resetError = error.message))),
+        Effect.ensuring(Effect.sync(() => (resetting = false))),
+      ),
+      { success: false },
+    );
   }
 </script>
 
@@ -189,7 +207,7 @@
         {/if}
       </h2>
     </header>
-    <div class="body" bind:this={content}>
+    <div class="body" bind:this={content} {@attach alignControls}>
       {#if view === "main"}
         <button class="brand" type="button" onclick={checkForUpdates}>
           <svg class="logo" viewBox="205 300 440 440" aria-hidden="true" focusable="false">
@@ -214,7 +232,7 @@
           </button>
           <button class="row" type="button" onclick={() => showView("settings")}>
             <span class="row-icon i-material-symbols:settings-outline" aria-hidden="true"></span>
-            <span class="copy"><strong>Settings</strong><span>Date format, hunt events, and showdown display</span></span>
+            <span class="copy"><strong>Settings</strong><span>Display and gameplay options</span></span>
             <span class="chevron i-material-symbols:chevron-right" aria-hidden="true"></span>
           </button>
           <button class="row" type="button" onclick={() => showView("notifications")}>
@@ -311,17 +329,11 @@
         <HuntSettings />
         <ShowdownSettings {onnavigate} />
         <div class="reset-settings">
-          <button class="reset" type="button" disabled={!collection.canWrite || collection.isSaving} onclick={() => resetDialog.show()}>
-            Reset saved data
+          <button class="reset" type="button" disabled={resetting} onclick={() => resetDialog.show()}>
+            {resetting ? "Deleting saved data…" : "Reset saved data"}
           </button>
-          <p class="description">Permanently clear your saved collection from this browser.</p>
-          {#if collection.saveError}<p class="error" role="alert">{collection.saveError.message}</p>{/if}
-          {#if !collection.canWrite}
-            <p class="description">
-              {collection.loadError?.message ??
-                (collection.needsRefresh ? "Refresh your collection before resetting saved data." : "Waiting for collection storage.")}
-            </p>
-          {/if}
+          <p class="description">Permanently delete all saved collections and settings from this browser.</p>
+          {#if resetError}<p class="error" role="alert">{resetError}</p>{/if}
         </div>
       {/if}
     </div>
@@ -337,9 +349,9 @@
 <ConfirmDialog
   bind:this={resetDialog}
   title="Reset saved data?"
-  description="This permanently deletes your collection ownership, wishlist, missing-content marks, and copy numbers saved in this browser. This cannot be undone. Export a backup from your collection first if you want to keep it."
+  description="This permanently deletes all data from every app database in this browser, including all collections, ownership, wishlists, missing-content marks, copy numbers, and app and hunt settings. The app will reload with default settings. This cannot be undone. Export a backup from your collection first if you want to keep it."
   confirmLabel="Reset saved data"
-  confirmDisabled={!collection.canWrite || collection.isSaving}
+  confirmDisabled={resetting}
   onconfirm={resetData}
 />
 
@@ -350,8 +362,8 @@
   .launcher {
     z-index: 6;
     position: fixed;
-    inset-block-end: max(var(--inset-floating-control), env(safe-area-inset-bottom));
-    inset-inline-end: max(var(--inset-floating-control), env(safe-area-inset-right));
+    inset-block-end: max(0.5rem, env(safe-area-inset-bottom));
+    inset-inline-end: max(0.5rem, env(safe-area-inset-right));
   }
   .scrim {
     z-index: 4;
@@ -405,7 +417,7 @@
     border: var(--border-width) solid var(--grey-7);
     border-inline-end: 0;
     border-block-end: 0;
-    border-start-start-radius: var(--radius-card);
+    border-start-start-radius: clamp(0px, calc((var(--viewport-width, 100vw) - 24rem) * 1e5), var(--radius-card));
     background: var(--surface-glass);
     backdrop-filter: var(--filter-glass);
     box-shadow:
@@ -472,6 +484,7 @@
   .body {
     min-block-size: 0;
     padding: var(--space-menu);
+    padding-inline-end: max(0px, calc(var(--toggle-padding-inline) - var(--width-scrollbar, 0px)));
     overflow-y: auto;
     overscroll-behavior-y: contain;
   }

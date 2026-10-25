@@ -64,10 +64,8 @@
 
   function onfocusin(event: FocusEvent) {
     const column = (event.target as Element).closest<HTMLElement>("[data-place]");
-    if (column) {
-      activePlace = Number(column.dataset.place);
-      numberPlace = activePlace;
-    }
+    if (column) activePlace = Number(column.dataset.place);
+    numberPlace = column ? activePlace : 10;
   }
 
   function focusDigit(place: number, digit: number) {

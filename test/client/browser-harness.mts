@@ -120,6 +120,8 @@ export async function runBrowser(profilePrefix: string, diagnosticExpression: st
     };
     await send("Runtime.enable");
     await send("Page.enable");
+    // /json/new can leave this target in the background, where document.hasFocus() is false.
+    await send("Page.bringToFront");
     // Runtime.exceptionThrown omits errors handled by the browser's window error dispatch, including ResizeObserver loop errors.
     await send("Page.addScriptToEvaluateOnNewDocument", {
       source:

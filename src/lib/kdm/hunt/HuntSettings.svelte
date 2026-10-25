@@ -10,9 +10,9 @@
   <h3 id={`${id}-heading`}>Hunt events</h3>
   <label for={`${id}-option`}>Card images by</label>
   <Select id={`${id}-option`} value={preferences.option} onchange={(event) => preferences.setOption(event.currentTarget.value)}>
+    <option value="ccg">Custom Content Group</option>
     <option value="fen">Fen</option>
     <option value="kekasi">Kekasi</option>
-    <option value="ccg">Custom Content Group</option>
   </Select>
   <fieldset>
     <legend>Expansion cards</legend>

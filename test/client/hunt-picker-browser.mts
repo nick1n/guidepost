@@ -1,5 +1,7 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import { runBrowser } from "./browser-harness.mts";
+import { huntImages } from "#lib/kdm/hunt/cards.ts";
+import { huntDefaults } from "#lib/kdm/hunt/preference-store.ts";
 
 await mkdir("temp/browser-verification", { recursive: true });
 await runBrowser(
@@ -149,17 +151,16 @@ await runBrowser(
       const final = await evaluate<{ out: number; in: number; src: string }>(
         "({...window.selectionCounts,src:document.querySelector('.slide:not([inert]) .card .front').src})",
       );
+      const images = huntImages(expected, huntDefaults);
       assert(
-        final.out === 1 && final.in === 1 && final.src.endsWith(`-${expected}.jpg`),
+        final.out === 1 && final.in === 1 && final.src.endsWith(`/${images.front}`),
         `${input} (${gap}ms gaps): only the final selected card slides in after input pauses, got ${JSON.stringify(final)}`,
       );
       const requests = await evaluate<string[]>(
         "performance.getEntriesByType('resource').map(entry=>entry.name).filter(url=>url.includes('/hunts/'))",
       );
       assert(
-        requests.every(
-          (url) => url.endsWith(`-${expected}.jpg`) || url.endsWith(`-${expected}-back.jpg`) || url.endsWith("/kekasi-back.jpg"),
-        ),
+        requests.every((url) => [images.front, images.back, images.reverse].some((path) => path && url.endsWith(`/${path}`))),
         `${input} (${gap}ms gaps): image requests wait for the final selection, got ${JSON.stringify(requests)}`,
       );
       await evaluate("window.stopCountingSelection()");
@@ -244,7 +245,12 @@ await runBrowser(
       await assertDigitFocus(place, digit);
       await assertColumn(place === "Tens" ? 10 : 1);
     }
-    await evaluate(`${picker}.querySelector('.close').focus()`);
+    await key("Tab");
+    assert(
+      await evaluate("document.activeElement.matches('dialog:has(.dice) .close')"),
+      "Tab from ones reaches Close before starting a new event number",
+    );
+    await assertColumn();
     for (const [digit, event, column] of [
       [3, 31, 10],
       [7, 37, 1],

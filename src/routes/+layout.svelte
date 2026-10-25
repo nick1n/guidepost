@@ -4,6 +4,7 @@
   import { onMount } from "svelte";
   import { afterNavigate } from "$app/navigation";
   import { Effect, Fiber } from "effect";
+  import { resetSavedData } from "#lib/app/delete-data.ts";
   import { Collection, setCollection } from "#lib/kdm/collection/state/collection.svelte.ts";
   import { createCollectionActions, setCollectionActions } from "#lib/kdm/collection/state/collection-actions.ts";
   import { CollectionSession } from "#lib/kdm/collection/state/collection-session.ts";
@@ -21,6 +22,18 @@
   let { children } = $props();
   const collection = setCollection(new Collection());
   const session = new CollectionSession(collection);
+  let deleting = false;
+  let stopStorage: Effect.Effect<void> = Effect.void;
+  const resetData = Effect.fn("App.resetData")(() =>
+    resetSavedData({
+      prepare: Effect.sync(() => {
+        deleting = true;
+        collection.setUser(undefined);
+      }),
+      stop: stopStorage,
+      reload: Effect.sync(() => location.reload()),
+    }),
+  );
   setSiteMenu(new SiteMenu());
   const log = setNotificationLog(new NotificationLog());
   const preferences = new AppPreferences(log.record);
@@ -32,6 +45,7 @@
   setCopyNumberEdits(new CopyNumberEdits(collection, collectionActions));
 
   function onbeforeunload(event: BeforeUnloadEvent) {
+    if (deleting) return;
     if (!collection.hasPendingChanges && !hunts.hasPendingChanges && !preferences.hasPendingChanges) return;
     collection.flushPendingEdits();
     // IndexedDB work is asynchronous; allow the user to stay until all queued writes finish.
@@ -40,10 +54,12 @@
   }
 
   function onvisibilitychange() {
+    if (deleting) return;
     if (document.visibilityState === "hidden") collection.flushPendingEdits();
   }
 
   function onpagehide() {
+    if (deleting) return;
     collection.flushPendingEdits();
   }
 
@@ -67,6 +83,10 @@
     const preferenceSession = Effect.runFork(preferences.run());
     const huntSession = Effect.runFork(hunts.run());
     const active = collectionActions.run(session.run("guest"), { success: false });
+    stopStorage = Effect.all([Fiber.interrupt(preferenceSession), Fiber.interrupt(active), Fiber.interrupt(huntSession)], {
+      concurrency: "unbounded",
+      discard: true,
+    });
     return () => {
       stopGlass();
       Effect.runFork(Fiber.interrupt(preferenceSession));
@@ -84,4 +104,4 @@
 </svelte:head>
 
 {@render children()}
-<SiteMenuPanel />
+<SiteMenuPanel onreset={resetData} />

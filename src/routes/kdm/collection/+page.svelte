@@ -163,7 +163,10 @@
 
 <svelte:window {onkeydown} />
 
-<main {@attach swipe({ onSwipe: swipeCategory, onDrag: dragCatalog, scope: "page" })} class="scrollbar-stable">
+<main
+  {@attach swipe({ directions: ["left", "right"], onSwipe: swipeCategory, onDrag: dragCatalog, scope: "page" })}
+  class="scrollbar-stable"
+>
   <a class="back" href={resolve("/")}>
     <span class="back-icon i-material-symbols:arrow-back" aria-hidden="true"></span>Guidepost
   </a>
@@ -173,7 +176,7 @@
   </header>
 
   {#if collection.loadStatus === "pending"}
-    <p class="collection-status" role="status">Loading your saved collection...</p>
+    <p class="collection-status loading" role="status">Loading your saved collection...</p>
   {:else if collection.loadError || collection.saveError}
     <div class="collection-status error">
       <p role="alert">{(collection.loadError ?? collection.saveError)?.message}</p>
@@ -434,6 +437,21 @@
     background: var(--panel);
     color: var(--muted-foreground);
 
+    &.loading {
+      display: grid;
+      align-items: center;
+      position: fixed;
+      z-index: 2;
+      inset-block-end: max(0.5rem, env(safe-area-inset-bottom));
+      inset-inline: 1rem;
+      inline-size: fit-content;
+      max-inline-size: calc(100% - 2rem);
+      block-size: var(--size-floating-control);
+      margin: 0 auto;
+      padding-block: 0.5rem;
+      text-align: center;
+    }
+
     &.error {
       display: grid;
       gap: 0.5rem;
@@ -573,8 +591,8 @@
   .back-to-top {
     z-index: 2;
     position: fixed;
-    inset-block-end: max(var(--inset-floating-control), env(safe-area-inset-bottom));
-    inset-inline-start: max(var(--inset-floating-control), env(safe-area-inset-left));
+    inset-block-end: max(0.5rem, env(safe-area-inset-bottom));
+    inset-inline-start: max(0.5rem, env(safe-area-inset-left));
   }
   .swipe-tabs {
     box-shadow: 0 0.25rem 0.5rem color-mix(var(--contrast) 25%, transparent);
