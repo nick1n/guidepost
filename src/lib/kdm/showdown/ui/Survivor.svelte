@@ -30,7 +30,7 @@
     type ListEntry,
     type Sheet,
   } from "#lib/kdm/showdown/sheet.ts";
-  import { attackStats } from "#lib/kdm/showdown/rules.ts";
+  import { attackStats, formatTarget } from "#lib/kdm/showdown/rules.ts";
   import { sampleActions, sampleDecks } from "#lib/kdm/showdown/fixtures.ts";
 
   let {
@@ -143,21 +143,13 @@
   let foundingStoneAttack = $derived(attackStats(sheet, "Founding Stone", monsterDefense));
   let fistAndToothAttack = $derived(attackStats(sheet, "Fist & Tooth", monsterDefense));
 
-  function formatTarget(value: number) {
-    return value === 10 ? "10" : `${value}+`;
-  }
-
-  function formatCrit(value: number | null) {
-    return value === null ? "\u2212" : formatTarget(value);
-  }
-
   function profileStats(attack: ReturnType<typeof attackStats>) {
     return [
       { label: "Spd", value: attack.speed },
       { label: "Acc", value: formatTarget(attack.acc), divider: true },
-      { label: "Perf", value: formatCrit(attack.phit) },
+      { label: "Perf", value: formatTarget(attack.phit) },
       { label: "Wnd", value: formatTarget(attack.wound), divider: true },
-      { label: "Crit", value: formatCrit(attack.crit) },
+      { label: "Crit", value: formatTarget(attack.crit) },
     ];
   }
 
@@ -243,12 +235,12 @@
   }
 
   const armor = [
-    { name: "Insanity", icon: undefined },
-    { name: "Head", icon: "location-head" },
-    { name: "Arms", icon: "location-arms" },
-    { name: "Body", icon: "location-body" },
-    { name: "Waist", icon: "location-waist" },
-    { name: "Legs", icon: "location-legs" },
+    { name: "Insanity", icon: undefined, injuries: ["Light"] },
+    { name: "Head", icon: "location-head", injuries: ["Heavy"] },
+    { name: "Arms", icon: "location-arms", injuries: ["Light", "Heavy"] },
+    { name: "Body", icon: "location-body", injuries: ["Light", "Heavy"] },
+    { name: "Waist", icon: "location-waist", injuries: ["Light", "Heavy"] },
+    { name: "Legs", icon: "location-legs", injuries: ["Light", "Heavy"] },
   ] as const;
   const tracks = [
     { name: "Hunt XP", max: 16, marks: [2, 6, 10, 15, 16], milestones: ["Age I", "Age II", "Age III", "Age IV", "Retired"] },
@@ -293,7 +285,7 @@
           </Counter>
           <div class="injuries">
             {#if index === 1}<span class="injury-gap" aria-hidden="true"></span>{/if}
-            {#each index === 0 ? ["Light"] : index === 1 ? ["Heavy"] : ["Light", "Heavy"] as injury (injury)}
+            {#each location.injuries as injury (injury)}
               <label class="injury-target" for={`${id}-${location.name}-${injury}`}>
                 <input
                   id={`${id}-${location.name}-${injury}`}
@@ -675,7 +667,7 @@
       bind:entries={entries[name]}
       deck={sampleDecks[name] ?? []}
       swipeDelete={variant === 1}
-      restricted={name === "Fighting Arts" ? !sheet.restrict.fightingArts : name === "Abilities" ? !sheet.restrict.abilities : false}
+      restricted={(name === "Fighting Arts" && !sheet.restrict.fightingArts) || (name === "Abilities" && !sheet.restrict.abilities)}
     />
   {/if}
 {/snippet}

@@ -92,6 +92,21 @@
     return sheet.nameless ? `Nameless ${index}` : sheet.name.trim() || `Nameless ${index}`;
   }
 
+  function dashboardLabel(index: number) {
+    if (index === 0) {
+      const turn = monsterTurn ? "current turn" : "waiting";
+      const knockedDown = monsterKnockedDown ? ", knocked down" : "";
+      return `White Lion, ${turn}${knockedDown}, movement ${monsterMovement}, toughness ${monsterDefense.toughness}, round ${round}`;
+    }
+    const sheet = sheets[index - 1];
+    const dodgeAvailable = availableActions(sheet);
+    const dodge = dodgeAvailable ? "Dodge available" : "Dodge unavailable";
+    let action: string;
+    if (monsterTurn) action = dodgeAvailable ? ", press again when selected to Dodge" : "";
+    else action = `, ${resourceText(index)}, press again when selected to toggle Acted`;
+    return `${dashboardName(index)}, ${statusText(sheet)}, ${tokenTotal(sheet)} tokens, ${dodge}${action}`;
+  }
+
   // Overlay scrollbars need a small inset; classic scrollbars supply their own balanced gutters.
   function dashboardSpacing(element: HTMLElement) {
     let frame = 0;
@@ -311,9 +326,7 @@
           style:--identity={person.color}
           style:--identity-ink={person.ink}
           aria-current={active === index ? "true" : undefined}
-          aria-label={index === 0
-            ? `White Lion, ${monsterTurn ? "current turn" : "waiting"}${monsterKnockedDown ? ", knocked down" : ""}, movement ${monsterMovement}, toughness ${monsterDefense.toughness}, round ${round}`
-            : `${dashboardName(index)}, ${statusText(sheets[index - 1])}, ${tokenTotal(sheets[index - 1])} tokens, ${availableActions(sheets[index - 1]) ? "Dodge available" : "Dodge unavailable"}${monsterTurn ? (availableActions(sheets[index - 1]) ? ", press again when selected to Dodge" : "") : `, ${resourceText(index)}, press again when selected to toggle Acted`}`}
+          aria-label={dashboardLabel(index)}
           onclick={() => selectSurvivor(index)}
         >
           <strong>{dashboardName(index)}</strong>

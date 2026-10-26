@@ -1,5 +1,10 @@
 <script module lang="ts">
   const titles = { main: "Menu", account: "Account", notifications: "Notification log", settings: "Settings" };
+  const noticePresentation = {
+    error: { icon: "i-material-symbols:error-outline", prefix: "Error: " },
+    success: { icon: "i-material-symbols:check-circle-outline", prefix: "Success: " },
+    info: { icon: "i-material-symbols:info-outline", prefix: "" },
+  };
 </script>
 
 <script lang="ts">
@@ -40,6 +45,11 @@
   let fullscreenAvailable = $state(false);
   let fullscreenPending = $state(false);
   let fullscreenError = $state("");
+  const fullscreenLabel = $derived.by(() => {
+    if (!fullscreenAvailable) return "Fullscreen unavailable";
+    if (fullscreenPending) return "Changing display?";
+    return fullscreen ? "Exit fullscreen" : "Fullscreen";
+  });
   let updateStatus = $state("");
   let updating = $state(false);
   let updateAttempt = $state(0);
@@ -103,25 +113,6 @@
     content.scrollTop = 0;
     const target = next === "main" ? content.querySelector("button") : content.previousElementSibling?.querySelector("button");
     target?.focus({ preventScroll: true });
-  }
-
-  function alignControls(element: HTMLDivElement) {
-    let frame = 0;
-    function measure() {
-      frame = 0;
-      const width = `${element.offsetWidth - element.clientWidth}px`;
-      if (element.style.getPropertyValue("--width-scrollbar") !== width) element.style.setProperty("--width-scrollbar", width);
-    }
-    // Scrollbar padding can resize the body, so write outside the observer's delivery cycle.
-    const observer = new ResizeObserver(() => {
-      if (!frame) frame = requestAnimationFrame(measure);
-    });
-    observer.observe(element);
-    measure();
-    return () => {
-      observer.disconnect();
-      cancelAnimationFrame(frame);
-    };
   }
 
   function back() {
@@ -222,135 +213,121 @@
         {/if}
       </h2>
     </header>
-    <div class="body" bind:this={content} {@attach alignControls}>
-      {#if view === "main"}
-        <button class="brand" type="button" onclick={checkForUpdates}>
-          <svg class="logo" viewBox="205 300 440 440" aria-hidden="true" focusable="false">
-            <image href={asset("logo/guidepost-min.svg")} width="850" height="1100" transform="rotate(-28 425 510)" />
-          </svg>
-          <span class="copy">
-            <strong>Guidepost <span class="version">v{version}</span></strong>
-            <span role="status">{updateStatus || "Check for updates"}</span>
-          </span>
-          {#key updateAttempt}
-            {#if updating}<span class="update-border" aria-hidden="true"></span>{/if}
-            <span class={["refresh", updating && "animating"]} aria-hidden="true">
-              <span class="row-icon i-material-symbols:refresh"></span>
-            </span>
-          {/key}
-        </button>
-        <div class="group">
-          <button class="row" type="button" onclick={() => showView("account")}>
-            <span class="row-icon i-material-symbols:account-circle-outline" aria-hidden="true"></span>
-            <span class="copy"><strong>Guest</strong><span>User account</span></span>
-            <span class="chevron i-material-symbols:chevron-right" aria-hidden="true"></span>
-          </button>
-          <button class="row" type="button" onclick={() => showView("settings")}>
-            <span class="row-icon i-material-symbols:settings-outline" aria-hidden="true"></span>
-            <span class="copy"><strong>Settings</strong><span>Display and gameplay options</span></span>
-            <span class="chevron i-material-symbols:chevron-right" aria-hidden="true"></span>
-          </button>
-          <button class="row" type="button" onclick={() => showView("notifications")}>
-            <span class="row-icon i-material-symbols:notifications-outline" aria-hidden="true"></span>
+    <div class="body" bind:this={content}>
+      <div class="content">
+        {#if view === "main"}
+          <button class="brand" type="button" onclick={checkForUpdates}>
+            <svg class="logo" viewBox="205 300 440 440" aria-hidden="true" focusable="false">
+              <image href={asset("logo/guidepost-min.svg")} width="850" height="1100" transform="rotate(-28 425 510)" />
+            </svg>
             <span class="copy">
-              <strong>Notification log <span class="count">{log.notices.length}</span></strong>
-              <span class="activity-detail">
-                <span class="latest">{latest?.message ?? "No activity yet"}</span>
-                {#if latest}<time datetime={new Date(latest.timestamp).toISOString()}>{dates.formatTime(latest.timestamp)}</time>{/if}
-              </span>
+              <strong>Guidepost <span class="version">v{version}</span></strong>
+              <span role="status">{updateStatus || "Check for updates"}</span>
             </span>
-            <span class="chevron i-material-symbols:chevron-right" aria-hidden="true"></span>
+            {#key updateAttempt}
+              {#if updating}<span class="update-border" aria-hidden="true"></span>{/if}
+              <span class={["refresh", updating && "animating"]} aria-hidden="true">
+                <span class="row-icon i-material-symbols:refresh"></span>
+              </span>
+            {/key}
           </button>
-        </div>
-        <nav class="navigation" aria-label="Site">
-          <a href={resolve("/")} onclick={(event) => onnavigate(event, resolve("/"))}>
-            <span class="row-icon i-material-symbols:home-outline" aria-hidden="true"></span>Home
-          </a>
-          <button type="button" disabled={!fullscreenAvailable || fullscreenPending} onclick={toggleFullscreen}>
-            <span
-              class={["row-icon", fullscreen ? "i-material-symbols:fullscreen-exit" : "i-material-symbols:fullscreen"]}
-              aria-hidden="true"
-            ></span>
-            {!fullscreenAvailable
-              ? "Fullscreen unavailable"
-              : fullscreenPending
-                ? "Changing display?"
-                : fullscreen
-                  ? "Exit fullscreen"
-                  : "Fullscreen"}
-          </button>
-        </nav>
-        {#if fullscreenError}<p class="error" role="alert">{fullscreenError}</p>{/if}
-      {:else if view === "account"}
-        <div class="empty">
-          <span class="empty-icon i-material-symbols:account-circle-outline" aria-hidden="true"></span>
-          <h3>Playing as a guest</h3>
-          <p>Your collection is saved in this browser. Accounts and device sync are not available yet.</p>
-        </div>
-      {:else if view === "notifications"}
-        <p class="description">Activity from this session, newest first.</p>
-        {#if log.notices.length}
-          <ol>
-            {#each log.notices as notice (notice.id)}
-              <li class="notice" data-kind={notice.kind}>
-                <span
-                  class={[
-                    "notice-icon",
-                    notice.kind === "error"
-                      ? "i-material-symbols:error-outline"
-                      : notice.kind === "success"
-                        ? "i-material-symbols:check-circle-outline"
-                        : "i-material-symbols:info-outline",
-                  ]}
-                  aria-hidden="true"
-                ></span>
-                <div>
-                  <span class="visually-hidden">{notice.kind === "error" ? "Error: " : notice.kind === "success" ? "Success: " : ""}</span>
-                  <p>{notice.message}</p>
-                  {#if notice.details?.length}
-                    <details>
-                      <summary>View editions ({notice.details.length})</summary>
-                      <ul>
-                        {#each notice.details as detail, index (index)}
-                          <li>{detail}</li>
-                        {/each}
-                      </ul>
-                    </details>
-                  {/if}
-                  <time datetime={new Date(notice.timestamp).toISOString()}>{dates.formatTimestamp(notice.timestamp)}</time>
-                </div>
-              </li>
-            {/each}
-          </ol>
-        {:else}
+          <div class="group">
+            <button class="row" type="button" onclick={() => showView("account")}>
+              <span class="row-icon i-material-symbols:account-circle-outline" aria-hidden="true"></span>
+              <span class="copy"><strong>Guest</strong><span>User account</span></span>
+              <span class="chevron i-material-symbols:chevron-right" aria-hidden="true"></span>
+            </button>
+            <button class="row" type="button" onclick={() => showView("settings")}>
+              <span class="row-icon i-material-symbols:settings-outline" aria-hidden="true"></span>
+              <span class="copy"><strong>Settings</strong><span>Display and gameplay options</span></span>
+              <span class="chevron i-material-symbols:chevron-right" aria-hidden="true"></span>
+            </button>
+            <button class="row" type="button" onclick={() => showView("notifications")}>
+              <span class="row-icon i-material-symbols:notifications-outline" aria-hidden="true"></span>
+              <span class="copy">
+                <strong>Notification log <span class="count">{log.notices.length}</span></strong>
+                <span class="activity-detail">
+                  <span class="latest">{latest?.message ?? "No activity yet"}</span>
+                  {#if latest}<time datetime={new Date(latest.timestamp).toISOString()}>{dates.formatTime(latest.timestamp)}</time>{/if}
+                </span>
+              </span>
+              <span class="chevron i-material-symbols:chevron-right" aria-hidden="true"></span>
+            </button>
+          </div>
+          <nav class="navigation" aria-label="Site">
+            <a href={resolve("/")} onclick={(event) => onnavigate(event, resolve("/"))}>
+              <span class="row-icon i-material-symbols:home-outline" aria-hidden="true"></span>Home
+            </a>
+            <button type="button" disabled={!fullscreenAvailable || fullscreenPending} onclick={toggleFullscreen}>
+              <span
+                class={["row-icon", fullscreen ? "i-material-symbols:fullscreen-exit" : "i-material-symbols:fullscreen"]}
+                aria-hidden="true"
+              ></span>
+              {fullscreenLabel}
+            </button>
+          </nav>
+          {#if fullscreenError}<p class="error" role="alert">{fullscreenError}</p>{/if}
+        {:else if view === "account"}
           <div class="empty">
-            <span class="empty-icon i-material-symbols:notifications-outline" aria-hidden="true"></span>
-            <h3>No activity yet</h3>
-            <p>Saved collection changes and notifications will appear here.</p>
+            <span class="empty-icon i-material-symbols:account-circle-outline" aria-hidden="true"></span>
+            <h3>Playing as a guest</h3>
+            <p>Your collection is saved in this browser. Accounts and device sync are not available yet.</p>
+          </div>
+        {:else if view === "notifications"}
+          <p class="description">Activity from this session, newest first.</p>
+          {#if log.notices.length}
+            <ol>
+              {#each log.notices as notice (notice.id)}
+                <li class="notice" data-kind={notice.kind}>
+                  <span class={["notice-icon", noticePresentation[notice.kind].icon]} aria-hidden="true"></span>
+                  <div>
+                    <span class="visually-hidden">{noticePresentation[notice.kind].prefix}</span>
+                    <p>{notice.message}</p>
+                    {#if notice.details?.length}
+                      <details>
+                        <summary>View editions ({notice.details.length})</summary>
+                        <ul>
+                          {#each notice.details as detail, index (index)}
+                            <li>{detail}</li>
+                          {/each}
+                        </ul>
+                      </details>
+                    {/if}
+                    <time datetime={new Date(notice.timestamp).toISOString()}>{dates.formatTimestamp(notice.timestamp)}</time>
+                  </div>
+                </li>
+              {/each}
+            </ol>
+          {:else}
+            <div class="empty">
+              <span class="empty-icon i-material-symbols:notifications-outline" aria-hidden="true"></span>
+              <h3>No activity yet</h3>
+              <p>Saved collection changes and notifications will appear here.</p>
+            </div>
+          {/if}
+        {:else}
+          <ToggleButton pressed={glass.enabled} onclick={() => glass.setEnabled(!glass.enabled)} style="margin-block-end: 0.75rem">
+            Glass effects
+          </ToggleButton>
+          <div class="date-settings">
+            <label for={`${id}-date-format`}>Date format</label>
+            <Select id={`${id}-date-format`} value={dates.dateFormat} onchange={(event) => dates.setDateFormat(event.currentTarget.value)}>
+              {#each dates.formats as format (format.value)}
+                <option value={format.value}>{format.label}</option>
+              {/each}
+            </Select>
+          </div>
+          <HuntSettings />
+          <ShowdownSettings {onnavigate} />
+          <div class="reset-settings">
+            <button class="reset" type="button" disabled={resetting} onclick={() => resetDialog.show()}>
+              {resetting ? "Deleting saved data…" : "Reset saved data"}
+            </button>
+            <p class="description">Permanently delete all saved collections and settings from this browser.</p>
+            {#if resetError}<p class="error" role="alert">{resetError}</p>{/if}
           </div>
         {/if}
-      {:else}
-        <ToggleButton pressed={glass.enabled} onclick={() => glass.setEnabled(!glass.enabled)} style="margin-block-end: 0.75rem">
-          Glass effects
-        </ToggleButton>
-        <div class="date-settings">
-          <label for={`${id}-date-format`}>Date format</label>
-          <Select id={`${id}-date-format`} value={dates.dateFormat} onchange={(event) => dates.setDateFormat(event.currentTarget.value)}>
-            {#each dates.formats as format (format.value)}
-              <option value={format.value}>{format.label}</option>
-            {/each}
-          </Select>
-        </div>
-        <HuntSettings />
-        <ShowdownSettings {onnavigate} />
-        <div class="reset-settings">
-          <button class="reset" type="button" disabled={resetting} onclick={() => resetDialog.show()}>
-            {resetting ? "Deleting saved data…" : "Reset saved data"}
-          </button>
-          <p class="description">Permanently delete all saved collections and settings from this browser.</p>
-          {#if resetError}<p class="error" role="alert">{resetError}</p>{/if}
-        </div>
-      {/if}
+      </div>
     </div>
     <footer>
       <div class="status">
@@ -421,6 +398,7 @@
     }
   }
   .sheet {
+    container-type: inline-size;
     display: flex;
     flex-direction: column;
     inline-size: 100%;
@@ -498,10 +476,13 @@
   }
   .body {
     min-block-size: 0;
-    padding: var(--space-menu);
-    padding-inline-end: max(0px, calc(var(--toggle-padding-inline) - var(--width-scrollbar, 0px)));
+    padding: var(--space-menu) 0 var(--space-menu) var(--space-menu);
     overflow-y: auto;
     overscroll-behavior-y: contain;
+  }
+  .content {
+    /* Keep the controls aligned to the sheet while letting the scrollbar use the end inset. */
+    inline-size: min(100%, calc(100cqi - var(--space-menu) - var(--toggle-padding-inline)));
   }
   .date-settings {
     display: grid;

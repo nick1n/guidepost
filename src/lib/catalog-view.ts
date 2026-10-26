@@ -75,25 +75,23 @@ export function reviewPrice(item: Item, edition: Edition) {
 }
 
 export function reviewEditions(item: Item & { category?: string }): Edition[] {
+  if (item.editions?.length) return item.editions;
+
   // Items without catalog editions get one trackable edition named for their category or accessory type.
-  return item.editions?.length
-    ? item.editions
-    : [
-        {
-          id: item.category === "bundles" ? "bundle" : "item",
-          label:
-            item.category === "bundles"
-              ? "Bundle"
-              : item.accessoryType === "dice"
-                ? "Dice"
-                : item.accessoryType === "shirt"
-                  ? "Shirt"
-                  : "Item",
-          format: "physical",
-          releaseDate: item.releaseDate,
-          releaseWindow: item.releaseWindow,
-        },
-      ];
+  let label: Edition["label"] = "Item";
+  if (item.category === "bundles") label = "Bundle";
+  else if (item.accessoryType === "dice") label = "Dice";
+  else if (item.accessoryType === "shirt") label = "Shirt";
+
+  return [
+    {
+      id: item.category === "bundles" ? "bundle" : "item",
+      label,
+      format: "physical",
+      releaseDate: item.releaseDate,
+      releaseWindow: item.releaseWindow,
+    },
+  ];
 }
 
 export function reviewEquivalentEditions(item: Item, edition: Edition) {

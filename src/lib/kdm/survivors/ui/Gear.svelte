@@ -1,3 +1,10 @@
+<script module lang="ts">
+  const gearValues = new Map([
+    ["Cloth", "1 waist armor"],
+    ["Fist & Tooth", "2 | 8 | 0"],
+  ]);
+</script>
+
 <script lang="ts">
   import KdIcon from "#lib/components/KdIcon.svelte";
   import { canDropGear, dropGear, getGearDrag, trinketSpace } from "./gear-drag";
@@ -195,7 +202,7 @@
         {/if}
         <strong class="gear-name">{item}</strong>
         {#if item !== "Founding Stone"}
-          <small class="gear-values">{item === "Cloth" ? "1 waist armor" : item === "Fist & Tooth" ? "2 | 8 | 0" : ""}</small>
+          <small class="gear-values">{gearValues.get(item) ?? ""}</small>
         {:else}
           <small class="gear-action"><KdIcon i="activation" /> Activate</small>
         {/if}

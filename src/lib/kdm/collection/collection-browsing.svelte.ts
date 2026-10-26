@@ -72,7 +72,7 @@ export class CollectionBrowsing {
   #hasSearch = $derived(!!this.#searchQuery || this.#selectedTags.length > 0);
   #unfiltered = $derived(!this.#hasSearch && this.#status === "all");
   // Tag candidates remain stable while the text query changes.
-  #tagged = $derived.by(() =>
+  #tagged = $derived(
     this.#selectedTags.length
       ? this.#categoryEntries.filter((item) => this.#selectedTags.every((tag) => item.tags.includes(tag)))
       : this.#categoryEntries,
@@ -81,10 +81,11 @@ export class CollectionBrowsing {
     const query = this.#searchQuery;
     const status = this.#status;
     if (!query && status === "all") return this.#tagged;
-    const field = status === "owned" ? "owned" : status === "wishlist" ? "wished" : undefined;
     return this.#tagged.filter((item) => {
       if (query && !this.#catalog.search.get(item.id)?.includes(query)) return false;
-      return !field || reviewEditions(item).some((edition) => this.#getEdition(item.id, edition.id)[field]);
+      if (status === "all") return true;
+      const field = status === "owned" ? "owned" : "wished";
+      return reviewEditions(item).some((edition) => this.#getEdition(item.id, edition.id)[field]);
     });
   });
   #limit = $derived(this.#unfiltered ? (this.#limits[this.#category] ?? batchSize) : this.#resultLimit);

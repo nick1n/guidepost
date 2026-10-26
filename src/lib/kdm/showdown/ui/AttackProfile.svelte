@@ -9,7 +9,7 @@
   import ActionCost from "./actions/ActionCost.svelte";
   import { attackOdds } from "#lib/kdm/showdown/attack-odds.ts";
   import { describeCost, type Cost } from "#lib/kdm/showdown/sheet.ts";
-  import { type attackStats } from "#lib/kdm/showdown/rules.ts";
+  import { formatTarget, type attackStats } from "#lib/kdm/showdown/rules.ts";
   import type { Snippet } from "svelte";
 
   type RollSpread = ReturnType<typeof attackOdds>["hits"];
@@ -162,8 +162,8 @@
         <div class="folio-board">
           <p class="folio-heading"><span>Attack ledger</span><b class="folio-dice">{attack.speed}d10</b></p>
           <p class="roll">
-            Hit {attack.acc === 10 ? "10" : `${attack.acc}+`} ({percent.format(odds.hitPerDie)} per die). Wound
-            {attack.wound === 10 ? "10" : `${attack.wound}+`} ({percent.format(odds.woundGivenHit)} per hit).
+            Hit {formatTarget(attack.acc)} ({percent.format(odds.hitPerDie)} per die). Wound
+            {formatTarget(attack.wound)} ({percent.format(odds.woundGivenHit)} per hit).
           </p>
           {@render distribution("Hits", "hit", odds.hits)}
           {@render distribution("Wounds", "wound", odds.wounds)}
@@ -201,23 +201,23 @@
             </div>
           </dl>
           <p class="roll">
-            Hit {attack.acc === 10 ? "10" : `${attack.acc}+`} ({percent.format(odds.hitPerDie)} per die). Wound
-            {attack.wound === 10 ? "10" : `${attack.wound}+`} ({percent.format(odds.woundGivenHit)} per hit).
+            Hit {formatTarget(attack.acc)} ({percent.format(odds.hitPerDie)} per die). Wound
+            {formatTarget(attack.wound)} ({percent.format(odds.woundGivenHit)} per hit).
           </p>
           {@render weaponKeywords(attack.keywords)}
         </div>
       {:else}
         <dl class="obsidian-targets">
           <div class="target">
-            <dt class="target-label">Hit {attack.acc === 10 ? "10" : `${attack.acc}+`}</dt>
+            <dt class="target-label">Hit {formatTarget(attack.acc)}</dt>
             <dd class="target-value">{diePercent.format(odds.hitPerDie)} / die</dd>
           </div>
           <div class="target">
-            <dt class="target-label">Wound {attack.wound === 10 ? "10" : `${attack.wound}+`}</dt>
+            <dt class="target-label">Wound {formatTarget(attack.wound)}</dt>
             <dd class="target-value">{diePercent.format(odds.woundGivenHit)} / hit</dd>
           </div>
           <div class="target">
-            <dt class="target-label">Crit {attack.crit === 10 ? "10" : `${attack.crit}+`}</dt>
+            <dt class="target-label">Crit {formatTarget(attack.crit)}</dt>
             <dd class="target-value">{diePercent.format(odds.critGivenHit)} / crit</dd>
           </div>
         </dl>

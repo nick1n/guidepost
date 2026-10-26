@@ -6,16 +6,14 @@
   const menu = getSiteMenu();
   const log = getNotificationLog();
   const id = $props.id();
-  const action = $derived(
-    menu.open
-      ? menu.onback
-        ? { label: "Back to menu", icon: "back", run: menu.onback }
-        : { label: "Close menu", icon: "close", run: () => menu.onclose() }
-      : { label: "Open menu", icon: "menu", run: () => menu.onopen() },
-  );
+  const action = $derived.by(() => {
+    if (!menu.open) return { label: "Open menu", icon: "menu", run: () => menu.onopen() };
+    if (menu.onback) return { label: "Back to menu", icon: "back", run: menu.onback };
+    return { label: "Close menu", icon: "close", run: () => menu.onclose() };
+  });
 
   function onclick() {
-    action.run?.();
+    action.run();
   }
 </script>
 

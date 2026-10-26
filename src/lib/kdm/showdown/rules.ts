@@ -11,6 +11,11 @@ type AttackWeapon = keyof typeof weaponStats;
 
 const clampTarget = (value: number) => Math.max(2, Math.min(10, value));
 
+export function formatTarget(value: number | null) {
+  if (value === null) return "\u2212";
+  return value === 10 ? "10" : `${value}+`;
+}
+
 export function attackStats(sheet: Sheet, weapon: AttackWeapon, monster: { toughness: number; luck: number; evasion: number }) {
   const base = weaponStats[weapon];
   const modifier = (index: number) => (sheet.attributes[index] ?? 0) + (sheet.bonuses[index] ?? 0) + tokenNet(sheet.tokens[index]);

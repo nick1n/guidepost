@@ -1,5 +1,4 @@
-import { statusOrder, type SurvivorStatusIcons, type Icon } from "#lib/kdm/ui/status/statuses.ts";
-import { statusSummary } from "#lib/kdm/ui/status/statuses.ts";
+import { statusOrder, statusSummary, type SurvivorStatusIcons, type Icon } from "#lib/kdm/ui/status/statuses.ts";
 
 import { survivors } from "./fixtures";
 
@@ -73,7 +72,9 @@ export function toggleStatus(sheet: Sheet, status: SurvivorStatusIcons) {
     sheet.statuses = sheet.statuses.filter((value) => value !== status);
     return;
   }
-  const excludedStatus = status === "status:dead" ? "status:cease-to-exist" : status === "status:cease-to-exist" ? "status:dead" : null;
+  let excludedStatus: SurvivorStatusIcons | null = null;
+  if (status === "status:dead") excludedStatus = "status:cease-to-exist";
+  else if (status === "status:cease-to-exist") excludedStatus = "status:dead";
   sheet.statuses = [...sheet.statuses.filter((value) => value !== excludedStatus), status];
 }
 

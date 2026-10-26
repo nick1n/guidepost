@@ -424,6 +424,7 @@
   {@const contents = includedCoverage(edition)}
   {@const hasContents = contents.children.length > 0}
   {@const gameplay = editionGameplay(item, edition)}
+  {@const gameplayDescription = edition.beta ? ", includes beta gameplay" : ", includes gameplay"}
   {@const price = reviewPrice(item, edition)}
   {@const detail = [...new Set([edition.name, ...(edition.format === "digital" ? ["Digital"] : editionMaterials(edition))])]
     .filter((part) => part && !edition.label.toLowerCase().includes(part.toLowerCase()))
@@ -454,7 +455,7 @@
       class="edition-label"
       type="button"
       aria-pressed={active}
-      aria-label="View {item.name}, {edition.label}{gameplay ? (edition.beta ? ', includes beta gameplay' : ', includes gameplay') : ''}"
+      aria-label="View {item.name}, {edition.label}{gameplay ? gameplayDescription : ''}"
       onclick={() => selectEdition(edition)}
     >
       <span class="edition-name">

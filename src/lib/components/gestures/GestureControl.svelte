@@ -2,12 +2,18 @@
   import type { Direction } from "./gesture";
 
   const initialValues = [6, 3, 8, 2, 5, 1];
+  const minimum = 0;
+  const maximum = 99;
   const directions: Direction[] = ["up", "down", "right", "left"];
   const menuLabels = { up: "+5", down: "−5", right: "Edit", left: "Reset" };
   const keyDirections: Record<string, Direction> = { ArrowUp: "up", ArrowRight: "right", ArrowDown: "down", ArrowLeft: "left" };
 
   function indexOf(event: Event) {
     return Number((event.currentTarget as HTMLButtonElement).dataset.index);
+  }
+
+  function clampValue(value: number) {
+    return Math.max(minimum, Math.min(maximum, value));
   }
 </script>
 
@@ -68,7 +74,7 @@
   let menuOpen = $derived(phase === "menu");
   let pathMenu = $derived(variant === "fan");
   let previewMenu = $derived(preview && pathMenu);
-  let previewValue = $derived(direction && !menuOpen ? Math.max(0, Math.min(99, values[active] + swipeDelta(direction))) : values[active]);
+  let previewValue = $derived(direction && !menuOpen ? clampValue(values[active] + swipeDelta(direction)) : values[active]);
   let loopDistance = $derived(swipeTravel <= 0 ? -swipeTravel * 25 : 100 - swipeTravel * 25);
 
   function announce(action: string) {
@@ -77,12 +83,19 @@
 
   function changeValue(delta: number, gesture: string) {
     const previous = values[active];
-    values[active] = Math.max(0, Math.min(99, previous + delta));
-    announce(
-      values[active] === previous
-        ? `${values[active] === 0 ? "minimum" : "maximum"} reached`
-        : `${gesture} ${previous} → ${values[active]}`,
-    );
+    values[active] = clampValue(previous + delta);
+    if (values[active] === previous) announce(`${values[active] === minimum ? "minimum" : "maximum"} reached`);
+    else announce(`${gesture} ${previous} → ${values[active]}`);
+  }
+
+  function controlLabel(index: number) {
+    if (numeric) return `Decrease ${labels[index]}, current value ${values[index]}`;
+    return `${panels[index] ? "Collapse" : "Expand"} ${labels[index]} dashboard`;
+  }
+
+  function panelIcon(index: number) {
+    if (phase === "ready") return expanded ? "i-material-symbols:unfold-less-double" : "i-material-symbols:unfold-more-double";
+    return panels[index] ? "i-material-symbols:unfold-less" : "i-material-symbols:unfold-more";
   }
 
   function togglePanels(all = false) {
@@ -298,7 +311,7 @@
   function onsubmit(event: SubmitEvent) {
     event.preventDefault();
     if (!Number.isFinite(draft)) return;
-    values[active] = Math.max(0, Math.min(99, Math.round(draft)));
+    values[active] = clampValue(Math.round(draft));
     editing = false;
     announce(`set to ${values[active]}`);
     buttons[active].focus();
@@ -482,9 +495,7 @@
               data-index={index}
               data-ready={!numeric && phase === "ready"}
               data-active={index === active && (menuOpen || editing)}
-              aria-label={numeric
-                ? `Decrease ${label}, current value ${values[index]}`
-                : `${panels[index] ? "Collapse" : "Expand"} ${label} dashboard`}
+              aria-label={controlLabel(index)}
               aria-describedby={`${id}-help`}
               aria-pressed={!numeric ? panels[index] : undefined}
               aria-expanded={numeric ? index === active && menuOpen : undefined}
@@ -501,19 +512,7 @@
               {onblur}
             >
               {#if numeric}<span class="value">{index === active ? previewValue : values[index]}</span>
-              {:else}<span
-                  class={[
-                    "control-icon",
-                    phase === "ready"
-                      ? expanded
-                        ? "i-material-symbols:unfold-less-double"
-                        : "i-material-symbols:unfold-more-double"
-                      : panels[index]
-                        ? "i-material-symbols:unfold-less"
-                        : "i-material-symbols:unfold-more",
-                  ]}
-                  aria-hidden="true"
-                ></span>{/if}
+              {:else}<span class={["control-icon", panelIcon(index)]} aria-hidden="true"></span>{/if}
               {#if variant === "corner"}<span class="corner" aria-hidden="true"
                   ><span class="tiny-icon i-material-symbols:more-horiz"></span></span
                 >{/if}
@@ -552,7 +551,17 @@
   {#if editing}
     <form class="editor" {onsubmit}>
       <label class="menu-label" for={`${id}-value`}>Edit {labels[active]}</label>
-      <input id={`${id}-value`} type="number" min="0" max="99" step="1" bind:this={input} bind:value={draft} {onkeydown} required />
+      <input
+        id={`${id}-value`}
+        type="number"
+        min={minimum}
+        max={maximum}
+        step="1"
+        bind:this={input}
+        bind:value={draft}
+        {onkeydown}
+        required
+      />
       <button class="save" aria-label={`Save ${labels[active]} value`}
         ><span class="small-icon i-material-symbols:check" aria-hidden="true"></span></button
       >

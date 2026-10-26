@@ -20,7 +20,8 @@
   const groupedIcons = new Map<string, KdIconName[]>();
 
   for (const icon of Object.keys(KD_ICONS).sort((a, b) => a.localeCompare(b)) as KdIconName[]) {
-    const group = groupOverrides[icon] ?? (otherIcons.has(icon) ? "other" : icon.includes("-") ? icon.split("-", 1)[0] : "other");
+    const fallback = !otherIcons.has(icon) && icon.includes("-") ? icon.split("-", 1)[0] : "other";
+    const group = groupOverrides[icon] ?? fallback;
     const entries = groupedIcons.get(group) ?? [];
     entries.push(icon);
     groupedIcons.set(group, entries);

@@ -119,11 +119,13 @@
   const setupDistance = 6;
   const setupTiles = tilesAtDistance(setupDistance);
 
+  const bloodthirsty = "Mood - Bloodthirsty";
+  const enraged = "Mood - Enraged";
   const actions = [
     { name: "Intimidate - [star] brain damage", mood: false },
     { name: "Mood - Alert", mood: true },
-    { name: "Mood - Bloodthirsty", mood: true },
-    { name: "Mood - Enraged", mood: true },
+    { name: bloodthirsty, mood: true },
+    { name: enraged, mood: true },
     { name: "Mood - Ground Fighting", mood: true },
     // "Persistent Injury - Beast's Temple",
     // "Persistent Injury - Broken Foot",
@@ -133,8 +135,6 @@
     // "Persistent Injury - Organ Trail",
     // "Persistent Injury - Ruptured Tendon",
   ] as const;
-  const bloodthirsty = "Mood - Bloodthirsty";
-  const enraged = "Mood - Enraged";
   const damageTokenIndex = tokens.indexOf("Damage");
   let moodCounts = $state<Record<string, number>>({});
   let activeMoods = $derived(
@@ -148,7 +148,8 @@
 
   function toggleMood(name: string) {
     const current = moodCounts[name] ?? 0;
-    const next = name === bloodthirsty ? (current === 3 ? 0 : current + 1) : current ? 0 : 1;
+    let next = current ? 0 : 1;
+    if (name === bloodthirsty) next = current === 3 ? 0 : current + 1;
 
     if (name === enraged && Boolean(current) !== Boolean(next)) {
       const damageTokens = values[damageTokenIndex];
@@ -167,6 +168,18 @@
         Math.min(...monsterTiles.map((monsterTile) => Math.abs(column - monsterTile.column) + Math.abs(row - monsterTile.row))) ===
         distance,
     );
+  }
+  function moodLabel(name: string) {
+    if (name !== bloodthirsty) return;
+    const count = moodCounts[name] ?? 0;
+    const state = count ? `${count} of 3` : "off";
+    const action = count === 3 ? "turn off" : `increase to ${count + 1}`;
+    return `${name}, ${state}. Activate to ${action}`;
+  }
+
+  function signedModifier(value: number) {
+    if (!value) return "\u2212";
+    return `${value > 0 ? "+" : ""}${value}`;
   }
 </script>
 
@@ -210,8 +223,8 @@
     `Life ${stats.life}`,
     `Mov ${stats.movement}`,
     `Tgh ${stats.toughness}`,
-    `Spd ${stats.speed ? `${stats.speed > 0 ? "+" : ""}${stats.speed}` : "\u2212"}`,
-    `Dmg ${stats.damage ? `${stats.damage > 0 ? "+" : ""}${stats.damage}` : "\u2212"}`,
+    `Spd ${signedModifier(stats.speed)}`,
+    `Dmg ${signedModifier(stats.damage)}`,
   ]}
   onaction={() => stats.life--}
   actionLabel="Wound"
@@ -263,9 +276,7 @@
     {#each actions as action (action.name)}
       <button
         class={["action", !action.mood && "wide", action.mood && moodCounts[action.name] && "active"]}
-        aria-label={action.name === bloodthirsty
-          ? `${action.name}, ${moodCounts[action.name] ? `${moodCounts[action.name]} of 3` : "off"}. Activate to ${moodCounts[action.name] === 3 ? "turn off" : `increase to ${(moodCounts[action.name] ?? 0) + 1}`}`
-          : undefined}
+        aria-label={moodLabel(action.name)}
         aria-pressed={action.mood && action.name !== bloodthirsty ? Boolean(moodCounts[action.name]) : undefined}
         onclick={action.mood ? () => toggleMood(action.name) : undefined}
       >

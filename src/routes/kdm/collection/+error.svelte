@@ -51,7 +51,11 @@
       <a class="home" href={resolve("/")}>Back to Guidepost</a>
     </div>
     <p class="retry-status" role="status">
-      {retrying ? "Opening your collection..." : retryFailed ? "We couldn't retry. Reload the page or return to Guidepost." : ""}
+      {#if retrying}
+        Opening your collection...
+      {:else if retryFailed}
+        We couldn't retry. Reload the page or return to Guidepost.
+      {/if}
     </p>
   </div>
 </main>

@@ -19,7 +19,8 @@ const slotLimit = trinketStart + 3 * trinketRowSize;
 
 export function trinketSpace(slots: (string | null)[]) {
   const empty = slots.findIndex((item, index) => index >= trinketStart && index < slotLimit && item === null);
-  return empty !== -1 ? empty : slots.length < slotLimit ? slots.length : -1;
+  if (empty !== -1) return empty;
+  return slots.length < slotLimit ? slots.length : -1;
 }
 
 export function canDropGear(source: GearDrag | null, slots: (string | null)[], target: number) {

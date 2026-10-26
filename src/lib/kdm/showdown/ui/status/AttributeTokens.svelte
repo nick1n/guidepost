@@ -10,6 +10,12 @@
   let editing = $state<number | null>(null);
   let selected = $derived(editing === null ? null : counts[editing]);
 
+  function tokenPosition(index: number) {
+    if (!monsterTokens) return;
+    const column = index < 4 ? index * 2 + 1 : (index - 4) * 2 + 2;
+    return { column: `${column} / span 2`, row: index < 4 ? 1 : 2 };
+  }
+
   function removeToken(index: number) {
     counts[index].negative++;
   }
@@ -35,11 +41,8 @@
 
 <div class={["token-grid", monsterTokens && "monster-tokens"]}>
   {#each names as name, index (name)}
-    <div
-      class={["token", `field-${name.toLowerCase()}`]}
-      style:grid-column={monsterTokens ? `${index < 4 ? index * 2 + 1 : (index - 4) * 2 + 2} / span 2` : undefined}
-      style:grid-row={monsterTokens ? (index < 4 ? 1 : 2) : undefined}
-    >
+    {@const position = tokenPosition(index)}
+    <div class={["token", `field-${name.toLowerCase()}`]} style:grid-column={position?.column} style:grid-row={position?.row}>
       <span class="label">{labels[index]}</span>
       <Counter
         id={`${id}-token-${index}`}

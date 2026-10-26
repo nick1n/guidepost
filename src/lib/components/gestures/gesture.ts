@@ -6,7 +6,8 @@ export type GestureStyle =
 
 export function swipeDirection(x: number, y: number, threshold = 28): Direction | null {
   if (Math.hypot(x, y) < threshold) return null;
-  return Math.abs(x) > Math.abs(y) ? (x > 0 ? "right" : "left") : y > 0 ? "down" : "up";
+  if (Math.abs(x) > Math.abs(y)) return x > 0 ? "right" : "left";
+  return y > 0 ? "down" : "up";
 }
 
 export function swipeDelta(direction: Direction) {

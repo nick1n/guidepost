@@ -26,6 +26,10 @@
 
   let { data }: PageProps = $props();
   const collection = getCollection();
+  const retryLabel = $derived.by(() => {
+    if (!collection.loadError) return "Refresh collection";
+    return collection.hasStore ? "Retry loading" : "Reload page";
+  });
   const collectionActions = getCollectionActions();
   // Route entry installs the catalog before building this page's index and commands.
   collection.setCatalog(untrack(() => data.catalog));
@@ -175,7 +179,7 @@
     <div class="collection-status error">
       <p role="alert">{(collection.loadError ?? collection.saveError)?.message}</p>
       <button type="button" onclick={refreshCollection}>
-        {collection.loadError ? (collection.hasStore ? "Retry loading" : "Reload page") : "Refresh collection"}
+        {retryLabel}
       </button>
     </div>
   {:else if collection.needsRefresh}

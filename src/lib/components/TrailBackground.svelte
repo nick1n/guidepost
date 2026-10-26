@@ -106,8 +106,10 @@
     const length = vertical ? 1000 : 1600;
     const breadth = vertical ? 1600 : 1000;
     const reverse = Math.random() < 0.5;
-    const point = (along: number, across: number) =>
-      vertical ? coordinates(across, reverse ? length - along : along) : coordinates(reverse ? length - along : along, across);
+    const point = (along: number, across: number) => {
+      const position = reverse ? length - along : along;
+      return vertical ? coordinates(across, position) : coordinates(position, across);
+    };
     const center = breadth * (0.15 + Math.random() * 0.7);
     const phase = Math.random() * Math.PI * 2;
     const points = Array.from({ length: 11 }, (_, i) => ({
