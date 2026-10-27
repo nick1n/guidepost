@@ -13,6 +13,31 @@ pnpm dev
 
 On Windows, if `pnpm` is missing, install the pnpm 12 bootstrap with `npm.cmd install --global pnpm@12`. The `packageManager` field in [package.json](package.json) pins the exact pnpm version used by this project.
 
+## Using the tools
+
+### Collection
+
+Open `/kdm/collection/` for search, edition details, ownership, and wishlist controls. Entries save locally through Dexie under stable content and edition IDs. Product ownership is explicit; included rows show derived content coverage. Stale tabs block editing and offer refresh while preserving the current view. Offline use requires a previously cached catalog.
+
+See the [implemented collection architecture](docs/kdm-architecture.md) for persistence, ownership, and content coverage. Future campaign and synchronization concepts are documented separately as [proposed design](docs/kdm-campaign-design.md).
+
+### Hunt links
+
+Share a hunt card using `/kdm/hunt/#/event/art/face`, for example `/kdm/hunt/#/1/fen/front`.
+
+- Events: `0` through `99` (`0` is event 100).
+- Artwork: `ccg`, `fen`, or `kekasi`.
+- Face: `front`, `back`, or `reverse` for cards with a special reverse.
+
+Links default to event 1, CCG artwork, and the back face, so `#/1` is enough. Opening a link leaves saved artwork preferences unchanged.
+Card controls update the URL without adding browser history entries.
+
+## Development
+
+See [AGENTS.md](AGENTS.md) for coding conventions and required checks.
+
+### Commands
+
 | Command             | Purpose                            |
 | ------------------- | ---------------------------------- |
 | `pnpm check`        | Check Svelte and TypeScript        |
@@ -25,7 +50,7 @@ On Windows, if `pnpm` is missing, install the pnpm 12 bootstrap with `npm.cmd in
 | `pnpm format`       | Format project files               |
 | `pnpm format:check` | Check formatting                   |
 
-Use `pnpm test` for watch mode. See [AGENTS.md](AGENTS.md) for coding conventions and required checks.
+Use `pnpm test` for watch mode.
 
 ### Browser tests
 
@@ -39,20 +64,7 @@ pnpm test:hunt-browser -- http://localhost:5173
 
 These check menu interactions, collection controls, and hunt cards. Screenshots and reports go to `temp/browser-verification/`.
 
-## Hunt links
-
-Share a hunt card using `/kdm/hunt/#/event/art/face`, for example `/kdm/hunt/#/1/fen/front`.
-
-- Events: `0` through `99` (`0` is event 100).
-- Artwork: `ccg`, `fen`, or `kekasi`.
-- Face: `front`, `back`, or `reverse` for cards with a special reverse.
-
-Links default to event 1, CCG artwork, and the back face, so `#/1` is enough. Opening a link leaves saved artwork preferences unchanged.
-Card controls update the URL without adding browser history entries.
-
-Pages share [hash navigation](src/lib/app/navigation/hash-route.svelte.ts) through `createHashRoute`, which handles URL changes and Back/Forward.
-
-## Where things live
+### Project layout
 
 | Path                                | Purpose                                                         |
 | ----------------------------------- | --------------------------------------------------------------- |
@@ -71,12 +83,30 @@ Pages share [hash navigation](src/lib/app/navigation/hash-route.svelte.ts) throu
 | `temp/`                             | Reports, browser verification, and scratch output               |
 
 Shared catalog calculations stay in [kdm-data.ts](src/lib/kdm-data.ts) and [catalog-view.ts](src/lib/catalog-view.ts).
+Pages share [hash navigation](src/lib/app/navigation/hash-route.svelte.ts) through `createHashRoute`, which handles URL changes and Back/Forward.
 See [design notes](docs/kdm-design-notes.md) for UI decisions.
 
-Back up `local-data/kdm-catalog/`. Its reviewed imports, tags, shop mappings, and archives are needed to reproduce catalog work.
-The folder is Git-ignored; do not commit personal workbook cells.
+## Catalog
 
-## Generated files
+The live app reads [data.json](static/kdm/catalog/data.json). Item IDs are object keys; explicit edition IDs are permanent and independent of mutable labels.
+
+- [Catalog guide](docs/kdm-catalog.md): data rules, identity, and reviewed product decisions.
+- [Catalog workflows](docs/catalog-workflows.md): commands, cache behavior, local inputs, imports, and reports.
+
+### Commands
+
+Catalog commands use local files and caches by default. Add `--fetch` for network access.
+
+```bash
+pnpm catalog:validate
+pnpm catalog:update --sim --fetch
+pnpm catalog:availability
+pnpm catalog:workbook
+```
+
+See each command's `--help` output and the workflow guide before applying staged catalog changes.
+
+### Generated files
 
 Edit the source files, then run `pnpm generate:types` to refresh these outputs. Development, checks, and builds also run this command.
 
@@ -88,26 +118,10 @@ Edit the source files, then run `pnpm generate:types` to refresh these outputs. 
 
 The [workbook map](static/kdm/catalog/workbook-map.json) uses a separate command, `pnpm catalog:workbook`, and requires the live catalog and local workbook import records.
 
-## Catalog
+### Local data
 
-The live app reads [data.json](static/kdm/catalog/data.json). Item IDs are object keys; explicit edition IDs are permanent and independent of mutable labels. For data rules, identity, and reviewed product decisions, see the [catalog guide](docs/kdm-catalog.md). For commands, cache behavior, local inputs, imports, and reports, see [catalog workflows](docs/catalog-workflows.md).
-
-Common commands:
-
-```bash
-pnpm catalog:validate
-pnpm catalog:update --sim --fetch
-pnpm catalog:availability
-pnpm catalog:workbook
-```
-
-Catalog commands use local files and caches by default. Add `--fetch` for network access. See each command's `--help` output and the workflow guide before applying staged catalog changes.
-
-## Collection
-
-Open `/kdm/collection/` for search, edition details, ownership, and wishlist controls. Entries save locally through Dexie under stable content and edition IDs. Product ownership is explicit; included rows show derived content coverage. Stale tabs block editing and offer refresh while preserving the current view. Offline use requires a previously cached catalog.
-
-See the [implemented collection architecture](docs/kdm-architecture.md) for persistence, ownership, and content coverage. Future campaign and synchronization concepts are documented separately as [proposed design](docs/kdm-campaign-design.md).
+Back up `local-data/kdm-catalog/`. Its reviewed imports, tags, shop mappings, and archives are needed to reproduce catalog work.
+The folder is Git-ignored; do not commit personal workbook cells.
 
 ## Known warnings
 
