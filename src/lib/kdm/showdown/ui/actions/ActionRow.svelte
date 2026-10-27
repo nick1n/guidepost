@@ -8,32 +8,33 @@
     cost,
     short,
     description,
-    open,
+    group,
     disabled,
-    onexpand,
     onspend,
   }: {
     title: string;
     cost: readonly Cost[];
     short: string;
     description: string;
-    open: boolean;
+    group: string;
     disabled: boolean;
-    onexpand: () => void;
-    onspend: () => void;
+    onspend: (event: MouseEvent) => void;
   } = $props();
-
-  const descriptionId = $props.id();
 </script>
 
 <li class="row">
-  <button class="read" type="button" aria-expanded={open} aria-controls={descriptionId} onclick={onexpand}>
-    <span class="heading">
-      <strong>{title}</strong>
-      <span class="chevron i-material-symbols:expand-more" aria-hidden="true"></span>
-    </span>
-    {#if !open}<small class="preview">{short}</small>{/if}
-  </button>
+  <details name={group}>
+    <summary class="read">
+      <span class="heading">
+        <strong>{title}</strong>
+        <span class="chevron i-material-symbols:expand-more" aria-hidden="true"></span>
+      </span>
+      <small class="preview">{short}</small>
+    </summary>
+    <div class="description">
+      <p><InlineMarkdown text={description} /></p>
+    </div>
+  </details>
   <button
     class="spend"
     type="button"
@@ -43,9 +44,6 @@
   >
     <ActionCost {cost} />
   </button>
-  <div class="description" id={descriptionId} hidden={!open}>
-    <p><InlineMarkdown text={description} /></p>
-  </div>
 </li>
 
 <style>
@@ -56,16 +54,34 @@
     border-radius: var(--radius-control);
     background: var(--panel);
   }
+  details,
+  details::details-content {
+    display: contents;
+  }
+  details:not([open])::details-content {
+    display: none;
+  }
+  details[open] .preview {
+    display: none;
+  }
   .read {
+    display: block;
+    grid-column: 1;
+    cursor: pointer;
     min-inline-size: 0;
     padding: 0.375rem 0.5rem;
     text-align: start;
+
+    &::-webkit-details-marker {
+      display: none;
+    }
 
     &:hover {
       background: var(--identity-9);
     }
 
     &:focus-visible {
+      outline: var(--border-width) solid var(--accent);
       outline-offset: -2px;
     }
   }
@@ -84,7 +100,7 @@
     color: var(--muted-foreground);
     transition: rotate var(--duration-fast);
   }
-  .read[aria-expanded="true"] .chevron {
+  details[open] .chevron {
     rotate: 180deg;
   }
   .preview {
@@ -97,6 +113,8 @@
     line-height: var(--line-height-snug);
   }
   .spend {
+    grid-row: 1;
+    grid-column: 2;
     padding-inline: 0.5rem;
     background: var(--identity-10);
 

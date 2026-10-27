@@ -6,7 +6,6 @@ function fixture({ attach = true, gutter = "auto" } = {}) {
   const trigger = {
     isConnected: true,
     focus: vi.fn(),
-    getBoundingClientRect: () => ({ width: 48, right: 992, bottom: 792 }),
   };
   const previous = { isConnected: true, focus: vi.fn() };
   const window = Object.assign(new EventTarget(), {
@@ -21,9 +20,7 @@ function fixture({ attach = true, gutter = "auto" } = {}) {
     querySelector: vi.fn((selector: string) => (selector === "[data-menu-trigger]" ? trigger : null)),
   };
   const properties = new Map<string, string>();
-  const dialog = Object.assign(new EventTarget(), {
-    ownerDocument: document,
-    open: false,
+  const placement = {
     style: {
       right: "",
       bottom: "",
@@ -31,6 +28,10 @@ function fixture({ attach = true, gutter = "auto" } = {}) {
       removeProperty: (key: string) => properties.delete(key),
     },
     getBoundingClientRect: vi.fn(() => ({ right: 984, bottom: 800 })),
+  };
+  const dialog = Object.assign(new EventTarget(), {
+    ownerDocument: document,
+    open: false,
     show: vi.fn(() => {
       dialog.open = true;
     }),
@@ -52,9 +53,9 @@ function fixture({ attach = true, gutter = "auto" } = {}) {
     historyOpen = open;
     session.synchronize(open);
   };
-  const mount = () => session.attach(dialog as unknown as HTMLDialogElement);
+  const mount = () => session.attach(dialog as unknown as HTMLDialogElement, placement as unknown as HTMLElement);
   const detach = attach ? mount() : undefined;
-  return { session, history, onchange, report, dialog, root, window, trigger, previous, properties, synchronize, mount, detach };
+  return { session, history, onchange, report, dialog, placement, root, window, trigger, previous, properties, synchronize, mount, detach };
 }
 
 function click(overrides: Partial<MouseEvent> = {}) {
@@ -160,22 +161,20 @@ describe("menu session", () => {
     view.detach!();
   });
 
-  it("honors history synchronization before attachment and realigns on resize", () => {
+  it("honors history synchronization before attachment and keeps viewport docking current on resize", () => {
     const view = fixture({ attach: false });
     view.synchronize(true);
     const detach = view.mount();
     expect(view.dialog.open).toBe(true);
     expect(view.properties.get("--viewport-width")).toBe("1000px");
-    expect(view.properties.get("--toggle-size")).toBe("48px");
-    expect(view.properties.get("--toggle-padding-inline")).toBe("8px");
-    expect(view.dialog.style.right).toBe("-16px");
+    expect(view.placement.style.right).toBe("-16px");
     view.window.innerWidth = 1200;
     view.window.dispatchEvent(new Event("resize"));
     expect(view.properties.get("--viewport-width")).toBe("1200px");
     detach();
-    const calls = view.dialog.getBoundingClientRect.mock.calls.length;
+    const calls = view.placement.getBoundingClientRect.mock.calls.length;
     view.window.dispatchEvent(new Event("resize"));
-    expect(view.dialog.getBoundingClientRect).toHaveBeenCalledTimes(calls);
+    expect(view.placement.getBoundingClientRect).toHaveBeenCalledTimes(calls);
   });
 
   it("uses the current trigger when previous focus has left and preserves an existing gutter", async () => {

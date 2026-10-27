@@ -190,153 +190,161 @@
 {/if}
 
 <div class={["scrim", menu.open && "is-open"]} aria-hidden="true"></div>
-<dialog
-  aria-labelledby={`${id}-heading`}
-  data-swipe-ignore
-  {@attach (dialog) => untrack(() => session.attach(dialog))}
-  {@attach dismissal.attach}
->
-  <div
-    class="sheet"
-    data-dragging={dismissal.distance > 0}
-    style:translate={dismissal.distance > 0 ? `0 ${dismissal.distance}px` : undefined}
-  >
-    <div class="grip" data-drag-handle aria-hidden="true"><span></span></div>
-    <header>
-      <h2 id={`${id}-heading`}>
-        {#if view !== "main"}
-          <button class="back" type="button" onclick={back}>
-            {titles[view]}<span class="visually-hidden">, back to menu</span>
-          </button>
-        {:else}
-          <span class="heading-label">{titles[view]}</span>
-        {/if}
-      </h2>
-    </header>
-    <div class="body" bind:this={content}>
-      <div class="content">
-        {#if view === "main"}
-          <button class="brand" type="button" onclick={checkForUpdates}>
-            <svg class="logo" viewBox="205 300 440 440" aria-hidden="true" focusable="false">
-              <image href={asset("logo/guidepost-min.svg")} width="850" height="1100" transform="rotate(-28 425 510)" />
-            </svg>
-            <span class="copy">
-              <strong>Guidepost <span class="version">v{version}</span></strong>
-              <span role="status">{updateStatus || "Check for updates"}</span>
-            </span>
-            {#key updateAttempt}
-              {#if updating}<span class="update-border" aria-hidden="true"></span>{/if}
-              <span class={["refresh", updating && "animating"]} aria-hidden="true">
-                <span class="row-icon i-material-symbols:refresh"></span>
-              </span>
-            {/key}
-          </button>
-          <div class="group">
-            <button class="row" type="button" onclick={() => showView("account")}>
-              <span class="row-icon i-material-symbols:account-circle-outline" aria-hidden="true"></span>
-              <span class="copy"><strong>Guest</strong><span>User account</span></span>
-              <span class="chevron i-material-symbols:chevron-right" aria-hidden="true"></span>
-            </button>
-            <button class="row" type="button" onclick={() => showView("settings")}>
-              <span class="row-icon i-material-symbols:settings-outline" aria-hidden="true"></span>
-              <span class="copy"><strong>Settings</strong><span>Display and gameplay options</span></span>
-              <span class="chevron i-material-symbols:chevron-right" aria-hidden="true"></span>
-            </button>
-            <button class="row" type="button" onclick={() => showView("notifications")}>
-              <span class="row-icon i-material-symbols:notifications-outline" aria-hidden="true"></span>
-              <span class="copy">
-                <strong>Notification log <span class="count">{log.notices.length}</span></strong>
-                <span class="activity-detail">
-                  <span class="latest">{latest?.message ?? "No activity yet"}</span>
-                  {#if latest}<time datetime={new Date(latest.timestamp).toISOString()}>{dates.formatTime(latest.timestamp)}</time>{/if}
+<div class="placement">
+  <div class="anchor">
+    <dialog
+      aria-labelledby={`${id}-heading`}
+      data-swipe-ignore
+      {@attach (dialog) => untrack(() => session.attach(dialog, dialog.closest<HTMLElement>(".placement")!))}
+      {@attach dismissal.attach}
+    >
+      <div
+        class="sheet"
+        data-dragging={dismissal.distance > 0}
+        style:translate={dismissal.distance > 0 ? `0 ${dismissal.distance}px` : undefined}
+      >
+        <div class="grip" data-drag-handle aria-hidden="true"><span></span></div>
+        <header>
+          <h2 id={`${id}-heading`}>
+            {#if view !== "main"}
+              <button class="back" type="button" onclick={back}>
+                {titles[view]}<span class="visually-hidden">, back to menu</span>
+              </button>
+            {:else}
+              <span class="heading-label">{titles[view]}</span>
+            {/if}
+          </h2>
+        </header>
+        <div class="body" bind:this={content}>
+          <div class="content">
+            {#if view === "main"}
+              <button class="brand" type="button" onclick={checkForUpdates}>
+                <svg class="logo" viewBox="205 300 440 440" aria-hidden="true" focusable="false">
+                  <image href={asset("logo/guidepost-min.svg")} width="850" height="1100" transform="rotate(-28 425 510)" />
+                </svg>
+                <span class="copy">
+                  <strong>Guidepost <span class="version">v{version}</span></strong>
+                  <span role="status">{updateStatus || "Check for updates"}</span>
                 </span>
-              </span>
-              <span class="chevron i-material-symbols:chevron-right" aria-hidden="true"></span>
-            </button>
+                {#key updateAttempt}
+                  {#if updating}<span class="update-border" aria-hidden="true"></span>{/if}
+                  <span class={["refresh", updating && "animating"]} aria-hidden="true">
+                    <span class="row-icon i-material-symbols:refresh"></span>
+                  </span>
+                {/key}
+              </button>
+              <div class="group">
+                <button class="row" type="button" onclick={() => showView("account")}>
+                  <span class="row-icon i-material-symbols:account-circle-outline" aria-hidden="true"></span>
+                  <span class="copy"><strong>Guest</strong><span>User account</span></span>
+                  <span class="chevron i-material-symbols:chevron-right" aria-hidden="true"></span>
+                </button>
+                <button class="row" type="button" onclick={() => showView("settings")}>
+                  <span class="row-icon i-material-symbols:settings-outline" aria-hidden="true"></span>
+                  <span class="copy"><strong>Settings</strong><span>Display and gameplay options</span></span>
+                  <span class="chevron i-material-symbols:chevron-right" aria-hidden="true"></span>
+                </button>
+                <button class="row" type="button" onclick={() => showView("notifications")}>
+                  <span class="row-icon i-material-symbols:notifications-outline" aria-hidden="true"></span>
+                  <span class="copy">
+                    <strong>Notification log <span class="count">{log.notices.length}</span></strong>
+                    <span class="activity-detail">
+                      <span class="latest">{latest?.message ?? "No activity yet"}</span>
+                      {#if latest}<time datetime={new Date(latest.timestamp).toISOString()}>{dates.formatTime(latest.timestamp)}</time>{/if}
+                    </span>
+                  </span>
+                  <span class="chevron i-material-symbols:chevron-right" aria-hidden="true"></span>
+                </button>
+              </div>
+              <nav class="navigation" aria-label="Site">
+                <a href={resolve("/")} onclick={(event) => onnavigate(event, resolve("/"))}>
+                  <span class="row-icon i-material-symbols:home-outline" aria-hidden="true"></span>Home
+                </a>
+                <button type="button" disabled={!fullscreenAvailable || fullscreenPending} onclick={toggleFullscreen}>
+                  <span
+                    class={["row-icon", fullscreen ? "i-material-symbols:fullscreen-exit" : "i-material-symbols:fullscreen"]}
+                    aria-hidden="true"
+                  ></span>
+                  {fullscreenLabel}
+                </button>
+              </nav>
+              {#if fullscreenError}<p class="error" role="alert">{fullscreenError}</p>{/if}
+            {:else if view === "account"}
+              <div class="empty">
+                <span class="empty-icon i-material-symbols:account-circle-outline" aria-hidden="true"></span>
+                <h3>Playing as a guest</h3>
+                <p>Your collection is saved in this browser. Accounts and device sync are not available yet.</p>
+              </div>
+            {:else if view === "notifications"}
+              <p class="description">Activity from this session, newest first.</p>
+              {#if log.notices.length}
+                <ol>
+                  {#each log.notices as notice (notice.id)}
+                    <li class="notice" data-kind={notice.kind}>
+                      <span class={["notice-icon", noticePresentation[notice.kind].icon]} aria-hidden="true"></span>
+                      <div>
+                        <span class="visually-hidden">{noticePresentation[notice.kind].prefix}</span>
+                        <p>{notice.message}</p>
+                        {#if notice.details?.length}
+                          <details>
+                            <summary>View editions ({notice.details.length})</summary>
+                            <ul>
+                              {#each notice.details as detail, index (index)}
+                                <li>{detail}</li>
+                              {/each}
+                            </ul>
+                          </details>
+                        {/if}
+                        <time datetime={new Date(notice.timestamp).toISOString()}>{dates.formatTimestamp(notice.timestamp)}</time>
+                      </div>
+                    </li>
+                  {/each}
+                </ol>
+              {:else}
+                <div class="empty">
+                  <span class="empty-icon i-material-symbols:notifications-outline" aria-hidden="true"></span>
+                  <h3>No activity yet</h3>
+                  <p>Saved collection changes and notifications will appear here.</p>
+                </div>
+              {/if}
+            {:else}
+              <ToggleButton pressed={glass.enabled} onclick={() => glass.setEnabled(!glass.enabled)} style="margin-block-end: 0.75rem">
+                Glass effects
+              </ToggleButton>
+              <div class="date-settings">
+                <label for={`${id}-date-format`}>Date format</label>
+                <Select
+                  id={`${id}-date-format`}
+                  value={dates.dateFormat}
+                  onchange={(event) => dates.setDateFormat(event.currentTarget.value)}
+                >
+                  {#each dates.formats as format (format.value)}
+                    <option value={format.value}>{format.label}</option>
+                  {/each}
+                </Select>
+              </div>
+              <HuntSettings />
+              <ShowdownSettings {onnavigate} />
+              <div class="reset-settings">
+                <button class="reset" type="button" disabled={resetting} onclick={() => resetDialog.show()}>
+                  {resetting ? "Deleting saved data…" : "Reset saved data"}
+                </button>
+                <p class="description">Permanently delete all saved collections and settings from this browser.</p>
+                {#if resetError}<p class="error" role="alert">{resetError}</p>{/if}
+              </div>
+            {/if}
           </div>
-          <nav class="navigation" aria-label="Site">
-            <a href={resolve("/")} onclick={(event) => onnavigate(event, resolve("/"))}>
-              <span class="row-icon i-material-symbols:home-outline" aria-hidden="true"></span>Home
-            </a>
-            <button type="button" disabled={!fullscreenAvailable || fullscreenPending} onclick={toggleFullscreen}>
-              <span
-                class={["row-icon", fullscreen ? "i-material-symbols:fullscreen-exit" : "i-material-symbols:fullscreen"]}
-                aria-hidden="true"
-              ></span>
-              {fullscreenLabel}
-            </button>
-          </nav>
-          {#if fullscreenError}<p class="error" role="alert">{fullscreenError}</p>{/if}
-        {:else if view === "account"}
-          <div class="empty">
-            <span class="empty-icon i-material-symbols:account-circle-outline" aria-hidden="true"></span>
-            <h3>Playing as a guest</h3>
-            <p>Your collection is saved in this browser. Accounts and device sync are not available yet.</p>
+        </div>
+        <footer>
+          <div class="status">
+            <span class={["connection", !online && "offline"]}></span>{online ? "Online" : "Offline"}<span>Saved on this device</span>
           </div>
-        {:else if view === "notifications"}
-          <p class="description">Activity from this session, newest first.</p>
-          {#if log.notices.length}
-            <ol>
-              {#each log.notices as notice (notice.id)}
-                <li class="notice" data-kind={notice.kind}>
-                  <span class={["notice-icon", noticePresentation[notice.kind].icon]} aria-hidden="true"></span>
-                  <div>
-                    <span class="visually-hidden">{noticePresentation[notice.kind].prefix}</span>
-                    <p>{notice.message}</p>
-                    {#if notice.details?.length}
-                      <details>
-                        <summary>View editions ({notice.details.length})</summary>
-                        <ul>
-                          {#each notice.details as detail, index (index)}
-                            <li>{detail}</li>
-                          {/each}
-                        </ul>
-                      </details>
-                    {/if}
-                    <time datetime={new Date(notice.timestamp).toISOString()}>{dates.formatTimestamp(notice.timestamp)}</time>
-                  </div>
-                </li>
-              {/each}
-            </ol>
-          {:else}
-            <div class="empty">
-              <span class="empty-icon i-material-symbols:notifications-outline" aria-hidden="true"></span>
-              <h3>No activity yet</h3>
-              <p>Saved collection changes and notifications will appear here.</p>
-            </div>
-          {/if}
-        {:else}
-          <ToggleButton pressed={glass.enabled} onclick={() => glass.setEnabled(!glass.enabled)} style="margin-block-end: 0.75rem">
-            Glass effects
-          </ToggleButton>
-          <div class="date-settings">
-            <label for={`${id}-date-format`}>Date format</label>
-            <Select id={`${id}-date-format`} value={dates.dateFormat} onchange={(event) => dates.setDateFormat(event.currentTarget.value)}>
-              {#each dates.formats as format (format.value)}
-                <option value={format.value}>{format.label}</option>
-              {/each}
-            </Select>
-          </div>
-          <HuntSettings />
-          <ShowdownSettings {onnavigate} />
-          <div class="reset-settings">
-            <button class="reset" type="button" disabled={resetting} onclick={() => resetDialog.show()}>
-              {resetting ? "Deleting saved data…" : "Reset saved data"}
-            </button>
-            <p class="description">Permanently delete all saved collections and settings from this browser.</p>
-            {#if resetError}<p class="error" role="alert">{resetError}</p>{/if}
-          </div>
-        {/if}
+          <div class="toggle-space" aria-hidden="true"></div>
+        </footer>
       </div>
-    </div>
-    <footer>
-      <div class="status">
-        <span class={["connection", !online && "offline"]}></span>{online ? "Online" : "Offline"}<span>Saved on this device</span>
-      </div>
-      <div class="toggle-space" aria-hidden="true"></div>
-    </footer>
+    </dialog>
   </div>
-</dialog>
+</div>
 
 <ConfirmDialog
   bind:this={resetDialog}
@@ -373,23 +381,55 @@
       visibility: visible;
     }
   }
-  dialog {
-    --space-menu: 0.75rem;
-    --toggle-padding-inline: 0.5rem;
-    --toggle-padding-block: 0.5rem;
-
+  @property --width-menu-end {
+    syntax: "<length>";
+    inherits: true;
+    initial-value: 0px;
+  }
+  @property --toggle-padding-block {
+    syntax: "<length>";
+    inherits: true;
+    initial-value: 0px;
+  }
+  @property --toggle-size {
+    syntax: "<length>";
+    inherits: true;
+    initial-value: 0px;
+  }
+  .placement {
     z-index: 5;
     position: fixed;
+    inset: anchor(--menu-trigger bottom) 0 0 anchor(--menu-trigger left);
+    container-type: size;
+    pointer-events: none;
+  }
+  .anchor {
+    /* Capture the viewport space before this container follows the button's own bounds. */
+    --width-menu-end: 100cqw;
+    --toggle-padding-block: 100cqh;
+
+    position: fixed;
+    inset: anchor(--menu-trigger top) anchor(--menu-trigger right) anchor(--menu-trigger bottom) anchor(--menu-trigger left);
+    container-type: size;
+  }
+  dialog {
+    --space-menu: 0.75rem;
+    /* Resolve the button size before the sheet establishes its own query container. */
+    --toggle-size: 100cqw;
+    --toggle-padding-inline: calc(var(--width-menu-end) - var(--toggle-size));
+
+    position: absolute;
     inline-size: min(24rem, var(--viewport-width, 100vw));
     max-inline-size: none;
-    max-block-size: calc(100dvh - 1rem - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+    max-block-size: calc(var(--viewport-height) - 1rem - env(safe-area-inset-top) - env(safe-area-inset-bottom));
     margin: 0;
-    inset: auto 0 0 auto;
+    inset: auto calc(-1 * var(--toggle-padding-inline)) calc(-1 * var(--toggle-padding-block)) auto;
     padding: 0;
     overflow: visible;
     border: 0;
     background: transparent;
     color: var(--foreground);
+    pointer-events: auto;
     transition: display var(--duration-fast);
     transition-behavior: allow-discrete;
 
@@ -436,8 +476,8 @@
   }
   .toggle-space {
     flex: none;
-    inline-size: var(--toggle-size, var(--size-floating-control));
-    block-size: var(--toggle-size, var(--size-floating-control));
+    inline-size: var(--toggle-size);
+    block-size: var(--toggle-size);
   }
   .grip {
     display: grid;

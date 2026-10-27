@@ -3,9 +3,7 @@
 </script>
 
 <script lang="ts">
-  import { onDestroy, tick } from "svelte";
-  import { prefersReducedMotion as reducedMotion } from "svelte/motion";
-  import { DURATION_FAST } from "#lib/constants.ts";
+  import { flushSync } from "svelte";
   import { createSwipeDismiss } from "#lib/swipe-dismiss.svelte.ts";
   import KdIcon from "#lib/components/KdIcon.svelte";
   import { selectDigit } from "./cards.ts";
@@ -14,16 +12,18 @@
   const id = $props.id();
   let dialog: HTMLDialogElement;
   let open = $state(false);
-  let closing = false;
-  let closeTimer: Timeout;
   let numberPlace = 10;
   let activePlace = 10;
   const dismissal = createSwipeDismiss(close);
 
-  onDestroy(() => clearTimeout(closeTimer));
-
   export function show() {
-    if (dialog.open || closing) return;
+    // Include the sheet's transitions when guarding a closing dialog, including paused exits.
+    if (
+      !dialog.isConnected ||
+      dialog.open ||
+      dialog.getAnimations({ subtree: true }).some((animation) => animation.playState !== "finished")
+    )
+      return;
     numberPlace = 10;
     activePlace = 10;
     dismissal.reset();
@@ -32,25 +32,12 @@
     dialog.querySelector<HTMLButtonElement>('[aria-pressed="true"]')?.focus();
   }
 
-  async function close() {
-    if (!dialog.open || closing) return;
-    closing = true;
-    dismissal.reset();
+  function close() {
+    if (!dialog.open) return;
     // Re-enable transitions after dragging before removing the native open state.
-    await tick();
-    if (!dialog.isConnected) return;
+    flushSync(() => dismissal.reset());
     dialog.close();
     open = false;
-    closeTimer = setTimeout(finishClose, reducedMotion.current ? 0 : DURATION_FAST + 50);
-  }
-
-  function finishClose() {
-    clearTimeout(closeTimer);
-    closing = false;
-  }
-
-  function ontransitionend(event: TransitionEvent) {
-    if (closing && !dialog.open && event.target === dialog.firstElementChild && event.propertyName === "translate") finishClose();
   }
 
   function onclick(event: MouseEvent) {
@@ -78,10 +65,10 @@
   }
 
   function onkeydown(event: KeyboardEvent) {
-    if (!dialog.open || closing || event.altKey || event.ctrlKey || event.metaKey || event.isComposing) return;
+    if (!dialog.open || event.altKey || event.ctrlKey || event.metaKey || event.isComposing) return;
     if (event.key === "Enter") {
       event.preventDefault();
-      if (!event.repeat) void close();
+      if (!event.repeat) close();
       return;
     }
     if (/^[0-9]$/.test(event.key)) {
@@ -136,7 +123,6 @@
   {oncancel}
   {onkeydown}
   {onfocusin}
-  {ontransitionend}
   {@attach dismissal.attach}
 >
   <div class="sheet">
@@ -197,7 +183,7 @@
   dialog {
     inline-size: max-content;
     max-inline-size: calc(100% - 2rem);
-    max-block-size: calc(100dvh - 2rem);
+    max-block-size: calc(var(--viewport-height) - 2rem);
     margin: auto;
     padding: 0;
     overflow: visible;

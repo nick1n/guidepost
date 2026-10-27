@@ -56,6 +56,10 @@ Use `$effect` only when external synchronization must rerun as reactive values c
 
 Use class arrays for conditional classes, such as `class={["item", active && "is-active"]}`. Avoid template strings and do not add `class:` directives.
 
+## Browser support
+
+Prefer native HTML, CSS, and Web APIs when they simplify code and preserve behavior. Before adopting a feature, verify support in current stable Chrome, Edge, Firefox, and Safari. Keep the existing implementation until all four support it; Chrome-only verification is insufficient. Recheck compatibility before adopting features such as dialog `closedby` or `scrollsnapchange`.
+
 ## Accessibility
 
 Use semantic HTML; add ARIA only for names, descriptions, states, or relationships HTML cannot express. Prefer visible labels; use `aria-label` only without a suitable visible label and `aria-describedby` for supplemental information. Referenced IDs must be unique and present. Do not substitute `title` for an accessible name or description.

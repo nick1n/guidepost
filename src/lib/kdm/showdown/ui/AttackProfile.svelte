@@ -34,14 +34,8 @@
     children?: Snippet;
   } = $props();
 
-  const oddsId = $props.id();
-  let open = $state(false);
   let odds = $derived(attack ? attackOdds(attack) : null);
   let marked = $derived(variant === 3 && (title === "Founding Stone" || title === "Fist & Tooth"));
-
-  function onclick() {
-    open = !open;
-  }
 </script>
 
 {#snippet distribution(title: string, singular: string, results: RollSpread)}
@@ -105,32 +99,111 @@
 
 <div class="profile">
   {#if attack}
-    <button class={["read", marked && "marked"]} type="button" aria-expanded={open} aria-controls={oddsId} {onclick}>
-      {#if marked && title === "Founding Stone"}
-        <span class="weapon-mark i-game-icons:rock" aria-hidden="true"></span>
-      {:else if marked && title === "Fist & Tooth"}
-        <span class="weapon-mark i-game-icons:fist" aria-hidden="true"></span>
-      {/if}
-      <span class={["heading", marked && "mark-foreground"]}>
-        <strong class={variant === 2 ? "with-icon" : undefined}>
-          {#if variant === 2 && title === "Founding Stone"}
-            <span class="title-icon i-game-icons:rock" aria-hidden="true"></span>
-          {:else if variant === 2 && title === "Fist & Tooth"}
-            <span class="title-icon i-game-icons:fist" aria-hidden="true"></span>
+    <details>
+      <summary class={["read", marked && "marked"]}>
+        {#if marked && title === "Founding Stone"}
+          <span class="weapon-mark i-game-icons:rock" aria-hidden="true"></span>
+        {:else if marked && title === "Fist & Tooth"}
+          <span class="weapon-mark i-game-icons:fist" aria-hidden="true"></span>
+        {/if}
+        <span class={["heading", marked && "mark-foreground"]}>
+          <strong class={variant === 2 ? "with-icon" : undefined}>
+            {#if variant === 2 && title === "Founding Stone"}
+              <span class="title-icon i-game-icons:rock" aria-hidden="true"></span>
+            {:else if variant === 2 && title === "Fist & Tooth"}
+              <span class="title-icon i-game-icons:fist" aria-hidden="true"></span>
+            {/if}
+            <span>{title}</span>
+          </strong>
+          <span class="chevron i-material-symbols:expand-more" aria-hidden="true"></span>
+        </span>
+        <span class={["stats", marked && "mark-foreground"]}>
+          {#each stats as stat (stat.label)}
+            <span class={["attack-stat", stat.divider && "divided"]} data-stat={stat.label}>
+              <span class="stat-label">{stat.label}</span>
+              <span class="stat-value">{stat.value}</span>
+            </span>
+          {/each}
+        </span>
+      </summary>
+      {#if odds}
+        <div class="odds">
+          {#if variant === 2}
+            <div class="folio-board">
+              <p class="folio-heading"><span>Attack ledger</span><b class="folio-dice">{attack.speed}d10</b></p>
+              <p class="roll">
+                Hit {formatTarget(attack.acc)} ({percent.format(odds.hitPerDie)} per die). Wound
+                {formatTarget(attack.wound)} ({percent.format(odds.woundGivenHit)} per hit).
+              </p>
+              {@render distribution("Hits", "hit", odds.hits)}
+              {@render distribution("Wounds", "wound", odds.wounds)}
+              {@render weaponKeywords(attack.keywords)}
+            </div>
+          {:else if variant === 3}
+            <div class="signal-board">
+              <p class="signal-heading"><span>Combat forecast</span><b class="signal-dice">{attack.speed}d10</b></p>
+              <div class="gauges">
+                <div class="gauge-unit">
+                  <span class="gauge-label">At least one hit</span>
+                  <div class="gauge hit" style:--chance={`${odds.anyHit * 100}%`}>
+                    <span class="gauge-core"><b class="gauge-value">{percent.format(odds.anyHit)}</b></span>
+                  </div>
+                </div>
+                <div class="gauge-unit">
+                  <span class="gauge-label">At least one wound</span>
+                  <div class="gauge wound" style:--chance={`${odds.anyWound * 100}%`}>
+                    <span class="gauge-core"><b class="gauge-value">{percent.format(odds.anyWound)}</b></span>
+                  </div>
+                </div>
+              </div>
+              <dl class="telemetry">
+                <div class="reading">
+                  <dt class="reading-label">2+ hits</dt>
+                  <dd class="reading-value">{percent.format(odds.hits.many)}</dd>
+                </div>
+                <div class="reading">
+                  <dt class="reading-label">Avg hits</dt>
+                  <dd class="reading-value">{average.format(odds.expectedHits)}</dd>
+                </div>
+                <div class="reading">
+                  <dt class="reading-label">Avg wounds</dt>
+                  <dd class="reading-value">{average.format(odds.expectedWounds)}</dd>
+                </div>
+              </dl>
+              <p class="roll">
+                Hit {formatTarget(attack.acc)} ({percent.format(odds.hitPerDie)} per die). Wound
+                {formatTarget(attack.wound)} ({percent.format(odds.woundGivenHit)} per hit).
+              </p>
+              {@render weaponKeywords(attack.keywords)}
+            </div>
+          {:else}
+            <dl class="obsidian-targets">
+              <div class="target">
+                <dt class="target-label">Hit {formatTarget(attack.acc)}</dt>
+                <dd class="target-value">{diePercent.format(odds.hitPerDie)} / die</dd>
+              </div>
+              <div class="target">
+                <dt class="target-label">Wound {formatTarget(attack.wound)}</dt>
+                <dd class="target-value">{diePercent.format(odds.woundGivenHit)} / hit</dd>
+              </div>
+              <div class="target">
+                <dt class="target-label">Crit {formatTarget(attack.crit)}</dt>
+                <dd class="target-value">{diePercent.format(odds.critGivenHit)} / crit</dd>
+              </div>
+            </dl>
+            {@render compactResult("Hits", "hit", odds.anyHit, odds.expectedHits, odds.hits)}
+            {@render compactResult("Wounds", "wound", odds.anyWound, odds.expectedWounds, odds.wounds)}
+            {@render compactResult("Crits", "crit", odds.anyCrit, odds.expectedCrits, odds.crits)}
+            {@render weaponKeywords(attack.keywords)}
           {/if}
-          <span>{title}</span>
-        </strong>
-        <span class="chevron i-material-symbols:expand-more" aria-hidden="true"></span>
-      </span>
-      <span class={["stats", marked && "mark-foreground"]}>
-        {#each stats as stat (stat.label)}
-          <span class={["attack-stat", stat.divider && "divided"]} data-stat={stat.label}>
-            <span class="stat-label">{stat.label}</span>
-            <span class="stat-value">{stat.value}</span>
-          </span>
-        {/each}
-      </span>
-    </button>
+          <p class="note">
+            {variant === 1
+              ? "Wound odds use Toughness; crit odds need an eligible hit location. Gear effects are excluded."
+              : "Assumes one normal wound roll per hit; excludes location and critical effects."}
+          </p>
+        </div>
+      {/if}
+    </details>
   {:else}
     <div class={["static-heading", onspend && "with-spend"]}>
       <strong>{title}</strong>
@@ -156,83 +229,6 @@
       <ActionCost {cost} />
     </button>
   {/if}
-  {#if attack && odds}
-    <div class="odds" id={oddsId} hidden={!open}>
-      {#if variant === 2}
-        <div class="folio-board">
-          <p class="folio-heading"><span>Attack ledger</span><b class="folio-dice">{attack.speed}d10</b></p>
-          <p class="roll">
-            Hit {formatTarget(attack.acc)} ({percent.format(odds.hitPerDie)} per die). Wound
-            {formatTarget(attack.wound)} ({percent.format(odds.woundGivenHit)} per hit).
-          </p>
-          {@render distribution("Hits", "hit", odds.hits)}
-          {@render distribution("Wounds", "wound", odds.wounds)}
-          {@render weaponKeywords(attack.keywords)}
-        </div>
-      {:else if variant === 3}
-        <div class="signal-board">
-          <p class="signal-heading"><span>Combat forecast</span><b class="signal-dice">{attack.speed}d10</b></p>
-          <div class="gauges">
-            <div class="gauge-unit">
-              <span class="gauge-label">At least one hit</span>
-              <div class="gauge hit" style:--chance={`${odds.anyHit * 100}%`}>
-                <span class="gauge-core"><b class="gauge-value">{percent.format(odds.anyHit)}</b></span>
-              </div>
-            </div>
-            <div class="gauge-unit">
-              <span class="gauge-label">At least one wound</span>
-              <div class="gauge wound" style:--chance={`${odds.anyWound * 100}%`}>
-                <span class="gauge-core"><b class="gauge-value">{percent.format(odds.anyWound)}</b></span>
-              </div>
-            </div>
-          </div>
-          <dl class="telemetry">
-            <div class="reading">
-              <dt class="reading-label">2+ hits</dt>
-              <dd class="reading-value">{percent.format(odds.hits.many)}</dd>
-            </div>
-            <div class="reading">
-              <dt class="reading-label">Avg hits</dt>
-              <dd class="reading-value">{average.format(odds.expectedHits)}</dd>
-            </div>
-            <div class="reading">
-              <dt class="reading-label">Avg wounds</dt>
-              <dd class="reading-value">{average.format(odds.expectedWounds)}</dd>
-            </div>
-          </dl>
-          <p class="roll">
-            Hit {formatTarget(attack.acc)} ({percent.format(odds.hitPerDie)} per die). Wound
-            {formatTarget(attack.wound)} ({percent.format(odds.woundGivenHit)} per hit).
-          </p>
-          {@render weaponKeywords(attack.keywords)}
-        </div>
-      {:else}
-        <dl class="obsidian-targets">
-          <div class="target">
-            <dt class="target-label">Hit {formatTarget(attack.acc)}</dt>
-            <dd class="target-value">{diePercent.format(odds.hitPerDie)} / die</dd>
-          </div>
-          <div class="target">
-            <dt class="target-label">Wound {formatTarget(attack.wound)}</dt>
-            <dd class="target-value">{diePercent.format(odds.woundGivenHit)} / hit</dd>
-          </div>
-          <div class="target">
-            <dt class="target-label">Crit {formatTarget(attack.crit)}</dt>
-            <dd class="target-value">{diePercent.format(odds.critGivenHit)} / crit</dd>
-          </div>
-        </dl>
-        {@render compactResult("Hits", "hit", odds.anyHit, odds.expectedHits, odds.hits)}
-        {@render compactResult("Wounds", "wound", odds.anyWound, odds.expectedWounds, odds.wounds)}
-        {@render compactResult("Crits", "crit", odds.anyCrit, odds.expectedCrits, odds.crits)}
-        {@render weaponKeywords(attack.keywords)}
-      {/if}
-      <p class="note">
-        {variant === 1
-          ? "Wound odds use Toughness; crit odds need an eligible hit location. Gear effects are excluded."
-          : "Assumes one normal wound roll per hit; excludes location and critical effects."}
-      </p>
-    </div>
-  {/if}
   {#if children}<div class="footer">{@render children()}</div>{/if}
 </div>
 
@@ -252,11 +248,23 @@
       grid-column: 1;
     }
   }
+  details,
+  details::details-content {
+    display: contents;
+  }
+  details:not([open])::details-content {
+    display: none;
+  }
   .read {
     display: grid;
     grid-column: 1;
     min-inline-size: 0;
     text-align: start;
+    cursor: pointer;
+
+    &::-webkit-details-marker {
+      display: none;
+    }
 
     &.marked {
       position: relative;
@@ -268,6 +276,7 @@
     }
 
     &:focus-visible {
+      outline: var(--border-width) solid var(--accent);
       outline-offset: -2px;
     }
   }
@@ -290,7 +299,7 @@
     color: var(--muted-foreground);
     transition: rotate var(--duration-fast);
   }
-  .read[aria-expanded="true"] .chevron {
+  details[open] .chevron {
     rotate: 180deg;
   }
   .profile {
@@ -406,10 +415,6 @@
     gap: 0.375rem;
     border-block-start: 1px solid var(--color-divider);
     font-size: var(--text-sm);
-
-    &[hidden] {
-      display: none;
-    }
   }
   .keyword-line {
     display: grid;

@@ -8,7 +8,7 @@ export function dragScroll(workspace: HTMLElement) {
   function nearestPanel(x: number) {
     let nearest: HTMLElement | undefined;
     let nearestDistance = Infinity;
-    for (const panel of workspace.querySelectorAll<HTMLElement>(":scope > .dashboard")) {
+    for (const panel of workspace.querySelectorAll<HTMLElement>(":scope > .panel > .dashboard")) {
       const bounds = panel.getBoundingClientRect();
       const distance = Math.max(bounds.left - x, 0, x - bounds.right);
       if (distance < nearestDistance) {

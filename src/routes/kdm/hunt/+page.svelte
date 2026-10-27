@@ -393,7 +393,7 @@
   main {
     display: grid;
     grid-template-rows: minmax(0, 1fr) auto;
-    block-size: calc(100dvh - var(--border-width));
+    block-size: calc(var(--viewport-height) - var(--border-width));
     padding: max(0.5rem, env(safe-area-inset-top)) max(0.5rem, env(safe-area-inset-right)) max(0.5rem, env(safe-area-inset-bottom))
       max(0.5rem, env(safe-area-inset-left));
     /* Keep animations within the viewport while allowing the card to cross the footer. */

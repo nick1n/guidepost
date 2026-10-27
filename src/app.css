@@ -110,6 +110,7 @@
   --size-icon-control: 1.5rem;
   --size-floating-control: 2.75rem;
   --inset-floating-control: 0.75rem;
+  --viewport-height: 100svh;
 
   --border-width: 2px;
   --gear-gap: 2px;
@@ -216,7 +217,7 @@ html:has(.scrollbar-stable) {
 }
 
 body {
-  min-block-size: 100dvh;
+  min-block-size: var(--viewport-height);
   color: var(--foreground);
   font-family: var(--font-sans);
   text-wrap-style: pretty;

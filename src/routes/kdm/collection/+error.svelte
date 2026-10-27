@@ -64,7 +64,7 @@
   main {
     display: grid;
     grid-template-rows: auto 1fr;
-    min-block-size: calc(100svh - var(--border-width));
+    min-block-size: calc(var(--viewport-height) - var(--border-width));
     inline-size: min(100%, 68rem);
     margin-inline: auto;
     padding: clamp(1rem, 4vw, 2.5rem);

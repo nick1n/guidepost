@@ -12,7 +12,15 @@ export default defineConfig({
     environment: "node",
     setupFiles: ["./test/setup.mts"],
     projects: [
-      { extends: true, test: { name: "client", include: ["test/client/**/*.test.{ts,mts}"] } },
+      {
+        extends: true,
+        test: {
+          name: "client",
+          include: ["test/client/**/*.test.{ts,mts}"],
+          // UnoCSS creates virtual styles during Svelte transforms; cached modules cannot recreate those styles.
+          fsModuleCache: false,
+        },
+      },
       { extends: true, test: { name: "scripts", include: ["test/scripts/**/*.test.{ts,mts}"] } },
     ],
   },

@@ -10,6 +10,7 @@
   };
 
   let { versions, value = [], onselect, groupLabel = "Versions owned", focusActive = false }: Props = $props();
+  const firstSelected = $derived(focusActive ? versions.find((version) => value.includes(version.id))?.id : undefined);
 </script>
 
 <div role="group" aria-label={groupLabel}>
@@ -19,8 +20,11 @@
     <button
       type="button"
       aria-pressed={active}
-      data-dialog-initial-focus={focusActive && active ? "true" : undefined}
       onclick={() => onselect(version.id)}
+      {@attach (button) => {
+        // Svelte initializes its autofocus attribute only once; keep the native dialog target reactive.
+        button.autofocus = version.id === firstSelected;
+      }}
     >
       {version.label}
     </button>

@@ -5,7 +5,7 @@
   let { label, children, ...attributes }: Omit<HTMLButtonAttributes, "children"> & { label: string; children: Snippet } = $props();
 </script>
 
-<button class="floating-control" type="button" aria-label={label} {...attributes}>
+<button type="button" aria-label={label} {...attributes}>
   {@render children()}
 </button>
 
@@ -23,6 +23,7 @@
     touch-action: manipulation;
 
     &[data-menu-trigger] {
+      anchor-name: --menu-trigger;
       position: relative;
       z-index: 6;
     }

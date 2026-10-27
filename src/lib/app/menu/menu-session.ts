@@ -13,6 +13,7 @@ type Options = {
 export class MenuSession {
   #options: Options;
   #dialog: HTMLDialogElement | undefined;
+  #placement: HTMLElement | undefined;
   #wanted = false;
   #open = false;
   #opening = false;
@@ -26,8 +27,9 @@ export class MenuSession {
     this.#options = options;
   }
 
-  attach = (dialog: HTMLDialogElement) => {
+  attach = (dialog: HTMLDialogElement, placement: HTMLElement) => {
     this.#dialog = dialog;
+    this.#placement = placement;
     const window = dialog.ownerDocument.defaultView!;
     const onclick = (event: MouseEvent) => {
       if (!this.#open || event.defaultPrevented || dialog.ownerDocument.querySelector("dialog:modal")) return;
@@ -53,18 +55,19 @@ export class MenuSession {
       event.preventDefault();
       this.close();
     };
-    window.addEventListener("resize", this.#align);
+    window.addEventListener("resize", this.#dock);
     window.addEventListener("keydown", onkeydown);
     window.addEventListener("click", onclick);
     this.synchronize(this.#wanted);
     return () => {
       this.#generation++;
-      window.removeEventListener("resize", this.#align);
+      window.removeEventListener("resize", this.#dock);
       window.removeEventListener("keydown", onkeydown);
       window.removeEventListener("click", onclick);
       dialog.close();
       this.#release();
       this.#dialog = undefined;
+      this.#placement = undefined;
       this.#open = false;
       this.#opening = false;
       this.#closing = false;
@@ -116,7 +119,7 @@ export class MenuSession {
         dialog.show();
         this.#trigger()?.focus({ preventScroll: true });
       }
-      this.#align();
+      this.#dock();
       return;
     }
 
@@ -153,22 +156,18 @@ export class MenuSession {
     return this.#dialog?.ownerDocument.querySelector<HTMLElement>("[data-menu-trigger]") ?? undefined;
   }
 
-  #align = () => {
+  #dock = () => {
     const dialog = this.#dialog;
-    const trigger = this.#trigger();
-    if (!dialog || !this.#open || !trigger) return;
+    const placement = this.#placement;
+    if (!dialog || !placement || !this.#open) return;
     const { innerWidth, innerHeight } = dialog.ownerDocument.defaultView!;
-    dialog.style.removeProperty("right");
-    dialog.style.removeProperty("bottom");
-    dialog.style.setProperty("--viewport-width", `${innerWidth}px`);
-    const target = trigger.getBoundingClientRect();
-    dialog.style.setProperty("--toggle-size", `${target.width}px`);
-    dialog.style.setProperty("--toggle-padding-inline", `${innerWidth - target.right}px`);
-    dialog.style.setProperty("--toggle-padding-block", `${innerHeight - target.bottom}px`);
-    const bounds = dialog.getBoundingClientRect();
+    placement.style.removeProperty("right");
+    placement.style.removeProperty("bottom");
+    placement.style.setProperty("--viewport-width", `${innerWidth}px`);
+    const bounds = placement.getBoundingClientRect();
     // Root scrollbar gutters can inset fixed elements; dock the panel to the physical viewport edge.
-    dialog.style.right = `${bounds.right - innerWidth}px`;
-    dialog.style.bottom = `${bounds.bottom - innerHeight}px`;
+    placement.style.right = `${bounds.right - innerWidth}px`;
+    placement.style.bottom = `${bounds.bottom - innerHeight}px`;
   };
 
   #lock() {

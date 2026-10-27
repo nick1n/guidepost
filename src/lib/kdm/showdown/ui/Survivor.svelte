@@ -105,7 +105,7 @@
     if (open && extras.some((section) => section.name === name && !section.populated)) showMore = true;
     sections.setSectionOpen(title, open);
   }
-  let expandedAction = $state<string | null>(null);
+  const actionGroup = `${id}-actions`;
   let compactGear = $state(false);
   let gearCount = $derived(compactGear ? 4 : 9);
   let trinketRows = $derived((sheet.gear.length - 10) / 3);
@@ -169,12 +169,13 @@
     useDodge(sheet);
   }
 
-  function activateFoundingStone() {
+  function activateFoundingStone(event: MouseEvent) {
     const slot = foundingStoneSlot;
     if (slot === -1 || !spendAction(attackCost)) return;
     sheet.gear[slot] = null;
     if (selectedGear === slot) selectedGear = null;
-    expandedAction = null;
+    const button = event.currentTarget as HTMLButtonElement;
+    for (const details of button.closest("ul")!.querySelectorAll("details[open]")) details.removeAttribute("open");
   }
 
   let extras = $derived([
@@ -380,9 +381,8 @@
           cost={attackCost}
           short="Archive to inflict an automatic critical wound"
           description={foundingStoneRule}
-          open={expandedAction === "founding-stone"}
+          group={actionGroup}
           disabled={!canUse(attackCost)}
-          onexpand={() => (expandedAction = expandedAction === "founding-stone" ? null : "founding-stone")}
           onspend={activateFoundingStone}
         />
       {/if}
@@ -393,9 +393,8 @@
             cost={action.cost}
             short={action.short}
             description={action.description}
-            open={expandedAction === action.title}
+            group={actionGroup}
             disabled={!canUse(action.cost)}
-            onexpand={() => (expandedAction = expandedAction === action.title ? null : action.title)}
             onspend={() => spendAction(action.cost)}
           />
         {/each}

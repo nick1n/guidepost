@@ -25,10 +25,11 @@
   import { survivors } from "#lib/kdm/showdown/fixtures.ts";
 
   const designs = [
-    { name: "Obsidian", subtitle: "The Command Table", className: "obsidian", href: "/kdm/showdown1" },
-    { name: "Folio", subtitle: "The Survivor Chronicles", className: "folio", href: "/kdm/showdown2" },
-    { name: "Signal", subtitle: "The Combat Console", className: "signal", href: "/kdm/showdown3" },
+    { name: "Obsidian", className: "obsidian" },
+    { name: "Folio", className: "folio" },
+    { name: "Signal", className: "signal" },
   ] as const;
+  const alignments = { left: "start", center: "center", right: "end", free: "nearest" } as const;
 
   let { variant = 1 }: { variant?: number } = $props();
   setGearDrag({ current: null, selection: null });
@@ -107,42 +108,9 @@
     return `${dashboardName(index)}, ${statusText(sheet)}, ${tokenTotal(sheet)} tokens, ${dodge}${action}`;
   }
 
-  // Overlay scrollbars need a small inset; classic scrollbars supply their own balanced gutters.
-  function dashboardSpacing(element: HTMLElement) {
-    let frame = 0;
-    function measure() {
-      frame = 0;
-      const style = getComputedStyle(element);
-      const gutter =
-        element.offsetWidth - element.clientWidth - parseFloat(style.borderInlineStartWidth) - parseFloat(style.borderInlineEndWidth);
-      const inset = gutter > 1 ? "0" : ".5rem";
-      if (element.style.getPropertyValue("--panel-inset") !== inset) element.style.setProperty("--panel-inset", inset);
-    }
-    // Changing the inset can resize this dashboard, so write outside the observer's delivery cycle.
-    const observer = new ResizeObserver(() => {
-      if (!frame) frame = requestAnimationFrame(measure);
-    });
-    observer.observe(element);
-    measure();
-    return () => {
-      observer.disconnect();
-      cancelAnimationFrame(frame);
-    };
-  }
   function alignDashboard(index: number) {
-    const dashboard = rail.children[index] as HTMLElement;
-    if (snap === "free") {
-      const railBounds = rail.getBoundingClientRect();
-      const dashboardBounds = dashboard.getBoundingClientRect();
-      let left = rail.scrollLeft;
-      if (dashboardBounds.left < railBounds.left) left -= railBounds.left - dashboardBounds.left;
-      if (dashboardBounds.right > railBounds.right) left += dashboardBounds.right - railBounds.right;
-      rail.scrollTo({ left, behavior: "instant" });
-      return;
-    }
-    const inset = parseFloat(getComputedStyle(rail).paddingInlineStart);
-    const left = dashboard.offsetLeft - rail.offsetLeft - inset;
-    rail.scrollTo({ left, behavior: "instant" });
+    const panel = rail.children[index] as HTMLElement;
+    panel.scrollIntoView({ behavior: "instant", block: "nearest", inline: alignments[snap] });
   }
   function jump(index: number) {
     active = index;
@@ -276,44 +244,39 @@
   <h1 class="visually-hidden">{design.name} Showdown</h1>
   <div class="workspace" bind:this={rail} {onscroll} {@attach dragScroll}>
     {#each roster as person, index (person.name)}
-      <!-- Each independent scroll region must be keyboard scrollable. -->
-      <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
-      <div
-        class={["dashboard", index === 0 && "monster-panel"]}
-        data-selected={active === index}
-        style:--identity={person.color}
-        style:--identity-ink={person.ink}
-        role="region"
-        aria-label={`${dashboardName(index)} dashboard`}
-        tabindex="0"
-        {@attach dashboardSpacing}
-      >
-        {#if index === 0}
-          <Monster
-            bind:this={dashboards[index]}
-            {variant}
-            {round}
-            {monsterTurn}
-            {awakening}
-            bind:knockedDown={monsterKnockedDown}
-            bind:values={monsterTokens}
-            bind:stats={monsterStats}
-            onturn={toggleTurn}
-            ontogglesection={toggleRelatedSections}
-          />
-        {:else}
-          <Survivor
-            bind:this={dashboards[index]}
-            person={survivors[index - 1]}
-            number={index}
-            {variant}
-            survivorTurn={!monsterTurn}
-            settlementSurvivors={sheets}
-            ontogglesection={toggleRelatedSections}
-            {monsterDefense}
-            bind:sheet={sheets[index - 1]}
-          />
-        {/if}
+      <div class="panel" style:--identity={person.color} style:--identity-ink={person.ink}>
+        <!-- Each independent scroll region must be keyboard scrollable. -->
+        <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+        <div class="dashboard" role="region" aria-label={`${dashboardName(index)} dashboard`} tabindex="0">
+          <div class="content">
+            {#if index === 0}
+              <Monster
+                bind:this={dashboards[index]}
+                {variant}
+                {round}
+                {monsterTurn}
+                {awakening}
+                bind:knockedDown={monsterKnockedDown}
+                bind:values={monsterTokens}
+                bind:stats={monsterStats}
+                onturn={toggleTurn}
+                ontogglesection={toggleRelatedSections}
+              />
+            {:else}
+              <Survivor
+                bind:this={dashboards[index]}
+                person={survivors[index - 1]}
+                number={index}
+                {variant}
+                survivorTurn={!monsterTurn}
+                settlementSurvivors={sheets}
+                ontogglesection={toggleRelatedSections}
+                {monsterDefense}
+                bind:sheet={sheets[index - 1]}
+              />
+            {/if}
+          </div>
+        </div>
       </div>
     {/each}
   </div>
@@ -397,7 +360,7 @@
 <style>
   /* Each identity owns its scale: 0 is lightest, 5 is the original color, and 10 is darkest.
    * Define it on both owners so inherited shades resolve against their own --identity. */
-  .dashboard,
+  .panel,
   .roster-button {
     --identity-light: oklch(from var(--foreground) l 0 none);
     --identity-dark: oklch(from var(--background) l 0 none);
@@ -427,7 +390,7 @@
 
     display: grid;
     grid-template-rows: minmax(0, 1fr) auto;
-    block-size: calc(100dvh - var(--border-width));
+    block-size: var(--viewport-height);
     background: var(--background);
     font-variant-numeric: lining-nums tabular-nums;
   }
@@ -444,8 +407,8 @@
   }
   .showdown :global([data-stacked-control]) {
     inline-size: min(var(--size-control), var(--size-number-max));
-    block-size: var(--size-control);
     min-inline-size: 0;
+    block-size: var(--size-control);
     min-block-size: 0;
   }
   .workspace {
@@ -461,25 +424,38 @@
     scrollbar-color: var(--card) var(--background);
     scrollbar-width: thin;
   }
-  .dashboard {
-    position: relative;
+  .panel {
+    container-type: inline-size;
     min-inline-size: 0;
-    padding-inline: var(--panel-inset, 0.5rem);
-    padding-block: 0.375rem;
-    overflow: hidden scroll;
+    min-block-size: 0;
     border-inline-end: var(--border-width) solid var(--color-divider);
     background: var(--identity-10);
-    scrollbar-color: var(--identity) transparent;
-    scrollbar-gutter: stable both-edges;
-    scrollbar-width: thin;
-    &:focus-visible {
+
+    &:has(.dashboard:focus-visible) {
       outline: 2px solid var(--accent);
       outline-offset: -2px;
     }
   }
+  .dashboard {
+    position: relative;
+    block-size: 100%;
+    padding-block: 0.375rem;
+    overflow: hidden scroll;
+    scrollbar-color: var(--identity) transparent;
+    scrollbar-gutter: stable both-edges;
+    scrollbar-width: thin;
+    &:focus-visible {
+      outline: none;
+    }
+  }
+  .content {
+    /* Classic scrollbar gutters or this inset provide the same minimum space around the controls. */
+    inline-size: min(100%, calc(100cqi - 1rem));
+    margin-inline: auto;
+  }
   footer {
     display: grid;
-    grid-template-columns: var(--size-control) minmax(0, 1fr) var(--size-control) var(--size-floating-control);
+    grid-template-columns: var(--size-control) minmax(0, 1fr) var(--size-control) max-content;
     align-items: center;
     padding: 0.125rem max(0.125rem, env(safe-area-inset-right)) max(0.125rem, env(safe-area-inset-bottom))
       max(0.125rem, env(safe-area-inset-left));
@@ -497,7 +473,6 @@
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
-    min-inline-size: var(--size-control);
     min-block-size: 3.5rem;
     padding: 0 0 0.25rem;
     overflow: hidden;
@@ -536,9 +511,9 @@
   .advance {
     display: flex;
     flex-wrap: wrap;
+    align-content: center;
     align-items: center;
     justify-content: center;
-    min-block-size: var(--size-control);
     padding-inline: 0.25rem;
     gap: 0 0.625rem;
     border-radius: var(--radius-control);
@@ -548,10 +523,10 @@
   }
   .turn-label {
     font-size: var(--text-md);
+    line-height: var(--line-height-snug);
   }
   .next-label {
     display: flex;
-    align-content: center;
     align-items: center;
     gap: 0.25rem;
 
@@ -563,7 +538,6 @@
     display: grid;
     place-items: center;
     inline-size: var(--size-control);
-    min-block-size: var(--size-control);
     border-radius: var(--radius-control);
     background: var(--card);
   }
@@ -602,13 +576,13 @@
   .showdown[data-snap="free"] .workspace {
     scroll-snap-type: none;
   }
-  .showdown[data-snap="left"] .dashboard {
+  .showdown[data-snap="left"] .panel {
     scroll-snap-align: start;
   }
-  .showdown[data-snap="center"] .dashboard {
+  .showdown[data-snap="center"] .panel {
     scroll-snap-align: center;
   }
-  .showdown[data-snap="right"] .dashboard {
+  .showdown[data-snap="right"] .panel {
     scroll-snap-align: end;
   }
   .folio {
@@ -628,9 +602,8 @@
       }
     }
   }
-  .folio .dashboard {
+  .folio .panel {
     border: 0;
-    border-radius: 0;
   }
   .folio .advance {
     background: var(--color-monster);
@@ -641,21 +614,28 @@
 
   @media (min-width: 1100px) {
     footer {
-      grid-template-columns: minmax(22rem, 1fr) 3.5rem 13rem repeat(2, 3.5rem);
+      --size-control: 3.5rem;
+      --size-floating-control: var(--size-control);
+
+      grid-template-columns: minmax(var(--size-control), 1fr) minmax(0, max-content) var(--size-control) 13rem var(--size-control) minmax(
+          var(--size-control),
+          1fr
+        );
       gap: 0.5rem;
     }
+    .roster,
+    .monster-flags {
+      --size-status-icon: 1.125rem;
+    }
     .roster {
-      grid-column: auto;
+      grid-template-columns: repeat(5, minmax(6rem, max-content));
+      grid-column: 2;
+    }
+    footer :global([data-menu-trigger]) {
+      justify-self: end;
     }
     .advance {
       flex-direction: column;
-    }
-    .advance,
-    .icon-button {
-      block-size: 3.5rem;
-    }
-    .icon-button {
-      inline-size: 3.5rem;
     }
   }
   .showdown .workspace:global([data-dragging="true"]) {

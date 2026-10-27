@@ -1,6 +1,5 @@
 <script lang="ts">
-  import { onDestroy, type Snippet } from "svelte";
-  import { DURATION_FAST } from "#lib/constants.ts";
+  import { flushSync, type Snippet } from "svelte";
   import InlineMarkdown from "./InlineMarkdown.svelte";
 
   type Props = {
@@ -29,43 +28,28 @@
 
   const id = $props.id();
   let dialog: HTMLDialogElement;
-  let closing = false;
-  let closeTimer: Timeout;
-
-  onDestroy(() => clearTimeout(closeTimer));
 
   export function show() {
-    if (dialog.open || closing) return;
+    // Apply pending option changes before the browser runs the dialog focusing steps.
+    flushSync();
+    // Native transitions retain the closing dialog until its actual exit finishes or is cancelled.
+    if (!dialog.isConnected || dialog.open || dialog.getAnimations().some((animation) => animation.playState !== "finished")) return;
     dialog.showModal();
-    queueMicrotask(() => {
-      if (dialog.open) dialog.querySelector<HTMLElement>("[data-dialog-initial-focus]")?.focus();
-    });
   }
 
   export function close(returnValue?: string) {
-    if (!dialog.open || closing) return;
-    closing = true;
+    if (!dialog.open) return;
     dialog.close(returnValue);
-    closeTimer = setTimeout(finishClose, DURATION_FAST + 50);
-  }
-
-  function finishClose() {
-    clearTimeout(closeTimer);
-    closing = false;
-  }
-
-  function ontransitionend(event: TransitionEvent) {
-    if (closing && event.target === dialog && event.propertyName === "opacity") finishClose();
   }
 
   function confirm() {
-    if (!dialog.open || closing || confirmDisabled) return;
+    if (!dialog.open || confirmDisabled) return;
     close("confirm");
     onconfirm();
   }
 
   function cancel() {
-    if (!dialog.open || closing) return;
+    if (!dialog.open) return;
     close("cancel");
     oncancel?.();
   }
@@ -80,14 +64,7 @@
   }
 </script>
 
-<dialog
-  bind:this={dialog}
-  aria-labelledby={`${id}-title`}
-  aria-describedby={`${id}-description`}
-  oncancel={handleCancel}
-  {onclick}
-  {ontransitionend}
->
+<dialog bind:this={dialog} aria-labelledby={`${id}-title`} aria-describedby={`${id}-description`} oncancel={handleCancel} {onclick}>
   <div class="content">
     <div class="heading">
       <h2 id={`${id}-title`}>{title}</h2>
