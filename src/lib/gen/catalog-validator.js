@@ -252,7 +252,7 @@ var e = (e, t) => () => (t || (e((t = { exports: {} }).exports, t, t.exports), (
             minLength: 1,
             description:
               "Display label, such as First Run, Encore, Plastic, or Sim. Labels may repeat; the edition ID supplies identity and includedOnly supplies inclusion status.",
-            enum: "1.3,1.5,1.6,1.7,2013,2015,2025,3D Files,Box,Bust: Encore,Bust: First Run,Bust: Second Run,Bust,Deathgrey M2,Deathgrey,Deathmas 2024,Deathmas,Deathpink,Digital Files,Dwelling Key,Early Variant,Easter,Ein Lee,Encore,First Run,First,Halloween,Illusionist Key,Lokman Lam,Master Dwelling Key,Metal,Naked,Original,Painters: Cheeky,Painters: Encore,Painters: First Run,Painters,Pawel Zdanowski,Photoresin,Plastic,Pledge,Preorder,Prize,Remaster: Deathgrey,Remaster: Encore,Remaster: First Run,Remaster,Resculpt: Encore,Resculpt: First Run,Resin & Metal,Resin,Second,Sim,Valentines,Wenjuinn Png,White Resin".split(
+            enum: "1.3,1.5,1.6,1.7,2013,2015,2025,3D Files,Box,Bust: Encore,Bust: First Run,Bust: Second Run,Bust,Deathgrey M2,Deathgrey,Deathmas 2024,Deathmas,Deathpink,Digital Files,Dwelling Key,Early Variant,Easter,Ein Lee,Encore,First Run,First,Halloween,Illusionist Key,Lokman Lam,Master Dwelling Key,Metal,Naked,Original,Painters: Cheeky,Painters: Deathgrey,Painters: Encore,Painters: First Run,Painters,Pawel Zdanowski,Photoresin,Plastic,Pledge,Preorder,Prize,Remaster: Deathgrey,Remaster: Encore,Remaster: First Run,Remaster,Resculpt: Encore,Resculpt: First Run,Resin & Metal,Resin,Second,Sim,Valentines,Wenjuinn Png,White Resin".split(
               ",",
             ),
           },
@@ -731,6 +731,7 @@ var e = (e, t) => () => (t || (e((t = { exports: {} }).exports, t, t.exports), (
             n !== "Naked" &&
             n !== "Original" &&
             n !== "Painters: Cheeky" &&
+            n !== "Painters: Deathgrey" &&
             n !== "Painters: Encore" &&
             n !== "Painters: First Run" &&
             n !== "Painters" &&

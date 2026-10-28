@@ -36,8 +36,9 @@ export async function validateCatalog(catalog: Catalog, schemaPath = "static/kdm
       if (category === "included-only" && !includedOnly)
         throw new Error("Included-only item has a standalone or unconfirmed edition: " + id);
       if (category === "content" && includedOnly) throw new Error("Move included-only item to included-only: " + id);
-      if (category !== "bundles" && prefixedId(id, item) !== id)
-        throw new Error("Item ID needs its family prefix: " + id + " -> " + prefixedId(id, item));
+      // Size and tags may be reclassified after creation without changing collection identity.
+      const expectedId = prefixedId(id, { ...item, size: undefined });
+      if (category !== "bundles" && expectedId !== id) throw new Error("Item ID needs its family prefix: " + id + " -> " + expectedId);
       if (items.has(id)) throw new Error("Duplicate item ID: " + id);
       items.set(id, item);
       for (const edition of item.editions ?? [])

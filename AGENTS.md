@@ -70,6 +70,9 @@ Hide non-focusable decorative icons and effects with `aria-hidden="true"`. Never
 
 Keep interface copy to useful labels, instructions, and explanations. Avoid decorative eyebrow labels and filler.
 
+Keep surrounding content stable during loading and feedback. Reserve space or use overlays; label changes must not resize controls.
+Verify idle, pending, and completed states at narrow and wide widths.
+
 Never use all-uppercase text in interface designs. Use sentence case for headings, labels, buttons, and navigation; do not apply `text-transform: uppercase` or manually capitalize entire words for visual emphasis.
 
 Use component-scoped `<style>` blocks for layout, spacing, typography, and interaction. Keep UnoCSS for icons; do not add Tailwind-style layout utilities, Tailwind, `clsx`, `tailwind-merge`, or `cn`. Migrate existing utility-heavy components incrementally when touched.
@@ -248,7 +251,7 @@ Collection -> OptimisticStore -> DexieStore (CollectionStore)
 - `DexieStore` reads and writes complete snapshots scoped to one owner in IndexedDB. It applies changed rows and removals with the revision check and update in one transaction. The `ownerId` index serves snapshot reads; entry primary keys serve writes. Load Dexie only inside browser initialization. Metadata schema version 1 validates the stored shape and is not a migration. Keep storage details out of `Collection`.
 - `CollectionStore.changes` optionally reports stale snapshots. `DexieStore` uses metadata `liveQuery` subscriptions with Effect finalizers. `Collection.observeChanges()` blocks edits and offers explicit refresh without replacing optimistic state. Observations never advance the expected write revision; local saves must not report themselves as stale.
 - Observer failures set a load error and block edits while preserving the snapshot. The layout forwards `Collection.canObserve` to `CollectionSession`, which owns startup, scoped monitoring, and teardown. Keep healthy monitoring active during refresh and restart failed monitoring only after a successful retry. Interrupt the subscription before closing Dexie. A storage-module download failure has no store to retry; offer a page reload.
-- Store `owned`, `wished`, component `missing` overrides, and `copyNumber` under stable content and edition IDs. Copy numbers are integers 1 through 9999, bounded by known run size. Keep product ownership separate from derived coverage; omit false defaults and delete empty edited entries. See [ownership rules](docs/kdm-architecture.md#product-ownership-and-content-coverage).
+- Store `owned`, `wished`, component `missing` overrides, and `copyNumber` under stable content and edition IDs. Copy numbers are integers 0 through 9999, independent of known run size. Keep product ownership separate from derived coverage; omit false defaults and delete empty edited entries. See [ownership rules](docs/kdm-architecture.md#product-ownership-and-content-coverage).
 - `OptimisticStore` holds confirmed state plus pending field patches, serializes persistence, and removes failed patches without overwriting newer edits. Only persistence waits in the queue. Batch related updates in one `saveMany()` transaction.
 - Backups validate before replacing a snapshot; workbook imports validate normalized row identities and merge provided fields in one queued save. Exports wait for queued writes and use confirmed data. Keep XLSX controls deferred.
 - Guard asynchronous results and failures against owner/store changes, including backup and workbook validation and export. Superseded operations interrupt before updating the next owner's state or reaching notifications.

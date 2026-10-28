@@ -1075,6 +1075,17 @@
       "size": "30",
       "tags": ["female", "male", "2015", "adam", "anna"]
     },
+    "allison-loves-kingdom-death": {
+      "aliases": ["Cheeky Allison - Painter's Scale", "Allison Loves Kingdom Death - Painter's Scale"],
+      "announcements": ["2026-02-27", "2026-04-30"],
+      "editions": [
+        { "id": "painters", "label": "Painters", "format": "physical", "handle": "allison-loves-kingdom-death-painters-scale", "materials": ["Photoresin"], "prices": [7500], "releaseDate": "2026-02-27", "shop": "out-of-stock" },
+        { "id": "painters-cheeky", "label": "Painters: Cheeky", "format": "physical", "handle": "cheeky-allison-painters-scale", "materials": ["Photoresin"], "prices": [7500], "releaseDate": "2026-04-30", "shop": "out-of-stock" }
+      ],
+      "kind": "model",
+      "name": "Allison Loves Kingdom Death",
+      "tags": ["female", "photoresin", "2026", "painters-scale", "death-high", "twilight-knight", "variant", "allison"]
+    },
     "allison-the-twilight-knight": {
       "aliases": ["Allison The Twilight Knight, Pinup Reversal"],
       "announcements": ["2024-08-29"],
@@ -1496,6 +1507,26 @@
       "size": "30",
       "tags": ["female", "gameplay", "gear", "photoresin", "deathgrey", "2024", "bjorn"]
     },
+    "black-cat": {
+      "aliases": ["Black Cat - Painter's Scale"],
+      "announcements": ["2024-10-31"],
+      "editions": [{ "id": "painters", "label": "Painters", "format": "physical", "materials": ["Photoresin"], "prices": [7000], "releaseDate": "2024-10-31", "shop": "out-of-stock" }],
+      "handle": "painters-scale-black-cat",
+      "kind": "model",
+      "name": "Black Cat",
+      "notes": "250 copies were sold at $70, followed by 400 at $75.",
+      "size": "50",
+      "tags": ["female", "generic", "2024", "painters-scale"]
+    },
+    "black-friday-formal-erza": {
+      "aliases": ["Black Friday Formal Erza - Painter's Scale"],
+      "announcements": ["2025-11-28"],
+      "editions": [{ "id": "painters", "label": "Painters", "format": "physical", "prices": [6700], "releaseDate": "2025-11-28", "shop": "missing" }],
+      "handle": "black-friday-formal-erza-painters-scale",
+      "kind": "model",
+      "name": "Black Friday Formal Erza",
+      "tags": ["female", "2025", "painters-scale", "core-survivor", "erza", "black-friday"]
+    },
     "black-friday-ninja": {
       "announcements": ["2019-11-29"],
       "editions": [{ "id": "box", "label": "Box", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseDate": "2015-11-27", "shop": "missing" }],
@@ -1635,7 +1666,7 @@
     "bust-first-hero-male": {
       "announcements": ["2026-05-29"],
       "editions": [
-        { "id": "bust-first-run", "label": "Bust: First Run", "format": "physical", "numbered": true, "prices": [8500], "releaseDate": "2026-05-29", "shop": "out-of-stock" },
+        { "id": "bust-first-run", "label": "Bust: First Run", "format": "physical", "numbered": true, "prices": [8500], "releaseDate": "2026-05-29", "runSize": 250, "shop": "out-of-stock" },
         { "id": "bust-encore", "label": "Bust: Encore", "format": "physical", "prices": [8500], "releaseDate": "2026-05-29", "shop": "out-of-stock" }
       ],
       "handle": "first-hero-male-bust",
@@ -1822,8 +1853,8 @@
     "dark-confidant": {
       "announcements": ["2025-10-31"],
       "editions": [
-        { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [3400], "releaseDate": "2025-10-31", "shop": "out-of-stock" },
-        { "id": "deathgrey", "label": "Deathgrey", "format": "physical", "materials": ["Deathgrey"], "numbered": true, "prices": [3900], "releaseDate": "2025-10-31", "shop": "out-of-stock" },
+        { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [3400], "releaseDate": "2025-10-31", "runSize": 500, "shop": "out-of-stock" },
+        { "id": "deathgrey", "label": "Deathgrey", "format": "physical", "materials": ["Deathgrey"], "numbered": true, "prices": [3900], "releaseDate": "2025-10-31", "runSize": 250, "shop": "out-of-stock" },
         { "id": "encore", "label": "Encore", "format": "physical", "materials": ["Photoresin"], "prices": [3400], "releaseDate": "2025-10-31", "shop": "out-of-stock" }
       ],
       "handle": "dark-confidant",
@@ -1940,7 +1971,7 @@
       "aliases": ["Death High Disciple of the Witch One Deathgrey", "Death High - Disciple of the Witch", "Death High - Disciple of the Witch One (2024)"],
       "announcements": ["2019-10-31", "2024-09-30", "2025-10-31"],
       "editions": [
-        { "id": "first-run", "label": "First Run", "format": "physical", "handle": "death-high-disciple-of-the-witch-one", "materials": ["Photoresin"], "numbered": true, "prices": [2700, 3400], "releaseDate": "2019-10-31", "shop": "out-of-stock", "size": "30" },
+        { "id": "first-run", "label": "First Run", "format": "physical", "handle": "death-high-disciple-of-the-witch-one", "materials": ["Photoresin"], "numbered": true, "prices": [2700, 3400], "releaseDate": "2019-10-31", "runSize": 500, "shop": "out-of-stock", "size": "30" },
         { "id": "deathgrey", "label": "Deathgrey", "format": "physical", "handle": "death-high-disciple-of-the-witch-one", "materials": ["Deathgrey"], "numbered": true, "prices": [3000, 3900], "releaseDate": "2019-10-31", "runSize": 150, "shop": "out-of-stock", "size": "30" },
         { "id": "encore", "label": "Encore", "format": "physical", "handle": "death-high-disciple-of-the-witch-one", "materials": ["Photoresin"], "prices": [2700, 3400], "releaseDate": "2019-10-31", "shop": "out-of-stock", "size": "30" },
         { "id": "resculpt-encore", "label": "Resculpt: Encore", "format": "physical", "handle": "death-high-disciple-of-the-witch-one-2024", "materials": ["Photoresin"], "prices": [3000], "releaseDate": "2024-09-30", "shop": "out-of-stock", "size": "30" }
@@ -1980,7 +2011,7 @@
       "announcements": ["2022-10-01", "2022-11-25"],
       "editions": [
         { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [3000], "releaseDate": "2022-09-30", "runSize": 500, "shop": "out-of-stock" },
-        { "id": "deathgrey", "label": "Deathgrey", "format": "physical", "materials": ["Deathgrey"], "numbered": true, "prices": [3000], "releaseDate": "2022-09-30", "shop": "out-of-stock" },
+        { "id": "deathgrey", "label": "Deathgrey", "format": "physical", "materials": ["Deathgrey"], "numbered": true, "prices": [3000], "releaseDate": "2022-09-30", "runSize": 250, "shop": "out-of-stock" },
         { "id": "encore", "label": "Encore", "format": "physical", "materials": ["Photoresin"], "prices": [3000], "releaseDate": "2022-09-30", "shop": "out-of-stock" }
       ],
       "handle": "death-high-erza",
@@ -1992,9 +2023,9 @@
     "death-high-esther": {
       "announcements": ["2025-09-30", "2026-09-30"],
       "editions": [
-        { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [3400], "releaseDate": "2025-09-30", "shop": "out-of-stock" },
+        { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [3400], "releaseDate": "2025-09-30", "runSize": 500, "shop": "out-of-stock" },
         { "id": "encore", "label": "Encore", "format": "physical", "materials": ["Photoresin"], "prices": [3400], "releaseDate": "2025-09-30", "shop": "out-of-stock" },
-        { "id": "deathgrey", "label": "Deathgrey", "format": "physical", "materials": ["Deathgrey"], "numbered": true, "prices": [3900], "releaseDate": "2026-09-30", "shop": "out-of-stock" }
+        { "id": "deathgrey", "label": "Deathgrey", "format": "physical", "materials": ["Deathgrey"], "numbered": true, "prices": [3900], "releaseDate": "2026-09-30", "runSize": 250, "shop": "out-of-stock" }
       ],
       "handle": "death-high-esther",
       "kind": "model",
@@ -2043,6 +2074,18 @@
       "name": "Death High - Intimacy Couple",
       "notes": "The remaster has subtle sculpt changes and uses APG's updated photoresin and higher-resolution printing.",
       "tags": ["female", "generic", "male", "photoresin", "2023", "deathgrey", "2020", "death-high", "resculpt", "remaster", "intimacy-couple"]
+    },
+    "death-high-life-model-simone": {
+      "aliases": ["Life Model Simone - Painter's Scale", "Death High - Life Model Simone - Painter's Scale"],
+      "announcements": ["2026-09-30"],
+      "editions": [
+        { "id": "painters-first-run", "label": "Painters: First Run", "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [7000], "releaseDate": "2026-09-30", "runSize": 400, "shop": "out-of-stock" },
+        { "id": "painters-encore", "label": "Painters: Encore", "format": "physical", "materials": ["Photoresin"], "prices": [7000], "releaseDate": "2026-09-30", "shop": "out-of-stock" }
+      ],
+      "handle": "life-model-simone-painters-scale",
+      "kind": "model",
+      "name": "Death High - Life Model Simone",
+      "tags": ["female", "photoresin", "2026", "painters-scale", "death-high", "simone"]
     },
     "death-high-lucy": {
       "aliases": ["Death High Lucy Deathgrey"],
@@ -2131,13 +2174,25 @@
     "death-high-pe-teacher-dung-beetle-knight": {
       "announcements": ["2025-09-30", "2026-09-30"],
       "editions": [
-        { "id": "first-run", "label": "First Run", "available": true, "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [6700], "releaseDate": "2025-09-30", "shop": "in-stock" },
+        { "id": "first-run", "label": "First Run", "available": true, "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [6700], "releaseDate": "2025-09-30", "runSize": 500, "shop": "in-stock" },
         { "id": "encore", "label": "Encore", "format": "physical", "materials": ["Photoresin"], "prices": [6700], "releaseDate": "2025-09-30", "shop": "out-of-stock" }
       ],
       "handle": "death-high-dung-beetle-knight",
       "kind": "model",
       "name": "Death High - PE Teacher Dung Beetle Knight",
       "tags": ["female", "generic", "in-stock", "photoresin", "knight", "2025", "death-high", "monster-dung-beetle-knight"]
+    },
+    "death-high-portraitist-snow": {
+      "aliases": ["Death High - Portraitist Snow - Painter's Scale"],
+      "announcements": ["2026-09-30"],
+      "editions": [
+        { "id": "painters-first-run", "label": "Painters: First Run", "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [7000], "releaseDate": "2026-09-30", "runSize": 400, "shop": "out-of-stock" },
+        { "id": "painters-encore", "label": "Painters: Encore", "format": "physical", "materials": ["Photoresin"], "prices": [7000], "releaseDate": "2026-09-30", "shop": "out-of-stock" }
+      ],
+      "handle": "death-high-portraitist-snow-painters-scale",
+      "kind": "model",
+      "name": "Death High - Portraitist Snow",
+      "tags": ["female", "photoresin", "2026", "painters-scale", "death-high", "snow"]
     },
     "death-high-preacher": {
       "aliases": ["Death High - Preacher (female)"],
@@ -2177,11 +2232,20 @@
       "size": "30",
       "tags": ["female", "death-high", "2018", "ringtail", "vixen"]
     },
+    "death-high-satan-twins": {
+      "aliases": ["Painters Scale Death High Satan Twins", "Death High - Satan Twins - Painter's Scale"],
+      "announcements": ["2025-09-30"],
+      "editions": [{ "id": "painters", "label": "Painters", "format": "physical", "materials": ["Photoresin"], "prices": [8700], "releaseDate": "2025-09-30", "shop": "out-of-stock" }],
+      "handle": "death-high-satan-twins-painters-scale",
+      "kind": "model",
+      "name": "Death High - Satan Twins",
+      "tags": ["female", "photoresin", "2025", "painters-scale", "death-high", "satan"]
+    },
     "death-high-satan-x": {
       "announcements": ["2025-09-30"],
       "editions": [
-        { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [3400], "releaseDate": "2025-09-30", "shop": "out-of-stock" },
-        { "id": "deathgrey", "label": "Deathgrey", "format": "physical", "materials": ["Deathgrey"], "numbered": true, "prices": [3900], "releaseDate": "2025-09-30", "shop": "out-of-stock" },
+        { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [3400], "releaseDate": "2025-09-30", "runSize": 500, "shop": "out-of-stock" },
+        { "id": "deathgrey", "label": "Deathgrey", "format": "physical", "materials": ["Deathgrey"], "numbered": true, "prices": [3900], "releaseDate": "2025-09-30", "runSize": 250, "shop": "out-of-stock" },
         { "id": "encore", "label": "Encore", "available": true, "format": "physical", "materials": ["Photoresin"], "prices": [3400], "releaseDate": "2025-09-30", "shop": "in-stock" }
       ],
       "handle": "death-high-satan-x",
@@ -2217,11 +2281,22 @@
       "size": "30",
       "tags": ["female", "generic", "photoresin", "deathgrey", "2020", "death-high", "savior"]
     },
+    "death-high-senior-allister": {
+      "aliases": ["Senior Death High Allister (Painters Scale)", "Death High - Senior Allister - Painter's Scale"],
+      "announcements": ["2023-10-02"],
+      "editions": [{ "id": "painters", "label": "Painters", "format": "physical", "materials": ["Photoresin"], "prices": [6500], "releaseDate": "2023-10-02", "shop": "out-of-stock" }],
+      "handle": "death-high-senior-allister-painters-scale",
+      "kind": "model",
+      "name": "Death High - Senior Allister",
+      "notes": "200 copies were printed. The price was adjusted to reflect the amount of material used.",
+      "size": "50",
+      "tags": ["male", "photoresin", "2023", "painters-scale", "death-high", "core-survivor", "allister"]
+    },
     "death-high-simon-jr": {
       "announcements": ["2026-09-30"],
       "editions": [
-        { "id": "first-run", "label": "First Run", "available": true, "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [3400], "releaseDate": "2026-09-30", "shop": "in-stock" },
-        { "id": "deathgrey", "label": "Deathgrey", "available": true, "format": "physical", "materials": ["Deathgrey"], "numbered": true, "prices": [3900], "releaseDate": "2026-09-30", "shop": "in-stock" },
+        { "id": "first-run", "label": "First Run", "available": true, "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [3400], "releaseDate": "2026-09-30", "runSize": 500, "shop": "in-stock" },
+        { "id": "deathgrey", "label": "Deathgrey", "available": true, "format": "physical", "materials": ["Deathgrey"], "numbered": true, "prices": [3900], "releaseDate": "2026-09-30", "runSize": 250, "shop": "in-stock" },
         { "id": "encore", "label": "Encore", "format": "physical", "materials": ["Photoresin"], "prices": [3400], "releaseDate": "2026-09-30", "shop": "out-of-stock" }
       ],
       "handle": "death-high-simon-jr",
@@ -2323,10 +2398,11 @@
     },
     "deathmas-kale": {
       "announcements": ["2025-12-25"],
-      "editions": [{ "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Resin"], "numbered": true, "prices": [3400], "releaseDate": "2025-12-25", "shop": "missing" }],
+      "editions": [{ "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Resin"], "numbered": true, "prices": [3400], "releaseDate": "2025-12-25", "runSize": 500, "shop": "missing" }],
       "handle": "deathmas-kale",
       "kind": "model",
       "name": "Deathmas Kale",
+      "notes": "First Run: estimated run size 500 (not confirmed).",
       "tags": ["male", "2025", "seasonal", "deathmas", "kale"]
     },
     "deathmas-percival": {
@@ -2343,7 +2419,7 @@
     "dermacentaur": {
       "announcements": ["2026-06-30"],
       "editions": [
-        { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [12500], "releaseDate": "2026-06-30", "shop": "out-of-stock" },
+        { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [12500], "releaseDate": "2026-06-30", "runSize": 250, "shop": "out-of-stock" },
         { "id": "encore", "label": "Encore", "format": "physical", "materials": ["Photoresin"], "prices": [12500], "releaseDate": "2026-06-30", "shop": "out-of-stock" }
       ],
       "handle": "dermacentaur",
@@ -2552,6 +2628,16 @@
       "size": "35 & 54",
       "tags": ["female", "plastic", "gameplay", "gear", "painters-scale", "seasonal", "2019", "promo", "aya", "easter"]
     },
+    "echoes-of-death-paladin": {
+      "aliases": ["Deathking Armor Paladin - Painters Scale", "Echoes of Death Paladin - Painter's Scale"],
+      "announcements": ["2024-08-29"],
+      "editions": [{ "id": "painters", "label": "Painters", "format": "physical", "materials": ["Photoresin"], "prices": [6000], "releaseDate": "2024-08-01", "shop": "out-of-stock" }],
+      "handle": "painters-scale-deathking-armor-paladin",
+      "kind": "model",
+      "name": "Echoes of Death Paladin",
+      "size": "50",
+      "tags": ["female", "generic", "2024", "painters-scale", "paladin", "echoes-of-death"]
+    },
     "edlen": {
       "aliases": ["Edlen Deathgrey M2 Edition"],
       "announcements": ["2023-12-25"],
@@ -2625,13 +2711,14 @@
     "endemic-life": {
       "announcements": ["2025-10-31"],
       "editions": [
-        { "id": "first-run", "label": "First Run", "available": true, "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [7500], "releaseDate": "2025-10-31", "shop": "in-stock" },
-        { "id": "deathgrey", "label": "Deathgrey", "available": true, "format": "physical", "materials": ["Deathgrey"], "numbered": true, "prices": [8000], "releaseDate": "2025-10-31", "shop": "in-stock" },
+        { "id": "first-run", "label": "First Run", "available": true, "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [7500], "releaseDate": "2025-10-31", "runSize": 500, "shop": "in-stock" },
+        { "id": "deathgrey", "label": "Deathgrey", "available": true, "format": "physical", "materials": ["Deathgrey"], "numbered": true, "prices": [8000], "releaseDate": "2025-10-31", "runSize": 250, "shop": "in-stock" },
         { "id": "encore", "label": "Encore", "format": "physical", "materials": ["Photoresin"], "prices": [7500], "releaseDate": "2025-10-31", "shop": "out-of-stock" }
       ],
       "handle": "endemic-life",
       "kind": "model",
       "name": "Endemic Life",
+      "notes": "First Run: estimated run size 500 (not confirmed).",
       "tags": ["in-stock", "photoresin", "deathgrey", "2025", "diorama", "endemic-life"]
     },
     "energy-potion-maker": {
@@ -2739,7 +2826,8 @@
     },
     "false-messengers": {
       "announcements": ["2025-07-22", "2025-09-30"],
-      "editions": [{ "id": "plastic", "label": "Plastic", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [8000], "releaseDate": "2025-07-22", "shop": "in-stock" }],
+      "editions": [{ "id": "plastic", "label": "Box", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [8000], "releaseDate": "2025-07-22", "shop": "in-stock" }],
+      "gameplay": true,
       "handle": "false-messengers",
       "includes": [
         { "item": "messenger-of-courage", "editionId": "plastic-included" },
@@ -2747,7 +2835,7 @@
         { "item": "messenger-of-the-first-story", "editionId": "plastic-included" },
         { "item": "messenger-of-the-spiral-path", "editionId": "plastic-included" }
       ],
-      "kind": "model",
+      "kind": "box",
       "name": "False Messengers",
       "tags": ["female", "plastic", "generic", "gameplay", "in-stock", "gear", "2025", "pattern", "disorder", "settlement-event", "pillar"]
     },
@@ -2873,8 +2961,8 @@
     "frozen-survivor-cyclamen": {
       "announcements": ["2026-01-30"],
       "editions": [
-        { "id": "first-run", "label": "First Run", "available": true, "beta": true, "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [3400], "releaseDate": "2026-01-30", "shop": "in-stock" },
-        { "id": "deathgrey", "label": "Deathgrey", "available": true, "beta": true, "format": "physical", "materials": ["Deathgrey"], "numbered": true, "prices": [3900], "releaseDate": "2026-01-30", "shop": "in-stock" },
+        { "id": "first-run", "label": "First Run", "available": true, "beta": true, "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [3400], "releaseDate": "2026-01-30", "runSize": 500, "shop": "in-stock" },
+        { "id": "deathgrey", "label": "Deathgrey", "available": true, "beta": true, "format": "physical", "materials": ["Deathgrey"], "numbered": true, "prices": [3900], "releaseDate": "2026-01-30", "runSize": 250, "shop": "in-stock" },
         { "id": "encore", "label": "Encore", "beta": true, "format": "physical", "materials": ["Photoresin"], "prices": [3400], "releaseDate": "2026-01-30", "shop": "out-of-stock" }
       ],
       "gameplay": true,
@@ -3018,6 +3106,18 @@
       "name": "Gorm",
       "tags": ["plastic", "monster", "2016", "quarry", "node-1-quarry", "monster-gorm", "2010"]
     },
+    "grand-manner-portrait-simon": {
+      "aliases": ["Grand Manner Portrait Simon - Painter's Scale"],
+      "announcements": ["2026-09-30"],
+      "editions": [
+        { "id": "painters-first-run", "label": "Painters: First Run", "available": true, "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [7000], "releaseDate": "2026-09-30", "runSize": 400, "shop": "in-stock" },
+        { "id": "painters-encore", "label": "Painters: Encore", "format": "physical", "materials": ["Photoresin"], "prices": [7000], "releaseDate": "2026-09-30", "shop": "out-of-stock" }
+      ],
+      "handle": "grand-manner-portrait-simon-painters-scale",
+      "kind": "model",
+      "name": "Grand Manner Portrait Simon",
+      "tags": ["in-stock", "male", "photoresin", "2026", "painters-scale", "simon"]
+    },
     "grand-mother": {
       "editions": [
         { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Resin"], "numbered": true, "prices": [2600], "releaseDate": "2011-02-11", "runSize": 200 },
@@ -3032,8 +3132,8 @@
     "great-game-hunter-bravado": {
       "announcements": ["2025-05-30"],
       "editions": [
-        { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [3400], "releaseDate": "2025-05-30", "shop": "missing" },
-        { "id": "deathgrey", "label": "Deathgrey", "format": "physical", "materials": ["Deathgrey"], "numbered": true, "prices": [3900], "releaseDate": "2025-05-30", "shop": "missing" },
+        { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [3400], "releaseDate": "2025-05-30", "runSize": 500, "shop": "missing" },
+        { "id": "deathgrey", "label": "Deathgrey", "format": "physical", "materials": ["Deathgrey"], "numbered": true, "prices": [3900], "releaseDate": "2025-05-30", "runSize": 250, "shop": "missing" },
         { "id": "encore", "label": "Encore", "format": "physical", "materials": ["Photoresin"], "prices": [3400], "releaseDate": "2025-05-30", "shop": "missing" }
       ],
       "handle": "great-game-hunter-bravado",
@@ -3107,8 +3207,8 @@
     "griswaldan": {
       "announcements": ["2026-02-27"],
       "editions": [
-        { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [3400], "releaseDate": "2026-02-27", "shop": "out-of-stock" },
-        { "id": "deathgrey", "label": "Deathgrey", "format": "physical", "materials": ["Deathgrey"], "numbered": true, "prices": [3900], "releaseDate": "2026-02-27", "shop": "out-of-stock" },
+        { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [3400], "releaseDate": "2026-02-27", "runSize": 500, "shop": "out-of-stock" },
+        { "id": "deathgrey", "label": "Deathgrey", "format": "physical", "materials": ["Deathgrey"], "numbered": true, "prices": [3900], "releaseDate": "2026-02-27", "runSize": 250, "shop": "out-of-stock" },
         { "id": "encore", "label": "Encore", "format": "physical", "materials": ["Photoresin"], "prices": [3400], "releaseDate": "2026-02-27", "shop": "out-of-stock" }
       ],
       "handle": "griswaldan",
@@ -3246,6 +3346,16 @@
       "size": "30",
       "tags": ["female", "plastic", "gameplay", "photoresin", "2024", "2015", "painters-scale", "seasonal", "promo", "white-speaker", "deathmas", "nico"]
     },
+    "hollowheart-rene": {
+      "aliases": ["Hollowheart Rene - Painter's Scale"],
+      "announcements": ["2025-03-03"],
+      "editions": [{ "id": "painters", "label": "Painters", "format": "physical", "materials": ["Photoresin"], "prices": [6500], "releaseDate": "2025-03-03", "shop": "out-of-stock" }],
+      "handle": "hollowheart-rene-painters-scale",
+      "kind": "model",
+      "name": "Hollowheart Rene",
+      "size": "50",
+      "tags": ["female", "2025", "painters-scale", "rene"]
+    },
     "holy-mage": {
       "announcements": ["2020-07-17", "2023-02-01"],
       "editions": [
@@ -3294,8 +3404,8 @@
     "illuminated-lady-2": {
       "announcements": ["2025-05-30"],
       "editions": [
-        { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [3400], "releaseDate": "2025-05-30", "shop": "out-of-stock" },
-        { "id": "deathgrey", "label": "Deathgrey", "format": "physical", "materials": ["Deathgrey"], "numbered": true, "prices": [3900], "releaseDate": "2025-05-30", "shop": "out-of-stock" },
+        { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [3400], "releaseDate": "2025-05-30", "runSize": 500, "shop": "out-of-stock" },
+        { "id": "deathgrey", "label": "Deathgrey", "format": "physical", "materials": ["Deathgrey"], "numbered": true, "prices": [3900], "releaseDate": "2025-05-30", "runSize": 250, "shop": "out-of-stock" },
         { "id": "encore", "label": "Encore", "format": "physical", "materials": ["Photoresin"], "prices": [3400], "releaseDate": "2025-05-30", "shop": "out-of-stock" }
       ],
       "handle": "illuminated-lady-2",
@@ -3305,9 +3415,10 @@
     },
     "indomitable-survivor-ballistic-brayonet-belvedere": {
       "announcements": ["2026-07-31"],
-      "editions": [{ "id": "plastic", "label": "Plastic", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [3400], "releaseDate": "2026-07-31", "shop": "in-stock" }],
+      "editions": [{ "id": "plastic", "label": "Box", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [3400], "releaseDate": "2026-07-31", "shop": "in-stock" }],
+      "gameplay": true,
       "handle": "indomitable-survivor-ballistic-brayonet-belvedere",
-      "kind": "model",
+      "kind": "box",
       "name": "Indomitable Survivor - Ballistic Brayonet Belvedere",
       "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "survivor", "2026", "pattern", "resource", "indomitable-survivor", "belvedere"]
     },
@@ -3324,9 +3435,10 @@
     },
     "indomitable-survivor-fated-dagger-domino": {
       "announcements": ["2025-09-30"],
-      "editions": [{ "id": "plastic", "label": "Plastic", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [3400], "releaseDate": "2025-09-30", "shop": "in-stock" }],
+      "editions": [{ "id": "plastic", "label": "Box", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [3400], "releaseDate": "2025-09-30", "shop": "in-stock" }],
+      "gameplay": true,
       "handle": "indomitable-survivor-fated-dagger-domino",
-      "kind": "model",
+      "kind": "box",
       "name": "Indomitable Survivor - Fated Dagger Domino",
       "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "survivor", "2025", "pattern", "resource", "indomitable-survivor", "domino"]
     },
@@ -3359,7 +3471,7 @@
       "announcements": ["2026-02-27", "2026-09-30"],
       "editions": [
         { "id": "sim", "label": "Sim", "available": true, "format": "digital", "gameplay": true, "handle": "kds-rene", "prices": [700], "releaseDate": "2026-09-30", "shop": "in-stock", "simulator": true },
-        { "id": "box", "label": "Box", "available": true, "format": "physical", "handle": "indomitable-survivor-heartleech-baselard-rene", "prices": [3400], "releaseDate": "2026-02-27", "shop": "in-stock" }
+        { "id": "box", "label": "Box", "available": true, "format": "physical", "handle": "indomitable-survivor-heartleech-baselard-rene", "materials": ["Plastic"], "prices": [3400], "releaseDate": "2026-02-27", "shop": "in-stock" }
       ],
       "kind": "box",
       "name": "Indomitable Survivor - Heartleech Baselard Rene",
@@ -3391,26 +3503,29 @@
     },
     "indomitable-survivor-oblouk-shield-arco": {
       "announcements": ["2025-08-29"],
-      "editions": [{ "id": "plastic", "label": "Plastic", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [3400], "releaseDate": "2025-08-29", "shop": "in-stock" }],
+      "editions": [{ "id": "plastic", "label": "Box", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [3400], "releaseDate": "2025-08-29", "shop": "in-stock" }],
+      "gameplay": true,
       "handle": "indomitable-survivor-oblouk-shield-arco",
-      "kind": "model",
+      "kind": "box",
       "name": "Indomitable Survivor - Oblouk Shield Arco",
       "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "survivor", "2025", "pattern", "resource", "indomitable-survivor", "arco"]
     },
     "indomitable-survivor-poison-partisan-ritika": {
       "aliases": ["Indomitable - Poison Partisan Ritika"],
       "announcements": ["2025-05-30"],
-      "editions": [{ "id": "plastic", "label": "Plastic", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [3400], "releaseDate": "2025-05-30", "shop": "in-stock" }],
+      "editions": [{ "id": "plastic", "label": "Box", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [3400], "releaseDate": "2025-05-30", "shop": "in-stock" }],
+      "gameplay": true,
       "handle": "indomitable-survivor-poison-partisan-ritika",
-      "kind": "model",
+      "kind": "box",
       "name": "Indomitable Survivor - Poison Partisan Ritika",
       "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "survivor", "2025", "pattern", "resource", "indomitable-survivor", "ritika"]
     },
     "indomitable-survivor-pulverizing-star-venus": {
       "announcements": ["2026-06-30"],
-      "editions": [{ "id": "plastic", "label": "Plastic", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [3400], "releaseDate": "2026-06-30", "shop": "in-stock" }],
+      "editions": [{ "id": "plastic", "label": "Box", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [3400], "releaseDate": "2026-06-30", "shop": "in-stock" }],
+      "gameplay": true,
       "handle": "indomitable-survivor-pulverizing-star-venus",
-      "kind": "model",
+      "kind": "box",
       "name": "Indomitable Survivor - Pulverizing Star Venus",
       "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "survivor", "2026", "pattern", "resource", "indomitable-survivor", "venus"]
     },
@@ -3465,18 +3580,20 @@
     },
     "indomitable-survivor-toxicimitar-badar": {
       "announcements": ["2025-08-29"],
-      "editions": [{ "id": "plastic", "label": "Plastic", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [3400], "releaseDate": "2025-08-29", "shop": "in-stock" }],
+      "editions": [{ "id": "plastic", "label": "Box", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [3400], "releaseDate": "2025-08-29", "shop": "in-stock" }],
+      "gameplay": true,
       "handle": "indomitable-survivor-toxicimitar-badar",
-      "kind": "model",
+      "kind": "box",
       "name": "Indomitable Survivor - Toxicimitar Badar",
       "tags": ["plastic", "gameplay", "in-stock", "gear", "male", "survivor", "2025", "pattern", "resource", "indomitable-survivor", "badar"]
     },
     "indomitable-survivor-tyrant-slayer-scarlet": {
       "aliases": ["Indomitable - Tyrant Slayer Scarlet"],
       "announcements": ["2025-06-30"],
-      "editions": [{ "id": "plastic", "label": "Plastic", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [3400], "releaseDate": "2025-06-30", "shop": "in-stock" }],
+      "editions": [{ "id": "plastic", "label": "Box", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [3400], "releaseDate": "2025-06-30", "shop": "in-stock" }],
+      "gameplay": true,
       "handle": "indomitable-survivor-tyrant-slayer-scarlet",
-      "kind": "model",
+      "kind": "box",
       "name": "Indomitable Survivor - Tyrant Slayer Scarlet",
       "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "survivor", "2025", "pattern", "resource", "indomitable-survivor", "scarlet"]
     },
@@ -3510,8 +3627,8 @@
       "aliases": ["Punctual Bride Investment Sniper - Painter's Scale", "Painters Scale Punctual Bride Investment Sniper"],
       "announcements": ["2025-08-29", "2025-09-30"],
       "editions": [
-        { "id": "first-run", "label": "First Run", "format": "physical", "handle": "investment-sniper-punctual-bride", "materials": ["Photoresin"], "numbered": true, "prices": [3400], "releaseDate": "2025-08-29", "shop": "out-of-stock" },
-        { "id": "deathgrey", "label": "Deathgrey", "format": "physical", "handle": "investment-sniper-punctual-bride", "materials": ["Deathgrey"], "numbered": true, "prices": [3900], "releaseDate": "2025-08-29", "shop": "out-of-stock" },
+        { "id": "first-run", "label": "First Run", "format": "physical", "handle": "investment-sniper-punctual-bride", "materials": ["Photoresin"], "numbered": true, "prices": [3400], "releaseDate": "2025-08-29", "runSize": 500, "shop": "out-of-stock" },
+        { "id": "deathgrey", "label": "Deathgrey", "format": "physical", "handle": "investment-sniper-punctual-bride", "materials": ["Deathgrey"], "numbered": true, "prices": [3900], "releaseDate": "2025-08-29", "runSize": 250, "shop": "out-of-stock" },
         { "id": "encore", "label": "Encore", "format": "physical", "handle": "investment-sniper-punctual-bride", "materials": ["Photoresin"], "prices": [3400], "releaseDate": "2025-08-29", "shop": "out-of-stock" },
         { "id": "painters", "label": "Painters", "format": "physical", "handle": "investment-sniper-punctual-bride-painters-scale", "prices": [6700], "releaseDate": "2025-09-30", "shop": "missing" }
       ],
@@ -3522,7 +3639,7 @@
     "iron-succubus": {
       "announcements": ["2026-02-27"],
       "editions": [
-        { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [6700], "releaseDate": "2026-02-27", "shop": "out-of-stock" },
+        { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [6700], "releaseDate": "2026-02-27", "runSize": 500, "shop": "out-of-stock" },
         { "id": "encore", "label": "Encore", "format": "physical", "materials": ["Photoresin"], "prices": [6700], "releaseDate": "2026-02-27", "shop": "out-of-stock" }
       ],
       "handle": "iron-succubus",
@@ -3590,6 +3707,17 @@
       "name": "King's Man",
       "tags": ["plastic", "monster", "core", "2015", "2011", "node-2-nemesis", "monster-kings-man"]
     },
+    "kingslayer-twilight-knight": {
+      "aliases": ["Kingslayer Twilight Knight - Painter's Scale"],
+      "announcements": ["2024-01-31"],
+      "editions": [{ "id": "painters", "label": "Painters", "format": "physical", "materials": ["Photoresin"], "prices": [6000], "releaseDate": "2024-01-31", "shop": "missing" }],
+      "handle": "kingslayer-twilight-knight",
+      "kind": "model",
+      "name": "Kingslayer Twilight Knight",
+      "notes": "400 printed.",
+      "size": "50",
+      "tags": ["female", "generic", "knight", "2024", "painters-scale", "twilight-knight"]
+    },
     "knight": {
       "editions": [
         { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Resin"], "numbered": true, "prices": [2700], "releaseDate": "2016-09-17", "runSize": 500 },
@@ -3625,7 +3753,7 @@
     "lagomorph-endemic-life": {
       "announcements": ["2026-04-30"],
       "editions": [
-        { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [6700], "releaseDate": "2026-04-30", "shop": "out-of-stock" },
+        { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [6700], "releaseDate": "2026-04-30", "runSize": 250, "shop": "out-of-stock" },
         { "id": "encore", "label": "Encore", "format": "physical", "materials": ["Photoresin"], "prices": [6700], "releaseDate": "2026-04-30", "shop": "out-of-stock" }
       ],
       "handle": "lagomorph-endemic-life",
@@ -3660,8 +3788,8 @@
     "lagomorph-prey-des": {
       "announcements": ["2026-04-30"],
       "editions": [
-        { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [3400], "releaseDate": "2026-04-30", "shop": "out-of-stock" },
-        { "id": "deathgrey", "label": "Deathgrey", "format": "physical", "materials": ["Deathgrey"], "numbered": true, "prices": [3900], "releaseDate": "2026-04-30", "shop": "out-of-stock" },
+        { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [3400], "releaseDate": "2026-04-30", "runSize": 500, "shop": "out-of-stock" },
+        { "id": "deathgrey", "label": "Deathgrey", "format": "physical", "materials": ["Deathgrey"], "numbered": true, "prices": [3900], "releaseDate": "2026-04-30", "runSize": 250, "shop": "out-of-stock" },
         { "id": "encore", "label": "Encore", "format": "physical", "materials": ["Photoresin"], "prices": [3400], "releaseDate": "2026-04-30", "shop": "out-of-stock" }
       ],
       "handle": "lagomorph-prey-des",
@@ -3831,7 +3959,7 @@
     "level-2-butcher-prototype": {
       "announcements": ["2026-08-31"],
       "editions": [
-        { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [6700], "releaseDate": "2026-08-31", "shop": "out-of-stock" },
+        { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [6700], "releaseDate": "2026-08-31", "runSize": 500, "shop": "out-of-stock" },
         { "id": "encore", "label": "Encore", "format": "physical", "materials": ["Photoresin"], "prices": [6700], "releaseDate": "2026-08-31", "shop": "out-of-stock" }
       ],
       "handle": "butcher-lvl-2-prototype",
@@ -3854,7 +3982,7 @@
     "lion-champion": {
       "announcements": ["2026-04-01"],
       "editions": [
-        { "id": "first-run", "label": "First Run", "available": true, "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [6700], "releaseDate": "2026-04-01", "shop": "in-stock" },
+        { "id": "first-run", "label": "First Run", "available": true, "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [6700], "releaseDate": "2026-04-01", "runSize": 500, "shop": "in-stock" },
         { "id": "encore", "label": "Encore", "format": "physical", "materials": ["Photoresin"], "prices": [6700], "releaseDate": "2026-04-01", "shop": "out-of-stock" }
       ],
       "handle": "lion-champion",
@@ -3886,8 +4014,8 @@
     "lion-knight-scholar": {
       "announcements": ["2026-04-01"],
       "editions": [
-        { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [3400], "releaseDate": "2026-04-01", "shop": "out-of-stock" },
-        { "id": "deathgrey", "label": "Deathgrey", "format": "physical", "materials": ["Deathgrey"], "numbered": true, "prices": [3900], "releaseDate": "2026-04-01", "shop": "out-of-stock" },
+        { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [3400], "releaseDate": "2026-04-01", "runSize": 500, "shop": "out-of-stock" },
+        { "id": "deathgrey", "label": "Deathgrey", "format": "physical", "materials": ["Deathgrey"], "numbered": true, "prices": [3900], "releaseDate": "2026-04-01", "runSize": 250, "shop": "out-of-stock" },
         { "id": "encore", "label": "Encore", "format": "physical", "materials": ["Photoresin"], "prices": [3400], "releaseDate": "2026-04-01", "shop": "out-of-stock" }
       ],
       "handle": "lion-scholar",
@@ -3935,7 +4063,7 @@
     "lunar-red-witch-seer": {
       "announcements": ["2026-01-30"],
       "editions": [
-        { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [6700], "releaseDate": "2026-01-30", "shop": "out-of-stock" },
+        { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [6700], "releaseDate": "2026-01-30", "runSize": 500, "shop": "out-of-stock" },
         { "id": "encore", "label": "Encore", "format": "physical", "materials": ["Photoresin"], "prices": [6700], "releaseDate": "2026-01-30", "shop": "out-of-stock" }
       ],
       "handle": "lunar-red-witch-seer",
@@ -4008,7 +4136,7 @@
       "announcements": ["2026-05-29"],
       "editions": [
         { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [3400], "releaseDate": "2026-05-29", "runSize": 500, "shop": "missing" },
-        { "id": "deathgrey", "label": "Deathgrey", "format": "physical", "materials": ["Deathgrey"], "numbered": true, "prices": [3900], "releaseDate": "2026-05-29", "shop": "missing" },
+        { "id": "deathgrey", "label": "Deathgrey", "format": "physical", "materials": ["Deathgrey"], "numbered": true, "prices": [3900], "releaseDate": "2026-05-29", "runSize": 250, "shop": "missing" },
         { "id": "encore", "label": "Encore", "format": "physical", "materials": ["Photoresin"], "prices": [3400], "releaseDate": "2026-05-29", "shop": "missing" }
       ],
       "handle": "male-survivor-guy",
@@ -4019,8 +4147,8 @@
     "male-survivor-lionel": {
       "announcements": ["2026-05-29"],
       "editions": [
-        { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [3400], "releaseDate": "2026-05-29", "shop": "missing" },
-        { "id": "deathgrey", "label": "Deathgrey", "format": "physical", "materials": ["Deathgrey"], "numbered": true, "prices": [3900], "releaseDate": "2026-05-29", "shop": "missing" },
+        { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [3400], "releaseDate": "2026-05-29", "runSize": 500, "shop": "missing" },
+        { "id": "deathgrey", "label": "Deathgrey", "format": "physical", "materials": ["Deathgrey"], "numbered": true, "prices": [3900], "releaseDate": "2026-05-29", "runSize": 250, "shop": "missing" },
         { "id": "encore", "label": "Encore", "format": "physical", "materials": ["Photoresin"], "prices": [3400], "releaseDate": "2026-05-29", "shop": "missing" }
       ],
       "handle": "white-lion-lionel",
@@ -4094,6 +4222,15 @@
       "size": "30",
       "tags": ["female", "plastic", "generic", "2015", "messenger"]
     },
+    "mirrorstone-survivor-male": {
+      "aliases": ["Painters Scale - Mirrorstone Survivor - Male", "People of the Mirrorstone - Male - Painter's Scale"],
+      "announcements": ["2026-05-29"],
+      "editions": [{ "id": "painters", "label": "Painters", "format": "physical", "prices": [6700], "releaseDate": "2026-05-29", "shop": "missing" }],
+      "handle": "people-of-the-mirrorstone-male-painters-scale",
+      "kind": "model",
+      "name": "People of the Mirrorstone - Male",
+      "tags": ["generic", "male", "survivor", "2026", "painters-scale", "pot-mirrorstone"]
+    },
     "mist-raikin-armor": {
       "aliases": ["Mist - Raikin Armor Deathgrey M2 Edition"],
       "announcements": ["2023-06-12"],
@@ -4126,7 +4263,7 @@
     "mole": {
       "announcements": ["2025-05-30"],
       "editions": [
-        { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [20500], "releaseDate": "2025-05-30", "shop": "out-of-stock" },
+        { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [20500], "releaseDate": "2025-05-30", "runSize": 500, "shop": "out-of-stock" },
         { "id": "encore", "label": "Encore", "format": "physical", "materials": ["Photoresin"], "prices": [20500], "releaseDate": "2025-05-30", "shop": "out-of-stock" }
       ],
       "handle": "mole",
@@ -4178,7 +4315,7 @@
         { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Resin"], "numbered": true, "prices": [2500], "releaseDate": "2012-01-30", "runSize": 200, "size": "30" },
         { "id": "encore", "label": "Encore", "format": "physical", "materials": ["Resin"], "prices": [2500], "releaseDate": "2012-01-30", "size": "30" },
         { "id": "early-variant", "label": "Early Variant", "format": "physical", "includedOnly": true, "materials": ["Resin"], "releaseDate": "2013-11-29", "size": "30" },
-        { "id": "painters", "label": "Painters", "available": true, "format": "physical", "handle": "mother-painters-scale", "prices": [6700], "releaseDate": "2026-04-01", "shop": "in-stock" }
+        { "id": "painters", "label": "Painters", "available": true, "format": "physical", "handle": "mother-painters-scale", "materials": ["Photoresin"], "prices": [6700], "releaseDate": "2026-04-01", "shop": "in-stock" }
       ],
       "kind": "model",
       "name": "Mother",
@@ -4347,6 +4484,15 @@
       "size": "30",
       "tags": ["female", "plastic", "knight", "gamblers-chest", "2021", "twilight-knight", "neko"]
     },
+    "neko-twilight-knight-maid": {
+      "aliases": ["Painters Scale Neko Twilight Knight - Maid", "Neko Twilight Knight - Maid - Painter's Scale"],
+      "announcements": ["2025-10-31"],
+      "editions": [{ "id": "painters", "label": "Painters", "format": "physical", "materials": ["Photoresin"], "prices": [6700], "releaseDate": "2025-10-31", "shop": "out-of-stock" }],
+      "handle": "neko-twilight-knight-maid-painters-scale",
+      "kind": "model",
+      "name": "Neko Twilight Knight - Maid",
+      "tags": ["female", "photoresin", "knight", "2025", "pinup", "painters-scale", "twilight-knight", "neko"]
+    },
     "nightmare-ram": {
       "aliases": ["Nightmare Ram (Resin)", "Naked Nightmare Ram"],
       "announcements": ["2019-11-29", "2020-11-27", "2022-11-25", "2023-11-24", "2024-11-29"],
@@ -4400,7 +4546,7 @@
     },
     "orc-boss": {
       "announcements": ["2025-06-30"],
-      "editions": [{ "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Plastic"], "numbered": true, "prices": [12500], "releaseDate": "2025-06-30", "shop": "out-of-stock" }],
+      "editions": [{ "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Plastic"], "numbered": true, "prices": [12500], "releaseDate": "2025-06-30", "runSize": 200, "shop": "out-of-stock" }],
       "handle": "orc-boss",
       "kind": "model",
       "name": "Orc Boss",
@@ -4415,204 +4561,6 @@
       "name": "Order Weaponsmith",
       "size": "30",
       "tags": ["female", "generic", "2017", "weaponsmith"]
-    },
-    "painters-scale-allison-loves-kingdom-death": {
-      "aliases": ["Cheeky Allison - Painter's Scale"],
-      "announcements": ["2026-02-27", "2026-04-30"],
-      "editions": [
-        { "id": "painters", "label": "Painters", "format": "physical", "handle": "allison-loves-kingdom-death-painters-scale", "prices": [7500], "releaseDate": "2026-02-27", "shop": "out-of-stock" },
-        { "id": "painters-cheeky", "label": "Painters: Cheeky", "format": "physical", "handle": "cheeky-allison-painters-scale", "prices": [7500], "releaseDate": "2026-04-30", "shop": "out-of-stock" }
-      ],
-      "kind": "model",
-      "name": "Allison Loves Kingdom Death - Painter's Scale",
-      "tags": ["female", "photoresin", "2026", "painters-scale", "death-high", "twilight-knight", "variant", "allison"]
-    },
-    "painters-scale-black-cat": {
-      "announcements": ["2024-10-31"],
-      "editions": [{ "id": "painters", "label": "Painters", "format": "physical", "materials": ["Photoresin"], "prices": [7000], "releaseDate": "2024-10-31", "shop": "out-of-stock" }],
-      "handle": "painters-scale-black-cat",
-      "kind": "model",
-      "name": "Black Cat - Painter's Scale",
-      "notes": "250 copies were sold at $70, followed by 400 at $75.",
-      "size": "50",
-      "tags": ["female", "generic", "2024", "painters-scale"]
-    },
-    "painters-scale-black-friday-formal-erza": {
-      "announcements": ["2025-11-28"],
-      "editions": [{ "id": "painters", "label": "Painters", "format": "physical", "prices": [6700], "releaseDate": "2025-11-28", "shop": "missing" }],
-      "handle": "black-friday-formal-erza-painters-scale",
-      "kind": "model",
-      "name": "Black Friday Formal Erza - Painter's Scale",
-      "tags": ["female", "2025", "painters-scale", "core-survivor", "erza", "black-friday"]
-    },
-    "painters-scale-death-high-life-model-simone": {
-      "aliases": ["Life Model Simone - Painter's Scale"],
-      "announcements": ["2026-09-30"],
-      "editions": [
-        { "id": "painters-first-run", "label": "Painters: First Run", "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [7000], "releaseDate": "2026-09-30", "shop": "out-of-stock" },
-        { "id": "painters-encore", "label": "Painters: Encore", "format": "physical", "materials": ["Photoresin"], "prices": [7000], "releaseDate": "2026-09-30", "shop": "out-of-stock" }
-      ],
-      "handle": "life-model-simone-painters-scale",
-      "kind": "model",
-      "name": "Death High - Life Model Simone - Painter's Scale",
-      "tags": ["female", "photoresin", "2026", "painters-scale", "death-high", "simone"]
-    },
-    "painters-scale-death-high-portraitist-snow": {
-      "announcements": ["2026-09-30"],
-      "editions": [
-        { "id": "painters-first-run", "label": "Painters: First Run", "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [7000], "releaseDate": "2026-09-30", "shop": "out-of-stock" },
-        { "id": "painters-encore", "label": "Painters: Encore", "format": "physical", "materials": ["Photoresin"], "prices": [7000], "releaseDate": "2026-09-30", "shop": "out-of-stock" }
-      ],
-      "handle": "death-high-portraitist-snow-painters-scale",
-      "kind": "model",
-      "name": "Death High - Portraitist Snow - Painter's Scale",
-      "tags": ["female", "photoresin", "2026", "painters-scale", "death-high", "snow"]
-    },
-    "painters-scale-death-high-satan-twins": {
-      "aliases": ["Painters Scale Death High Satan Twins"],
-      "announcements": ["2025-09-30"],
-      "editions": [{ "id": "painters", "label": "Painters", "format": "physical", "prices": [8700], "releaseDate": "2025-09-30", "shop": "out-of-stock" }],
-      "handle": "death-high-satan-twins-painters-scale",
-      "kind": "model",
-      "name": "Death High - Satan Twins - Painter's Scale",
-      "tags": ["female", "photoresin", "2025", "painters-scale", "death-high", "satan"]
-    },
-    "painters-scale-death-high-senior-allister": {
-      "aliases": ["Senior Death High Allister (Painters Scale)"],
-      "announcements": ["2023-10-02"],
-      "editions": [{ "id": "painters", "label": "Painters", "format": "physical", "materials": ["Photoresin"], "prices": [6500], "releaseDate": "2023-10-02", "shop": "out-of-stock" }],
-      "handle": "death-high-senior-allister-painters-scale",
-      "kind": "model",
-      "name": "Death High - Senior Allister - Painter's Scale",
-      "notes": "200 copies were printed. The price was adjusted to reflect the amount of material used.",
-      "size": "50",
-      "tags": ["male", "photoresin", "2023", "painters-scale", "death-high", "core-survivor", "allister"]
-    },
-    "painters-scale-echoes-of-death-paladin": {
-      "aliases": ["Deathking Armor Paladin - Painters Scale"],
-      "announcements": ["2024-08-29"],
-      "editions": [{ "id": "painters", "label": "Painters", "format": "physical", "materials": ["Photoresin"], "prices": [6000], "releaseDate": "2024-08-01", "shop": "out-of-stock" }],
-      "handle": "painters-scale-deathking-armor-paladin",
-      "kind": "model",
-      "name": "Echoes of Death Paladin - Painter's Scale",
-      "size": "50",
-      "tags": ["female", "generic", "2024", "painters-scale", "paladin", "echoes-of-death"]
-    },
-    "painters-scale-grand-manner-portrait-simon": {
-      "announcements": ["2026-09-30"],
-      "editions": [
-        { "id": "painters-first-run", "label": "Painters: First Run", "available": true, "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [7000], "releaseDate": "2026-09-30", "shop": "in-stock" },
-        { "id": "painters-encore", "label": "Painters: Encore", "format": "physical", "materials": ["Photoresin"], "prices": [7000], "releaseDate": "2026-09-30", "shop": "out-of-stock" }
-      ],
-      "handle": "grand-manner-portrait-simon-painters-scale",
-      "kind": "model",
-      "name": "Grand Manner Portrait Simon - Painter's Scale",
-      "tags": ["in-stock", "male", "photoresin", "2026", "painters-scale", "simon"]
-    },
-    "painters-scale-hollowheart-rene": {
-      "announcements": ["2025-03-03"],
-      "editions": [{ "id": "painters", "label": "Painters", "format": "physical", "materials": ["Photoresin"], "prices": [6500], "releaseDate": "2025-03-03", "shop": "out-of-stock" }],
-      "handle": "hollowheart-rene-painters-scale",
-      "kind": "model",
-      "name": "Hollowheart Rene - Painter's Scale",
-      "size": "50",
-      "tags": ["female", "2025", "painters-scale", "rene"]
-    },
-    "painters-scale-kingslayer-twilight-knight": {
-      "announcements": ["2024-01-31"],
-      "editions": [{ "id": "painters", "label": "Painters", "format": "physical", "materials": ["Photoresin"], "prices": [6000], "releaseDate": "2024-01-31", "shop": "missing" }],
-      "handle": "kingslayer-twilight-knight",
-      "kind": "model",
-      "name": "Kingslayer Twilight Knight - Painter's Scale",
-      "notes": "400 printed.",
-      "size": "50",
-      "tags": ["female", "generic", "knight", "2024", "painters-scale", "twilight-knight"]
-    },
-    "painters-scale-mirrorstone-survivor-male": {
-      "aliases": ["Painters Scale - Mirrorstone Survivor - Male", "People of the Mirrorstone - Male - Painter's Scale"],
-      "announcements": ["2026-05-29"],
-      "editions": [{ "id": "painters", "label": "Painters", "format": "physical", "prices": [6700], "releaseDate": "2026-05-29", "shop": "missing" }],
-      "handle": "people-of-the-mirrorstone-male-painters-scale",
-      "kind": "model",
-      "name": "People of the Mirrorstone - Male",
-      "tags": ["generic", "male", "survivor", "2026", "painters-scale", "pot-mirrorstone"]
-    },
-    "painters-scale-neko-twilight-knight-maid": {
-      "aliases": ["Painters Scale Neko Twilight Knight - Maid"],
-      "announcements": ["2025-10-31"],
-      "editions": [{ "id": "painters", "label": "Painters", "format": "physical", "prices": [6700], "releaseDate": "2025-10-31", "shop": "out-of-stock" }],
-      "handle": "neko-twilight-knight-maid-painters-scale",
-      "kind": "model",
-      "name": "Neko Twilight Knight - Maid - Painter's Scale",
-      "tags": ["female", "photoresin", "knight", "2025", "pinup", "painters-scale", "twilight-knight", "neko"]
-    },
-    "painters-scale-possessed-twilight-knight": {
-      "aliases": ["Possessed Twilight Knight - Painter's Scale (Oracle of Nozuki)"],
-      "editions": [{ "id": "painters", "label": "Painters", "format": "physical", "materials": ["Resin"], "prices": [2500], "releaseDate": "2023-07-26" }],
-      "gameplay": true,
-      "gameplayContent": "Survivor's Lantern alt art",
-      "kind": "box",
-      "name": "Possessed Twilight Knight - Painter's Scale",
-      "notes": "Released as the Relic Knights Kickstarter bonus miniature originally offered by Soda Pop Miniatures and Ninja Division.",
-      "size": "50",
-      "tags": ["female", "generic", "gameplay", "2023", "knight", "painters-scale", "twilight-knight"]
-    },
-    "painters-scale-reverse-lagomorph-erza": {
-      "announcements": ["2025-05-01", "2026-04-30"],
-      "editions": [{ "id": "painters", "label": "Painters", "format": "physical", "materials": ["Photoresin"], "prices": [13000], "releaseDate": "2025-04-30", "shop": "out-of-stock" }],
-      "handle": "reverse-lagomoprh-erza-painters-scale",
-      "kind": "model",
-      "name": "Reverse Lagomorph Erza - Painter's Scale",
-      "notes": "Released as a fundraiser to offset tariff costs.",
-      "size": "50",
-      "tags": ["female", "photoresin", "2025", "painters-scale", "seasonal", "core-survivor", "erza", "lagomorph"]
-    },
-    "painters-scale-reverse-lagomorph-lucy": {
-      "announcements": ["2026-04-30"],
-      "editions": [{ "id": "painters", "label": "Painters", "available": true, "format": "physical", "prices": [13000], "releaseDate": "2026-04-30", "shop": "in-stock" }],
-      "handle": "reverse-lagomorph-lucy-painters-scale",
-      "kind": "model",
-      "name": "Reverse Lagomorph Lucy - Painter's Scale",
-      "tags": ["female", "in-stock", "photoresin", "2026", "painters-scale", "core-survivor", "lucy", "lagomorph"]
-    },
-    "painters-scale-summer-archivist": {
-      "announcements": ["2026-06-30"],
-      "editions": [{ "id": "painters", "label": "Painters", "format": "physical", "prices": [6700], "releaseDate": "2026-06-30", "shop": "out-of-stock" }],
-      "handle": "summer-archivist-painters-scale",
-      "kind": "model",
-      "name": "Summer Archivist - Painter's Scale",
-      "tags": ["female", "generic", "photoresin", "2026", "painters-scale", "seasonal", "summer", "archivist", "laurie"]
-    },
-    "painters-scale-thief-variant": {
-      "aliases": ["Painters Scale Thief Variant"],
-      "announcements": ["2025-05-30"],
-      "editions": [{ "id": "painters", "label": "Painters", "format": "physical", "prices": [6700], "releaseDate": "2025-05-30", "shop": "missing" }],
-      "handle": "eod-thief-variant-painter",
-      "kind": "model",
-      "name": "Thief Variant - Painter's Scale",
-      "tags": ["female", "generic", "2025", "painters-scale", "variant", "thief"]
-    },
-    "painters-scale-valentine-morgan": {
-      "aliases": ["Valentine's Morgan - Painters Scale"],
-      "announcements": ["2024-04-02"],
-      "editions": [{ "id": "painters", "label": "Painters", "format": "physical", "materials": ["Photoresin"], "prices": [6000], "releaseDate": "2024-04-02", "shop": "out-of-stock" }],
-      "handle": "valentines-morgan-painters-scale",
-      "kind": "model",
-      "name": "Valentine Morgan - Painter's Scale",
-      "notes": "190 printed.",
-      "size": "50",
-      "tags": ["female", "2024", "painters-scale", "seasonal", "morgan", "valentine"]
-    },
-    "painters-scale-waiting-in-the-railyard": {
-      "aliases": ["Waiting in the Railyard (Samantha Haulage Cargos)"],
-      "announcements": ["2023-11-24", "2023-11-27", "2024-11-29"],
-      "editions": [{ "id": "painters", "label": "Painters", "format": "physical", "materials": ["Photoresin"], "prices": [6500], "releaseDate": "2023-11-24", "shop": "missing" }],
-      "handle": "waiting-in-the-railyard",
-      "kind": "model",
-      "name": "Waiting in the Railyard",
-      "notes": "A made-to-order painter's scale model to commemorate the shipping crisis and recoup the shipping deficit.",
-      "size": "50",
-      "tags": ["female", "2023", "painters-scale", "samantha"]
     },
     "paladin": {
       "editions": [
@@ -4719,7 +4667,7 @@
     "phantom-weaver-delusion-of-the-royal-jelly": {
       "announcements": ["2026-02-27"],
       "editions": [
-        { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [6700], "releaseDate": "2026-02-27", "shop": "out-of-stock" },
+        { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [6700], "releaseDate": "2026-02-27", "runSize": 500, "shop": "out-of-stock" },
         { "id": "encore", "label": "Encore", "format": "physical", "materials": ["Photoresin"], "prices": [6700], "releaseDate": "2026-02-27", "shop": "out-of-stock" }
       ],
       "handle": "phantom-weaver",
@@ -4732,7 +4680,7 @@
       "announcements": ["2025-07-22", "2025-09-30", "2026-08-31"],
       "editions": [
         { "id": "sim", "label": "Sim", "available": true, "format": "digital", "handle": "kds-gatherism", "prices": [650], "releaseDate": "2026-08-31", "shop": "in-stock", "simulator": true },
-        { "id": "box", "label": "Box", "available": true, "format": "physical", "handle": "philosophy-of-death-gatherism", "prices": [6500], "releaseDate": "2025-09-30", "shop": "in-stock" }
+        { "id": "box", "label": "Box", "available": true, "format": "physical", "handle": "philosophy-of-death-gatherism", "materials": ["Plastic"], "prices": [6500], "releaseDate": "2025-09-30", "shop": "in-stock" }
       ],
       "gameplay": true,
       "kind": "box",
@@ -4787,7 +4735,7 @@
       "announcements": ["2025-08-29"],
       "editions": [
         { "id": "sim", "label": "Sim", "available": true, "format": "digital", "gameplay": true, "handle": "kds-fade", "prices": [700], "releaseDate": "2025-10-31", "shop": "in-stock", "simulator": true },
-        { "id": "box", "label": "Box", "available": true, "format": "physical", "handle": "fade-pillar-survivor", "prices": [3400], "releaseDate": "2025-08-29", "shop": "in-stock" }
+        { "id": "box", "label": "Box", "available": true, "format": "physical", "handle": "fade-pillar-survivor", "materials": ["Plastic"], "prices": [3400], "releaseDate": "2025-08-29", "shop": "in-stock" }
       ],
       "kind": "box",
       "name": "Pillar - Fade",
@@ -4813,7 +4761,7 @@
       "announcements": ["2025-07-22", "2025-09-30"],
       "editions": [
         { "id": "sim", "label": "Sim", "available": true, "format": "digital", "handle": "kds-percival", "prices": [700], "releaseDate": "2025-10-31", "shop": "in-stock", "simulator": true },
-        { "id": "box", "label": "Box", "available": true, "format": "physical", "handle": "pillar-percival", "prices": [3400], "releaseDate": "2025-09-30", "shop": "in-stock" }
+        { "id": "box", "label": "Box", "available": true, "format": "physical", "handle": "pillar-percival", "materials": ["Plastic"], "prices": [3400], "releaseDate": "2025-09-30", "shop": "in-stock" }
       ],
       "gameplay": true,
       "kind": "box",
@@ -4824,7 +4772,7 @@
       "aliases": ["Summer Grimmory", "Summer Grimmory (Beta)"],
       "announcements": ["2025-06-30"],
       "editions": [
-        { "id": "first-run", "label": "First Run", "beta": true, "format": "physical", "limit": true, "materials": ["Photoresin"], "numbered": true, "prices": [7500], "releaseDate": "2025-06-30", "shop": "out-of-stock" },
+        { "id": "first-run", "label": "First Run", "beta": true, "format": "physical", "limit": true, "materials": ["Photoresin"], "numbered": true, "prices": [7500], "releaseDate": "2025-06-30", "runSize": 300, "shop": "out-of-stock" },
         { "id": "encore", "label": "Encore", "beta": true, "format": "physical", "materials": ["Photoresin"], "prices": [7500], "releaseDate": "2025-06-30", "shop": "out-of-stock" }
       ],
       "gameplay": true,
@@ -5575,6 +5523,17 @@
       "size": "54",
       "tags": ["female", "plastic", "generic", "gameplay", "knight", "pinup", "seasonal", "promo", "naked", "2014", "twilight-knight", "deathmas"]
     },
+    "possessed-twilight-knight": {
+      "aliases": ["Possessed Twilight Knight - Painter's Scale (Oracle of Nozuki)", "Possessed Twilight Knight - Painter's Scale"],
+      "editions": [{ "id": "painters", "label": "Painters", "format": "physical", "materials": ["Resin"], "prices": [2500], "releaseDate": "2023-07-26" }],
+      "gameplay": true,
+      "gameplayContent": "Survivor's Lantern alt art",
+      "kind": "box",
+      "name": "Possessed Twilight Knight",
+      "notes": "Released as the Relic Knights Kickstarter bonus miniature originally offered by Soda Pop Miniatures and Ninja Division.",
+      "size": "50",
+      "tags": ["female", "generic", "gameplay", "2023", "knight", "painters-scale", "twilight-knight"]
+    },
     "priestess": {
       "editions": [
         { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Resin"], "numbered": true, "prices": [2700], "releaseDate": "2018-05-02", "runSize": 500 },
@@ -5616,8 +5575,8 @@
     "questing-aya": {
       "announcements": ["2026-08-31"],
       "editions": [
-        { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [3400], "releaseDate": "2026-08-31", "shop": "out-of-stock" },
-        { "id": "deathgrey", "label": "Deathgrey", "format": "physical", "materials": ["Deathgrey"], "numbered": true, "prices": [3900], "releaseDate": "2026-08-31", "shop": "out-of-stock" },
+        { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [3400], "releaseDate": "2026-08-31", "runSize": 500, "shop": "out-of-stock" },
+        { "id": "deathgrey", "label": "Deathgrey", "format": "physical", "materials": ["Deathgrey"], "numbered": true, "prices": [3900], "releaseDate": "2026-08-31", "runSize": 250, "shop": "out-of-stock" },
         { "id": "encore", "label": "Encore", "format": "physical", "materials": ["Photoresin"], "prices": [3400], "releaseDate": "2026-08-31", "shop": "out-of-stock" }
       ],
       "handle": "questing-aya",
@@ -5628,8 +5587,8 @@
     "questing-erza": {
       "announcements": ["2025-08-29"],
       "editions": [
-        { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [3400], "releaseDate": "2025-08-29", "shop": "out-of-stock" },
-        { "id": "deathgrey", "label": "Deathgrey", "format": "physical", "materials": ["Deathgrey"], "numbered": true, "prices": [3900], "releaseDate": "2025-08-29", "shop": "out-of-stock" }
+        { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [3400], "releaseDate": "2025-08-29", "runSize": 500, "shop": "out-of-stock" },
+        { "id": "deathgrey", "label": "Deathgrey", "format": "physical", "materials": ["Deathgrey"], "numbered": true, "prices": [3900], "releaseDate": "2025-08-29", "runSize": 250, "shop": "out-of-stock" }
       ],
       "handle": "questing-erza",
       "kind": "model",
@@ -5700,7 +5659,7 @@
     "ray-vermillion": {
       "announcements": ["2026-04-30"],
       "editions": [
-        { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [6700], "releaseDate": "2026-04-30", "shop": "out-of-stock" },
+        { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [6700], "releaseDate": "2026-04-30", "runSize": 500, "shop": "out-of-stock" },
         { "id": "encore", "label": "Encore", "format": "physical", "materials": ["Photoresin"], "prices": [6700], "releaseDate": "2026-04-30", "shop": "out-of-stock" }
       ],
       "handle": "ray-vermillion",
@@ -5733,6 +5692,26 @@
       "name": "Reapokratis",
       "size": "30",
       "tags": ["female", "gameplay", "gear", "photoresin", "beta", "2022", "reapokratis"]
+    },
+    "reverse-lagomorph-erza": {
+      "aliases": ["Reverse Lagomorph Erza - Painter's Scale"],
+      "announcements": ["2025-05-01", "2026-04-30"],
+      "editions": [{ "id": "painters", "label": "Painters", "format": "physical", "materials": ["Photoresin"], "prices": [13000], "releaseDate": "2025-04-30", "shop": "out-of-stock" }],
+      "handle": "reverse-lagomoprh-erza-painters-scale",
+      "kind": "model",
+      "name": "Reverse Lagomorph Erza",
+      "notes": "Released as a fundraiser to offset tariff costs.",
+      "size": "50",
+      "tags": ["female", "photoresin", "2025", "painters-scale", "seasonal", "core-survivor", "erza", "lagomorph"]
+    },
+    "reverse-lagomorph-lucy": {
+      "aliases": ["Reverse Lagomorph Lucy - Painter's Scale"],
+      "announcements": ["2026-04-30"],
+      "editions": [{ "id": "painters", "label": "Painters", "available": true, "format": "physical", "materials": ["Photoresin"], "prices": [13000], "releaseDate": "2026-04-30", "shop": "in-stock" }],
+      "handle": "reverse-lagomorph-lucy-painters-scale",
+      "kind": "model",
+      "name": "Reverse Lagomorph Lucy",
+      "tags": ["female", "in-stock", "photoresin", "2026", "painters-scale", "core-survivor", "lucy", "lagomorph"]
     },
     "ringtail-survivor": {
       "editions": [
@@ -5823,7 +5802,7 @@
       "editions": [
         { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Resin"], "numbered": true, "prices": [5500], "releaseDate": "2014-04-28", "runSize": 500 },
         { "id": "encore", "label": "Encore", "format": "physical", "materials": ["Resin"], "prices": [5500], "releaseDate": "2014-04-28" },
-        { "id": "plastic", "label": "Plastic", "available": true, "format": "physical", "handle": "satan-1", "materials": ["Plastic"], "prices": [3400], "releaseDate": "2025-12-04", "shop": "in-stock" }
+        { "id": "plastic", "label": "Box", "available": true, "format": "physical", "handle": "satan-1", "materials": ["Plastic"], "prices": [3400], "releaseDate": "2025-12-04", "shop": "in-stock" }
       ],
       "kind": "model",
       "name": "Satan",
@@ -5902,10 +5881,10 @@
       "aliases": ["Sci Fi Dwelling Keeper - Painter's Scale"],
       "announcements": ["2026-08-31"],
       "editions": [
-        { "id": "first-run", "label": "First Run", "format": "physical", "handle": "sci-fi-dwelling-keeper", "materials": ["Photoresin"], "numbered": true, "prices": [3400], "releaseDate": "2026-08-31", "shop": "out-of-stock" },
-        { "id": "deathgrey", "label": "Deathgrey", "format": "physical", "handle": "sci-fi-dwelling-keeper", "materials": ["Deathgrey"], "numbered": true, "prices": [3900], "releaseDate": "2026-08-31", "shop": "out-of-stock" },
+        { "id": "first-run", "label": "First Run", "format": "physical", "handle": "sci-fi-dwelling-keeper", "materials": ["Photoresin"], "numbered": true, "prices": [3400], "releaseDate": "2026-08-31", "runSize": 500, "shop": "out-of-stock" },
+        { "id": "deathgrey", "label": "Deathgrey", "format": "physical", "handle": "sci-fi-dwelling-keeper", "materials": ["Deathgrey"], "numbered": true, "prices": [3900], "releaseDate": "2026-08-31", "runSize": 250, "shop": "out-of-stock" },
         { "id": "encore", "label": "Encore", "format": "physical", "handle": "sci-fi-dwelling-keeper", "materials": ["Photoresin"], "prices": [3400], "releaseDate": "2026-08-31", "shop": "out-of-stock" },
-        { "id": "painters", "label": "Painters", "format": "physical", "handle": "sci-fi-dwelling-keeper-painters-scale", "prices": [6700], "releaseDate": "2026-08-31", "shop": "out-of-stock" }
+        { "id": "painters", "label": "Painters", "format": "physical", "handle": "sci-fi-dwelling-keeper-painters-scale", "materials": ["Photoresin"], "prices": [6700], "releaseDate": "2026-08-31", "shop": "out-of-stock" }
       ],
       "kind": "model",
       "name": "Sci Fi Dwelling Keeper",
@@ -5955,9 +5934,9 @@
       "aliases": ["Sci Fi Percival - Painter's Scale"],
       "announcements": ["2025-08-29"],
       "editions": [
-        { "id": "first-run", "label": "First Run", "format": "physical", "handle": "sci-fi-percival", "materials": ["Photoresin"], "numbered": true, "prices": [3400], "releaseDate": "2025-08-29", "shop": "out-of-stock" },
-        { "id": "deathgrey", "label": "Deathgrey", "format": "physical", "handle": "sci-fi-percival", "materials": ["Deathgrey"], "numbered": true, "prices": [3900], "releaseDate": "2025-08-29", "shop": "out-of-stock" },
-        { "id": "painters", "label": "Painters", "format": "physical", "handle": "sci-fi-percival-painters-scale", "prices": [6700], "releaseDate": "2025-08-29", "shop": "out-of-stock" }
+        { "id": "first-run", "label": "First Run", "format": "physical", "handle": "sci-fi-percival", "materials": ["Photoresin"], "numbered": true, "prices": [3400], "releaseDate": "2025-08-29", "runSize": 500, "shop": "out-of-stock" },
+        { "id": "deathgrey", "label": "Deathgrey", "format": "physical", "handle": "sci-fi-percival", "materials": ["Deathgrey"], "numbered": true, "prices": [3900], "releaseDate": "2025-08-29", "runSize": 250, "shop": "out-of-stock" },
+        { "id": "painters", "label": "Painters", "format": "physical", "handle": "sci-fi-percival-painters-scale", "materials": ["Photoresin"], "prices": [6700], "releaseDate": "2025-08-29", "shop": "out-of-stock" }
       ],
       "kind": "model",
       "name": "Sci Fi Percival",
@@ -6071,9 +6050,10 @@
     },
     "seed-pattern-survivor-ingama": {
       "announcements": ["2026-01-30"],
-      "editions": [{ "id": "plastic", "label": "Plastic", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [3400], "releaseDate": "2026-01-30", "shop": "in-stock" }],
+      "editions": [{ "id": "plastic", "label": "Box", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [3400], "releaseDate": "2026-01-30", "shop": "in-stock" }],
+      "gameplay": true,
       "handle": "seed-pattern-ingama",
-      "kind": "model",
+      "kind": "box",
       "name": "Seed Pattern Survivor - Ingama",
       "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "survivor", "2026", "pattern", "seed", "ingama"]
     },
@@ -6103,9 +6083,10 @@
     },
     "seed-pattern-survivor-zaniyah": {
       "announcements": ["2026-04-30"],
-      "editions": [{ "id": "plastic", "label": "Plastic", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [3400], "releaseDate": "2026-04-30", "shop": "in-stock" }],
+      "editions": [{ "id": "plastic", "label": "Box", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [3400], "releaseDate": "2026-04-30", "shop": "in-stock" }],
+      "gameplay": true,
       "handle": "seed-pattern-zaniyah",
-      "kind": "model",
+      "kind": "box",
       "name": "Seed Pattern Survivor - Zaniyah",
       "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "survivor", "2026", "pattern", "seed", "zaniyah"]
     },
@@ -6412,7 +6393,7 @@
     "shadow-box-holy-lands": {
       "announcements": ["2026-04-01"],
       "editions": [
-        { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [10000], "releaseDate": "2026-04-01", "shop": "out-of-stock" },
+        { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [10000], "releaseDate": "2026-04-01", "runSize": 100, "shop": "out-of-stock" },
         { "id": "encore", "label": "Encore", "format": "physical", "materials": ["Photoresin"], "prices": [10000], "releaseDate": "2026-04-01", "shop": "out-of-stock" }
       ],
       "handle": "shadow-box-holy-lands",
@@ -6500,8 +6481,8 @@
     "starting-survivor-allison": {
       "announcements": ["2026-06-30"],
       "editions": [
-        { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [3400], "releaseDate": "2026-06-30", "shop": "out-of-stock" },
-        { "id": "deathgrey", "label": "Deathgrey", "format": "physical", "materials": ["Deathgrey"], "numbered": true, "prices": [3900], "releaseDate": "2026-06-30", "shop": "out-of-stock" },
+        { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [3400], "releaseDate": "2026-06-30", "runSize": 500, "shop": "out-of-stock" },
+        { "id": "deathgrey", "label": "Deathgrey", "format": "physical", "materials": ["Deathgrey"], "numbered": true, "prices": [3900], "releaseDate": "2026-06-30", "runSize": 250, "shop": "out-of-stock" },
         { "id": "encore", "label": "Encore", "format": "physical", "materials": ["Photoresin"], "prices": [3400], "releaseDate": "2026-06-30", "shop": "out-of-stock" }
       ],
       "handle": "starting-survivor-allison",
@@ -6590,8 +6571,8 @@
     "summer-aquanaut-erza": {
       "announcements": ["2025-06-30"],
       "editions": [
-        { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [3400], "releaseDate": "2025-06-30", "shop": "out-of-stock" },
-        { "id": "deathgrey", "label": "Deathgrey", "format": "physical", "materials": ["Deathgrey"], "numbered": true, "prices": [3900], "releaseDate": "2025-06-30", "shop": "out-of-stock" },
+        { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [3400], "releaseDate": "2025-06-30", "runSize": 500, "shop": "out-of-stock" },
+        { "id": "deathgrey", "label": "Deathgrey", "format": "physical", "materials": ["Deathgrey"], "numbered": true, "prices": [3900], "releaseDate": "2025-06-30", "runSize": 250, "shop": "out-of-stock" },
         { "id": "encore", "label": "Encore", "format": "physical", "materials": ["Photoresin"], "prices": [3400], "releaseDate": "2025-06-30", "shop": "out-of-stock" }
       ],
       "handle": "summer-aquanaut-erza",
@@ -6599,12 +6580,21 @@
       "name": "Summer Aquanaut Erza",
       "tags": ["female", "photoresin", "deathgrey", "2025", "seasonal", "core-survivor", "erza", "summer"]
     },
+    "summer-archivist": {
+      "aliases": ["Summer Archivist - Painter's Scale"],
+      "announcements": ["2026-06-30"],
+      "editions": [{ "id": "painters", "label": "Painters", "format": "physical", "materials": ["Photoresin"], "prices": [6700], "releaseDate": "2026-06-30", "shop": "out-of-stock" }],
+      "handle": "summer-archivist-painters-scale",
+      "kind": "model",
+      "name": "Summer Archivist",
+      "tags": ["female", "generic", "photoresin", "2026", "painters-scale", "seasonal", "summer", "archivist", "laurie"]
+    },
     "summer-aya": {
       "aliases": ["Summer Aya - Painter's Scale", "Painters Scale Summer Aya"],
       "announcements": ["2022-10-01", "2025-06-30"],
       "editions": [
         { "id": "first-run", "label": "First Run", "beta": true, "format": "physical", "handle": "summer-aya", "materials": ["Photoresin"], "numbered": true, "prices": [3000], "releaseDate": "2022-09-30", "runSize": 500, "shop": "out-of-stock", "size": "30" },
-        { "id": "deathgrey", "label": "Deathgrey", "beta": true, "format": "physical", "handle": "summer-aya", "materials": ["Deathgrey"], "numbered": true, "prices": [3500], "releaseDate": "2022-09-30", "shop": "out-of-stock", "size": "30" },
+        { "id": "deathgrey", "label": "Deathgrey", "beta": true, "format": "physical", "handle": "summer-aya", "materials": ["Deathgrey"], "numbered": true, "prices": [3500], "releaseDate": "2022-09-30", "runSize": 250, "shop": "out-of-stock", "size": "30" },
         { "id": "encore", "label": "Encore", "beta": true, "format": "physical", "handle": "summer-aya", "materials": ["Photoresin"], "prices": [3000], "releaseDate": "2022-09-30", "shop": "out-of-stock", "size": "30" },
         { "id": "painters", "label": "Painters", "beta": true, "format": "physical", "gameplay": false, "handle": "summer-aya-painters-scale", "prices": [6700], "releaseDate": "2025-06-30", "shop": "missing" }
       ],
@@ -6658,7 +6648,7 @@
       "editions": [
         { "id": "first-run", "label": "First Run", "beta": true, "format": "physical", "materials": ["Deathgrey"], "numbered": true, "prices": [3400], "releaseDate": "2024-09-30", "runSize": 500, "shop": "out-of-stock" },
         { "id": "deathgrey", "label": "Deathgrey", "beta": true, "format": "physical", "materials": ["Deathgrey"], "numbered": true, "prices": [3900], "releaseDate": "2024-09-30", "runSize": 250, "shop": "out-of-stock" },
-        { "id": "encore", "label": "Encore", "beta": true, "format": "physical", "materials": ["Deathgrey"], "numbered": true, "prices": [3400], "releaseDate": "2024-09-30", "shop": "out-of-stock" }
+        { "id": "encore", "label": "Encore", "beta": true, "format": "physical", "materials": ["Deathgrey"], "prices": [3400], "releaseDate": "2024-09-30", "shop": "out-of-stock" }
       ],
       "gameplay": true,
       "handle": "sun-claws-esther",
@@ -6864,6 +6854,15 @@
       "size": "30",
       "tags": ["female", "generic", "2015", "thief"]
     },
+    "thief-variant": {
+      "aliases": ["Painters Scale Thief Variant", "Thief Variant - Painter's Scale"],
+      "announcements": ["2025-05-30"],
+      "editions": [{ "id": "painters", "label": "Painters", "format": "physical", "prices": [6700], "releaseDate": "2025-05-30", "shop": "missing" }],
+      "handle": "eod-thief-variant-painter",
+      "kind": "model",
+      "name": "Thief Variant",
+      "tags": ["female", "generic", "2025", "painters-scale", "variant", "thief"]
+    },
     "thrall": {
       "aliases": ["Thrall / Trapdoor Man"],
       "announcements": ["2019-10-31", "2023-12-25"],
@@ -6884,7 +6883,7 @@
       "editions": [
         { "id": "first-run", "label": "First Run", "format": "physical", "handle": "till-death-do-us-part", "materials": ["Photoresin"], "numbered": true, "prices": [5000], "releaseDate": "2018-02-14", "runSize": 500, "shop": "missing", "size": "30" },
         { "id": "encore", "label": "Encore", "format": "physical", "handle": "till-death-do-us-part", "materials": ["Photoresin"], "prices": [5000], "releaseDate": "2018-02-14", "shop": "missing", "size": "30" },
-        { "id": "remaster", "label": "Remaster", "format": "physical", "gameplay": false, "handle": "till-death-do-us-part-2-0", "prices": [5000], "releaseDate": "2026-02-27", "shop": "out-of-stock" }
+        { "id": "remaster", "label": "Remaster", "format": "physical", "gameplay": false, "handle": "till-death-do-us-part-2-0", "materials": ["Photoresin"], "prices": [5000], "releaseDate": "2026-02-27", "shop": "out-of-stock" }
       ],
       "gameplay": true,
       "gameplayContent": "Prototype",
@@ -6948,6 +6947,17 @@
       "name": "Usagi",
       "size": "30",
       "tags": ["female", "gameplay", "gear", "photoresin", "deathgrey", "2024", "beta", "usagi"]
+    },
+    "valentine-morgan": {
+      "aliases": ["Valentine's Morgan - Painters Scale", "Valentine Morgan - Painter's Scale"],
+      "announcements": ["2024-04-02"],
+      "editions": [{ "id": "painters", "label": "Painters", "format": "physical", "materials": ["Photoresin"], "prices": [6000], "releaseDate": "2024-04-02", "shop": "out-of-stock" }],
+      "handle": "valentines-morgan-painters-scale",
+      "kind": "model",
+      "name": "Valentine Morgan",
+      "notes": "190 printed.",
+      "size": "50",
+      "tags": ["female", "2024", "painters-scale", "seasonal", "morgan", "valentine"]
     },
     "valkyrie": {
       "editions": [
@@ -7097,6 +7107,17 @@
       "name": "Vitanvox",
       "size": "30",
       "tags": ["female", "gameplay", "gear", "photoresin", "2023", "beta", "vitanvox"]
+    },
+    "waiting-in-the-railyard": {
+      "aliases": ["Waiting in the Railyard (Samantha Haulage Cargos)"],
+      "announcements": ["2023-11-24", "2023-11-27", "2024-11-29"],
+      "editions": [{ "id": "painters", "label": "Painters", "format": "physical", "materials": ["Photoresin"], "prices": [6500], "releaseDate": "2023-11-24", "shop": "missing" }],
+      "handle": "waiting-in-the-railyard",
+      "kind": "model",
+      "name": "Waiting in the Railyard",
+      "notes": "A made-to-order painter's scale model to commemorate the shipping crisis and recoup the shipping deficit.",
+      "size": "50",
+      "tags": ["female", "2023", "painters-scale", "samantha"]
     },
     "wanderer-aeneas": {
       "aliases": ["Anonymous Survivor / Aeneas the Wanderer", "KDS Wanderer - Aeneas", "Aeneas the Wanderer"],
@@ -7396,8 +7417,8 @@
     "woe-grimmory": {
       "announcements": ["2025-11-28"],
       "editions": [
-        { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [3400], "releaseDate": "2025-11-27", "shop": "out-of-stock" },
-        { "id": "deathgrey", "label": "Deathgrey", "format": "physical", "materials": ["Deathgrey"], "numbered": true, "prices": [3900], "releaseDate": "2025-11-27", "shop": "out-of-stock" },
+        { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [3400], "releaseDate": "2025-11-27", "runSize": 500, "shop": "out-of-stock" },
+        { "id": "deathgrey", "label": "Deathgrey", "format": "physical", "materials": ["Deathgrey"], "numbered": true, "prices": [3900], "releaseDate": "2025-11-27", "runSize": 250, "shop": "out-of-stock" },
         { "id": "encore", "label": "Encore", "format": "physical", "materials": ["Photoresin"], "prices": [3400], "releaseDate": "2025-11-27", "shop": "out-of-stock" }
       ],
       "handle": "woe-grimmory",
@@ -7408,13 +7429,14 @@
     "woe-white-speaker": {
       "announcements": ["2026-06-30"],
       "editions": [
-        { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [6700], "releaseDate": "2026-06-30", "shop": "out-of-stock" },
-        { "id": "encore", "label": "Encore", "format": "physical", "materials": ["Photoresin"], "prices": [6700], "releaseDate": "2026-06-30", "shop": "out-of-stock" }
+        { "id": "first-run", "label": "Painters: First Run", "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [6700], "releaseDate": "2026-06-30", "runSize": 500, "shop": "out-of-stock" },
+        { "id": "encore", "label": "Painters: Encore", "format": "physical", "materials": ["Photoresin"], "prices": [6700], "releaseDate": "2026-06-30", "shop": "out-of-stock" }
       ],
       "handle": "woe-white-speaker",
       "kind": "model",
       "name": "Woe White Speaker",
-      "tags": ["female", "generic", "photoresin", "2026", "white-speaker"]
+      "notes": "Painters First Run: estimated run size 500 (not confirmed).",
+      "tags": ["female", "generic", "photoresin", "2026", "painters-scale", "white-speaker"]
     },
     "world-of-smog-steampunk-twilight-knight": {
       "editions": [{ "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [1500], "releaseDate": "2018-03-01" }],

@@ -50,6 +50,15 @@ Run `catalog:availability` after importing new editions to assign snapshot stock
 Reviewed fallback: undated Encore without a release window inherits First Run's date, or Deathgrey's if First Run has none.
 Known Encore dates stay unchanged.
 
+Use legible certificates matched to the product, sculpt, and release for run sizes; read the total after `of`.
+Deathgrey's `1st production run` is not the separate First Run edition. Do not infer Encore numbering from material.
+Preserve release-specific owner confirmations and estimates, including uncertainty notes. Leave Black Friday Ninja - Variant's
+2021 Deathgrey and Apotheosis's Deathmas run sizes unknown.
+
+Painter's scale requires explicit release-specific wording or owner confirmation; base diameter is insufficient.
+Death High Intimacy Couple and Necromancer Boss's archival remaster are standard scale.
+Evidence remains in `.cache/kdm-catalog/product-images/` and `temp/kdm-catalog/reports/`.
+
 ## Product, content, and ownership
 
 Use `includes` to reference shared canonical content. A simple product may represent its own contents; do not create
@@ -63,13 +72,16 @@ Current data rules:
 - Use inclusion `shortLabel` only when the parent makes part of the canonical name redundant, such as `Model`, `Armor`, or `Gameplay content`. It applies only within that relationship. Keep canonical names for unrelated contents and named variants.
 - `included-only` contains items whose editions are all explicitly marked `includedOnly: true`. Mixed items retain their existing category and that flag on included-only editions. Parent `includes` references remain valid across categories.
 - Edition labels describe the release and may repeat. Use `includedOnly: true` only for confirmed components available as part of another product; the UI derives that distinction. Included-only editions have no `prices` field because they are not separately sold. Shop matching excludes them. Workbook regeneration retains mapped IDs; a new legacy label reference prefers a unique standalone edition, otherwise requires an unambiguous included edition.
+- Retail packaging alone does not establish a `Box` edition or White Box classification. Model-only Pinups keep their material or release labels, including `Plastic`, even when shop descriptions mention a white box. Use the reviewed product classification for gameplay boxes.
 
 - Content IDs are object keys. Explicit edition IDs are permanent lowercase kebab-case, unique within their item. Keep IDs when labels
   or facts change; never reuse retired IDs. Creation tooling suggests initial IDs and rejects collisions. Reserve `item` and `bundle`
   for synthetic editions. Beta editions use ordinary IDs and `beta: true`; all-Beta items use `kind: "beta"`, mixed items `kind: "box"`.
   Keep established product prefixes. Named boxed collections are sets; couples and grouped expansion miniatures are models.
-- Matching models, busts, and painter's scale releases share an item with separate editions. Single artist releases use Painters or Bust;
-  multiple releases qualify labels, such as Painters: First Run. Distinct themes, remasters, and unmatched models remain separate.
+- Matching models, busts, and painter's scale releases share an item. Keep model names in titles and format-first qualifiers in edition labels,
+  such as `Painters: First Run` or `Remaster: First Run`; busts follow the same convention. Preserve item and edition IDs when renaming.
+  Painter's scale is recorded in edition labels and tags, without a scale prefix on item IDs.
+  Distinct themes, remasters, and unmatched models remain separate.
   Morgan's bust belongs to Morgan the Savior; White Speaker painter's scale belongs to White Speaker Koshka (formerly White Speaker).
   Senior Death High Allister and Thief Variant remain separate.
 - Gameplay defaults to false. Item `gameplay` appears only when true; editions store an override only when different. `gameplayContent` and notes belong on the item. Alternative names use `aliases`; `alt` is removed.
@@ -103,6 +115,7 @@ The schema retains ID-pattern rules and basic field validation without condition
 
 The original workbook remains in `local-data/kdm-catalog/imports/KDM Collection Sheets.xlsx`.
 Never infer ownership from ambiguous material or run choices.
+Exported model titles omit the `Box` qualifier. Deathgrey releases use the First Run checkbox column while retaining their Deathgrey edition labels and materials; explicitly labeled Encore releases stay in Encore.
 
 Run `pnpm catalog:workbook` to regenerate [workbook-map.json](../static/kdm/catalog/workbook-map.json) from the local
 `local-data/kdm-catalog/imports/kdm-import-records.json` and live catalog. The 705 mapped rows retain their sheet, row, and product name as

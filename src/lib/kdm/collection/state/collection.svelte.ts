@@ -4,7 +4,7 @@ import { SvelteSet } from "svelte/reactivity";
 import { CollectionError } from "./collection-errors.ts";
 import { StoreError, type CollectionStore } from "./collection-store.ts";
 import { OptimisticStore } from "./optimistic-store.ts";
-import { decodeBackup, encodeBackup, previewWorkbookRows, exportWorkbookRows } from "./collection-transfer.ts";
+import { decodeBackup, encodeBackup, previewWorkbookRows, exportWorkbookRows, exportCollectionRows } from "./collection-transfer.ts";
 import type { Catalog, CollectionPatch, CollectionSnapshot, Currency, EntryState } from "#lib/types/index.ts";
 import { collectionKey, copyNumberMaximum, CopyNumberSchema, parseCollectionKey } from "#lib/types/collection.ts";
 import { reviewIndex, reviewEditions, reviewPrice, type EditionSelection } from "#lib/catalog-view.ts";
@@ -362,20 +362,11 @@ export class Collection {
             new CollectionError({
               operation: "save",
               itemIds: [key],
-              message: `Copy numbers must be whole numbers from 1 to ${copyNumberMaximum}.`,
+              message: `Copy numbers must be whole numbers from 0 to ${copyNumberMaximum}.`,
               cause,
             }),
         ),
       );
-      const [contentId, editionId] = yield* decodeKey(key);
-      const runSize = this.catalog.byId.get(contentId)?.editions?.find((edition) => edition.id === editionId)?.runSize;
-      if (runSize !== undefined && copyNumber > runSize)
-        return yield* new CollectionError({
-          operation: "save",
-          itemIds: [key],
-          message: `Copy number must not exceed this edition's run of ${runSize}.`,
-          cause: copyNumber,
-        });
     }
     return yield* this.commitMany({ [key]: { copyNumber } });
   });
@@ -422,8 +413,8 @@ export class Collection {
     return yield* this.reportSave(writer.replace(snapshot), keys);
   });
 
-  previewWorkbook = Effect.fn("Collection.previewWorkbook")({ self: this }, function* (rows: unknown) {
-    const entries = yield* this.guardGeneration(previewWorkbookRows(rows, this.catalogData));
+  previewWorkbook = Effect.fn("Collection.previewWorkbook")({ self: this }, function* (rows: unknown, mapping?: unknown) {
+    const entries = yield* this.guardGeneration(previewWorkbookRows(rows, this.catalogData, mapping));
     const patch: CollectionPatch = {};
     for (const [key, entry] of Object.entries(entries)) {
       patch[key] = {
@@ -437,8 +428,8 @@ export class Collection {
     return patch;
   });
 
-  importWorkbook = Effect.fn("Collection.importWorkbook")({ self: this }, function* (rows: unknown) {
-    const entries = yield* this.previewWorkbook(rows);
+  importWorkbook = Effect.fn("Collection.importWorkbook")({ self: this }, function* (rows: unknown, mapping?: unknown) {
+    const entries = yield* this.previewWorkbook(rows, mapping);
     return yield* this.commitMany(entries);
   });
 
@@ -446,7 +437,16 @@ export class Collection {
     const generation = this.generation;
     const writer = yield* this.requireWriter("save", []);
     return yield* this.guardGeneration(
-      writer.snapshot().pipe(Effect.flatMap((snapshot) => exportWorkbookRows(snapshot, this.catalogData))),
+      writer.snapshot().pipe(Effect.flatMap((snapshot) => exportCollectionRows(snapshot, this.catalogData))),
+      generation,
+    );
+  });
+
+  exportMappedWorkbook = Effect.fn("Collection.exportMappedWorkbook")({ self: this }, function* (mapping?: unknown) {
+    const generation = this.generation;
+    const writer = yield* this.requireWriter("save", []);
+    return yield* this.guardGeneration(
+      writer.snapshot().pipe(Effect.flatMap((snapshot) => exportWorkbookRows(snapshot, this.catalogData, mapping))),
       generation,
     );
   });

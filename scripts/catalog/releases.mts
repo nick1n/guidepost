@@ -27,7 +27,7 @@ function variantLabel(variant: Variant, fallback: string): string {
   if (/^original cover$/i.test(variant.title)) return "Pawel Zdanowski";
   const cover = variant.title.match(/^(Ein Lee|Lokman Lam|Wenjuinn Png) variant cover$/i);
   if (cover) return ["Ein Lee", "Lokman Lam", "Wenjuinn Png"].find((name) => name.toLowerCase() === cover[1]!.toLowerCase())!;
-  const format = fallback.match(/^(Painters|Bust)(?:: (.+))?$/);
+  const format = fallback.match(/^(Painters|Bust|Remaster|Resculpt)(?:: (.+))?$/);
   if (format) return format[2] ? `${format[1]}: ${variantLabel(variant, format[2])}` : format[1]!;
   if (/first run/i.test(variant.title)) return "First Run";
   if (/second run collectors edition/i.test(variant.title)) return "Second Run";
@@ -51,8 +51,9 @@ function observedPrices(variants: Variant[], previous: number[] = []) {
 
 function inferMaterials(rows: string[], label: string) {
   if (label === "Sim") return undefined;
-  if (/^Deathgrey/.test(label)) return ["Deathgrey"];
-  if (label === "Deathpink") return ["Deathpink"];
+  const release = label.split(": ").at(-1)!;
+  if (/^Deathgrey/.test(release)) return ["Deathgrey"];
+  if (release === "Deathpink") return ["Deathpink"];
   if (rows.some((row) => /photoresin.*miniature|miniature.*photoresin/i.test(row))) return ["Photoresin"];
   if (rows.some((row) => /(?:hard )?plastic.*miniature|miniature.*(?:hard )?plastic/i.test(row))) return ["Plastic"];
   if (rows.some((row) => /resin.*miniature|miniature.*resin/i.test(row))) return ["Resin"];
@@ -161,10 +162,10 @@ export function resolveReleases(item: Item, product: Product, options: ReleaseOp
     const edition = editionByLabel(editions, label);
     const materials =
       policy === "retrieve"
-        ? retrievedMaterial && label !== "Sim" && retrievedMaterial !== label && !/^Deathgrey|^Deathpink/.test(label)
+        ? retrievedMaterial && label !== "Sim" && retrievedMaterial !== label && !/(?:^|: )(?:Deathgrey|Deathpink)/.test(label)
           ? [retrievedMaterial]
           : undefined
-        : /^Deathgrey|^Deathpink/.test(label)
+        : /(?:^|: )(?:Deathgrey|Deathpink)/.test(label)
           ? inferMaterials(rows, label)
           : (mapping?.materials ?? inferMaterials(rows, label) ?? edition?.materials);
     return { label, variants, edition, prices: observedPrices(variants, policy === "retrieve" ? [] : edition?.prices), materials };

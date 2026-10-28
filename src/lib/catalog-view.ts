@@ -94,6 +94,28 @@ export function reviewEditions(item: Item & { category?: string }): Edition[] {
   ];
 }
 
+/** Whether a release contains physical models, independently of ownership or gameplay coverage. */
+export function reviewHasModels(
+  item: CatalogEntry,
+  edition: Edition,
+  byId: ReadonlyMap<string, CatalogEntry>,
+  visited = new Set<string>(),
+): boolean {
+  if (item.category === "homebrew" || edition.format !== "physical" || edition.simulator) return false;
+  if (item.category === "accessories" || ["content", "accessory", "simulator"].includes(item.kind ?? "")) return false;
+  if (["core", "expansion", "box", "model", "armor-kit", "beta", "terrain", "base", "set", "vignette"].includes(item.kind ?? ""))
+    return true;
+  const key = collectionKey(item.id, edition.id);
+  if (visited.has(key)) return false;
+  const next = new Set(visited).add(key);
+  return (item.includes ?? []).some((inclusion) => {
+    const reference = typeof inclusion === "string" ? { item: inclusion } : inclusion;
+    if (reference.parentEditionIds && !reference.parentEditionIds.includes(edition.id)) return false;
+    const child = byId.get(reference.item);
+    return !!child && matchingEditions(child, reference, edition).some((release) => reviewHasModels(child, release, byId, next));
+  });
+}
+
 export function reviewEquivalentEditions(item: Item, edition: Edition) {
   const canonical = edition.equivalentTo ?? edition.id;
   return reviewEditions(item).filter((release) => (release.equivalentTo ?? release.id) === canonical);

@@ -35,7 +35,7 @@ export function event(type: string, properties: Record<string, unknown> = {}) {
   return result;
 }
 
-export function swipeFixture({
+export function createFixture({
   dialog = false,
   page = false,
   directions = ["left", "right"],

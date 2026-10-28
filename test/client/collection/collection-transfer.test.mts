@@ -71,7 +71,7 @@ it.effect("workbook rows round trip collection fields without labels or personal
   }),
 );
 
-it.effect("rejects numbers above a known run size and exports without a workbook mapping", () =>
+it.effect("backups preserve zero and numbers above run size while workbook exports require a mapping", () =>
   Effect.gen(function* () {
     const catalog = {
       content: {
@@ -87,10 +87,10 @@ it.effect("rejects numbers above a known run size and exports without a workbook
       "included-only": {},
     };
     const key = collectionKey("limited", "limited-run");
-    assert.equal(
-      (yield* Effect.flip(decodeBackup(JSON.stringify({ formatVersion: 1, entries: { [key]: { copyNumber: 5001 } } }), catalog))).reason,
-      "invalid-data",
-    );
+    for (const copyNumber of [0, 5001, 9999]) {
+      const entries = { [key]: { copyNumber } };
+      assert.deepEqual(yield* decodeBackup(yield* encodeBackup(entries, catalog), catalog), entries);
+    }
     const valid = { [key]: { copyNumber: 5000 } };
     assert.deepEqual(yield* decodeBackup(yield* encodeBackup(valid, catalog), catalog), valid);
     assert.equal((yield* Effect.flip(exportWorkbookRows(valid, catalog, workbookMap))).reason, "unknown-reference");
@@ -166,7 +166,7 @@ it.effect("propagates source-row ownership to explicitly related editions", () =
 
 it.effect("rejects invalid workbook number cells", () =>
   Effect.gen(function* () {
-    for (const copyNumber of ["7", 0, 10000, 1.5]) {
+    for (const copyNumber of ["7", -1, 10000, 1.5]) {
       const result = yield* Effect.result(
         previewWorkbookRows([{ sheet: mapped.sheet, row: mapped.row, name: mapped.name, copyNumber }], data, workbookMap),
       );

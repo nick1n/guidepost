@@ -7,7 +7,7 @@ import { CopyNumberEdits } from "#lib/kdm/collection/state/copy-number-edits.sve
 import { Notifications, type Notice } from "#lib/app/notifications/notifications.ts";
 import { type CollectionStore } from "#lib/kdm/collection/state/collection-store.ts";
 import { collectionKey, type Catalog, type CollectionSnapshot } from "#lib/types/index.ts";
-import { makeTestStore } from "./test-store.ts";
+import { makeStore } from "./test-store.ts";
 
 const catalog: Catalog = {
   content: {
@@ -59,7 +59,7 @@ function keyboard(key: string, isComposing = false) {
 }
 
 async function fixture(initial: CollectionSnapshot = {}) {
-  const store = makeTestStore(initial);
+  const store = makeStore(initial);
   const started = Effect.runSync(Deferred.make<void>());
   store.onSaveStarted(() => Deferred.succeed(started, undefined));
   const collection = new Collection(catalog);
@@ -184,7 +184,18 @@ it("isolates editions and items and supports item and app-wide flushes", async (
   expect(f.collection.hasPendingChanges).toBe(false);
 });
 
-it.each([input("1.5"), input("0"), input("101"), input("", true)])("reports invalid input without saving", async (value) => {
+it.each([0, 101, 9999])("saves copy number %s independently of run size", async (value) => {
+  const f = await fixture();
+  f.edits.update(selection(), input(String(value)));
+  f.edits.flush();
+  await f.settled();
+  expect(f.writes).toHaveLength(1);
+  expect(f.collection.get(collectionKey("model", "resin")).copyNumber).toBe(value);
+  expect(f.notices.filter((notice) => notice.kind === "error")).toEqual([]);
+  expect(f.collection.hasPendingChanges).toBe(false);
+});
+
+it.each([input("1.5"), input("-1"), input("10000"), input("", true)])("reports invalid input without saving", async (value) => {
   const f = await fixture();
   f.edits.update(selection(), value);
   f.edits.flush();

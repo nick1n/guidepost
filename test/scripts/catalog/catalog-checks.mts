@@ -1011,8 +1011,8 @@ test("family IDs distinguish boxes, sculpt formats, singular Pinups and confirme
     ],
     ["first-hero-bust-male", "First Hero Bust - Male", "model", ["bust"], "bust-first-hero-male"],
     ["pinup-lioness-bust", "Pinup Lioness Bust", "model", ["pinup", "bust"], "bust-pinup-lioness"],
-    ["pinup-butcher-painters-scale", "Pinup Butcher - Painter's Scale", "model", ["pinup"], "painters-scale-pinup-butcher"],
-    ["set-paladin-painters-scale", "Paladin - Painter's Scale", "set", ["painters-scale"], "set-painters-scale-paladin"],
+    ["pinup-butcher", "Pinup Butcher - Painter's Scale", "model", ["pinup"], "pinup-butcher"],
+    ["set-paladin", "Paladin - Painter's Scale", "set", ["painters-scale"], "set-paladin"],
     ["set-pinups-of-death-i", "Pinups of Death I", "set", ["pinup"], "set-pinups-of-death-1"],
     ["set-survivors-of-death-iii", "Survivors of Death III", "set", ["survivor"], "set-survivors-of-death-3"],
     ["set-halloween-survivors-series-ii", "Halloween Survivors - Series II", "set", ["survivor"], "set-halloween-survivors-series-2"],
@@ -1048,12 +1048,12 @@ test("family IDs distinguish boxes, sculpt formats, singular Pinups and confirme
   }
   assert.equal(prefixedId("pillar-fade", { name: "Pillar - Fade (Updated Display Name)", kind: "model", tags: ["fade"] }), "pillar-fade");
   assert.equal(
-    prefixedId("painters-scale-death-high-life-model-simone", {
+    prefixedId("death-high-life-model-simone", {
       name: "Death High - Simone (Updated Display Name) - Painter's Scale",
       kind: "model",
       tags: ["simone"],
     }),
-    "painters-scale-death-high-life-model-simone",
+    "death-high-life-model-simone",
   );
   assert.equal(
     prefixedId("black-friday-death-dice", {
@@ -1232,6 +1232,24 @@ test("the schema requires descriptive tags and rejects obsolete nulls and price 
     price: null,
   } as unknown as Catalog["accessories"][string];
   await assert.rejects(validateCatalog(catalog), /Catalog schema errors/);
+});
+
+test("painter scale metadata does not add an item ID prefix", async (t) => {
+  const workspace = await mkdtemp(join(tmpdir(), "kdm-scale-identity-"));
+  t.after(() => rm(workspace, { recursive: true, force: true }));
+  const schemaPath = join(workspace, "data.schema.json");
+  await writeFile(schemaPath, await readFile("static/kdm/catalog/data.schema.json", "utf8"));
+  const catalog = empty();
+  catalog.content.model = {
+    name: "Model",
+    kind: "model",
+    size: "50",
+    tags: ["painters-scale"],
+    editions: [{ id: "original-id", label: "Painters: First Run", format: "physical", numbered: true }],
+  };
+  assert.equal(prefixedId("model", catalog.content.model), "model");
+  assert.equal((await validateCatalog(catalog, schemaPath)).items, 1);
+  assert.equal(catalog.content.model.editions![0]!.id, "original-id");
 });
 
 test("edition IDs are required and unique within each item", async (t) => {

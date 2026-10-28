@@ -43,12 +43,7 @@
       "sheet": "KDM Miniatures",
       "row": 5,
       "name": "Reverse Lagomorph Erza - Painter's Scale",
-      "primary": {
-        "category": "content",
-        "contentId": "painters-scale-reverse-lagomorph-erza",
-        "editionId": "painters",
-        "sourceEdition": "Painters"
-      }
+      "primary": { "category": "content", "contentId": "reverse-lagomorph-erza", "editionId": "painters", "sourceEdition": "Painters" }
     },
     {
       "sheet": "KDM Miniatures",
@@ -182,12 +177,7 @@
       "sheet": "KDM Miniatures",
       "row": 19,
       "name": "Hollowheart Rene - Painter's Scale",
-      "primary": {
-        "category": "content",
-        "contentId": "painters-scale-hollowheart-rene",
-        "editionId": "painters",
-        "sourceEdition": "Painters"
-      }
+      "primary": { "category": "content", "contentId": "hollowheart-rene", "editionId": "painters", "sourceEdition": "Painters" }
     },
     {
       "sheet": "KDM Miniatures",
@@ -381,7 +371,7 @@
       "sheet": "KDM Miniatures",
       "row": 40,
       "name": "Black Cat - Painter's Scale",
-      "primary": { "category": "content", "contentId": "painters-scale-black-cat", "editionId": "painters", "sourceEdition": "Painters" }
+      "primary": { "category": "content", "contentId": "black-cat", "editionId": "painters", "sourceEdition": "Painters" }
     },
     {
       "sheet": "KDM Miniatures",
@@ -647,12 +637,7 @@
       "sheet": "KDM Miniatures",
       "row": 62,
       "name": "Echoes of Death Paladin - Painter's Scale",
-      "primary": {
-        "category": "content",
-        "contentId": "painters-scale-echoes-of-death-paladin",
-        "editionId": "painters",
-        "sourceEdition": "Painters"
-      }
+      "primary": { "category": "content", "contentId": "echoes-of-death-paladin", "editionId": "painters", "sourceEdition": "Painters" }
     },
     {
       "sheet": "KDM Miniatures",
@@ -1038,12 +1023,7 @@
       "sheet": "KDM Miniatures",
       "row": 99,
       "name": "Valentine Morgan - Painter's Scale",
-      "primary": {
-        "category": "content",
-        "contentId": "painters-scale-valentine-morgan",
-        "editionId": "painters",
-        "sourceEdition": "Painters"
-      }
+      "primary": { "category": "content", "contentId": "valentine-morgan", "editionId": "painters", "sourceEdition": "Painters" }
     },
     {
       "sheet": "KDM Miniatures",
@@ -1199,12 +1179,7 @@
       "sheet": "KDM Miniatures",
       "row": 113,
       "name": "Kingslayer Twilight Knight - Painter's Scale",
-      "primary": {
-        "category": "content",
-        "contentId": "painters-scale-kingslayer-twilight-knight",
-        "editionId": "painters",
-        "sourceEdition": "Painters"
-      }
+      "primary": { "category": "content", "contentId": "kingslayer-twilight-knight", "editionId": "painters", "sourceEdition": "Painters" }
     },
     {
       "sheet": "KDM Miniatures",
@@ -1341,12 +1316,7 @@
       "sheet": "KDM Miniatures",
       "row": 130,
       "name": "Waiting in the Railyard (Samantha Haulage Cargos)",
-      "primary": {
-        "category": "content",
-        "contentId": "painters-scale-waiting-in-the-railyard",
-        "editionId": "painters",
-        "sourceEdition": "Painters"
-      }
+      "primary": { "category": "content", "contentId": "waiting-in-the-railyard", "editionId": "painters", "sourceEdition": "Painters" }
     },
     {
       "sheet": "KDM Miniatures",
@@ -1502,12 +1472,7 @@
       "sheet": "KDM Miniatures",
       "row": 145,
       "name": "Death High Senior Allister - Painter's Scale",
-      "primary": {
-        "category": "content",
-        "contentId": "painters-scale-death-high-senior-allister",
-        "editionId": "painters",
-        "sourceEdition": "Painters"
-      }
+      "primary": { "category": "content", "contentId": "death-high-senior-allister", "editionId": "painters", "sourceEdition": "Painters" }
     },
     {
       "sheet": "KDM Miniatures",
@@ -1920,12 +1885,7 @@
       "sheet": "KDM Miniatures",
       "row": 205,
       "name": "Possessed Twilight Knight - Painter's Scale (Oracle of Nozuki)",
-      "primary": {
-        "category": "content",
-        "contentId": "painters-scale-possessed-twilight-knight",
-        "editionId": "painters",
-        "sourceEdition": "Painters"
-      }
+      "primary": { "category": "content", "contentId": "possessed-twilight-knight", "editionId": "painters", "sourceEdition": "Painters" }
     },
     {
       "sheet": "KDM Miniatures",
@@ -6119,13 +6079,13 @@
       "primary": { "category": "content", "contentId": "satan", "editionId": "first-run", "sourceEdition": "First Run" },
       "related": [
         { "category": "content", "contentId": "satan", "editionId": "encore", "sourceEdition": "Encore" },
-        { "category": "content", "contentId": "satan", "editionId": "plastic", "sourceEdition": "Plastic" }
+        { "category": "content", "contentId": "satan", "editionId": "plastic", "sourceEdition": "Box" }
       ],
       "ownershipScope": "source-row",
       "releaseEditions": {
         "M": [{ "category": "content", "contentId": "satan", "editionId": "first-run", "sourceEdition": "First Run" }],
         "N": [{ "category": "content", "contentId": "satan", "editionId": "encore", "sourceEdition": "Encore" }],
-        "O": [{ "category": "content", "contentId": "satan", "editionId": "plastic", "sourceEdition": "Plastic" }]
+        "O": [{ "category": "content", "contentId": "satan", "editionId": "plastic", "sourceEdition": "Box" }]
       }
     },
     {

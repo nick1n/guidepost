@@ -119,7 +119,7 @@ it.effect("persists edition ownership, wishlist, and copy numbers across connect
     const f = fixture();
     const first = yield* f.make();
     expect(yield* first.load()).toEqual({});
-    const state = { [core]: { owned: true, wished: false, copyNumber: 5000 }, [resin]: { wished: true, copyNumber: 9999 } };
+    const state = { [core]: { owned: true, wished: false, copyNumber: 0 }, [resin]: { wished: true, copyNumber: 9999 } };
     const { save } = first;
     yield* save(state);
     first.close();
@@ -276,7 +276,7 @@ it.effect("rejects invalid copy numbers before changing rows or revision", () =>
     yield* store.save({ [core]: { owned: true, copyNumber: 42 } });
     const db = yield* f.inspect();
     const before = yield* Effect.promise(() => db.table("metadata").get("guest"));
-    for (const invalid of ["42", 0, 1.5, 10000, Number.NaN]) {
+    for (const invalid of ["42", -1, 1.5, 10000, Number.NaN]) {
       const entry = { owned: false, copyNumber: 42 };
       Object.assign(entry, { copyNumber: invalid });
       const error = yield* Effect.flip(store.save({ [core]: entry }));

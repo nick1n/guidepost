@@ -4,8 +4,10 @@ import { Ajv2020 } from "ajv/dist/2020.js";
 import {
   decodeWorkbookMap,
   workbookLocator,
+  releaseColumns,
+  type ReleaseColumn,
   type WorkbookMap,
-  type WorkbookMappingRow as WorkbookRow,
+  type MappingRow,
   type WorkbookTarget,
 } from "#lib/types/workbook.ts";
 import { publishFiles } from "./publication.mts";
@@ -14,12 +16,12 @@ import { editionByLabel } from "./identity.mts";
 
 type SourceRef = { category: WorkbookTarget["category"]; itemId: string; edition?: string };
 type ImportRow = SourceRef & {
-  sheet: WorkbookRow["sheet"];
+  sheet: MappingRow["sheet"];
   row: number;
   name: string;
   relatedItems?: SourceRef[];
   ownershipScope?: "source-row";
-  releaseEditions?: Partial<Record<"M" | "N" | "O", SourceRef[]>>;
+  releaseEditions?: Partial<Record<ReleaseColumn, SourceRef[]>>;
 };
 export type WorkbookImports = { workbook: string; records: ImportRow[] };
 const rowKey = workbookLocator;
@@ -74,7 +76,7 @@ export function buildWorkbookMap(imports: WorkbookImports, catalog: Catalog, pre
     const related = record.relatedItems?.map((ref, index) => resolveTarget(ref, old?.related?.[index], `related[${index}]`));
     const releaseEditions = record.releaseEditions
       ? Object.fromEntries(
-          (["M", "N", "O"] as const)
+          releaseColumns
             .filter((column) => record.releaseEditions?.[column])
             .map((column) => {
               const refs = record.releaseEditions![column]!;

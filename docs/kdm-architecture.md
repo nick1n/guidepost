@@ -6,8 +6,8 @@ Status: describes implemented collection storage and current app behavior. Campa
 
 The collection supports guest use and offline saves. It tracks owned content, editions, wishlist state, and related details without gameplay undo.
 
-The `/kdm/collection/` page saves owned, wished, component missing overrides, and numeric `copyNumber` values locally. Copy numbers are integers from 1 to 9999,
-bounded by a known run size. Entries use compound content/edition keys. Explicit edition IDs are permanent lowercase kebab-case,
+The `/kdm/collection/` page saves owned, wished, component missing overrides, and numeric `copyNumber` values locally. Copy numbers are integers from 0 to 9999,
+independent of a known run size. Entries use compound content/edition keys. Explicit edition IDs are permanent lowercase kebab-case,
 unique within each item, and independent of labels or other mutable facts. Edition-less items use `item`, or `bundle` for bundles.
 See the [catalog guide](kdm-catalog.md) for authoring rules.
 
@@ -46,8 +46,15 @@ because no persistence adapter exists yet.
 
 Validated JSON backups replace the snapshot through the optimistic queue. Exports wait for preceding writes and copy confirmed data.
 Workbook workflows validate normalized rows against the product-only map, require explicit selections for ambiguous releases, and
-merge provided fields in one save. Workbook exports reject unmapped entries and shared-row values they cannot represent.
-The mapping loads on demand; XLSX adapters and controls remain future work.
+merge provided fields in one save. Exports targeting the original mapping reject entries and shared-row values it cannot represent.
+
+[Workbook transfers](../src/lib/kdm/collection/workbook/file.ts) load on demand and run in the browser.
+Guidepost exports retain edition IDs and collection state for reimport; unknown or ambiguous identities fail validation.
+Original workbook imports ignore unchecked cells, blanks, and copy-number placeholders. Earlier v1/v2 exports remain supported.
+Closing the drawer preserves work; unmounting interrupts it, and owner changes invalidate previews and downloads.
+
+Exports preserve the three-tab template and cover physical model products, shirts, dice, and original workbook bundles.
+The product projection owns eligibility, release grouping, and classification.
 
 Metadata schema version 1 validates records; it is separate from Dexie's database version and provides no migration.
 The collection queue has no durable undo. After release, table/index changes need Dexie upgrades, and incompatible records need a

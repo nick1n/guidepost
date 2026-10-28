@@ -268,8 +268,8 @@
                 <span>{numberedEdition.label} #</span>
                 <input
                   type="number"
-                  min="1"
-                  max={Math.min(numberedEdition.runSize ?? copyNumberMaximum, copyNumberMaximum)}
+                  min="0"
+                  max={copyNumberMaximum}
                   disabled={!writable}
                   value={copies.value(item.id, numberedEdition.id) ?? value.copyNumber ?? ""}
                   oninput={(event) => copies.update({ item, edition: numberedEdition }, event.currentTarget)}

@@ -1,7 +1,7 @@
 import { Result, Schema } from "effect";
 
 export const copyNumberMaximum = 9999;
-export const CopyNumberSchema = Schema.Int.check(Schema.isBetween({ minimum: 1, maximum: copyNumberMaximum }));
+export const CopyNumberSchema = Schema.Int.check(Schema.isBetween({ minimum: 0, maximum: copyNumberMaximum }));
 
 export const EntryStateSchema = Schema.Struct({
   owned: Schema.optionalKey(Schema.Boolean),

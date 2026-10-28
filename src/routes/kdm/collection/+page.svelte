@@ -16,7 +16,7 @@
   import CollectionCard from "#lib/kdm/collection/ui/CollectionCard.svelte";
   import { swipe, type SwipeDirection } from "#lib/swipe.ts";
   import { reviewTagLabel } from "#lib/catalog-view.ts";
-  import { CollectionBrowsing, browseCategories as categories } from "#lib/kdm/collection/collection-browsing.svelte.ts";
+  import { CollectionBrowsing, categories } from "#lib/kdm/collection/collection-browsing.svelte.ts";
   import { CollectionCards } from "#lib/kdm/collection/collection-cards.svelte.ts";
   import { formatPriceTotals } from "#lib/kdm-data.ts";
   import { getCollectionActions, ownershipMessage } from "#lib/kdm/collection/state/collection-actions.ts";

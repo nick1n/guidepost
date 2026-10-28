@@ -8,14 +8,14 @@ import {
 } from "#lib/catalog-view.ts";
 import type { EntryState } from "#lib/types/index.ts";
 
-export const browseCategories = [
+export const categories = [
   { id: "content", label: "Content" },
   { id: "accessories", label: "Accessories" },
   { id: "bundles", label: "Bundles" },
   { id: "homebrew", label: "Homebrew" },
 ] as const;
 
-type Category = (typeof browseCategories)[number]["id"];
+type Category = (typeof categories)[number]["id"];
 type Status = "all" | "owned" | "wishlist";
 type EditionReader = (item: string, edition: string) => Pick<EntryState, "owned" | "wished">;
 type BrowseUrl = { href: string; searchParams: Pick<URLSearchParams, "get" | "getAll"> };
@@ -101,7 +101,7 @@ export class CollectionBrowsing {
     return reviewTagCounts(this.#filtered);
   });
   #panels = $derived(
-    browseCategories.flatMap((option) => {
+    categories.flatMap((option) => {
       const retained = this.#retained[option.id];
       return retained ? [{ ...option, items: option.id === this.#category ? this.#visible : retained }] : [];
     }),
@@ -142,7 +142,7 @@ export class CollectionBrowsing {
   /** Restore navigation without writing back or letting a pending search overwrite the destination. */
   restore(url: BrowseUrl) {
     this.cancelPendingUrl();
-    const category = browseCategories.find(({ id }) => id === url.searchParams.get("cat"))?.id ?? "content";
+    const category = categories.find(({ id }) => id === url.searchParams.get("cat"))?.id ?? "content";
     this.#setCategory(category);
     this.#query = url.searchParams.get("q") ?? "";
     const tags = this.#catalog.tags.get(category) ?? [];

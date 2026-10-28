@@ -1,7 +1,11 @@
 import { Schema } from "effect";
 import { EntryStateSchema } from "./collection.ts";
 
-const SheetSchema = Schema.Literals(["KDM Miniatures", "Shirt Catalog", "Dice Catalog"]);
+export const sheets = ["KDM Miniatures", "Shirt Catalog", "Dice Catalog"] as const;
+export const releaseColumns = ["M", "N", "O"] as const;
+export type WorkbookSheet = (typeof sheets)[number];
+
+const SheetSchema = Schema.Literals(sheets);
 const RowNumberSchema = Schema.Int.check(Schema.isGreaterThanOrEqualTo(2));
 const EditionIdSchema = Schema.String.check(Schema.isPattern(/^[a-z0-9]+(?:-[a-z0-9]+)*$/u));
 
@@ -47,7 +51,7 @@ const MapRowSchema = Schema.Struct({
     }),
   }),
 );
-export interface WorkbookMappingRow extends Schema.Schema.Type<typeof MapRowSchema> {}
+export interface MappingRow extends Schema.Schema.Type<typeof MapRowSchema> {}
 
 export const WorkbookMapSchema = Schema.Struct({
   $schema: Schema.Literal("./workbook-map.schema.json"),
@@ -68,16 +72,49 @@ export const WorkbookMapSchema = Schema.Struct({
   });
 export interface WorkbookMap extends Schema.Schema.Type<typeof WorkbookMapSchema> {}
 
-export const WorkbookRowsSchema = Schema.Array(
-  Schema.Struct({
-    ...EntryStateSchema.fields,
-    sheet: SheetSchema,
-    row: RowNumberSchema,
-    name: Schema.NonEmptyString,
-    releaseColumn: Schema.optionalKey(Schema.Literals(["M", "N", "O"])),
-    editionId: Schema.optionalKey(EditionIdSchema),
-  }),
-);
+const ReleaseColumnSchema = Schema.Literals(releaseColumns);
+export type ReleaseColumn = Schema.Schema.Type<typeof ReleaseColumnSchema>;
+
+const MappedRowSchema = Schema.Struct({
+  ...EntryStateSchema.fields,
+  sheet: SheetSchema,
+  row: RowNumberSchema,
+  name: Schema.NonEmptyString,
+  releaseColumn: Schema.optionalKey(ReleaseColumnSchema),
+  editionId: Schema.optionalKey(EditionIdSchema),
+});
+export type MappedWorkbookRow = Schema.Schema.Type<typeof MappedRowSchema>;
+
+const CollectionRowSchema = Schema.Struct({
+  ...EntryStateSchema.fields,
+  sheet: Schema.Literal("Guidepost collection"),
+  row: RowNumberSchema,
+  name: Schema.NonEmptyString,
+  contentId: Schema.NonEmptyString,
+  editionId: EditionIdSchema,
+});
+export type CollectionWorkbookRow = Schema.Schema.Type<typeof CollectionRowSchema>;
+export const CollectionWorkbookRowsSchema = Schema.Array(CollectionRowSchema);
+
+export const metadataColumn = "AZ";
+export const templateMarker = "Guidepost workbook v3";
+const TemplateEntrySchema = Schema.Struct({
+  contentId: CollectionRowSchema.fields.contentId,
+  editionId: EditionIdSchema,
+  label: Schema.String,
+  material: Schema.String,
+  column: Schema.optionalKey(ReleaseColumnSchema),
+  state: EntryStateSchema,
+});
+export type TemplateEntry = Schema.Schema.Type<typeof TemplateEntrySchema>;
+export const MetadataSchema = Schema.Struct({
+  name: Schema.NonEmptyString,
+  entries: Schema.Array(TemplateEntrySchema),
+  baseline: Schema.Record(Schema.String, Schema.Union([Schema.String, Schema.Number, Schema.Boolean, Schema.Null])),
+});
+export type Metadata = Schema.Schema.Type<typeof MetadataSchema>;
+
+export const WorkbookRowsSchema = Schema.Array(Schema.Union([MappedRowSchema, CollectionRowSchema]));
 export type WorkbookRow = Schema.Schema.Type<typeof WorkbookRowsSchema>[number];
 
 export function workbookLocator(row: { sheet: string; row: number }) {

@@ -1,5 +1,5 @@
 <script module lang="ts">
-  const titles = { main: "Menu", account: "Account", notifications: "Notification log", settings: "Settings" };
+  const titles = { main: "Menu", account: "Account", notifications: "Notification log", settings: "Settings", workbook: "Import workbook" };
   const noticePresentation = {
     error: { icon: "i-material-symbols:error-outline", prefix: "Error: " },
     success: { icon: "i-material-symbols:check-circle-outline", prefix: "Success: " },
@@ -28,6 +28,7 @@
   import MenuButton from "./MenuButton.svelte";
   import ShowdownSettings from "#lib/kdm/showdown/ui/ShowdownSettings.svelte";
   import HuntSettings from "#lib/kdm/hunt/HuntSettings.svelte";
+  import Controls from "#lib/kdm/collection/workbook/Controls.svelte";
 
   const menu = getSiteMenu();
   const dates = getDatePreferences();
@@ -117,6 +118,10 @@
 
   function back() {
     void showView("main");
+  }
+
+  function closeImport() {
+    if (view === "workbook") back();
   }
 
   function onfullscreenchange() {
@@ -256,6 +261,16 @@
                   <span class="chevron i-material-symbols:chevron-right" aria-hidden="true"></span>
                 </button>
               </div>
+            {/if}
+            {#if page.route.id === "/kdm/collection"}
+              <Controls
+                showButtons={view === "main"}
+                reviewing={view === "workbook"}
+                onreview={() => showView("workbook")}
+                onclose={closeImport}
+              />
+            {/if}
+            {#if view === "main"}
               <nav class="navigation" aria-label="Site">
                 <a href={resolve("/")} onclick={(event) => onnavigate(event, resolve("/"))}>
                   <span class="row-icon i-material-symbols:home-outline" aria-hidden="true"></span>Home
@@ -307,7 +322,7 @@
                   <p>Saved collection changes and notifications will appear here.</p>
                 </div>
               {/if}
-            {:else}
+            {:else if view === "settings"}
               <ToggleButton pressed={glass.enabled} onclick={() => glass.setEnabled(!glass.enabled)} style="margin-block-end: 0.75rem">
                 Glass effects
               </ToggleButton>

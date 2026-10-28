@@ -54,6 +54,7 @@ export function clearChangedListings(item: Item, before: ReturnType<typeof listi
 export function normalizeItem(item: Item) {
   const listings = listingSnapshot(item);
   for (const edition of item.editions ?? []) {
+    edition.label = edition.label.replace(/^Painter['’]s Scale(?=:|$)/u, "Painters");
     if (edition.includedOnly) delete edition.prices;
     if (edition.label === "Deathgrey M2 Edition") edition.label = "Deathgrey M2";
     recordAvailability(edition, edition.available === true);
@@ -68,9 +69,10 @@ export function normalizeItem(item: Item) {
       edition.materials = [edition.label];
     if (
       edition.runSize !== undefined ||
-      /\bfirst[\s-]+run\b|\bdeathgrey\b/i.test(
-        [edition.label, edition.name, ...(edition.name ? [edition.name] : (edition.materials ?? []))].join(" "),
-      )
+      (!/\bencore\b/i.test(edition.label) &&
+        /\bfirst[\s-]+run\b|\bdeathgrey\b/i.test(
+          [edition.label, edition.name, ...(edition.name ? [edition.name] : (edition.materials ?? []))].join(" "),
+        ))
     )
       edition.numbered = true;
   }

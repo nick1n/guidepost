@@ -73,7 +73,17 @@ self.addEventListener("fetch", (event) => {
       const cache = await caches.open(cacheName);
       // Prerendered HTML is the same for all search/filter URLs; the client restores their state.
       const cached = await cache.match(event.request, { ignoreSearch: event.request.mode === "navigate" });
-      const response = cached ?? (await fetch(event.request));
+      const response =
+        cached ??
+        (await fetch(event.request).catch(
+          () =>
+            // Offline cache misses and cancelled requests must still settle respondWith with a response.
+            new Response("This resource is unavailable. Check your connection and try again.", {
+              status: 503,
+              statusText: "Service Unavailable",
+              headers: { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store" },
+            }),
+        ));
       const url = new URL(event.request.url);
       if (response.ok && url.origin === self.location.origin && deferredAssets.has(url.pathname)) {
         if (!cached) event.waitUntil(cache.put(event.request, response.clone()).catch(() => {}));

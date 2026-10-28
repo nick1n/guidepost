@@ -39,12 +39,6 @@ const slug = (name: string) =>
 
 function itemFamily(id: string, item: Item) {
   if (/\bbust\b/i.test(item.name) || /^(?:set-)?bust-/.test(id)) return "bust";
-  if (
-    /painter['’]?s?\s+scale/i.test(item.name) ||
-    /^(?:set-)?painters-scale-/.test(id) ||
-    (item.size === "50" && item.tags.includes("painters-scale"))
-  )
-    return "painters-scale";
   const name = slug(item.name);
   return families.find((family) => name.startsWith(family + "-")) ?? (item.tags.includes("pinup") ? "pinup" : undefined);
 }
@@ -62,7 +56,7 @@ function familyId(id: string, item: Item) {
   const kind = item.kind === "set" || item.kind === "expansion" ? item.kind : undefined;
   let base = kind ? id.replace(new RegExp("^" + kind + "-"), "").replace(kind === "expansion" ? /-expansion$/ : /$^/, "") : id;
   const family = itemFamily(id, item);
-  if (family === "bust" || family === "painters-scale") {
+  if (family === "bust") {
     const named = slug(item.name);
     base = base.replace(new RegExp("(?:^|-)" + family + "(?=-|$)", "g"), "").replace(/^-|-$/g, "");
     const namedFamily = families.find((value) => named.startsWith(value + "-"));

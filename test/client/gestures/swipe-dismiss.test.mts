@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { Element, event, swipeFixture } from "./swipe-fixture.mts";
+import { Element, event, createFixture } from "./swipe-fixture.mts";
 
 function fixture() {
-  return swipeFixture({ dialog: true, directions: ["down"], threshold: 64, duration: 1500 });
+  return createFixture({ dialog: true, directions: ["down"], threshold: 64, duration: 1500 });
 }
 
 describe("menu swipe dismissal", () => {

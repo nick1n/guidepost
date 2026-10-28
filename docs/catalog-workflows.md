@@ -98,7 +98,10 @@ Publication guards the catalog, import records, workbook schemas, and previous m
 
 [src/lib/types/workbook.ts](../src/lib/types/workbook.ts) owns the mapping and normalized-row contract.
 `pnpm generate:types` derives [workbook-map.schema.json](../static/kdm/catalog/workbook-map.schema.json); edit the contract instead of the generated schema.
-Runtime validation also rejects duplicate sheet/row locators. Normalized-row workflows exist; XLSX parsing, writing, and controls are deferred.
+Runtime validation also rejects duplicate sheet/row locators. XLSX transfers load the product-only map on demand.
+
+`pnpm catalog:workbook-template` rebuilds the committed template from `local-data/kdm-catalog/imports/KDM Collection Sheets.xlsx`,
+validating mapped names and removing personal data. Keep the source Git-ignored and review the sanitized template before publication.
 
 ### Live shop links
 

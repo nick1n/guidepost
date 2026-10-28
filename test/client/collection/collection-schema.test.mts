@@ -24,7 +24,7 @@ it("rejects malformed or noncanonical keys and invalid state", () => {
     expect(Result.isFailure(parseCollectionKey(key))).toBe(true);
     expect(() => Schema.decodeUnknownSync(CollectionSnapshotSchema)({ [key]: { owned: true } })).toThrow();
   }
-  for (const invalid of ["42", 0, 1.5, 10000, Number.NaN]) {
+  for (const invalid of ["42", -1, 1.5, 10000, Number.NaN]) {
     expect(() => Schema.decodeUnknownSync(CopyNumberSchema)(invalid)).toThrow();
     expect(() =>
       Schema.decodeUnknownSync(CollectionSnapshotSchema)({ [collectionKey("item", "edition")]: { copyNumber: invalid } }),
@@ -34,7 +34,7 @@ it("rejects malformed or noncanonical keys and invalid state", () => {
     Schema.decodeUnknownSync(CollectionSnapshotSchema)({ [collectionKey("item", "edition")]: { copyNumber: undefined } }),
   ).toThrow();
   expect(copyNumberMaximum).toBe(9999);
-  for (const valid of [1, 5000, copyNumberMaximum]) {
+  for (const valid of [0, 1, 5000, copyNumberMaximum]) {
     expect(Schema.decodeUnknownSync(CopyNumberSchema)(valid)).toBe(valid);
   }
   expect(

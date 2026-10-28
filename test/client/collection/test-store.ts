@@ -17,7 +17,7 @@ export interface TestStore extends CollectionStore {
 
 export class TestCollectionStore extends Context.Service<TestCollectionStore, TestStore>()("guidepost/test/CollectionStore") {}
 
-export function makeTestStore(initial: CollectionSnapshot = {}): TestStore {
+export function makeStore(initial: CollectionSnapshot = {}): TestStore {
   let state = structuredClone(initial);
   let failLoad = false;
   let failSave: StoreError["reason"] | undefined;
@@ -87,7 +87,7 @@ export function makeTestStore(initial: CollectionSnapshot = {}): TestStore {
 export function testStoreLayer(initial: CollectionSnapshot = {}) {
   return Layer.effectContext(
     Effect.sync(() => {
-      const service = makeTestStore(initial);
+      const service = makeStore(initial);
       return Context.make(CollectionStorage, service).pipe(Context.add(TestCollectionStore, service));
     }),
   );

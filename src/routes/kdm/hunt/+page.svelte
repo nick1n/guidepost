@@ -2,7 +2,7 @@
   import { asset } from "$app/paths";
   import type { AssetPath } from "$app/types";
   import { backOut, cubicOut } from "svelte/easing";
-  import { prefersReducedMotion as reducedMotion } from "svelte/motion";
+  import { prefersReducedMotion } from "svelte/motion";
   import { huntDefaults } from "#lib/kdm/hunt/preference-store.ts";
   import { huntImages } from "#lib/kdm/hunt/cards.ts";
 
@@ -17,7 +17,7 @@
 
   function slide(_node: Element, { dir }: { dir: 1 | -1 }) {
     return {
-      duration: reducedMotion.current ? 0 : duration,
+      duration: prefersReducedMotion.current ? 0 : duration,
       easing: dir === -1 ? backOut : cubicOut,
       css: (t: number, u: number) => `translate: ${dir * u * 150}%; rotate: ${dir * u * 15}deg; opacity: ${t}`,
     };
@@ -92,7 +92,7 @@
 
   // Random draws need changing dice values while the outgoing card animates.
   $effect(() => {
-    if (!drawing || loadError || reducedMotion.current) return;
+    if (!drawing || loadError || prefersReducedMotion.current) return;
     const interval = setInterval(() => {
       firstRand = Math.floor(Math.random() * 10);
       secondRand = Math.floor(Math.random() * 10);
@@ -135,7 +135,7 @@
     flipDirection = undefined;
     flipSource = cardElement;
     rotation += turn === "left" ? -180 : 180;
-    if (reducedMotion.current) finishFlip(cardElement);
+    if (prefersReducedMotion.current) finishFlip(cardElement);
   }
 
   function finishFlip(element: HTMLButtonElement) {
@@ -363,12 +363,12 @@
       title="Select event (/, Up/Down arrows)"
     >
       <span class="dice" aria-hidden="true">
-        <span class="die light" style:--roll={drawing && !reducedMotion.current ? `${-45 - (secondRand / 9) * 360}deg` : "-45deg"}>
+        <span class="die light" style:--roll={drawing && !prefersReducedMotion.current ? `${-45 - (secondRand / 9) * 360}deg` : "-45deg"}>
           <span>
             {#if first === 0}<KdIcon i="lantern" />{:else}{first}{/if}
           </span>
         </span>
-        <span class="die" style:--roll={drawing && !reducedMotion.current ? `${45 + (firstRand / 9) * 360}deg` : "45deg"}>
+        <span class="die" style:--roll={drawing && !prefersReducedMotion.current ? `${45 + (firstRand / 9) * 360}deg` : "45deg"}>
           <span>
             {#if second === 0}<KdIcon i="lantern" />{:else}{second}{/if}
           </span>

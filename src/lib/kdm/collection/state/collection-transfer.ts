@@ -11,7 +11,16 @@ import {
   type EntryState,
 } from "#lib/types/index.ts";
 
-import { workbookLocator, WorkbookMapSchema, WorkbookRowsSchema, type WorkbookMap, type WorkbookRow } from "#lib/types/workbook.ts";
+import {
+  workbookLocator,
+  releaseColumns,
+  WorkbookMapSchema,
+  WorkbookRowsSchema,
+  type WorkbookMap,
+  type WorkbookRow,
+  type MappedWorkbookRow,
+  type CollectionWorkbookRow,
+} from "#lib/types/workbook.ts";
 import { normalizeSnapshot } from "#lib/types/collection.ts";
 export type { WorkbookMap, WorkbookRow } from "#lib/types/workbook.ts";
 
@@ -77,9 +86,6 @@ const validateSnapshot = Effect.fn("CollectionTransfer.validateSnapshot")(functi
         reference: key,
       });
     }
-    if (entry.copyNumber !== undefined && edition.runSize !== undefined && entry.copyNumber > edition.runSize) {
-      return yield* invalid(operation, `Copy number for ${key} exceeds its run size of ${edition.runSize}.`, key);
-    }
   }
   return snapshot;
 });
@@ -107,7 +113,8 @@ export const previewWorkbookRows = Effect.fn("CollectionTransfer.previewWorkbook
   const rows = yield* Schema.decodeUnknownEffect(WorkbookRowsSchema, { onExcessProperty: "error" })(input).pipe(
     Effect.mapError(() => invalid("preview", "Workbook rows are invalid.")),
   );
-  const map = yield* decodeMapping("preview", mapping);
+  const direct = rows.length > 0 && rows.every((row) => row.sheet === "Guidepost collection");
+  const map = direct ? undefined : yield* decodeMapping("preview", mapping);
   return yield* resolveWorkbookRows(rows, catalog, map, "preview");
 });
 
@@ -115,14 +122,27 @@ export const previewWorkbookRows = Effect.fn("CollectionTransfer.previewWorkbook
 const resolveWorkbookRows = Effect.fn("CollectionTransfer.resolveWorkbookRows")(function* (
   rows: readonly WorkbookRow[],
   catalog: Catalog,
-  map: WorkbookMap,
+  map: WorkbookMap | undefined,
   operation: "preview" | "export",
 ) {
-  const byLocator = new Map(map.rows.map((row) => [workbookLocator(row), row]));
+  const byLocator = new Map((map?.rows ?? []).map((row) => [workbookLocator(row), row]));
   const hasTarget = knownTarget(catalog);
   const entries: Record<string, EntryState> = {};
   const seenRows = new Set<string>();
+  const directTargets = new Set<string>();
   for (const row of rows) {
+    if (row.sheet === "Guidepost collection") {
+      const key = collectionKey(row.contentId, row.editionId);
+      if (entries[key]) return yield* invalid(operation, `Workbook repeats collection edition ${key}.`, key);
+      directTargets.add(key);
+      entries[key] = {
+        ...(row.owned === undefined ? {} : { owned: row.owned }),
+        ...(row.wished === undefined ? {} : { wished: row.wished }),
+        ...(row.missing === undefined ? {} : { missing: row.missing }),
+        ...(row.copyNumber === undefined ? {} : { copyNumber: row.copyNumber }),
+      };
+      continue;
+    }
     const locator = workbookLocator(row);
     const selection = JSON.stringify([row.sheet, row.row, row.releaseColumn ?? null]);
     if (seenRows.has(selection)) return yield* invalid(operation, `Workbook selection ${selection} appears more than once.`, locator);
@@ -167,6 +187,7 @@ const resolveWorkbookRows = Effect.fn("CollectionTransfer.resolveWorkbookRows")(
     const targets = source.ownershipScope === "source-row" ? [selectedTarget, ...(source.related ?? [])] : selected;
     for (const target of targets) {
       const key = collectionKey(target.contentId, target.editionId);
+      if (directTargets.has(key)) return yield* invalid(operation, `Workbook repeats collection edition ${key}.`, key);
       if (!hasTarget(target.contentId, target.editionId, target.category)) {
         return yield* new TransferError({
           operation,
@@ -193,7 +214,7 @@ const resolveWorkbookRows = Effect.fn("CollectionTransfer.resolveWorkbookRows")(
   return yield* validateSnapshot(entries, catalog, operation);
 });
 
-// These rows contain only collection fields and product locators. XLSX cell handling belongs in a future adapter.
+// These rows contain only collection fields and product locators. The XLSX adapter owns cell handling.
 export const exportWorkbookRows = Effect.fn("CollectionTransfer.exportWorkbookRows")(function* (
   snapshot: CollectionSnapshot,
   catalog: Catalog,
@@ -205,12 +226,12 @@ export const exportWorkbookRows = Effect.fn("CollectionTransfer.exportWorkbookRo
   yield* validateSnapshot(validated, catalog, "export");
   const entries = normalizeSnapshot(validated);
   const map = yield* decodeMapping("export", mapping);
-  const rows: WorkbookRow[] = [];
+  const rows: MappedWorkbookRow[] = [];
   const represented = new Set<string>();
   for (const source of map.rows) {
     const selections = [
       { target: source.primary, releaseColumn: undefined },
-      ...(["M", "N", "O"] as const).flatMap((releaseColumn) =>
+      ...releaseColumns.flatMap((releaseColumn) =>
         (source.releaseEditions?.[releaseColumn] ?? []).map((target) => ({ target, releaseColumn })),
       ),
     ];
@@ -271,5 +292,32 @@ export const exportWorkbookRows = Effect.fn("CollectionTransfer.exportWorkbookRo
     )
   )
     return yield* invalid("export", "Workbook rows cannot represent this collection without changing its values.");
+  return rows;
+});
+
+// Fresh workbooks use catalog identities directly, independent of the original spreadsheet's coverage and shared rows.
+export const exportCollectionRows = Effect.fn("CollectionTransfer.exportCollectionRows")(function* (
+  snapshot: CollectionSnapshot,
+  catalog: Catalog,
+) {
+  const decoded = yield* Schema.decodeUnknownEffect(CollectionSnapshotSchema, { onExcessProperty: "error" })(snapshot).pipe(
+    Effect.mapError(() => invalid("export", "Collection data is invalid.")),
+  );
+  yield* validateSnapshot(decoded, catalog, "export");
+  const items = new Map(reviewEntries(catalog).map((item) => [item.id, item]));
+  const rows: CollectionWorkbookRow[] = [];
+  for (const [key, entry] of Object.entries(normalizeSnapshot(decoded))) {
+    const [contentId, editionId] = yield* Effect.fromResult(parseCollectionKey(key)).pipe(
+      Effect.mapError(() => invalid("export", "Collection entry has an invalid key.", key)),
+    );
+    rows.push({
+      sheet: "Guidepost collection",
+      row: rows.length + 3,
+      name: items.get(contentId)?.name ?? contentId,
+      contentId,
+      editionId,
+      ...entry,
+    });
+  }
   return rows;
 });

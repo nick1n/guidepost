@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { Element, event, swipeFixture as fixture } from "./swipe-fixture.mts";
+import { Element, event, createFixture } from "./swipe-fixture.mts";
 
 describe("directional swipes", () => {
   it.each([
@@ -8,7 +8,7 @@ describe("directional swipes", () => {
     { direction: "up", x: 2, y: -80, distance: -80 },
     { direction: "down", x: 2, y: 80, distance: 80 },
   ] as const)("recognizes $direction with signed drag feedback", ({ direction, x, y, distance }) => {
-    const view = fixture({ directions: ["left", "right", "up", "down"] });
+    const view = createFixture({ directions: ["left", "right", "up", "down"] });
     view.touch("touchstart");
     expect(view.touch("touchmove", x, y, 200).defaultPrevented).toBe(true);
     expect(view.onDrag).toHaveBeenLastCalledWith(distance, true);
@@ -19,7 +19,7 @@ describe("directional swipes", () => {
   });
 
   it("leaves disabled directions to native scrolling and never reclaims that gesture", () => {
-    const view = fixture({ directions: ["up"] });
+    const view = createFixture({ directions: ["up"] });
     view.touch("touchstart");
     expect(view.touch("touchmove", 80, 0, 200).defaultPrevented).toBe(false);
     view.touch("touchend", 0, -100, 300);
@@ -28,7 +28,7 @@ describe("directional swipes", () => {
   });
 
   it("preserves horizontal scrolling without blocking an enabled vertical swipe", () => {
-    const view = fixture({ directions: ["left", "up"] });
+    const view = createFixture({ directions: ["left", "up"] });
     view.child.scrollWidth = 300;
     view.child.overflowX = "auto";
     view.touch("touchstart");
@@ -41,7 +41,7 @@ describe("directional swipes", () => {
   });
 
   it("allows vertical swipes only at the corresponding scroll edge", () => {
-    const view = fixture({ directions: ["up", "down"] });
+    const view = createFixture({ directions: ["up", "down"] });
     view.child.scrollHeight = 300;
     view.child.overflowY = "auto";
     for (const [scrollTop, expected] of [
@@ -62,7 +62,7 @@ describe("directional swipes", () => {
   });
 
   it.each(["mouse", "touch"])("applies custom distance and duration limits to %s", (input) => {
-    const view = fixture({ directions: ["down"], threshold: 100, duration: 250 });
+    const view = createFixture({ directions: ["down"], threshold: 100, duration: 250 });
     const fire = input === "mouse" ? view.pointer : view.touch;
     for (const [distance, time] of [
       [80, 200],
@@ -78,7 +78,7 @@ describe("directional swipes", () => {
 
   it("enforces touch duration without scheduling feedback when none is requested", () => {
     vi.useFakeTimers();
-    const view = fixture({ feedback: false });
+    const view = createFixture({ feedback: false });
     try {
       view.touch("touchstart");
       expect(vi.getTimerCount()).toBe(0);
@@ -92,7 +92,7 @@ describe("directional swipes", () => {
   });
 
   it("ignores nested dialogs and native touch scrolling", () => {
-    const view = fixture({ directions: ["left", "up"] });
+    const view = createFixture({ directions: ["left", "up"] });
     view.child.parentElement = new Element("dialog");
     view.touch("touchstart");
     view.touch("touchend", -100, 0, 300);
@@ -105,7 +105,7 @@ describe("directional swipes", () => {
   });
 
   it("supports upward touch gestures without also flipping or activating the touched control", () => {
-    const view = fixture({ directions: ["left", "right", "up"] });
+    const view = createFixture({ directions: ["left", "right", "up"] });
     view.touch("touchstart", 100, 200);
     expect(view.touch("touchmove", 102, 100, 200).defaultPrevented).toBe(true);
     view.touch("touchend", 102, 100, 300);
@@ -128,7 +128,7 @@ describe("directional swipes", () => {
     view.detach();
   });
   it.each([false, true])("supports slow mouse dragging and suppresses only its following pointer click, page=%s", (page) => {
-    const view = fixture({ page });
+    const view = createFixture({ page });
     view.pointer("pointerdown");
     expect(view.pointer("pointermove", -80, 4, 2000).defaultPrevented).toBe(true);
     expect(view.onDrag).toHaveBeenLastCalledWith(-80, true);
@@ -144,7 +144,7 @@ describe("directional swipes", () => {
   });
   it("expires touch readiness even while the finger stops moving", () => {
     vi.useFakeTimers();
-    const view = fixture();
+    const view = createFixture();
     view.touch("touchstart");
     expect(view.touch("touchmove", 80, 0, 200).defaultPrevented).toBe(true);
     expect(view.onDrag).toHaveBeenLastCalledWith(80, true);
@@ -156,7 +156,7 @@ describe("directional swipes", () => {
     vi.useRealTimers();
   });
   it("commits a quick touch swipe once and preserves vertical scroll decisions", () => {
-    const view = fixture();
+    const view = createFixture();
     view.touch("touchstart");
     view.touch("touchend", 80, 0, 300);
     expect(view.onSwipe).toHaveBeenCalledWith("right");
@@ -168,7 +168,7 @@ describe("directional swipes", () => {
     view.detach();
   });
   it.each(["control", "scroller"])("preserves gestures owned by a %s", (kind) => {
-    const view = fixture();
+    const view = createFixture();
     if (kind === "control") view.child.selector = "input";
     else {
       view.child.scrollWidth = 300;
@@ -181,7 +181,7 @@ describe("directional swipes", () => {
     view.detach();
   });
   it.each(["blur", "pointercancel", "buttons", "detach"])("cancels and clears feedback on %s", (kind) => {
-    const view = fixture();
+    const view = createFixture();
     view.pointer("pointerdown");
     view.pointer("pointermove", 80);
     if (kind === "blur") view.window.dispatchEvent(new Event("blur"));

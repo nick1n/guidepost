@@ -1,5 +1,6 @@
 import { expect, test } from "vitest";
 import { availabilityReleases, productEditions, resolveReleases } from "#scripts/catalog/releases.mts";
+import { normalizeItem } from "#scripts/catalog/normalize.mts";
 import type { Edition, Product, Variant } from "#scripts/catalog/types.mts";
 
 function variant(id: number, title: string, facts: Partial<Variant> = {}): Variant {
@@ -9,6 +10,67 @@ function variant(id: number, title: string, facts: Partial<Variant> = {}): Varia
 function listing(variants: Variant[], facts: Partial<Product> = {}): Product {
   return { id: 1, title: "Example", handle: "example", description: "", variants, ...facts };
 }
+
+test.each(["Encore", "Painters: Encore", "Bust: Encore"])("does not infer numbering from Deathgrey material for %s", (label) => {
+  const edition: Edition = { id: "encore", label, materials: ["Deathgrey"] };
+  normalizeItem({ name: "Example", tags: [], editions: [edition] });
+  expect(edition.numbered).toBeUndefined();
+});
+
+test("preserves release numbering and explicitly documented numbered Encore exceptions", () => {
+  const editions: Edition[] = [
+    { id: "first-run", label: "First Run" },
+    { id: "deathgrey", label: "Deathgrey" },
+    { id: "known-total", label: "Encore", runSize: 200 },
+    { id: "confirmed-numbered", label: "Encore", numbered: true },
+  ];
+  normalizeItem({ name: "Example", tags: [], editions });
+  expect(editions.map((edition) => edition.numbered)).toEqual([true, true, true, true]);
+});
+
+test("normalizes legacy painter labels without changing permanent IDs", () => {
+  const editions: Edition[] = [
+    { id: "original-id", label: "Painter's Scale: First Run", releaseDate: "2025-01-01" },
+    { id: "encore-id", label: "Painter's Scale: Encore" },
+  ];
+  normalizeItem({ name: "Example", tags: [], editions });
+  expect(editions.map(({ id, label, releaseDate }) => ({ id, label, releaseDate }))).toEqual([
+    { id: "original-id", label: "Painters: First Run", releaseDate: "2025-01-01" },
+    { id: "encore-id", label: "Painters: Encore", releaseDate: "2025-01-01" },
+  ]);
+});
+
+test("matches painter release variants to their existing IDs and keeps Deathgrey material", () => {
+  const editions: Edition[] = [
+    { id: "original-id", label: "Painters: First Run" },
+    { id: "grey-id", label: "Painters: Deathgrey" },
+    { id: "encore-id", label: "Painters: Encore" },
+  ];
+  const result = resolveReleases(
+    { name: "Example", tags: [], editions },
+    listing([variant(1, "First Run"), variant(2, "Deathgrey"), variant(3, "Encore")], {
+      description: "<ul><li>Photoresin miniature</li></ul>",
+    }),
+    { policy: "update", mapping: { category: "content", itemId: "example", edition: "Painters: First Run" } },
+  );
+  expect(result.releases.map(({ edition, label, materials }) => ({ id: edition?.id, label, materials }))).toEqual([
+    { id: "original-id", label: "Painters: First Run", materials: ["Photoresin"] },
+    { id: "grey-id", label: "Painters: Deathgrey", materials: ["Deathgrey"] },
+    { id: "encore-id", label: "Painters: Encore", materials: ["Photoresin"] },
+  ]);
+});
+
+test("retains remaster qualifiers when matching release variants", () => {
+  const editions: Edition[] = [
+    { id: "original-id", label: "Remaster: First Run" },
+    { id: "encore-id", label: "Remaster: Encore" },
+  ];
+  const result = resolveReleases({ name: "Example", tags: [], editions }, listing([variant(1, "First Run"), variant(2, "Encore")]), {
+    policy: "update",
+    mapping: { category: "content", itemId: "example", edition: "Remaster: First Run" },
+  });
+  expect(result.releases.map(({ edition }) => edition?.id)).toEqual(["original-id", "encore-id"]);
+});
 
 test("curated selectors group warehouses under the existing edition without reassigning its permanent ID", () => {
   const edition: Edition = { id: "original-release", label: "Renamed release", prices: [2000, 4000] };
