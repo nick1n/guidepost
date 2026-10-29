@@ -18,7 +18,7 @@ import {
   type Metadata,
 } from "#lib/types/workbook.ts";
 import { TransferError } from "../state/collection-transfer.ts";
-import { CopyNumberSchema, copyNumberMaximum } from "#lib/types/collection.ts";
+import { CopyNumberSchema, copyNumberMaximum, collectionKey } from "#lib/types/collection.ts";
 import type { CatalogEntry } from "#lib/catalog-view.ts";
 import { workbookIdentities } from "./identity.ts";
 
@@ -36,6 +36,27 @@ const decodeMetadata = Schema.decodeUnknownSync(Schema.fromJsonString(MetadataSc
 type Selection = { editionId: string; contentId?: string; releaseColumn?: ReleaseColumn; label?: string };
 export type Draft = { id: string; row: WorkbookRow; options: Selection[]; hint: string; overlay?: boolean };
 type Cell = { value: unknown; address: string; sheet: string };
+
+function modelGroups(entries: Metadata["entries"]) {
+  const groups = new Map<string, Metadata["entries"]>();
+  for (const entry of entries) {
+    const key = collectionKey(entry.contentId, entry.sharedWith ?? entry.editionId);
+    groups.set(key, [...(groups.get(key) ?? []), entry]);
+  }
+  return [...groups.values()];
+}
+
+function preferred(entries: Metadata["entries"], field: "owned" | "wished") {
+  const active = entries.filter((entry) => entry.state[field]);
+  if (active.length) return active;
+  if (field === "owned") {
+    const supplied = entries.filter((entry) => entry.supplied);
+    if (supplied.length) return supplied;
+    const wished = entries.filter((entry) => entry.state.wished);
+    if (wished.length) return wished;
+  }
+  return entries.filter((entry) => !entry.sharedWith).slice(0, 1);
+}
 
 function cell(sheet: Sheet, row: number, column: number | string): Cell {
   const index = typeof column === "number" ? column : [...column].reduce((index, letter) => index * 26 + letter.charCodeAt(0) - 64, 0);
@@ -252,12 +273,25 @@ function readTemplate(workbook: Sheet[]): Draft[] {
       }
       const changed = (column: string) => (text(getCell(column)) ?? null) !== (metadata.baseline[column] ?? null);
       const ownership = (entries: Metadata["entries"], owned: boolean) => {
-        for (const entry of entries) add(entry, { owned, missing: false, ...(owned ? { wished: false } : {}) }, true);
+        for (const group of modelGroups(entries))
+          for (const entry of owned ? preferred(group, "owned") : group)
+            add(
+              entry,
+              {
+                owned: owned && (!entry.supplied || entry.state.owned === true),
+                missing: !owned && entry.supplied === true,
+                ...(owned ? { wished: false } : {}),
+              },
+              true,
+            );
       };
       const ownColumn = miniature ? "A" : "B";
       if (changed(ownColumn)) {
         const owned = checkbox(getCell(ownColumn));
-        if (owned !== undefined) ownership(owned ? metadata.entries.slice(0, 1) : metadata.entries, owned);
+        if (owned !== undefined) {
+          const primary = modelGroups(metadata.entries)[0] ?? [];
+          ownership(owned ? primary : metadata.entries, owned);
+        }
       }
       if (!miniature) return;
       for (const column of releaseColumns) {
@@ -277,7 +311,8 @@ function readTemplate(workbook: Sheet[]): Draft[] {
         if (!changed(column)) continue;
         const selected = materialSelection(getCell(column));
         if (!selected) {
-          for (const entry of metadata.entries) add(entry, field === "owned" ? { owned: false, missing: false } : { wished: false }, true);
+          if (field === "owned") ownership(metadata.entries, false);
+          else for (const entry of metadata.entries) add(entry, { wished: false }, true);
           continue;
         }
         const hint = String(text(getCell(column)));
@@ -285,22 +320,41 @@ function readTemplate(workbook: Sheet[]): Draft[] {
           (entry) => entry.material.toLowerCase() === hint.toLowerCase() || entry.label.toLowerCase() === hint.toLowerCase(),
         );
         const candidates = matches.length ? matches : metadata.entries;
-        const entry = candidates[0];
-        if (!entry) continue;
-        add(
-          entry,
-          field === "owned" ? { owned: true, wished: false, missing: false } : { wished: true },
-          true,
-          candidates.length > 1
-            ? candidates.map((entry) => ({ contentId: entry.contentId, editionId: entry.editionId, label: entry.label }))
-            : [],
-          hint,
-        );
+        const groups = modelGroups(candidates);
+        if (groups.length === 1) {
+          if (field === "owned") ownership(candidates, true);
+          else for (const entry of preferred(candidates, field)) add(entry, { wished: true }, true);
+        } else if (groups.length) {
+          const choices = groups.flatMap((group) => preferred(group, field).slice(0, 1));
+          add(
+            choices[0],
+            field === "owned" ? { owned: true, wished: false, missing: false } : { wished: true },
+            true,
+            choices.map((entry) => ({ contentId: entry.contentId, editionId: entry.editionId, label: entry.label })),
+            hint,
+          );
+        }
       }
       if (changed("L")) {
         const copy = copyNumber(getCell("L"));
         const numbered = metadata.entries.find((entry) => entry.column === "M") ?? metadata.entries[0];
-        if (copy !== undefined && numbered) add(numbered, { copyNumber: copy }, true);
+        if (copy !== undefined && numbered) {
+          const group = modelGroups(metadata.entries).find((group) => group.includes(numbered))!;
+          const copies = group.filter((entry) => entry.state.copyNumber !== undefined);
+          const candidates = copies.length ? copies : preferred(group, "owned");
+          add(
+            candidates[0],
+            { copyNumber: copy },
+            true,
+            candidates.length > 1
+              ? candidates.map((entry) => ({
+                  contentId: entry.contentId,
+                  editionId: entry.editionId,
+                  label: `${entry.label}${entry.sharedWith ? " (Included)" : ""}`,
+                }))
+              : [],
+          );
+        }
       }
     });
   }

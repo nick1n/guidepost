@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { SvelteMap } from "svelte/reactivity";
 import { reviewIndex } from "#lib/catalog-view.ts";
 import { CollectionBrowsing } from "#lib/kdm/collection/collection-browsing.svelte.ts";
+import { collectionHash, type CollectionView } from "#lib/kdm/collection/url.ts";
 import type { Catalog, EntryState } from "#lib/types/index.ts";
 
 function fixture(count = 0) {
@@ -37,12 +38,12 @@ function fixture(count = 0) {
   };
   const catalog = reviewIndex(data);
   const states = new SvelteMap<string, EntryState>();
-  let url = new URL("https://example.test/kdm/collection?keep=yes#cards");
-  const replace = vi.fn((next: URL) => {
-    url = next;
+  let url = new URL("https://example.test/kdm/collection/?keep=yes");
+  const replace = vi.fn((view: CollectionView) => {
+    url.hash = collectionHash.format(view);
   });
   const browsing = new CollectionBrowsing(catalog, (item, edition) => states.get(`${item}/${edition}`) ?? {}, {
-    current: () => url,
+    current: () => collectionHash.read(url.hash),
     replace,
   });
   return {
@@ -52,9 +53,12 @@ function fixture(count = 0) {
     get url() {
       return url;
     },
-    navigate(search: string) {
-      url = new URL(`https://example.test/kdm/collection${search}`);
-      browsing.restore(url);
+    get params() {
+      return new URLSearchParams(url.hash.split("?")[1]);
+    },
+    navigate(hash: string) {
+      url = new URL(`https://example.test/kdm/collection/${hash}`);
+      browsing.restore(collectionHash.read(url.hash));
     },
   };
 }
@@ -181,7 +185,7 @@ describe("collection browsing", () => {
     expect(f.browsing.status).toBe("wishlist");
     expect(f.browsing.visible).toHaveLength(100);
     f.browsing.showMoreItems();
-    f.navigate("?tag=model");
+    f.navigate("#/content?tag=model");
     expect(f.browsing.visible).toHaveLength(100);
     f.browsing.clearSearch();
     expect(f.browsing.visible).toHaveLength(100);
@@ -189,13 +193,13 @@ describe("collection browsing", () => {
 
   it("restores URL filters in the destination category, deduplicating and rejecting unavailable tags without writing", () => {
     const f = fixture();
-    f.navigate("?cat=accessories&q=%20Dice%20&tag=dice&tag=dice&tag=monster-lion&tag=missing");
+    f.navigate("#/accessories?q=%20Dice%20&tag=dice&tag=dice&tag=monster-lion&tag=missing");
     expect(f.browsing.category).toBe("accessories");
     expect(f.browsing.query).toBe(" Dice ");
     expect(f.browsing.selectedTags).toEqual(["dice"]);
     expect(f.browsing.filtered.map((item) => item.id)).toEqual(["dice"]);
     expect(f.replace).not.toHaveBeenCalled();
-    f.navigate("?cat=included-only&tag=monster-lion&tag=dice");
+    f.navigate("#/included-only?tag=monster-lion&tag=dice");
     expect(f.browsing.category).toBe("content");
     expect(f.browsing.selectedTags).toEqual(["monster-lion"]);
     expect(f.browsing.filtered.map((item) => item.id)).toEqual(["core", "model"]);
@@ -268,15 +272,15 @@ describe("collection browsing", () => {
     vi.advanceTimersByTime(249);
     expect(f.replace).not.toHaveBeenCalled();
     vi.advanceTimersByTime(1);
-    expect(f.url.searchParams.get("q")).toBe("Tomorrow");
+    expect(f.params.get("q")).toBe("Tomorrow");
     f.browsing.setQuery("unfinished");
     const clear = f.browsing.clearSearch;
     clear();
-    expect(f.url.searchParams.has("q")).toBe(false);
+    expect(f.params.has("q")).toBe(false);
     vi.runAllTimers();
     expect(f.replace).toHaveBeenCalledTimes(2);
     expect(f.url.searchParams.get("keep")).toBe("yes");
-    expect(f.url.hash).toBe("#cards");
+    expect(f.url.hash).toBe("");
   });
 
   it("cancels pending writes before navigation, on restoration, and on page disposal", () => {
@@ -287,9 +291,9 @@ describe("collection browsing", () => {
     vi.runAllTimers();
     expect(f.replace).not.toHaveBeenCalled();
     f.browsing.setQuery("pending again");
-    f.navigate("?cat=accessories&q=dice");
+    f.navigate("#/accessories?q=dice");
     vi.runAllTimers();
-    expect(f.url.searchParams.get("q")).toBe("dice");
+    expect(f.params.get("q")).toBe("dice");
     expect(f.replace).not.toHaveBeenCalled();
     f.browsing.setQuery("disposed");
     f.browsing.cancelPendingUrl();
@@ -297,23 +301,46 @@ describe("collection browsing", () => {
     expect(f.replace).not.toHaveBeenCalled();
   });
 
-  it("writes normalized category and tag parameters immediately and avoids redundant replacements", () => {
+  it("retains expanded search batches when its own hash update is observed", () => {
+    vi.useFakeTimers();
+    const f = fixture(205);
+    f.browsing.setQuery("model");
+    f.browsing.showMoreItems();
+    vi.runAllTimers();
+    f.browsing.restore(collectionHash.read(f.url.hash));
+    expect(f.browsing.visible).toHaveLength(200);
+    expect(f.replace).toHaveBeenCalledOnce();
+  });
+
+  it("keeps ownership and wishlist status out of links and ignores incoming status parameters", () => {
+    const f = fixture();
+    f.browsing.toggleStatus("owned");
+    expect(f.replace).not.toHaveBeenCalled();
+    f.browsing.changeCategory("accessories");
+    expect(f.url.hash).toBe("#/accessories");
+    f.navigate("#/content?status=wishlist");
+    expect(f.browsing.status).toBe("owned");
+    f.browsing.toggleStatus("wishlist");
+    expect(f.replace).toHaveBeenCalledOnce();
+  });
+
+  it("writes normalized category routes and tag parameters immediately and avoids redundant replacements", () => {
     vi.useFakeTimers();
     const f = fixture();
-    f.navigate("?cat=content&tag=monster-lion&tag=monster-lion&tag=missing&keep=yes#cards");
+    f.navigate("?keep=yes#/content?tag=monster-lion&tag=monster-lion&tag=missing");
     f.browsing.setQuery("Tomorrow");
     f.browsing.toggleTag("armor-kit");
-    expect(f.url.searchParams.has("cat")).toBe(false);
-    expect(f.url.searchParams.getAll("tag")).toEqual(["monster-lion", "armor-kit"]);
-    expect(f.url.searchParams.get("q")).toBe("Tomorrow");
+    expect(collectionHash.read(f.url.hash).category).toBe("content");
+    expect(f.params.getAll("tag")).toEqual(["monster-lion", "armor-kit"]);
+    expect(f.params.get("q")).toBe("Tomorrow");
     vi.runAllTimers();
     expect(f.replace).toHaveBeenCalledTimes(1);
     f.browsing.changeCategory("accessories");
-    expect(f.url.searchParams.get("cat")).toBe("accessories");
-    expect(f.url.searchParams.get("q")).toBe("Tomorrow");
-    expect(f.url.searchParams.has("tag")).toBe(false);
+    expect(f.url.hash).toMatch(/^#\/accessories\?/);
+    expect(f.params.get("q")).toBe("Tomorrow");
+    expect(f.params.has("tag")).toBe(false);
     expect(f.url.searchParams.get("keep")).toBe("yes");
-    expect(f.url.hash).toBe("#cards");
+    expect(f.url.hash).toBe("#/accessories?q=Tomorrow");
     f.browsing.changeCategory("accessories");
     f.browsing.toggleTag("monster-lion");
     expect(f.replace).toHaveBeenCalledTimes(2);
@@ -326,13 +353,13 @@ describe("collection browsing", () => {
     f.browsing.changeCategory("accessories");
     expect(f.browsing.query).toBe(" Dice ");
     expect(f.browsing.filtered.map((item) => item.id)).toEqual(["dice"]);
-    expect(f.url.searchParams.get("q")).toBe(" Dice ");
-    expect(f.url.searchParams.get("cat")).toBe("accessories");
+    expect(f.params.get("q")).toBe(" Dice ");
+    expect(f.url.hash).toMatch(/^#\/accessories\?/);
     f.browsing.changeCategory("content");
     expect(f.browsing.query).toBe(" Dice ");
     expect(f.browsing.filtered).toEqual([]);
-    expect(f.url.searchParams.get("q")).toBe(" Dice ");
-    expect(f.url.searchParams.has("cat")).toBe(false);
+    expect(f.params.get("q")).toBe(" Dice ");
+    expect(collectionHash.read(f.url.hash).category).toBe("content");
     vi.runAllTimers();
     expect(f.replace).toHaveBeenCalledTimes(2);
   });
@@ -351,7 +378,7 @@ describe("collection browsing", () => {
     expect(f.browsing.acceptTagQuery()).toBe(true);
     expect(f.browsing.selectedTags).toEqual(["monster-lion", "armor-kit"]);
     f.browsing.removeLastTag();
-    expect(f.url.searchParams.getAll("tag")).toEqual(["monster-lion"]);
+    expect(f.params.getAll("tag")).toEqual(["monster-lion"]);
     f.browsing.setQuery("unmatched");
     expect(f.browsing.acceptTagQuery()).toBe(false);
     expect(f.browsing.query).toBe("unmatched");

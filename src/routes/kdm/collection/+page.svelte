@@ -9,14 +9,15 @@
 
 <script lang="ts">
   import Header from "#lib/app/Header.svelte";
-  import { afterNavigate, beforeNavigate, goto } from "$app/navigation";
-  import { page } from "$app/state";
+  import { beforeNavigate } from "$app/navigation";
   import { onDestroy, untrack } from "svelte";
+  import { createHashRoute } from "#lib/app/navigation/hash-route.svelte.ts";
   import { innerHeight, scrollY } from "svelte/reactivity/window";
   import CollectionCard from "#lib/kdm/collection/ui/CollectionCard.svelte";
   import { swipe, type SwipeDirection } from "#lib/swipe.ts";
   import { reviewTagLabel } from "#lib/catalog-view.ts";
-  import { CollectionBrowsing, categories } from "#lib/kdm/collection/collection-browsing.svelte.ts";
+  import { CollectionBrowsing } from "#lib/kdm/collection/collection-browsing.svelte.ts";
+  import { categories, collectionHash } from "#lib/kdm/collection/url.ts";
   import { CollectionCards } from "#lib/kdm/collection/collection-cards.svelte.ts";
   import { formatPriceTotals } from "#lib/kdm-data.ts";
   import { getCollectionActions, ownershipMessage } from "#lib/kdm/collection/state/collection-actions.ts";
@@ -31,6 +32,7 @@
     return collection.hasStore ? "Retry loading" : "Reload page";
   });
   const collectionActions = getCollectionActions();
+  const route = createHashRoute(collectionHash);
   // Route entry installs the catalog before building this page's index and commands.
   collection.setCatalog(untrack(() => data.catalog));
   const catalog = collection.catalog;
@@ -43,8 +45,8 @@
       return { owned: value.owned, wished: value.wished && !value.owned };
     },
     {
-      current: () => page.shallow?.url ?? page.url,
-      replace: (url) => goto(url, { state: page.state, shallow: true, replace: true }),
+      current: () => route.value,
+      replace: (view) => route.replace(view),
     },
   );
   let dragDistance = $state(0);
@@ -97,8 +99,11 @@
   }
 
   beforeNavigate(() => browsing.cancelPendingUrl());
-  afterNavigate(({ to }) => {
-    if (to) browsing.restore(to.url);
+  // Native hash edits and Back/Forward happen outside collection controls, so restore browsing when the route changes.
+  $effect(() => {
+    if (!route.ready) return;
+    const view = route.value;
+    untrack(() => browsing.restore(view));
   });
   const showBackToTop = $derived((innerHeight.current ?? 0) > 0 && (scrollY.current ?? 0) >= (innerHeight.current ?? 0));
 

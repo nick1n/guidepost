@@ -89,7 +89,7 @@ await runBrowser(
         );
       }
     }
-    await send("Page.navigate", { url: new URL("/kdm/collection/?q=kingdom%20death%20monster", base).href });
+    await send("Page.navigate", { url: new URL("/kdm/collection/#/content?q=kingdom%20death%20monster", base).href });
     await waitFor("document.querySelector('article input[type=checkbox]:not(:disabled)') !== null");
     await evaluate(`(()=>{
       const input=document.querySelector('input[type=search]');

@@ -7,19 +7,11 @@ import {
   type CatalogIndex,
 } from "#lib/catalog-view.ts";
 import type { EntryState } from "#lib/types/index.ts";
+import { categories, formatCollectionHash, type Category, type CollectionView } from "./url.ts";
 
-export const categories = [
-  { id: "content", label: "Content" },
-  { id: "accessories", label: "Accessories" },
-  { id: "bundles", label: "Bundles" },
-  { id: "homebrew", label: "Homebrew" },
-] as const;
-
-type Category = (typeof categories)[number]["id"];
 type Status = "all" | "owned" | "wishlist";
 type EditionReader = (item: string, edition: string) => Pick<EntryState, "owned" | "wished">;
-type BrowseUrl = { href: string; searchParams: Pick<URLSearchParams, "get" | "getAll"> };
-type Navigation = { current: () => BrowseUrl; replace: (url: URL) => void };
+type Navigation = { current: () => CollectionView; replace: (view: CollectionView) => void };
 const batchSize = 100;
 const searchUrlDelay = 250;
 
@@ -140,13 +132,21 @@ export class CollectionBrowsing {
   }
 
   /** Restore navigation without writing back or letting a pending search overwrite the destination. */
-  restore(url: BrowseUrl) {
+  restore(view: CollectionView) {
     this.cancelPendingUrl();
-    const category = categories.find(({ id }) => id === url.searchParams.get("cat"))?.id ?? "content";
-    this.#setCategory(category);
-    this.#query = url.searchParams.get("q") ?? "";
-    const tags = this.#catalog.tags.get(category) ?? [];
-    this.#setTags([...new Set(url.searchParams.getAll("tag"))].filter((tag) => tags.some((value) => value.tag === tag)));
+    const tags = this.#catalog.tags.get(view.category) ?? [];
+    const selected = [...new Set(view.tags)].filter((tag) => tags.some((value) => value.tag === tag));
+    // Our own URL updates must preserve expanded result batches and retained card state.
+    if (
+      view.category === this.#category &&
+      view.query === this.#query &&
+      selected.length === this.#selectedTags.length &&
+      selected.every((tag, index) => tag === this.#selectedTags[index])
+    )
+      return;
+    this.#setCategory(view.category);
+    this.#query = view.query;
+    this.#setTags(selected);
   }
 
   cancelPendingUrl() {
@@ -156,15 +156,8 @@ export class CollectionBrowsing {
 
   #writeUrl = () => {
     this.cancelPendingUrl();
-    const current = this.#navigation.current();
-    const url = new URL(current.href);
-    if (this.#category === "content") url.searchParams.delete("cat");
-    else url.searchParams.set("cat", this.#category);
-    if (this.#query) url.searchParams.set("q", this.#query);
-    else url.searchParams.delete("q");
-    url.searchParams.delete("tag");
-    for (const tag of this.#selectedTags) url.searchParams.append("tag", tag);
-    if (url.href !== current.href) this.#navigation.replace(url);
+    const view = { category: this.#category, query: this.#query, tags: this.#selectedTags };
+    if (formatCollectionHash(view) !== formatCollectionHash(this.#navigation.current())) this.#navigation.replace(view);
   };
 
   #setTags(tags: string[]) {

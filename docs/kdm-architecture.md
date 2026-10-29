@@ -55,6 +55,9 @@ Closing the drawer preserves work; unmounting interrupts it, and owner changes i
 
 Exports preserve the three-tab template and cover physical model products, shirts, dice, and original workbook bundles.
 The product projection owns eligibility, release grouping, and classification.
+Shared model rows retain separate edition states and whether the included model was supplied. Unchanged imports preserve acquisitions;
+unchecking a supplied model records a missing-component override, and checking it again clears that override without creating standalone ownership.
+See [workbook mapping](kdm-catalog.md#workbook-mapping) for row-sharing rules.
 
 Metadata schema version 1 validates records; it is separate from Dexie's database version and provides no migration.
 The collection queue has no durable undo. After release, table/index changes need Dexie upgrades, and incompatible records need a

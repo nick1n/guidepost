@@ -471,6 +471,9 @@
       linear-gradient(150deg, transparent 20%, #ffd6ad0f 50%, transparent 80%),
       radial-gradient(ellipse at center, transparent 70%, #fff0bd04 100%);
 
+    /* Contain navigation margins so they cannot push the viewport-height body down. */
+    display: flow-root;
+
     /* Clip the menu entrance horizontally while the window keeps vertical scrolling. */
     overflow-x: clip;
 

@@ -116,6 +116,8 @@ The schema retains ID-pattern rules and basic field validation without condition
 The original workbook remains in `local-data/kdm-catalog/imports/KDM Collection Sheets.xlsx`.
 Never infer ownership from ambiguous material or run choices.
 Exported model titles omit the `Box` qualifier. Deathgrey releases use the First Run checkbox column while retaining their Deathgrey edition labels and materials; explicitly labeled Encore releases stay in Encore.
+Included-only and standalone models within the same item share a row when material, scale, and identity match unambiguously.
+Conflicting named variants and ambiguous matches remain separate.
 
 Run `pnpm catalog:workbook` to regenerate [workbook-map.json](../static/kdm/catalog/workbook-map.json) from the local
 `local-data/kdm-catalog/imports/kdm-import-records.json` and live catalog. The 705 mapped rows retain their sheet, row, and product name as

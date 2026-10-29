@@ -17,6 +17,9 @@ import { cloneRow, columnIndex, elements, parseXml, renumberRow, serializeXml, s
 import { addCheckboxes } from "./checkboxes.ts";
 import { workbookProducts } from "./products.ts";
 
+const checked = (entry: TemplateEntry) =>
+  !(entry.sharedWith && entry.state.missing) && (entry.state.owned === true || (entry.supplied === true && entry.state.missing !== true));
+
 export function templateBytes() {
   const base64 = templateUrl.slice(templateUrl.indexOf(",") + 1);
   return Uint8Array.from(atob(base64), (character) => character.charCodeAt(0));
@@ -91,22 +94,23 @@ export function writeTemplate(input: readonly CollectionWorkbookRow[], mapping: 
         setCell(row, column, value);
         baseline[column] = value;
       };
-      put(
-        miniature ? "A" : "B",
-        entries.some((entry) => entry.state.owned),
-      );
+      put(miniature ? "A" : "B", entries.some(checked));
       if (miniature) {
         baseline.H = normalizeName(String(cellValue(row, "H", shared) ?? "")) || null;
         for (const [column, checked] of Object.entries(products.classifications(entries))) setCell(row, column, checked ? true : null);
-        put(
-          "I",
-          [...new Set(entries.filter((entry) => entry.state.owned).map((entry) => entry.material || entry.label))].join(", ") || null,
-        );
+        put("I", [...new Set(entries.filter(checked).map((entry) => entry.material || entry.label))].join(", ") || null);
         put(
           "J",
           [...new Set(entries.filter((entry) => entry.state.wished).map((entry) => entry.material || entry.label))].join(", ") || null,
         );
-        const numbered = entries.find((entry) => entry.column === "M") ?? entries[0];
+        const primary = entries.find((entry) => entry.column === "M") ?? entries[0];
+        const numbered =
+          entries.find(
+            (entry) =>
+              entry.contentId === primary?.contentId &&
+              (entry.sharedWith ?? entry.editionId) === (primary.sharedWith ?? primary.editionId) &&
+              entry.state.copyNumber !== undefined,
+          ) ?? primary;
         const item = numbered && byId.get(numbered.contentId);
         const edition = item && reviewEditions(item).find((edition) => edition.id === numbered.editionId);
         const previous = cellValue(row, "L", shared);
@@ -118,7 +122,7 @@ export function writeTemplate(input: readonly CollectionWorkbookRow[], mapping: 
           if (existing?.getAttribute("t") === "b" || entries.some((entry) => entry.column === column))
             put(
               column,
-              entries.some((entry) => entry.column === column && entry.state.owned),
+              entries.some((entry) => entry.column === column && checked(entry)),
             );
         }
       }

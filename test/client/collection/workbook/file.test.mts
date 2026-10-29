@@ -13,7 +13,7 @@ import { Collection } from "#lib/kdm/collection/state/collection.svelte.ts";
 import { previewWorkbookRows, TransferError } from "#lib/kdm/collection/state/collection-transfer.ts";
 import { mapping, readWorkbook, writeWorkbook, resolveDrafts } from "#lib/kdm/collection/workbook/file.ts";
 import { makeStore } from "../test-store.ts";
-import { reviewEntries, reviewEditions } from "#lib/catalog-view.ts";
+import { reviewEntries, reviewEditions, type CatalogEntry } from "#lib/catalog-view.ts";
 import { strFromU8, strToU8, unzipSync, zipSync } from "fflate";
 import { columnIndex, elements, parseXml, serializeXml, setCell } from "#lib/kdm/collection/workbook/xml.ts";
 import { templateBytes } from "#lib/kdm/collection/workbook/template.ts";
@@ -556,6 +556,214 @@ it.effect("fills missing workbook run counts from catalog facts while preserving
 function file(bytes: Uint8Array<ArrayBuffer>) {
   return new File([bytes], "collection.xlsx");
 }
+
+it.effect("shares included and standalone material rows without changing their independent saved records", () =>
+  Effect.gen(function* () {
+    const id = "pinup-butcher";
+    const standalone = collectionKey(id, "plastic");
+    const included = collectionKey(id, "plastic-included");
+    const painters = collectionKey(id, "painters");
+    const snapshot = { [standalone]: { wished: true }, [included]: { owned: true, copyNumber: 42 }, [painters]: { owned: true } };
+    const collection = new Collection(data);
+    yield* collection.setStore(makeStore(snapshot));
+    const bytes = yield* writeWorkbook(yield* collection.exportWorkbook(), reviewEntries(data));
+    const workbook = new ExcelJS.Workbook();
+    yield* Effect.promise(() => workbook.xlsx.load(bytes.buffer));
+    const rows = productRows(workbook, id);
+    assert.equal(rows.length, 2, "One Plastic row and one separate Photoresin painter's-scale row");
+    const plastic = rows.find((row) => row.getCell("H").text === "Plastic")!;
+    assert.equal(plastic.getCell("A").value, true);
+    assert.equal(plastic.getCell("O").value, true);
+    assert.equal(plastic.getCell("L").value, 42);
+    assert.doesNotMatch(plastic.getCell("B").text, /included/iu);
+    assert.deepEqual(
+      JSON.parse(String(plastic.getCell(metadataColumn).value)).entries.map((entry: TemplateEntry) => entry.editionId),
+      ["plastic", "plastic-included"],
+    );
+    const target = new Collection(data);
+    const store = makeStore();
+    yield* target.setStore(store);
+    yield* target.importWorkbook(resolveDrafts(yield* readWorkbook(file(bytes))));
+    assert.deepEqual(store.state, snapshot, "Unchanged import preserves acquisition source and separate wish/copy fields");
+    const edited = editWorkbook(bytes, (worksheet) => {
+      for (const row of xmlProductRows(worksheet("KDM Miniatures"), id, "plastic")) setCell(row, "O", false);
+    });
+    yield* target.importWorkbook(resolveDrafts(yield* readWorkbook(file(edited))));
+    assert.deepEqual(store.state, { [standalone]: { wished: true }, [included]: { copyNumber: 42 }, [painters]: { owned: true } });
+  }),
+);
+
+it.effect("shows included model coverage on shared rows while reimport preserves the owning box and missing overrides", () =>
+  Effect.gen(function* () {
+    const parent = collectionKey("set-pinups-of-death-series-3", "box");
+    const included = collectionKey("pinup-butcher", "plastic-included");
+    const standalone = collectionKey("pinup-butcher", "plastic");
+    const snapshot = { [parent]: { owned: true } };
+    const collection = new Collection(data);
+    const store = makeStore(snapshot);
+    yield* collection.setStore(store);
+    const bytes = yield* writeWorkbook(yield* collection.exportWorkbook(), reviewEntries(data));
+    const workbook = new ExcelJS.Workbook();
+    yield* Effect.promise(() => workbook.xlsx.load(bytes.buffer));
+    const row = productRows(workbook, "pinup-butcher").find((row) => row.getCell("H").text === "Plastic")!;
+    assert.equal(row.getCell("A").value, true);
+    assert.equal(row.getCell("O").value, true);
+    yield* collection.importWorkbook(resolveDrafts(yield* readWorkbook(file(bytes))));
+    assert.deepEqual(store.state, snapshot, "Derived model coverage must not become standalone ownership");
+    const edited = editWorkbook(bytes, (worksheet) => {
+      for (const row of xmlProductRows(worksheet("KDM Miniatures"), "pinup-butcher", "plastic")) setCell(row, "O", false);
+    });
+    yield* collection.importWorkbook(resolveDrafts(yield* readWorkbook(file(edited))));
+    assert.deepEqual(store.state, { ...snapshot, [included]: { missing: true } });
+    assert.equal(store.state[standalone], undefined);
+
+    const missing = yield* writeWorkbook(yield* collection.exportWorkbook(), reviewEntries(data));
+    const restored = editWorkbook(missing, (worksheet) => {
+      for (const row of xmlProductRows(worksheet("KDM Miniatures"), "pinup-butcher", "plastic")) setCell(row, "O", true);
+    });
+    yield* collection.importWorkbook(resolveDrafts(yield* readWorkbook(file(restored))));
+    assert.deepEqual(store.state, snapshot, "Checking a supplied missing component clears its override without inventing an acquisition");
+  }),
+);
+
+it.effect("editing unowned shared model fields records only its standalone edition", () =>
+  Effect.gen(function* () {
+    const bytes = yield* writeWorkbook([], reviewEntries(data));
+    for (const [column, value, expected] of [
+      ["A", true, { owned: true }],
+      ["O", true, { owned: true }],
+      ["I", "Plastic", { owned: true }],
+      ["J", "Plastic", { wished: true }],
+      ["L", 17, { copyNumber: 17 }],
+    ] as const) {
+      const edited = editWorkbook(bytes, (worksheet) => {
+        const rows = xmlProductRows(worksheet("KDM Miniatures"), "pinup-butcher", "plastic");
+        assert.equal(rows.length, 1);
+        for (const row of rows) setCell(row, column, value);
+      });
+      const collection = new Collection(data);
+      const store = makeStore();
+      yield* collection.setStore(store);
+      yield* collection.importWorkbook(resolveDrafts(yield* readWorkbook(file(edited))));
+      assert.deepEqual(store.state, { [collectionKey("pinup-butcher", "plastic")]: expected }, column);
+    }
+  }),
+);
+
+it.effect("preserves both copy numbers on a shared model and requires a choice when editing them", () =>
+  Effect.gen(function* () {
+    const standalone = collectionKey("pinup-butcher", "plastic");
+    const included = collectionKey("pinup-butcher", "plastic-included");
+    const snapshot = { [standalone]: { owned: true, copyNumber: 12 }, [included]: { owned: true, copyNumber: 42 } };
+    const collection = new Collection(data);
+    const store = makeStore(snapshot);
+    yield* collection.setStore(store);
+    const bytes = yield* writeWorkbook(yield* collection.exportWorkbook(), reviewEntries(data));
+    yield* collection.importWorkbook(resolveDrafts(yield* readWorkbook(file(bytes))));
+    assert.deepEqual(store.state, snapshot);
+    const edited = editWorkbook(bytes, (worksheet) => {
+      for (const row of xmlProductRows(worksheet("KDM Miniatures"), "pinup-butcher", "plastic")) setCell(row, "L", 99);
+    });
+    const drafts = yield* readWorkbook(file(edited));
+    assert.equal(resolveDrafts(drafts), undefined);
+    const choice = drafts.find((draft) => draft.options.length)!;
+    const option = choice.options.find((option) => option.editionId === "plastic-included")!;
+    yield* collection.importWorkbook(resolveDrafts(drafts, { [choice.id]: JSON.stringify(option) }));
+    assert.deepEqual(store.state, { [standalone]: snapshot[standalone], [included]: { owned: true, copyNumber: 99 } });
+  }),
+);
+
+it.effect("keeps explicitly missing included models unchecked even when their acquisition is recorded", () =>
+  Effect.gen(function* () {
+    const snapshot = {
+      [collectionKey("set-pinups-of-death-series-3", "box")]: { owned: true },
+      [collectionKey("pinup-butcher", "plastic-included")]: { owned: true, missing: true },
+    };
+    const collection = new Collection(data);
+    const store = makeStore(snapshot);
+    yield* collection.setStore(store);
+    const bytes = yield* writeWorkbook(yield* collection.exportWorkbook(), reviewEntries(data));
+    const workbook = new ExcelJS.Workbook();
+    yield* Effect.promise(() => workbook.xlsx.load(bytes.buffer));
+    const row = productRows(workbook, "pinup-butcher").find((row) => row.getCell("H").text === "Plastic")!;
+    assert.equal(row.getCell("A").value, false);
+    assert.equal(row.getCell("O").value, false);
+    yield* collection.importWorkbook(resolveDrafts(yield* readWorkbook(file(bytes))));
+    assert.deepEqual(store.state, snapshot);
+  }),
+);
+
+it("keeps ambiguous releases, named variants, and differently scaled models separate", () => {
+  const edition = (id: string, label: string, size: string, includedOnly = false): Edition => ({
+    id,
+    label,
+    size,
+    materials: ["Resin"],
+    format: "physical",
+    ...(includedOnly ? { includedOnly: true } : {}),
+  });
+  const fixtures = {
+    exact: [edition("resin", "Resin", "30"), edition("included", "Resin", "30", true)],
+    naked: [edition("box", "Box", "30"), edition("included", "Naked", "30", true)],
+    namedMatch: [
+      { ...edition("resin", "Resin", "30"), name: "remaster", releaseDate: "2020-12-12" },
+      { ...edition("included", "Resin", "30", true), releaseDate: "2020-12-12" },
+    ],
+    unknownVariant: [{ ...edition("resin", "Resin", "30"), name: "remaster" }, edition("included", "Resin", "30", true)],
+    ambiguous: [edition("first", "First Run", "30"), edition("encore", "Encore", "30"), edition("included", "Resin", "30", true)],
+    scaled: [edition("painters", "Painters", "50"), edition("included", "Resin", "30", true)],
+    named: [edition("resin", "Resin", "30"), edition("variant", "Early Variant", "30", true)],
+  };
+  const items: CatalogEntry[] = Object.entries(fixtures).map(([id, editions]) => ({
+    id,
+    editions,
+    name: id,
+    category: "content",
+    kind: "model",
+    tags: ["generic"],
+  }));
+  const projection = workbookProducts(items, { ...mapping, rows: [] });
+  const [plan] = projection.planRows([], [{ name: "KDM Miniatures", rows: [] }]);
+  for (const id of ["exact", "naked", "namedMatch"]) assert.equal(plan.additions.filter((row) => row.item.id === id).length, 1, id);
+  for (const id of ["ambiguous", "scaled", "named", "unknownVariant"]) {
+    const rows = plan.additions.filter((row) => row.item.id === id);
+    assert.equal(rows.length, 2, id);
+    assert.ok(
+      rows.flatMap((row) => row.entries).every((entry) => !entry.sharedWith),
+      id,
+    );
+  }
+  const mapped = workbookProducts(items, {
+    ...mapping,
+    rows: [{ sheet: "KDM Miniatures", row: 2, name: "naked", primary: { category: "content", contentId: "naked", editionId: "included" } }],
+  });
+  const [retained] = mapped.planRows([], [{ name: "KDM Miniatures", rows: [{ row: 2, name: "naked", material: "Resin" }] }]);
+  assert.deepEqual(
+    retained.rows.get(2)!.entries.map(({ editionId, column }) => [editionId, column]),
+    [
+      ["box", "O"],
+      ["included", "O"],
+    ],
+  );
+  assert.equal(retained.additions.filter((row) => row.item.id === "naked").length, 0);
+});
+
+it.effect("rejects shared model metadata without a matching material and control", () =>
+  Effect.gen(function* () {
+    const bytes = yield* writeWorkbook([], reviewEntries(data));
+    for (const changes of [{ sharedWith: "painters" }, { material: "Deathgrey" }, { column: "M" }]) {
+      const edited = editWorkbook(bytes, (worksheet) => {
+        const row = xmlProductRows(worksheet("KDM Miniatures"), "pinup-butcher", "plastic")[0];
+        const raw = elements(row, "c").find((cell) => cell.getAttribute("r")?.startsWith(metadataColumn))!;
+        const metadata = JSON.parse(raw.textContent!);
+        const index = metadata.entries.findIndex((entry: TemplateEntry) => entry.sharedWith);
+        metadata.entries[index] = { ...metadata.entries[index], ...changes };
+        setCell(row, metadataColumn, JSON.stringify(metadata));
+      });
+      assert.equal((yield* Effect.flip(readWorkbook(file(edited)))).reason, "invalid-data");
+    }
+  }),
+);
 
 function legacy() {
   const workbook = new ExcelJS.Workbook();

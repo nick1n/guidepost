@@ -6,7 +6,24 @@ await runBrowser(
   "hunt",
   "JSON.stringify({url:location.href,text:document.body.innerText,active:document.activeElement?.getAttribute('aria-label')})",
   async ({ base, send, evaluate, waitFor, click, assert, errors, report, saveScreenshot }) => {
+    await send("Page.addScriptToEvaluateOnNewDocument", {
+      source: `
+        window.huntIntervals = new Set();
+        const startInterval = window.setInterval.bind(window);
+        const stopInterval = window.clearInterval.bind(window);
+        window.setInterval = (...args) => {
+          const id = startInterval(...args);
+          window.huntIntervals.add(id);
+          return id;
+        };
+        window.clearInterval = (id) => {
+          window.huntIntervals.delete(id);
+          stopInterval(id);
+        };
+      `,
+    });
     const card = "document.querySelector('button.card')";
+    const live = "document.querySelector('main > p[aria-live]')";
     const picker = "document.querySelector('dialog:has(.dice)')";
     const menu = "document.querySelector('dialog[data-swipe-ignore]')";
     const option = "document.querySelector('select[id$=\"-option\"]')";
@@ -25,6 +42,7 @@ await runBrowser(
       await ready();
     };
     const state = (event: number, face: string) => `${card}?.getAttribute('aria-label')==='Flip hunt event ${event}, showing ${face}'`;
+    const announced = (event: number, face: string) => `${live}?.textContent.trim()==='Hunt event ${event}, ${face}.'`;
     const key = async (key: string, code = key, windowsVirtualKeyCode = key.charCodeAt(0)) => {
       await send("Input.dispatchKeyEvent", {
         type: "keyDown",
@@ -87,9 +105,9 @@ await runBrowser(
     assert(
       await evaluate(`(()=>{
       const paths=performance.getEntriesByType('resource').map(entry=>new URL(entry.name).pathname);
-      return paths.some(path=>path.endsWith('/kekasi-73.jpg')) && !paths.some(path=>path.endsWith('/kekasi-1.jpg'));
+      return paths.some(path=>path.endsWith('/kekasi-73.jpg')) && !paths.some(path=>path.endsWith('/kekasi-1.jpg')||path.endsWith('/ccg-back.png'));
     })()`),
-      "Initial deep link loads the requested event without fetching event 1 first",
+      "Initial deep link loads the requested event without fetching event 1 or the default CCG back",
     );
 
     // Exercise the main journey with real motion on desktop and reduced motion on mobile.
@@ -104,6 +122,7 @@ await runBrowser(
         await evaluate(`${state(1, "front")} && document.querySelector('.front').src.endsWith('/fen/fen-1.png')`),
         "Link restores event, artwork, and face",
       );
+      assert(await evaluate(announced(1, "front")), "Ready card announcement matches its event and face");
       const historyLength = await evaluate<number>("history.length");
       await evaluate(`${card}.focus();${card}.click()`);
       await waitFor("location.hash==='#/1/fen'");
@@ -136,6 +155,7 @@ await runBrowser(
       await ready();
       assert(await evaluate(`${state(0, "card back")} && location.hash==='#/0/fen'`), "Picker selects 00 and conceals the event");
 
+      const idleIntervals = await evaluate<number>("window.huntIntervals.size");
       await evaluate(
         "window.huntRandom=Math.random;Math.random=()=>0.42;document.querySelector('.random').click();Math.random=window.huntRandom",
       );
@@ -147,10 +167,27 @@ await runBrowser(
           await evaluate("document.querySelector('.front').src.endsWith('fen-0.png') && document.querySelector('.random').disabled"),
           "Draw preserves the outgoing card until its actual animation finishes",
         );
+        assert(
+          await evaluate(`${state(0, "card back")} && ${live}.textContent.trim()===''`),
+          "Pending draw keeps the outgoing card's label and waits to announce the incoming card",
+        );
+        await saveScreenshot(`temp/browser-verification/hunt-${width}-drawing.png`);
+        assert(await evaluate(`window.huntIntervals.size===${idleIntervals + 1}`), "A paused draw keeps one dice timer active");
+        await send("Emulation.setEmulatedMedia", { features: [{ name: "prefers-reduced-motion", value: "reduce" }] });
+        await frames();
+        await evaluate("window.huntRandom=Math.random;window.huntRolls=0;Math.random=()=>{window.huntRolls++;return 0.9}");
+        await evaluate("new Promise(resolve=>setTimeout(resolve,450))");
+        assert(await evaluate("window.huntRolls===0"), "Enabling reduced motion stops dice updates during a paused draw");
+        await send("Emulation.setEmulatedMedia", { features: [{ name: "prefers-reduced-motion", value: "no-preference" }] });
+        await waitFor("window.huntRolls>0");
+        assert(await evaluate("window.huntRolls>0"), "Disabling reduced motion resumes dice updates during the same draw");
+        await evaluate("Math.random=window.huntRandom");
         await evaluate("window.huntExit.finish()");
       }
       await ready();
       assert(await evaluate(state(42, "card back")), "Random draw completes on the concealed requested event");
+      assert(await evaluate(announced(42, "card back")), "Completed draw announces the committed event and face");
+      assert(await evaluate(`window.huntIntervals.size===${idleIntervals}`), "Completing a draw releases its dice timer");
       assert(
         await evaluate("document.documentElement.scrollWidth<=innerWidth && document.documentElement.scrollHeight<=innerHeight+2"),
         `${width}px: card and controls fit the viewport`,
@@ -210,9 +247,26 @@ await runBrowser(
     await swipe("dialog:has(.dice) header", 0, 110);
     await closedPicker();
 
-    // Artwork replacement shares one sequencing check with rapid URL changes.
     await send("Emulation.setDeviceMetricsOverride", { width: 1280, height: 844, deviceScaleFactor: 1, mobile: false });
     await send("Emulation.setEmulatedMedia", { features: [{ name: "prefers-reduced-motion", value: "no-preference" }] });
+    await navigate("#/42/fen/front");
+    await evaluate(
+      "window.huntRandom=Math.random;Math.random=()=>0.42;document.querySelector('.random').click();Math.random=window.huntRandom",
+    );
+    await ready();
+    assert(await evaluate(state(42, "card back")), "Drawing the current event still completes and conceals it");
+    await evaluate("document.querySelector('.random').click()");
+    await pauseExit();
+    await evaluate("location.hash='#/73/kekasi/reverse'");
+    await waitFor("document.querySelector('.selection').getAttribute('aria-label').endsWith('73')");
+    await evaluate("window.huntExit.finish()");
+    await ready();
+    assert(
+      await evaluate(`${state(73, "reverse")} && document.querySelector('.front').src.endsWith('kekasi-73.jpg')`),
+      "Navigation during a draw replaces its pending event, artwork, and face",
+    );
+
+    // Artwork replacement shares one sequencing check with rapid URL changes.
     await navigate("#/11/kekasi/reverse");
     assert(await evaluate("document.querySelector('.back').src.endsWith('kekasi-11-back.jpg')"), "Links restore event-specific reverses");
     await settings();
@@ -226,6 +280,7 @@ await runBrowser(
       await evaluate("document.querySelectorAll('.card').length===1 && document.querySelector('.front').src.endsWith('kekasi-11.jpg')"),
       "Rapid artwork and URL changes retain one intact outgoing card",
     );
+    assert(await evaluate(`${live}.textContent.trim()===''`), "Pending artwork changes do not announce an unready card");
     await evaluate("window.huntExit.finish()");
     await ready();
     assert(
@@ -234,6 +289,7 @@ await runBrowser(
       ),
       "Latest URL wins and the incoming artwork is loaded on the requested face",
     );
+    assert(await evaluate(announced(85, "front")), "Rapid navigation announces the final committed card");
 
     await navigate("#/85/ccg/front");
     await settings();
@@ -298,14 +354,17 @@ await runBrowser(
       await evaluate("location.hash==='#/79/fen/front' && !document.querySelector('.random').disabled"),
       "Failed artwork retains the requested URL and leaves drawing available",
     );
+    assert(await evaluate(`${live}.textContent.trim()===''`), "Failed artwork does not announce a card as ready");
     await send("Network.setBlockedURLs", { urls: [] });
     await evaluate("document.querySelector('.retry').focus()");
     await waitFor("document.activeElement.matches('.retry')");
     await key("Enter", "Enter", 13);
     await ready();
     assert(await evaluate(`${state(79, "front")} && document.activeElement===${card}`), "Keyboard retry loads the card and restores focus");
+    assert(await evaluate(announced(79, "front")), "Successful retry announces the loaded card");
 
     await send("Emulation.setEmulatedMedia", { features: [{ name: "prefers-reduced-motion", value: "no-preference" }] });
+    const idleIntervals = await evaluate<number>("window.huntIntervals.size");
     await evaluate("document.querySelector('.random').click()");
     await pauseExit();
     await click("Open menu");
@@ -315,6 +374,7 @@ await runBrowser(
       await evaluate("!document.querySelector('.slide,main:not(.landing)') && document.querySelectorAll('[data-menu-trigger]').length===1"),
       "Home removes hunt controls immediately, even during a paused exit",
     );
+    assert(await evaluate(`window.huntIntervals.size===${idleIntervals}`), "Leaving during a draw releases its dice timer");
     assert(errors.length === 0, `No browser runtime errors: ${JSON.stringify(errors)}`);
     await writeFile("temp/browser-verification/hunt-report.json", JSON.stringify({ report, errors }, null, 2));
   },

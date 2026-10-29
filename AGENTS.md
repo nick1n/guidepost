@@ -6,6 +6,13 @@ See [README.md](README.md) for setup, commands, catalog workflows, and known war
 
 Never use em dashes or centered dots in user-facing output. Use commas, colons, semicolons, parentheses, bullets, or separate sentences.
 
+## Product character
+
+Preserve the site's voice, atmosphere, domain language, visuals, and playful interactions in suggestions and implementation.
+Treat thematic copy and interaction metaphors as intentional. Cleanup and optimization do not authorize replacing them with generic conventions.
+Use the smallest change needed to fix a concrete usability, correctness, accessibility, or performance problem while preserving the experience.
+Broader changes to voice, theme, or interaction style require an explicit user request.
+
 ## Sub-agents
 
 When delegation is authorized, choose the model and reasoning effort for each task rather than inheriting the primary agent's settings:
@@ -68,7 +75,8 @@ Hide non-focusable decorative icons and effects with `aria-hidden="true"`. Never
 
 ## Styling
 
-Keep interface copy to useful labels, instructions, and explanations. Avoid decorative eyebrow labels and filler.
+Keep interface copy useful and consistent with the site's character. Avoid decorative eyebrow labels and filler;
+thematic language that supports the experience is not filler.
 
 Keep surrounding content stable during loading and feedback. Reserve space or use overlays; label changes must not resize controls.
 Verify idle, pending, and completed states at narrow and wide widths.

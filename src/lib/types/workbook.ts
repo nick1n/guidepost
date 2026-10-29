@@ -104,6 +104,8 @@ const TemplateEntrySchema = Schema.Struct({
   label: Schema.String,
   material: Schema.String,
   column: Schema.optionalKey(ReleaseColumnSchema),
+  sharedWith: Schema.optionalKey(EditionIdSchema),
+  supplied: Schema.optionalKey(Schema.Literal(true)),
   state: EntryStateSchema,
 });
 export type TemplateEntry = Schema.Schema.Type<typeof TemplateEntrySchema>;
@@ -111,7 +113,24 @@ export const MetadataSchema = Schema.Struct({
   name: Schema.NonEmptyString,
   entries: Schema.Array(TemplateEntrySchema),
   baseline: Schema.Record(Schema.String, Schema.Union([Schema.String, Schema.Number, Schema.Boolean, Schema.Null])),
-});
+}).check(
+  Schema.makeFilter(
+    (metadata) =>
+      metadata.entries.every((entry) => {
+        if (!entry.sharedWith) return entry.supplied === undefined;
+        return metadata.entries.some(
+          (target) =>
+            target.contentId === entry.contentId &&
+            target.editionId === entry.sharedWith &&
+            !target.sharedWith &&
+            target.editionId !== entry.editionId &&
+            target.material === entry.material &&
+            target.column === entry.column,
+        );
+      }),
+    { message: "Shared model entries require a matching standalone edition in the same row." },
+  ),
+);
 export type Metadata = Schema.Schema.Type<typeof MetadataSchema>;
 
 export const WorkbookRowsSchema = Schema.Array(Schema.Union([MappedRowSchema, CollectionRowSchema]));

@@ -17,9 +17,12 @@ await runBrowser(
     };
     const navigate = async (url: string) => {
       await send("Page.navigate", { url });
+      const target = new URL(url);
+      const query = new URLSearchParams(target.hash.split("?")[1]).get("q") ?? "";
+      await waitFor(`document.querySelector('#catalog-search')?.value === ${JSON.stringify(query)}`);
       await waitFor("document.querySelector('article input[type=checkbox]:not(:disabled)') !== null");
     };
-    const coreUrl = new URL("/kdm/collection/?q=kingdom%20death%20monster", base).href;
+    const coreUrl = new URL("/kdm/collection/#/content?q=kingdom%20death%20monster", base).href;
     await send("Emulation.setDeviceMetricsOverride", { width: 1280, height: 900, deviceScaleFactor: 1, mobile: false });
     await navigate(coreUrl);
     async function progress(label: string, expected: number) {
@@ -129,6 +132,54 @@ await runBrowser(
         Math.abs((await evaluate<number>("document.querySelectorAll('article')[80].getBoundingClientRect().height")) - height) < 1,
         `Offscreen card retains its expanded height after collapse and expand at ${width}px`,
       );
+    }
+    const category = (name: string) =>
+      `[...document.querySelectorAll('.categories button')].find(e => e.textContent.trim() === ${JSON.stringify(name)})`;
+    const search = async (value: string) => {
+      await evaluate("document.querySelector('#catalog-search').focus(); document.querySelector('#catalog-search').select()");
+      await send("Input.insertText", { text: value });
+    };
+    for (const width of [1280, 390]) {
+      await send("Emulation.setDeviceMetricsOverride", { width, height: 900, deviceScaleFactor: 1, mobile: width === 390 });
+      await navigate(new URL("/kdm/collection/#/accessories?q=dice&tag=dice", base).href);
+      await waitFor(
+        `${category("Accessories")}.getAttribute('aria-pressed') === 'true' && document.querySelector('#catalog-search').value === 'dice'`,
+      );
+      assert(
+        await evaluate("location.search === '' && document.querySelector('.active-tag')?.textContent.trim() === 'dice'"),
+        `Hash deep link restores category, search, and tags at ${width}px`,
+      );
+      await evaluate("document.querySelector('.active-tag').click()");
+      await search("black dice");
+      await waitFor("location.hash === '#/accessories?q=black+dice'");
+      assert(await evaluate("document.activeElement.id === 'catalog-search'"), `Search hash updates retain focus at ${width}px`);
+      await evaluate(`${category("Content")}.click()`);
+      await waitFor("location.hash === '#/content?q=black+dice'");
+      await evaluate("document.querySelector('.clear-text').click()");
+      await waitFor("location.hash === ''");
+      assert(await evaluate("location.search === ''"), `Clearing the default content view removes the hash at ${width}px`);
+      await evaluate("location.hash = '/bundles'");
+      await waitFor(`${category("Bundles")}.getAttribute('aria-pressed') === 'true'`);
+      await evaluate("location.hash = '/homebrew'");
+      await waitFor(`${category("Homebrew")}.getAttribute('aria-pressed') === 'true'`);
+      await evaluate("history.back()");
+      await waitFor(`${category("Bundles")}.getAttribute('aria-pressed') === 'true'`);
+      await evaluate("history.forward()");
+      await waitFor(`${category("Homebrew")}.getAttribute('aria-pressed') === 'true'`);
+      assert(true, `Native hash changes and Back/Forward restore categories at ${width}px`);
+      await click("Open menu");
+      await waitFor("document.querySelector('dialog[data-swipe-ignore]')?.open");
+      await evaluate(`${category("Accessories")}.click()`);
+      await waitFor(`${category("Accessories")}.getAttribute('aria-pressed') === 'true'`);
+      if (await evaluate("document.querySelector('dialog[data-swipe-ignore]')?.open")) await click("Close menu");
+      await waitFor("!document.querySelector('dialog[data-swipe-ignore]')?.open");
+      assert(
+        await evaluate("location.hash === '#/accessories' && document.querySelector('#catalog-search').value === ''"),
+        `Menu dismissal retains the latest collection hash at ${width}px`,
+      );
+      await evaluate("document.querySelector('.stat-owned').click()");
+      assert(await evaluate("location.hash === '#/accessories'"), `Ownership filtering stays out of the URL at ${width}px`);
+      await saveScreenshot(`temp/browser-verification/collection-hash-${width}.png`);
     }
     assert(errors.length === 0, "No browser runtime exceptions, window errors, or error logs");
     await saveScreenshot("temp/browser-verification/ownership.png");

@@ -21,6 +21,12 @@ Open `/kdm/collection/` for search, edition details, ownership, and wishlist con
 
 See the [implemented collection architecture](docs/kdm-architecture.md) for persistence, ownership, and content coverage. Future campaign and synchronization concepts are documented separately as [proposed design](docs/kdm-campaign-design.md).
 
+Collection links keep browsing state in the hash, for example `/kdm/collection/#/accessories?q=dice` or
+`/kdm/collection/#/content?tag=monster&tag=pinup`. Categories are `content`, `accessories`, `bundles`, and `homebrew`;
+`q` searches and repeated `tag` parameters require every selected tag. The default content view needs no hash.
+Controls replace the current history entry, and Back/Forward restores linked views.
+Ownership and wishlist filters stay local and are not included in links.
+
 Use **Import workbook** or **Export workbook** in the collection menu to transfer KDM Collection Sheets or Guidepost exports.
 Imports preview changes and ask you to resolve ambiguous editions. Original sheets merge checked products, wishes, and copy numbers;
 blank and unchecked cells leave saved values unchanged. Exports preserve the original three-tab layout and retain collection data for reimport.

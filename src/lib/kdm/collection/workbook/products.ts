@@ -62,6 +62,34 @@ export function workbookProducts(items: readonly CatalogEntry[], mapping: Workbo
     });
   const allowed = new Set(items.flatMap((item) => editions(item).map((edition) => collectionKey(item.id, edition.id))));
   const accepts = (contentId: string, editionId: string) => allowed.has(collectionKey(contentId, editionId));
+  const materials = [...new Set(items.flatMap((item) => reviewEditions(item).flatMap((edition) => edition.materials ?? [])))].sort(
+    (a, b) => b.length - a.length,
+  );
+  const shared = new Map<string, Edition>();
+  const included = new Map<string, Edition[]>();
+  const materialKey = (edition: Edition) => JSON.stringify([...(edition.materials ?? [])].sort());
+  for (const item of items) {
+    const releases = editions(item);
+    for (const edition of releases) {
+      if (!edition.includedOnly || !edition.materials?.length || ![...materials, "Box", "Naked"].includes(edition.label)) continue;
+      const candidates = releases.filter((candidate) => {
+        if (candidate.includedOnly || materialKey(candidate) !== materialKey(edition)) return false;
+        if (edition.name && candidate.name !== edition.name) return false;
+        if (candidate.name && !edition.name && (!edition.releaseDate || edition.releaseDate !== candidate.releaseDate)) return false;
+        const size = edition.size ?? item.size;
+        const otherSize = candidate.size ?? item.size;
+        if (size !== otherSize) return false;
+        const shape = /^(Painters|Bust|Remaster|Resculpt)(?::|$)/u.exec(candidate.label)?.[1];
+        if (shape === "Remaster" || shape === "Resculpt") return false;
+        return !shape || (size !== undefined && size === otherSize);
+      });
+      if (candidates.length !== 1) continue;
+      const target = candidates[0];
+      shared.set(collectionKey(item.id, edition.id), target);
+      const key = collectionKey(item.id, target.id);
+      included.set(key, [...(included.get(key) ?? []), edition]);
+    }
+  }
   const membership = (id: string, editionId: string) =>
     new Set([
       collectionKey(id, editionId),
@@ -69,9 +97,6 @@ export function workbookProducts(items: readonly CatalogEntry[], mapping: Workbo
     ]);
   const core = membership("core", "1-5");
   const chest = membership("expansion-gamblers-chest", "box");
-  const materials = [...new Set(items.flatMap((item) => reviewEditions(item).flatMap((edition) => edition.materials ?? [])))].sort(
-    (a, b) => b.length - a.length,
-  );
   const materialPattern = materials.map(escapePattern).join("|");
   const cleanQualifier = (value: string) =>
     value
@@ -145,13 +170,24 @@ export function workbookProducts(items: readonly CatalogEntry[], mapping: Workbo
   // Product planning uses only catalog data and source row values; the writer owns XML, styles, and row positions.
   const planRows = (input: readonly CollectionWorkbookRow[], sheets: readonly SourceSheet[]) => {
     const states = new Map<string, EntryState>();
+    const snapshot: Record<string, EntryState> = {};
     for (const row of input) {
       const key = collectionKey(row.contentId, row.editionId);
-      if (states.has(key)) throw new Error(`Duplicate collection edition ${key}.`);
+      if (Object.hasOwn(snapshot, key)) throw new Error(`Duplicate collection edition ${key}.`);
       const item = index.byId.get(row.contentId);
       if (!item) throw new Error(`Unknown catalog item ${row.contentId}.`);
       if (!reviewEditions(item).some((edition) => edition.id === row.editionId)) throw new Error(`Unknown catalog edition ${key}.`);
-      if (accepts(row.contentId, row.editionId)) states.set(key, normalizeEntry(row));
+      snapshot[key] = normalizeEntry(row);
+      if (accepts(row.contentId, row.editionId)) states.set(key, snapshot[key]);
+    }
+    const supplied = new Set<string>();
+    for (const key of shared.keys()) {
+      const entry = { ...snapshot[key] };
+      delete entry.owned;
+      delete entry.missing;
+      const [contentId, editionId] = JSON.parse(key) as [string, string];
+      const status = index.coverage({ ...snapshot, [key]: entry }).edition(contentId, editionId);
+      if (status.covered && status.via.some((source) => source.item.id !== contentId)) supplied.add(key);
     }
     const descriptor = (contentId: string, editionId: string, column?: ReleaseColumn): TemplateEntry => {
       const item = index.byId.get(contentId);
@@ -165,6 +201,27 @@ export function workbookProducts(items: readonly CatalogEntry[], mapping: Workbo
         state: states.get(collectionKey(contentId, editionId)) ?? {},
       };
     };
+    const expand = (entry: TemplateEntry): TemplateEntry[] => {
+      const key = collectionKey(entry.contentId, entry.editionId);
+      const target = shared.get(key);
+      if (target) return expand(descriptor(entry.contentId, target.id, entry.column));
+      const matches = included.get(key) ?? [];
+      const column = entry.column ?? (matches.length ? releaseColumn(entry.label) : undefined);
+      return [
+        { ...entry, ...(column ? { column } : {}) },
+        ...matches.map((edition) => ({
+          ...descriptor(entry.contentId, edition.id, column),
+          material: entry.material,
+          sharedWith: entry.editionId,
+          ...(supplied.has(collectionKey(entry.contentId, edition.id)) ? { supplied: true as const } : {}),
+        })),
+      ];
+    };
+    const mapped = new Set(
+      mapping.rows
+        .flatMap((row) => [row.primary, ...Object.values(row.releaseEditions ?? {}).flat()])
+        .map((target) => collectionKey(target.contentId, target.editionId)),
+    );
     const represented = new Set<string>();
     const plans = sheets.map((sheet) => {
       const miniature = sheet.name === "KDM Miniatures";
@@ -187,6 +244,12 @@ export function workbookProducts(items: readonly CatalogEntry[], mapping: Workbo
           } else entries.push(descriptor(target.contentId, target.editionId, column));
         }
         entries = entries.filter((entry) => accepts(entry.contentId, entry.editionId));
+        entries = entries
+          .filter((entry) => {
+            const target = shared.get(collectionKey(entry.contentId, entry.editionId));
+            return !target || !mapped.has(collectionKey(entry.contentId, target.id));
+          })
+          .flatMap(expand);
         const primary = entries[0];
         if (
           miniature &&
@@ -195,7 +258,11 @@ export function workbookProducts(items: readonly CatalogEntry[], mapping: Workbo
           releaseColumn(primary.label) === "M" &&
           !entries.some((entry) => entry.column === "M")
         )
-          entries[0] = { ...primary, column: "M" };
+          entries = entries.map((entry) =>
+            entry === primary || (entry.contentId === primary.contentId && entry.sharedWith === primary.editionId)
+              ? { ...entry, column: "M" }
+              : entry,
+          );
         if (!entries.length) {
           removed.add(source.row);
           continue;
@@ -217,7 +284,7 @@ export function workbookProducts(items: readonly CatalogEntry[], mapping: Workbo
         const pairs = miniature ? releasePairs(releases) : [];
         for (const edition of releases) {
           const key = collectionKey(item.id, edition.id);
-          if (represented.has(key)) continue;
+          if (represented.has(key) || shared.has(key)) continue;
           let group = [edition];
           const pair = pairs.find((pair) => pair.some((release) => release.id === edition.id)) ?? [];
           const sibling = pair.find((release) => release.id !== edition.id);
@@ -234,8 +301,9 @@ export function workbookProducts(items: readonly CatalogEntry[], mapping: Workbo
               row.entries = row.entries.map((entry) =>
                 entry.contentId === item.id && entry.editionId === sibling.id ? { ...entry, column: siblingColumn } : entry,
               );
-              row.entries.push(descriptor(item.id, edition.id, column));
+              row.entries.push(...expand(descriptor(item.id, edition.id, column)));
               represented.add(key);
+              for (const entry of row.entries) represented.add(collectionKey(entry.contentId, entry.editionId));
               continue;
             }
           } else if (sibling) group = pair;
@@ -247,12 +315,15 @@ export function workbookProducts(items: readonly CatalogEntry[], mapping: Workbo
           const base = label;
           while (names.has(identity())) label = `${base} ${alternate++}`;
           names.add(identity());
+          const entries = group.flatMap((edition) =>
+            expand(descriptor(item.id, edition.id, miniature ? releaseColumn(edition.label) : undefined)),
+          );
           additions.push({
             item,
-            entries: group.map((edition) => descriptor(item.id, edition.id, miniature ? releaseColumn(edition.label) : undefined)),
+            entries,
             name: label,
           });
-          for (const release of group) represented.add(collectionKey(item.id, release.id));
+          for (const entry of entries) represented.add(collectionKey(entry.contentId, entry.editionId));
         }
       }
       return { rows, removed, additions };

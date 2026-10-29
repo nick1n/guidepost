@@ -8,7 +8,7 @@
 
   const duration = 500;
   const selectionDelay = 250;
-  const defaultBack = huntImages(1, huntDefaults).back;
+  const defaultImages = huntImages(1, huntDefaults);
 
   // Card paths are constructed from the local deck definitions and verified against static assets in tests.
   function cardAsset(path: string) {
@@ -41,14 +41,26 @@
   const art = $derived(route.value.art ?? preferences.option);
   const wantedFace = $derived(route.value.show);
   const target = $derived({ event: card, art, show: wantedFace });
+  const targetImages = $derived(
+    huntImages(card, {
+      option: art,
+      bravadoBeta: preferences.bravadoBeta,
+      devilSatan: preferences.devilSatan,
+      gregalopeCE: preferences.gregalopeCE,
+    }),
+  );
+  const request = $derived({ event: card, show: wantedFace, images: targetImages });
   const loaded = new SvelteSet<string>();
   const failed = new SvelteSet<string>();
-  let artworkCard = $state<number>();
+  // Accept a new artwork snapshot only when selection or drawing allows it to start loading.
+  let artwork = $state.raw<typeof request>();
   let rotation = $state(0);
   const showCard = $derived(rotation % 360 !== 0);
   let hasClicked = $state(false);
-  let drawing = $state(false);
-  let selecting = $state(false);
+  let phase = $state<"idle" | "drawing" | "selecting">("idle");
+  const drawing = $derived(phase === "drawing");
+  const selecting = $derived(phase === "selecting");
+  let drawTimer: Timeout;
   let selectionTimer: Timeout;
   let firstRand = $state(0);
   let secondRand = $state(0);
@@ -62,74 +74,63 @@
   let retryFocus: { front: string; retry: number } | undefined;
   let flipDirection: "left" | "right" | undefined;
 
-  const requestedImages = $derived(
-    huntImages(artworkCard ?? card, {
-      option: art,
-      bravadoBeta: preferences.bravadoBeta,
-      devilSatan: preferences.devilSatan,
-      gregalopeCE: preferences.gregalopeCE,
-    }),
-  );
-  // Keep the outgoing artwork unchanged until its slide has actually finished.
-  let images = $state.raw(huntImages(1, huntDefaults));
+  const requestedImages = $derived(artwork?.images ?? request.images);
+  // Keep the outgoing event and artwork together until its slide has actually finished.
+  let presented = $state.raw({ event: 1, images: defaultImages });
+  const images = $derived(presented.images);
   // The rendered face stays with the outgoing artwork until the requested images can enter.
-  let backFace = $derived(images.back);
+  let concealedFace = $state<"back" | "reverse">("back");
+  const backFace = $derived(concealedFace === "reverse" ? (images.reverse ?? images.back) : images.back);
+  const canLoad = $derived(preferences.ready && artwork !== undefined);
   const sources = $derived(
-    preferences.ready && artworkCard !== undefined
-      ? [requestedImages.front, requestedImages.back, ...(requestedImages.reverse ? [requestedImages.reverse] : [])]
-      : [],
+    canLoad ? [requestedImages.front, requestedImages.back, ...(requestedImages.reverse ? [requestedImages.reverse] : [])] : [],
   );
-  const loading = $derived(!preferences.ready || artworkCard === undefined || sources.some((src) => !loaded.has(src)));
+  const loading = $derived(!canLoad || sources.some((src) => !loaded.has(src)));
   const loadError = $derived(sources.some((src) => failed.has(src)));
   const busy = $derived(drawing || loading || selecting || !!exitingElement || images.front !== requestedImages.front);
   const first = $derived(drawing ? firstRand : Math.floor(card / 10));
   const second = $derived(drawing ? secondRand : card % 10);
   const face = $derived.by(() => {
     if (showCard) return "front";
-    if (backFace === images.reverse) return "reverse";
+    if (concealedFace === "reverse" && images.reverse) return "reverse";
     return "card back";
   });
 
-  // Random draws need changing dice values while the outgoing card animates.
-  $effect(() => {
-    if (!drawing || loadError || prefersReducedMotion.current) return;
-    const interval = setInterval(() => {
-      firstRand = Math.floor(Math.random() * 10);
-      secondRand = Math.floor(Math.random() * 10);
-    }, 200);
-    return () => clearInterval(interval);
-  });
-
-  // URL navigation, including Back/Forward, must retarget the browser's card transitions. Animation state never writes the URL.
+  // Back/Forward and preference changes can request a card without a page event handler, so retarget the running presentation reactively.
   $effect(() => {
     if (!route.ready) return;
-    const nextCard = card;
-    const nextFace = wantedFace;
-    const nextFront = requestedImages.front;
-    untrack(() => {
-      if (artworkCard === undefined) {
-        artworkCard = nextCard;
-        commitImages();
-      } else if (nextCard !== artworkCard && !drawing) beginSelection();
-      else if (!busy && !loadError && images.front === nextFront) {
-        presentFace(nextFace);
-      }
-    });
+    const next = request;
+    untrack(() => retarget(next));
   });
 
-  onDestroy(() => clearTimeout(selectionTimer));
+  onDestroy(() => {
+    clearInterval(drawTimer);
+    clearTimeout(selectionTimer);
+  });
+
+  function retarget(next: typeof request) {
+    if (drawing) return;
+    if (artwork && next.event !== artwork.event) beginSelection();
+    else stage(next);
+  }
+
+  function stage(next: typeof request) {
+    artwork = next;
+    if (!slideElement && !exitingElement) commitImages();
+    else if (!busy && !loadError) presentFace(next.show);
+  }
 
   function flip(direction?: "left" | "right") {
     hasClicked = true;
     if (flipping || busy || loadError || !cardElement) return;
     flipDirection = direction ?? (showCard ? "left" : "right");
-    const concealedFace: HuntFace = images.reverse ? "reverse" : "back";
-    const show = showCard ? concealedFace : "front";
+    const hiddenFace: HuntFace = images.reverse ? "reverse" : "back";
+    const show = showCard ? hiddenFace : "front";
     route.replace({ ...target, show });
   }
 
   function presentFace(show: HuntFace) {
-    if (show !== "front") backFace = show === "reverse" ? (images.reverse ?? images.back) : images.back;
+    if (show !== "front") concealedFace = show;
     if ((show === "front") === showCard || !cardElement) return;
     const turn = flipDirection ?? (showCard ? "left" : "right");
     flipDirection = undefined;
@@ -175,23 +176,29 @@
     retryFocus = undefined;
     flipSource = undefined;
     rotation = Math.round(rotation / 360) * 360;
-    backFace = images.back;
+    concealedFace = "back";
   }
 
   function draw() {
     if (flipping || drawing) return;
     const waitForExit = !busy && !loadError && slideElement !== undefined;
     clearTimeout(selectionTimer);
-    selecting = false;
-    drawing = true;
+    phase = "drawing";
     route.replace({ ...target, event: Math.floor(Math.random() * 100), show: "back" });
-    if (!waitForExit) finishDraw();
+    if (waitForExit) {
+      drawTimer = setInterval(() => {
+        if (loadError || prefersReducedMotion.current) return;
+        firstRand = Math.floor(Math.random() * 10);
+        secondRand = Math.floor(Math.random() * 10);
+      }, 200);
+    } else finishDraw();
   }
 
   function finishDraw() {
+    clearInterval(drawTimer);
     conceal();
-    artworkCard = card;
-    drawing = false;
+    phase = "idle";
+    stage(request);
   }
 
   function onoutrostart(event: Event) {
@@ -206,9 +213,9 @@
   }
 
   function commitImages() {
-    images = requestedImages;
+    presented = { event: artwork?.event ?? card, images: requestedImages };
     rotation = wantedFace === "front" ? 180 : 0;
-    backFace = wantedFace === "reverse" ? (images.reverse ?? images.back) : images.back;
+    concealedFace = wantedFace === "reverse" ? "reverse" : "back";
   }
 
   function selectHunt() {
@@ -229,12 +236,12 @@
 
   function beginSelection() {
     if (!busy && !loadError) exitingElement = slideElement;
-    selecting = true;
+    phase = "selecting";
     conceal();
     clearTimeout(selectionTimer);
     selectionTimer = setTimeout(() => {
-      artworkCard = card;
-      selecting = false;
+      phase = "idle";
+      stage(request);
     }, selectionDelay);
   }
 
@@ -307,9 +314,6 @@
 
 <svelte:head>
   <title>Hunt Events | Guidepost</title>
-  {#if !preferences.ready || requestedImages.back === defaultBack}
-    <link rel="prefetch" as="image" href={cardAsset(defaultBack)} />
-  {/if}
   <meta name="description" content="Draw and select all 100 Kingdom Death: Monster hunt events with card images by Fen, Kekasi, and CCG." />
 </svelte:head>
 
@@ -328,7 +332,7 @@
         <button
           class="card"
           type="button"
-          aria-label={`Flip hunt event ${card}, showing ${face}`}
+          aria-label={`Flip hunt event ${presented.event}, showing ${face}`}
           aria-keyshortcuts="ArrowLeft ArrowRight"
           title="Flip card (Left/Right arrows)"
           aria-disabled={flipping || undefined}
@@ -384,7 +388,9 @@
     </button>
     <div class="menu"><MenuButton /></div>
   </footer>
-  <p class="visually-hidden" aria-live="polite">Hunt event {card}, {face}.</p>
+  <p class="visually-hidden" aria-live="polite" aria-atomic="true">
+    {#if !busy && !loadError}Hunt event {presented.event}, {face}.{/if}
+  </p>
 </main>
 
 <HuntPicker bind:this={picker} {card} onselect={select} />
