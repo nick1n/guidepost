@@ -32,3 +32,30 @@ describe("collection hash routes", () => {
     expect(collectionHash.read("#/content?status=owned&wished=true")).toEqual({ category: "content", query: "", tags: [] });
   });
 });
+
+describe("exact collection item routes", () => {
+  it("preserves case and safely round-trips each encoded segment once", () => {
+    const view: CollectionView = { category: "content", itemId: "Model /%?#?", query: "", tags: [] };
+    expect(collectionHash.read(collectionHash.format(view))).toEqual(view);
+    expect(collectionHash.read("#/content/Model").itemId).toBe("Model");
+  });
+
+  it("gives item routes precedence over query and tags when reading and writing", () => {
+    expect(collectionHash.read("#/content/model?q=other&tag=monster")).toEqual({
+      category: "content",
+      itemId: "model",
+      query: "",
+      tags: [],
+    });
+    expect(collectionHash.format({ category: "content", itemId: "model", query: "other", tags: ["monster"] })).toBe("#/content/model");
+  });
+
+  it.each(["#/content/", "#/content/model/extra", "#/unknown/model", "#/content/%E0%A4%A"])(
+    "retains invalid item-shaped path %s as an item view",
+    (hash) => {
+      const view = collectionHash.read(hash);
+      expect(view.itemId).toBeNull();
+      expect(collectionHash.read(collectionHash.format(view))).toEqual(view);
+    },
+  );
+});

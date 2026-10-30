@@ -10,6 +10,8 @@
     "test:run": "vitest run",
     "test:client": "vitest run --project client",
     "test:collection-browser": "node test/client/collection-browser.mts",
+    "test:collection-startup": "node test/client/collection-startup-browser.mts",
+    "test:error-browser": "node test/client/error-browser.mts",
     "test:menu-browser": "node test/client/menu-browser.mts",
     "test:hunt-browser": "node test/client/hunt-browser.mts",
     "test:scripts": "vitest run --project scripts && node --test \"test/scripts/**/*-checks.mts\"",

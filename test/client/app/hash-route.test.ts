@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, vi } from "vitest";
 import { expect, it } from "@effect/vitest";
 import { Cause, Deferred, Effect, Exit, Fiber } from "effect";
-import { NavigationError } from "#lib/navigation.ts";
+import { NavigationError } from "#lib/app/navigation/navigate.ts";
 import { HashNavigation, createHashRoute, setHashNavigation } from "#lib/app/navigation/hash-route.svelte.ts";
 import { formatHash, readHash } from "#lib/app/navigation/hash.ts";
 
@@ -60,6 +60,29 @@ it("distinguishes an unread browser hash from an empty hash", () => {
   expect(view.ready).toBe(true);
   expect(view.value).toBe(7);
 });
+
+it("synchronizes a newly mounted page with its current URL instead of the preceding page's hash", () => {
+  url = new URL("https://example.test/kdm/collection/#/accessories");
+  const view = createHashRoute({ read: (hash) => readHash(hash)?.[0], format: (category) => formatHash([category ?? "content"]) });
+  expect(view.value).toBe("7");
+  view.synchronize();
+  expect(view.value).toBe("accessories");
+  expect(replace).not.toHaveBeenCalled();
+});
+
+it.effect("entry synchronization preserves an optimistic hash replacement within the same page", () =>
+  Effect.gen(function* () {
+    const release = yield* Deferred.make<void>();
+    replace.mockReturnValueOnce(Deferred.await(release));
+    const view = route();
+    view.replace(42);
+    view.synchronize();
+    expect(view.value).toBe(42);
+    yield* Deferred.succeed(release, undefined);
+    yield* Fiber.join(fibers[0]);
+    expect(view.value).toBe(7);
+  }),
+);
 
 it("replaces only the hash immediately, retaining the path and search", () => {
   const view = route();

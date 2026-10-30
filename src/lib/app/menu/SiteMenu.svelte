@@ -11,7 +11,7 @@
   import { onMount, tick, untrack } from "svelte";
   import { Effect } from "effect";
   import type { ResetError } from "#lib/app/delete-data.ts";
-  import { getCollectionActions } from "#lib/kdm/collection/state/collection-actions.ts";
+  import { getActions } from "#lib/app/actions.ts";
   import { goto } from "$app/navigation";
   import { page } from "$app/state";
   import { asset, resolve } from "$app/paths";
@@ -34,7 +34,7 @@
   const dates = getDatePreferences();
   const glass = getGlassPreferences();
   const log = getNotificationLog();
-  const actions = getCollectionActions();
+  const actions = getActions();
   let { onreset }: { onreset: () => Effect.Effect<void, ResetError> } = $props();
   let resetting = $state(false);
   let resetError = $state("");

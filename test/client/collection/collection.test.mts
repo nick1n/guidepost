@@ -1,6 +1,6 @@
 import { it, expect } from "@effect/vitest";
 import { Cause, Deferred, Effect, Exit, Fiber, Layer, Queue, Stream } from "effect";
-import { reportAction } from "#lib/kdm/collection/state/collection-actions.ts";
+import { reportAction } from "#lib/app/actions.ts";
 import { Notifications } from "#lib/app/notifications/notifications.ts";
 import { Collection } from "#lib/kdm/collection/state/collection.svelte.ts";
 import { CollectionError } from "#lib/kdm/collection/state/collection-errors.ts";
@@ -20,6 +20,19 @@ const data = catalogJson as Catalog;
 const core = collectionKey("core", "1.6");
 const expansion = collectionKey("dragon-king", "1.6");
 const dice = collectionKey("dice", "1.6");
+
+it("catalog readiness distinguishes an absent source from an installed empty catalog", () => {
+  const empty: Catalog = { content: {}, "included-only": {}, accessories: {}, bundles: {}, homebrew: {} };
+  const collection = new Collection();
+  expect(collection.hasCatalog).toBe(false);
+  expect(collection.shopUpdated).toBeUndefined();
+  expect(collection.catalog.entries).toEqual([]);
+  collection.setCatalog({ ...empty, shopUpdated: "2026-10-29" });
+  expect(collection.hasCatalog).toBe(true);
+  expect(collection.shopUpdated).toBe("2026-10-29");
+  expect(collection.catalog.entries).toEqual([]);
+  expect(new Collection(empty).hasCatalog).toBe(true);
+});
 
 function bundleCatalog(): Catalog {
   return {

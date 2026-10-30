@@ -1,0 +1,1057 @@
+<script module lang="ts">
+  const swipeFeedbackDuration = 900;
+  const updateDate = new Intl.DateTimeFormat("en-US", { dateStyle: "medium", timeZone: "UTC" });
+  function tagWeight(count: number, maximum: number) {
+    const proportion = Math.log(Math.max(3, count) / 3) / Math.log(Math.max(4, maximum) / 3);
+    return Math.expm1(2 * proportion) / Math.expm1(2);
+  }
+</script>
+
+<script lang="ts">
+  import { beforeNavigate } from "$app/navigation";
+  import { onDestroy, untrack } from "svelte";
+  import { innerHeight, scrollY } from "svelte/reactivity/window";
+  import CollectionCard from "#lib/kdm/collection/ui/CollectionCard.svelte";
+  import { swipe, type SwipeDirection } from "#lib/swipe.ts";
+  import { reviewTagLabel } from "#lib/catalog-view.ts";
+  import { CollectionBrowsing } from "#lib/kdm/collection/collection-browsing.svelte.ts";
+  import { categories, type CollectionView } from "#lib/kdm/collection/url.ts";
+  import { CollectionCards } from "#lib/kdm/collection/collection-cards.svelte.ts";
+  import { formatPriceTotals } from "#lib/kdm-data.ts";
+  import { getActions } from "#lib/app/actions.ts";
+  import { ownershipMessage } from "#lib/kdm/collection/messages.ts";
+  import FloatingButton from "#lib/components/FloatingButton.svelte";
+  import { getCollection } from "#lib/kdm/collection/state/collection.svelte.ts";
+
+  let { route }: { route: { readonly value: CollectionView; replace: (view: CollectionView) => void } } = $props();
+  const collection = getCollection();
+  const retryLabel = $derived.by(() => {
+    if (!collection.loadError) return "Refresh collection";
+    return collection.hasStore ? "Retry loading" : "Reload page";
+  });
+  const actions = getActions();
+  const catalog = collection.catalog;
+  const entries = catalog.entries;
+  const shopUpdated = $derived(collection.shopUpdated);
+  const browsing = new CollectionBrowsing(
+    catalog,
+    (item, edition) => {
+      const value = collection.getEdition(item, edition);
+      return { owned: value.owned, wished: value.wished && !value.owned };
+    },
+    {
+      current: () => route.value,
+      replace: (view) => route.replace(view),
+    },
+    untrack(() => route.value),
+  );
+  const categoryName = $derived(categories.find(({ id }) => id === browsing.category)?.label.toLowerCase() ?? "content");
+  let dragDistance = $state(0);
+  let swipeReady = $state(false);
+  let categoriesVisible = $state(true);
+  let categoryBar: HTMLElement | undefined;
+  let swipeFeedback = $state(false);
+  let swipeFeedbackTimer: Timeout;
+  const showSwipeTabs = $derived((dragDistance !== 0 || swipeFeedback) && !categoriesVisible);
+  let searchInput: HTMLInputElement | undefined;
+
+  function clearSearchText() {
+    browsing.setQuery("");
+    searchInput?.focus();
+  }
+
+  function onkeydown(event: KeyboardEvent) {
+    if (event.defaultPrevented || event.isComposing || event.repeat || event.altKey) return;
+    const target = event.target;
+    const modified = event.ctrlKey || event.metaKey;
+    if (
+      event.key === "Backspace" &&
+      !modified &&
+      !event.shiftKey &&
+      target === searchInput &&
+      !browsing.query &&
+      browsing.selectedTags.length
+    ) {
+      event.preventDefault();
+      browsing.removeLastTag();
+      return;
+    }
+    if (event.key === "Enter" && !modified && !event.shiftKey && target === searchInput) {
+      if (!browsing.acceptTagQuery()) return;
+      event.preventDefault();
+      return;
+    }
+    if (event.key === "Escape" && !modified && !event.shiftKey && target === searchInput) {
+      event.preventDefault();
+      searchInput?.blur();
+      return;
+    }
+    const searchShortcut = event.key.toLowerCase() === "k" && modified && !event.shiftKey;
+    if (!searchShortcut) {
+      if (event.key !== "/" || modified) return;
+      if (target instanceof HTMLElement && (target.closest("input, textarea, select") || target.isContentEditable)) return;
+    }
+    event.preventDefault();
+    searchInput?.focus();
+  }
+
+  beforeNavigate(() => browsing.cancelPendingUrl());
+  // Native hash edits and Back/Forward happen outside collection controls, so restore browsing when the route changes.
+  $effect.pre(() => {
+    const view = route.value;
+    untrack(() => browsing.restore(view));
+  });
+  const showBackToTop = $derived((innerHeight.current ?? 0) > 0 && (scrollY.current ?? 0) >= (innerHeight.current ?? 0));
+
+  function backToTop() {
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }
+  let tagsOpen = $state(false);
+  let allTagsOpen = $state(false);
+  const writable = $derived(collection.canWrite);
+  const cards = new CollectionCards(entries);
+  onDestroy(() => {
+    browsing.cancelPendingUrl();
+    clearTimeout(swipeFeedbackTimer);
+    cards.dispose();
+  });
+  function markLatestOwned() {
+    if (!writable) return;
+    const targets = browsing.latestUnowned;
+    actions.run(collection.setEditionsOwned(targets, true), { success: ownershipMessage(targets, true) });
+  }
+  function refreshCollection() {
+    if (!collection.hasStore) {
+      window.location.reload();
+      return;
+    }
+    actions.run(collection.refresh(), { success: false });
+  }
+  function swipeCategory(direction: SwipeDirection) {
+    const index = categories.findIndex((option) => option.id === browsing.category);
+    const offset = direction === "left" ? 1 : -1;
+    const next = categories[(index + offset + categories.length) % categories.length];
+    browsing.changeCategory(next.id);
+    if (!categoriesVisible) {
+      clearTimeout(swipeFeedbackTimer);
+      swipeFeedback = true;
+      swipeFeedbackTimer = setTimeout(() => (swipeFeedback = false), swipeFeedbackDuration);
+    }
+  }
+  function dragCatalog(distance: number, ready = false) {
+    if (distance !== 0 && dragDistance === 0) {
+      clearTimeout(swipeFeedbackTimer);
+      swipeFeedback = false;
+      // Measure at gesture start so feedback does not wait for the observer's next frame.
+      if (categoryBar) {
+        const bounds = categoryBar.getBoundingClientRect();
+        categoriesVisible = bounds.bottom > 0 && bounds.top < window.innerHeight;
+      }
+    }
+    dragDistance = distance;
+    swipeReady = ready;
+  }
+  function observeCategories(element: HTMLElement) {
+    categoryBar = element;
+    const observer = new IntersectionObserver(([entry]) => {
+      categoriesVisible = entry.isIntersecting;
+    });
+    observer.observe(element);
+    return () => {
+      observer.disconnect();
+      categoryBar = undefined;
+    };
+  }
+</script>
+
+<svelte:window {onkeydown} />
+
+<div {@attach swipe({ directions: ["left", "right"], onSwipe: swipeCategory, onDrag: dragCatalog, scope: "page" })} class="catalog">
+  {#if collection.loadStatus === "pending"}
+    <p class="collection-status loading" role="status">Loading your saved collection...</p>
+  {:else if collection.loadError || collection.saveError}
+    <div class="collection-status error">
+      <p role="alert">{(collection.loadError ?? collection.saveError)?.message}</p>
+      <button type="button" onclick={refreshCollection}>
+        {retryLabel}
+      </button>
+    </div>
+  {:else if collection.needsRefresh}
+    <div class="collection-status">
+      <p role="status">Your collection changed in another tab. Refresh your collection before editing again.</p>
+      <button onclick={refreshCollection}>Refresh collection</button>
+    </div>
+  {/if}
+
+  <section class="stats" aria-label="Collection totals">
+    <button class="stat-owned" type="button" aria-pressed={browsing.status === "owned"} onclick={() => browsing.toggleStatus("owned")}>
+      <span class="stat-label">
+        Owned<span class="stat-icon control-icon i-material-symbols:inventory-2-outline-sharp" aria-hidden="true"></span>
+      </span>
+      <strong>{collection.ownedCount}</strong>
+    </button>
+    <div class="stat-value">
+      <strong>{formatPriceTotals(collection.totals)}</strong>
+    </div>
+    <button
+      class="stat-wishlist"
+      type="button"
+      aria-pressed={browsing.status === "wishlist"}
+      onclick={() => browsing.toggleStatus("wishlist")}
+    >
+      <span class="stat-label">
+        <span class="stat-icon control-icon i-material-symbols:favorite-outline" aria-hidden="true"></span>Wishlist
+      </span>
+      <strong>{collection.wishlistCount}</strong>
+    </button>
+  </section>
+
+  <nav class="categories" aria-label="Catalog categories" {@attach observeCategories}>
+    {@render categoryButtons()}
+  </nav>
+  <nav class={["swipe-tabs", showSwipeTabs && "is-visible"]} aria-label="Catalog categories while swiping" inert={!showSwipeTabs}>
+    {@render categoryButtons()}
+  </nav>
+
+  <div class="catalog-filters">
+    <div class={["search-controls", browsing.selectedTags.length > 0 && browsing.selectedTags.length <= 2 && "is-inline"]}>
+      <div class="search-heading">
+        <label class="search" for="catalog-search">Search</label>
+        {#if browsing.hasSearch}
+          <button class="search-command" type="button" onclick={markLatestOwned} disabled={!writable || !browsing.latestUnowned.length}>
+            Mark latest editions owned
+          </button>
+        {/if}
+        <button
+          class="search-command"
+          type="button"
+          onclick={browsing.clearSearch}
+          disabled={!browsing.isItemView && !browsing.query && !browsing.selectedTags.length && browsing.status === "all"}
+        >
+          Clear search
+        </button>
+        <p class="results">{browsing.filtered.length} items</p>
+      </div>
+      <div class="search-row">
+        <div class="search-field">
+          <input
+            id="catalog-search"
+            type="search"
+            bind:this={searchInput}
+            bind:value={() => browsing.query, browsing.setQuery}
+            aria-keyshortcuts="/ Control+k Meta+k"
+            aria-describedby="search-shortcut"
+            placeholder="Name, alias, or tag"
+          />
+          <span id="search-shortcut" class={["shortcut", browsing.query && "is-hidden"]}>
+            <span class="visually-hidden">Press </span><kbd>/</kbd><span class="visually-hidden"> to focus search</span>
+          </span>
+          {#if browsing.query}
+            <button class="clear-text" type="button" aria-label="Clear search text" onclick={clearSearchText}>
+              <span class="control-icon i-material-symbols:close" aria-hidden="true"></span>
+            </button>
+          {/if}
+        </div>
+        {#if browsing.selectedTags.length}
+          <section class="tag-filters" aria-label="Selected tags">
+            {#each browsing.selectedTags as tag (tag)}
+              <button
+                class="active-tag"
+                type="button"
+                aria-label="Remove {reviewTagLabel(tag)} filter"
+                onclick={() => browsing.toggleTag(tag)}
+              >
+                {reviewTagLabel(tag)}<span class="remove-icon i-material-symbols:close" aria-hidden="true"></span>
+              </button>
+            {/each}
+          </section>
+        {/if}
+        <div class="search-actions">
+          <button
+            class="tag-heading"
+            type="button"
+            aria-expanded={tagsOpen}
+            aria-controls="tag-browser"
+            onclick={() => (tagsOpen = !tagsOpen)}
+          >
+            <span class="tag-icon control-icon i-material-symbols:label-outline" aria-hidden="true"></span>
+            <strong class="tag-title">Tags</strong>
+            <span class="tag-chevron control-icon i-material-symbols:expand-more" aria-hidden="true"></span>
+          </button>
+          <button
+            class="collapse-all"
+            type="button"
+            aria-label={cards.allCollapsed ? "Expand all" : "Collapse all"}
+            disabled={!entries.length}
+            onclick={() => cards.toggleAll()}
+          >
+            <span
+              class={[
+                "collapse-icon",
+                "control-icon",
+                cards.allCollapsed ? "i-material-symbols:unfold-more" : "i-material-symbols:unfold-less",
+              ]}
+              aria-hidden="true"
+            ></span>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="tag-body" id="tag-browser" hidden={!tagsOpen}>
+      {#if tagsOpen}
+        {#if browsing.cloudTags.length}
+          <fieldset class="tag-cloud">
+            <legend class="visually-hidden">Filter by tags</legend>
+            {#each browsing.cloudTags as option (option.tag)}
+              {@render tagButton(option.tag, tagWeight(option.count, browsing.tags[0]?.count ?? 0))}
+            {/each}
+          </fieldset>
+        {/if}
+        {#if browsing.category === "content" && browsing.allTags.length}
+          <details class="more-tags" bind:open={allTagsOpen}>
+            <summary class="more-heading"
+              >All tags<span class="more-chevron control-icon i-material-symbols:expand-more" aria-hidden="true"></span></summary
+            >
+            {#if allTagsOpen}
+              <fieldset class="tag-list">
+                <legend class="visually-hidden">All tags</legend>
+                {#each browsing.allTags as option (option.tag)}
+                  {@render tagButton(option.tag)}
+                {/each}
+              </fieldset>
+            {/if}
+          </details>
+        {/if}
+        {#if !browsing.tags.length}<p>No tags are listed for this category.</p>{/if}
+      {/if}
+    </div>
+  </div>
+
+  {#if browsing.isItemView}
+    <p class="item-navigation">
+      <button class="search-command" type="button" onclick={() => browsing.changeCategory(browsing.category)}>Back to {categoryName}</button
+      >
+    </p>
+  {/if}
+
+  <div class="catalog-viewport">
+    <div class={["catalog-content", dragDistance !== 0 && "is-dragging"]} style:--drag-distance={`${dragDistance}px`}>
+      {#each browsing.panels as option (option.id)}
+        {@const items = option.items}
+        <!-- Keep visited cards mounted so category changes preserve their controls and deferred bodies. -->
+        <div data-category={option.id} hidden={option.id !== browsing.category}>
+          {#if !items.length}
+            <p class="empty">
+              {browsing.missingItem && option.id === browsing.category
+                ? "This item could not be found in this category."
+                : "No items match. Try another search, tag, category, or ownership filter."}
+            </p>
+          {:else}
+            <div class="cards">
+              {#each items as item, index (item.id)}
+                {@const presentation = cards.state(item.id, index)}
+                <CollectionCard
+                  {item}
+                  ready={presentation.ready}
+                  collapsed={presentation.collapsed}
+                  selectedTags={browsing.selectedTags}
+                  observe={cards.observe(item.id)}
+                  onToggle={() => cards.toggle(item.id)}
+                  onHold={() => cards.toggleAll(item.id)}
+                  onTagClick={browsing.toggleTag}
+                />
+              {/each}
+            </div>
+            {#if option.id === browsing.category && items.length < browsing.filtered.length}
+              <div class="catalog-more">
+                <p>
+                  {browsing.category === "content" ? "Gameplay items first. " : ""}Showing {items.length} of {browsing.filtered.length} items.
+                </p>
+                <button class="show-more" type="button" onclick={browsing.showMoreItems}>Show {browsing.nextCount} more</button>
+              </div>
+            {/if}
+          {/if}
+        </div>
+      {/each}
+    </div>
+  </div>
+  <footer>
+    <p>Your collection is saved on this device and remains available offline.</p>
+    {#if shopUpdated}
+      <p>Latest shop update: <time datetime={shopUpdated}>{updateDate.format(new Date(shopUpdated))}</time>.</p>
+    {/if}
+  </footer>
+  <div
+    class={["swipe-previous", dragDistance > 0 && "is-visible"]}
+    data-ready={swipeReady}
+    style:--swipe-pull={`${Math.max(0, dragDistance)}px`}
+    aria-hidden="true"
+  >
+    <span class="swipe-icon i-material-symbols:chevron-left"></span>
+  </div>
+  <div
+    class={["swipe-next", dragDistance < 0 && "is-visible"]}
+    data-ready={swipeReady}
+    style:--swipe-pull={`${Math.max(0, -dragDistance)}px`}
+    aria-hidden="true"
+  >
+    <span class="swipe-icon i-material-symbols:chevron-right"></span>
+  </div>
+</div>
+
+{#if showBackToTop}
+  <div class="back-to-top">
+    <FloatingButton label="Back to top" onclick={backToTop}>
+      <span class="control-icon i-material-symbols:expand-less" aria-hidden="true"></span>
+    </FloatingButton>
+  </div>
+{/if}
+
+{#snippet categoryButtons()}
+  {#each categories as option (option.id)}
+    <button
+      class="category-tab"
+      type="button"
+      aria-pressed={browsing.category === option.id}
+      onclick={() => browsing.changeCategory(option.id)}>{option.label}</button
+    >
+  {/each}
+  <span class="tab-highlight" aria-hidden="true"></span>
+{/snippet}
+
+{#snippet tagButton(tag: string, weight = 0)}
+  {@const selected = browsing.selectedTags.includes(tag)}
+  <button
+    class="cloud-tag"
+    type="button"
+    aria-pressed={selected}
+    disabled={!selected && !browsing.tagCounts.get(tag)}
+    style:--tag-weight={weight}
+    onclick={() => browsing.toggleTag(tag)}>{reviewTagLabel(tag)}</button
+  >
+{/snippet}
+
+<style>
+  .collection-status {
+    margin-block: 0.75rem;
+    padding: 0.75rem;
+    border: var(--border-width) solid var(--color-divider);
+    border-radius: var(--radius-control);
+    background: var(--panel);
+    color: var(--muted-foreground);
+
+    &.loading {
+      display: grid;
+      align-items: center;
+      position: fixed;
+      z-index: 2;
+      inset-block-end: max(0.5rem, env(safe-area-inset-bottom));
+      inset-inline: 1rem;
+      inline-size: fit-content;
+      max-inline-size: calc(100% - 2rem);
+      block-size: var(--size-floating-control);
+      margin: 0 auto;
+      padding-block: 0.5rem;
+      text-align: center;
+    }
+
+    &.error {
+      display: grid;
+      gap: 0.5rem;
+      color: var(--accent-red);
+    }
+  }
+  .collection-status button {
+    justify-self: start;
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--radius-control);
+    background: var(--card);
+    color: var(--foreground);
+  }
+  .catalog {
+    --distance-swipe-limit: 2.25rem;
+    --size-swipe-icon: clamp(3rem, 8vw, 7rem);
+    --distance-swipe-cue-limit: calc(var(--size-swipe-icon) * 0.5);
+  }
+  .catalog-viewport {
+    /* Clip the shifted catalog without creating a scrolling container. */
+    overflow-x: clip;
+  }
+  .item-navigation {
+    margin-block: 0.5rem;
+    text-align: end;
+  }
+  .catalog-content {
+    translate: clamp(calc(-1 * var(--distance-swipe-limit)), calc(var(--drag-distance) * 0.3), var(--distance-swipe-limit)) 0;
+    transition: translate var(--duration-fast) var(--ease-standard);
+
+    &.is-dragging {
+      cursor: grabbing;
+      transition: none;
+    }
+  }
+  .swipe-previous,
+  .swipe-next {
+    --swipe-shadow: drop-shadow(0 0.125rem 0.25rem color-mix(var(--contrast) 80%, transparent));
+
+    display: grid;
+    visibility: hidden;
+    z-index: 2;
+    position: fixed;
+    inset-block-start: 50%;
+    /* Shadow the icon's silhouette, since a text shadow does not apply to its mask. */
+    filter: var(--swipe-shadow) drop-shadow(0 0 0.5rem color-mix(var(--foreground) 20%, transparent));
+    opacity: 0;
+    /* Decorative gesture feedback must not intercept the swipe or nearby controls. */
+    pointer-events: none;
+    transition:
+      opacity var(--duration-fast) var(--ease-standard),
+      translate var(--duration-fast) var(--ease-standard),
+      visibility 0s var(--duration-fast);
+
+    &.is-visible {
+      visibility: visible;
+      opacity: 1;
+      transition-delay: 0s;
+      /* Follow the pointer immediately while retaining the opacity fade. */
+      transition-duration: var(--duration-fast), 0s, 0s;
+    }
+    &[data-ready="true"] {
+      filter: var(--swipe-shadow) drop-shadow(0 0 0.75rem color-mix(var(--accent) 65%, transparent));
+    }
+  }
+  .swipe-previous {
+    inset-inline-start: 0;
+    translate: -25% -50%;
+
+    &.is-visible {
+      translate: clamp(
+          calc(var(--size-swipe-icon) * -0.25),
+          calc(var(--size-swipe-icon) * -0.25 + var(--swipe-pull) * 0.5),
+          var(--distance-swipe-cue-limit)
+        ) -50%;
+    }
+  }
+  .swipe-next {
+    inset-inline-end: 0;
+    translate: 25% -50%;
+
+    &.is-visible {
+      translate: clamp(
+          calc(var(--distance-swipe-cue-limit) * -1),
+          calc(var(--size-swipe-icon) * 0.25 - var(--swipe-pull) * 0.5),
+          calc(var(--size-swipe-icon) * 0.25)
+        ) -50%;
+    }
+  }
+  .swipe-icon {
+    --size-icon: var(--size-swipe-icon);
+    color: var(--muted-foreground);
+    transition:
+      color var(--duration-fast) var(--ease-standard),
+      scale var(--duration-fast) var(--ease-standard);
+  }
+  [data-ready="true"] .swipe-icon {
+    scale: 1.12;
+    color: var(--accent);
+  }
+  .tag-heading,
+  .show-more,
+  .collapse-all {
+    border: var(--border-width) solid var(--color-divider);
+    border-radius: var(--radius-control);
+    background: var(--panel);
+  }
+  .back-to-top {
+    z-index: 2;
+    position: fixed;
+    inset-block-end: max(0.5rem, env(safe-area-inset-bottom));
+    inset-inline-start: max(0.5rem, env(safe-area-inset-left));
+  }
+  .swipe-tabs {
+    box-shadow: 0 0.25rem 0.5rem color-mix(var(--contrast) 25%, transparent);
+  }
+  .show-more {
+    color: var(--foreground);
+  }
+  footer,
+  .results {
+    color: var(--muted-foreground);
+  }
+  .categories,
+  .swipe-tabs {
+    display: flex;
+    margin-block-start: 0.5rem;
+    padding: 0.25rem;
+    overflow-x: auto;
+    gap: 0.25rem;
+    border-radius: var(--radius-control);
+    background: var(--panel);
+  }
+  .swipe-tabs {
+    visibility: hidden;
+    z-index: 2;
+    /* Keep the gesture's category controls visible without moving the page layout. */
+    position: fixed;
+    max-inline-size: calc(var(--size-catalog) - 0.5rem);
+    margin-inline: auto;
+    margin-block-start: 0;
+    inset-block-start: 0;
+    inset-inline: 0.25rem;
+    padding-block-start: max(0.25rem, env(safe-area-inset-top));
+    translate: 0 calc(-100% - 0.5rem);
+    transition:
+      translate var(--duration-fast) var(--ease-standard),
+      visibility 0s var(--duration-fast);
+
+    &.is-visible {
+      visibility: visible;
+      translate: 0 0;
+      transition-delay: 0s;
+    }
+  }
+  .category-tab {
+    flex: 1 0 auto;
+    min-block-size: 2.75rem;
+    padding: 0.375rem 0.25rem;
+    border-radius: calc(var(--radius-control) - 0.25rem);
+    color: var(--muted-foreground);
+    font-size: var(--text-sm);
+    white-space: nowrap;
+
+    &[aria-pressed="true"] {
+      background: var(--card);
+      color: var(--foreground);
+    }
+  }
+  .tab-highlight {
+    display: none;
+  }
+  @supports (anchor-name: --active-category) and (anchor-scope: --active-category) {
+    .categories {
+      position: relative;
+      isolation: isolate;
+    }
+    .categories,
+    .swipe-tabs {
+      anchor-scope: --active-category;
+    }
+    .category-tab {
+      z-index: 1;
+      position: relative;
+
+      &[aria-pressed="true"] {
+        anchor-name: --active-category;
+        background: transparent;
+      }
+    }
+    .tab-highlight {
+      display: block;
+      position: absolute;
+      position-anchor: --active-category;
+      inset-block-end: anchor(--active-category bottom);
+      inset-block-start: anchor(--active-category top);
+      inset-inline-end: anchor(--active-category right);
+      inset-inline-start: anchor(--active-category left);
+      border-radius: calc(var(--radius-control) - 0.25rem);
+      background: var(--card);
+      transition:
+        inset-block-start var(--duration-fast) var(--ease-standard),
+        inset-block-end var(--duration-fast) var(--ease-standard),
+        inset-inline-start var(--duration-fast) var(--ease-standard),
+        inset-inline-end var(--duration-fast) var(--ease-standard);
+    }
+  }
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem;
+    font-size: var(--text-xl);
+    line-height: var(--line-height-tight);
+    font-variant-numeric: tabular-nums;
+  }
+  .stats > * {
+    display: grid;
+    align-content: center;
+    padding: 0.75rem;
+    border-radius: var(--radius-card);
+    background: var(--panel);
+  }
+  .stats button {
+    text-align: start;
+    &[aria-pressed="true"] {
+      background: var(--stat-tint);
+    }
+  }
+  .stat-owned {
+    --stat-accent: var(--accent-blue);
+    --stat-tint: var(--blue-10);
+  }
+  .stat-wishlist {
+    --stat-accent: var(--accent-red);
+    --stat-tint: var(--red-10);
+    justify-items: end;
+  }
+  .stat-value {
+    grid-row: 2;
+    grid-column: 1 / -1;
+    justify-items: center;
+    padding-block: 0.5rem;
+    color: var(--accent-green);
+    font-size: var(--text-2xl);
+  }
+  .stat-label {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    color: var(--muted-foreground);
+    font-size: var(--text-lg);
+  }
+  .stat-icon {
+    color: var(--stat-accent);
+  }
+  .stats button strong {
+    color: var(--stat-accent);
+  }
+  .catalog-filters {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    margin-block: 0.5rem;
+    gap: 0.5rem;
+  }
+  .search {
+    margin-inline-end: auto;
+    color: var(--muted-foreground);
+    font-size: var(--text-sm);
+  }
+  .shortcut {
+    grid-area: 1 / 1;
+    align-self: center;
+    justify-self: end;
+    margin-inline-end: 0.5rem;
+    color: var(--muted-foreground);
+    font-size: var(--text-sm);
+    pointer-events: none;
+
+    &.is-hidden {
+      visibility: hidden;
+    }
+  }
+  kbd {
+    padding: 0.125rem 0.25rem;
+    border: var(--border-width) solid var(--color-divider);
+    border-radius: 0.25rem;
+    background: var(--panel);
+  }
+  .search-controls {
+    display: grid;
+    gap: 0.25rem;
+  }
+  .search-heading {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .search-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .search-field {
+    display: grid;
+    min-inline-size: 0;
+  }
+  input[type="search"] {
+    grid-area: 1 / 1;
+    inline-size: 100%;
+    min-inline-size: 0;
+    padding: 0.5rem;
+    padding-inline-end: 2.5rem;
+    border: var(--border-width) solid var(--color-divider);
+    border-radius: var(--radius-control);
+    background: var(--card);
+
+    &::-webkit-search-cancel-button {
+      display: none;
+    }
+  }
+  .clear-text {
+    display: grid;
+    grid-area: 1 / 1;
+    place-items: center;
+    align-self: stretch;
+    justify-self: end;
+    inline-size: 2.25rem;
+    border-radius: var(--radius-control);
+    color: var(--muted-foreground);
+
+    &:focus-visible {
+      outline: var(--border-width) solid var(--accent);
+    }
+  }
+  .tag-filters {
+    grid-row: 2;
+    grid-column: 1 / -1;
+  }
+  .tag-heading,
+  .more-heading {
+    display: flex;
+    align-items: center;
+    min-block-size: 2.75rem;
+    font-size: var(--text-md);
+  }
+  .search-actions {
+    display: flex;
+    grid-row: 1;
+    grid-column: 2;
+    gap: 0.5rem;
+  }
+  .tag-heading {
+    padding: 0.5rem;
+    gap: 0.375rem;
+  }
+  .tag-icon {
+    display: none;
+  }
+  .more-heading {
+    justify-content: space-between;
+    padding-inline: 0.25rem;
+    gap: 0.75rem;
+    border-radius: var(--radius-control);
+    background: var(--grey-9);
+    color: var(--muted-foreground);
+    list-style: none;
+    cursor: pointer;
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+  }
+  .tag-icon,
+  .tag-chevron,
+  .more-chevron {
+    flex-shrink: 0;
+    color: var(--muted-foreground);
+  }
+  .tag-title {
+    flex: 1;
+  }
+  .tag-chevron,
+  .more-chevron {
+    transition: rotate var(--duration-fast) var(--ease-standard);
+  }
+  .tag-heading[aria-expanded="true"] .tag-chevron,
+  .more-tags[open] .more-chevron {
+    rotate: 180deg;
+  }
+  .tag-body {
+    display: grid;
+    padding: 0.75rem;
+    gap: 0.75rem;
+    border: var(--border-width) solid var(--color-divider);
+    border-radius: var(--radius-control);
+    background: var(--card);
+
+    &[hidden] {
+      display: none;
+    }
+  }
+  .tag-body p {
+    color: var(--muted-foreground);
+    font-size: var(--text-sm);
+  }
+  .tag-cloud,
+  .tag-list,
+  .tag-filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.125rem;
+  }
+  .tag-cloud,
+  .tag-list {
+    min-inline-size: 0;
+    padding: 0.375rem;
+  }
+  .tag-cloud {
+    justify-content: center;
+    padding-block: 1rem;
+  }
+  .tag-list {
+    max-block-size: 20rem;
+    overflow-y: auto;
+  }
+  .cloud-tag {
+    max-inline-size: 100%;
+    min-block-size: 2rem;
+    padding: 0 0.5em;
+    transform-origin: bottom;
+    border-radius: 99px;
+    background: var(--panel);
+    color: var(--muted-foreground);
+    font: var(--font-normal) calc(var(--text-md) + var(--tag-weight) * var(--text-lg) * 1.75) / var(--line-height-snug) var(--font-sans);
+    overflow-wrap: anywhere;
+    transition:
+      scale var(--duration-fast) var(--ease-standard),
+      background-color var(--duration-fast) var(--ease-standard),
+      color var(--duration-fast) var(--ease-standard);
+
+    &[aria-pressed="true"] {
+      background: var(--accent);
+      color: var(--accent-foreground);
+    }
+  }
+  .active-tag {
+    display: inline-flex;
+    align-items: center;
+    max-inline-size: 100%;
+    min-block-size: 2.75rem;
+    padding: 0.375rem 0.625rem;
+    gap: 0.375rem;
+    border: var(--border-width) solid var(--blue-6);
+    border-radius: var(--radius-control);
+    background: var(--blue-10);
+    color: var(--accent);
+    font-size: var(--text-sm);
+    overflow-wrap: anywhere;
+  }
+  :is(.tag-heading, .more-heading, .cloud-tag, .active-tag):focus-visible {
+    outline: var(--border-width) solid var(--accent);
+    outline-offset: 3px;
+  }
+  .remove-icon {
+    --size-icon: 1rem;
+
+    flex-shrink: 0;
+    color: var(--accent);
+  }
+  .results {
+    font-size: var(--text-sm);
+    white-space: nowrap;
+  }
+  .search-command {
+    min-block-size: 1.5rem;
+    padding-inline: 0.25rem;
+    border-radius: var(--radius-control);
+    color: var(--muted-foreground);
+    font-size: var(--text-sm);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+  .cards {
+    display: grid;
+    align-items: start;
+    gap: 0.5rem;
+  }
+  .catalog-more {
+    display: grid;
+    justify-items: center;
+    margin-block-start: 1rem;
+    gap: 0.5rem;
+    color: var(--muted-foreground);
+    font-size: var(--text-sm);
+    text-align: center;
+  }
+  .show-more {
+    padding: 0.75rem 1rem;
+    font-size: var(--text-md);
+  }
+  .collapse-all {
+    display: grid;
+    place-items: center;
+    min-inline-size: 2.75rem;
+    padding: 0.5rem;
+  }
+  .collapse-icon {
+    color: var(--muted-foreground);
+  }
+  .empty {
+    padding: 2rem 1rem;
+    color: var(--muted-foreground);
+    text-align: center;
+  }
+  footer {
+    display: grid;
+    margin-block-start: 1rem;
+    gap: 0.25rem;
+    font-size: var(--text-sm);
+    text-align: center;
+  }
+  button:disabled {
+    cursor: default;
+    opacity: 0.4;
+  }
+  button,
+  summary,
+  input {
+    transition: var(--transition-colors);
+  }
+  @media (hover: hover) {
+    .clear-text:hover {
+      color: var(--accent);
+    }
+    button:not(:disabled, .cloud-tag, .search-command, .clear-text):hover,
+    summary:hover {
+      background: var(--blue-8);
+      color: var(--accent);
+    }
+    .search-command:not(:disabled):hover {
+      color: var(--accent);
+    }
+    .stat-wishlist:not(:disabled):hover {
+      background: var(--red-8);
+    }
+    .active-tag:not(:disabled):hover,
+    input[type="search"]:hover {
+      border-color: var(--accent);
+    }
+    .tag-heading:hover :is(.tag-icon, .tag-chevron),
+    summary:hover .more-chevron {
+      color: var(--accent);
+    }
+    .cloud-tag:not(:disabled):hover {
+      z-index: 1;
+      scale: 1.25;
+      background: var(--accent);
+      color: var(--accent-foreground);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .swipe-previous.is-visible,
+    .swipe-next.is-visible {
+      translate: 0 -50%;
+    }
+    .catalog-content {
+      translate: none;
+    }
+  }
+  @media (min-width: 40rem) {
+    .tag-icon {
+      display: inline-block;
+    }
+    .is-inline .search-row {
+      grid-template-columns: minmax(0, 1fr) auto auto;
+    }
+    .is-inline .tag-filters {
+      grid-row: 1;
+      grid-column: 2;
+    }
+    .is-inline .search-actions {
+      grid-column: 3;
+    }
+    .stats {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    .stat-value {
+      grid-row: auto;
+      grid-column: auto;
+    }
+  }
+  @media (min-width: 60rem) {
+    .cards {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+</style>

@@ -5,7 +5,7 @@ import { CollectionBrowsing } from "#lib/kdm/collection/collection-browsing.svel
 import { collectionHash, type CollectionView } from "#lib/kdm/collection/url.ts";
 import type { Catalog, EntryState } from "#lib/types/index.ts";
 
-function fixture(count = 0) {
+function fixture(count = 0, hash = "", initial?: CollectionView) {
   const data: Catalog = {
     content: {
       model: {
@@ -38,14 +38,19 @@ function fixture(count = 0) {
   };
   const catalog = reviewIndex(data);
   const states = new SvelteMap<string, EntryState>();
-  let url = new URL("https://example.test/kdm/collection/?keep=yes");
+  let url = new URL("https://example.test/kdm/collection/?keep=yes" + hash);
   const replace = vi.fn((view: CollectionView) => {
     url.hash = collectionHash.format(view);
   });
-  const browsing = new CollectionBrowsing(catalog, (item, edition) => states.get(`${item}/${edition}`) ?? {}, {
-    current: () => collectionHash.read(url.hash),
-    replace,
-  });
+  const browsing = new CollectionBrowsing(
+    catalog,
+    (item, edition) => states.get(`${item}/${edition}`) ?? {},
+    {
+      current: () => collectionHash.read(url.hash),
+      replace,
+    },
+    initial,
+  );
   return {
     browsing,
     states,
@@ -383,5 +388,80 @@ describe("collection browsing", () => {
     expect(f.browsing.acceptTagQuery()).toBe(false);
     expect(f.browsing.query).toBe("unmatched");
     f.browsing.cancelPendingUrl();
+  });
+});
+
+describe("initial and exact item browsing", () => {
+  it("seeds only the explicit initial filtered category, without hidden default cards", () => {
+    const { browsing } = fixture(205, "", collectionHash.read("#/accessories?q=dice&tag=dice&tag=missing"));
+    expect(browsing.category).toBe("accessories");
+    expect(browsing.selectedTags).toEqual(["dice"]);
+    expect(browsing.panels.map(({ id, items }) => [id, items.map((item) => item.id)])).toEqual([["accessories", ["dice"]]]);
+  });
+
+  it("initializes exact item mode before retaining any results and ignores conflicting filters", () => {
+    const { browsing, states } = fixture(205, "#/content/model?q=core&tag=missing");
+    expect(browsing.itemId).toBe("model");
+    expect(browsing.isItemView).toBe(true);
+    expect(browsing.missingItem).toBe(false);
+    expect(browsing.query).toBe("");
+    expect(browsing.selectedTags).toEqual([]);
+    expect(browsing.panels.flatMap(({ items }) => items.map(({ id }) => id))).toEqual(["model"]);
+    expect(browsing.latestUnowned.map(({ item }) => item.id)).toEqual(["model"]);
+    expect(browsing.nextCount).toBe(0);
+    states.set("model/new", { owned: true });
+    expect(browsing.visible.map(({ id }) => id)).toEqual(["model"]);
+    expect(browsing.latestUnowned).toEqual([]);
+  });
+
+  it.each([
+    "#/content/Model",
+    "#/content/missing",
+    "#/accessories/model",
+    "#/content/hidden",
+    "#/included-only/hidden",
+    "#/content/",
+    "#/content/model/extra",
+    "#/content/%E0%A4%A",
+  ])("keeps invalid or missing item %s empty", (hash) => {
+    const { browsing } = fixture(205, hash);
+    expect(browsing.isItemView).toBe(true);
+    expect(browsing.missingItem).toBe(true);
+    expect(browsing.filtered).toEqual([]);
+    expect(browsing.latestUnowned).toEqual([]);
+    expect(browsing.nextCount).toBe(0);
+    expect(browsing.panels.flatMap(({ items }) => items)).toEqual([]);
+    browsing.changeCategory(browsing.category);
+    expect(browsing.isItemView).toBe(false);
+    expect(browsing.visible.length).toBeGreaterThan(0);
+  });
+
+  it("cancels pending search and clears local filters on entering an item", () => {
+    vi.useFakeTimers();
+    const f = fixture();
+    f.browsing.toggleStatus("owned");
+    f.browsing.toggleTag("monster-lion");
+    f.browsing.setQuery("pending");
+    f.navigate("#/accessories/dice?q=ignored&tag=dice");
+    vi.runAllTimers();
+    expect(f.browsing.status).toBe("all");
+    expect(f.browsing.query).toBe("");
+    expect(f.browsing.selectedTags).toEqual([]);
+    expect(f.browsing.visible.map(({ id }) => id)).toEqual(["dice"]);
+    expect(f.url.hash).toBe("#/accessories/dice?q=ignored&tag=dice");
+  });
+
+  it.each(["search", "tag", "status", "category", "clear"] as const)("exits item mode through %s and replaces its URL", (action) => {
+    vi.useFakeTimers();
+    const f = fixture(0, "#/content/model");
+    if (action === "search") f.browsing.setQuery("core");
+    if (action === "tag") f.browsing.toggleTag("monster-lion");
+    if (action === "status") f.browsing.toggleStatus("owned");
+    if (action === "category") f.browsing.changeCategory(f.browsing.category);
+    if (action === "clear") f.browsing.clearSearch();
+    vi.runAllTimers();
+    expect(f.browsing.isItemView).toBe(false);
+    expect(collectionHash.read(f.url.hash).itemId).toBeUndefined();
+    expect(f.replace).toHaveBeenCalledOnce();
   });
 });

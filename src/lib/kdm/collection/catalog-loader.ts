@@ -15,7 +15,11 @@ export class CatalogLoadError extends Schema.TaggedError<CatalogLoadError>()("Ca
 }
 
 export const loadCatalog = Effect.fn("Catalog.load")(function* (url: string) {
-  const response = yield* HttpClient.get(url).pipe(Effect.mapError((cause) => new CatalogLoadError({ reason: "transport", cause })));
+  const response = yield* HttpClient.get(url).pipe(
+    // Keep this public static request compatible with the browser's fetch preload.
+    Effect.provideService(HttpClient.TracerPropagationEnabled, false),
+    Effect.mapError((cause) => new CatalogLoadError({ reason: "transport", cause })),
+  );
   yield* HttpClientResponse.filterStatusOk(response).pipe(Effect.mapError((cause) => new CatalogLoadError({ reason: "status", cause })));
   return yield* HttpClientResponse.schemaBodyJson(CatalogSchema, { onExcessProperty: "error" })(response).pipe(
     Effect.mapError((cause) => new CatalogLoadError({ reason: "invalid-data", cause })),

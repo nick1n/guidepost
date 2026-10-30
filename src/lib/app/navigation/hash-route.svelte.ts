@@ -1,7 +1,7 @@
 import { page } from "$app/state";
 import { Cause, Effect } from "effect";
 import { createContext, onMount, untrack } from "svelte";
-import { navigate, type NavigationError } from "#lib/navigation.ts";
+import { navigate, type NavigationError } from "./navigate.ts";
 
 type Codec<Value> = { read: (hash: string) => Value; format: (value: Value) => string };
 type Run = (operation: Effect.Effect<void, NavigationError>) => void;
@@ -26,6 +26,15 @@ export class HashNavigation {
 
   get hash() {
     return this.#hash;
+  }
+
+  /** A newly mounted page must read its own URL, without superseding an optimistic replacement on that page. */
+  synchronize() {
+    const current = this.#browser.current();
+    if (!this.#pending || pageScope(current) !== this.#pending.scope) {
+      this.#pending = undefined;
+      this.#hash = current.hash;
+    }
   }
 
   replace(next: string) {
@@ -62,11 +71,8 @@ export class HashNavigation {
     this.#menuOpen = menuOpen;
     this.#pathname = current.pathname;
     if (retain) this.replace(this.#hash ?? "");
-    else if (!this.#pending || pageScope(current) !== this.#pending.scope) {
-      this.#pending = undefined;
-      // SvelteKit can retain an earlier shallow URL after a native hash change.
-      this.#hash = current.hash;
-    }
+    // SvelteKit can retain an earlier shallow URL after a native hash change.
+    else this.synchronize();
   }
 
   hashChanged() {
@@ -120,6 +126,9 @@ export function createHashRoute<Value>(codec: Codec<Value>) {
     },
     get value() {
       return value;
+    },
+    synchronize() {
+      navigation.synchronize();
     },
     replace(next: Value) {
       return navigation.replace(codec.format(next));

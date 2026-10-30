@@ -99,7 +99,10 @@ export class Collection {
     return totals;
   });
   readonly coverage = $derived(this.catalog.coverage(this.state));
-  private catalogData: Catalog = $state.raw({ content: {}, "included-only": {}, accessories: {}, bundles: {}, homebrew: {} });
+  private catalogSource = $state.raw<Catalog>();
+  private readonly catalogData: Catalog = $derived(
+    this.catalogSource ?? { content: {}, "included-only": {}, accessories: {}, bundles: {}, homebrew: {} },
+  );
   private readonly catalogIndex = $derived(reviewIndex(this.catalogData));
   private userId?: string;
   private store?: CollectionStore;
@@ -109,7 +112,7 @@ export class Collection {
   private observationFailed = false;
 
   constructor(catalogData?: Catalog) {
-    if (catalogData) this.catalogData = catalogData;
+    this.catalogSource = catalogData;
   }
 
   get catalog() {
@@ -118,7 +121,15 @@ export class Collection {
   }
 
   setCatalog(catalogData: Catalog) {
-    this.catalogData = catalogData;
+    this.catalogSource = catalogData;
+  }
+
+  get hasCatalog() {
+    return this.catalogSource !== undefined;
+  }
+
+  get shopUpdated() {
+    return this.catalogSource?.shopUpdated;
   }
 
   get canWrite() {

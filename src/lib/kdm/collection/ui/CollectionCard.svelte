@@ -49,7 +49,8 @@
   import { SvelteSet } from "svelte/reactivity";
   import { getCollection } from "#lib/kdm/collection/state/collection.svelte.ts";
   import { getDatePreferences } from "#lib/app/preferences/date-preferences.svelte.ts";
-  import { getCollectionActions, ownershipMessage, wishMessage, includedMessage } from "#lib/kdm/collection/state/collection-actions.ts";
+  import { getActions } from "#lib/app/actions.ts";
+  import { ownershipMessage, wishMessage, includedMessage } from "#lib/kdm/collection/messages.ts";
   import { getCopyNumberEdits } from "#lib/kdm/collection/state/copy-number-edits.svelte.ts";
   import { collectionKey, copyNumberMaximum } from "#lib/types/collection.ts";
 
@@ -61,7 +62,7 @@
   function release(edition: Edition) {
     return edition.releaseDate ? dates.formatDate(edition.releaseDate) : (edition.releaseWindow ?? "date unknown");
   }
-  const collectionActions = getCollectionActions();
+  const actions = getActions();
   const copies = getCopyNumberEdits();
   const catalog = collection.catalog;
   const writable = $derived(collection.canWrite);
@@ -118,7 +119,7 @@
     if (!writable) return "Collection changes are unavailable until your collection is loaded.";
     const owned = !hasOwned;
     const targets = editions.filter((edition) => owned || selection(edition).owned).map((edition) => ({ item, edition }));
-    collectionActions.run(collection.setEditionsOwned(targets, owned), { success: ownershipMessage(targets, owned) });
+    actions.run(collection.setEditionsOwned(targets, owned), { success: ownershipMessage(targets, owned) });
     showOwnershipFeedback(owned ? "owned" : "cleared");
     return `${item.name}, all editions marked ${owned ? "owned" : "not owned"}.`;
   }
@@ -132,7 +133,7 @@
     clearTimeout(feedbackTimer);
     feedback = undefined;
     const shouldOwn = owned ?? !collection.getEdition(target.id, edition.id).owned;
-    collectionActions.run(collection.toggleOwned(collectionKey(target.id, edition.id), shouldOwn), {
+    actions.run(collection.toggleOwned(collectionKey(target.id, edition.id), shouldOwn), {
       success: ownershipMessage([{ item: target, edition }], shouldOwn),
     });
   }
@@ -140,7 +141,7 @@
     if (!writable) return;
     const entry = collection.getEdition(target.id, edition.id);
     const wished = !entry.owned && !entry.wished;
-    collectionActions.run(collection.toggleWish(collectionKey(target.id, edition.id)), {
+    actions.run(collection.toggleWish(collectionKey(target.id, edition.id)), {
       success: wishMessage({ item: target, edition }, wished),
     });
   }
@@ -148,7 +149,7 @@
     if (!writable) return;
     const shouldOwn = owned ?? !collection.coverage.edition(target.id, edition.id).covered;
     const restoring = collection.getEdition(target.id, edition.id).missing;
-    collectionActions.run(collection.toggleIncludedOwned(collectionKey(target.id, edition.id), shouldOwn), {
+    actions.run(collection.toggleIncludedOwned(collectionKey(target.id, edition.id), shouldOwn), {
       success: includedMessage({ item: target, edition }, shouldOwn, restoring),
     });
   }

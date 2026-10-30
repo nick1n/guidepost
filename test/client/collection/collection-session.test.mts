@@ -3,7 +3,7 @@ import { Deferred, Effect, Fiber, Layer, Queue, Stream } from "effect";
 import { Collection } from "#lib/kdm/collection/state/collection.svelte.ts";
 import { CollectionSession } from "#lib/kdm/collection/state/collection-session.ts";
 import { CollectionError } from "#lib/kdm/collection/state/collection-errors.ts";
-import { reportAction } from "#lib/kdm/collection/state/collection-actions.ts";
+import { reportAction } from "#lib/app/actions.ts";
 import { Notifications } from "#lib/app/notifications/notifications.ts";
 import { collectionKey } from "#lib/types/collection.ts";
 import { StoreError, type CollectionStore } from "#lib/kdm/collection/state/collection-store.ts";

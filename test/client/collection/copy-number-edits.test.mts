@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { Deferred, Effect, Fiber } from "effect";
 import type { EditionSelection } from "#lib/catalog-view.ts";
-import { createCollectionActions } from "#lib/kdm/collection/state/collection-actions.ts";
+import { createActions } from "#lib/app/actions.ts";
 import { Collection } from "#lib/kdm/collection/state/collection.svelte.ts";
 import { CopyNumberEdits } from "#lib/kdm/collection/state/copy-number-edits.svelte.ts";
 import { Notifications, type Notice } from "#lib/app/notifications/notifications.ts";
@@ -65,7 +65,7 @@ async function fixture(initial: CollectionSnapshot = {}) {
   const collection = new Collection(catalog);
   await Effect.runPromise(collection.setStore(store));
   const notices: Notice[] = [];
-  const actions = createCollectionActions(Notifications.layerWith((notice) => notices.push(notice)));
+  const actions = createActions(Notifications.layerWith((notice) => notices.push(notice)));
   const run = vi.spyOn(actions, "run");
   const edits = new CopyNumberEdits(collection, actions);
   return {

@@ -4,28 +4,30 @@ A personal hub for board game companion tools, built with SvelteKit 3, Svelte 5,
 
 ## Getting started
 
-Run from the project root:
-
 ```bash
 pnpm install
 pnpm dev
 ```
 
-On Windows, if `pnpm` is missing, install the pnpm 12 bootstrap with `npm.cmd install --global pnpm@12`. The `packageManager` field in [package.json](package.json) pins the exact pnpm version used by this project.
+On Windows, install missing pnpm with `npm.cmd install --global pnpm@12`. [package.json](package.json) pins the project version.
 
 ## Using the tools
 
 ### Collection
 
-Open `/kdm/collection/` for search, edition details, ownership, and wishlist controls. Entries save locally through Dexie under stable content and edition IDs. Product ownership is explicit; included rows show derived content coverage. Stale tabs block editing and offer refresh while preserving the current view. Offline use requires a previously cached catalog.
+Open `/kdm/collection/` to search products, view editions, and track ownership and wishes. Entries save locally. Included rows show content coverage; product ownership is recorded separately. Stale tabs block editing and offer refresh. Offline use requires a cached catalog.
 
-See the [implemented collection architecture](docs/kdm-architecture.md) for persistence, ownership, and content coverage. Future campaign and synchronization concepts are documented separately as [proposed design](docs/kdm-campaign-design.md).
+See the [collection architecture](docs/kdm-architecture.md) for persistence and ownership rules, and the [proposed design](docs/kdm-campaign-design.md) for future campaign and synchronization plans.
 
 Collection links keep browsing state in the hash, for example `/kdm/collection/#/accessories?q=dice` or
 `/kdm/collection/#/content?tag=monster&tag=pinup`. Categories are `content`, `accessories`, `bundles`, and `homebrew`;
 `q` searches and repeated `tag` parameters require every selected tag. The default content view needs no hash.
+Item links such as `/kdm/collection/#/content/woe-white-speaker` show one item, overriding search and tags.
+Changing search, tags, category, or ownership filters returns to category browsing.
 Controls replace the current history entry, and Back/Forward restores linked views.
 Ownership and wishlist filters stay local and are not included in links.
+
+The catalog loads in the browser and is reused on return visits within the app. Catalog and saved-collection failures have separate retry controls.
 
 Use **Import workbook** or **Export workbook** in the collection menu to transfer KDM Collection Sheets or Guidepost exports.
 Imports preview changes and ask you to resolve ambiguous editions. Original sheets merge checked products, wishes, and copy numbers;
@@ -65,7 +67,7 @@ Use `pnpm test` for watch mode.
 
 ### Browser tests
 
-Start a local development server and install Chrome or Chromium. Set `CHROME_PATH` if it is not detected.
+Install Chrome or Chromium; set `CHROME_PATH` if needed. Menu, collection, and hunt checks require a running development server:
 
 ```bash
 pnpm test:menu-browser -- http://localhost:5173
@@ -73,7 +75,16 @@ pnpm test:collection-browser -- http://localhost:5173
 pnpm test:hunt-browser -- http://localhost:5173
 ```
 
-These check menu interactions, collection controls, and hunt cards. Screenshots and reports go to `temp/browser-verification/`.
+Startup and error-page checks require a production build:
+
+```bash
+pnpm build
+pnpm test:collection-startup
+pnpm test:error-browser
+```
+
+These cover initial routing, catalog loading and reuse, retry feedback, layout stability, and cancellation.
+Screenshots and reports go to `temp/browser-verification/`.
 
 ### Project layout
 
@@ -119,7 +130,7 @@ See each command's `--help` output and the workflow guide before applying staged
 
 ### Generated files
 
-Edit the source files, then run `pnpm generate:types` to refresh these outputs. Development, checks, and builds also run this command.
+Run `pnpm generate:types` after editing these sources. Development, checks, and builds also generate them.
 
 | Generated output                                                                                                          | Source                                                  |
 | ------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- |

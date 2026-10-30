@@ -4,10 +4,11 @@
   import { onMount } from "svelte";
   import { createHashNavigation, setHashNavigation } from "#lib/app/navigation/hash-route.svelte.ts";
   import { afterNavigate } from "$app/navigation";
+  import { page } from "$app/state";
   import { Effect, Fiber } from "effect";
   import { resetSavedData } from "#lib/app/delete-data.ts";
   import { Collection, setCollection } from "#lib/kdm/collection/state/collection.svelte.ts";
-  import { createCollectionActions, setCollectionActions } from "#lib/kdm/collection/state/collection-actions.ts";
+  import { createActions, setActions } from "#lib/app/actions.ts";
   import { CollectionSession } from "#lib/kdm/collection/state/collection-session.ts";
   import { Notifications } from "#lib/app/notifications/notifications.ts";
   import { SiteMenu, setSiteMenu } from "#lib/app/menu/site-menu.svelte.ts";
@@ -42,9 +43,9 @@
   const glass = setGlassPreferences(new GlassPreferences(preferences));
   setShowdownDisplay(new ShowdownDisplay());
   const hunts = setHuntPreferences(new HuntPreferences(log.record));
-  const collectionActions = setCollectionActions(createCollectionActions(Notifications.layerWith(log.record)));
-  setHashNavigation(createHashNavigation(collectionActions.run));
-  setCopyNumberEdits(new CopyNumberEdits(collection, collectionActions));
+  const actions = setActions(createActions(Notifications.layerWith(log.record)));
+  setHashNavigation(createHashNavigation(actions.run));
+  setCopyNumberEdits(new CopyNumberEdits(collection, actions));
 
   function onbeforeunload(event: BeforeUnloadEvent) {
     if (deleting) return;
@@ -84,7 +85,7 @@
     const stopGlass = glass.start();
     const preferenceSession = Effect.runFork(preferences.run());
     const huntSession = Effect.runFork(hunts.run());
-    const active = collectionActions.run(session.run("guest"), { success: false });
+    const active = actions.run(session.run("guest"), { success: false });
     stopStorage = Effect.all([Fiber.interrupt(preferenceSession), Fiber.interrupt(active), Fiber.interrupt(huntSession)], {
       concurrency: "unbounded",
       discard: true,
@@ -106,4 +107,6 @@
 </svelte:head>
 
 {@render children()}
-<SiteMenuPanel onreset={resetData} />
+{#if page.status < 400}
+  <SiteMenuPanel onreset={resetData} />
+{/if}

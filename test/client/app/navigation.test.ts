@@ -1,7 +1,7 @@
 import { beforeEach, vi } from "vitest";
 import { expect, it } from "@effect/vitest";
 import { Effect } from "effect";
-import { navigate, NavigationError } from "#lib/navigation.ts";
+import { navigate, NavigationError } from "#lib/app/navigation/navigate.ts";
 
 const goto = vi.hoisted(() => vi.fn());
 vi.mock("$app/navigation", () => ({ goto }));

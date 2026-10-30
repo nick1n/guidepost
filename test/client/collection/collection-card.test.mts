@@ -13,7 +13,7 @@ const context = await vi.hoisted(async () => {
   return { collection: {} as unknown, stylesheet: `/src/lib/kdm/collection/ui/__uno_CollectionCard_${hash}.svelte.css` };
 });
 vi.mock("#lib/kdm/collection/state/collection.svelte.ts", () => ({ getCollection: () => context.collection }));
-vi.mock("#lib/kdm/collection/state/collection-actions.ts", () => ({ getCollectionActions: () => ({ run: vi.fn() }) }));
+vi.mock("#lib/app/actions.ts", () => ({ getActions: () => ({ run: vi.fn() }) }));
 vi.mock("#lib/kdm/collection/state/copy-number-edits.svelte.ts", () => ({
   getCopyNumberEdits: () => ({ value: () => undefined, flush: vi.fn() }),
 }));

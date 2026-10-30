@@ -150,12 +150,13 @@
   import ConfirmDialog from "#lib/components/ConfirmDialog.svelte";
   import TrailBackground from "#lib/components/TrailBackground.svelte";
   import VersionPicker from "#lib/kdm/catalog/ui/VersionPicker.svelte";
-  import { navigate } from "#lib/navigation.ts";
+  import { navigate } from "#lib/app/navigation/navigate.ts";
   import { getCollection } from "#lib/kdm/collection/state/collection.svelte.ts";
-  import { getCollectionActions, editionName } from "#lib/kdm/collection/state/collection-actions.ts";
+  import { getActions } from "#lib/app/actions.ts";
+  import { editionName } from "#lib/kdm/collection/messages.ts";
   import { collectionKey } from "#lib/types/collection.ts";
   const collection = getCollection();
-  const collectionActions = getCollectionActions();
+  const actions = getActions();
 
   let landing: HTMLElement;
   let ownershipDialog: { show: Noop };
@@ -255,10 +256,10 @@
       return collection.setManyOwned([key], true);
     });
     const edition = coreVersions.find((edition) => edition.id === version);
-    collectionActions.run(save, {
+    actions.run(save, {
       success: edition ? `${editionName({ item: { name: "Kingdom Death: Monster" }, edition })} marked as owned.` : false,
     });
-    collectionActions.run(continueToQuickStart(), { success: false });
+    actions.run(continueToQuickStart(), { success: false });
   }
 
   function continueToQuickStart() {

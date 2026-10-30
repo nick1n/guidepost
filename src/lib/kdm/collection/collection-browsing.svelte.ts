@@ -28,17 +28,32 @@ export class CollectionBrowsing {
   #query = $state("");
   #selectedTags = $state.raw<string[]>([]);
   #status = $state<Status>("all");
+  #itemId = $state<string | null | undefined>(undefined);
   #limits = $state<Partial<Record<Category, number>>>({});
   #resultLimit = $state(batchSize);
   #retained = $state.raw<Partial<Record<Category, CatalogEntry[]>>>({});
   #urlTimer: Timeout;
 
-  constructor(catalog: CatalogIndex, getEdition: EditionReader, navigation: Navigation) {
+  constructor(catalog: CatalogIndex, getEdition: EditionReader, navigation: Navigation, initial: CollectionView = navigation.current()) {
     this.#catalog = catalog;
     this.#getEdition = getEdition;
     this.#navigation = navigation;
     this.#content = reviewGameplayFirst(catalog.byCategory.get("content") ?? []);
-    this.#retained = { content: this.#content.slice(0, batchSize) };
+    this.#category = initial.category;
+    this.#itemId = initial.itemId;
+    this.#query = this.isItemView ? "" : initial.query;
+    this.#selectedTags = this.isItemView ? [] : this.#validTags(initial);
+    this.#retained = { [this.#category]: this.#visible };
+  }
+
+  get itemId() {
+    return this.#itemId;
+  }
+  get isItemView() {
+    return this.#itemId !== undefined;
+  }
+  get missingItem() {
+    return this.isItemView && this.#filtered.length === 0;
   }
 
   get category() {
@@ -62,7 +77,7 @@ export class CollectionBrowsing {
   #cloudTags = $derived.by(() => (this.#category === "content" ? (this.#catalog.tagViews.get(this.#category)?.cloud ?? []) : this.#tags));
   #allTags = $derived.by(() => this.#catalog.tagViews.get(this.#category)?.all ?? []);
   #hasSearch = $derived(!!this.#searchQuery || this.#selectedTags.length > 0);
-  #unfiltered = $derived(!this.#hasSearch && this.#status === "all");
+  #unfiltered = $derived(!this.isItemView && !this.#hasSearch && this.#status === "all");
   // Tag candidates remain stable while the text query changes.
   #tagged = $derived(
     this.#selectedTags.length
@@ -70,6 +85,10 @@ export class CollectionBrowsing {
       : this.#categoryEntries,
   );
   #filtered = $derived.by(() => {
+    if (this.isItemView) {
+      const item = this.#itemId ? this.#catalog.byId.get(this.#itemId) : undefined;
+      return item?.category === this.#category ? [item] : [];
+    }
     const query = this.#searchQuery;
     const status = this.#status;
     if (!query && status === "all") return this.#tagged;
@@ -134,19 +153,27 @@ export class CollectionBrowsing {
   /** Restore navigation without writing back or letting a pending search overwrite the destination. */
   restore(view: CollectionView) {
     this.cancelPendingUrl();
-    const tags = this.#catalog.tags.get(view.category) ?? [];
-    const selected = [...new Set(view.tags)].filter((tag) => tags.some((value) => value.tag === tag));
+    const selected = view.itemId !== undefined ? [] : this.#validTags(view);
+    const query = view.itemId !== undefined ? "" : view.query;
     // Our own URL updates must preserve expanded result batches and retained card state.
     if (
       view.category === this.#category &&
-      view.query === this.#query &&
+      query === this.#query &&
+      view.itemId === this.#itemId &&
       selected.length === this.#selectedTags.length &&
       selected.every((tag, index) => tag === this.#selectedTags[index])
     )
       return;
     this.#setCategory(view.category);
-    this.#query = view.query;
+    this.#itemId = view.itemId;
+    if (this.isItemView) this.#status = "all";
+    this.#query = query;
     this.#setTags(selected);
+  }
+
+  #validTags(view: CollectionView) {
+    const tags = this.#catalog.tags.get(view.category) ?? [];
+    return [...new Set(view.tags)].filter((tag) => tags.some((value) => value.tag === tag));
   }
 
   cancelPendingUrl() {
@@ -156,7 +183,7 @@ export class CollectionBrowsing {
 
   #writeUrl = () => {
     this.cancelPendingUrl();
-    const view = { category: this.#category, query: this.#query, tags: this.#selectedTags };
+    const view = { category: this.#category, query: this.#query, tags: this.#selectedTags, itemId: this.#itemId };
     if (formatCollectionHash(view) !== formatCollectionHash(this.#navigation.current())) this.#navigation.replace(view);
   };
 
@@ -166,6 +193,7 @@ export class CollectionBrowsing {
   }
 
   setQuery = (value: string) => {
+    this.#itemId = undefined;
     if (value.trim().toLowerCase() !== this.#searchQuery) this.#resultLimit = batchSize;
     this.#query = value;
     this.cancelPendingUrl();
@@ -186,17 +214,20 @@ export class CollectionBrowsing {
 
   changeCategory(next: Category) {
     this.#setCategory(next);
+    this.#itemId = undefined;
     this.#setTags([]);
     this.#writeUrl();
   }
 
   toggleTag = (tag: string) => {
     if (!this.#tags.some((value) => value.tag === tag)) return;
+    this.#itemId = undefined;
     this.#setTags(this.#selectedTags.includes(tag) ? this.#selectedTags.filter((value) => value !== tag) : [...this.#selectedTags, tag]);
     this.#writeUrl();
   };
 
   removeLastTag() {
+    this.#itemId = undefined;
     this.#setTags(this.#selectedTags.slice(0, -1));
     this.#writeUrl();
   }
@@ -218,7 +249,10 @@ export class CollectionBrowsing {
   };
 
   toggleStatus(next: Exclude<Status, "all">) {
+    const wasItemView = this.isItemView;
+    this.#itemId = undefined;
     this.#status = this.#status === next ? "all" : next;
+    if (wasItemView) this.#writeUrl();
     this.#resultLimit = batchSize;
   }
 

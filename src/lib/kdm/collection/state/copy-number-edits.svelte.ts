@@ -4,7 +4,8 @@ import { SvelteMap } from "svelte/reactivity";
 import type { EditionSelection } from "#lib/catalog-view.ts";
 import { collectionKey } from "#lib/types/collection.ts";
 import type { Collection } from "./collection.svelte.ts";
-import { copyNumberMessage, type createCollectionActions } from "./collection-actions.ts";
+import type { Actions } from "#lib/app/actions.ts";
+import { copyNumberMessage } from "#lib/kdm/collection/messages.ts";
 
 const saveDelay = 1000;
 type Draft = { itemId: string; value: string; flush: () => void; cancel: () => void };
@@ -13,9 +14,9 @@ type NumberInput = Pick<HTMLInputElement, "value" | "valueAsNumber" | "validity"
 export class CopyNumberEdits {
   private readonly drafts = new SvelteMap<string, Draft>();
   private readonly collection: Collection;
-  private readonly actions: ReturnType<typeof createCollectionActions>;
+  private readonly actions: Actions;
 
-  constructor(collection: Collection, actions: ReturnType<typeof createCollectionActions>) {
+  constructor(collection: Collection, actions: Actions) {
     this.collection = collection;
     this.actions = actions;
   }

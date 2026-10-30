@@ -1,10 +1,10 @@
 # Local-first KDM architecture
 
-Status: describes implemented collection storage and current app behavior. Campaign and synchronization design is in the [proposed campaign design](kdm-campaign-design.md).
+This document covers implemented app behavior. See [proposed campaign design](kdm-campaign-design.md) for campaign and synchronization plans.
 
 ## Collection scope and existing behavior
 
-The collection supports guest use and offline saves. It tracks owned content, editions, wishlist state, and related details without gameplay undo.
+The collection supports guest use and offline saves, without gameplay undo.
 
 The `/kdm/collection/` page saves owned, wished, component missing overrides, and numeric `copyNumber` values locally. Copy numbers are integers from 0 to 9999,
 independent of a known run size. Entries use compound content/edition keys. Explicit edition IDs are permanent lowercase kebab-case,
@@ -30,8 +30,7 @@ which restarts monitoring after retry and keeps the subscription active during n
 or another owner's collection.
 
 The root layout provides one `Collection` per app instance through Svelte context. It owns commands, derived totals and coverage,
-load/save errors, and pending-write status. Components run commands through `collectionActions`; injected notifications use Effect
-logging. Ownership commands record selected acquisitions; included content coverage is derived. Collection value sums catalog
+load/save errors, and pending-write status. Ownership commands record acquisitions; included content coverage is derived. Collection value sums catalog
 prices of directly owned products, excluding included-only components.
 
 The root initializes an empty catalog. Quick Start imports generated [core-editions.json](../src/lib/gen/core-editions.json): playable core IDs and labels
@@ -39,8 +38,17 @@ in catalog order, excluding Resin. The collection route loads the full catalog w
 Helpers receive catalog data explicitly. Collection links disable hover data preloading; the service worker caches catalog and collection
 HTML after a visit.
 
-The action boundary handles the full Effect cause. Interruption remains control flow, including causes that also contain a typed
-failure, and produces no failure notification. Expected failures report their typed messages; defects report a generic message and
+The collection route prerenders a header and loading shell, with no catalog cards or serialized catalog response.
+[CatalogSession](../src/lib/kdm/collection/catalog-session.svelte.ts) loads and validates the catalog with a cancellable browser request,
+inline retry, and reuse of the catalog in `Collection`. A collection-only fetch preload starts the first download early and is omitted on revisits.
+Read-only pending, failed, and error getters expose one private state, separate from saved-collection loading and errors.
+
+The app's [action runner](../src/lib/app/actions.ts) is provided through Svelte context and runs collection commands, navigation, and settings resets.
+It reports notifications through injected Effect logging and accepts feature-owned tagged errors without importing their implementations.
+Collection success messages stay in [messages.ts](../src/lib/kdm/collection/messages.ts).
+
+Actions inspect the full Effect cause. Any interruption suppresses failure notifications, even when the cause also contains a typed failure.
+Expected failures report their typed messages; defects report a generic message and
 log the full cause. A database load or monitoring failure offers retry; a failed storage-module download requires a page reload
 because no persistence adapter exists yet.
 
@@ -66,9 +74,13 @@ compatibility or migration policy with preservation tests.
 ## Collection browsing
 
 [CollectionBrowsing](../src/lib/kdm/collection/collection-browsing.svelte.ts) owns catalog category, search, tags, ownership filters,
-per-category batches, retained card results, and URL restoration.
+item selection, per-category batches, retained card results, and URL restoration. It initializes panels from the synchronized hash,
+so direct links render the requested view first. Item links resolve stable IDs within their category; unknown IDs show an empty state.
+Browsing controls exit item mode; ownership and edition controls preserve it.
 [CollectionCards](../src/lib/kdm/collection/collection-cards.svelte.ts) owns collapse, deferred rendering, viewport observation,
-and held-card scroll anchoring. The collection page owns focus, gestures, and navigation; `Collection` owns collection commands.
+and held-card scroll anchoring. The collection page creates and synchronizes one hash route, passing it to the
+[catalog screen](../src/lib/kdm/collection/ui/Catalog.svelte) for browsing transitions. The screen owns focus, gestures,
+and card disposal; `Collection` owns collection commands.
 
 ## App and route settings
 

@@ -1,7 +1,7 @@
 import { Effect, Fiber, Queue, type Scope } from "effect";
 import type { Collection } from "./collection.svelte.ts";
 import { CollectionError } from "./collection-errors.ts";
-import { reportAction } from "./collection-actions.ts";
+import { reportAction } from "#lib/app/actions.ts";
 import type { CollectionStore } from "./collection-store.ts";
 
 type OpenStore = (ownerId: string) => Effect.Effect<CollectionStore, CollectionError, Scope.Scope>;

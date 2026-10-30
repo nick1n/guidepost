@@ -2,7 +2,7 @@
   import { onDestroy } from "svelte";
   import { Effect, Fiber, Result } from "effect";
   import { getCollection } from "../state/collection.svelte.ts";
-  import { getCollectionActions } from "../state/collection-actions.ts";
+  import { getActions } from "#lib/app/actions.ts";
   import { TransferError } from "../state/collection-transfer.ts";
   import type { CollectionError } from "../state/collection-errors.ts";
   import { parseCollectionKey, type CollectionPatch, type EntryState } from "#lib/types/collection.ts";
@@ -13,7 +13,8 @@
 
   let { showButtons, reviewing, onreview, onclose }: { showButtons: boolean; reviewing: boolean; onreview: Noop; onclose: Noop } = $props();
   const collection = getCollection();
-  const actions = getCollectionActions();
+  const ready = $derived(collection.hasCatalog && collection.canWrite);
+  const actions = getActions();
   const id = $props.id();
   let input: HTMLInputElement;
   let busy = $state(false);
@@ -206,7 +207,7 @@
     <button
       type="button"
       onclick={importFile}
-      disabled={busy || !collection.canWrite}
+      disabled={busy || !ready}
       aria-busy={busy && !exporting}
       aria-describedby={importStatus ? `${id}-import-status` : undefined}
     >
@@ -220,7 +221,7 @@
     <button
       type="button"
       onclick={exportFile}
-      disabled={busy || !collection.canWrite}
+      disabled={busy || !ready}
       aria-busy={exporting}
       aria-describedby={exportStatus ? `${id}-export-status` : undefined}
     >
@@ -234,7 +235,7 @@
   </div>
   <span id={`${id}-import-status`} class="visually-hidden" role="status">{importStatus}</span>
   <span id={`${id}-export-status`} class="visually-hidden" role="status">{exportStatus}</span>
-  {#if !collection.canWrite}<p>Load or refresh your collection to use workbook transfers.</p>{/if}
+  {#if !ready}<p>Load or refresh your collection to use workbook transfers.</p>{/if}
   {#if error && !errorInReview}<p class="error" role="alert">{error}</p>{/if}
 {/if}
 {#if reviewing}
@@ -275,11 +276,11 @@
     <div class="actions">
       <button type="button" onclick={cancel} disabled={busy}>Cancel</button>
       {#if drafts.length}
-        <button type="button" onclick={confirmImport} disabled={busy || !rows || !count || !collection.canWrite}
+        <button type="button" onclick={confirmImport} disabled={busy || !rows || !count || !ready}
           >Import {count || "selected"} editions</button
         >
       {:else}
-        <button type="button" onclick={chooseFile} disabled={busy || !collection.canWrite}>Choose workbook</button>
+        <button type="button" onclick={chooseFile} disabled={busy || !ready}>Choose workbook</button>
       {/if}
     </div>
   </section>
