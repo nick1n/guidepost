@@ -19,6 +19,8 @@
   import { getSiteMenu } from "#lib/app/menu/site-menu.svelte.ts";
   import { getDatePreferences } from "#lib/app/preferences/date-preferences.svelte.ts";
   import { getGlassPreferences } from "#lib/app/preferences/glass-preferences.svelte.ts";
+  import { getCurrencyPreferences } from "#lib/app/currency/preferences.svelte.ts";
+  import { currencies, defaultEuroRate } from "#lib/app/currency/model.ts";
   import { getNotificationLog } from "#lib/app/notifications/notification-log.svelte.ts";
   import ConfirmDialog from "#lib/components/ConfirmDialog.svelte";
   import Select from "#lib/components/Select.svelte";
@@ -33,6 +35,8 @@
   const menu = getSiteMenu();
   const dates = getDatePreferences();
   const glass = getGlassPreferences();
+  const money = getCurrencyPreferences();
+  const currencyNames = new Intl.DisplayNames(["en"], { type: "currency" });
   const log = getNotificationLog();
   const actions = getActions();
   let { onreset }: { onreset: () => Effect.Effect<void, ResetError> } = $props();
@@ -326,7 +330,7 @@
               <ToggleButton pressed={glass.enabled} onclick={() => glass.setEnabled(!glass.enabled)} style="margin-block-end: 0.75rem">
                 Glass effects
               </ToggleButton>
-              <div class="date-settings">
+              <div class="preference">
                 <label for={`${id}-date-format`}>Date format</label>
                 <Select
                   id={`${id}-date-format`}
@@ -337,6 +341,32 @@
                     <option value={format.value}>{format.label}</option>
                   {/each}
                 </Select>
+              </div>
+              <div class="preference">
+                <label for={`${id}-currency`}>Totals currency</label>
+                <Select
+                  id={`${id}-currency`}
+                  value={money.currency}
+                  onchange={(event) => money.setCurrency(event.currentTarget.value)}
+                  aria-describedby={`${id}-currency-description`}
+                >
+                  {#each currencies as currency (currency)}
+                    <option value={currency}>{currency} ({currencyNames.of(currency)})</option>
+                  {/each}
+                </Select>
+                <p id={`${id}-currency-description`} class="description rate-note">
+                  {#if money.date}
+                    {money.unavailable ? "Saved rates" : "Rates"}: {dates.formatDate(money.date)}
+                  {:else if money.pending}
+                    Updating exchange rates...
+                  {:else if money.currency === "USD" || money.currency === "EUR"}
+                    Default estimate: €1 = ${defaultEuroRate}
+                  {:else if money.unavailable}
+                    Exchange rates unavailable
+                  {:else}
+                    Rates load with your collection
+                  {/if}
+                </p>
               </div>
               <HuntSettings />
               <ShowdownSettings {onnavigate} />
@@ -539,7 +569,7 @@
     /* Keep the controls aligned to the sheet while letting the scrollbar use the end inset. */
     inline-size: min(100%, calc(100cqi - var(--space-menu) - var(--toggle-padding-inline)));
   }
-  .date-settings {
+  .preference {
     display: grid;
     margin-block-end: 1.25rem;
     gap: 0.5rem;
@@ -554,6 +584,10 @@
     margin-block-start: 1.25rem;
     padding-block-start: 1rem;
     border-block-start: var(--border-width) solid var(--grey-7);
+  }
+  .rate-note {
+    min-block-size: 1.25rem;
+    line-height: var(--line-height-snug);
   }
   .reset {
     min-block-size: 2.75rem;

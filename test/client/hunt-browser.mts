@@ -299,7 +299,7 @@ await runBrowser(
     await closeMenu();
     await ready();
     await waitFor(`(async()=>{
-      const db=await new Promise((resolve,reject)=>{const r=indexedDB.open('guidepost-preferences');r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error)});
+      const db=await new Promise((resolve,reject)=>{const r=indexedDB.open('guidepost');r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error)});
       try{return await new Promise((resolve,reject)=>{const r=db.transaction('preferences').objectStore('preferences').get('hunt');r.onsuccess=()=>{const p=r.result;resolve(p?.option==='kekasi'&&p.bravadoBeta&&p.devilSatan&&p.gregalopeCE)};r.onerror=()=>reject(r.error)})}
       finally{db.close()}
     })()`);

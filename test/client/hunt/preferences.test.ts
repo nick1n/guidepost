@@ -1,31 +1,19 @@
 import "fake-indexeddb/auto";
-import Dexie from "dexie";
 import { afterEach, vi } from "vitest";
 import { it, expect } from "@effect/vitest";
 import { Cause, Deferred, Effect, Exit, Fiber, Queue } from "effect";
 import { HuntPreferences } from "#lib/kdm/hunt/preferences.svelte.ts";
 import { DexieHuntStore } from "#lib/kdm/hunt/dexie-store.ts";
 import { huntDefaults, HuntStorageError, type HuntPreferenceStore, type HuntValues } from "#lib/kdm/hunt/preference-store.ts";
+import { databaseFixture } from "../fixtures/database.ts";
 
-const connections: Array<{ close(): void }> = [];
-const databases = new Set<string>();
-
-afterEach(async () => {
-  vi.restoreAllMocks();
-  for (const connection of connections.splice(0)) connection.close();
-  for (const name of databases) await Dexie.delete(name);
-  databases.clear();
-});
+const database = databaseFixture();
+afterEach(() => vi.restoreAllMocks());
 
 function fixture() {
-  const name = `hunt-test-${crypto.randomUUID()}`;
-  databases.add(name);
-  const make = () => {
-    const store = new DexieHuntStore(name);
-    connections.push(store);
-    return store;
-  };
-  return { name, make };
+  const f = database();
+  const make = () => f.track(new DexieHuntStore(f.name));
+  return { ...f, make };
 }
 
 it.effect("returns defaults on a fresh database and saves all settings across connections", () =>
@@ -59,8 +47,7 @@ it.effect("reports invalid stored values without rewriting them", () =>
     const f = fixture();
     const store = f.make();
     yield* store.load();
-    const db = new Dexie(f.name);
-    connections.push(db);
+    const db = f.db;
     yield* Effect.promise(() => db.open());
     const invalid = { ...huntDefaults, option: "unknown-set" };
     yield* Effect.promise(() => db.table("preferences").put(invalid, "hunt"));

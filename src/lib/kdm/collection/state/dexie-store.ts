@@ -1,8 +1,8 @@
-import Dexie, { liveQuery, type Table } from "dexie";
+import { liveQuery } from "dexie";
 import { Cause, Effect, Queue, Result, Schema, Stream } from "effect";
+import { Database, EntryRow, Metadata } from "#lib/app/database.ts";
 import {
   CollectionSnapshotSchema,
-  EntryStateSchema,
   collectionKey,
   entryId,
   parseCollectionKey,
@@ -11,34 +11,6 @@ import {
 } from "#lib/types/index.ts";
 import { StoreError, type CollectionStore } from "./collection-store";
 
-const EntryRow = Schema.Struct({
-  id: Schema.String,
-  ownerId: Schema.String,
-  contentId: Schema.NonEmptyString,
-  editionId: Schema.NonEmptyString,
-  state: EntryStateSchema,
-});
-interface EntryRow extends Schema.Schema.Type<typeof EntryRow> {}
-
-const Metadata = Schema.Struct({
-  ownerId: Schema.String,
-  schemaVersion: Schema.Literal(1),
-  revision: Schema.String,
-});
-interface Metadata extends Schema.Schema.Type<typeof Metadata> {}
-
-class CollectionDatabase extends Dexie {
-  readonly entries: Table<EntryRow, string>;
-  readonly metadata: Table<Metadata, string>;
-
-  constructor(name: string) {
-    super(name, { autoOpen: false });
-    this.version(1).stores({ entries: "id, ownerId", metadata: "ownerId" });
-    this.entries = this.table("entries");
-    this.metadata = this.table("metadata");
-  }
-}
-
 const storeError =
   (operation: StoreError["operation"], reason: StoreError["reason"] = "unavailable") =>
   (cause: unknown) =>
@@ -46,23 +18,23 @@ const storeError =
 
 /** Local collection snapshots with transactional revision checks against competing tabs. */
 export class DexieStore implements CollectionStore {
-  private database: CollectionDatabase | undefined;
+  private database: Database | undefined;
   private revision: string | undefined;
   private pendingRevision: string | undefined;
 
   private constructor(
     private readonly ownerId: string,
-    private readonly databaseName: string,
+    private readonly databaseName: string | undefined,
   ) {}
 
   static make(ownerId = "guest", options: { databaseName?: string } = {}) {
-    return Effect.sync(() => new DexieStore(ownerId, options.databaseName ?? "guidepost-collection"));
+    return Effect.sync(() => new DexieStore(ownerId, options.databaseName));
   }
 
   private open = Effect.fn("DexieStore.open")({ self: this }, function (operation: StoreError["operation"]) {
     return Effect.tryPromise({
       try: async () => {
-        this.database ??= new CollectionDatabase(this.databaseName);
+        this.database ??= new Database(this.databaseName);
         if (!this.database.isOpen()) await this.database.open();
         return this.database;
       },

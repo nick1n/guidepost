@@ -1,4 +1,5 @@
 import { Cause, Effect, Schema } from "effect";
+import { rateCacheName } from "../lib/app/currency/model";
 
 export class CacheError extends Schema.TaggedError<CacheError>()("WorkerCacheError", {
   operation: Schema.String,
@@ -85,7 +86,7 @@ export function createWorker(platform: Platform, options: Options) {
   const activate = Effect.fn("ServiceWorker.activate")(function* () {
     const keys = yield* cacheOperation("keys", () => platform.caches.keys());
     yield* Effect.forEach(
-      keys.filter((key) => key !== cacheName),
+      keys.filter((key) => key !== cacheName && key !== rateCacheName),
       (key) => cacheOperation("delete", () => platform.caches.delete(key)),
       { concurrency: "unbounded", discard: true },
     );

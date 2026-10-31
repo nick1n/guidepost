@@ -15,6 +15,7 @@
   import { DatePreferences, setDatePreferences } from "#lib/app/preferences/date-preferences.svelte.ts";
   import { GlassPreferences, setGlassPreferences } from "#lib/app/preferences/glass-preferences.svelte.ts";
   import { AppPreferences } from "#lib/app/preferences/preferences.svelte.ts";
+  import { CurrencyPreferences, setCurrencyPreferences } from "#lib/app/currency/preferences.svelte.ts";
   import { NotificationLog, setNotificationLog } from "#lib/app/notifications/notification-log.svelte.ts";
   import { ShowdownDisplay, setShowdownDisplay } from "#lib/kdm/showdown/display.svelte.ts";
   import { HuntPreferences, setHuntPreferences } from "#lib/kdm/hunt/preferences.svelte.ts";
@@ -39,6 +40,7 @@
   setSiteMenu(new SiteMenu());
   const log = setNotificationLog(new NotificationLog());
   const preferences = new AppPreferences(log.record);
+  setCurrencyPreferences(new CurrencyPreferences(preferences));
   setDatePreferences(new DatePreferences(preferences));
   const glass = setGlassPreferences(new GlassPreferences(preferences));
   setShowdownDisplay(new ShowdownDisplay());

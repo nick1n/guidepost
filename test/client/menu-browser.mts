@@ -155,7 +155,7 @@ await runBrowser(
       "(()=>{const select=document.querySelector('dialog[data-swipe-ignore] select');select.value='day-first';select.dispatchEvent(new Event('change',{bubbles:true}))})()",
     );
     await waitFor(`new Promise((resolve,reject)=>{
-      const request=indexedDB.open('guidepost-preferences');
+      const request=indexedDB.open('guidepost');
       request.onerror=()=>reject(request.error);
       request.onsuccess=()=>{
         const db=request.result,transaction=db.transaction('preferences'),row=transaction.objectStore('preferences').get('app');

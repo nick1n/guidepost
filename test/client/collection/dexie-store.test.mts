@@ -1,6 +1,5 @@
 import "fake-indexeddb/auto";
 import { IDBObjectStore } from "fake-indexeddb";
-import Dexie from "dexie";
 import { afterEach, vi } from "vitest";
 import { it, expect } from "@effect/vitest";
 import { Deferred, Effect, Fiber, Queue, Stream } from "effect";
@@ -9,38 +8,22 @@ import { OptimisticStore } from "#lib/kdm/collection/state/optimistic-store.ts";
 import { StoreError } from "#lib/kdm/collection/state/collection-store.ts";
 import catalogJson from "#catalog/data.json";
 import { collectionKey, entryId, type Catalog } from "#lib/types/index.ts";
+import { databaseFixture } from "../fixtures/database.ts";
 
 const data = catalogJson as Catalog;
 
-const connections: Array<{ close(): void }> = [];
-const databases = new Set<string>();
-
-afterEach(async () => {
-  vi.restoreAllMocks();
-  for (const connection of connections.splice(0)) connection.close();
-  for (const name of databases) await Dexie.delete(name);
-  databases.clear();
-});
+const database = databaseFixture();
+afterEach(() => vi.restoreAllMocks());
 
 function fixture() {
-  const name = `collection-test-${crypto.randomUUID()}`;
-  databases.add(name);
+  const f = database();
   const make = (ownerId = "guest") =>
-    DexieStore.make(ownerId, { databaseName: name }).pipe(
-      Effect.tap((store) =>
-        Effect.sync(() => {
-          connections.push(store);
-        }),
-      ),
-    );
-  const inspect = () => {
-    const db = new Dexie(name);
-    connections.push(db);
-    return Effect.promise(async () => {
-      await db.open();
-      return db;
+    DexieStore.make(ownerId, { databaseName: f.name }).pipe(Effect.tap((store) => Effect.sync(() => f.track(store))));
+  const inspect = () =>
+    Effect.promise(async () => {
+      await f.db.open();
+      return f.db;
     });
-  };
   return { make, inspect };
 }
 

@@ -2,6 +2,7 @@ import { assert, expect, it } from "@effect/vitest";
 import { Cause, Deferred, Effect, Exit, Fiber, Logger } from "effect";
 import { vi } from "vitest";
 import { CacheError, createWorker, reportWorker, runWorker, type Platform } from "../../../src/service-worker/worker.ts";
+import { rateCacheName } from "#lib/app/currency/model.ts";
 
 const origin = "http://localhost:5173";
 const collectionPath = "/kdm/collection/";
@@ -44,6 +45,15 @@ function request(path = `${collectionPath}?cat=accessories`, mode: RequestMode =
   Object.defineProperty(request, "mode", { value: mode });
   return request;
 }
+
+it.effect("preserves saved exchange rates across service worker updates", () =>
+  Effect.gen(function* () {
+    const { worker, platform } = fixture();
+    platform.caches.keys.mockResolvedValue(["cache-old", "cache-test", rateCacheName]);
+    yield* worker.activate();
+    expect(platform.caches.delete).toHaveBeenCalledExactlyOnceWith("cache-old");
+  }),
+);
 
 it("resolves the browser promise with a non-cacheable 503 after a failed uncached navigation", async () => {
   const { worker, cache } = fixture();

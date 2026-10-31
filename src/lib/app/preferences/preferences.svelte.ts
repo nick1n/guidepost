@@ -28,6 +28,10 @@ export class AppPreferences {
     return this.#session.values.dateFormat;
   }
 
+  get currency() {
+    return this.#session.values.currency;
+  }
+
   get glass() {
     return this.#session.values.glass;
   }

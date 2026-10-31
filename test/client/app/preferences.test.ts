@@ -1,47 +1,35 @@
 import "fake-indexeddb/auto";
-import Dexie from "dexie";
 import { afterEach, vi } from "vitest";
 import { it, expect } from "@effect/vitest";
 import { Cause, Deferred, Effect, Exit, Fiber, Queue } from "effect";
 import { AppPreferences } from "#lib/app/preferences/preferences.svelte.ts";
 import { DatePreferences } from "#lib/app/preferences/date-preferences.svelte.ts";
 import { DexieAppStore } from "#lib/app/preferences/dexie-preference-store.ts";
-import { PreferenceDatabase } from "#lib/app/preferences/preference-database.ts";
 import { appDefaults, AppStorageError, type AppPreferenceStore, type AppValues } from "#lib/app/preferences/preference-store.ts";
 import { DexieHuntStore } from "#lib/kdm/hunt/dexie-store.ts";
 import { huntDefaults } from "#lib/kdm/hunt/preference-store.ts";
+import { databaseFixture } from "../fixtures/database.ts";
 
-const connections: Array<{ close(): void }> = [];
-const databases = new Set<string>();
-
-afterEach(async () => {
-  vi.restoreAllMocks();
-  for (const connection of connections.splice(0)) connection.close();
-  for (const name of databases) await Dexie.delete(name);
-  databases.clear();
-});
+const database = databaseFixture();
+afterEach(() => vi.restoreAllMocks());
 
 function fixture() {
-  const name = `app-preferences-${crypto.randomUUID()}`;
-  databases.add(name);
-  const db = new PreferenceDatabase(name);
-  const first = new DexieAppStore(name);
-  const second = new DexieAppStore(name);
-  connections.push(db, first, second);
-  return { name, db, first, second };
+  const f = database();
+  const first = f.track(new DexieAppStore(f.name));
+  const second = f.track(new DexieAppStore(f.name));
+  return { ...f, first, second };
 }
 
 it.effect("loads defaults without writing and persists both preferences independently of the hunt record", () =>
   Effect.gen(function* () {
     const f = fixture();
-    const hunts = new DexieHuntStore(f.name);
-    connections.push(hunts);
+    const hunts = f.track(new DexieHuntStore(f.name));
     yield* hunts.save({ option: "ccg" });
     expect(yield* f.first.load()).toEqual(appDefaults);
     yield* Effect.promise(() => f.db.open());
     expect(yield* Effect.promise(() => f.db.preferences.get("app"))).toBeUndefined();
     yield* f.first.save({ dateFormat: "written", glass: false });
-    expect(yield* f.second.load()).toEqual({ dateFormat: "written", glass: false });
+    expect(yield* f.second.load()).toEqual({ ...appDefaults, dateFormat: "written", glass: false });
     expect(yield* hunts.load()).toEqual({ ...huntDefaults, option: "ccg" });
   }),
 );
@@ -51,9 +39,18 @@ it.effect("merges unrelated writes across connections and persists the cleared g
     const f = fixture();
     yield* f.first.load();
     yield* Effect.all([f.first.save({ dateFormat: "month-first" }), f.second.save({ glass: false })], { concurrency: "unbounded" });
-    expect(yield* f.first.load()).toEqual({ dateFormat: "month-first", glass: false });
+    expect(yield* f.first.load()).toEqual({ ...appDefaults, dateFormat: "month-first", glass: false });
     yield* f.second.save({ glass: null });
-    expect(yield* f.first.load()).toEqual({ dateFormat: "month-first", glass: null });
+    expect(yield* f.first.load()).toEqual({ ...appDefaults, dateFormat: "month-first", glass: null });
+  }),
+);
+
+it.effect("persists the totals currency without losing unrelated preferences", () =>
+  Effect.gen(function* () {
+    const f = fixture();
+    yield* f.first.save({ currency: "GBP" });
+    yield* f.second.save({ dateFormat: "written" });
+    expect(yield* f.first.load()).toEqual({ ...appDefaults, currency: "GBP", dateFormat: "written" });
   }),
 );
 
@@ -90,7 +87,7 @@ it.effect("preserves startup edits, serializes writes, and closes the session on
     dates.setDateFormat("written");
     const active = yield* f.start();
     f.preferences.save({ glass: false });
-    yield* Deferred.succeed(load, { dateFormat: "day-first", glass: true });
+    yield* Deferred.succeed(load, { ...appDefaults, dateFormat: "day-first", glass: true });
     expect(yield* Queue.take(started)).toEqual({ dateFormat: "written" });
     expect(f.preferences).toMatchObject({ dateFormat: "written", glass: false, ready: true });
     dates.setDateFormat("invalid");
@@ -135,7 +132,7 @@ it.effect("does not apply a superseded load or notify on mixed interruption caus
     const active = yield* f.start();
     f.preferences.save({ glass: false });
     yield* Fiber.interrupt(active);
-    yield* Deferred.succeed(load, { dateFormat: "written", glass: true });
+    yield* Deferred.succeed(load, { ...appDefaults, dateFormat: "written", glass: true });
     expect(f.preferences).toMatchObject({ dateFormat: "iso", glass: false });
     expect(f.record).not.toHaveBeenCalled();
     const mixed = yield* memoryFixture(

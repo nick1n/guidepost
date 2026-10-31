@@ -74,7 +74,7 @@ await runBrowser(
     await evaluate(`${button("Import 3 editions")}.click()`);
     await waitFor("document.querySelector('dialog[data-swipe-ignore]').textContent.includes('Imported 3 editions.')");
     const saved = await evaluate<unknown[]>(
-      `new Promise((resolve,reject)=>{const request=indexedDB.open('guidepost-collection');request.onerror=()=>reject(request.error);request.onsuccess=()=>{const db=request.result,transaction=db.transaction('entries'),rows=transaction.objectStore('entries').getAll();rows.onsuccess=()=>resolve(rows.result);rows.onerror=()=>reject(rows.error);transaction.oncomplete=()=>db.close()}})`,
+      `new Promise((resolve,reject)=>{const request=indexedDB.open('guidepost');request.onerror=()=>reject(request.error);request.onsuccess=()=>{const db=request.result,transaction=db.transaction('entries'),rows=transaction.objectStore('entries').getAll();rows.onsuccess=()=>resolve(rows.result);rows.onerror=()=>reject(rows.error);transaction.oncomplete=()=>db.close()}})`,
     );
     assert(saved.length === 4, "Import preserves core 1.6 and persists selected editions and reviewed shared-row ownership");
     await evaluate(`${button("Export workbook")}.click()`);

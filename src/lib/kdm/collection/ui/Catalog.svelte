@@ -9,7 +9,8 @@
 
 <script lang="ts">
   import { beforeNavigate } from "$app/navigation";
-  import { onDestroy, untrack } from "svelte";
+  import { onDestroy, onMount, untrack } from "svelte";
+  import { Effect, Fiber } from "effect";
   import { innerHeight, scrollY } from "svelte/reactivity/window";
   import CollectionCard from "#lib/kdm/collection/ui/CollectionCard.svelte";
   import { swipe, type SwipeDirection } from "#lib/swipe.ts";
@@ -17,7 +18,7 @@
   import { CollectionBrowsing } from "#lib/kdm/collection/collection-browsing.svelte.ts";
   import { categories, type CollectionView } from "#lib/kdm/collection/url.ts";
   import { CollectionCards } from "#lib/kdm/collection/collection-cards.svelte.ts";
-  import { formatPriceTotals } from "#lib/kdm-data.ts";
+  import { getCurrencyPreferences } from "#lib/app/currency/preferences.svelte.ts";
   import { getActions } from "#lib/app/actions.ts";
   import { ownershipMessage } from "#lib/kdm/collection/messages.ts";
   import FloatingButton from "#lib/components/FloatingButton.svelte";
@@ -30,6 +31,19 @@
     return collection.hasStore ? "Retry loading" : "Reload page";
   });
   const actions = getActions();
+  const money = getCurrencyPreferences();
+  const totalReady = $derived(money.ready && collection.loadStatus !== "pending");
+  let rateRequest: Fiber.Fiber<unknown, unknown> | undefined;
+  function refreshRates() {
+    if (document.visibilityState === "hidden" || money.pending) return;
+    rateRequest = actions.run(money.refresh(), { success: false });
+  }
+  onMount(() => {
+    refreshRates();
+    return () => {
+      if (rateRequest) actions.run(Fiber.interrupt(rateRequest));
+    };
+  });
   const catalog = collection.catalog;
   const entries = catalog.entries;
   const shopUpdated = $derived(collection.shopUpdated);
@@ -164,7 +178,8 @@
   }
 </script>
 
-<svelte:window {onkeydown} />
+<svelte:window {onkeydown} onfocus={refreshRates} ononline={refreshRates} />
+<svelte:document onvisibilitychange={refreshRates} />
 
 <div {@attach swipe({ directions: ["left", "right"], onSwipe: swipeCategory, onDrag: dragCatalog, scope: "page" })} class="catalog">
   {#if collection.loadStatus === "pending"}
@@ -190,8 +205,14 @@
       </span>
       <strong>{collection.ownedCount}</strong>
     </button>
-    <div class="stat-value">
-      <strong>{formatPriceTotals(collection.totals)}</strong>
+    <div class="stat-value" aria-busy={!totalReady}>
+      <strong class={["total", totalReady && "is-ready"]}>
+        {#if totalReady}
+          {money.formatTotals(collection.totals)}
+        {:else}
+          <span class="visually-hidden">loading total</span>
+        {/if}
+      </strong>
     </div>
     <button
       class="stat-wishlist"
@@ -699,6 +720,15 @@
     padding-block: 0.5rem;
     color: var(--accent-green);
     font-size: var(--text-2xl);
+  }
+  .total {
+    min-block-size: calc(1em * var(--line-height-tight));
+    opacity: 0;
+    transition: opacity var(--duration-fast) var(--ease-standard);
+
+    &.is-ready {
+      opacity: 1;
+    }
   }
   .stat-label {
     display: flex;

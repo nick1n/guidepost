@@ -29,6 +29,12 @@ Ownership and wishlist filters stay local and are not included in links.
 
 The catalog loads in the browser and is reused on return visits within the app. Catalog and saved-collection failures have separate retry controls.
 
+Choose **Totals currency** in Settings to convert the collection value into one of 30 supported currencies. Individual products keep
+their listed currency. Conversions use Frankfurter's ECB reference rates, cached on this device for 24 hours and refreshed when the
+collection is opened or brought back into view. The rate date appears beneath the currency setting. Offline use keeps the last saved
+rates; without saved rates, EUR/USD conversion uses the built-in estimate of EUR 1 = USD 1.13. Other currencies need a saved rate,
+otherwise amounts stay in their original currencies. Converted totals are estimates and exclude exchange fees.
+
 Use **Import workbook** or **Export workbook** in the collection menu to transfer KDM Collection Sheets or Guidepost exports.
 Imports preview changes and ask you to resolve ambiguous editions. Original sheets merge checked products, wishes, and copy numbers;
 blank and unchecked cells leave saved values unchanged. Exports preserve the original three-tab layout and retain collection data for reimport.

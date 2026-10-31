@@ -78,7 +78,7 @@ it.effect("interruption during shutdown prevents deletion and reload", () =>
 );
 
 it("deletes every database, including preferences, other owners, and legacy databases", async () => {
-  const names = ["guidepost-collection", "guidepost-preferences", "legacy-data"];
+  const names = ["guidepost", "guidepost-collection", "guidepost-preferences", "legacy-data"];
   for (const name of names) {
     const db = new Dexie(name);
     db.version(1).stores({ records: "id" });

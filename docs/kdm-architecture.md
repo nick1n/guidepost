@@ -20,6 +20,10 @@ Collection -> OptimisticStore -> DexieStore (CollectionStore)
 by writing changed rows and removing omitted entries. Revision checks, row changes, and metadata updates share one IndexedDB transaction.
 Warm loads are read-only; the `ownerId` index serves reads and entry primary keys serve writes.
 
+[Database](../src/lib/app/database.ts) defines the version-one `guidepost` database with `entries`, `metadata`, and `preferences`
+tables. Collection and preference adapters share this schema and database name, with independently owned connections so closing
+one session does not interrupt another. The old collection and preference databases are not migrated or read.
+
 Dexie loads after the browser mounts the app. A metadata `liveQuery` subscription reports stale snapshots through the store interface.
 `Collection` blocks edits and offers an explicit refresh without replacing its current state. Observations never authorize writing
 against a newer revision. `CollectionSession` owns startup and monitoring in one Effect scope, stopping subscriptions before
@@ -96,11 +100,15 @@ notification log. Failed writes retain choices in memory without automatic retry
 is explicitly saved successfully; unrelated writes cannot clear it. `hasPendingChanges` counts queued or active writes.
 A storage-module startup failure requires a reload.
 
-Both adapters use [PreferenceDatabase](../src/lib/app/preferences/preference-database.ts): the version-one `guidepost-preferences`
-database, with `app` and `hunt` records in the `preferences` table. Loads are read-only; transactional patches preserve other tabs'
+Both adapters use [Database](../src/lib/app/database.ts), with `app` and `hunt` records in the shared `guidepost` database's
+`preferences` table. Loads are read-only; transactional patches preserve other tabs'
 unrelated fields. There are no live cross-tab subscriptions or localStorage migrations.
 
-Decoding accepts plain records, defaults absent known fields, and rejects malformed present values, including `undefined`.
+The shared [preference adapter](../src/lib/app/preferences/dexie-store.ts) owns opening, loading, transactional patches, and closing.
+App and hunt adapters supply their record keys, defaults, decoders, and feature-owned errors. Each keeps its own connection.
+
+The shared [record decoder](../src/lib/app/preferences/record.ts) derives optional stored fields from each feature's schema.
+It accepts plain records, defaults absent known fields, and rejects malformed present values, including `undefined`.
 Saves preserve unknown fields. Field renames or meaning changes need explicit migration rules.
 
 [DatePreferences](../src/lib/app/preferences/date-preferences.svelte.ts) defaults to ISO formatting and caches formatters.
@@ -110,6 +118,20 @@ follows the system when its override is `null`. Only user interaction can clear 
 [NotificationLog](../src/lib/app/notifications/notification-log.svelte.ts) retains the newest 100 notices for the session.
 [ShowdownDisplay](../src/lib/kdm/showdown/display.svelte.ts) shares session-only settings across themes and releases route-owned
 summaries and alignment callbacks on unmount.
+
+[CurrencyPreferences](../src/lib/app/currency/preferences.svelte.ts) reads the app's saved totals currency, defaulting to USD.
+The total stays pending until the saved preference and initial rate-cache read resolve, so startup cannot display USD before a
+saved currency. Usable cached rates display during revalidation; missing rates wait for the request before falling back.
+Collection totals convert from their listed USD/EUR amounts through ECB rates supplied by Frankfurter; product prices keep their
+listed currency. The collection owns cancellable rate requests on mount, focus, visibility, and reconnect. Exchange-rate failures
+preserve the last snapshot. Before any download, a built-in EUR/USD estimate of EUR 1 = USD 1.13 allows offline conversion in either
+direction. This fallback never receives a fetch timestamp or suppresses a network refresh. Other currencies need saved rates,
+otherwise totals list the original currency amounts separately. The currency setting shows the rate date or identifies the default estimate.
+
+The exchange-rate adapter validates network and cached responses and stores the snapshot with its successful fetch time in
+`guidepost-exchange-rates-v1` Cache Storage. Freshness lasts 24 hours regardless of the rates' published date. Cache failures leave
+rates usable in memory. The service worker preserves this cache across app updates, and the adapter works before worker activation.
+No scheduled background refresh is used.
 
 ## Product ownership and content coverage
 

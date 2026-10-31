@@ -10,7 +10,7 @@ await runBrowser(
   async ({ base, send, evaluate, waitFor, click, errors, report, assert, saveScreenshot }) => {
     const rows = async () => {
       const records = await evaluate<StoredRow[]>(
-        `(async()=>{await new Promise(r=>setTimeout(r,200));const db=await new Promise((r,j)=>{const q=indexedDB.open('guidepost-collection');q.onsuccess=()=>r(q.result);q.onerror=()=>j(q.error)});try{return await new Promise((r,j)=>{const q=db.transaction('entries','readonly').objectStore('entries').getAll();q.onsuccess=()=>r(q.result);q.onerror=()=>j(q.error)})}finally{db.close()}})()`,
+        `(async()=>{await new Promise(r=>setTimeout(r,200));const db=await new Promise((r,j)=>{const q=indexedDB.open('guidepost');q.onsuccess=()=>r(q.result);q.onerror=()=>j(q.error)});try{return await new Promise((r,j)=>{const q=db.transaction('entries','readonly').objectStore('entries').getAll();q.onsuccess=()=>r(q.result);q.onerror=()=>j(q.error)})}finally{db.close()}})()`,
       );
       if (!Array.isArray(records)) throw new Error("Expected stored collection rows");
       return records;
