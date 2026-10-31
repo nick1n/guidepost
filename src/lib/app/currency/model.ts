@@ -1,38 +1,6 @@
 import { Schema } from "effect";
 
-// Currencies covered by the ECB reference rates, plus their EUR base.
-export const currencies = [
-  "AUD",
-  "BRL",
-  "CAD",
-  "CHF",
-  "CNY",
-  "CZK",
-  "DKK",
-  "EUR",
-  "GBP",
-  "HKD",
-  "HUF",
-  "IDR",
-  "ILS",
-  "INR",
-  "ISK",
-  "JPY",
-  "KRW",
-  "MXN",
-  "MYR",
-  "NOK",
-  "NZD",
-  "PHP",
-  "PLN",
-  "RON",
-  "SEK",
-  "SGD",
-  "THB",
-  "TRY",
-  "USD",
-  "ZAR",
-] as const;
+export const currencies = ["USD", "EUR", "GBP", "CAD", "AUD", "JPY"] as const;
 
 export const DisplayCurrency = Schema.Literals(currencies);
 export type DisplayCurrency = typeof DisplayCurrency.Type;

@@ -41,8 +41,10 @@ await runBrowser(
       "The rate status replaces the currency dropdown description",
     );
     assert(
-      await evaluate("document.querySelector('select[id$=\"-currency\"]').options.length === 30"),
-      "Settings offers all 30 supported currencies",
+      await evaluate(
+        "JSON.stringify([...document.querySelector('select[id$=\"-currency\"]').options].map(option => option.value)) === JSON.stringify(['USD','EUR','GBP','CAD','AUD','JPY'])",
+      ),
+      "Settings offers the six common currencies",
     );
     await evaluate(
       "const select=document.querySelector('select[id$=\"-currency\"]'); select.value='GBP'; select.dispatchEvent(new Event('change',{bubbles:true}))",

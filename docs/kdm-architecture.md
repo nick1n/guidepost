@@ -120,6 +120,7 @@ follows the system when its override is `null`. Only user interaction can clear 
 summaries and alignment callbacks on unmount.
 
 [CurrencyPreferences](../src/lib/app/currency/preferences.svelte.ts) reads the app's saved totals currency, defaulting to USD.
+The selector and stored preference schema support six currencies.
 The total stays pending until the saved preference and initial rate-cache read resolve, so startup cannot display USD before a
 saved currency. Usable cached rates display during revalidation; missing rates wait for the request before falling back.
 Collection totals convert from their listed USD/EUR amounts through ECB rates supplied by Frankfurter; product prices keep their
