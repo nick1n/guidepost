@@ -12,8 +12,9 @@ The entry point is [scrape-shop-links.mts](../scripts/news/scrape-shop-links.mts
 Successfully exported articles, including those with no retained links, are skipped unless `--refresh-posts` reprocesses saved pages.
 
 The scraper reads article bodies, including newsletters and Kickstarter content hosted on the news site. It excludes navigation and
-never requests Kickstarter, product pages, images, or tracking redirects. Fetch requests run sequentially, at least two seconds apart;
-use `pnpm scrape:news --fetch --delay 5` to slow them further.
+never requests Kickstarter, product pages, images, or tracking redirects. All network requests share the catalog CLI's persisted
+35-second request gate, including the transition from news to shop downloads. Use `pnpm scrape:news --fetch --delay 60` to slow news requests further;
+values below 35 seconds are rejected. Cached pages require no wait.
 
 Results checkpoint after each post:
 
@@ -33,6 +34,7 @@ No `nameSource` field is exported. Dates use `YYYY-MM-DD` without UTC conversion
 Keep the JSON checkpoint with the CSV. Legacy Python exports are supported; damaged JSON or a lone CSV stops the script without replacement.
 Pages cache in `.cache/kingdom-death-news`. Use `--fetch --refresh-posts` to download historical articles again;
 `--refresh-posts` alone reprocesses saved pages. `--output` and `--cache` select other directories.
+`--request-cache` selects the shared request timing directory, defaulting to `.cache/kdm-shop/`.
 Use a new output directory to rebuild. Do not run concurrent copies against one output directory.
 
 Exit code 0 and `complete: true` mean every indexed post was read, not that the index includes every historical announcement.

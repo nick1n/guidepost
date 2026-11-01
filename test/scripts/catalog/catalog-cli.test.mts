@@ -4,12 +4,65 @@ import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
+import { pathToFileURL } from "node:url";
 import { expect, it } from "@effect/vitest";
-import { Cause, Deferred, Effect, Exit, Fiber } from "effect";
+import { Cause, Deferred, Effect, Exit, Fiber, Logger } from "effect";
 import { FetchHttpClient } from "effect/http";
 import { offlineMode, workflow } from "#scripts/catalog/cli.mts";
 import { checkListing } from "#scripts/catalog/commands/check-shop-links.mts";
 import { downloadNewsPage } from "#scripts/news/scrape-shop-links.mts";
+
+const requestCache = Effect.acquireRelease(
+  Effect.promise(() => mkdtemp(join(tmpdir(), "guidepost-cli-request-cache-"))),
+  (cache) => Effect.promise(() => rm(cache, { recursive: true, force: true })),
+);
+
+it.effect("prints expected shop failures as readable CLI errors while retaining unexpected defect details", () =>
+  Effect.gen(function* () {
+    const directory = yield* Effect.acquireRelease(
+      Effect.promise(() => mkdtemp(join(tmpdir(), "guidepost-cli-errors-"))),
+      (path) => Effect.promise(() => rm(path, { recursive: true, force: true })),
+    );
+    const entry = join(directory, "error.mts");
+    const moduleUrl = (path: string) => JSON.stringify(pathToFileURL(resolve(path)).href);
+    const execute = promisify(execFile);
+    for (const failure of [
+      'new ShopError(404, "https://shop.kingdomdeath.com/products/example.js")',
+      'new ShopError(429, "https://shop.kingdomdeath.com/products/example.js")',
+      'new ShopRequestError({ url: "https://shop.kingdomdeath.com", message: "Shop request failed" })',
+      'new Error("Unexpected defect")',
+    ]) {
+      yield* Effect.promise(() =>
+        writeFile(
+          entry,
+          `
+        import { Command } from ${moduleUrl("node_modules/effect/dist/cli/index.js")};
+        import { runCommand, workflow } from ${moduleUrl("scripts/catalog/cli.mts")};
+        import { ShopError, ShopRequestError } from ${moduleUrl("scripts/catalog/shop.mts")};
+        runCommand(Command.make("error", {}, () => workflow(async () => { throw ${failure}; })));
+      `,
+        ),
+      );
+      const result = yield* Effect.promise(() =>
+        execute(process.execPath, [entry], { timeout: 10_000 }).then(
+          () => ({ code: 0, output: "" }),
+          (error: Error & { code: number; stdout: string; stderr: string }) => ({ code: error.code, output: error.stdout + error.stderr }),
+        ),
+      );
+      expect(result.code).toBe(1);
+      if (failure.includes("Unexpected defect")) {
+        expect(result.output).toContain("Unexpected defect");
+        expect(result.output).toContain("CatalogCommandError");
+      } else {
+        if (failure.includes("ShopError")) expect(result.output).toContain(`Shop HTTP ${failure.includes("429") ? 429 : 404}`);
+        else expect(result.output).toContain("Shop request failed");
+        if (failure.includes("429")) expect(result.output).toContain("Stopped without retrying");
+        expect(result.output).not.toContain("CatalogCommandError");
+        expect(result.output).not.toContain("at file:");
+      }
+    }
+  }).pipe(Effect.scoped),
+);
 
 it.effect("interruption waits for the promise workflow's cleanup", () =>
   Effect.gen(function* () {
@@ -48,20 +101,32 @@ it.effect("interruption waits for the promise workflow's cleanup", () =>
 it.effect("HTTP adapters preserve method, redirects, headers and non-success statuses without retry", () =>
   Effect.gen(function* () {
     const requests: RequestInit[] = [];
-    const fetch: typeof globalThis.fetch = async (_input, init) => {
+    const messages: string[] = [];
+    const logger = Logger.make(({ message }) => messages.push(String(message)));
+    const cache = yield* requestCache;
+    const newsCache = yield* requestCache;
+    const fetch: typeof globalThis.fetch = async (input, init) => {
+      expect(messages.at(-1)).toContain(`${init?.method === "HEAD" ? "Checking" : "Fetching"} ${String(input)}`);
       requests.push(init ?? {});
       return new Response("Unavailable", { status: 503 });
     };
-    const result = yield* checkListing(new URL("https://example.com/product")).pipe(Effect.provideService(FetchHttpClient.Fetch, fetch));
+    const result = yield* checkListing(new URL("https://example.com/product"), { cache }).pipe(
+      Effect.provideService(FetchHttpClient.Fetch, fetch),
+      Effect.provide(Logger.layer([logger])),
+    );
     expect(result).toEqual({ status: 503, ok: false });
-    const news = yield* downloadNewsPage("https://kingdomdeath.com/news/test").pipe(Effect.provideService(FetchHttpClient.Fetch, fetch));
+    const news = yield* downloadNewsPage("https://kingdomdeath.com/news/test", { cache: newsCache }).pipe(
+      Effect.provideService(FetchHttpClient.Fetch, fetch),
+      Effect.provide(Logger.layer([logger])),
+    );
     expect(news).toEqual({ status: 503, html: "" });
     expect(requests).toHaveLength(2);
     expect(requests[0].method).toBe("HEAD");
-    expect(requests[0].redirect).toBe("follow");
+    expect(requests[0].redirect).toBe("manual");
     expect(requests[1].redirect).toBe("error");
     expect(new Headers(requests[1].headers).get("user-agent")).toBe("Guidepost-News-Link-Exporter/2.0");
-  }),
+    expect(messages.at(-1)).toContain("HTTP 503 https://kingdomdeath.com/news/test");
+  }).pipe(Effect.scoped),
 );
 
 it.effect(
@@ -156,7 +221,7 @@ it.effect(
           ),
         );
         expect(output.failed).toBe(true);
-        if (args[0] === "--delay") expect(output.text).toContain("--delay must be a finite number of at least 2 seconds");
+        if (args[0] === "--delay") expect(output.text).toContain("--delay must be a finite number of at least 35 seconds");
         expect(yield* Effect.promise(() => readdir(directory))).toEqual([]);
       }
     }).pipe(Effect.scoped),
@@ -421,25 +486,38 @@ it.effect(
 
 it.effect("link checks report successful and failed HTTP statuses", () =>
   Effect.gen(function* () {
-    for (const status of [200, 204, 404, 410, 301, 403, 429, 503]) {
+    for (const status of [200, 204, 404, 410, 301, 403, 503]) {
+      const cache = yield* requestCache;
       const fetch: typeof globalThis.fetch = async () => new Response(null, { status });
-      const result = yield* checkListing(new URL("https://example.com")).pipe(Effect.provideService(FetchHttpClient.Fetch, fetch));
+      const result = yield* checkListing(new URL("https://example.com"), { cache }).pipe(
+        Effect.provideService(FetchHttpClient.Fetch, fetch),
+      );
       expect(result).toEqual({ status, ok: status >= 200 && status < 300 });
     }
+    const limitedCache = yield* requestCache;
+    const limitedFetch: typeof globalThis.fetch = async () => new Response(null, { status: 429, headers: { "Retry-After": "60" } });
+    const stopped = yield* Effect.flip(
+      checkListing(new URL("https://shop.kingdomdeath.com"), { cache: limitedCache }).pipe(
+        Effect.provideService(FetchHttpClient.Fetch, limitedFetch),
+      ),
+    );
+    expect(stopped).toMatchObject({ _tag: "ShopError", status: 429 });
     const fetch: typeof globalThis.fetch = async () => {
       throw new Error("offline");
     };
+    const cache = yield* requestCache;
     const result = yield* Effect.result(
-      checkListing(new URL("https://example.com")).pipe(Effect.provideService(FetchHttpClient.Fetch, fetch)),
+      checkListing(new URL("https://example.com"), { cache }).pipe(Effect.provideService(FetchHttpClient.Fetch, fetch)),
     );
     expect(result).toMatchObject({ _tag: "Failure", failure: { _tag: "LinkRequestError" } });
-  }),
+  }).pipe(Effect.scoped),
 );
 
 it.effect("link request interruption aborts transport without a failure result", () =>
   Effect.gen(function* () {
     const entered = yield* Deferred.make<void>();
     let aborted = false;
+    const cache = yield* requestCache;
     const fetch: typeof globalThis.fetch = (_input, init) =>
       new Promise((_resolve, reject) => {
         init?.signal?.addEventListener(
@@ -452,7 +530,7 @@ it.effect("link request interruption aborts transport without a failure result",
         );
         Effect.runSync(Deferred.succeed(entered, undefined));
       });
-    const fiber = yield* checkListing(new URL("https://example.com")).pipe(
+    const fiber = yield* checkListing(new URL("https://example.com"), { cache }).pipe(
       Effect.provideService(FetchHttpClient.Fetch, fetch),
       Effect.forkChild,
     );
@@ -461,5 +539,5 @@ it.effect("link request interruption aborts transport without a failure result",
     const exit = yield* Fiber.await(fiber);
     expect(aborted).toBe(true);
     expect(Exit.isFailure(exit) && Cause.hasInterrupts(exit.cause)).toBe(true);
-  }),
+  }).pipe(Effect.scoped),
 );

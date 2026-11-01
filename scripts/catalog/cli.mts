@@ -2,6 +2,7 @@ import { NodeRuntime, NodeServices } from "@effect/platform-node";
 import { Cause, Effect, Option, Schema } from "effect";
 import { Command, Flag } from "effect/cli";
 import { CatalogInputError } from "./review/schema.mts";
+import { ShopError, ShopRequestError } from "./shop.mts";
 
 export const optionalString = (name: string) => Flag.String(name).pipe(Flag.optional, Flag.map(Option.getOrUndefined));
 export const offline = Flag.Boolean("offline").pipe(
@@ -45,7 +46,11 @@ export function runCommand<Name extends string, Input, ContextInput>(command: Co
       const reason = cause.reasons[0];
       if (cause.reasons.length !== 1 || !reason || !Cause.isFailReason(reason)) return Effect.failCause(cause);
       const error = reason.error;
-      if (!(error instanceof CommandError) || !(error.cause instanceof CatalogInputError)) return Effect.failCause(cause);
+      if (
+        !(error instanceof CommandError) ||
+        !(error.cause instanceof CatalogInputError || error.cause instanceof ShopError || error.cause instanceof ShopRequestError)
+      )
+        return Effect.failCause(cause);
       const message = error.cause.message;
       return Effect.sync(() => {
         console.error(message);

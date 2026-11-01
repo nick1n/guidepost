@@ -1,5 +1,5 @@
 import { expect, it } from "@effect/vitest";
-import { Cause, Clock, Deferred, Duration, Effect, Exit, Fiber, Queue } from "effect";
+import { Cause, Clock, Deferred, Duration, Effect, Exit, Fiber, Logger, Queue } from "effect";
 import { FetchHttpClient } from "effect/http";
 import { TestClock } from "effect/testing";
 import { createHash } from "node:crypto";
@@ -33,9 +33,167 @@ const observedClock = Effect.gen(function* () {
       sleep: (duration: Duration.Duration) => Queue.offer(sleeps, Duration.toMillis(duration)).pipe(Effect.andThen(clock.sleep(duration))),
     },
     pacing: Queue.take(sleeps).pipe(Effect.repeat({ until: (duration) => duration === 35_000 })),
+    waiting: (milliseconds: number) => Queue.take(sleeps).pipe(Effect.repeat({ until: (duration) => duration === milliseconds })),
     timeout: Queue.take(sleeps).pipe(Effect.repeat({ until: (duration) => duration === 40_000 })),
   };
 });
+
+it.effect("stops on a rate-limited page without retrying or fetching the next page", () =>
+  Effect.gen(function* () {
+    yield* TestClock.setTime(now);
+    const cache = yield* directory;
+    const observer = yield* observedClock;
+    const urls: string[] = [];
+    const pages = [1, 2].map((page) => `https://shop.kingdomdeath.com/products.json?limit=250&page=${page}`);
+    const fetch: typeof globalThis.fetch = async (input) => {
+      urls.push(String(input));
+      return urls.length === 1 ? new Response(null, { status: 429, headers: { "Retry-After": "60" } }) : Response.json({ products: [] });
+    };
+    const client = new ShopClient({ cache, refresh: true });
+    const get = (url: string) =>
+      client.getEffect(url).pipe(Effect.provideService(FetchHttpClient.Fetch, fetch), Effect.provideService(Clock.Clock, observer.clock));
+    const stopped = yield* Effect.raceFirst(
+      Effect.flip(get(pages[0]).pipe(Effect.andThen(get(pages[1])))),
+      observer.waiting(60_000).pipe(Effect.as(undefined)),
+    );
+    expect(stopped).toMatchObject({ status: 429, url: pages[0], retryAt: now + 60_000 });
+    expect(urls).toEqual([pages[0]]);
+    yield* TestClock.adjust(120_000);
+    expect(urls).toEqual([pages[0]]);
+    yield* missingLock(cache);
+  }).pipe(Effect.scoped),
+);
+
+it.effect("cached rate limits remain terminal without an explicit refresh", () =>
+  Effect.gen(function* () {
+    yield* TestClock.setTime(now);
+    const cache = yield* directory;
+    const messages: string[] = [];
+    const logger = Logger.make(({ message }) => messages.push(String(message)));
+    let calls = 0;
+    const fetch: typeof globalThis.fetch = async () => {
+      calls++;
+      return new Response(null, { status: 429 });
+    };
+    const client = new ShopClient({ cache });
+    const get = client.getEffect(url).pipe(Effect.provideService(FetchHttpClient.Fetch, fetch), Effect.provide(Logger.layer([logger])));
+    expect(yield* Effect.flip(get)).toMatchObject({ status: 429, cached: false });
+    expect(yield* Effect.flip(get)).toMatchObject({ status: 429, cached: true });
+    const fresh = new ShopClient({ cache }).getEffect(url).pipe(Effect.provideService(FetchHttpClient.Fetch, fetch));
+    expect(yield* Effect.flip(fresh)).toMatchObject({ status: 429, cached: true });
+    expect(calls).toBe(1);
+    expect(messages.some((message) => message.includes("will retry"))).toBe(false);
+    yield* missingLock(cache);
+  }).pipe(Effect.scoped),
+);
+
+it.effect("reports the wait and active URL, without logging cached reads as downloads", () =>
+  Effect.gen(function* () {
+    yield* TestClock.setTime(now);
+    const cache = yield* directory;
+    const observer = yield* observedClock;
+    const messages: string[] = [];
+    const logger = Logger.make(({ message }) => messages.push(String(message)));
+    const fetch: typeof globalThis.fetch = async () => {
+      expect(messages.at(-1)).toContain(`Fetching ${url}`);
+      return Response.json({});
+    };
+    yield* Effect.promise(() => writeFile(join(cache, "last-request.json"), JSON.stringify({ startedAt: now })));
+    const client = new ShopClient({ cache });
+    const get = client
+      .getEffect(url)
+      .pipe(
+        Effect.provideService(FetchHttpClient.Fetch, fetch),
+        Effect.provideService(Clock.Clock, observer.clock),
+        Effect.provide(Logger.layer([logger])),
+      );
+    expect(messages).toEqual([]);
+    const fiber = yield* Effect.forkChild(get);
+    yield* observer.pacing;
+    expect(messages).toEqual([expect.stringContaining(`Waiting 35s before fetching ${url}`)]);
+    yield* TestClock.adjust(35_000);
+    yield* Fiber.join(fiber);
+    expect(messages).toEqual([
+      expect.stringContaining(`Waiting 35s before fetching ${url}`),
+      expect.stringContaining(`Fetching ${url}`),
+      expect.stringContaining(`HTTP 200 ${url}`),
+    ]);
+    yield* get;
+    yield* new ShopClient({ cache, offline: true }).getEffect(url).pipe(Effect.provide(Logger.layer([logger])));
+    expect(messages).toHaveLength(3);
+  }).pipe(Effect.scoped),
+);
+
+it.effect.each(["120", new Date(now + 120_000).toUTCString(), "10"])(
+  "stops on 429 and retains the reported cooldown (%s) for explicit future runs",
+  (retryAfter) =>
+    Effect.gen(function* () {
+      yield* TestClock.setTime(now);
+      const cache = yield* directory;
+      const cooldown = retryAfter === "10" ? 10_000 : 120_000;
+      const wait = Math.max(35_000, cooldown);
+      const observer = yield* observedClock;
+      let calls = 0;
+      const fetch: typeof globalThis.fetch = async () => {
+        calls++;
+        return calls === 1 ? new Response(null, { status: 429, headers: { "Retry-After": retryAfter } }) : Response.json({});
+      };
+      const client = new ShopClient({ cache, refresh: true });
+      const stopped = yield* Effect.flip(client.getEffect(url).pipe(Effect.provideService(FetchHttpClient.Fetch, fetch)));
+      expect(stopped).toMatchObject({ status: 429, retryAt: now + cooldown });
+      expect(stopped.message).toContain("Stopped without retrying");
+      expect(JSON.parse(yield* Effect.promise(() => readFile(join(cache, "last-request.json"), "utf8")))).toEqual({
+        startedAt: now,
+        retryAt: now + cooldown,
+      });
+      const cached = yield* Effect.flip(new ShopClient({ cache, offline: true }).getEffect(url));
+      expect(cached).toMatchObject({ status: 429, cached: true, retryAt: now + cooldown });
+      expect(calls).toBe(1);
+      yield* missingLock(cache);
+      const messages: string[] = [];
+      const logger = Logger.make(({ message }) => messages.push(String(message)));
+      const next = yield* new ShopClient({ cache, refresh: true })
+        .getEffect(url)
+        .pipe(
+          Effect.provideService(FetchHttpClient.Fetch, fetch),
+          Effect.provideService(Clock.Clock, observer.clock),
+          Effect.provide(Logger.layer([logger])),
+          Effect.forkChild,
+        );
+      yield* observer.waiting(wait);
+      yield* TestClock.adjust(wait - 1);
+      expect(calls).toBe(1);
+      yield* TestClock.adjust(1);
+      yield* Fiber.join(next);
+      expect(calls).toBe(2);
+      expect(messages[0]).toContain(`Waiting ${wait / 1000}s before fetching ${url}`);
+      yield* missingLock(cache);
+    }).pipe(Effect.scoped),
+);
+
+it.effect.each([undefined, "invalid", "-1", "0", "99999999999999999999", new Date(now - 1_000).toUTCString()])(
+  "stops without retrying for a missing, invalid or expired Retry-After (%s)",
+  (retryAfter) =>
+    Effect.gen(function* () {
+      yield* TestClock.setTime(now);
+      const cache = yield* directory;
+      let calls = 0;
+      const fetch: typeof globalThis.fetch = async () => {
+        calls++;
+        return calls === 1
+          ? new Response(null, { status: 429, headers: retryAfter === undefined ? {} : { "Retry-After": retryAfter } })
+          : Response.json({ recovered: true });
+      };
+      const client = new ShopClient({ cache });
+      const stopped = yield* Effect.flip(client.getEffect(url).pipe(Effect.provideService(FetchHttpClient.Fetch, fetch)));
+      expect(stopped).toMatchObject({ status: 429 });
+      expect(JSON.parse(yield* Effect.promise(() => readFile(join(cache, "last-request.json"), "utf8")))).toEqual({ startedAt: now });
+      expect(calls).toBe(1);
+      yield* TestClock.adjust(120_000);
+      expect(calls).toBe(1);
+      yield* missingLock(cache);
+    }).pipe(Effect.scoped),
+);
 
 it.effect("validates disk envelopes and their URL without contacting the shop", () =>
   Effect.gen(function* () {
@@ -111,7 +269,7 @@ it.effect("sends fixed headers and refuses redirects, then preserves disk HTTP n
     expect(requests[0].redirect).toBe("error");
     const headers = new Headers(requests[0].headers);
     expect(headers.get("accept")).toBe("application/json");
-    expect(headers.get("user-agent")).toBe("Guidepost-Catalog-Updater/1.0");
+    expect(headers.get("user-agent")).toContain("Chrome/155.0.0.0");
     yield* missingLock(cache);
   }).pipe(Effect.scoped),
 );

@@ -118,6 +118,7 @@ export interface ShopResponse extends Schema.Schema.Type<typeof ShopResponse> {}
 export const ShopFailure = Schema.Struct({
   url,
   checkedAt,
+  retryAt: Schema.optionalKey(Schema.Int.check(Schema.isGreaterThanOrEqualTo(0), Schema.isLessThanOrEqualTo(8_640_000_000_000_000))),
   status: Schema.Int.check(
     Schema.isGreaterThanOrEqualTo(100),
     Schema.isLessThanOrEqualTo(599),

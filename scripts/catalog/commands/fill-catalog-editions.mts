@@ -7,7 +7,7 @@ import { publishFiles } from "../publication.mts";
 import { catalogTemp, catalogCache, catalogData } from "../paths.mts";
 import { compareEditions, organizeCatalog } from "../order.mts";
 import { clearChangedListings, listingSnapshot, normalizeItem } from "../normalize.mts";
-import { productUrl, ShopClient, shopProduct } from "../shop.mts";
+import { productUrl, ShopClient, ShopError, shopProduct } from "../shop.mts";
 import { normalized } from "../update.mts";
 import { productEditions } from "../releases.mts";
 import { validateCatalog } from "../validate.mts";
@@ -75,6 +75,7 @@ export async function fillEditions(
       console.log(`${report.reachable.length + report.unreachable.length}/${targets.length}: ${itemId}, ${item.editions.length} editions`);
     } catch (error) {
       if (options.signal?.aborted) throw error;
+      if (error instanceof ShopError && error.status === 429) throw error;
       report.unreachable.push({
         itemId,
         name: item.name,

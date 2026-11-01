@@ -4,21 +4,28 @@ import { access, mkdir, open, readFile, unlink, writeFile } from "node:fs/promis
 import { join, resolve } from "node:path";
 import { Cache, Clock, Effect, Exit, Schema, Semaphore } from "effect";
 import { FetchHttpClient, HttpClient } from "effect/http";
-import { decodeShopCache, decodeShopProduct, ShopResponse } from "./shop-schema.mts";
+import { decodeShopCache, decodeShopProduct, ShopFailure, ShopResponse } from "./shop-schema.mts";
 import type { Edition, Item } from "./types.mts";
+import { withProgress } from "./progress.mts";
 
 export class ShopError extends Schema.TaggedError<ShopError>()("ShopError", {
   message: Schema.String,
   status: Schema.Number,
   url: Schema.String,
   cached: Schema.Boolean,
+  retryAt: ShopFailure.fields.retryAt,
 }) {
-  constructor(status: number, url: string, cached = false) {
+  constructor(status: number, url: string, cached = false, retryAt?: number) {
     super({
       status,
       url,
       cached,
-      message: `Shop HTTP ${status}: ${url}.${cached ? " Cached response." : " No automatic retry was sent."}`,
+      ...(retryAt === undefined ? {} : { retryAt }),
+      message:
+        `Shop HTTP ${status}: ${url}.` +
+        (status === 429 ? " Stopped without retrying." : "") +
+        (retryAt === undefined ? "" : ` Retry-After indicates ${new Date(retryAt).toISOString()}.`) +
+        (cached ? " Cached response." : ""),
     });
   }
 }
@@ -100,9 +107,17 @@ function file<A>(url: string, message: string, operation: () => Promise<A>) {
 
 const requestState = Schema.Struct({
   startedAt: Schema.Int.check(Schema.isGreaterThanOrEqualTo(0), Schema.isLessThanOrEqualTo(Number.MAX_SAFE_INTEGER)),
+  retryAt: ShopFailure.fields.retryAt,
 });
 
-/** One network gate for product downloads and HEAD checks sharing a cache directory. */
+function retryTime(value: string | undefined, now: number) {
+  if (!value?.trim()) return;
+  const text = value.trim();
+  const time = /^\d+$/.test(text) ? now + Number(text) * 1000 : Date.parse(text);
+  return Number.isSafeInteger(time) && time > now && time <= 8_640_000_000_000_000 ? time : undefined;
+}
+
+/** One network gate for all catalog CLI requests, including news, downloads, redirects and HEAD checks. */
 export const withShopRequest = Effect.fn("Shop.request")(function* <A, E, R>(
   url: string,
   request: (startedAt: number) => Effect.Effect<A, E, R>,
@@ -151,7 +166,11 @@ export const withShopRequest = Effect.fn("Shop.request")(function* <A, E, R>(
             catch: (cause) => new ShopRequestError({ url, message: "Invalid shop request timing", cause }),
           });
           const now = yield* Clock.currentTimeMillis;
-          yield* Effect.sleep(Math.max(0, state.startedAt + delay * 1000 - now));
+          const wait = Math.max(0, state.startedAt + delay * 1000 - now, (state.retryAt ?? 0) - now);
+          if (wait > 0) {
+            yield* Effect.logInfo(`Waiting ${Math.ceil(wait / 1000)}s before fetching ${url}`);
+            yield* withProgress(url, Effect.sleep(wait), { wait });
+          }
         }
         const startedAt = yield* Clock.currentTimeMillis;
         yield* file(url, "Could not record shop request timing", () => writeFile(statePath, JSON.stringify({ startedAt }) + "\n"));
@@ -204,7 +223,9 @@ export class ShopClient {
       if (saved.url !== url) return yield* new ShopRequestError({ url, message: "Cached shop response URL does not match its request" });
       const now = yield* Clock.currentTimeMillis;
       if (!this.options.offline && now - Date.parse(saved.checkedAt) > (this.options.maxAgeMs ?? 86_400_000)) return;
-      if ("status" in saved) return yield* new ShopError(saved.status, url, true);
+      if ("status" in saved) {
+        return yield* new ShopError(saved.status, url, true, saved.retryAt);
+      }
       return saved;
     }.bind(this),
   );
@@ -217,25 +238,43 @@ export class ShopClient {
           Effect.gen({ self: this }, function* () {
             const request: { url: string; startedAt: string; status?: number } = { url, startedAt: new Date(startedAt).toISOString() };
             this.requests.push(request);
-            return yield* Effect.gen({ self: this }, function* () {
-              const response = yield* HttpClient.get(url, {
-                headers: { "User-Agent": "Guidepost-Catalog-Updater/1.0", Accept: "application/json" },
-              });
-              request.status = response.status;
-              const checkedAt = new Date(yield* Clock.currentTimeMillis).toISOString();
-              if (response.status < 200 || response.status >= 300) {
-                yield* file(url, "Could not save the shop failure response", () =>
-                  writeFile(cacheFile(this.directory, url), JSON.stringify({ url, checkedAt, status: response.status }) + "\n"),
+            yield* Effect.logInfo(`Fetching ${url}`);
+            return yield* withProgress(
+              `Fetching ${url}`,
+              Effect.gen({ self: this }, function* () {
+                const response = yield* HttpClient.get(url, {
+                  headers: {
+                    "User-Agent":
+                      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36",
+                    Accept: "application/json",
+                  },
+                });
+                request.status = response.status;
+                const now = yield* Clock.currentTimeMillis;
+                const checkedAt = new Date(now).toISOString();
+                if (response.status < 200 || response.status >= 300) {
+                  const retryAt = response.status === 429 ? retryTime(response.headers["retry-after"], now) : undefined;
+                  if (retryAt !== undefined) {
+                    yield* file(url, "Could not save the shop cooldown", () =>
+                      writeFile(join(this.directory, "last-request.json"), JSON.stringify({ startedAt, retryAt }) + "\n"),
+                    );
+                  }
+                  yield* file(url, "Could not save the shop failure response", () =>
+                    writeFile(cacheFile(this.directory, url), JSON.stringify({ url, checkedAt, status: response.status, retryAt }) + "\n"),
+                  );
+                  return yield* new ShopError(response.status, url, false, retryAt);
+                }
+                const data = yield* response.json;
+                const result = yield* Schema.decodeUnknownEffect(ShopResponse)({ url, checkedAt, data });
+                yield* file(url, "Could not save the shop response", () =>
+                  writeFile(cacheFile(this.directory, url), JSON.stringify(result, null, 2) + "\n"),
                 );
-                return yield* new ShopError(response.status, url);
-              }
-              const data = yield* response.json;
-              const result = yield* Schema.decodeUnknownEffect(ShopResponse)({ url, checkedAt, data });
-              yield* file(url, "Could not save the shop response", () =>
-                writeFile(cacheFile(this.directory, url), JSON.stringify(result, null, 2) + "\n"),
-              );
-              return result;
-            }).pipe(
+                return result;
+              }),
+            ).pipe(
+              Effect.ensuring(
+                Effect.suspend(() => (request.status === undefined ? Effect.void : Effect.logInfo(`HTTP ${request.status} ${url}`))),
+              ),
               Effect.timeout("40 seconds"),
               Effect.mapError((cause) =>
                 cause instanceof ShopError || cause instanceof ShopRequestError

@@ -50,6 +50,7 @@ export async function prepareUpdate(options: Options = {}) {
   const news = await refreshNews({
     output: newsFolder,
     cache: options.newsCache,
+    requestCache: options.cache,
     fetch: options.fetch,
     refreshPosts: options.refreshPosts,
     signal: options.signal,

@@ -3,13 +3,13 @@ import { FetchHttpClient, HttpClient } from "effect/http";
 import { createHash } from "node:crypto";
 import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
 import { join, resolve } from "node:path";
-import { setTimeout as sleep } from "node:timers/promises";
 import { format, resolveConfig } from "prettier";
 import { fileURLToPath } from "node:url";
 import { Command, Flag } from "effect/cli";
-import { offline, fetch, offlineMode, runCommand, workflow } from "../catalog/cli.mts";
+import { offline, fetch, offlineMode, optionalString, runCommand, workflow } from "../catalog/cli.mts";
 import { Parser } from "htmlparser2";
-import { productUrl, shopLinkUrl } from "../catalog/shop.mts";
+import { productUrl, shopLinkUrl, ShopRequestError, withShopRequest } from "../catalog/shop.mts";
+import { withProgress } from "../catalog/progress.mts";
 
 const newsUrl = "https://kingdomdeath.com/news";
 type Post = { date: string; title: string; postUrl: string };
@@ -322,27 +322,45 @@ class HttpError extends Error {
 }
 
 export class NewsRequestError extends Schema.TaggedError<NewsRequestError>()("NewsRequestError", { cause: Schema.Defect() }) {}
-export const downloadNewsPage = Effect.fn("News.downloadPage")((url: string) =>
-  HttpClient.get(url, { headers: { "User-Agent": "Guidepost-News-Link-Exporter/2.0", Accept: "text/html" } }).pipe(
-    Effect.flatMap((response) =>
-      response.status >= 200 && response.status < 300
-        ? response.text.pipe(Effect.map((html) => ({ status: response.status, html })))
-        : Effect.succeed({ status: response.status, html: "" }),
-    ),
-    Effect.timeout(40_000),
-    Effect.mapError((cause) => new NewsRequestError({ cause })),
-    Effect.provide(FetchHttpClient.layer),
-    Effect.provideService(FetchHttpClient.RequestInit, { redirect: "error" }),
+export const downloadNewsPage = Effect.fn("News.downloadPage")((url: string, options: { cache?: string; delay?: number } = {}) =>
+  withShopRequest(
+    url,
+    () =>
+      Effect.logInfo(`Fetching ${url}`).pipe(
+        Effect.andThen(
+          withProgress(
+            `Fetching ${url}`,
+            HttpClient.get(url, { headers: { "User-Agent": "Guidepost-News-Link-Exporter/2.0", Accept: "text/html" } }).pipe(
+              Effect.flatMap((response) =>
+                response.status >= 200 && response.status < 300
+                  ? response.text.pipe(Effect.map((html) => ({ status: response.status, html })))
+                  : Effect.succeed({ status: response.status, html: "" }),
+              ),
+            ),
+          ),
+        ),
+        Effect.tap((response) => Effect.logInfo(`HTTP ${response.status} ${url}`)),
+        Effect.timeout(40_000),
+        Effect.mapError((cause) => new NewsRequestError({ cause })),
+        Effect.provide(FetchHttpClient.layer),
+        Effect.provideService(FetchHttpClient.RequestInit, { redirect: "error" }),
+      ),
+    options,
   ),
 );
 
 export class Downloader {
   requests = 0;
-  private finished = 0;
-  constructor(options: { cache: string; delay: number; offline?: boolean; signal?: AbortSignal }) {
+  constructor(
+    options: { cache: string; delay: number; requestCache?: string; offline?: boolean; signal?: AbortSignal },
+    download = downloadNewsPage,
+  ) {
+    if (!Number.isFinite(options.delay) || options.delay < 35) throw new Error("News requests require at least 35 seconds between starts");
     this.options = options;
+    this.download = download;
   }
-  private options: { cache: string; delay: number; offline?: boolean; signal?: AbortSignal };
+  private readonly download: typeof downloadNewsPage;
+  private options: { cache: string; delay: number; requestCache?: string; offline?: boolean; signal?: AbortSignal };
 
   async get(url: string, cached = true) {
     const path = join(this.options.cache, createHash("sha256").update(url).digest("hex") + ".html");
@@ -354,10 +372,11 @@ export class Downloader {
       }
     }
     if (this.options.offline) throw new Error("No cached news page: " + url + "; run pnpm scrape:news --fetch to download it.");
-    await sleep(Math.max(0, this.options.delay * 1_000 - (performance.now() - this.finished)), undefined, { signal: this.options.signal });
     this.requests++;
     try {
-      const response = await Effect.runPromise(downloadNewsPage(url), { signal: this.options.signal });
+      const response = await Effect.runPromise(this.download(url, { cache: this.options.requestCache, delay: this.options.delay }), {
+        signal: this.options.signal,
+      });
       if (response.status < 200 || response.status >= 300) throw new HttpError(response.status, url);
       const html = response.html;
       pageData(html);
@@ -367,8 +386,6 @@ export class Downloader {
     } catch (error) {
       this.options.signal?.throwIfAborted();
       throw error;
-    } finally {
-      this.finished = performance.now();
     }
   }
 }
@@ -422,6 +439,7 @@ export async function updateReport(
       await persist();
       signal?.throwIfAborted();
       if (
+        error instanceof ShopRequestError ||
         (error instanceof HttpError && [401, 403, 429].includes(error.status)) ||
         (error instanceof Error && error.name === "AbortError")
       ) {
@@ -443,12 +461,14 @@ const newsFlags = {
   fetch,
   output: Flag.String("output").pipe(Flag.withDefault("scripts/news")),
   cache: Flag.String("cache").pipe(Flag.withDefault(".cache/kingdom-death-news")),
-  delay: Flag.String("delay").pipe(Flag.withDefault("2")),
+  delay: Flag.String("delay").pipe(Flag.withDefault("35")),
+  "request-cache": optionalString("request-cache"),
   "refresh-posts": Flag.Boolean("refresh-posts").pipe(Flag.withDefault(false)),
 };
 export type RefreshOptions = {
   output?: string;
   cache?: string;
+  requestCache?: string;
   fetch?: boolean;
   refreshPosts?: boolean;
   signal?: AbortSignal;
@@ -467,13 +487,15 @@ export class NewsRefreshError extends Error {
 export async function refreshNews(options: RefreshOptions = {}): Promise<Report> {
   const output = options.output ?? "scripts/news";
   const cache = options.cache ?? ".cache/kingdom-death-news";
-  const delay = options.delay ?? 2;
-  if (!Number.isFinite(delay) || delay < 2) throw new Error("--delay must be a finite number of at least 2 seconds");
+  const delay = options.delay ?? 35;
+  if (!Number.isFinite(delay) || delay < 35) throw new Error("--delay must be a finite number of at least 35 seconds");
   // Validate before writing anything, so a damaged checkpoint cannot erase earlier results.
   options.signal?.throwIfAborted();
   const report = await loadReport(output);
   await recoverCachedHistory(report, cache);
-  const downloader = options.downloader ?? new Downloader({ cache, delay, offline: !options.fetch, signal: options.signal });
+  const downloader =
+    options.downloader ??
+    new Downloader({ cache, delay, requestCache: options.requestCache, offline: !options.fetch, signal: options.signal });
   const checkpoint = async () => {
     report.requestsThisRun = downloader.requests;
     await saveReport(report, output);
@@ -496,6 +518,7 @@ export async function refreshNews(options: RefreshOptions = {}): Promise<Report>
     if (options.signal?.aborted) throw error;
     report.complete = false;
     report.errors.push(message(error));
+    if (error instanceof ShopRequestError) throw error;
   } finally {
     report.finishedAt = new Date().toISOString();
     await checkpoint();
@@ -508,6 +531,7 @@ async function runNews(values: Command.Command.Config.Infer<typeof newsFlags>, s
   const report = await refreshNews({
     output: values.output,
     cache: values.cache,
+    requestCache: values["request-cache"],
     fetch: !offlineMode(values),
     refreshPosts: values["refresh-posts"],
     delay: Number(values.delay),

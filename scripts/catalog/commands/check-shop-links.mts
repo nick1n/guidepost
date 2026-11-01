@@ -11,26 +11,47 @@ import { publishFiles } from "../publication.mts";
 import { categories } from "../types.mts";
 import type { Catalog } from "#lib/types/index.ts";
 import { catalogTemp } from "../paths.mts";
-import { withShopRequest } from "../shop.mts";
+import { ShopError, ShopRequestError, withShopRequest } from "../shop.mts";
 import { formatLockConflict } from "../locks.mts";
+import { withProgress } from "../progress.mts";
 
 export class LinkRequestError extends Schema.TaggedError<LinkRequestError>()("LinkRequestError", { cause: Schema.Defect() }) {}
-export const checkListing = Effect.fn("CatalogLinks.checkListing")((url: URL) =>
-  HttpClient.head(url.href).pipe(
-    Effect.map((response) => {
-      const ok = response.status >= 200 && response.status < 300;
-      return { status: response.status, ok };
-    }),
-    Effect.timeout(10_000),
-    Effect.mapError((cause) => new LinkRequestError({ cause })),
-    Effect.provide(FetchHttpClient.layer),
-    Effect.provideService(FetchHttpClient.RequestInit, { redirect: "follow" }),
-  ),
-);
+const followListing = Effect.fn("CatalogLinks.checkListing")(function* (
+  url: URL,
+  options: { cache?: string },
+  redirects: number,
+): Effect.fn.Return<{ status: number; ok: boolean }, LinkRequestError | ShopError | ShopRequestError> {
+  const response = yield* withShopRequest(
+    url.href,
+    () =>
+      Effect.logInfo(`Checking ${url.href}`).pipe(
+        Effect.andThen(withProgress(`Checking ${url.href}`, HttpClient.head(url.href))),
+        Effect.timeout(10_000),
+        Effect.mapError((cause) => new LinkRequestError({ cause })),
+        Effect.provide(FetchHttpClient.layer),
+        Effect.provideService(FetchHttpClient.RequestInit, { redirect: "manual" }),
+      ),
+    options,
+  );
+  if (response.status === 429) return yield* new ShopError(429, url.href);
+  const location = response.headers.location;
+  if ([301, 302, 303, 307, 308].includes(response.status) && location) {
+    if (redirects === 0) return yield* new LinkRequestError({ cause: new Error("Too many link redirects") });
+    const next = yield* Effect.try({
+      try: () => new URL(location, url),
+      catch: (cause) => new LinkRequestError({ cause }),
+    });
+    return yield* followListing(next, options, redirects - 1);
+  }
+  return { status: response.status, ok: response.status >= 200 && response.status < 300 };
+});
+
+export function checkListing(url: URL, options: { cache?: string } = {}) {
+  return followListing(url, options, 20);
+}
 const LinkResult = Schema.Struct({ checkedAt: Schema.String, status: Schema.NullOr(Schema.Number), ok: Schema.Boolean });
 const LinkCheckpoint = Schema.Struct({
   complete: Schema.Boolean,
-  starts: Schema.optionalKey(Schema.Record(Schema.String, Schema.Number)),
   results: Schema.Record(Schema.String, LinkResult),
 });
 const resumeLifetime = 24 * 60 * 60 * 1000;
@@ -47,7 +68,7 @@ export async function checkShopLinks(
 ) {
   const now = dependencies.now ?? Date.now;
   const wait = dependencies.wait ?? ((milliseconds, signal) => sleep(milliseconds, undefined, { signal }));
-  const check = dependencies.check ?? ((url, signal) => Effect.runPromise(checkListing(url), { signal }));
+  const check = dependencies.check;
   const catalogPath = options.catalog
     ? resolve(options.catalog)
     : fileURLToPath(new URL("../../../static/kdm/catalog/data.json", import.meta.url));
@@ -106,14 +127,8 @@ export async function checkShopLinks(
     });
     type Result = typeof LinkResult.Type;
     const checkpointResults: Record<string, Result> = Object.fromEntries(resumed);
-    const starts = new Map<string, number>(Object.entries(checkpoint?.starts ?? {}).filter(([host]) => host !== "shop.kingdomdeath.com"));
-    for (const [listing, result] of resumed) {
-      const host = new URL(listing).hostname;
-      if (host !== "shop.kingdomdeath.com") starts.set(host, Math.max(starts.get(host) ?? 0, Date.parse(result.checkedAt)));
-    }
     // Checkpoints survive cancellation and catalog edits that invalidate the final report.
-    const saveCheckpoint = () =>
-      publishFiles([{ path: checkpointPath, json: { complete: false, starts: Object.fromEntries(starts), results: checkpointResults } }]);
+    const saveCheckpoint = () => publishFiles([{ path: checkpointPath, json: { complete: false, results: checkpointResults } }]);
     await saveCheckpoint();
     const listings: {
       category: string;
@@ -163,34 +178,24 @@ export async function checkShopLinks(
           const url = new URL(listing, "https://shop.kingdomdeath.com");
           const key = url.href;
           if (!results.has(key)) {
-            const shop = url.hostname === "shop.kingdomdeath.com";
-            if (!shop) {
-              const delay = (starts.get(url.hostname) ?? -Infinity) + 1_000 - now();
-              if (delay > 0) await wait(delay, signal);
-              signal.throwIfAborted();
-              starts.set(url.hostname, now());
-              await saveCheckpoint();
-            }
             signal.throwIfAborted();
             const perform = async (): Promise<Result> => {
               try {
-                const result = await check(url, signal);
+                const request = check
+                  ? withShopRequest(url.href, () => Effect.promise(() => check(url, signal)), { cache: options.cache })
+                  : checkListing(url, { cache: options.cache });
+                const result = await Effect.runPromise(request.pipe(Effect.provideService(Clock.Clock, requestClock)), { signal });
+                if (result.status === 429) throw new ShopError(429, url.href);
                 console.log(`${result.status} ${url}`);
                 return { ...result, checkedAt: new Date(now()).toISOString() };
               } catch (error) {
                 signal.throwIfAborted();
+                if (error instanceof ShopRequestError || (error instanceof ShopError && error.status === 429)) throw error;
                 console.warn(`Failed ${listing}: ${error instanceof Error ? error.message : String(error)}`);
                 return { status: null, ok: false, checkedAt: new Date(now()).toISOString() };
               }
             };
-            const response = shop
-              ? await Effect.runPromise(
-                  withShopRequest(url.href, () => Effect.promise(perform), { cache: options.cache }).pipe(
-                    Effect.provideService(Clock.Clock, requestClock),
-                  ),
-                  { signal },
-                )
-              : await perform();
+            const response = await perform();
             results.set(key, response);
             checkpointResults[key] = response;
             await saveCheckpoint();
@@ -216,7 +221,7 @@ export async function checkShopLinks(
     await publishFiles(
       [
         { path: reportPath, json: { checkedAt, reachable, unreachable, missing, listings } },
-        { path: checkpointPath, json: { complete: true, starts: Object.fromEntries(starts), results: checkpointResults } },
+        { path: checkpointPath, json: { complete: true, results: checkpointResults } },
       ],
       {
         baselines: [{ path: catalogPath, text: baseline, message: "Catalog changed during link checks; rerun to preserve your edits." }],

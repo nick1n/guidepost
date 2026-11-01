@@ -6,7 +6,6 @@ import { join } from "node:path";
 import { test } from "node:test";
 import {
   csv,
-  Downloader,
   extractLinks,
   keepUrl,
   loadReport,
@@ -398,24 +397,6 @@ test("malformed checkpoints are not silently replaced", async (t) => {
   await writeFile(join(output, "shop-links.json"), "broken");
   await assert.rejects(loadReport(output));
   assert.equal(await readFile(join(output, "shop-links.json"), "utf8"), "broken");
-});
-
-test("index bypasses cache while articles reuse it, with delays between requests", async (t) => {
-  const cache = await mkdtemp(join(tmpdir(), "kdm-news-test-"));
-  t.after(() => rm(cache, { recursive: true, force: true }));
-  const starts: number[] = [];
-  const fetchMock = t.mock.method(globalThis, "fetch", async () => {
-    starts.push(performance.now());
-    return new Response(page({ stories: [story("new")] }));
-  });
-  const downloader = new Downloader({ cache, delay: 0.02 });
-  await downloader.get(news, false);
-  await downloader.get(news, false);
-  await downloader.get(`${news}/new`);
-  await downloader.get(`${news}/new`);
-  assert.equal(fetchMock.mock.callCount(), 3);
-  assert.ok(starts[1]! - starts[0]! >= 18);
-  assert.ok(starts[2]! - starts[1]! >= 18);
 });
 
 test("CSV escapes scraped text and parser rejects challenge pages", () => {

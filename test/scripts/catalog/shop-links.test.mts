@@ -46,7 +46,7 @@ async function fixture(run: (catalog: string, checkpoint: string, report: string
   }
 }
 
-it("paces each host, keeps stock dates, and refreshes completed fetch runs", async () => {
+it("paces all hosts together, keeps stock dates, and refreshes completed fetch runs", async () => {
   await fixture(async (catalog, checkpoint, report) => {
     let time = Date.parse("2026-01-01T00:00:00Z");
     const requests: { host: string; time: number }[] = [];
@@ -65,7 +65,7 @@ it("paces each host, keeps stock dates, and refreshes completed fetch runs", asy
       { catalog, cache: join(dirname(catalog), "shop-cache"), offline: false },
       dependencies,
     );
-    expect(requests.map(({ time: instant }) => instant - requests[0].time)).toEqual([0, 0, 1000, 35000]);
+    expect(requests.map(({ time: instant }) => instant - requests[0].time)).toEqual([0, 35000, 70000, 105000]);
     expect(JSON.parse(await readFile(catalog, "utf8")).shopUpdated).toBe("2025-01-01");
     expect(JSON.parse(await readFile(checkpoint, "utf8")).complete).toBe(true);
     expect(JSON.parse(await readFile(report, "utf8")).listings.every((row: { checkedAt?: string }) => row.checkedAt)).toBe(true);
@@ -117,7 +117,7 @@ it("retains checkpoints on cancellation and resumes recent requests with shop pa
     expect(await readFile(catalog, "utf8")).toBe(baseline);
     const interrupted = JSON.parse(await readFile(checkpoint, "utf8"));
     expect(Object.keys(interrupted.results)).toHaveLength(1);
-    expect(interrupted.starts).toEqual({ "example.com": time });
+    expect(interrupted.starts).toBeUndefined();
     const requests: number[] = [];
     await checkShopLinks(
       new AbortController().signal,
@@ -134,7 +134,7 @@ it("retains checkpoints on cancellation and resumes recent requests with shop pa
       },
     );
     expect(requests).toHaveLength(3);
-    expect(requests[2] - Date.parse("2026-01-01T00:00:00Z")).toBe(35000);
+    expect(requests[2] - Date.parse("2026-01-01T00:00:00Z")).toBe(140000);
   });
 });
 
@@ -194,7 +194,7 @@ it("paces resumed requests after cancellation during an unfinished HEAD", async 
     ).rejects.toThrow();
     const saved = JSON.parse(await readFile(checkpoint, "utf8"));
     expect(saved.results).toEqual({});
-    expect(saved.starts["shop.kingdomdeath.com"]).toBeUndefined();
+    expect(saved.starts).toBeUndefined();
     expect(JSON.parse(await readFile(join(dirname(catalog), "shop-cache/last-request.json"), "utf8"))).toEqual({ startedAt: start });
     const requests: number[] = [];
     await checkShopLinks(
@@ -328,10 +328,8 @@ it.each(["legacy-start", "completion"])("shared request timing ignores %s checkp
         },
       },
     );
-    expect(shopRequests[0] - start).toBe(35_000);
-    expect(JSON.parse(await readFile(checkpoint, "utf8")).starts).toEqual({
-      "example.com": source === "completion" ? start + 11_000 : start + 36_000,
-    });
+    expect(shopRequests[0] - start).toBe(source === "completion" ? 105_000 : 35_000);
+    expect(JSON.parse(await readFile(checkpoint, "utf8")).starts).toBeUndefined();
   });
 });
 
@@ -369,5 +367,36 @@ it.each([200, 404, 503])("HEAD status %s writes link reports without changing an
       saved.listings.every((row: { status: number; reachable: boolean }) => row.status === status && row.reachable === (status === 200)),
     ).toBe(true);
     expect(JSON.parse(await readFile(checkpoint, "utf8")).complete).toBe(true);
+  });
+});
+
+it("stops link checking on 429 while preserving earlier checkpoints and catalog bytes", async () => {
+  await fixture(async (catalog, checkpoint, report) => {
+    const baseline = await readFile(catalog, "utf8");
+    let time = Date.parse("2026-01-01T00:00:00Z");
+    let calls = 0;
+    await expect(
+      checkShopLinks(
+        new AbortController().signal,
+        { catalog, cache: join(dirname(catalog), "shop-cache"), offline: false },
+        {
+          now: () => time,
+          wait: async (delay) => {
+            time += delay;
+          },
+          check: async () => {
+            calls++;
+            return { status: calls === 1 ? 200 : 429, ok: calls === 1 };
+          },
+        },
+      ),
+    ).rejects.toMatchObject({ _tag: "ShopError", status: 429 });
+    expect(calls).toBe(2);
+    expect(await readFile(catalog, "utf8")).toBe(baseline);
+    const saved = JSON.parse(await readFile(checkpoint, "utf8"));
+    expect(saved.complete).toBe(false);
+    expect(Object.keys(saved.results)).toEqual(["https://shop.kingdomdeath.com/products/a"]);
+    await expect(readFile(report, "utf8")).rejects.toMatchObject({ code: "ENOENT" });
+    await expect(readFile(join(dirname(checkpoint), "shop-links.lock"))).rejects.toMatchObject({ code: "ENOENT" });
   });
 });

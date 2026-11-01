@@ -65,7 +65,12 @@ Catalog publication also rejects workbook map or schema changes made during a ru
 
 Commands use local files and caches by default. `--fetch` permits downloads; `--offline` cannot accompany it.
 News fetching downloads new or failed articles. Use `--refresh-posts` to reprocess historical articles, adding `--fetch` to download them again.
-Shop requests start at least 35 seconds apart and cache responses for 24 hours without automatic retries.
+All catalog CLI network requests start at least 35 seconds apart, including news, shop downloads, link checks to any host,
+and each redirect hop. They share persisted timing in `.cache/kdm-shop/`; cached reads require no wait. Shop responses cache for 24 hours.
+Fetch progress shows the active URL, HTTP status, and any wait before the next request. Interactive terminals also show a spinner
+and a wait countdown; redirected output uses plain log lines. HTTP 429 stops the command without retrying or fetching later listings.
+Shop downloads retain `Retry-After` as reported cooldown information, which also applies to later explicit runs using the same request cache;
+it does not guarantee that a subsequent request will succeed. Other HTTP failures stop downloads with a readable error.
 Use `--help` for command options.
 
 Multi-file publication is not transactional. After a partial failure, inspect the reported published and pending paths before rerunning.
@@ -135,9 +140,10 @@ validating mapped names and removing personal data. Keep the source Git-ignored 
 
 `pnpm check:shop-links` displays the saved summary. Add `--fetch` to check catalog listings and write
 `temp/kdm-catalog/reports/shop-links.json`. Link checks leave the catalog unchanged.
-HEAD requests follow redirects with a 10-second timeout. Requests to the shop start at least 35 seconds apart;
-other hosts use 1-second spacing. Shop downloads and link checks share `.cache/kdm-shop/request.lock` and the persisted
-request start time, preventing overlapping requests across commands. Use `--cache path` to select the same custom cache for both.
+HEAD requests follow redirects with a 10-second timeout per hop. Every hop uses the shared 35-second request gate, including external hosts.
+News, shop downloads, and link checks share `.cache/kdm-shop/request.lock` and the persisted request start time, preventing overlapping
+requests across commands. Catalog `--cache path` also coordinates the news phase of monthly updates. Standalone news scraping uses
+`--request-cache path` to select the same custom request cache; its `--cache` option selects cached HTML instead.
 A second process using that cache stops with a lock error; rerun after the first command finishes.
 A separate `temp/kdm-catalog/reports/shop-links.lock` prevents competing checkers from overwriting progress and releases on completion or cancellation.
 Lock errors include the recorded PID and acquisition time when available. Normal cancellation cleans up locks; a crash or forced termination may leave one behind.

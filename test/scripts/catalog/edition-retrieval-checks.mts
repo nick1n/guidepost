@@ -6,7 +6,7 @@ import { test } from "node:test";
 import { createHash } from "node:crypto";
 import { productEditions } from "#scripts/catalog/releases.mts";
 import { fillEditions } from "#scripts/catalog/commands/fill-catalog-editions.mts";
-import { shopProduct } from "#scripts/catalog/shop.mts";
+import { ShopError, shopProduct } from "#scripts/catalog/shop.mts";
 
 const raw = {
   id: 1,
@@ -54,6 +54,33 @@ async function fixture() {
   await writeFile(join(root, "scripts/news/shop-links.json"), JSON.stringify({ links: [] }));
   return { root, path };
 }
+
+test("a 429 stops edition retrieval before later listings or catalog publication", async () => {
+  const { root, path } = await fixture();
+  try {
+    const catalog = JSON.parse(await readFile(path, "utf8"));
+    catalog.content.later = { ...catalog.content.example, name: "Later", handle: "later" };
+    const baseline = JSON.stringify(catalog);
+    await writeFile(path, baseline);
+    let calls = 0;
+    await assert.rejects(
+      fillEditions({
+        catalog: path,
+        client: {
+          get: async (url) => {
+            calls++;
+            throw new ShopError(429, url);
+          },
+        },
+      }),
+      (error: unknown) => error instanceof ShopError && error.status === 429,
+    );
+    assert.equal(calls, 1);
+    assert.equal(await readFile(path, "utf8"), baseline);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
 
 test("retrieval writes editions and mappings while failed listings retain their item facts", async () => {
   const { root, path } = await fixture();
