@@ -1,6 +1,6 @@
 {
   "$schema": "./data.schema.json",
-  "shopUpdated": "2026-10-15",
+  "shopUpdated": "2026-11-01",
   "content": {
     "core": {
       "aliases": ["Collector's Resin Edition Kingdom Death Core 1.0", "Monster 1.5 Core Game", "Kingdom Death Monster 1.5", "Monster 1.6 Core Game", "Kingdom Death Monster 1.6", "KINGDOM DEATH"],
@@ -67,7 +67,8 @@
         "2026-05-29",
         "2026-06-30",
         "2026-08-31",
-        "2026-09-30"
+        "2026-09-30",
+        "2026-10-30"
       ],
       "editions": [
         { "id": "sim", "label": "Sim", "available": true, "format": "digital", "handle": "kingdom-death-simulator-1", "prices": [2000], "releaseDate": "2022-11-25", "shop": "in-stock", "simulator": true },
@@ -130,8 +131,8 @@
         "dice",
         "lucy",
         "monster-phoenix",
-        "erza",
         "monster-white-lion",
+        "erza",
         "campaign",
         "monster-butcher",
         "monster-screaming-antelope",
@@ -198,7 +199,7 @@
       ]
     },
     "expansion-dung-beetle-knight": {
-      "announcements": ["2022-12-25", "2023-11-24", "2026-09-30"],
+      "announcements": ["2022-12-25", "2023-11-24", "2026-09-30", "2026-10-30"],
       "editions": [
         { "id": "sim", "label": "Sim", "available": true, "format": "digital", "handle": "kds-dung-beetle-knight-expansion", "prices": [700], "releaseDate": "2023-11-24", "shop": "in-stock", "simulator": true },
         { "id": "1-3", "label": "1.3", "format": "physical", "materials": ["Plastic"], "prices": [3000, 6000], "releaseDate": "2016-02-16" },
@@ -318,8 +319,8 @@
         "expansion",
         "sim",
         "settlement-location",
-        "armor",
         "hunt-event",
+        "armor",
         "innovation",
         "fighting-art",
         "secret-fighting-art",
@@ -441,7 +442,7 @@
       "editions": [
         { "id": "sim", "label": "Sim", "available": true, "format": "digital", "handle": "kds-manhunter-expansion", "prices": [700], "releaseDate": "2023-11-24", "shop": "in-stock", "simulator": true },
         { "id": "1-3", "label": "1.3", "format": "physical", "materials": ["Plastic"], "prices": [3500, 6000], "releaseDate": "2016-02-16" },
-        { "id": "1-6", "label": "1.6", "format": "physical", "handle": "manhunter-expansion-1-6", "materials": ["Plastic"], "prices": [6500, 8000], "releaseDate": "2021-11-26", "shop": "missing" }
+        { "id": "1-6", "label": "1.6", "available": true, "format": "physical", "handle": "manhunter-expansion-1-6", "materials": ["Plastic"], "prices": [6500, 8000], "releaseDate": "2021-11-26", "shop": "in-stock" }
       ],
       "gameplay": true,
       "includes": [
@@ -476,7 +477,7 @@
       ]
     },
     "expansion-slenderman": {
-      "announcements": ["2022-12-25", "2023-11-24", "2026-09-30"],
+      "announcements": ["2022-12-25", "2023-11-24", "2026-09-30", "2026-10-30"],
       "editions": [
         { "id": "sim", "label": "Sim", "available": true, "format": "digital", "handle": "kds-slenderman-expansion", "prices": [700], "releaseDate": "2023-11-24", "shop": "in-stock", "simulator": true },
         { "id": "1-3", "label": "1.3", "format": "physical", "materials": ["Plastic"], "prices": [4000, 6000], "releaseDate": "2016-02-16" },
@@ -795,13 +796,13 @@
         "male",
         "terrain",
         "2024",
-        "quarry",
         "pattern",
+        "quarry",
         "resource",
         "expansion",
         "sim",
-        "armor",
         "hunt-event",
+        "armor",
         "innovation",
         "fighting-art",
         "secret-fighting-art",
@@ -915,14 +916,14 @@
         "male",
         "terrain",
         "2026",
-        "quarry",
         "pattern",
+        "quarry",
         "resource",
         "expansion",
         "sim",
         "settlement-location",
-        "armor",
         "hunt-event",
+        "armor",
         "innovation",
         "fighting-art",
         "secret-fighting-art",
@@ -1174,7 +1175,7 @@
       "name": "Architect - Female (Beta Build)",
       "notes": "The first Kingdom Death miniature produced in orange photoresin.",
       "size": "30",
-      "tags": ["female", "generic", "photoresin", "2019", "beta", "architect"]
+      "tags": ["female", "generic", "photoresin", "beta", "2019", "architect"]
     },
     "architect-male": {
       "editions": [
@@ -1334,14 +1335,14 @@
     },
     "ashbloom-of-dedheim": {
       "aliases": ["Ashbloom Bust"],
-      "announcements": ["2025-10-31", "2025-11-28"],
+      "announcements": ["2025-10-31", "2025-11-28", "2026-10-30"],
       "editions": [
-        { "id": "painters", "label": "Painters", "format": "physical", "gameplay": true, "handle": "ashbloom-of-dedheim", "prices": [6000], "releaseDate": "2025-10-31", "shop": "missing" },
+        { "id": "painters", "label": "Painters", "available": true, "format": "physical", "gameplay": true, "handle": "ashbloom-of-dedheim", "prices": [6000], "releaseDate": "2025-10-31", "shop": "in-stock" },
         { "id": "bust", "label": "Bust", "format": "physical", "handle": "ashbloom-bust", "prices": [7500], "releaseDate": "2025-11-27", "shop": "out-of-stock" }
       ],
       "kind": "box",
       "name": "Ashbloom of Dedheim",
-      "tags": ["female", "gameplay", "2025", "painters-scale", "bust", "dedheim", "ashbloom"]
+      "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "2025", "painters-scale", "pattern", "bust", "seed", "dedheim", "ashbloom"]
     },
     "astri-the-promised": {
       "aliases": ["Astri the Promised Deathgrey", "Astri", "Astri the Promised - Painter's Scale"],
@@ -1595,7 +1596,7 @@
       "tags": ["plastic", "generic", "male", "knight", "2024", "2016", "monster-black-knight"]
     },
     "blushing-owl": {
-      "announcements": ["2021-07-19", "2024-02-29"],
+      "announcements": ["2021-07-19", "2024-02-29", "2026-10-30"],
       "editions": [
         { "id": "first-run", "label": "First Run", "format": "physical", "handle": "blushing-owl", "materials": ["Resin"], "numbered": true, "prices": [15000], "releaseDate": "2021-07-19", "runSize": 250, "shop": "missing" },
         { "id": "encore", "label": "Encore", "format": "physical", "handle": "blushing-owl-photoresin", "materials": ["Photoresin"], "numbered": true, "prices": [15000], "releaseDate": "2024-02-29", "runSize": 200, "shop": "out-of-stock" }
@@ -1604,7 +1605,7 @@
       "name": "Blushing Owl",
       "notes": "The original release had only a First Run edition. The 2024 Photoresin Encore was limited to 200 copies.",
       "size": "100",
-      "tags": ["photoresin", "resin", "2021", "blushing-owl"]
+      "tags": ["monster", "photoresin", "resin", "2021", "monster-blushing-owl"]
     },
     "blushing-owl-armor-male": {
       "aliases": ["Blushing Owl Armor - Male Deathgrey M2 Edition"],
@@ -1633,8 +1634,8 @@
       "tags": ["female", "generic", "2019", "boxer"]
     },
     "brave-and-hollow": {
-      "announcements": ["2024-10-31", "2025-10-31"],
-      "editions": [{ "id": "box", "label": "Box", "format": "physical", "materials": ["Plastic"], "prices": [4000], "releaseDate": "2024-10-31", "shop": "missing" }],
+      "announcements": ["2024-10-31", "2025-10-31", "2026-10-30"],
+      "editions": [{ "id": "box", "label": "Box", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [4000, 4200], "releaseDate": "2024-10-31", "shop": "in-stock" }],
       "gameplay": true,
       "gameplayContent": "Patterns 46, 47, 48",
       "handle": "brave-hollow",
@@ -1642,7 +1643,7 @@
       "name": "Brave + Hollow",
       "notes": "Box: Seed Pattern.",
       "size": "30",
-      "tags": ["female", "plastic", "gameplay", "2024", "pattern", "hollow", "brave"]
+      "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "male", "2024", "pattern", "seed", "dedheim", "hollow", "brave"]
     },
     "bullet-dancer": {
       "announcements": ["2019-05-15", "2020-09-29", "2024-09-30"],
@@ -1719,6 +1720,18 @@
       "name": "Caster Hunter",
       "size": "30",
       "tags": ["female", "generic", "photoresin", "deathgrey", "2021"]
+    },
+    "cat-eater-enchantress": {
+      "announcements": ["2026-10-30"],
+      "editions": [
+        { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [6700], "releaseDate": "2026-10-30", "shop": "out-of-stock" },
+        { "id": "encore", "label": "Encore", "format": "physical", "materials": ["Photoresin"], "prices": [6700], "releaseDate": "2026-10-30", "shop": "out-of-stock" }
+      ],
+      "handle": "cat-eater-enchantress",
+      "kind": "model",
+      "name": "Cat-Eater Enchantress",
+      "size": "50",
+      "tags": ["female", "generic", "photoresin", "2026"]
     },
     "cat-eater-knight": {
       "aliases": ["Naked Cat-Eater Knight"],
@@ -1841,16 +1854,18 @@
       "tags": ["female", "deathgrey", "2025", "painters-scale", "seasonal", "core-survivor", "lucy"]
     },
     "cyclops-knight": {
-      "announcements": ["2019-01-30", "2021-07-19"],
+      "aliases": ["Cyclops Knight Reforged"],
+      "announcements": ["2019-01-30", "2021-07-19", "2026-10-30"],
       "editions": [
-        { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Resin"], "numbered": true, "prices": [4000], "releaseDate": "2018-05-02", "runSize": 500, "shop": "missing" },
-        { "id": "encore", "label": "Encore", "format": "physical", "materials": ["Resin"], "prices": [4000], "releaseDate": "2018-05-02", "shop": "missing" }
+        { "id": "first-run", "label": "First Run", "format": "physical", "handle": "cyclops-knight", "materials": ["Resin"], "numbered": true, "prices": [4000], "releaseDate": "2018-05-02", "runSize": 500, "shop": "missing" },
+        { "id": "encore", "label": "Encore", "format": "physical", "handle": "cyclops-knight", "materials": ["Resin"], "prices": [4000], "releaseDate": "2018-05-02", "shop": "missing" },
+        { "id": "reforged-first-run", "label": "Reforged: First Run", "available": true, "format": "physical", "handle": "cyclops-knight-reforged", "materials": ["Photoresin"], "numbered": true, "prices": [6700], "releaseDate": "2026-10-30", "shop": "in-stock" },
+        { "id": "reforged-encore", "label": "Reforged: Encore", "format": "physical", "handle": "cyclops-knight-reforged", "materials": ["Photoresin"], "prices": [6700], "releaseDate": "2026-10-30", "shop": "out-of-stock" }
       ],
-      "handle": "cyclops-knight",
       "kind": "model",
       "name": "Cyclops Knight",
       "size": "50",
-      "tags": ["knight", "2018"]
+      "tags": ["in-stock", "photoresin", "knight", "2026", "2018", "resculpt", "weaponsmith"]
     },
     "dark-confidant": {
       "announcements": ["2025-10-31"],
@@ -2188,13 +2203,13 @@
     "death-high-pe-teacher-dung-beetle-knight": {
       "announcements": ["2025-09-30", "2026-09-30"],
       "editions": [
-        { "id": "first-run", "label": "First Run", "available": true, "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [6700], "releaseDate": "2025-09-30", "runSize": 500, "shop": "in-stock" },
+        { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [6700], "releaseDate": "2025-09-30", "runSize": 500, "shop": "out-of-stock" },
         { "id": "encore", "label": "Encore", "format": "physical", "materials": ["Photoresin"], "prices": [6700], "releaseDate": "2025-09-30", "shop": "out-of-stock" }
       ],
       "handle": "death-high-dung-beetle-knight",
       "kind": "model",
       "name": "Death High - PE Teacher Dung Beetle Knight",
-      "tags": ["female", "generic", "in-stock", "photoresin", "knight", "2025", "death-high", "monster-dung-beetle-knight"]
+      "tags": ["female", "generic", "photoresin", "knight", "2025", "death-high", "monster-dung-beetle-knight"]
     },
     "death-high-portraitist-snow": {
       "aliases": ["Death High - Portraitist Snow - Painter's Scale"],
@@ -2431,7 +2446,7 @@
       "tags": ["female", "plastic", "2024", "painters-scale", "seasonal", "deathmas", "percival", "doggo"]
     },
     "dermacentaur": {
-      "announcements": ["2026-06-30"],
+      "announcements": ["2026-06-30", "2026-10-30"],
       "editions": [
         { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [12500], "releaseDate": "2026-06-30", "runSize": 250, "shop": "out-of-stock" },
         { "id": "encore", "label": "Encore", "format": "physical", "materials": ["Photoresin"], "prices": [12500], "releaseDate": "2026-06-30", "shop": "out-of-stock" }
@@ -2463,14 +2478,14 @@
       "tags": ["female", "plastic", "generic", "gameplay", "knight", "2017", "promo", "twilight-knight"]
     },
     "devil-satan": {
-      "announcements": ["2019-10-31", "2020-10-30", "2023-10-31", "2024-10-31", "2025-10-31"],
-      "editions": [{ "id": "box", "label": "Box", "format": "physical", "materials": ["Plastic"], "prices": [5000], "releaseDate": "2018-10-31", "shop": "missing" }],
+      "announcements": ["2019-10-31", "2020-10-30", "2023-10-31", "2024-10-31", "2025-10-31", "2026-10-30"],
+      "editions": [{ "id": "box", "label": "Box", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [5000, 6000], "releaseDate": "2018-10-31", "shop": "in-stock" }],
       "gameplay": true,
       "handle": "devil-satan",
       "kind": "box",
       "name": "Devil Satan",
       "size": "35 & 54",
-      "tags": ["female", "plastic", "gameplay", "seasonal", "promo", "2018", "satan"]
+      "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "painters-scale", "seasonal", "hunt-event", "promo", "2018", "halloween", "satan"]
     },
     "disciple-of-the-witch-1": {
       "aliases": ["Disciple of the Witch - One"],
@@ -2762,15 +2777,15 @@
       "tags": ["photoresin", "deathgrey", "2024", "entobra"]
     },
     "erza-of-dedheim": {
-      "announcements": ["2022-10-31", "2023-10-31", "2024-10-31", "2025-10-31"],
-      "editions": [{ "id": "box", "label": "Box", "format": "physical", "materials": ["Plastic"], "prices": [6000], "releaseDate": "2022-10-31", "shop": "missing" }],
+      "announcements": ["2022-10-31", "2023-10-31", "2024-10-31", "2025-10-31", "2026-10-30"],
+      "editions": [{ "id": "box", "label": "Box", "format": "physical", "materials": ["Plastic"], "prices": [6000], "releaseDate": "2022-10-31", "shop": "out-of-stock" }],
       "gameplay": true,
       "gameplayContent": "Patterns 031, 032, 033",
       "handle": "erza-of-dedheim",
       "kind": "box",
       "name": "Erza of Dedheim",
       "size": "35 & 54",
-      "tags": ["female", "plastic", "gameplay", "painters-scale", "seasonal", "core-survivor", "2022", "erza", "seed", "dedheim"]
+      "tags": ["female", "plastic", "gameplay", "gear", "painters-scale", "seasonal", "pattern", "core-survivor", "2022", "seed", "erza", "dedheim"]
     },
     "estate-hero": {
       "announcements": ["2019-04-22", "2020-02-14", "2022-04-22"],
@@ -3005,7 +3020,7 @@
       "announcements": ["2023-02-01", "2026-01-30"],
       "editions": [
         { "id": "first-run", "label": "First Run", "beta": true, "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [3400], "releaseDate": "2023-01-31", "runSize": 500, "shop": "out-of-stock" },
-        { "id": "encore", "label": "Encore", "available": true, "beta": true, "format": "physical", "materials": ["Photoresin"], "prices": [3400], "releaseDate": "2023-01-31", "shop": "in-stock" }
+        { "id": "encore", "label": "Encore", "beta": true, "format": "physical", "materials": ["Photoresin"], "prices": [3400], "releaseDate": "2023-01-31", "shop": "out-of-stock" }
       ],
       "gameplay": true,
       "gameplayContent": "Beta Rules & Gear",
@@ -3013,7 +3028,7 @@
       "kind": "beta",
       "name": "Frozen Survivor - Hellebore",
       "size": "30",
-      "tags": ["gameplay", "in-stock", "gear", "male", "photoresin", "2023", "survivor", "beta", "frozen-survivor", "hellebore"]
+      "tags": ["gameplay", "gear", "male", "photoresin", "2023", "survivor", "beta", "frozen-survivor", "hellebore"]
     },
     "gift-of-death": {
       "editions": [{ "id": "resin-metal", "label": "Resin & Metal", "format": "physical", "materials": ["Resin", "Metal"], "prices": [9000], "releaseDate": "2009-12-10" }],
@@ -3085,16 +3100,16 @@
       "tags": ["plastic", "monster", "knight", "core", "2017", "2014", "bust", "finale-monster", "monster-gold-smoke-knight"]
     },
     "golden-bat": {
-      "announcements": ["2024-10-31"],
+      "announcements": ["2024-10-31", "2026-10-30"],
       "editions": [
         { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [22500], "releaseDate": "2024-10-31", "runSize": 500, "shop": "out-of-stock" },
-        { "id": "encore", "label": "Encore", "format": "physical", "materials": ["Photoresin"], "prices": [22500], "releaseDate": "2024-10-31", "shop": "out-of-stock" }
+        { "id": "encore", "label": "Encore", "available": true, "format": "physical", "materials": ["Photoresin"], "prices": [22500], "releaseDate": "2024-10-31", "shop": "in-stock" }
       ],
       "handle": "golden-bat",
       "kind": "model",
       "name": "Golden Bat",
       "size": "100",
-      "tags": ["monster", "2024", "monster-golden-bat"]
+      "tags": ["monster", "in-stock", "photoresin", "2024", "monster-golden-bat"]
     },
     "golden-bat-hunter-foltron": {
       "aliases": ["Golden Bat Hunter - Foltron Deathgrey M2 Edition"],
@@ -3282,20 +3297,20 @@
       "tags": ["female", "2023", "deathgrey", "seasonal", "core-survivor", "lucy", "halloween"]
     },
     "halloween-ringtail-vixen": {
-      "announcements": ["2020-10-30", "2022-10-31", "2023-10-31", "2024-10-31", "2025-10-31"],
-      "editions": [{ "id": "box", "label": "Box", "format": "physical", "materials": ["Plastic"], "prices": [5000], "releaseDate": "2020-10-30", "shop": "missing" }],
+      "announcements": ["2020-10-30", "2022-10-31", "2023-10-31", "2024-10-31", "2025-10-31", "2026-10-30"],
+      "editions": [{ "id": "box", "label": "Box", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [5000, 6000], "releaseDate": "2020-10-30", "shop": "in-stock" }],
       "gameplay": true,
       "gameplayContent": "Patterns -011 to -012",
       "handle": "halloween-ringtail-vixen",
       "kind": "box",
       "name": "Halloween Ringtail Vixen",
       "size": "35 & 54",
-      "tags": ["female", "plastic", "gameplay", "2020", "seasonal", "pattern", "halloween", "ringtail", "vixen"]
+      "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "painters-scale", "2020", "seasonal", "pattern", "seed", "halloween", "ringtail", "vixen"]
     },
     "halloween-survivor-flower-knight-costume": {
       "aliases": ["Halloween Survivor Flower Costume", "Halloween Survivors - Flower Knight Costume"],
-      "announcements": ["2022-10-31", "2023-10-31", "2024-10-31", "2025-10-31"],
-      "editions": [{ "id": "box", "label": "Box", "format": "physical", "materials": ["Plastic"], "prices": [3000], "releaseDate": "2022-10-31", "shop": "missing" }],
+      "announcements": ["2022-10-31", "2023-10-31", "2024-10-31", "2025-10-31", "2026-10-30"],
+      "editions": [{ "id": "box", "label": "Box", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [3000], "releaseDate": "2022-10-31", "shop": "in-stock" }],
       "gameplay": true,
       "gameplayContent": "Pattern -023",
       "handle": "halloween-survivor-flower-knight-costume",
@@ -3303,24 +3318,24 @@
       "name": "Halloween Survivor - Flower Knight Costume",
       "notes": "Exclusive to Halloween. First released during the 2022 Halloween Sale.",
       "size": "30",
-      "tags": ["female", "plastic", "gameplay", "knight", "survivor", "seasonal", "pattern", "2022", "halloween"]
+      "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "knight", "survivor", "seasonal", "pattern", "2022", "seed", "halloween", "monster-flower-knight"]
     },
     "halloween-survivors-king-costume": {
-      "announcements": ["2023-10-31", "2024-10-31", "2025-10-31"],
-      "editions": [{ "id": "box", "label": "Box", "format": "physical", "materials": ["Plastic"], "prices": [3000], "releaseDate": "2023-10-31", "shop": "missing" }],
+      "announcements": ["2023-10-31", "2024-10-31", "2025-10-31", "2026-10-30"],
+      "editions": [{ "id": "box", "label": "Box", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [3000], "releaseDate": "2023-10-31", "shop": "in-stock" }],
       "gameplay": true,
       "gameplayContent": "Pattern 041",
       "handle": "halloween-survivors-king-costume",
       "kind": "box",
       "name": "Halloween Survivors - King Costume",
       "size": "30",
-      "tags": ["plastic", "gameplay", "male", "2023", "survivor", "seasonal", "pattern", "halloween"]
+      "tags": ["plastic", "gameplay", "in-stock", "gear", "male", "2023", "survivor", "seasonal", "pattern", "seed", "halloween", "monster-king"]
     },
     "halloween-white-speaker": {
       "aliases": ["Halloween White Speaker - Hard Plastic", "Resin Halloween White Speaker"],
-      "announcements": ["2019-10-31", "2020-10-30", "2022-10-31", "2023-10-31", "2024-10-31", "2025-10-31"],
+      "announcements": ["2019-10-31", "2020-10-30", "2022-10-31", "2023-10-31", "2024-10-31", "2025-10-31", "2026-10-30"],
       "editions": [
-        { "id": "box", "label": "Box", "format": "physical", "handle": "halloween-white-speaker-1", "materials": ["Plastic"], "prices": [2700], "releaseDate": "2017-10-31", "shop": "missing" },
+        { "id": "box", "label": "Box", "available": true, "format": "physical", "handle": "halloween-white-speaker-1", "materials": ["Plastic"], "prices": [2700, 3000], "releaseDate": "2017-10-31", "shop": "in-stock" },
         { "id": "resin", "label": "Resin", "format": "physical", "gameplay": false, "handle": "halloween-white-speaker", "materials": ["Resin"], "prices": [2700], "releaseDate": "2017-10-31", "shop": "missing" }
       ],
       "gameplay": true,
@@ -3329,7 +3344,7 @@
       "name": "Halloween White Speaker",
       "notes": "Exclusive to All Hallows Eve.",
       "size": "30",
-      "tags": ["female", "plastic", "gameplay", "resin", "seasonal", "pattern", "2017", "white-speaker", "halloween"]
+      "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "resin", "seasonal", "pattern", "2017", "seed", "white-speaker", "halloween"]
     },
     "hell-dorado-twilight-knight": {
       "editions": [{ "id": "metal", "label": "Metal", "format": "physical", "materials": ["Metal"], "prices": [1500], "releaseDate": "2014-04-01" }],
@@ -3723,14 +3738,14 @@
     },
     "kingslayer-twilight-knight": {
       "aliases": ["Kingslayer Twilight Knight - Painter's Scale"],
-      "announcements": ["2024-01-31"],
-      "editions": [{ "id": "painters", "label": "Painters", "format": "physical", "materials": ["Photoresin"], "prices": [6000], "releaseDate": "2024-01-31", "shop": "missing" }],
+      "announcements": ["2024-01-31", "2026-10-30"],
+      "editions": [{ "id": "painters", "label": "Painters", "format": "physical", "materials": ["Photoresin"], "prices": [6000, 6700], "releaseDate": "2024-01-31", "shop": "out-of-stock" }],
       "handle": "kingslayer-twilight-knight",
       "kind": "model",
       "name": "Kingslayer Twilight Knight",
       "notes": "400 printed.",
       "size": "50",
-      "tags": ["female", "generic", "knight", "2024", "painters-scale", "twilight-knight"]
+      "tags": ["female", "generic", "photoresin", "knight", "2024", "painters-scale", "twilight-knight"]
     },
     "knight": {
       "editions": [
@@ -4059,6 +4074,14 @@
       "size": "30",
       "tags": ["female", "generic", "2021"]
     },
+    "lucy-of-dedheim": {
+      "announcements": ["2026-10-30"],
+      "editions": [{ "id": "painters", "label": "Painters", "format": "physical", "materials": ["Photoresin"], "prices": [6700], "releaseDate": "2026-10-30", "shop": "out-of-stock" }],
+      "handle": "lucy-of-dedheim-painters-scale",
+      "kind": "model",
+      "name": "Lucy of Dedheim",
+      "tags": ["female", "photoresin", "2026", "painters-scale", "seasonal", "core-survivor", "lucy", "halloween", "dedheim"]
+    },
     "lunar-aya": {
       "aliases": ["KDS Lunar Aya", "Lunar Aya - Painter's Scale"],
       "announcements": ["2024-01-31", "2024-02-29", "2026-01-30"],
@@ -4275,7 +4298,7 @@
       "tags": ["female", "photoresin", "2023", "deathgrey", "variant", "mist"]
     },
     "mole": {
-      "announcements": ["2025-05-30"],
+      "announcements": ["2025-05-30", "2026-10-30"],
       "editions": [
         { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [20500], "releaseDate": "2025-05-30", "runSize": 500, "shop": "out-of-stock" },
         { "id": "encore", "label": "Encore", "format": "physical", "materials": ["Photoresin"], "prices": [20500], "releaseDate": "2025-05-30", "shop": "out-of-stock" }
@@ -4545,19 +4568,19 @@
       "kind": "box",
       "name": "Novice",
       "notes": "Painter's Scale: 200 copies of the resculpt were printed.\n\nThe Beta resculpt was the first Generic miniature released with Beta rules and gear.",
-      "tags": ["female", "generic", "gameplay", "gear", "painters-scale", "2019", "beta", "2022", "resculpt", "novice"]
+      "tags": ["female", "generic", "gameplay", "gear", "painters-scale", "beta", "2019", "2022", "resculpt", "novice"]
     },
     "oktoberfest-aya": {
       "aliases": ["Octoberfest Aya"],
-      "announcements": ["2019-10-31", "2020-10-30", "2022-10-31", "2023-10-31", "2024-10-31", "2025-10-31"],
-      "editions": [{ "id": "box", "label": "Box", "format": "physical", "materials": ["Plastic"], "prices": [5000], "releaseDate": "2019-10-31", "shop": "missing" }],
+      "announcements": ["2019-10-31", "2020-10-30", "2022-10-31", "2023-10-31", "2024-10-31", "2025-10-31", "2026-10-30"],
+      "editions": [{ "id": "box", "label": "Box", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [5000, 6000], "releaseDate": "2019-10-31", "shop": "in-stock" }],
       "gameplay": true,
       "gameplayContent": "Patterns -007 to -009",
       "handle": "oktoberfest-aya",
       "kind": "box",
       "name": "Oktoberfest Aya",
       "size": "35 & 54",
-      "tags": ["female", "plastic", "gameplay", "seasonal", "pattern", "2019", "aya", "oktoberfest"]
+      "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "painters-scale", "seasonal", "pattern", "2019", "aya", "oktoberfest"]
     },
     "orc-boss": {
       "announcements": ["2025-06-30"],
@@ -4844,7 +4867,7 @@
       "kind": "model",
       "name": "Pinup Butcher",
       "notes": "Painters: Painter's Scale version of a model chosen by winners of the Pinup Painting Contest 2022; limited to 350 prints.",
-      "tags": ["female", "plastic", "generic", "monster", "in-stock", "pinup", "2020", "painters-scale", "monster-butcher", "node-1-nemesis"]
+      "tags": ["female", "plastic", "generic", "monster", "in-stock", "pinup", "painters-scale", "2020", "monster-butcher", "node-1-nemesis"]
     },
     "pinup-death-armor": {
       "editions": [
@@ -5017,17 +5040,17 @@
     },
     "pinup-halloween-special-twilight-knight": {
       "aliases": ["Halloween Pinup Twilight Knight", "Resin Halloween Pinup Twilight Knight", "Halloween Pinup Twilight Knight - Painter's Scale"],
-      "announcements": ["2019-10-31", "2020-10-30", "2022-10-31", "2023-10-31", "2024-10-31", "2025-10-31"],
+      "announcements": ["2019-10-31", "2020-10-30", "2022-10-31", "2023-10-31", "2024-10-31", "2025-10-31", "2026-10-30"],
       "editions": [
         { "id": "resin", "label": "Resin", "format": "physical", "handle": "halloween-special-pinup-twilight-knight", "materials": ["Resin"], "prices": [2700], "releaseDate": "2014-10-31", "shop": "out-of-stock", "size": "30" },
-        { "id": "box", "label": "Box", "format": "physical", "handle": "plastic-halloween-pinup-twilight-knight", "materials": ["Plastic"], "prices": [2600], "releaseDate": "2018-10-31", "shop": "missing", "size": "30" },
+        { "id": "box", "label": "Box", "available": true, "format": "physical", "handle": "plastic-halloween-pinup-twilight-knight", "materials": ["Plastic"], "prices": [2500, 2600], "releaseDate": "2018-10-31", "shop": "in-stock", "size": "30" },
         { "id": "painters", "label": "Painters", "format": "physical", "gameplay": false, "handle": "halloween-twilight-knight-painters-scale", "materials": ["Photoresin"], "prices": [6000], "releaseDate": "2023-10-31", "shop": "missing", "size": "50" }
       ],
       "gameplay": true,
       "kind": "box",
       "name": "Halloween Special Pinup Twilight Knight",
       "notes": "Exclusive to All Hallows Eve. First released as a resin (small box), and in 2018 as plastic (large box).\n\nPainters: 400 printed.",
-      "tags": ["female", "plastic", "generic", "gameplay", "gear", "resin", "knight", "pinup", "painters-scale", "seasonal", "promo", "2014", "twilight-knight", "halloween"]
+      "tags": ["female", "plastic", "generic", "gameplay", "in-stock", "gear", "resin", "knight", "pinup", "painters-scale", "seasonal", "promo", "2014", "twilight-knight", "halloween"]
     },
     "pinup-honeycomb-weaver": {
       "aliases": ["Pinup Honeycomb Weaver - Painter's Scale"],
@@ -5040,7 +5063,7 @@
       "kind": "model",
       "name": "Pinup Honeycomb Weaver",
       "notes": "Painters: Painter's Scale version of a model chosen by winners of the Pinup Painting Contest 2022; limited to 400 prints.",
-      "tags": ["female", "plastic", "generic", "monster", "in-stock", "photoresin", "pinup", "2020", "painters-scale", "node-3-nemesis", "monster-honeycomb-weaver"]
+      "tags": ["female", "plastic", "generic", "monster", "in-stock", "photoresin", "pinup", "painters-scale", "2020", "node-3-nemesis", "monster-honeycomb-weaver"]
     },
     "pinup-kings-man": {
       "editions": [
@@ -5138,7 +5161,7 @@
       "kind": "model",
       "name": "Pinup Nightmare Ram Armor",
       "notes": "The resin Pinup Nightmare Ram Armor was renamed Pinup Ramette for its Plastic release in Pinups of Death IV.\n\nPainter's Scale: selected by winners of the 2022 Pinup Painting Contest and limited to 250 prints.",
-      "tags": ["female", "plastic", "generic", "photoresin", "resin", "pinup", "2016", "painters-scale", "armor", "nightmare-ram"]
+      "tags": ["female", "plastic", "generic", "photoresin", "resin", "pinup", "painters-scale", "2016", "armor", "nightmare-ram"]
     },
     "pinup-nightmare-ram-armor-male": {
       "editions": [
@@ -5350,7 +5373,7 @@
       "kind": "model",
       "name": "Pinup Storm Knight Armor",
       "notes": "Renamed from Pinup Storm Armor to Pinup Storm Knight Armor for Pinups of Death III.\n\nPainter's Scale: selected by winners of the 2022 Pinup Painting Contest and limited to 450 prints.",
-      "tags": ["female", "plastic", "generic", "in-stock", "photoresin", "resin", "knight", "pinup", "2016", "painters-scale", "armor"]
+      "tags": ["female", "plastic", "generic", "in-stock", "photoresin", "resin", "knight", "pinup", "painters-scale", "2016", "armor"]
     },
     "pinup-sunstalker-dancer": {
       "aliases": ["Sunstalker Dancer Bust", "Pinup Sunstalker Dancer - Painter's Scale", "Sunstalker Dancer - Painters Scale"],
@@ -5536,7 +5559,7 @@
       "name": "X-mas Special Pinup Twilight Knight",
       "notes": "Box: Promos of Death.",
       "size": "54",
-      "tags": ["female", "plastic", "generic", "gameplay", "knight", "pinup", "seasonal", "promo", "naked", "2014", "twilight-knight", "deathmas"]
+      "tags": ["female", "plastic", "generic", "gameplay", "knight", "pinup", "seasonal", "naked", "promo", "2014", "twilight-knight", "deathmas"]
     },
     "possessed-twilight-knight": {
       "aliases": ["Possessed Twilight Knight - Painter's Scale (Oracle of Nozuki)", "Possessed Twilight Knight - Painter's Scale"],
@@ -5784,6 +5807,21 @@
       "size": "30",
       "tags": ["female", "generic", "2018"]
     },
+    "rune": {
+      "announcements": ["2026-10-30"],
+      "editions": [
+        { "id": "first-run", "label": "First Run", "beta": true, "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [3400], "releaseDate": "2026-10-30", "shop": "out-of-stock" },
+        { "id": "deathgrey", "label": "Deathgrey", "beta": true, "format": "physical", "materials": ["Deathgrey"], "numbered": true, "prices": [3900], "releaseDate": "2026-10-30", "shop": "out-of-stock" },
+        { "id": "encore", "label": "Encore", "available": true, "beta": true, "format": "physical", "materials": ["Photoresin"], "prices": [3400], "releaseDate": "2026-10-30", "shop": "in-stock" }
+      ],
+      "gameplay": true,
+      "gameplayContent": "The Counterculture beta character card; Heritage Breaker beta rare gear card",
+      "handle": "rune",
+      "kind": "beta",
+      "name": "Rune",
+      "size": "30",
+      "tags": ["female", "gameplay", "in-stock", "gear", "photoresin", "deathgrey", "2026", "beta", "character", "rune"]
+    },
     "samurai": {
       "editions": [
         { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Resin"], "numbered": true, "prices": [2700], "releaseDate": "2017-05-26", "runSize": 500 },
@@ -6012,7 +6050,7 @@
       "kind": "model",
       "name": "Screaming Antelope",
       "notes": "Twenty-seven antlered Resin Screaming Antelopes were produced for the first Kickstarter's Resin Core games.",
-      "tags": ["plastic", "monster", "resin", "core", "2015", "quarry", "node-2-quarry", "monster-screaming-antelope"]
+      "tags": ["plastic", "monster", "resin", "core", "2015", "quarry", "monster-screaming-antelope", "node-2-quarry"]
     },
     "screaming-god-armor-female": {
       "announcements": ["2021-04-05"],
@@ -6131,7 +6169,7 @@
       "name": "10th Anniversary Survivors",
       "notes": "The four starting survivors reimagined for their tenth anniversary.",
       "size": "30",
-      "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "survivor", "pattern", "2019", "lucy", "erza", "allister", "seed", "zachary", "anniversary", "core-monster"]
+      "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "survivor", "pattern", "2019", "lucy", "seed", "erza", "allister", "zachary", "anniversary", "core-monster"]
     },
     "set-15th-anniversary-survivors": {
       "aliases": ["15th Anniversary Survivors / Perfect Survivors"],
@@ -6142,6 +6180,22 @@
       "name": "15th Anniversary Survivors",
       "size": "30",
       "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "survivor", "terrain", "2024", "resource", "settlement-location", "innovation", "core-survivor", "lucy", "erza", "allister", "zachary", "anniversary"]
+    },
+    "set-disciples-of-the-witch": {
+      "announcements": ["2026-10-30"],
+      "editions": [{ "id": "naked", "label": "Naked", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [4500], "releaseDate": "2026-10-30", "shop": "in-stock" }],
+      "handle": "naked-disciples-of-the-witch",
+      "includes": [
+        { "item": "disciple-of-the-witch-1", "editionId": "plastic-included" },
+        { "item": "disciple-of-the-witch-2", "editionId": "plastic-included" },
+        { "item": "disciple-of-the-witch-3", "editionId": "plastic-included" },
+        { "item": "disciple-of-the-witch-4", "editionId": "plastic-included" },
+        { "item": "disciple-of-the-witch-5-6", "editionId": "plastic-included" }
+      ],
+      "kind": "set",
+      "name": "Naked Disciples of the Witch",
+      "notes": "Contains Disciples 1, 2, 3, 4, and 6 (cataloged as 5/6). Miniatures only, without packaging or artwork.",
+      "tags": ["female", "plastic", "generic", "in-stock", "2026", "naked", "abyssal-woods", "disciple-of-the-witch"]
     },
     "set-echoes-of-death": {
       "announcements": ["2019-03-27"],
@@ -6201,22 +6255,22 @@
     },
     "set-halloween-survivors": {
       "aliases": ["Halloween Survivors (set of 4)", "Halloween Survivors I"],
-      "announcements": ["2019-10-31", "2020-10-30", "2022-10-31", "2023-10-31", "2024-10-31", "2025-10-31"],
+      "announcements": ["2019-10-31", "2020-10-30", "2022-10-31", "2023-10-31", "2024-10-31", "2025-10-31", "2026-10-30"],
       "editions": [
         { "id": "plastic-included", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "releaseDate": "2016-10-28" },
-        { "id": "box", "label": "Box", "format": "physical", "materials": ["Plastic"], "prices": [5000], "releaseDate": "2017-10-31", "shop": "missing" }
+        { "id": "box", "label": "Box", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [5000, 6000], "releaseDate": "2017-10-31", "shop": "in-stock" }
       ],
       "handle": "halloween-survivors",
       "kind": "set",
       "name": "Halloween Survivors",
       "notes": "Exclusive to All Hallows Eve. First released in the 2016 Halloween Trick or Treat Bag.",
       "size": "30",
-      "tags": ["female", "plastic", "male", "survivor", "seasonal", "2017", "core-survivor", "lucy", "erza", "halloween", "zachary"]
+      "tags": ["female", "plastic", "in-stock", "male", "survivor", "seasonal", "2017", "core-survivor", "lucy", "erza", "halloween", "allister", "zachary"]
     },
     "set-halloween-survivors-series-2": {
       "aliases": ["Halloween Survivors - Series II (set of 4)"],
-      "announcements": ["2021-11-26", "2022-10-31", "2023-10-31", "2025-10-31"],
-      "editions": [{ "id": "box", "label": "Box", "format": "physical", "materials": ["Plastic"], "prices": [6000], "releaseDate": "2021-11-26", "shop": "missing" }],
+      "announcements": ["2021-11-26", "2022-10-31", "2023-10-31", "2025-10-31", "2026-10-30"],
+      "editions": [{ "id": "box", "label": "Box", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [6000], "releaseDate": "2021-11-26", "shop": "in-stock" }],
       "gameplay": true,
       "gameplayContent": "Patterns -015 to -018",
       "handle": "halloween-survivors-series-ii",
@@ -6224,7 +6278,7 @@
       "name": "Halloween Survivors - Series II",
       "notes": "Exclusive to All Hallows Eve. First released during Late Halloween Sale 2021 (Black Friday 2021).",
       "size": "30",
-      "tags": ["female", "plastic", "generic", "gameplay", "survivor", "seasonal", "pattern", "2021", "halloween"]
+      "tags": ["female", "plastic", "generic", "gameplay", "in-stock", "gear", "survivor", "seasonal", "pattern", "2021", "monster-white-lion", "seed", "halloween", "monster-gorm", "monster-screaming-antelope", "monster-crimson-crocodile"]
     },
     "set-pathfinders-of-death": {
       "aliases": ["Pathfinders of Death (Kyra, Merisel, Seoni & Valeros)"],
@@ -6284,7 +6338,7 @@
       "kind": "set",
       "name": "Pinups Of Death II",
       "notes": "A pinup collection containing all 11 Pinups from the first Kingdom Death: Monster Kickstarter. The Naked edition contains the same 11 miniatures without gameplay content.",
-      "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "survivor", "pinup", "2020", "2019", "promo", "naked", "pot-sun", "settlement-event", "bundle"]
+      "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "survivor", "pinup", "2020", "2019", "naked", "promo", "pot-sun", "settlement-event", "bundle"]
     },
     "set-pinups-of-death-series-3": {
       "aliases": ["Pinups of Death III Collection"],
@@ -6385,7 +6439,7 @@
       "name": "Survivors of Death 1",
       "notes": "Gen Con 2024. Features canon variants of Bullet Dancer, Hospitalar, Azure Knight & Investment Sniper.",
       "size": "30",
-      "tags": ["female", "plastic", "generic", "gameplay", "in-stock", "gear", "male", "survivor", "2024", "pattern", "resource", "fighting-art", "variant", "knowledge", "strain", "seed", "collective-cognition", "impairment"]
+      "tags": ["female", "plastic", "generic", "gameplay", "in-stock", "gear", "male", "survivor", "2024", "pattern", "resource", "fighting-art", "variant", "knowledge", "seed", "strain", "collective-cognition", "impairment"]
     },
     "set-survivors-of-death-2": {
       "announcements": ["2025-08-29"],
@@ -6393,7 +6447,7 @@
       "handle": "survivors-of-death-2",
       "kind": "set",
       "name": "Survivors of Death II",
-      "tags": ["female", "plastic", "generic", "gameplay", "in-stock", "gear", "male", "survivor", "2025", "pattern", "resource", "fighting-art", "knowledge", "strain", "seed", "collective-cognition", "impairment"]
+      "tags": ["female", "plastic", "generic", "gameplay", "in-stock", "gear", "male", "survivor", "2025", "pattern", "resource", "fighting-art", "knowledge", "seed", "strain", "collective-cognition", "impairment"]
     },
     "set-survivors-of-death-3": {
       "announcements": ["2026-09-30"],
@@ -6404,7 +6458,7 @@
       "kind": "set",
       "name": "Survivors of Death III",
       "notes": "The Troubadour Troupe set includes Lyra, Melody, Harmony, and Sage miniatures; four character cards; the Troubadour Troupe pillar; Band innovation; Demise Stridulation strain milestone; Blind Rocker vermin; Discord Cricket strange resource; and Resonance Headset pattern and gear. The shop recommends a Gambler's Chest campaign for the Feasting Songs collective cognition milestone (CC 23) and Ardent, Elegant, and Dueling Soundscape knowledge cards. Gen Con 2026 premiere.",
-      "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "survivor", "2026", "pattern", "resource", "innovation", "knowledge", "ability", "strain", "character", "pillar", "vermin", "collective-cognition", "impairment", "harmony", "lyra", "melody", "sage"]
+      "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "survivor", "2026", "pattern", "resource", "innovation", "knowledge", "ability", "character", "strain", "pillar", "vermin", "collective-cognition", "impairment", "harmony", "lyra", "melody", "sage"]
     },
     "shadow-box-holy-lands": {
       "announcements": ["2026-04-01"],
@@ -7581,7 +7635,7 @@
       "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Honeycomb Weaver", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "releaseWindow": "2026" }],
       "kind": "armor-kit",
       "name": "Steel Wax Armor Kit",
-      "tags": ["plastic", "2024", "2026", "upcoming", "armor", "naked", "armor-kit"]
+      "tags": ["plastic", "2026", "2024", "upcoming", "armor", "naked", "armor-kit"]
     },
     "atnas-the-child-eater": {
       "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "releaseDate": "2023-11-24" }],
@@ -8609,13 +8663,13 @@
     "dice-halloween": {
       "accessoryType": "dice",
       "aliases": ["Halloween Dice"],
-      "announcements": ["2019-10-31", "2020-10-30", "2022-10-31", "2023-10-31", "2024-10-31", "2025-10-31"],
+      "announcements": ["2019-10-31", "2020-10-30", "2022-10-31", "2023-10-31", "2024-10-31", "2025-10-31", "2026-10-30"],
       "handle": "halloween-death-dice",
       "kind": "accessory",
       "name": "Halloween Death Dice",
       "price": 2000,
       "releaseDate": "2019-10-31",
-      "shop": "missing",
+      "shop": "in-stock",
       "tags": ["seasonal", "2019", "dice", "halloween", "orange", "purple"]
     },
     "dice-holiday": {
@@ -8780,7 +8834,7 @@
       "name": "Kingdom Death Comic: Phobia 2 - The Settlement",
       "tags": ["in-stock", "2026", "settlement", "comic", "phobia"]
     },
-    "shirt-black-knight": { "accessoryType": "shirt", "aliases": ["Black Knight Shirt (2018)"], "kind": "accessory", "name": "Black Knight Shirt", "price": 2500, "releaseYear": 2018, "tags": ["knight", "2018", "shirt"] },
+    "shirt-black-knight": { "accessoryType": "shirt", "aliases": ["Black Knight Shirt (2018)"], "kind": "accessory", "name": "Black Knight Shirt", "price": 2500, "releaseYear": 2018, "tags": ["knight", "shirt", "2018"] },
     "shirt-bone-eater": {
       "accessoryType": "shirt",
       "aliases": ["Bone Eater Shirt (2023)", "Bone Eater T Shirt"],
@@ -8873,6 +8927,7 @@
       "shop": "out-of-stock",
       "tags": ["2023", "shirt", "crest", "monster-godhand"]
     },
+    "shirt-golden-bat": { "accessoryType": "shirt", "announcements": ["2026-10-30"], "handle": "golden-bat-t-shirt", "kind": "accessory", "name": "Golden Bat Shirt", "price": 3200, "releaseDate": "2026-10-30", "shop": "in-stock", "tags": ["2026", "shirt", "monster-golden-bat"] },
     "shirt-gorm": { "accessoryType": "shirt", "aliases": ["Gorm Shirt (2019)"], "kind": "accessory", "name": "Gorm Shirt", "price": 2500, "releaseYear": 2019, "tags": ["2019", "shirt", "monster-gorm"] },
     "shirt-happy-holidays-atnas": {
       "accessoryType": "shirt",
@@ -9065,7 +9120,7 @@
       "shop": "missing",
       "tags": ["2020", "shirt", "verdant-lord"]
     },
-    "shirt-watcher": { "accessoryType": "shirt", "aliases": ["Watcher Shirt (2018)"], "kind": "accessory", "name": "Watcher Shirt", "price": 2500, "releaseYear": 2018, "tags": ["2018", "shirt", "monster-watcher"] },
+    "shirt-watcher": { "accessoryType": "shirt", "aliases": ["Watcher Shirt (2018)"], "kind": "accessory", "name": "Watcher Shirt", "price": 2500, "releaseYear": 2018, "tags": ["shirt", "2018", "monster-watcher"] },
     "survivor-tokens": {
       "accessoryType": "other",
       "announcements": ["2021-04-05"],
@@ -9481,14 +9536,14 @@
         "monster-screaming-god",
         "monster-dragon-king",
         "monster-gorm",
+        "monster-screaming-antelope",
         "monster-sunstalker",
         "pot-star",
-        "monster-screaming-antelope",
         "monster-frogdog",
         "monster-bone-eaters",
-        "monster-lonely-tree",
         "monster-crimson-crocodile",
         "monster-flower-knight",
+        "monster-lonely-tree",
         "monster-hand",
         "anniversary",
         "base",
@@ -9575,7 +9630,7 @@
       "name": "RevampedGame Settlement Locations",
       "price": 0,
       "releaseWindow": "2026",
-      "tags": ["homebrew", "3d-files", "monster", "revampedgame", "core", "settlement-location", "pot-sun", "monster-phoenix", "monster-white-lion", "monster-dragon-king", "monster-gorm", "monster-sunstalker", "pot-star", "monster-screaming-antelope", "model"]
+      "tags": ["homebrew", "3d-files", "monster", "revampedgame", "core", "settlement-location", "pot-sun", "monster-phoenix", "monster-white-lion", "monster-dragon-king", "monster-gorm", "monster-screaming-antelope", "monster-sunstalker", "pot-star", "model"]
     },
     "satan-pledge": {
       "editions": [{ "id": "pledge", "label": "Pledge", "format": "physical", "prices": [271000], "releaseWindow": "2030" }],

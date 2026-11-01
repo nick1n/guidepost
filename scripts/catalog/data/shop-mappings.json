@@ -3114,5 +3114,50 @@
     "category": "accessories",
     "itemId": "kings-coins",
     "editionId": "prize"
+  },
+  "naked-disciples-of-the-witch": {
+    "category": "content",
+    "itemId": "set-disciples-of-the-witch",
+    "releaseDate": "2026-10-30",
+    "editionId": "naked"
+  },
+  "golden-bat-t-shirt": {
+    "category": "accessories",
+    "itemId": "shirt-golden-bat",
+    "releaseDate": "2026-10-30"
+  },
+  "cyclops-knight-reforged": {
+    "category": "content",
+    "itemId": "cyclops-knight",
+    "releaseDate": "2026-10-30",
+    "variantEditionIds": {
+      "67727481864561": "reforged-first-run",
+      "67727481897329": "reforged-encore"
+    }
+  },
+  "cat-eater-enchantress": {
+    "category": "content",
+    "itemId": "cat-eater-enchantress",
+    "releaseDate": "2026-10-30",
+    "variantEditionIds": {
+      "67727324414321": "first-run",
+      "67727324479857": "encore"
+    }
+  },
+  "rune": {
+    "category": "content",
+    "itemId": "rune",
+    "releaseDate": "2026-10-30",
+    "variantEditionIds": {
+      "67727270969713": "first-run",
+      "67727271002481": "deathgrey",
+      "67727271035249": "encore"
+    }
+  },
+  "lucy-of-dedheim-painters-scale": {
+    "category": "content",
+    "itemId": "lucy-of-dedheim",
+    "releaseDate": "2026-10-30",
+    "editionId": "painters"
   }
 }

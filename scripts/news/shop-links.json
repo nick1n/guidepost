@@ -1,6 +1,6 @@
 {
   "source": "https://kingdomdeath.com/news",
-  "startedAt": "2026-11-01T17:10:40.517Z",
+  "startedAt": "2026-11-01T20:33:53.972Z",
   "complete": true,
   "discoveredPosts": 134,
   "posts": [
@@ -8569,11 +8569,11 @@
     }
   ],
   "errors": [],
-  "requestsThisRun": 1,
+  "requestsThisRun": 0,
   "skippedPostsThisRun": 134,
   "processedPostsThisRun": 0,
   "removedLinksThisRun": 0,
   "linkHistoryVersion": 3,
   "historyRecovery": { "postsRecovered": 133, "postsMissingCache": 0 },
-  "finishedAt": "2026-11-01T17:10:40.946Z"
+  "finishedAt": "2026-11-01T20:33:54.134Z"
 }

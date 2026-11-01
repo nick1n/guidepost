@@ -146,6 +146,11 @@ Safelist icon classes in [uno.config.ts](uno.config.ts) when extraction is unrel
 
 ## Scripts
 
+Read and write repository text as UTF-8 explicitly, including temporary scripts and subprocess output. In Python, pass
+`encoding="utf-8"` to text file operations and subprocess decoding; in Node, pass `"utf8"` to file operations. Do not rely on
+Windows locale defaults or shell pipelines to preserve Unicode. After bulk rewrites, inspect the diff for unintended changes to
+existing non-ASCII text. Valid UTF-8 and schema validation alone do not detect text decoded with the wrong encoding.
+
 Scripts must use local files and caches by default. Require `--fetch` for every network path, including retries and fallbacks.
 Never download automatically for missing or stale caches; report missing data with instructions to rerun with `--fetch`.
 

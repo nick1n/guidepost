@@ -34,6 +34,14 @@ Reviewed maintenance state lives in `scripts/catalog/data/` and belongs in Git. 
 `local-data/kdm-catalog/`; response caches belong under `.cache/kdm-catalog/shopify-products/`, and generated reports under
 `temp/kdm-catalog/reports/`. These private and generated directories remain Git-ignored.
 
+### Review new listings with Codex
+
+Invoke [$kdm-catalog-update](../.agents/skills/kdm-catalog-update/SKILL.md) in a new thread for this repository to review saved evidence,
+find existing matches, and check products in the update's news articles for missing tags, including already matched items and restocks.
+Confirm proposed matches, new items, and tag updates before applying them. Append `Refresh the shop first` to request current store
+evidence, or supply handles with decisions such as `new beta` or `matches item-id / edition-id`. Supplied decisions carry through without
+repeated confirmation; a supplied list limits the review to those products unless a broader review is requested.
+
 ### Prepare an update
 
 ```bash

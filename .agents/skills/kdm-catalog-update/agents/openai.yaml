@@ -1,0 +1,4 @@
+interface:
+  display_name: "KDM catalog update"
+  short_description: "Match store releases and review article-wide tags"
+  default_prompt: "Use $kdm-catalog-update to review saved store evidence, propose matches and new items, check existing article products for missing tags, and ask me to confirm unapproved decisions before applying."
