@@ -6,4 +6,4 @@ allowBuilds:
 packageImportMethod: clone-or-copy
 
 patchedDependencies:
-  "@unocss/svelte-scoped@66.11.0": patches/@unocss__svelte-scoped@66.11.0.patch
+  "@unocss/svelte-scoped@66.12.0": patches/@unocss__svelte-scoped@66.12.0.patch

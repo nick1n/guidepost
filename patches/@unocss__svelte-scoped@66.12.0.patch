@@ -86,11 +86,10 @@ index 214ebb1..ec623d9 100644
  			}
  		},
  		async transformIndexHtml(html) {
-@@ -2377,6 +2406,7 @@ function GlobalStylesPlugin(ctx, injectReset) {
+@@ -2377,5 +2406,6 @@ function GlobalStylesPlugin(ctx, injectReset) {
  			}
  		}
  	};
 +	return plugin;
  }
- //#endregion
- //#region ../../virtual-shared/integration/src/hash.ts
+ // ../../virtual-shared/integration/src/hash.ts
