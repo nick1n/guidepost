@@ -1,4 +1,3 @@
-import { catalogLocal } from "./paths.mts";
 import { formatLockConflict } from "./locks.mts";
 import { createHash } from "node:crypto";
 import { access, mkdir, open, readFile, unlink, writeFile } from "node:fs/promises";
@@ -6,15 +5,7 @@ import { join, resolve } from "node:path";
 import { Cache, Clock, Effect, Exit, Schema, Semaphore } from "effect";
 import { FetchHttpClient, HttpClient } from "effect/http";
 import { decodeShopCache, decodeShopProduct, ShopResponse } from "./shop-schema.mts";
-import type { Edition, Item, Mapping } from "./types.mts";
-
-export async function loadMappings(root: string, path?: string): Promise<Record<string, Mapping>> {
-  const text = await readFile(path ?? join(catalogLocal(root), "kdm-shop-mappings.json"), "utf8").catch((error: unknown) => {
-    if (!path && error instanceof Error && "code" in error && error.code === "ENOENT") return "{}";
-    throw error;
-  });
-  return JSON.parse(text);
-}
+import type { Edition, Item } from "./types.mts";
 
 export class ShopError extends Schema.TaggedError<ShopError>()("ShopError", {
   message: Schema.String,

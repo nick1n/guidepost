@@ -21,7 +21,6 @@ export type Report = {
   finishedAt?: string;
   complete: boolean;
   discoveredPosts: number;
-  discoveredPostUrls?: string[];
   posts: Entry[];
   links: Link[];
   errors: string[];
@@ -33,6 +32,26 @@ export type Report = {
   historyRecovery?: { postsRecovered: number; postsMissingCache: number };
 };
 type Anchor = { href: string; text: string[]; alt: string[]; line: (string | Anchor)[] };
+
+export function postFingerprints(report: Pick<Report, "posts" | "links">): Record<string, string> {
+  const linksByPost = new Map<string, { itemName: string; shopUrl: string }[]>();
+  for (const { postUrl, itemName, shopUrl } of report.links) {
+    const links = linksByPost.get(postUrl) ?? [];
+    links.push({ itemName, shopUrl });
+    linksByPost.set(postUrl, links);
+  }
+  return Object.fromEntries(
+    report.posts
+      .filter((post) => post.status === "read" && !post.error)
+      .map((post) => [
+        post.postUrl,
+        createHash("sha256")
+          .update(JSON.stringify({ date: post.date, title: post.title, links: linksByPost.get(post.postUrl) ?? [] }))
+          .digest("hex"),
+      ]),
+  );
+}
+
 const clean = (text: string) => text.replace(/\s+/g, " ").trim();
 const message = (error: unknown) => (error instanceof Error ? error.message : String(error));
 
@@ -360,6 +379,7 @@ export async function updateReport(
   getArticle: (url: string, cached: boolean) => Promise<string>,
   checkpoint: () => Promise<void>,
   refreshPosts = false,
+  signal?: AbortSignal,
 ) {
   if (!Array.isArray(index.stories) || !index.stories.length) throw new Error("News index has no stories");
   const posts = index.stories.map((value) => {
@@ -368,7 +388,6 @@ export async function updateReport(
   });
   if (new Set(posts.map((entry) => entry.postUrl)).size !== posts.length) throw new Error("News index has duplicate slugs");
   report.discoveredPosts = posts.length;
-  report.discoveredPostUrls = posts.map((entry) => entry.postUrl);
   const publicationDates = new Map(posts.map((entry) => [entry.postUrl, entry.date]));
   let failed = false;
   const persist = async () => {
@@ -377,6 +396,7 @@ export async function updateReport(
   };
   normalizeReport(report, publicationDates);
   for (const metadata of posts) {
+    signal?.throwIfAborted();
     const position = report.posts.findIndex((entry) => entry.postUrl === metadata.postUrl);
     if (position !== -1 && report.posts[position]!.status === "read" && !report.posts[position]!.error && !refreshPosts) {
       report.skippedPostsThisRun++;
@@ -400,6 +420,7 @@ export async function updateReport(
       if (position === -1) report.posts.push(entry);
       else report.posts[position] = entry;
       await persist();
+      signal?.throwIfAborted();
       if (
         (error instanceof HttpError && [401, 403, 429].includes(error.status)) ||
         (error instanceof Error && error.name === "AbortError")
@@ -425,17 +446,37 @@ const newsFlags = {
   delay: Flag.String("delay").pipe(Flag.withDefault("2")),
   "refresh-posts": Flag.Boolean("refresh-posts").pipe(Flag.withDefault(false)),
 };
-async function main(values: Command.Command.Config.Infer<typeof newsFlags>, signal: AbortSignal) {
-  const offline = offlineMode(values);
-  const delay = Number(values.delay);
+export type RefreshOptions = {
+  output?: string;
+  cache?: string;
+  fetch?: boolean;
+  refreshPosts?: boolean;
+  signal?: AbortSignal;
+  delay?: number;
+  downloader?: Pick<Downloader, "get" | "requests">;
+};
+
+export class NewsRefreshError extends Error {
+  readonly report: Report;
+  constructor(report: Report) {
+    super(`News refresh incomplete: ${report.errors.join("; ") || "one or more articles failed"}`);
+    this.report = report;
+  }
+}
+
+export async function refreshNews(options: RefreshOptions = {}): Promise<Report> {
+  const output = options.output ?? "scripts/news";
+  const cache = options.cache ?? ".cache/kingdom-death-news";
+  const delay = options.delay ?? 2;
   if (!Number.isFinite(delay) || delay < 2) throw new Error("--delay must be a finite number of at least 2 seconds");
   // Validate before writing anything, so a damaged checkpoint cannot erase earlier results.
-  const report = await loadReport(values.output);
-  await recoverCachedHistory(report, values.cache);
-  const downloader = new Downloader({ cache: values.cache, delay, offline, signal });
+  options.signal?.throwIfAborted();
+  const report = await loadReport(output);
+  await recoverCachedHistory(report, cache);
+  const downloader = options.downloader ?? new Downloader({ cache, delay, offline: !options.fetch, signal: options.signal });
   const checkpoint = async () => {
     report.requestsThisRun = downloader.requests;
-    await saveReport(report, values.output);
+    await saveReport(report, output);
   };
   try {
     await checkpoint();
@@ -444,27 +485,44 @@ async function main(values: Command.Command.Config.Infer<typeof newsFlags>, sign
       report,
       index,
       (url, cached) => {
-        console.log(`Reading ${url}`);
-        return downloader.get(url, values.fetch ? false : cached);
+        options.signal?.throwIfAborted();
+        return downloader.get(url, options.fetch ? false : cached);
       },
       checkpoint,
-      values.fetch || values["refresh-posts"],
+      options.refreshPosts,
+      options.signal,
     );
   } catch (error) {
-    if (signal.aborted) throw error;
+    if (options.signal?.aborted) throw error;
     report.complete = false;
     report.errors.push(message(error));
-    console.error(message(error));
   } finally {
     report.finishedAt = new Date().toISOString();
     await checkpoint();
   }
+  if (!report.complete) throw new NewsRefreshError(report);
+  return report;
+}
+
+async function runNews(values: Command.Command.Config.Infer<typeof newsFlags>, signal: AbortSignal) {
+  const report = await refreshNews({
+    output: values.output,
+    cache: values.cache,
+    fetch: !offlineMode(values),
+    refreshPosts: values["refresh-posts"],
+    delay: Number(values.delay),
+    signal,
+  }).catch((error: unknown) => {
+    if (!(error instanceof NewsRefreshError)) throw error;
+    console.error(error.message);
+    process.exitCode = 1;
+    return error.report;
+  });
   console.log(
     `${report.complete ? "Complete" : "PARTIAL"}: ${report.links.length} links, ${report.skippedPostsThisRun} posts skipped, ${report.processedPostsThisRun} processed, ${report.removedLinksThisRun} links removed, ${report.requestsThisRun} requests.`,
   );
-  if (!report.complete) process.exitCode = 1;
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  runCommand(Command.make("scrape:news", newsFlags, (values) => workflow((signal) => main(values, signal))));
+  runCommand(Command.make("scrape:news", newsFlags, (values) => workflow((signal) => runNews(values, signal))));
 }

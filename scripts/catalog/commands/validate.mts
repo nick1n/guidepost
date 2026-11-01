@@ -4,7 +4,7 @@ import { Argument, Command } from "effect/cli";
 import { runCommand, workflow } from "../cli.mts";
 import { validateCatalog } from "../validate.mts";
 import { loadTags, checkTags } from "../tags.mts";
-import { loadMappings } from "../shop.mts";
+import { loadMappings } from "../inputs.mts";
 
 runCommand(
   Command.make(

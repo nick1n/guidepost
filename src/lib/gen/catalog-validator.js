@@ -341,7 +341,7 @@ var e = (e, t) => () => (t || (e((t = { exports: {} }).exports, t, t.exports), (
             },
             uniqueItems: !0,
             description:
-              "Known sale amounts plus current MSRP in cents. Maximum is MSRP; the array makes no active-sale claim. Price evidence and estimates remain in the audit.",
+              "Observed selling and compare-at amounts in cents, sorted lowest to highest and retaining earlier prices. The array makes no active-sale claim. Price evidence and estimates remain in the audit.",
             minItems: 1,
           },
           releaseDate: {

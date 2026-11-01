@@ -4,7 +4,7 @@ Run from the project root with Node.js 22.18 or newer and installed dependencies
 
 ```powershell
 pnpm scrape:news          # Use cached pages
-pnpm scrape:news --fetch  # Refresh the index and all articles
+pnpm scrape:news --fetch  # Refresh the index and new or failed articles
 ```
 
 The entry point is [scrape-shop-links.mts](../scripts/news/scrape-shop-links.mts). Default runs make no requests; missing cached pages report how to rerun with
@@ -23,15 +23,16 @@ Results checkpoint after each post:
 Only direct `shop.kingdomdeath.com/products` URLs remain. Non-product URLs and any URL containing `collections` (case-insensitive) are
 excluded, including `/collections/.../products/...`. Each run also filters existing exports and updates retained link counts.
 
-Each exact shop-URL/item-name pair appears once, under its earliest post. Comparisons preserve query strings, fragments, and name case.
-Different names for one URL remain separate. Rows sort oldest first; newly discovered older posts can replace retained occurrences.
+Each exact shop-URL/item-name pair appears once per post. Comparisons preserve query strings, fragments, and name case.
+Different names for one URL remain separate. Rows sort oldest first, retaining repeated announcements across posts.
 Posts reduced to zero rows remain processed.
 
 Names come from release text, link labels, or image descriptions, falling back to unverified names derived from URLs.
 No `nameSource` field is exported. Dates use `YYYY-MM-DD` without UTC conversion; source timestamps break same-day ties.
 
 Keep the JSON checkpoint with the CSV. Legacy Python exports are supported; damaged JSON or a lone CSV stops the script without replacement.
-Pages cache in `.cache/kingdom-death-news`; `--fetch` bypasses saved pages. `--output` and `--cache` select other directories.
+Pages cache in `.cache/kingdom-death-news`. Use `--fetch --refresh-posts` to download historical articles again;
+`--refresh-posts` alone reprocesses saved pages. `--output` and `--cache` select other directories.
 Use a new output directory to rebuild. Do not run concurrent copies against one output directory.
 
 Exit code 0 and `complete: true` mean every indexed post was read, not that the index includes every historical announcement.

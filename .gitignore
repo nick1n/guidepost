@@ -164,7 +164,7 @@ vite.config.ts.timestamp-*
 # Generated news CSV
 /scripts/news/shop-links.csv
 
-# Retained local catalog inputs and archives
+# Private workbook inputs and local catalog archives
 /local-data/
 
 # Script tests are source, not build output

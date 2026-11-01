@@ -1,3 +1,6 @@
+import { readSnapshot } from "#scripts/catalog/snapshot.mts";
+import { normalizeItem } from "#scripts/catalog/normalize.mts";
+import { organizeCatalog } from "#scripts/catalog/order.mts";
 import { createHash } from "node:crypto";
 import { mkdir, mkdtemp, readFile, rm, unlink, utimes, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
@@ -33,7 +36,8 @@ async function fixture(run: (paths: { root: string; catalog: string; folder: str
       await writeFile(path, JSON.stringify({ products: page === 2 ? [product] : [] }));
       await utimes(path, pageDate, pageDate);
     }
-    const original = JSON.stringify({
+    await writeFile(join(dirname(catalog), "data.schema.json"), await readFile("static/kdm/catalog/data.schema.json", "utf8"));
+    const data = {
       content: {
         example: {
           name: "Example",
@@ -48,8 +52,10 @@ async function fixture(run: (paths: { root: string; catalog: string; folder: str
       accessories: {},
       bundles: {},
       "included-only": {},
-      homebrew: { files: { name: "Files", tags: ["homebrew"], editions: [{ id: "files", label: "3D Files", available: true }] } },
-    });
+      homebrew: { files: { name: "Files", tags: ["homebrew"], editions: [{ id: "files", label: "3D Files", available: true as const }] } },
+    };
+    for (const items of Object.values(data)) for (const item of Object.values(items)) normalizeItem(item);
+    const original = JSON.stringify(organizeCatalog(data));
     await writeFile(catalog, original);
     await run({ root, catalog, folder, original });
   } finally {
@@ -161,5 +167,75 @@ it("refuses a potentially truncated snapshot without requesting a third page", a
     ).rejects.toThrow("exceeds two pages");
     expect(urls).toHaveLength(2);
     expect(await readFile(catalog, "utf8")).toBe(original);
+  });
+});
+
+it("reads a normalized snapshot without publishing downloaded pages", async () => {
+  await fixture(async ({ catalog, folder, original }) => {
+    const paths = [1, 2].map((page) => join(folder, "products-page-" + page + ".json"));
+    const previous = await Promise.all(paths.map((path) => readFile(path, "utf8")));
+    const result = await readSnapshot({
+      catalog,
+      offline: false,
+      client: {
+        get: async (url) => ({ url, checkedAt: "2026-10-15T00:00:00.000Z", data: { products: url.endsWith("page=1") ? [product] : [] } }),
+      },
+    });
+    expect(result.products[0]?.variants[0]?.price).toBe(7000);
+    expect(result.files).toHaveLength(2);
+    expect(result.baselines.map((baseline) => baseline.text)).toEqual(previous);
+    expect(await Promise.all(paths.map((path) => readFile(path, "utf8")))).toEqual(previous);
+    expect(await readFile(catalog, "utf8")).toBe(original);
+  });
+});
+
+it("dates saved snapshots using their oldest page", async () => {
+  await fixture(async ({ catalog, folder }) => {
+    await utimes(join(folder, "products-page-1.json"), new Date("2026-10-01T00:00:00.000Z"), new Date("2026-10-01T00:00:00.000Z"));
+    const result = await readSnapshot({ catalog, client: noNetwork });
+    expect(result.checkedAt).toBe("2026-10-01T00:00:00.000Z");
+    expect(result.files).toEqual([]);
+  });
+});
+
+it("preserves concurrent snapshot edits before publication", async () => {
+  await fixture(async ({ catalog, folder, original }) => {
+    const edited = JSON.stringify({ products: [], edited: true });
+    await expect(
+      refreshAvailability({
+        catalog,
+        offline: false,
+        client: {
+          get: async (url) => {
+            if (url.endsWith("page=2")) await writeFile(join(folder, "products-page-1.json"), edited);
+            return { url, checkedAt: "2026-10-15T00:00:00.000Z", data: { products: url.endsWith("page=1") ? [product] : [] } };
+          },
+        },
+      }),
+    ).rejects.toThrow("Saved shop snapshot changed");
+    expect(await readFile(catalog, "utf8")).toBe(original);
+    expect(await readFile(join(folder, "products-page-1.json"), "utf8")).toBe(edited);
+  });
+});
+
+it("validates the full catalog before publishing downloaded caches", async () => {
+  await fixture(async ({ catalog, folder }) => {
+    const invalid = JSON.parse(await readFile(catalog, "utf8"));
+    invalid.content.example.requires = ["missing-child"];
+    const original = JSON.stringify(invalid);
+    await writeFile(catalog, original);
+    const paths = [1, 2].map((page) => join(folder, "products-page-" + page + ".json"));
+    const previous = await Promise.all(paths.map((path) => readFile(path, "utf8")));
+    await expect(
+      refreshAvailability({
+        catalog,
+        offline: false,
+        client: {
+          get: async (url) => ({ url, checkedAt: "2026-10-15T00:00:00.000Z", data: { products: url.endsWith("page=1") ? [product] : [] } }),
+        },
+      }),
+    ).rejects.toThrow("Missing prerequisite");
+    expect(await readFile(catalog, "utf8")).toBe(original);
+    expect(await Promise.all(paths.map((path) => readFile(path, "utf8")))).toEqual(previous);
   });
 });

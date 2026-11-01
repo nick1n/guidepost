@@ -31,12 +31,14 @@ export type Evidence = { url: string; checkedAt: string; data: Product };
 export type Mapping = {
   category: Category;
   itemId: string;
-  edition?: string;
+  editionId?: string;
+  editionLabel?: string;
   create?: Partial<Item> & Pick<Item, "name">;
   gameplay?: boolean;
   materials?: string[];
   replaceUrl?: boolean;
+  retired?: string;
   releaseDate?: string;
-  variantEditions?: Record<string, string>;
+  variantEditionIds?: Record<string, string>;
   variantIds?: number[];
 };

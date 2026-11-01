@@ -13,6 +13,7 @@ const WorkbookTargetSchema = Schema.Struct({
   category: Schema.Literals(["content", "accessories", "bundles", "included-only"]),
   contentId: Schema.NonEmptyString,
   editionId: EditionIdSchema,
+  // Existing v1 maps may retain a source label; matching uses only editionId.
   sourceEdition: Schema.optionalKey(Schema.NonEmptyString),
 }).annotate({ identifier: "target" });
 export interface WorkbookTarget extends Schema.Schema.Type<typeof WorkbookTargetSchema> {}

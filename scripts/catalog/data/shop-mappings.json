@@ -1,0 +1,3118 @@
+{
+  "kingdom-death-simulator-1": {
+    "category": "content",
+    "itemId": "core",
+    "gameplay": true,
+    "variantIds": [42048655753399],
+    "editionId": "sim"
+  },
+  "kds-gamblers-chest": {
+    "category": "content",
+    "itemId": "expansion-gamblers-chest",
+    "gameplay": true,
+    "releaseDate": "2025-11-28",
+    "editionId": "sim"
+  },
+  "kds-flower-knight-expansion": {
+    "category": "content",
+    "itemId": "expansion-flower-knight",
+    "gameplay": true,
+    "releaseDate": "2023-11-24",
+    "editionId": "sim"
+  },
+  "kds-dung-beetle-knight-expansion": {
+    "category": "content",
+    "itemId": "expansion-dung-beetle-knight",
+    "gameplay": true,
+    "releaseDate": "2023-11-24",
+    "editionId": "sim"
+  },
+  "kds-frogdog-expansion": {
+    "category": "content",
+    "itemId": "expansion-frogdog",
+    "gameplay": true,
+    "releaseDate": "2025-01-31",
+    "editionId": "sim"
+  },
+  "kds-gorm-expansion": {
+    "category": "content",
+    "itemId": "expansion-gorm",
+    "gameplay": true,
+    "releaseDate": "2023-11-24",
+    "editionId": "sim"
+  },
+  "kds-spidicules-expansion": {
+    "category": "content",
+    "itemId": "expansion-spidicules",
+    "gameplay": true,
+    "releaseDate": "2023-11-24",
+    "editionId": "sim"
+  },
+  "kds-sunstalker-expansion": {
+    "category": "content",
+    "itemId": "expansion-sunstalker",
+    "gameplay": true,
+    "releaseDate": "2023-11-24",
+    "editionId": "sim"
+  },
+  "kds-dragon-king-expansion-1": {
+    "category": "content",
+    "itemId": "expansion-dragon-king",
+    "gameplay": true,
+    "releaseDate": "2023-11-24",
+    "editionId": "sim"
+  },
+  "kds-lion-knight-expansion": {
+    "category": "content",
+    "itemId": "expansion-lion-knight",
+    "gameplay": true,
+    "releaseDate": "2023-11-24",
+    "editionId": "sim"
+  },
+  "kds-lion-god-expansion": {
+    "category": "content",
+    "itemId": "expansion-lion-god",
+    "gameplay": true,
+    "releaseDate": "2023-11-24",
+    "editionId": "sim"
+  },
+  "kds-manhunter-expansion": {
+    "category": "content",
+    "itemId": "expansion-manhunter",
+    "gameplay": true,
+    "releaseDate": "2023-11-24",
+    "editionId": "sim"
+  },
+  "kds-slenderman-expansion": {
+    "category": "content",
+    "itemId": "expansion-slenderman",
+    "gameplay": true,
+    "releaseDate": "2023-11-24",
+    "editionId": "sim"
+  },
+  "kds-lonely-tree-expansion": {
+    "category": "content",
+    "itemId": "expansion-lonely-tree",
+    "gameplay": true,
+    "releaseDate": "2023-11-24",
+    "editionId": "sim"
+  },
+  "kds-green-knight-armor-expansion": {
+    "category": "content",
+    "itemId": "expansion-green-knight-armor",
+    "gameplay": true,
+    "editionId": "sim"
+  },
+  "kds-black-knight": {
+    "category": "content",
+    "itemId": "expansion-black-knight",
+    "gameplay": true,
+    "releaseDate": "2024-11-29",
+    "editionId": "sim"
+  },
+  "kds-candy-cola": {
+    "category": "content",
+    "itemId": "wanderer-candy-cola",
+    "gameplay": true,
+    "releaseDate": "2026-04-01",
+    "editionId": "sim"
+  },
+  "kds-morg": {
+    "category": "content",
+    "itemId": "indomitable-survivor-greatest-gaxe-morg",
+    "gameplay": true,
+    "releaseDate": "2023-11-24",
+    "editionId": "sim"
+  },
+  "kds-lunar-aya": {
+    "category": "content",
+    "itemId": "lunar-aya",
+    "gameplay": true,
+    "releaseDate": "2026-01-30",
+    "editionId": "sim"
+  },
+  "kds-aeneas": {
+    "category": "content",
+    "itemId": "wanderer-aeneas",
+    "gameplay": true,
+    "releaseDate": "2026-04-30",
+    "editionId": "sim"
+  },
+  "kds-death-drifter": {
+    "category": "content",
+    "itemId": "wanderer-death-drifter",
+    "gameplay": true,
+    "releaseDate": "2026-05-29",
+    "editionId": "sim"
+  },
+  "kds-wanderer-goth": {
+    "category": "content",
+    "itemId": "wanderer-goth",
+    "gameplay": true,
+    "releaseDate": "2026-02-27",
+    "editionId": "sim"
+  },
+  "kds-red-witches": {
+    "category": "content",
+    "itemId": "expansion-red-witches",
+    "gameplay": true,
+    "releaseDate": "2025-09-30",
+    "editionId": "sim"
+  },
+  "kds-pariah": {
+    "category": "content",
+    "itemId": "expansion-pariah",
+    "gameplay": true,
+    "releaseDate": "2025-09-30",
+    "editionId": "sim"
+  },
+  "kds-gatherism": {
+    "category": "content",
+    "itemId": "philosophies-of-death-gatherism",
+    "gameplay": true,
+    "releaseDate": "2026-08-31",
+    "editionId": "sim"
+  },
+  "kds-nukealope": {
+    "category": "content",
+    "itemId": "vignette-of-death-screaming-nukealope",
+    "gameplay": true,
+    "releaseDate": "2026-06-30",
+    "editionId": "sim"
+  },
+  "kds-screaming-god": {
+    "category": "content",
+    "itemId": "expansion-screaming-god",
+    "gameplay": true,
+    "releaseDate": "2026-07-31",
+    "editionId": "sim"
+  },
+  "kds-wave-2-bundle": {
+    "category": "bundles",
+    "itemId": "expansion-of-death-vol-1-6",
+    "gameplay": true,
+    "releaseDate": "2023-11-24",
+    "editionId": "sim"
+  },
+  "kds-glow": {
+    "category": "content",
+    "itemId": "legendary-character-glow",
+    "gameplay": true,
+    "releaseDate": "2025-12-25",
+    "editionId": "sim"
+  },
+  "kds-fade": {
+    "category": "content",
+    "itemId": "pillar-fade",
+    "gameplay": true,
+    "releaseDate": "2025-10-31",
+    "editionId": "sim"
+  },
+  "kds-percival": {
+    "category": "content",
+    "itemId": "pillar-percival",
+    "gameplay": true,
+    "releaseDate": "2025-10-31",
+    "editionId": "sim"
+  },
+  "kds-killenium-butcher-vignette": {
+    "category": "content",
+    "itemId": "vignette-of-death-killennium-butcher",
+    "gameplay": true,
+    "releaseDate": "2025-03-03",
+    "editionId": "sim"
+  },
+  "kds-echoes-of-death-1": {
+    "category": "content",
+    "itemId": "set-echoes-of-death",
+    "gameplay": true,
+    "releaseDate": "2024-07-26",
+    "editionId": "sim"
+  },
+  "kds-echoes-of-death-2": {
+    "category": "content",
+    "itemId": "set-echoes-of-death-2",
+    "gameplay": true,
+    "releaseDate": "2025-03-31",
+    "editionId": "sim"
+  },
+  "kds-echoes-of-death-4": {
+    "category": "content",
+    "itemId": "set-echoes-of-death-3",
+    "gameplay": true,
+    "releaseDate": "2025-06-30",
+    "editionId": "sim"
+  },
+  "kds-rubi": {
+    "category": "content",
+    "itemId": "indomitable-survivor-tachyon-nodachi-rubi",
+    "gameplay": true,
+    "releaseDate": "2025-06-30",
+    "editionId": "sim"
+  },
+  "kds-skrelle": {
+    "category": "content",
+    "itemId": "skrelle",
+    "gameplay": true,
+    "releaseDate": "2024-07-03",
+    "editionId": "sim"
+  },
+  "kds-kale": {
+    "category": "content",
+    "itemId": "indomitable-survivor-roaring-harmonica-kale",
+    "gameplay": true,
+    "releaseDate": "2024-04-30",
+    "editionId": "sim"
+  },
+  "kds-grimmory": {
+    "category": "content",
+    "itemId": "indomitable-survivor-gusk-knives-grimmory",
+    "gameplay": true,
+    "releaseDate": "2024-04-02",
+    "editionId": "sim"
+  },
+  "kds-xell": {
+    "category": "content",
+    "itemId": "indomitable-survivor-stampede-glaive-xell",
+    "gameplay": true,
+    "releaseDate": "2024-02-29",
+    "editionId": "sim"
+  },
+  "kds-longclaw-lenore": {
+    "category": "content",
+    "itemId": "indomitable-survivor-longclaw-lenore",
+    "gameplay": true,
+    "releaseDate": "2024-01-31",
+    "editionId": "sim"
+  },
+  "kds-gigalion-expansion": {
+    "category": "content",
+    "itemId": "vignette-of-death-white-gigalion",
+    "gameplay": true,
+    "releaseDate": "2023-11-24",
+    "editionId": "sim"
+  },
+  "kds-rene": {
+    "category": "content",
+    "itemId": "indomitable-survivor-heartleech-baselard-rene",
+    "gameplay": true,
+    "releaseDate": "2026-09-30",
+    "editionId": "sim"
+  },
+  "grand-manner-portrait-simon-painters-scale": {
+    "category": "content",
+    "itemId": "grand-manner-portrait-simon",
+    "gameplay": false,
+    "materials": ["Photoresin"],
+    "releaseDate": "2026-09-30",
+    "editionId": "painters-first-run",
+    "variantEditionIds": {
+      "67599333228913": "painters-encore"
+    }
+  },
+  "life-model-simone-painters-scale": {
+    "category": "content",
+    "itemId": "death-high-life-model-simone",
+    "gameplay": false,
+    "materials": ["Photoresin"],
+    "releaseDate": "2026-09-30",
+    "editionId": "painters-first-run",
+    "variantEditionIds": {
+      "67599396700529": "painters-encore"
+    }
+  },
+  "death-high-portraitist-snow-painters-scale": {
+    "category": "content",
+    "itemId": "death-high-portraitist-snow",
+    "gameplay": false,
+    "materials": ["Photoresin"],
+    "releaseDate": "2026-09-30",
+    "editionId": "painters-first-run",
+    "variantEditionIds": {
+      "67599408824689": "painters-encore"
+    }
+  },
+  "death-high-simon-jr": {
+    "category": "content",
+    "itemId": "death-high-simon-jr",
+    "gameplay": false,
+    "materials": ["Photoresin"],
+    "releaseDate": "2026-09-30",
+    "editionId": "first-run",
+    "variantEditionIds": {
+      "64601722683761": "deathgrey",
+      "64601722716529": "encore"
+    }
+  },
+  "seed-pattern-survivor-astri-the-promised": {
+    "category": "content",
+    "itemId": "seed-pattern-survivor-astri-the-promised",
+    "gameplay": true,
+    "releaseDate": "2026-09-30",
+    "editionId": "box"
+  },
+  "survivors-of-death-iii": {
+    "category": "content",
+    "itemId": "set-survivors-of-death-3",
+    "gameplay": true,
+    "releaseDate": "2026-09-30",
+    "editionId": "box"
+  },
+  "hollow": {
+    "category": "content",
+    "itemId": "legendary-character-hollow",
+    "gameplay": true,
+    "replaceUrl": true,
+    "releaseDate": "2026-09-30",
+    "editionId": "box"
+  },
+  "slenderman-expansion-1-7": {
+    "category": "content",
+    "itemId": "expansion-slenderman",
+    "gameplay": true,
+    "releaseDate": "2026-09-30",
+    "editionId": "1-7"
+  },
+  "dung-beetle-knight-expansion-1-7": {
+    "category": "content",
+    "itemId": "expansion-dung-beetle-knight",
+    "gameplay": true,
+    "releaseDate": "2026-09-30",
+    "editionId": "1-7"
+  },
+  "death-high-esther": {
+    "category": "content",
+    "itemId": "death-high-esther",
+    "gameplay": false,
+    "materials": ["Photoresin"],
+    "releaseDate": "2025-09-30",
+    "editionId": "first-run",
+    "variantEditionIds": {
+      "62367144083825": "deathgrey",
+      "62367144116593": "encore"
+    }
+  },
+  "death-high-dung-beetle-knight": {
+    "category": "content",
+    "itemId": "death-high-pe-teacher-dung-beetle-knight",
+    "gameplay": false,
+    "materials": ["Photoresin"],
+    "releaseDate": "2025-09-30",
+    "editionId": "first-run",
+    "variantEditionIds": {
+      "62367121441137": "encore"
+    }
+  },
+  "death-high-white-lion-1": {
+    "category": "content",
+    "itemId": "death-high-white-lion",
+    "gameplay": false,
+    "materials": ["Photoresin"],
+    "editionId": "encore",
+    "variantEditionIds": {
+      "43519864701111": "first-run"
+    }
+  },
+  "death-high-murderer": {
+    "category": "content",
+    "itemId": "death-high-murderer",
+    "gameplay": false,
+    "materials": ["Photoresin"],
+    "editionId": "encore",
+    "variantEditionIds": {
+      "31479428776019": "first-run",
+      "31479428841555": "deathgrey"
+    }
+  },
+  "kingdom-death-monster-1-5": {
+    "category": "content",
+    "itemId": "core",
+    "gameplay": true,
+    "editionId": "1-6"
+  },
+  "red-witches-expansion": {
+    "category": "content",
+    "itemId": "expansion-red-witches",
+    "gameplay": true,
+    "releaseDate": "2025-09-30",
+    "editionId": "box"
+  },
+  "pariah-expansion": {
+    "category": "content",
+    "itemId": "expansion-pariah",
+    "gameplay": true,
+    "releaseDate": "2025-09-30",
+    "editionId": "box"
+  },
+  "fall-death-dice": {
+    "category": "accessories",
+    "itemId": "dice-fall"
+  },
+  "gamblers-chest-expansion": {
+    "category": "content",
+    "itemId": "expansion-gamblers-chest",
+    "releaseDate": "2023-11-24",
+    "editionId": "box"
+  },
+  "black-knight-expansion": {
+    "category": "content",
+    "itemId": "expansion-black-knight",
+    "releaseDate": "2024-04-02",
+    "editionId": "box"
+  },
+  "frogdog-expansion": {
+    "category": "content",
+    "itemId": "expansion-frogdog",
+    "releaseDate": "2024-07-26",
+    "editionId": "box"
+  },
+  "screaming-god-expansion": {
+    "category": "content",
+    "itemId": "expansion-screaming-god",
+    "releaseDate": "2026-07-31",
+    "editionId": "box"
+  },
+  "vignette-of-death-screaming-nukealope": {
+    "category": "content",
+    "itemId": "vignette-of-death-screaming-nukealope",
+    "gameplay": true,
+    "releaseDate": "2025-10-31",
+    "editionId": "box"
+  },
+  "pinup-screaming-god-armor": {
+    "category": "content",
+    "itemId": "pinup-screaming-god-armor",
+    "releaseDate": "2020-02-14",
+    "editionId": "first-run"
+  },
+  "blushing-owl-photoresin": {
+    "category": "content",
+    "itemId": "blushing-owl",
+    "releaseDate": "2024-02-29",
+    "editionId": "encore"
+  },
+  "ringtail-vixen-wb": {
+    "category": "content",
+    "itemId": "ringtail-vixen",
+    "releaseDate": "2019-08-16",
+    "editionId": "box"
+  },
+  "pinup-easter-twilight-knight": {
+    "category": "content",
+    "itemId": "pinup-easter-twilight-knight",
+    "releaseDate": "2018-04-02",
+    "editionId": "box"
+  },
+  "plastic-halloween-pinup-twilight-knight": {
+    "category": "content",
+    "itemId": "pinup-halloween-special-twilight-knight",
+    "releaseDate": "2018-10-31",
+    "editionId": "box"
+  },
+  "indomitable-survivor-fated-dagger-domino": {
+    "category": "content",
+    "itemId": "indomitable-survivor-fated-dagger-domino",
+    "releaseDate": "2025-09-30",
+    "editionId": "plastic"
+  },
+  "indomitable-survivor-oblouk-shield-arco": {
+    "category": "content",
+    "itemId": "indomitable-survivor-oblouk-shield-arco",
+    "releaseDate": "2025-08-29",
+    "editionId": "plastic"
+  },
+  "indomitable-survivor-poison-partisan-ritika": {
+    "category": "content",
+    "itemId": "indomitable-survivor-poison-partisan-ritika",
+    "releaseDate": "2025-05-30",
+    "editionId": "plastic"
+  },
+  "indomitable-survivor-pulverizing-star-venus": {
+    "category": "content",
+    "itemId": "indomitable-survivor-pulverizing-star-venus",
+    "releaseDate": "2026-06-30",
+    "editionId": "plastic"
+  },
+  "indomitable-survivor-toxicimitar-badar": {
+    "category": "content",
+    "itemId": "indomitable-survivor-toxicimitar-badar",
+    "releaseDate": "2025-08-29",
+    "editionId": "plastic"
+  },
+  "indomitable-survivor-tyrant-slayer-scarlet": {
+    "category": "content",
+    "itemId": "indomitable-survivor-tyrant-slayer-scarlet",
+    "releaseDate": "2025-06-30",
+    "editionId": "plastic"
+  },
+  "naked-cat-doctors": {
+    "category": "content",
+    "itemId": "naked-cat-doctors",
+    "releaseDate": "2025-11-28",
+    "editionId": "plastic"
+  },
+  "seed-pattern-ingama": {
+    "category": "content",
+    "itemId": "seed-pattern-survivor-ingama",
+    "releaseDate": "2026-01-30",
+    "editionId": "plastic"
+  },
+  "seed-pattern-zaniyah": {
+    "category": "content",
+    "itemId": "seed-pattern-survivor-zaniyah",
+    "releaseDate": "2026-04-30",
+    "editionId": "plastic"
+  },
+  "survivors-of-death-2": {
+    "category": "content",
+    "itemId": "set-survivors-of-death-2",
+    "releaseDate": "2025-08-29",
+    "editionId": "box"
+  },
+  "wanderer-preacher": {
+    "category": "content",
+    "itemId": "wanderer-preacher",
+    "releaseDate": "2026-01-30",
+    "editionId": "box"
+  },
+  "ashbloom-of-dedheim": {
+    "category": "content",
+    "itemId": "ashbloom-of-dedheim",
+    "releaseDate": "2025-10-31",
+    "editionId": "painters"
+  },
+  "deathmas-percival": {
+    "category": "content",
+    "itemId": "deathmas-percival",
+    "releaseDate": "2025-12-25",
+    "editionId": "plastic"
+  },
+  "indomitable-survivor-heartleech-baselard-rene": {
+    "category": "content",
+    "itemId": "indomitable-survivor-heartleech-baselard-rene",
+    "releaseDate": "2026-02-27",
+    "editionId": "box"
+  },
+  "snow-the-savior": {
+    "category": "content",
+    "itemId": "legendary-character-snow-the-savior",
+    "releaseDate": "2025-08-29",
+    "editionId": "box"
+  },
+  "fade-pillar-survivor": {
+    "category": "content",
+    "itemId": "pillar-fade",
+    "releaseDate": "2025-08-29",
+    "editionId": "box"
+  },
+  "pillar-forge-priest": {
+    "category": "content",
+    "itemId": "pillar-forge-priest",
+    "releaseDate": "2026-04-01",
+    "editionId": "box"
+  },
+  "pillar-percival": {
+    "category": "content",
+    "itemId": "pillar-percival",
+    "releaseDate": "2025-09-30",
+    "editionId": "box"
+  },
+  "pinup-warrior-of-the-sun-1": {
+    "category": "content",
+    "itemId": "pinup-warrior-of-the-sun",
+    "releaseDate": "2024-08-29",
+    "editionId": "box"
+  },
+  "pinup-wet-nurse-1": {
+    "category": "content",
+    "itemId": "pinup-wet-nurse",
+    "releaseDate": "2024-08-29",
+    "editionId": "box"
+  },
+  "wanderer-aeneas": {
+    "category": "content",
+    "itemId": "wanderer-aeneas",
+    "releaseDate": "2025-09-30",
+    "editionId": "box"
+  },
+  "wanderer-death-drifter": {
+    "category": "content",
+    "itemId": "wanderer-death-drifter",
+    "releaseDate": "2025-09-30",
+    "editionId": "box"
+  },
+  "wanderer-goth": {
+    "category": "content",
+    "itemId": "wanderer-goth",
+    "releaseDate": "2025-09-30",
+    "editionId": "box"
+  },
+  "summer-grimmory": {
+    "category": "content",
+    "itemId": "pillar-summer-grimmory",
+    "releaseDate": "2025-06-30",
+    "editionId": "first-run",
+    "variantEditionIds": {
+      "55277494075761": "encore"
+    }
+  },
+  "beyond-the-wall-1a": {
+    "category": "content",
+    "itemId": "beyond-the-wall",
+    "releaseDate": "2024-08-29",
+    "editionId": "box"
+  },
+  "philosophy-of-death-gatherism": {
+    "category": "content",
+    "itemId": "philosophies-of-death-gatherism",
+    "releaseDate": "2025-09-30",
+    "editionId": "box"
+  },
+  "people-of-the-sun-priestess-percival": {
+    "category": "content",
+    "itemId": "priestess-percival",
+    "releaseDate": "2025-11-28",
+    "editionId": "box"
+  },
+  "stone-wrecker-1": {
+    "category": "content",
+    "itemId": "character-stone-wrecker",
+    "releaseDate": "2026-05-29",
+    "editionId": "box"
+  },
+  "white-speaker-1": {
+    "category": "content",
+    "itemId": "white-speaker-koshka",
+    "releaseDate": "2024-08-29",
+    "editionId": "box"
+  },
+  "frozen-survivor-cyclamen": {
+    "category": "content",
+    "itemId": "frozen-survivor-cyclamen",
+    "variantEditionIds": {
+      "62906974503281": "first-run",
+      "62906974536049": "deathgrey",
+      "62906974568817": "encore"
+    }
+  },
+  "pinup-black-knight": {
+    "category": "content",
+    "itemId": "pinup-black-knight-armor",
+    "editionId": "plastic"
+  },
+  "pinup-male-screaming-god": {
+    "category": "content",
+    "itemId": "pinup-screaming-god-armor-male",
+    "editionId": "plastic"
+  },
+  "pinup-male-nightmare-ram-armor-1": {
+    "category": "content",
+    "itemId": "pinup-nightmare-ram-armor-male",
+    "editionId": "plastic"
+  },
+  "pinup-male-manhunter": {
+    "category": "content",
+    "itemId": "pinup-manhunter-male",
+    "editionId": "plastic"
+  },
+  "pinup-male-dragon-goblin": {
+    "category": "content",
+    "itemId": "pinup-dragon-goblin-male",
+    "editionId": "plastic"
+  },
+  "pinup-male-visionary": {
+    "category": "content",
+    "itemId": "pinup-visionary-male",
+    "editionId": "plastic"
+  },
+  "pinup-male-twilight-knight": {
+    "category": "content",
+    "itemId": "pinup-twilight-knight-male",
+    "editionId": "plastic"
+  },
+  "pinup-male-dung-beetle-dancer": {
+    "category": "content",
+    "itemId": "pinup-dung-beetle-dancer-male",
+    "editionId": "plastic"
+  },
+  "pinup-gold-smoke-knight": {
+    "category": "content",
+    "itemId": "pinup-gold-smoke-knight-armor",
+    "editionId": "plastic"
+  },
+  "death-high-disciple-of-the-witch-one-2024": {
+    "category": "content",
+    "itemId": "death-high-disciple-of-the-witch-one",
+    "editionId": "resculpt-encore",
+    "variantEditionIds": {
+      "43520578453687": "resculpt-encore"
+    }
+  },
+  "death-high-male-preacher-2024": {
+    "category": "content",
+    "itemId": "death-high-preacher-male",
+    "editionId": "resculpt-encore",
+    "variantEditionIds": {
+      "43520011665591": "resculpt-encore"
+    }
+  },
+  "death-high-twilight-knight-2024": {
+    "category": "content",
+    "itemId": "death-high-twilight-knight-female",
+    "editionId": "resculpt-encore",
+    "variantEditionIds": {
+      "43520597754039": "resculpt-encore"
+    }
+  },
+  "death-high-white-speaker-2024": {
+    "category": "content",
+    "itemId": "death-high-white-speaker",
+    "editionId": "resculpt-encore",
+    "variantEditionIds": {
+      "43520605946039": "resculpt-encore"
+    }
+  },
+  "forgegod-archival-remaster": {
+    "category": "content",
+    "itemId": "forge-god",
+    "editionId": "remaster-first-run",
+    "variantEditionIds": {
+      "42676941029559": "remaster-first-run"
+    }
+  },
+  "forsaker-resculpt": {
+    "category": "content",
+    "itemId": "forsaker"
+  },
+  "necromancer-archival-remaster": {
+    "category": "content",
+    "itemId": "necromancer",
+    "variantEditionIds": {
+      "41968766714039": "remaster-encore",
+      "41968766648503": "remaster-first-run",
+      "41968766681271": "remaster-deathgrey"
+    }
+  },
+  "necromancer-boss-archival-remaster": {
+    "category": "content",
+    "itemId": "necromancer-boss",
+    "editionId": "remaster-first-run",
+    "variantEditionIds": {
+      "51643950203249": "remaster-first-run",
+      "51643950268785": "remaster-first-run"
+    }
+  },
+  "till-death-do-us-part-2-0": {
+    "category": "content",
+    "itemId": "till-death-do-us-part",
+    "editionId": "remaster",
+    "variantEditionIds": {
+      "63239773749617": "remaster"
+    }
+  },
+  "black-friday-ninja-variant-2021": {
+    "category": "content",
+    "itemId": "black-friday-ninja-variant",
+    "editionId": "deathgrey"
+  },
+  "novice-resculpt": {
+    "category": "content",
+    "itemId": "novice"
+  },
+  "death-high-satan-x": {
+    "category": "content",
+    "itemId": "death-high-satan-x",
+    "variantEditionIds": {
+      "62367095456113": "first-run",
+      "62367095488881": "deathgrey",
+      "62367095521649": "encore"
+    }
+  },
+  "indomitable-survivor-ballistic-brayonet-belvedere": {
+    "category": "content",
+    "itemId": "indomitable-survivor-ballistic-brayonet-belvedere",
+    "variantEditionIds": {
+      "64235842306417": "plastic",
+      "64235842339185": "plastic",
+      "64235842371953": "plastic",
+      "64235842404721": "plastic",
+      "64235842437489": "plastic",
+      "64235857346929": "plastic"
+    }
+  },
+  "dark-confidant": {
+    "category": "content",
+    "itemId": "dark-confidant",
+    "variantEditionIds": {
+      "62513216127345": "first-run",
+      "62513216160113": "deathgrey",
+      "62513216192881": "encore"
+    }
+  },
+  "dermacentaur": {
+    "category": "content",
+    "itemId": "dermacentaur",
+    "variantEditionIds": {
+      "63790766653809": "first-run",
+      "63790766686577": "encore"
+    }
+  },
+  "endemic-life": {
+    "category": "content",
+    "itemId": "endemic-life",
+    "variantEditionIds": {
+      "62513216913777": "first-run",
+      "62513216946545": "deathgrey",
+      "62513216979313": "encore"
+    }
+  },
+  "false-messengers": {
+    "category": "content",
+    "itemId": "false-messengers",
+    "variantEditionIds": {
+      "62391838146929": "plastic",
+      "62391838179697": "plastic",
+      "62391838212465": "plastic",
+      "62391838245233": "plastic",
+      "62391838278001": "plastic"
+    }
+  },
+  "griswaldan": {
+    "category": "content",
+    "itemId": "griswaldan",
+    "variantEditionIds": {
+      "63195025441137": "first-run",
+      "63195025572209": "deathgrey",
+      "63195025473905": "encore"
+    }
+  },
+  "illuminated-lady-2": {
+    "category": "content",
+    "itemId": "illuminated-lady-2",
+    "variantEditionIds": {
+      "55241144009073": "first-run",
+      "55241144041841": "deathgrey",
+      "55241144074609": "encore"
+    }
+  },
+  "iron-succubus": {
+    "category": "content",
+    "itemId": "iron-succubus",
+    "editionId": "first-run",
+    "variantEditionIds": {
+      "63177075065201": "first-run",
+      "63177075097969": "encore"
+    }
+  },
+  "lagomorph-endemic-life": {
+    "category": "content",
+    "itemId": "lagomorph-endemic-life",
+    "editionId": "first-run",
+    "variantEditionIds": {
+      "63442529911153": "first-run",
+      "63442529943921": "encore"
+    }
+  },
+  "lagomorph-prey-des": {
+    "category": "content",
+    "itemId": "lagomorph-prey-des",
+    "variantEditionIds": {
+      "63442502418801": "first-run",
+      "63442508153201": "deathgrey",
+      "63442502451569": "encore"
+    }
+  },
+  "legendary-card-pack-1-6-upgrade": {
+    "category": "content",
+    "itemId": "legendary-card-pack",
+    "variantEditionIds": {
+      "40980329988279": "1",
+      "41328634462391": "1",
+      "41850813153463": "1",
+      "41850814136503": "1"
+    }
+  },
+  "butcher-lvl-2-prototype": {
+    "category": "content",
+    "itemId": "level-2-butcher-prototype",
+    "editionId": "first-run",
+    "variantEditionIds": {
+      "64395128406385": "first-run",
+      "64395128471921": "encore"
+    }
+  },
+  "lion-champion": {
+    "category": "content",
+    "itemId": "lion-champion",
+    "editionId": "first-run",
+    "variantEditionIds": {
+      "63304241283441": "first-run",
+      "63304241348977": "encore"
+    }
+  },
+  "lion-scholar": {
+    "category": "content",
+    "itemId": "lion-knight-scholar",
+    "variantEditionIds": {
+      "63304227553649": "first-run",
+      "63304227586417": "deathgrey",
+      "63304227619185": "encore"
+    }
+  },
+  "lunar-red-witch-seer": {
+    "category": "content",
+    "itemId": "lunar-red-witch-seer",
+    "editionId": "first-run",
+    "variantEditionIds": {
+      "62906984006001": "first-run",
+      "62906984071537": "encore"
+    }
+  },
+  "male-survivor-guy": {
+    "category": "content",
+    "itemId": "male-survivor-guy",
+    "variantEditionIds": {
+      "63594710663537": "first-run",
+      "63594723410289": "deathgrey",
+      "63594710696305": "encore"
+    }
+  },
+  "white-lion-lionel": {
+    "category": "content",
+    "itemId": "male-survivor-lionel",
+    "editionId": "first-run",
+    "variantEditionIds": {
+      "63594723967345": "first-run",
+      "63594724000113": "deathgrey",
+      "63594724032881": "encore"
+    }
+  },
+  "mole": {
+    "category": "content",
+    "itemId": "mole",
+    "variantEditionIds": {
+      "55235513713009": "first-run",
+      "55235513745777": "encore"
+    }
+  },
+  "orc-boss": {
+    "category": "content",
+    "itemId": "orc-boss",
+    "variantEditionIds": {
+      "55248271638897": "first-run"
+    }
+  },
+  "phantom-weaver": {
+    "category": "content",
+    "itemId": "phantom-weaver-delusion-of-the-royal-jelly",
+    "editionId": "first-run",
+    "variantEditionIds": {
+      "63195023343985": "first-run",
+      "63195023376753": "encore"
+    }
+  },
+  "questing-aya": {
+    "category": "content",
+    "itemId": "questing-aya",
+    "variantEditionIds": {
+      "64395052286321": "first-run",
+      "64395052319089": "deathgrey",
+      "64395052351857": "encore"
+    }
+  },
+  "questing-erza": {
+    "category": "content",
+    "itemId": "questing-erza",
+    "variantEditionIds": {
+      "55712780517745": "first-run",
+      "55712780550513": "deathgrey"
+    }
+  },
+  "ray-vermillion": {
+    "category": "content",
+    "itemId": "ray-vermillion",
+    "editionId": "first-run",
+    "variantEditionIds": {
+      "63442492457329": "first-run",
+      "63442492490097": "encore"
+    }
+  },
+  "starting-survivor-allison": {
+    "category": "content",
+    "itemId": "starting-survivor-allison",
+    "variantEditionIds": {
+      "63790331429233": "first-run",
+      "63790331462001": "deathgrey",
+      "63790331494769": "encore"
+    }
+  },
+  "summer-aquanaut-erza": {
+    "category": "content",
+    "itemId": "summer-aquanaut-erza",
+    "variantEditionIds": {
+      "55277440762225": "first-run",
+      "55277440794993": "deathgrey",
+      "55277440827761": "encore"
+    }
+  },
+  "woe-grimmory": {
+    "category": "content",
+    "itemId": "woe-grimmory",
+    "variantEditionIds": {
+      "62636786581873": "first-run",
+      "62636786614641": "deathgrey",
+      "62636786647409": "encore"
+    }
+  },
+  "woe-white-speaker": {
+    "category": "content",
+    "itemId": "woe-white-speaker",
+    "editionId": "first-run",
+    "variantEditionIds": {
+      "63790694269297": "first-run",
+      "63790694334833": "encore"
+    }
+  },
+  "naked-nightmare-ram": {
+    "category": "content",
+    "itemId": "nightmare-ram",
+    "materials": ["Resin"],
+    "editionId": "encore"
+  },
+  "naked-xmas-pinup-twilight-knight": {
+    "category": "content",
+    "itemId": "pinup-x-mas-special-twilight-knight",
+    "editionId": "box"
+  },
+  "kingdom-death-simulator": {
+    "category": "content",
+    "itemId": "kingdom-death-simulator",
+    "editionId": "dwelling-key"
+  },
+  "kingdom-death-illusionist-key": {
+    "category": "content",
+    "itemId": "kingdom-death-simulator",
+    "editionId": "illusionist-key"
+  },
+  "naked-gorm-armor-kit": {
+    "category": "content",
+    "itemId": "armor-kit-gorment",
+    "editionId": "naked"
+  },
+  "naked-dragon-king-armor-kit": {
+    "category": "content",
+    "itemId": "armor-kit-dragon-king",
+    "editionId": "naked"
+  },
+  "shadow-box-holy-lands": {
+    "category": "content",
+    "itemId": "shadow-box-holy-lands",
+    "variantEditionIds": {
+      "63384459280753": "encore",
+      "63304445297009": "first-run"
+    }
+  },
+  "pinup-male-nightmare-ram-armor": {
+    "category": "content",
+    "itemId": "pinup-ramette-and-nightmare-ram-armor",
+    "editionId": "plastic"
+  },
+  "vignette-of-death-collection-eu": {
+    "category": "bundles",
+    "itemId": "vignette-of-death-collection",
+    "editionId": "2025"
+  },
+  "vignette-of-death-collection": {
+    "category": "bundles",
+    "itemId": "vignette-of-death-collection",
+    "editionId": "2025"
+  },
+  "vignette-of-death-collection-uk": {
+    "category": "bundles",
+    "itemId": "vignette-of-death-collection",
+    "editionId": "2025"
+  },
+  "vignettes-of-death-collection-us": {
+    "category": "bundles",
+    "itemId": "vignette-of-death-collection",
+    "editionId": "2025"
+  },
+  "kings-coin-prize": {
+    "category": "accessories",
+    "itemId": "kings-coins",
+    "editionId": "prize"
+  },
+  "kings-coins": {
+    "category": "accessories",
+    "itemId": "kings-coins",
+    "editionId": "original"
+  },
+  "valentines-apotheosis": {
+    "category": "content",
+    "itemId": "apotheosis",
+    "editionId": "valentines"
+  },
+  "may-2026-apotheosis": {
+    "category": "content",
+    "itemId": "may-2026-apotheosis",
+    "editionId": "photoresin"
+  },
+  "apotheosis": {
+    "category": "content",
+    "itemId": "apotheosis",
+    "editionId": "deathmas"
+  },
+  "deathmas-apotheosis-2024": {
+    "category": "content",
+    "itemId": "apotheosis",
+    "editionId": "deathmas-2024"
+  },
+  "easter-apotheosis": {
+    "category": "content",
+    "itemId": "apotheosis",
+    "editionId": "easter"
+  },
+  "halloween-apotheosis": {
+    "category": "content",
+    "itemId": "apotheosis",
+    "editionId": "halloween"
+  },
+  "lantern-armor-kit": {
+    "category": "content",
+    "itemId": "armor-kit-lantern",
+    "editionId": "naked"
+  },
+  "leather-armor-kit": {
+    "category": "content",
+    "itemId": "armor-kit-leather",
+    "editionId": "naked"
+  },
+  "naked-spider-silk-armor-kit": {
+    "category": "content",
+    "itemId": "armor-kit-spider-silk",
+    "editionId": "naked"
+  },
+  "screaming-fur-armor-kit": {
+    "category": "content",
+    "itemId": "armor-kit-screaming",
+    "editionId": "naked"
+  },
+  "kingdom-death-monster-1-6-rulebook": {
+    "category": "accessories",
+    "itemId": "kingdom-death-monster-rulebook",
+    "editionId": "1-6"
+  },
+  "forge-priest-1": {
+    "category": "content",
+    "itemId": "pillar-forge-priest",
+    "releaseDate": "2026-04-01",
+    "replaceUrl": true,
+    "editionId": "box"
+  },
+  "naked-pinups-of-death-2": {
+    "category": "content",
+    "itemId": "set-pinups-of-death-series-2",
+    "materials": ["Plastic"],
+    "releaseDate": "2019-11-29",
+    "editionId": "naked"
+  },
+  "starting-survivor-set-copy": {
+    "category": "bundles",
+    "itemId": "ultimate-starting-survivor-set-finale-edition"
+  },
+  "lantern-year-29-bundle": {
+    "category": "bundles",
+    "itemId": "starting-survivor-set-kingdom-death-monster-1-6-and-gamblers-chest"
+  },
+  "sci-fi-dwelling-keeper": {
+    "category": "content",
+    "itemId": "sci-fi-dwelling-keeper",
+    "materials": ["Photoresin"],
+    "variantEditionIds": {
+      "64395063755121": "first-run",
+      "64395063787889": "deathgrey",
+      "64395063820657": "encore"
+    }
+  },
+  "investment-sniper-punctual-bride": {
+    "category": "content",
+    "itemId": "investment-sniper-punctual-bride",
+    "materials": ["Photoresin"],
+    "variantEditionIds": {
+      "55712784777585": "first-run",
+      "55712784810353": "deathgrey",
+      "55764875346289": "encore"
+    }
+  },
+  "sci-fi-percival": {
+    "category": "content",
+    "itemId": "sci-fi-percival",
+    "materials": ["Photoresin"],
+    "variantEditionIds": {
+      "55712775995761": "first-run",
+      "55712776028529": "deathgrey"
+    }
+  },
+  "twilight-knight": {
+    "category": "content",
+    "itemId": "twilight-knight",
+    "materials": ["Resin"],
+    "variantEditionIds": {
+      "356580309": "first-run",
+      "64466736120177": "encore"
+    }
+  },
+  "pinup-visionary-1": {
+    "category": "content",
+    "itemId": "pinup-visionary",
+    "variantEditionIds": {
+      "41257479471287": "plastic",
+      "43183477457079": "plastic"
+    }
+  },
+  "lagomorph-incubation": {
+    "category": "content",
+    "itemId": "lagomorph-incubation",
+    "materials": ["Photoresin"],
+    "editionId": "first-run",
+    "variantEditionIds": {
+      "55159889330545": "first-run",
+      "55159889363313": "encore"
+    }
+  },
+  "lagomorph-kit": {
+    "category": "content",
+    "itemId": "lagomorph-kit",
+    "materials": ["Photoresin"],
+    "variantEditionIds": {
+      "55159865803121": "first-run",
+      "55159865835889": "encore"
+    }
+  },
+  "white-speaker-bloodmage": {
+    "category": "content",
+    "itemId": "white-speaker-bloodmage",
+    "materials": ["Photoresin"],
+    "editionId": "first-run",
+    "variantEditionIds": {
+      "52193423753585": "first-run",
+      "52193423786353": "encore"
+    }
+  },
+  "rain-stalker": {
+    "category": "content",
+    "itemId": "rain-stalker",
+    "materials": ["Photoresin"],
+    "editionId": "first-run",
+    "variantEditionIds": {
+      "52193422377329": "first-run",
+      "52193422442865": "encore"
+    }
+  },
+  "golden-bat": {
+    "category": "content",
+    "itemId": "golden-bat",
+    "materials": ["Photoresin"],
+    "variantEditionIds": {
+      "51643950104945": "first-run",
+      "51643950137713": "encore"
+    }
+  },
+  "summer-aya": {
+    "category": "content",
+    "itemId": "summer-aya",
+    "variantEditionIds": {
+      "41357851099319": "first-run",
+      "41357851132087": "encore",
+      "41357851164855": "deathgrey"
+    }
+  },
+  "death-high-erza": {
+    "category": "content",
+    "itemId": "death-high-erza",
+    "variantEditionIds": {
+      "41361076781239": "first-run",
+      "41361076814007": "encore",
+      "41361076846775": "deathgrey"
+    }
+  },
+  "first-hero-male-bust": {
+    "category": "content",
+    "itemId": "bust-first-hero-male",
+    "variantEditionIds": {
+      "63594662494577": "bust-first-run",
+      "63707341095281": "bust-encore"
+    }
+  },
+  "echoes-of-death-one": {
+    "category": "content",
+    "itemId": "set-echoes-of-death",
+    "editionId": "box"
+  },
+  "butcher-bust": {
+    "category": "content",
+    "itemId": "butcher",
+    "variantEditionIds": {
+      "41902805287095": "bust-first-run",
+      "41905312366775": "bust-second-run"
+    }
+  },
+  "pinup-butcher": {
+    "category": "content",
+    "itemId": "pinup-butcher",
+    "editionId": "plastic"
+  },
+  "pinup-death-armor": {
+    "category": "content",
+    "itemId": "pinup-death-armor",
+    "editionId": "plastic"
+  },
+  "pinup-disciple-of-the-witch": {
+    "category": "content",
+    "itemId": "pinup-disciple-of-the-witch",
+    "editionId": "plastic"
+  },
+  "pinup-dragon-goblin": {
+    "category": "content",
+    "itemId": "pinup-dragon-goblin",
+    "editionId": "plastic"
+  },
+  "pinup-dung-ball": {
+    "category": "content",
+    "itemId": "pinup-dung-ball",
+    "editionId": "plastic"
+  },
+  "pinup-dung-beetle-dancer": {
+    "category": "content",
+    "itemId": "pinup-dung-beetle-dancer",
+    "editionId": "plastic"
+  },
+  "pinup-dung-beetle": {
+    "category": "content",
+    "itemId": "pinup-dung-beetle-knight",
+    "editionId": "plastic"
+  },
+  "pinup-faceless-survivor": {
+    "category": "content",
+    "itemId": "pinup-faceless-survivor",
+    "editionId": "plastic"
+  },
+  "pinup-frogdog-armor": {
+    "category": "content",
+    "itemId": "pinup-frogdog-armor",
+    "editionId": "plastic"
+  },
+  "pinup-honeycomb-weaver": {
+    "category": "content",
+    "itemId": "pinup-honeycomb-weaver",
+    "editionId": "plastic"
+  },
+  "pinup-kingsman": {
+    "category": "content",
+    "itemId": "pinup-kings-man",
+    "editionId": "plastic"
+  },
+  "pinup-manhunter": {
+    "category": "content",
+    "itemId": "pinup-manhunter",
+    "editionId": "plastic"
+  },
+  "pinup-mountain-dungeon-armor": {
+    "category": "content",
+    "itemId": "pinup-mountain-dungeon-armor",
+    "editionId": "plastic"
+  },
+  "pinup-percival": {
+    "category": "content",
+    "itemId": "pinup-percival",
+    "editionId": "plastic"
+  },
+  "pinup-pond-scum-armor": {
+    "category": "content",
+    "itemId": "pinup-pond-scum-armor",
+    "editionId": "plastic"
+  },
+  "pinup-scout-of-death": {
+    "category": "content",
+    "itemId": "pinup-scout-of-death",
+    "editionId": "plastic"
+  },
+  "pinup-screaming-god-armor-1": {
+    "category": "content",
+    "itemId": "pinup-screaming-god-armor",
+    "editionId": "plastic"
+  },
+  "pinup-storm-knight-armor": {
+    "category": "content",
+    "itemId": "pinup-storm-knight-armor",
+    "editionId": "plastic"
+  },
+  "pinup-titan-bee-armor": {
+    "category": "content",
+    "itemId": "pinup-titan-bee-armor",
+    "editionId": "plastic"
+  },
+  "dragon-king-expansion-1-6": {
+    "category": "content",
+    "itemId": "expansion-dragon-king",
+    "editionId": "1-6"
+  },
+  "dung-beetle-expansion-1-6": {
+    "category": "content",
+    "itemId": "expansion-dung-beetle-knight",
+    "editionId": "1-6"
+  },
+  "flower-knight-expansion-1-6": {
+    "category": "content",
+    "itemId": "expansion-flower-knight",
+    "editionId": "1-6"
+  },
+  "gorm-expansion-1-6": {
+    "category": "content",
+    "itemId": "expansion-gorm",
+    "editionId": "1-6"
+  },
+  "lion-god-expansion-1-6": {
+    "category": "content",
+    "itemId": "expansion-lion-god",
+    "editionId": "1-6"
+  },
+  "lion-knight-expansion-1-6": {
+    "category": "content",
+    "itemId": "expansion-lion-knight",
+    "editionId": "1-6"
+  },
+  "lonely-tree-expansion-1-6": {
+    "category": "content",
+    "itemId": "expansion-lonely-tree",
+    "editionId": "1-6"
+  },
+  "manhunter-expansion-1-6": {
+    "category": "content",
+    "itemId": "expansion-manhunter",
+    "editionId": "1-6"
+  },
+  "slenderman-expansion-1-6": {
+    "category": "content",
+    "itemId": "expansion-slenderman",
+    "editionId": "1-6"
+  },
+  "spidicules-expansion-1-6": {
+    "category": "content",
+    "itemId": "expansion-spidicules",
+    "editionId": "1-6"
+  },
+  "sunstalker-expansion": {
+    "category": "content",
+    "itemId": "expansion-sunstalker",
+    "editionId": "1-6"
+  },
+  "ashbloom-bust": {
+    "category": "content",
+    "itemId": "ashbloom-of-dedheim",
+    "editionId": "bust"
+  },
+  "deathking-armor-bust": {
+    "category": "content",
+    "itemId": "bust-deathking-armor",
+    "editionId": "bust"
+  },
+  "forgot-bust": {
+    "category": "content",
+    "itemId": "bust-forgot",
+    "editionId": "bust"
+  },
+  "hollow-bust": {
+    "category": "content",
+    "itemId": "bust-hollow",
+    "editionId": "bust"
+  },
+  "early-survivor-zelda": {
+    "category": "content",
+    "itemId": "early-survivor-zelda",
+    "editionId": "box"
+  },
+  "flower-knight-bust": {
+    "category": "content",
+    "itemId": "flower-knight",
+    "editionId": "bust"
+  },
+  "gold-smoke-knight-bust": {
+    "category": "content",
+    "itemId": "gold-smoke-knight",
+    "editionId": "bust"
+  },
+  "morgan-the-savior": {
+    "category": "content",
+    "itemId": "morgan-the-savior",
+    "editionId": "box"
+  },
+  "morgan-bust": {
+    "category": "content",
+    "itemId": "morgan-the-savior",
+    "editionId": "bust"
+  },
+  "murderer-bust": {
+    "category": "content",
+    "itemId": "murderer",
+    "editionId": "bust"
+  },
+  "pariah-bust": {
+    "category": "content",
+    "itemId": "pariah",
+    "editionId": "bust"
+  },
+  "witch-of-the-east-star-painters-scale": {
+    "category": "content",
+    "itemId": "witch-of-the-east-star",
+    "editionId": "painters"
+  },
+  "witch-of-the-east-star-bust": {
+    "category": "content",
+    "itemId": "witch-of-the-east-star",
+    "editionId": "bust"
+  },
+  "death-high-allister": {
+    "category": "content",
+    "itemId": "death-high-allister"
+  },
+  "death-high-archivist": {
+    "category": "content",
+    "itemId": "death-high-archivist"
+  },
+  "death-high-aya": {
+    "category": "content",
+    "itemId": "death-high-aya"
+  },
+  "death-high-disciple-of-the-witch-one": {
+    "category": "content",
+    "itemId": "death-high-disciple-of-the-witch-one"
+  },
+  "death-high-dragon-sacrifice": {
+    "category": "content",
+    "itemId": "death-high-dragon-sacrifice"
+  },
+  "death-high-enforcer": {
+    "category": "content",
+    "itemId": "death-high-enforcer"
+  },
+  "death-high-herb-gatherer": {
+    "category": "content",
+    "itemId": "death-high-herb-gatherer"
+  },
+  "death-high-holy-mage": {
+    "category": "content",
+    "itemId": "death-high-holy-mage"
+  },
+  "death-high-intimacy-couple": {
+    "category": "content",
+    "itemId": "death-high-intimacy-couple",
+    "editionId": "first-run",
+    "variantEditionIds": {
+      "31514119536723": "encore",
+      "31712168804435": "deathgrey"
+    }
+  },
+  "death-high-lucy": {
+    "category": "content",
+    "itemId": "death-high-lucy"
+  },
+  "death-high-miko": {
+    "category": "content",
+    "itemId": "death-high-miko"
+  },
+  "death-high-moss": {
+    "category": "content",
+    "itemId": "death-high-moss"
+  },
+  "death-high-necromancer": {
+    "category": "content",
+    "itemId": "death-high-necromancer"
+  },
+  "death-high-novice": {
+    "category": "content",
+    "itemId": "death-high-novice"
+  },
+  "death-high-preacher": {
+    "category": "content",
+    "itemId": "death-high-preacher"
+  },
+  "death-high-preacher-male": {
+    "category": "content",
+    "itemId": "death-high-preacher-male"
+  },
+  "death-high-ringtail-vixen": {
+    "category": "content",
+    "itemId": "death-high-ringtail-vixen"
+  },
+  "death-high-satan-y": {
+    "category": "content",
+    "itemId": "death-high-satan-y"
+  },
+  "death-high-savior": {
+    "category": "content",
+    "itemId": "death-high-savior"
+  },
+  "death-high-twilight-knight-female": {
+    "category": "content",
+    "itemId": "death-high-twilight-knight-female"
+  },
+  "death-high-visionary": {
+    "category": "content",
+    "itemId": "death-high-visionary"
+  },
+  "death-high-white-speaker": {
+    "category": "content",
+    "itemId": "death-high-white-speaker"
+  },
+  "death-high-zachary": {
+    "category": "content",
+    "itemId": "death-high-zachary"
+  },
+  "frozen-survivor-camellia": {
+    "category": "content",
+    "itemId": "frozen-survivor-camellia"
+  },
+  "frozen-survivor-galanthus": {
+    "category": "content",
+    "itemId": "frozen-survivor-galanthus"
+  },
+  "hellebore-a-frozen-survivor": {
+    "category": "content",
+    "itemId": "frozen-survivor-hellebore"
+  },
+  "indomitable-dashing-reaper-paleun": {
+    "category": "content",
+    "itemId": "indomitable-survivor-dashing-reaper-paleun",
+    "editionId": "box"
+  },
+  "indomitable-survivor-greatest-gaxe-morg": {
+    "category": "content",
+    "itemId": "indomitable-survivor-greatest-gaxe-morg",
+    "editionId": "box"
+  },
+  "gusk-knives-grimmory": {
+    "category": "content",
+    "itemId": "indomitable-survivor-gusk-knives-grimmory",
+    "editionId": "box"
+  },
+  "longclaw-lenore": {
+    "category": "content",
+    "itemId": "indomitable-survivor-longclaw-lenore",
+    "editionId": "box"
+  },
+  "longclaw-lenore-painters-scale": {
+    "category": "content",
+    "itemId": "indomitable-survivor-longclaw-lenore",
+    "editionId": "painters"
+  },
+  "indomitable-survivor-lordsruin-titus": {
+    "category": "content",
+    "itemId": "indomitable-survivor-lordsruin-titus",
+    "editionId": "box"
+  },
+  "indomitable-survivor-roaring-harmonica-kale": {
+    "category": "content",
+    "itemId": "indomitable-survivor-roaring-harmonica-kale",
+    "editionId": "box"
+  },
+  "stampede-glaive-xell": {
+    "category": "content",
+    "itemId": "indomitable-survivor-stampede-glaive-xell",
+    "editionId": "box"
+  },
+  "indomitable-survivor-tachyon-nodachi-rubi": {
+    "category": "content",
+    "itemId": "indomitable-survivor-tachyon-nodachi-rubi",
+    "editionId": "box"
+  },
+  "indomitable-survivor-thumping-timpani-ledla": {
+    "category": "content",
+    "itemId": "indomitable-survivor-thumping-timpani-ledla",
+    "editionId": "box"
+  },
+  "glow": {
+    "category": "content",
+    "itemId": "legendary-character-glow",
+    "editionId": "box"
+  },
+  "aya-lantern-armor": {
+    "category": "content",
+    "itemId": "legendary-character-lantern-armor-aya"
+  },
+  "aya-lantern-armor-painters-scale": {
+    "category": "content",
+    "itemId": "legendary-character-lantern-armor-aya",
+    "editionId": "painters"
+  },
+  "lantern-armor-aya": {
+    "category": "content",
+    "itemId": "legendary-character-lantern-armor-aya",
+    "editionId": "box"
+  },
+  "astri-the-promised": {
+    "category": "content",
+    "itemId": "astri-the-promised"
+  },
+  "astri-the-promised-painters-scale": {
+    "category": "content",
+    "itemId": "astri-the-promised",
+    "editionId": "painters"
+  },
+  "barbarian-lucy": {
+    "category": "content",
+    "itemId": "barbarian-lucy"
+  },
+  "barbarian-lucy-painters-scale": {
+    "category": "content",
+    "itemId": "barbarian-lucy",
+    "editionId": "painters"
+  },
+  "cupid-lucy": {
+    "category": "content",
+    "itemId": "cupid-lucy"
+  },
+  "cupid-lucy-painters-scale-copy": {
+    "category": "content",
+    "itemId": "cupid-lucy",
+    "editionId": "painters"
+  },
+  "deathgmas-cockroach-queen": {
+    "category": "content",
+    "itemId": "deathmas-cockroach-queen"
+  },
+  "deathmas-cockroach-queen-painterscale": {
+    "category": "content",
+    "itemId": "deathmas-cockroach-queen",
+    "editionId": "painters"
+  },
+  "deathmas-cockroach-queen-1": {
+    "category": "content",
+    "itemId": "deathmas-cockroach-queen",
+    "editionId": "box"
+  },
+  "deathmas-gunborg": {
+    "category": "content",
+    "itemId": "deathmas-gunborg",
+    "editionId": "plastic"
+  },
+  "deathmas-gunborg-painters-scale": {
+    "category": "content",
+    "itemId": "deathmas-gunborg",
+    "editionId": "painters"
+  },
+  "deathmas-percival-painters-scale": {
+    "category": "content",
+    "itemId": "deathmas-percival",
+    "editionId": "painters"
+  },
+  "erza-of-dedheim": {
+    "category": "content",
+    "itemId": "erza-of-dedheim",
+    "editionId": "box"
+  },
+  "father-son": {
+    "category": "content",
+    "itemId": "father-and-son",
+    "editionId": "painters"
+  },
+  "gunborg": {
+    "category": "content",
+    "itemId": "gunborg"
+  },
+  "gunborg-painters-scale": {
+    "category": "content",
+    "itemId": "gunborg",
+    "editionId": "painters"
+  },
+  "holiday-white-speaker-nico": {
+    "category": "content",
+    "itemId": "holiday-white-speaker-nico",
+    "editionId": "box"
+  },
+  "holiday-white-speaker-nico-painters-scale": {
+    "category": "content",
+    "itemId": "holiday-white-speaker-nico",
+    "editionId": "painters"
+  },
+  "investment-sniper-punctual-bride-painters-scale": {
+    "category": "content",
+    "itemId": "investment-sniper-punctual-bride",
+    "editionId": "painters"
+  },
+  "lunar-aya": {
+    "category": "content",
+    "itemId": "lunar-aya",
+    "editionId": "box"
+  },
+  "lunar-aya-painters-scale": {
+    "category": "content",
+    "itemId": "lunar-aya",
+    "editionId": "painters"
+  },
+  "mother-painters-scale": {
+    "category": "content",
+    "itemId": "mother",
+    "editionId": "painters"
+  },
+  "necromancer-variant-painters-scale": {
+    "category": "content",
+    "itemId": "necromancer-variant",
+    "editionId": "painters"
+  },
+  "novice-1": {
+    "category": "content",
+    "itemId": "novice"
+  },
+  "novice-painters-scale": {
+    "category": "content",
+    "itemId": "novice",
+    "editionId": "painters"
+  },
+  "allison-loves-kingdom-death-painters-scale": {
+    "category": "content",
+    "itemId": "allison-loves-kingdom-death",
+    "editionId": "painters"
+  },
+  "cheeky-allison-painters-scale": {
+    "category": "content",
+    "itemId": "allison-loves-kingdom-death",
+    "editionId": "painters-cheeky"
+  },
+  "painters-scale-black-cat": {
+    "category": "content",
+    "itemId": "black-cat",
+    "editionId": "painters"
+  },
+  "black-friday-formal-erza-painters-scale": {
+    "category": "content",
+    "itemId": "black-friday-formal-erza",
+    "editionId": "painters"
+  },
+  "death-high-satan-twins-painters-scale": {
+    "category": "content",
+    "itemId": "death-high-satan-twins",
+    "editionId": "painters"
+  },
+  "death-high-senior-allister-painters-scale": {
+    "category": "content",
+    "itemId": "death-high-senior-allister",
+    "editionId": "painters"
+  },
+  "painters-scale-deathking-armor-paladin": {
+    "category": "content",
+    "itemId": "echoes-of-death-paladin",
+    "editionId": "painters"
+  },
+  "hollowheart-rene-painters-scale": {
+    "category": "content",
+    "itemId": "hollowheart-rene",
+    "editionId": "painters"
+  },
+  "kingslayer-twilight-knight": {
+    "category": "content",
+    "itemId": "kingslayer-twilight-knight",
+    "editionId": "painters"
+  },
+  "people-of-the-mirrorstone-male-painters-scale": {
+    "category": "content",
+    "itemId": "mirrorstone-survivor-male",
+    "editionId": "painters"
+  },
+  "neko-twilight-knight-maid-painters-scale": {
+    "category": "content",
+    "itemId": "neko-twilight-knight-maid",
+    "editionId": "painters"
+  },
+  "reverse-lagomoprh-erza-painters-scale": {
+    "category": "content",
+    "itemId": "reverse-lagomorph-erza",
+    "editionId": "painters"
+  },
+  "reverse-lagomorph-lucy-painters-scale": {
+    "category": "content",
+    "itemId": "reverse-lagomorph-lucy",
+    "editionId": "painters"
+  },
+  "summer-archivist-painters-scale": {
+    "category": "content",
+    "itemId": "summer-archivist",
+    "editionId": "painters"
+  },
+  "eod-thief-variant-painter": {
+    "category": "content",
+    "itemId": "thief-variant",
+    "editionId": "painters"
+  },
+  "valentines-morgan-painters-scale": {
+    "category": "content",
+    "itemId": "valentine-morgan",
+    "editionId": "painters"
+  },
+  "waiting-in-the-railyard": {
+    "category": "content",
+    "itemId": "waiting-in-the-railyard",
+    "editionId": "painters"
+  },
+  "sen": {
+    "category": "content",
+    "itemId": "sen"
+  },
+  "sen-variant-painters-scale": {
+    "category": "content",
+    "itemId": "sen",
+    "editionId": "painters"
+  },
+  "summer-aya-painters-scale": {
+    "category": "content",
+    "itemId": "summer-aya",
+    "editionId": "painters"
+  },
+  "summer-lucy": {
+    "category": "content",
+    "itemId": "summer-lucy"
+  },
+  "summer-lucy-painters-scale": {
+    "category": "content",
+    "itemId": "summer-lucy",
+    "editionId": "painters"
+  },
+  "sunlantern-armor-aya": {
+    "category": "content",
+    "itemId": "sunlantern-armor-aya"
+  },
+  "wendy-the-frozen-star": {
+    "category": "content",
+    "itemId": "wendy-the-frozen-star"
+  },
+  "wendy-the-frozen-star-painters-scale": {
+    "category": "content",
+    "itemId": "wendy-the-frozen-star",
+    "editionId": "painters"
+  },
+  "pinup-butcher-painters-scale": {
+    "category": "content",
+    "itemId": "pinup-butcher",
+    "editionId": "painters"
+  },
+  "halloween-special-pinup-twilight-knight": {
+    "category": "content",
+    "itemId": "pinup-halloween-special-twilight-knight",
+    "editionId": "resin"
+  },
+  "halloween-twilight-knight-painters-scale": {
+    "category": "content",
+    "itemId": "pinup-halloween-special-twilight-knight",
+    "editionId": "painters"
+  },
+  "pinup-honey-comb-weaver-painters-scale": {
+    "category": "content",
+    "itemId": "pinup-honeycomb-weaver",
+    "editionId": "painters"
+  },
+  "leather-queen-bust": {
+    "category": "content",
+    "itemId": "pinup-leather-queen",
+    "editionId": "bust"
+  },
+  "pinup-lioness-bust": {
+    "category": "content",
+    "itemId": "pinup-lioness"
+  },
+  "pinup-nightmare-ram-armor-painters-scale": {
+    "category": "content",
+    "itemId": "pinup-nightmare-ram-armor",
+    "editionId": "painters"
+  },
+  "pinup-order-knight": {
+    "category": "content",
+    "itemId": "pinup-order-knight",
+    "editionId": "box"
+  },
+  "primal-huntress-bust": {
+    "category": "content",
+    "itemId": "pinup-primal-huntress"
+  },
+  "pinup-sci-fi-twilight-knight-1": {
+    "category": "content",
+    "itemId": "pinup-sci-fi-twilight-knight",
+    "editionId": "box"
+  },
+  "pinup-storm-armor-painters-scale": {
+    "category": "content",
+    "itemId": "pinup-storm-knight-armor",
+    "editionId": "painters"
+  },
+  "sunstalker-dancer-bust": {
+    "category": "content",
+    "itemId": "pinup-sunstalker-dancer"
+  },
+  "sunstalker-dancer-painters-scale": {
+    "category": "content",
+    "itemId": "pinup-sunstalker-dancer",
+    "editionId": "painters"
+  },
+  "pinup-twilight-knight-deserter-1": {
+    "category": "content",
+    "itemId": "pinup-twilight-knight-deserter",
+    "editionId": "plastic"
+  },
+  "painters-scale-pinup-twilight-witch": {
+    "category": "content",
+    "itemId": "pinup-twilight-witch",
+    "editionId": "painters"
+  },
+  "valentines-day-pinup-twilight-knight": {
+    "category": "content",
+    "itemId": "pinup-valentines-day-twilight-knight",
+    "editionId": "box"
+  },
+  "pinup-visionary": {
+    "category": "content",
+    "itemId": "pinup-visionary",
+    "editionId": "resin"
+  },
+  "sci-fi-dwelling-keeper-painters-scale": {
+    "category": "content",
+    "itemId": "sci-fi-dwelling-keeper",
+    "editionId": "painters"
+  },
+  "sci-fi-erza-1": {
+    "category": "content",
+    "itemId": "sci-fi-erza",
+    "editionId": "deathgrey-m2",
+    "variantEditionIds": {
+      "29443851354195": "first-run",
+      "29443851386963": "encore",
+      "29443861250131": "deathgrey"
+    }
+  },
+  "sci-fi-lucy": {
+    "category": "content",
+    "itemId": "sci-fi-lucy"
+  },
+  "sci-fi-lucy-variant": {
+    "category": "content",
+    "itemId": "sci-fi-lucy",
+    "editionId": "painters"
+  },
+  "sci-fi-percival-painters-scale": {
+    "category": "content",
+    "itemId": "sci-fi-percival",
+    "editionId": "painters"
+  },
+  "sci-fi-twilight-knight": {
+    "category": "content",
+    "itemId": "sci-fi-twilight-knight-male"
+  },
+  "sci-fi-white-speaker-1": {
+    "category": "content",
+    "itemId": "sci-fi-white-speaker",
+    "editionId": "box"
+  },
+  "seed-pattern-jackel": {
+    "category": "content",
+    "itemId": "seed-pattern-survivor-jackel",
+    "editionId": "box"
+  },
+  "seed-pattern-willow": {
+    "category": "content",
+    "itemId": "seed-pattern-survivor-willow",
+    "editionId": "box"
+  },
+  "10th-anniversary-survivors": {
+    "category": "content",
+    "itemId": "set-10th-anniversary-survivors",
+    "editionId": "box"
+  },
+  "15th-anniversary-survivors": {
+    "category": "content",
+    "itemId": "set-15th-anniversary-survivors",
+    "editionId": "box"
+  },
+  "echoes-of-death-two": {
+    "category": "content",
+    "itemId": "set-echoes-of-death-2",
+    "editionId": "box"
+  },
+  "echoes-of-death-three": {
+    "category": "content",
+    "itemId": "set-echoes-of-death-3",
+    "editionId": "box"
+  },
+  "echoes-of-death-four": {
+    "category": "content",
+    "itemId": "set-echoes-of-death-4",
+    "editionId": "box"
+  },
+  "halloween-survivors": {
+    "category": "content",
+    "itemId": "set-halloween-survivors",
+    "editionId": "box"
+  },
+  "halloween-survivors-series-ii": {
+    "category": "content",
+    "itemId": "set-halloween-survivors-series-2",
+    "editionId": "box"
+  },
+  "pinups-of-death-series-1": {
+    "category": "content",
+    "itemId": "set-pinups-of-death-series-1",
+    "editionId": "box"
+  },
+  "pinups-of-death-series-2": {
+    "category": "content",
+    "itemId": "set-pinups-of-death-series-2",
+    "editionId": "box"
+  },
+  "pinups-of-death-series-3": {
+    "category": "content",
+    "itemId": "set-pinups-of-death-series-3",
+    "editionId": "box"
+  },
+  "pinups-of-death-series-iv": {
+    "category": "content",
+    "itemId": "set-pinups-of-death-series-4",
+    "editionId": "box"
+  },
+  "pinups-of-death-series-v": {
+    "category": "content",
+    "itemId": "set-pinups-of-death-series-5",
+    "editionId": "box"
+  },
+  "survivors-of-death-1": {
+    "category": "content",
+    "itemId": "set-survivors-of-death-1",
+    "editionId": "box"
+  },
+  "vignette-of-death-killennium-butcher": {
+    "category": "content",
+    "itemId": "vignette-of-death-killennium-butcher",
+    "editionId": "box"
+  },
+  "vignette-of-death-white-gigalion": {
+    "category": "content",
+    "itemId": "vignette-of-death-white-gigalion",
+    "editionId": "box"
+  },
+  "candy-and-cola": {
+    "category": "content",
+    "itemId": "wanderer-candy-cola",
+    "editionId": "plastic"
+  },
+  "wanderer-candy": {
+    "category": "content",
+    "itemId": "wanderer-candy-cola",
+    "editionId": "box"
+  },
+  "10th-anniversary-white-speaker": {
+    "category": "content",
+    "itemId": "10th-anniversary-white-speaker",
+    "editionId": "first-run"
+  },
+  "allison-the-twilight-knight": {
+    "category": "content",
+    "itemId": "allison-the-twilight-knight",
+    "editionId": "box"
+  },
+  "ambitionism-survivors": {
+    "category": "content",
+    "itemId": "ambitionism-survivors"
+  },
+  "ammo-slave": {
+    "category": "content",
+    "itemId": "ammo-slave"
+  },
+  "architect": {
+    "category": "content",
+    "itemId": "architect-female-beta-build",
+    "editionId": "photoresin"
+  },
+  "archivist": {
+    "category": "content",
+    "itemId": "archivist"
+  },
+  "aries": {
+    "category": "content",
+    "itemId": "aries"
+  },
+  "azure-knight": {
+    "category": "content",
+    "itemId": "azure-knight"
+  },
+  "badar": {
+    "category": "content",
+    "itemId": "badar"
+  },
+  "barbarian-allister": {
+    "category": "content",
+    "itemId": "barbarian-allister"
+  },
+  "basara": {
+    "category": "content",
+    "itemId": "basara",
+    "editionId": "box"
+  },
+  "before-the-wall": {
+    "category": "content",
+    "itemId": "before-the-wall",
+    "editionId": "box"
+  },
+  "biomech-butcher": {
+    "category": "content",
+    "itemId": "biomech-butcher",
+    "editionId": "first-run",
+    "variantEditionIds": {
+      "43179369332919": "encore"
+    }
+  },
+  "birthday-gift": {
+    "category": "content",
+    "itemId": "birthday-aya",
+    "editionId": "box"
+  },
+  "bjorn": {
+    "category": "content",
+    "itemId": "bjorn"
+  },
+  "black-friday-ninja": {
+    "category": "content",
+    "itemId": "black-friday-ninja",
+    "editionId": "box"
+  },
+  "black-friday-ninja-variant": {
+    "category": "content",
+    "itemId": "black-friday-ninja-variant"
+  },
+  "black-knight-elastomer-statues": {
+    "category": "content",
+    "itemId": "black-knight-elastomer-statues",
+    "editionId": "first-run"
+  },
+  "blushing-owl": {
+    "category": "content",
+    "itemId": "blushing-owl",
+    "editionId": "first-run"
+  },
+  "blushing-owl-armor-male": {
+    "category": "content",
+    "itemId": "blushing-owl-armor-male"
+  },
+  "boxer": {
+    "category": "content",
+    "itemId": "boxer"
+  },
+  "brave-hollow": {
+    "category": "content",
+    "itemId": "brave-and-hollow",
+    "editionId": "box"
+  },
+  "bullet-dancer": {
+    "category": "content",
+    "itemId": "bullet-dancer"
+  },
+  "caster-hunter": {
+    "category": "content",
+    "itemId": "caster-hunter"
+  },
+  "cat-eater-knight": {
+    "category": "content",
+    "itemId": "cat-eater-knight",
+    "editionId": "plastic"
+  },
+  "stone-wrecker": {
+    "category": "content",
+    "itemId": "character-stone-wrecker"
+  },
+  "chef-male": {
+    "category": "content",
+    "itemId": "chef-male"
+  },
+  "cleric": {
+    "category": "content",
+    "itemId": "cleric"
+  },
+  "court-barrister": {
+    "category": "content",
+    "itemId": "court-barrister"
+  },
+  "court-investigator": {
+    "category": "content",
+    "itemId": "court-investigator"
+  },
+  "cyclops-knight": {
+    "category": "content",
+    "itemId": "cyclops-knight"
+  },
+  "dark-of-star": {
+    "category": "content",
+    "itemId": "dark-of-star"
+  },
+  "dark-soldier": {
+    "category": "content",
+    "itemId": "dark-soldier"
+  },
+  "valentines-day-aya": {
+    "category": "content",
+    "itemId": "death-crown-inheritor-aya",
+    "editionId": "box"
+  },
+  "deathmas-kale": {
+    "category": "content",
+    "itemId": "deathmas-kale",
+    "editionId": "first-run"
+  },
+  "pinup-detective-twilight-knight": {
+    "category": "content",
+    "itemId": "detective-twilight-knight",
+    "editionId": "box"
+  },
+  "devil-satan": {
+    "category": "content",
+    "itemId": "devil-satan",
+    "editionId": "box"
+  },
+  "disciple-of-the-witch-one": {
+    "category": "content",
+    "itemId": "disciple-of-the-witch-1"
+  },
+  "disciple-of-the-witch-two": {
+    "category": "content",
+    "itemId": "disciple-of-the-witch-2"
+  },
+  "disciple-of-the-witch-six": {
+    "category": "content",
+    "itemId": "disciple-of-the-witch-5-6"
+  },
+  "distracted": {
+    "category": "content",
+    "itemId": "distracted"
+  },
+  "doll": {
+    "category": "content",
+    "itemId": "doll"
+  },
+  "dragon-slayer": {
+    "category": "content",
+    "itemId": "dragon-slayer"
+  },
+  "easter-aya": {
+    "category": "content",
+    "itemId": "easter-aya",
+    "editionId": "box"
+  },
+  "edlen": {
+    "category": "content",
+    "itemId": "edlen"
+  },
+  "elf": {
+    "category": "content",
+    "itemId": "elf"
+  },
+  "elf-variant": {
+    "category": "content",
+    "itemId": "elf-variant",
+    "editionId": "resin"
+  },
+  "elgnirk-the-chaos-elf": {
+    "category": "content",
+    "itemId": "elgnirk-the-chaos-elf",
+    "editionId": "box"
+  },
+  "elsbeth": {
+    "category": "content",
+    "itemId": "elsbeth",
+    "editionId": "box"
+  },
+  "energy-potion-maker": {
+    "category": "content",
+    "itemId": "energy-potion-maker"
+  },
+  "entobra-the-walker": {
+    "category": "content",
+    "itemId": "entobra-the-walker"
+  },
+  "estate-hero": {
+    "category": "content",
+    "itemId": "estate-hero"
+  },
+  "male-estate-hero": {
+    "category": "content",
+    "itemId": "estate-hero-male"
+  },
+  "green-knight-armor-expansion-1-6": {
+    "category": "content",
+    "itemId": "expansion-green-knight-armor",
+    "editionId": "1-6"
+  },
+  "fallen-hero": {
+    "category": "content",
+    "itemId": "fallen-hero"
+  },
+  "male-fighter": {
+    "category": "content",
+    "itemId": "fighter-male"
+  },
+  "flower-witch": {
+    "category": "content",
+    "itemId": "flower-witch"
+  },
+  "forsaker": {
+    "category": "content",
+    "itemId": "forsaker"
+  },
+  "gladiator": {
+    "category": "content",
+    "itemId": "gladiator"
+  },
+  "gnostin-stonesmasher": {
+    "category": "content",
+    "itemId": "gnostin-stonesmasher"
+  },
+  "dragon-goblin-guard": {
+    "category": "content",
+    "itemId": "goblin-guard"
+  },
+  "golden-bat-hunter-foltron": {
+    "category": "content",
+    "itemId": "golden-bat-hunter-foltron"
+  },
+  "great-game-hunter-bravado": {
+    "category": "content",
+    "itemId": "great-game-hunter-bravado"
+  },
+  "grimmory": {
+    "category": "content",
+    "itemId": "grimmory"
+  },
+  "guinevere": {
+    "category": "content",
+    "itemId": "guinevere",
+    "editionId": "box"
+  },
+  "halloween-lucy": {
+    "category": "content",
+    "itemId": "halloween-lucy"
+  },
+  "halloween-ringtail-vixen": {
+    "category": "content",
+    "itemId": "halloween-ringtail-vixen",
+    "editionId": "box"
+  },
+  "halloween-survivor-flower-knight-costume": {
+    "category": "content",
+    "itemId": "halloween-survivor-flower-knight-costume",
+    "editionId": "box"
+  },
+  "halloween-survivors-king-costume": {
+    "category": "content",
+    "itemId": "halloween-survivors-king-costume",
+    "editionId": "box"
+  },
+  "halloween-white-speaker-1": {
+    "category": "content",
+    "itemId": "halloween-white-speaker",
+    "editionId": "box"
+  },
+  "halloween-white-speaker": {
+    "category": "content",
+    "itemId": "halloween-white-speaker",
+    "editionId": "resin"
+  },
+  "holy-mage": {
+    "category": "content",
+    "itemId": "holy-mage"
+  },
+  "holy-priests": {
+    "category": "content",
+    "itemId": "holy-priests",
+    "editionId": "first-run"
+  },
+  "hospitalar": {
+    "category": "content",
+    "itemId": "hospitalar"
+  },
+  "inferno-snake-fighter": {
+    "category": "content",
+    "itemId": "inferno-snake-fighter"
+  },
+  "investment-sniper": {
+    "category": "content",
+    "itemId": "investment-sniper"
+  },
+  "generic-male-knight": {
+    "category": "content",
+    "itemId": "knight-male"
+  },
+  "lagomorph-survivors": {
+    "category": "content",
+    "itemId": "lagomorph-survivors"
+  },
+  "lantern-guard": {
+    "category": "content",
+    "itemId": "lantern-guard"
+  },
+  "lantern-guard-male": {
+    "category": "content",
+    "itemId": "lantern-guard-male"
+  },
+  "last-bard": {
+    "category": "content",
+    "itemId": "last-bard"
+  },
+  "libra": {
+    "category": "content",
+    "itemId": "libra"
+  },
+  "lolowen": {
+    "category": "content",
+    "itemId": "lolowen",
+    "editionId": "box"
+  },
+  "lost-princess": {
+    "category": "content",
+    "itemId": "lost-princess"
+  },
+  "lunar-twilight-knight": {
+    "category": "content",
+    "itemId": "lunar-twilight-knight",
+    "editionId": "box"
+  },
+  "lunar-twilight-knight-male": {
+    "category": "content",
+    "itemId": "lunar-twilight-knight-male"
+  },
+  "lune": {
+    "category": "content",
+    "itemId": "lune"
+  },
+  "lune-2": {
+    "category": "content",
+    "itemId": "lune",
+    "editionId": "box"
+  },
+  "mist-raikin-armor": {
+    "category": "content",
+    "itemId": "mist-raikin-armor"
+  },
+  "mist-variant": {
+    "category": "content",
+    "itemId": "mist-variant"
+  },
+  "moss": {
+    "category": "content",
+    "itemId": "moss"
+  },
+  "necromancer": {
+    "category": "content",
+    "itemId": "necromancer"
+  },
+  "necromancer-boss": {
+    "category": "content",
+    "itemId": "necromancer-boss"
+  },
+  "neko-twilight-knight": {
+    "category": "content",
+    "itemId": "neko-twilight-knight"
+  },
+  "oktoberfest-aya": {
+    "category": "content",
+    "itemId": "oktoberfest-aya",
+    "editionId": "box"
+  },
+  "pascha": {
+    "category": "content",
+    "itemId": "pascha"
+  },
+  "pascha-variant": {
+    "category": "content",
+    "itemId": "pascha-variant"
+  },
+  "peasant-hero": {
+    "category": "content",
+    "itemId": "peasant-hero"
+  },
+  "phoenix-hunt-reenactment": {
+    "category": "content",
+    "itemId": "phoenix-hunt-reenactment"
+  },
+  "priestess-percival": {
+    "category": "content",
+    "itemId": "priestess-percival"
+  },
+  "questing-lucy": {
+    "category": "content",
+    "itemId": "questing-lucy"
+  },
+  "questing-maids": {
+    "category": "content",
+    "itemId": "questing-maids",
+    "editionId": "plastic"
+  },
+  "questing-zachary": {
+    "category": "content",
+    "itemId": "questing-zachary"
+  },
+  "rayanor": {
+    "category": "content",
+    "itemId": "rayanor"
+  },
+  "reapokratis": {
+    "category": "content",
+    "itemId": "reapokratis"
+  },
+  "chambermaid": {
+    "category": "content",
+    "itemId": "royal-chambermaid"
+  },
+  "santa-satan": {
+    "category": "content",
+    "itemId": "santa-satan",
+    "editionId": "box"
+  },
+  "satan-1": {
+    "category": "content",
+    "itemId": "satan",
+    "editionId": "plastic"
+  },
+  "savior-40-years": {
+    "category": "content",
+    "itemId": "savior-40-years"
+  },
+  "screaming-god-armor-female": {
+    "category": "content",
+    "itemId": "screaming-god-armor-female"
+  },
+  "screaming-god-armor-male": {
+    "category": "content",
+    "itemId": "screaming-god-armor-male"
+  },
+  "screaming-sun-armor-lucy": {
+    "category": "content",
+    "itemId": "screaming-sun-armor-lucy"
+  },
+  "screaming-sun-armor-lucy-1": {
+    "category": "content",
+    "itemId": "screaming-sun-armor-lucy",
+    "editionId": "box"
+  },
+  "shadow-thief": {
+    "category": "content",
+    "itemId": "shadow-thief"
+  },
+  "skeleton-boss": {
+    "category": "content",
+    "itemId": "skeleton-boss"
+  },
+  "skrelle": {
+    "category": "content",
+    "itemId": "skrelle",
+    "editionId": "box"
+  },
+  "sky-fisher-melo": {
+    "category": "content",
+    "itemId": "sky-fisher-melo"
+  },
+  "smog-drummer": {
+    "category": "content",
+    "itemId": "smog-drummer"
+  },
+  "stone-face-bases": {
+    "category": "content",
+    "itemId": "stone-face-bases",
+    "editionId": "plastic"
+  },
+  "strider-princess": {
+    "category": "content",
+    "itemId": "strider-princess"
+  },
+  "summer-cyrus": {
+    "category": "content",
+    "itemId": "summer-cyrus"
+  },
+  "summer-goth": {
+    "category": "content",
+    "itemId": "summer-goth",
+    "editionId": "box"
+  },
+  "sun-claws-esther": {
+    "category": "content",
+    "itemId": "sun-claws-esther",
+    "editionId": "first-run",
+    "variantEditionIds": {
+      "43519833997495": "encore",
+      "43519833964727": "deathgrey"
+    }
+  },
+  "sunstalker-infant": {
+    "category": "content",
+    "itemId": "sunstalker-infant-and-caretakers"
+  },
+  "swashbuckler": {
+    "category": "content",
+    "itemId": "swashbuckler",
+    "editionId": "box"
+  },
+  "sylvania": {
+    "category": "content",
+    "itemId": "sylvania"
+  },
+  "temple-explorer": {
+    "category": "content",
+    "itemId": "temple-explorer"
+  },
+  "thief": {
+    "category": "content",
+    "itemId": "thief"
+  },
+  "thrall": {
+    "category": "content",
+    "itemId": "thrall"
+  },
+  "till-death-do-us-part": {
+    "category": "content",
+    "itemId": "till-death-do-us-part"
+  },
+  "usagi": {
+    "category": "content",
+    "itemId": "usagi"
+  },
+  "visionary-female": {
+    "category": "content",
+    "itemId": "visionary-female"
+  },
+  "vitanvox": {
+    "category": "content",
+    "itemId": "vitanvox"
+  },
+  "white-knight": {
+    "category": "content",
+    "itemId": "white-knight"
+  },
+  "white-speaker-boss": {
+    "category": "content",
+    "itemId": "white-speaker-boss"
+  },
+  "white-speaker-sword-hunter-wb": {
+    "category": "content",
+    "itemId": "white-speaker-sword-hunter",
+    "editionId": "box"
+  },
+  "white-sun-lion": {
+    "category": "content",
+    "itemId": "white-sunlion-armor-erza"
+  },
+  "white-sunlion-armor-erza": {
+    "category": "content",
+    "itemId": "white-sunlion-armor-erza",
+    "editionId": "box"
+  },
+  "willow": {
+    "category": "content",
+    "itemId": "willow"
+  },
+  "winter-solstice-lucy": {
+    "category": "content",
+    "itemId": "winter-solstice-lucy",
+    "editionId": "box"
+  },
+  "black-and-red-dice": {
+    "category": "accessories",
+    "itemId": "dice-black-and-red"
+  },
+  "black-friday-death-dice": {
+    "category": "accessories",
+    "itemId": "dice-black-friday"
+  },
+  "black-out-dice": {
+    "category": "accessories",
+    "itemId": "dice-black-out"
+  },
+  "classic-death-die": {
+    "category": "accessories",
+    "itemId": "dice-classic"
+  },
+  "easter-death-dice": {
+    "category": "accessories",
+    "itemId": "dice-easter"
+  },
+  "golden-bat-hunter-death-dice": {
+    "category": "accessories",
+    "itemId": "dice-golden-bat"
+  },
+  "halloween-death-dice": {
+    "category": "accessories",
+    "itemId": "dice-halloween"
+  },
+  "holiday-death-dice": {
+    "category": "accessories",
+    "itemId": "dice-holiday"
+  },
+  "parasite-queen-death-dice": {
+    "category": "accessories",
+    "itemId": "dice-parasite-queen"
+  },
+  "spring-death-die": {
+    "category": "accessories",
+    "itemId": "dice-spring"
+  },
+  "squire-dice": {
+    "category": "accessories",
+    "itemId": "dice-squire"
+  },
+  "summer-death-dice": {
+    "category": "accessories",
+    "itemId": "dice-summer"
+  },
+  "valentines-day-death-dice": {
+    "category": "accessories",
+    "itemId": "dice-valentines-day"
+  },
+  "winter-death-dice": {
+    "category": "accessories",
+    "itemId": "dice-winter"
+  },
+  "bone-eater-t-shirt": {
+    "category": "accessories",
+    "itemId": "shirt-bone-eater"
+  },
+  "crimson-croc-t-shirt": {
+    "category": "accessories",
+    "itemId": "shirt-crimson-croc"
+  },
+  "dragon-king-t-shirt": {
+    "category": "accessories",
+    "itemId": "shirt-dragon-king"
+  },
+  "dung-beetle-knight-t-shirt": {
+    "category": "accessories",
+    "itemId": "shirt-dung-beetle-knight"
+  },
+  "dungeon-deck-t-shirt": {
+    "category": "accessories",
+    "itemId": "shirt-dungeon-deck"
+  },
+  "gambler-t-shirt": {
+    "category": "accessories",
+    "itemId": "shirt-gambler"
+  },
+  "god-hand-t-shirt": {
+    "category": "accessories",
+    "itemId": "shirt-godhand"
+  },
+  "happy-holidays-t-shirt": {
+    "category": "accessories",
+    "itemId": "shirt-happy-holidays-atnas"
+  },
+  "honeycomb-weaver-t-shirt": {
+    "category": "accessories",
+    "itemId": "shirt-honeycomb-weaver"
+  },
+  "ivory-dragon-t-shirt-gc-copy": {
+    "category": "accessories",
+    "itemId": "shirt-ivory-dragon"
+  },
+  "despair-t-shirt": {
+    "category": "accessories",
+    "itemId": "shirt-kickstarter-1-0-despair"
+  },
+  "killenium-butcher-t-shirt": {
+    "category": "accessories",
+    "itemId": "shirt-killennium-butcher"
+  },
+  "lantern-10-t-shirt": {
+    "category": "accessories",
+    "itemId": "shirt-lantern-10"
+  },
+  "parasite-queen-t-shirt": {
+    "category": "accessories",
+    "itemId": "shirt-parasite-queen"
+  },
+  "pariah-t-shirt": {
+    "category": "accessories",
+    "itemId": "shirt-pariah"
+  },
+  "performing-artists-t-shirt": {
+    "category": "accessories",
+    "itemId": "shirt-performing-artists"
+  },
+  "red-witches-t-shirt": {
+    "category": "accessories",
+    "itemId": "shirt-red-witches"
+  },
+  "screaming-nukealope-t-shirt": {
+    "category": "accessories",
+    "itemId": "shirt-screaming-nukealope"
+  },
+  "titan-bee-t-shirt": {
+    "category": "accessories",
+    "itemId": "shirt-titan-bee"
+  },
+  "verdant-lord-crest-shirt": {
+    "category": "accessories",
+    "itemId": "shirt-verdant-lord"
+  },
+  "black-knight-citadel-board-travel-edition": {
+    "category": "accessories",
+    "itemId": "black-knight-citadel-board-travel-edition",
+    "editionId": "photoresin"
+  },
+  "founders-stone-momento": {
+    "category": "accessories",
+    "itemId": "founders-stone-momento"
+  },
+  "kingdom-death-face-mask": {
+    "category": "accessories",
+    "itemId": "kingdom-death-face-mask"
+  },
+  "kingdom-death-comic-phobia-2-the-settlement": {
+    "category": "accessories",
+    "itemId": "phobia-2-the-settlement",
+    "variantEditionIds": {
+      "64403344064881": "original",
+      "64403344097649": "blue",
+      "64403344163185": "tan"
+    }
+  },
+  "phobia-the-hunt": {
+    "category": "accessories",
+    "itemId": "phobia-1-the-hunt",
+    "variantEditionIds": {
+      "55717760500081": "original",
+      "55717760532849": "grey",
+      "55717760565617": "red",
+      "55717521228145": "pink"
+    }
+  },
+  "survivor-tokens": {
+    "category": "accessories",
+    "itemId": "survivor-tokens"
+  },
+  "ultimate-showdown-board": {
+    "category": "accessories",
+    "itemId": "ultimate-showdown-board"
+  },
+  "expansion-of-death-vol-1-6": {
+    "category": "bundles",
+    "itemId": "expansion-of-death-vol-1-6",
+    "editionId": "1-6"
+  },
+  "naked-forbidden-bundle": {
+    "category": "bundles",
+    "itemId": "naked-forbidden-bundle"
+  },
+  "naked-future-2023": {
+    "category": "bundles",
+    "itemId": "naked-future-2023",
+    "editionId": "plastic"
+  },
+  "naked-future-2024": {
+    "category": "bundles",
+    "itemId": "naked-future-2024",
+    "editionId": "plastic"
+  },
+  "naked-future-bundle": {
+    "category": "bundles",
+    "itemId": "naked-future-bundle",
+    "editionId": "plastic"
+  },
+  "pinups-of-death-1-5-bundle": {
+    "category": "bundles",
+    "itemId": "pinups-of-death-collection"
+  },
+  "core-game-bundle": {
+    "category": "bundles",
+    "itemId": "starting-survivor-set"
+  },
+  "preorder-screaming-god-expansion": {
+    "category": "content",
+    "itemId": "expansion-screaming-god",
+    "editionId": "box",
+    "retired": "Released as /products/screaming-god-expansion; historical preorder listing."
+  },
+  "preorder-wanderer-preacher": {
+    "category": "content",
+    "itemId": "wanderer-preacher",
+    "editionId": "box",
+    "retired": "Released as /products/wanderer-preacher; historical preorder listing."
+  },
+  "preorder-red-witches-expansion": {
+    "category": "content",
+    "itemId": "expansion-red-witches",
+    "editionId": "box",
+    "retired": "Released as /products/red-witches-expansion; historical preorder listing."
+  },
+  "preorder-wanderer-goth": {
+    "category": "content",
+    "itemId": "wanderer-goth",
+    "editionId": "box",
+    "retired": "Released as /products/wanderer-goth; historical preorder listing."
+  },
+  "preorder-false-messengers": {
+    "category": "content",
+    "itemId": "false-messengers",
+    "editionId": "plastic",
+    "retired": "Released as /products/false-messengers; historical preorder listing."
+  },
+  "preorder-pariah-expansion": {
+    "category": "content",
+    "itemId": "expansion-pariah",
+    "editionId": "box",
+    "retired": "Released as /products/pariah-expansion; historical preorder listing."
+  },
+  "preorder-wanderer-candy": {
+    "category": "content",
+    "itemId": "wanderer-candy-cola",
+    "editionId": "box",
+    "retired": "Released as /products/wanderer-candy; historical preorder listing."
+  },
+  "preorder-wanderer-death-drifter": {
+    "category": "content",
+    "itemId": "wanderer-death-drifter",
+    "editionId": "box",
+    "retired": "Released as /products/wanderer-death-drifter; historical preorder listing."
+  },
+  "preorder-wanderer-aeneas": {
+    "category": "content",
+    "itemId": "wanderer-aeneas",
+    "editionId": "box",
+    "retired": "Released as /products/wanderer-aeneas; historical preorder listing."
+  },
+  "preorder-pillar-percival": {
+    "category": "content",
+    "itemId": "pillar-percival",
+    "editionId": "box",
+    "retired": "Released as /products/pillar-percival; historical preorder listing."
+  },
+  "preorder-philosophy-of-death-gatherism": {
+    "category": "content",
+    "itemId": "philosophies-of-death-gatherism",
+    "editionId": "box",
+    "retired": "Released as /products/philosophy-of-death-gatherism; historical preorder listing."
+  },
+  "kickstarter-preorder-black-cat": {
+    "category": "content",
+    "itemId": "black-cat",
+    "editionId": "painters",
+    "retired": "Released as /products/painters-scale-black-cat; historical preorder listing."
+  },
+  "white-speaker-bloodmage-preorder": {
+    "category": "content",
+    "itemId": "white-speaker-bloodmage",
+    "variantEditionIds": {
+      "55254909026673": "first-run",
+      "55254909059441": "encore"
+    },
+    "retired": "Released as /products/white-speaker-bloodmage; historical preorder listing."
+  },
+  "preorder-2025-adversaries-and-allies-bundle": {
+    "category": "bundles",
+    "itemId": "adversaries-and-allies-bundle",
+    "retired": "Owner confirmed historical preorder for adversaries-and-allies-bundle."
+  },
+  "kings-coin-copy": {
+    "category": "accessories",
+    "itemId": "kings-coins",
+    "editionId": "prize"
+  }
+}

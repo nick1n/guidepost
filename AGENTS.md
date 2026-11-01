@@ -6,6 +6,15 @@ See [README.md](README.md) for setup, commands, catalog workflows, and known war
 
 Never use em dashes or centered dots in user-facing output. Use commas, colons, semicolons, parentheses, bullets, or separate sentences.
 
+## Documentation
+
+Document only what a future reader needs to use, operate, or change the project correctly: workflows, contracts, constraints, and non-obvious decisions.
+A code change does not automatically need a documentation change. Keep resolved bugs, implementation details, validation cases, and test results
+in code, tests, or commit/PR descriptions unless they leave a lasting limitation or required action.
+Update existing guidance rather than appending notes. Give each topic one home and link to it: README for entry points, workflow docs for commands,
+catalog docs for product decisions, architecture docs for boundaries, and AGENTS.md for contributor rules. Remove stale or repeated text when editing.
+Before adding prose, ask what future action or decision it changes; omit it if there is no concrete answer.
+
 ## Product character
 
 Preserve the site's voice, atmosphere, domain language, visuals, and playful interactions in suggestions and implementation.
@@ -146,8 +155,7 @@ Never download automatically for missing or stale caches; report missing data wi
 
 Explicit editions require permanent readable lowercase kebab-case `id` values, unique within their item. Assign IDs once; retain them when facts change and never reuse retired IDs. Creation tooling in [identity.mts](scripts/catalog/identity.mts) rejects collisions for review. `label` is mutable display text, never collection identity. Items
 without explicit editions use synthetic `item` IDs, or `bundle` for bundles. The product-only
-[workbook-map.json](static/kdm/catalog/workbook-map.json) connects local workbook rows to these IDs; regenerate it with `pnpm catalog:workbook` from the
-Git-ignored import records. Sheet and row numbers are locators for that workbook snapshot, not permanent IDs. Review changed row
+[workbook-map.json](static/kdm/catalog/workbook-map.json) connects workbook rows to these IDs. `pnpm catalog:workbook` validates and normalizes the committed product-only map without private inputs; rebuild with `--imports local-data/kdm-catalog/imports/kdm-import-records.json` when needed. IDs remain permanent. Sheet and row numbers are locators for that workbook snapshot, not permanent IDs. Review changed row
 identities and ambiguous release alternatives before import or export uses them. Do not put personal workbook cells in
 the map.
 
@@ -182,16 +190,18 @@ Preserve direct owner edits and reviewed facts.
 
 - Research cached news and `.cache/kdm-catalog/shopify-products/products-page-N.json` before requesting the shop.
   Prefer product `.js` JSON; its prices are cents, while paginated product prices are dollars. Space shop requests at least
-  35 seconds apart. Local mappings, imports, and archives live in Git-ignored `local-data/kdm-catalog/`; reports remain in `temp/kdm-catalog/reports/`.
-- Local `local-data/kdm-catalog/kdm-tags.json` supplies exact reviewed tags when present; sync it after direct tag edits.
+  35 seconds apart. Shared reviewed mappings, tags, schemas, and import ledgers live in `scripts/catalog/data/`; personal workbook inputs and archives remain in Git-ignored `local-data/kdm-catalog/`. Reports remain in `temp/kdm-catalog/reports/`.
+- `scripts/catalog/data/tags.json` supplies exact reviewed tags; update it with direct tag edits.
   Catalog tags sort by global item frequency, highest first, with alphabetical ties. Master tag arrays stay alphabetical,
   and item key ordering matches the catalog. The tag schema validates vocabulary, not every item ID.
-- `catalog:tags` stages changes; `catalog:tags --apply` applies them and syncs the master file. `catalog:update` stages
-  broader changes and rejects stale reviews. `catalog:availability` owns stock and availability, using only
+- Follow [catalog workflows](docs/catalog-workflows.md) for monthly updates and tag reviews. Never acknowledge failed news imports;
+  publish import history only after catalog and reports succeed. Reject publication when captured inputs have changed.
+- `catalog:availability` owns weekly stock and availability refreshes, validates before publishing, and uses only
   `https://shop.kingdomdeath.com/products.json?limit=250&page=1` and `page=2`. By default it reads the saved
   `products-page-1.json` and `products-page-2.json`; `--fetch` retrieves exactly those two pages and refreshes their caches.
   Never use individual product responses, caches, or HEAD checks for stock or availability. Metadata imports preserve existing
-  stock on unchanged listings; refresh availability after adding editions. Link checks write reports only. Preserve homebrew flags. `--offline` uses caches. Failed downloads or concurrent edits must not overwrite catalog data.
+  stock on unchanged listings; refresh availability after adding editions. Link checks write reports only. Preserve homebrew flags.
+  Failed downloads or concurrent edits must not overwrite catalog data.
 
 ### Catalog data rules
 
@@ -202,7 +212,7 @@ Preserve direct owner edits and reviewed facts.
 - Gameplay defaults to false; store item `gameplay` only when true and edition overrides only when different.
   Beta belongs on editions as `beta: true`, without beta ID prefixes. Item badges aggregate all editions.
   Bundle gameplay respects included editions and their overrides.
-- Edition prices are integer cents in `prices` arrays (recorded sales plus current MSRP, maximum is MSRP). Missing prices on products
+- Edition prices are integer cents in `prices` arrays (observed selling and compare-at amounts, sorted lowest to highest). Missing prices on products
   are unknown; `[0]` is a known zero price. Genuine non-sale components use `includedOnly: true` with no `prices` field.
   Reuse reviewed identical content through `includes` instead of creating another edition to suppress its price. Simple products may
   represent their own contents; keep distinct content editions for actual differences. Items whose editions are all included-only
@@ -210,7 +220,8 @@ Preserve direct owner edits and reviewed facts.
 - Exact release dates use edition `releaseDate`; windows use `releaseWindow`, quarters as `YYYY Qn`. Earlier documented releases
   take precedence over restock dates. Undated Encore without a window inherits First Run or Deathgrey.
   Future Box releases use `Preorder` and Plastic material; items with any future release retain `upcoming`.
-- Use the schema's edition-label enum. Label changes preserve edition IDs; update label-based local mappings when needed.
+- Use the schema's edition-label enum. Label changes preserve edition IDs. Shop mappings use `editionId` and `variantEditionIds`;
+  labels are only discovery hints for new releases.
   Do not automatically create an item for each miniature in a box; add child items only for separately cataloged products or reviewed
   included components. Master Dwelling Key dynamically grants all Sim editions.
 - Content sorts core, expansions by release, then other items by ID. Homebrew puts CCG-tagged items first, sorting each group by ID.

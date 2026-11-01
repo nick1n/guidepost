@@ -73,6 +73,8 @@ it.effect(
         "scripts/catalog/commands/fill-catalog-editions.mts",
         "scripts/catalog/commands/refresh-catalog-availability.mts",
         "scripts/catalog/commands/update-catalog.mts",
+        "scripts/catalog/commands/apply-catalog.mts",
+        "scripts/catalog/commands/update-tags.mts",
         "scripts/catalog/commands/workbook.mts",
         "scripts/catalog/commands/validate.mts",
         "scripts/news/scrape-shop-links.mts",
@@ -81,7 +83,7 @@ it.effect(
         const output = yield* Effect.tryPromise(() => execute(process.execPath, [path, "--help"], { timeout: 10_000 }));
         expect(output.stdout).toContain("USAGE");
         expect(output.stdout).toContain("--help, -h");
-        if (path === "scripts/catalog/commands/workbook.mts" || path === "scripts/catalog/commands/validate.mts") {
+        if (["workbook.mts", "validate.mts", "apply-catalog.mts", "update-tags.mts"].some((name) => path.endsWith("/" + name))) {
           expect(output.stdout).not.toContain("--fetch");
         } else {
           expect(output.stdout).toContain("--fetch");
@@ -170,31 +172,24 @@ it.effect(
         (path) => Effect.promise(() => rm(path, { recursive: true, force: true })),
       );
       const catalog = join(directory, "static/kdm/catalog");
-      const news = join(directory, "news");
       const review = join(directory, "review.json");
       yield* Effect.promise(async () => {
         await mkdir(catalog, { recursive: true });
-        await mkdir(news);
         for (const name of ["data.json", "data.schema.json"]) await copyFile(resolve("static/kdm/catalog", name), join(catalog, name));
-        await writeFile(join(news, "shop-links.json"), "{}");
       });
       const baseline = yield* Effect.promise(() => readFile(join(catalog, "data.json"), "utf8"));
       const execute = promisify(execFile);
       const output = yield* Effect.tryPromise(() =>
-        execute(
-          process.execPath,
-          [resolve("scripts/catalog/commands/update-catalog.mts"), "--tags-only", "--catalog", catalog, "--news", news, "--review", review],
-          {
-            cwd: directory,
-            timeout: 10_000,
-          },
-        ),
+        execute(process.execPath, [resolve("scripts/catalog/commands/update-tags.mts"), "--catalog", catalog, "--review", review], {
+          cwd: directory,
+          timeout: 10_000,
+        }),
       );
       expect(output.stderr).toBe("");
       expect(output.stdout).toContain("0 shop requests");
       const staged = JSON.parse(yield* Effect.promise(() => readFile(review, "utf8")));
       expect(staged.date).toBe("tags-only");
-      expect(staged.requests).toEqual([]);
+      expect(staged).not.toHaveProperty("requests");
       expect(yield* Effect.promise(() => readFile(join(catalog, "data.json"), "utf8"))).toBe(baseline);
     }).pipe(Effect.scoped),
   { timeout: 20_000 },
@@ -295,6 +290,7 @@ it.effect(
       const folder = join(directory, ".cache/kdm-catalog/shopify-products");
       yield* Effect.promise(async () => {
         await mkdir(join(directory, "static/kdm/catalog"), { recursive: true });
+        await copyFile(resolve("static/kdm/catalog/data.schema.json"), join(directory, "static/kdm/catalog/data.schema.json"));
         await mkdir(folder, { recursive: true });
         await writeFile(catalog, JSON.stringify({ content: {}, "included-only": {}, bundles: {}, accessories: {}, homebrew: {} }));
         await writeFile(
@@ -348,11 +344,39 @@ it.effect(
       );
       const catalog = join(directory, "static/kdm/catalog");
       const news = join(directory, "news");
-      const review = join(directory, "review.json");
+      const newsCache = join(directory, "news-cache");
       const metadata = { date: "2025-01-01", title: "Example", postUrl: "https://kingdomdeath.com/news/example" };
       yield* Effect.promise(async () => {
         await mkdir(catalog, { recursive: true });
         await mkdir(news);
+        await mkdir(newsCache);
+        await writeFile(
+          join(newsCache, createHash("sha256").update("https://kingdomdeath.com/news").digest("hex") + ".html"),
+          '<script id="__NEXT_DATA__">' +
+            JSON.stringify({
+              props: { pageProps: { data: { stories: [{ date: metadata.date, title: metadata.title, slug: "example" }] } } },
+            }) +
+            "</script>",
+        );
+        const snapshotFolder = join(directory, ".cache/kdm-catalog/shopify-products");
+        await mkdir(snapshotFolder, { recursive: true });
+        for (const page of [1, 2])
+          await writeFile(
+            join(snapshotFolder, `products-page-${page}.json`),
+            JSON.stringify({
+              products:
+                page === 1
+                  ? [
+                      {
+                        id: 2,
+                        handle: "other",
+                        title: "Other",
+                        variants: [{ id: 2, title: "Default Title", price: "10.00", requires_shipping: true, available: true }],
+                      },
+                    ]
+                  : [],
+            }),
+          );
         for (const name of ["data.json", "data.schema.json"]) await copyFile(resolve("static/kdm/catalog", name), join(catalog, name));
         await writeFile(
           join(news, "shop-links.json"),
@@ -378,8 +402,8 @@ it.effect(
             news,
             "--cache",
             join(directory, "cache"),
-            "--review",
-            review,
+            "--news-cache",
+            newsCache,
           ],
           { cwd: directory, timeout: 10_000 },
         ).then(
@@ -390,7 +414,7 @@ it.effect(
       expect(output).toContain("No cached shop response");
       expect(output).toContain("--fetch");
       expect(yield* Effect.promise(() => readFile(join(catalog, "data.json"), "utf8"))).toBe(baseline);
-      expect(yield* Effect.promise(() => readdir(directory))).not.toContain("review.json");
+      expect(yield* Effect.promise(() => readdir(directory))).not.toContain("temp");
     }).pipe(Effect.scoped),
   { timeout: 20_000 },
 );

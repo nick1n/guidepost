@@ -6,7 +6,8 @@ import { availabilityFromUrls } from "#scripts/catalog/availability.mts";
 import { normalizeItem } from "#scripts/catalog/normalize.mts";
 import { availabilityReleases, resolveReleases } from "#scripts/catalog/releases.mts";
 import { validateCatalog } from "#scripts/catalog/validate.mts";
-import { buildWorkbookMap, type WorkbookImports } from "#scripts/catalog/workbook.mts";
+import { buildWorkbookMap } from "#scripts/catalog/workbook/map.mts";
+import type { WorkbookImports } from "#scripts/catalog/workbook/imports.mts";
 import { planUpdate } from "#scripts/catalog/update.mts";
 import { categories, type Catalog, type Product } from "#scripts/catalog/types.mts";
 import type { Tags } from "#scripts/catalog/tags.mts";
@@ -49,7 +50,7 @@ const product: Product = {
 };
 const imports: WorkbookImports = {
   workbook: "Collection.xlsx",
-  records: [{ sheet: "KDM Miniatures", row: 2, name: "Rulebook", category: "accessories", itemId: "rulebook", edition: "1.6" }],
+  records: [{ sheet: "KDM Miniatures", row: 2, name: "Rulebook", category: "accessories", itemId: "rulebook", editionId: "1-6" }],
 };
 
 test("duplicate labels retain ID-based references, uniqueness checks, and chronological validation", async () => {
@@ -79,15 +80,15 @@ test("duplicate labels retain ID-based references, uniqueness checks, and chrono
   }
 });
 
-test.each(["update", "observe"] as const)("%s shop resolution targets the standalone release regardless of edition order", (policy) => {
+test("shop resolution targets the standalone release regardless of edition order", () => {
   const book = catalog().accessories.rulebook!;
   for (const editions of [book.editions!, book.editions!.toReversed()]) {
     const result = resolveReleases({ ...book, editions }, product, {
-      policy,
-      mapping: { category: "accessories", itemId: "rulebook", edition: "1.6" },
+      policy: "update",
+      mapping: { category: "accessories", itemId: "rulebook", editionId: "1-6" },
     });
     expect(result.releases[0]!.edition?.id).toBe("1-6");
-    expect(result.releases[0]!.prices).toEqual([4500]);
+    expect(result.releases[0]!.prices).toEqual([4000, 4500]);
   }
 });
 
@@ -97,7 +98,7 @@ test("shop matching rejects ambiguous standalone labels instead of choosing the 
   expect(() =>
     resolveReleases(book, product, {
       policy: "update",
-      mapping: { category: "accessories", itemId: "rulebook", edition: "1.6" },
+      mapping: { category: "accessories", itemId: "rulebook", editionLabel: "1.6" },
     }),
   ).toThrow("Ambiguous edition label");
 });
@@ -126,43 +127,33 @@ test("catalog updates preserve included component identity and facts without inv
     data,
     [{ data: product, url: "https://shop.kingdomdeath.com/products/rulebook.js", checkedAt: "2026-10-14T00:00:00Z" }],
     {
-      rulebook: { category: "accessories", itemId: "rulebook", edition: "1.6" },
+      rulebook: { category: "accessories", itemId: "rulebook", editionId: "1-6" },
     },
     [],
     tags,
   );
   expect(result.catalog.accessories.rulebook!.editions!.find((edition) => edition.id === included.id)).toEqual(included);
   expect(result.catalog.accessories.rulebook!.editions!.find((edition) => edition.id === included.id)?.prices).toBeUndefined();
-  expect(result.catalog.accessories.rulebook!.editions!.find((edition) => edition.id === "1-6")?.prices).toEqual([4500]);
+  expect(result.catalog.accessories.rulebook!.editions!.find((edition) => edition.id === "1-6")?.prices).toEqual([4000, 4500]);
 });
 
-test("new workbook label references prefer standalone editions, while previous maps retain either ID", () => {
-  const data = catalog();
-  const previous = buildWorkbookMap(imports, data);
-  expect(previous.rows[0]!.primary.editionId).toBe("1-6");
-  data.accessories.rulebook!.editions!.reverse();
-  expect(buildWorkbookMap(imports, data, previous).rows[0]!.primary.editionId).toBe("1-6");
-  const includedMap = {
-    ...previous,
-    rows: previous.rows.map((row) => ({ ...row, primary: { ...row.primary, editionId: "1-6-included" } })),
-  };
-  expect(buildWorkbookMap(imports, data, includedMap).rows[0]!.primary.editionId).toBe("1-6-included");
-});
+test("workbook edition IDs select standalone and included editions regardless of order", () => {
+  const original = catalog();
+  const book = original.accessories.rulebook!;
+  const orders = [book.editions!, book.editions!.toReversed()];
 
-test("unmapped duplicate workbook choices fail and missing mapped IDs require review", () => {
-  const data = catalog();
-  const previous = buildWorkbookMap(imports, data);
-  data.accessories.rulebook!.editions!.push({ id: "another-standalone", label: "1.6", format: "physical" });
-  expect(() => buildWorkbookMap(imports, data)).toThrow("Ambiguous edition label");
-  expect(buildWorkbookMap(imports, data, previous).rows[0]!.primary.editionId).toBe("1-6");
-  data.accessories.rulebook!.editions = data.accessories.rulebook!.editions!.filter((edition) => edition.id !== "1-6");
-  expect(() => buildWorkbookMap(imports, data, previous)).toThrow("Mapped edition disappeared");
-});
+  for (const editionId of ["1-6", "1-6-included"]) {
+    const source = structuredClone(imports);
+    source.records[0]!.editionId = editionId;
 
-test("a unique included workbook reference remains supported", () => {
-  const data = catalog();
-  data.accessories.rulebook!.editions = data.accessories.rulebook!.editions!.filter((edition) => edition.includedOnly);
-  expect(buildWorkbookMap(imports, data).rows[0]!.primary.editionId).toBe("1-6-included");
+    for (const editions of orders) {
+      const data = structuredClone(original);
+      data.accessories.rulebook!.editions = structuredClone(editions);
+      const regenerated = buildWorkbookMap(source, data);
+      expect(regenerated.rows[0]!.primary.editionId).toBe(editionId);
+      expect(buildWorkbookMap(source, data, regenerated).rows[0]!.primary.editionId).toBe(editionId);
+    }
+  }
 });
 
 test("accessory labels describe the containing release without inventing resin construction", () => {

@@ -4,14 +4,16 @@ import { fileURLToPath } from "node:url";
 import { Command } from "effect/cli";
 import { catalog, offline, fetch, offlineMode, runCommand, workflow } from "../cli.mts";
 import { publishFiles } from "../publication.mts";
-import { catalogTemp, catalogLocal, catalogCache } from "../paths.mts";
+import { catalogTemp, catalogCache, catalogData } from "../paths.mts";
 import { compareEditions, organizeCatalog } from "../order.mts";
 import { clearChangedListings, listingSnapshot, normalizeItem } from "../normalize.mts";
 import { productUrl, ShopClient, shopProduct } from "../shop.mts";
 import { normalized } from "../update.mts";
 import { productEditions } from "../releases.mts";
 import { validateCatalog } from "../validate.mts";
-import type { Catalog, Mapping } from "../types.mts";
+import { parseMappings } from "../mappings.mts";
+import { captureWorkbookInputs, readOptional } from "../inputs.mts";
+import type { Catalog } from "../types.mts";
 
 export async function fillEditions(
   options: { catalog?: string; offline?: boolean; refresh?: boolean; signal?: AbortSignal; client?: Pick<ShopClient, "get"> } = {},
@@ -22,14 +24,12 @@ export async function fillEditions(
   const catalog: Catalog = JSON.parse(original);
   const root = dirname(path);
   const temp = catalogTemp(root);
-  const mappingsPath = join(catalogLocal(root), "kdm-shop-mappings.json");
-  const mappingText = await readFile(mappingsPath, "utf8").catch((error: NodeJS.ErrnoException) => {
-    if (error.code === "ENOENT") return undefined;
-    throw error;
-  });
-  const mappings: Record<string, Mapping> = JSON.parse(mappingText ?? "{}");
+  const mappingsPath = join(catalogData(root), "shop-mappings.json");
+  const mappingText = await readOptional(mappingsPath);
+  const mappings = parseMappings(mappingText, mappingsPath);
   const schemaPath = join(root, "data.schema.json");
   const schemaText = await readFile(schemaPath, "utf8");
+  const workbookInputs = await captureWorkbookInputs(root);
   const news: { links: { itemName: string; shopUrl: string; date: string }[] } = JSON.parse(
     await readFile(resolve(root, "../../../scripts/news/shop-links.json"), "utf8"),
   );
@@ -70,7 +70,7 @@ export async function fillEditions(
       delete item.priceMinimum;
       normalizeItem(item);
       clearChangedListings(item, listings);
-      mappings[product.handle] = { ...mappings[product.handle], category: "content", itemId, variantEditions: result.selectors };
+      mappings[product.handle] = { ...mappings[product.handle], category: "content", itemId, variantEditionIds: result.selectors };
       report.reachable.push({ itemId, url, editions: item.editions.map((e) => e.label) });
       console.log(`${report.reachable.length + report.unreachable.length}/${targets.length}: ${itemId}, ${item.editions.length} editions`);
     } catch (error) {
@@ -87,10 +87,7 @@ export async function fillEditions(
   }
   organizeCatalog(catalog);
   await validateCatalog(catalog, schemaPath);
-  const reportText = await readFile(reportPath, "utf8").catch((error: NodeJS.ErrnoException) => {
-    if (error.code === "ENOENT") return undefined;
-    throw error;
-  });
+  const reportText = await readOptional(reportPath);
   report.complete = true;
   report.applied = true;
   await publishFiles(
@@ -109,6 +106,7 @@ export async function fillEditions(
         },
         { path: schemaPath, text: schemaText, message: "Schema changed during retrieval; rerun to validate against the current schema." },
         { path: reportPath, text: reportText, message: "Retrieval report changed during publication; rerun to preserve its updates." },
+        ...workbookInputs,
       ],
       signal: options.signal,
     },

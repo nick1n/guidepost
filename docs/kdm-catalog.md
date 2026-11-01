@@ -9,43 +9,13 @@ archives live in `local-data/kdm-catalog/archives/kdm-data.json` and `local-data
 | [Workbook map](../static/kdm/catalog/workbook-map.json), [schema](../static/kdm/catalog/workbook-map.schema.json) | Source rows and catalog edition IDs         |
 | [News export](../scripts/news/shop-links.json)                                                                    | Cached announcement dates and product links |
 
-Optional, Git-ignored `local-data/kdm-catalog/kdm-tags.json` supplies exact reviewed assignments; otherwise updates use catalog tags.
-Apply edits before deleting it. Vocabulary lives in `local-data/kdm-catalog/kdm-tags.schema.json` under `$defs.tag.enum`.
-VS Code flags invalid tags, empty arrays, and duplicates; merging checks missing and unknown item IDs.
-Catalog tags sort by global frequency with alphabetical ties; master tag arrays stay alphabetical.
-
-```bash
-pnpm catalog:tags
-pnpm catalog:tags --apply
-pnpm catalog:validate
-```
-
-`catalog:tags` stages a review; `--apply` applies it and syncs the master file. No shop requests are made.
-`catalog:tags-schema` refreshes schema structure while preserving vocabulary and custom definitions; new item IDs need no schema regeneration.
-
-For news updates:
-
-```bash
-pnpm scrape:news --fetch
-pnpm catalog:update --sim --fetch
-pnpm catalog:update --apply-review temp/kdm-catalog/reports/kdm-update-review.json
-pnpm catalog:validate
-```
-
-Reports stay in Git-ignored `temp/kdm-catalog/reports/`; retained inputs and archives belong under `local-data/kdm-catalog/`. Updates stage reviews; unknown products need curated mappings and tags.
-Commands default to cached evidence and never download missing entries. `--fetch` refreshes caches; `--offline` selects the default and
-cannot accompany it. Use `--date YYYY-MM-DD` to select an article. Shop requests start at least 35 seconds apart, cache for 24 hours,
-and never retry automatically. A 404/410 preserves facts; other failures stop preparation.
-Changes to catalog, schemas, news, or master tags invalidate a review.
+For update, tag, availability, and mapping commands, see [catalog workflows](catalog-workflows.md).
 
 The news scraper collects announcement links. Product `.js` caches retain complete storefront responses, with prices in cents;
 Sim `products.json` prices are dollars and normalize to cents. Source tags are evidence, not reviewed assignments.
 Offline updates prefer `.js` caches and also accept existing `.json` product caches.
 Stock and availability use only the complete two-page shop snapshot: `products.json?limit=250&page=1` and `page=2`.
-`catalog:availability` reads the saved `products-page-1.json` and `products-page-2.json` by default.
-With `--fetch`, it downloads exactly those two pages and publishes their caches only after both succeed.
 Individual product responses and HEAD checks never supply stock or availability.
-Run `catalog:availability` after importing new editions to assign snapshot stock.
 
 Reviewed fallback: undated Encore without a release window inherits First Run's date, or Deathgrey's if First Run has none.
 Known Encore dates stay unchanged.
@@ -94,7 +64,7 @@ Current data rules:
   Tag and metadata updates use existing shop states; `catalog:availability` updates them from the snapshot.
   [stock.mts](../scripts/catalog/stock.mts) owns stock, availability, link-health, and listing-invalidation operations. Tag sorting and validation
   share its stock predicate; workflow code chooses whether a stock observation also replaces availability.
-- Prices are integer cents. Edition `prices` arrays contain recorded sale amounts and current MSRP, with the maximum representing MSRP. Missing prices are unknown; `[0]` is a known zero price. Lunar Aya's Sim price remains the user-authorized $7 estimate, documented in the report.
+- Prices are integer cents. Edition `prices` arrays retain observed selling and compare-at amounts, sorted lowest to highest. The range includes earlier prices after price changes. Missing prices are unknown; `[0]` is a known zero price. Lunar Aya's Sim price remains the user-authorized $7 estimate, documented in the report.
 - For reviewed bundle comparisons, an unpriced edition may set `priceFrom` to one standalone edition ID on the same item.
   The target must have its own `prices`, match the format and simulator status, and have neither `includedOnly` nor `priceFrom`.
   Do not combine `prices` with `priceFrom`. This reference does not establish content equivalence or product ownership and does not
@@ -119,8 +89,8 @@ Exported model titles omit the `Box` qualifier. Deathgrey releases use the First
 Included-only and standalone models within the same item share a row when material, scale, and identity match unambiguously.
 Conflicting named variants and ambiguous matches remain separate.
 
-Run `pnpm catalog:workbook` to regenerate [workbook-map.json](../static/kdm/catalog/workbook-map.json) from the local
-`local-data/kdm-catalog/imports/kdm-import-records.json` and live catalog. The 705 mapped rows retain their sheet, row, and product name as
+Run `pnpm catalog:workbook` to validate and normalize the committed [workbook-map.json](../static/kdm/catalog/workbook-map.json) against the live catalog.
+Private source records are only read with an explicit `--imports` path. The mapped rows retain their sheet, row, and product name as
 source anchors, plus primary, related, and release-column references to stable edition IDs. M, N, and O alternatives remain separate;
 general personal values stay scoped to the source row. The map contains product references only, never owned, wished, copy, comment,
 or raw cell values. Sheet and row numbers locate this workbook snapshot rather than serving as permanent IDs. Regeneration rejects
@@ -128,9 +98,12 @@ changed row identities and unresolved references for review. Validated normalize
 [collection-transfer.ts](../src/lib/kdm/collection/state/collection-transfer.ts); XLSX parsing, writing, and controls are deferred. Exports reject unmapped entries and values
 that a shared row cannot represent. JSON backups preserve a complete collection snapshot.
 
-Validation checks optional import records and their schema when present. Keep records and the workbook to regenerate or verify the map.
-Shop mappings are optional; unresolved products stay in review. An explicit `--mappings` path must exist.
-Retained import records belong under Git-ignored `local-data/kdm-catalog/imports/`; Shopify snapshots belong in `.cache/kdm-catalog/shopify-products/`, and reviewed shop mappings live in `local-data/kdm-catalog/kdm-shop-mappings.json`. Reports remain under `temp/kdm-catalog/reports/`. Custom workspaces use the same `static/kdm/catalog/`, `local-data/`, `.cache/`, and `temp/` layout.
+Catalog validation checks committed workbook map references by permanent edition ID, independent of private records and mutable edition labels.
+Shop mappings are optional; unresolved products stay in review. Mappings use `editionId` and `variantEditionIds` for existing editions;
+labels are discovery hints for new releases. See [catalog workflows](catalog-workflows.md) for the mapping format.
+Reviewed mappings, tags, schemas, and the news ledger live in tracked `scripts/catalog/data/`. Private import records remain under Git-ignored
+`local-data/kdm-catalog/imports/`; snapshots stay in `.cache/kdm-catalog/shopify-products/`, and reports in `temp/kdm-catalog/reports/`.
+Custom workspaces use the same directory layout. See [catalog workflows](catalog-workflows.md) for shared files and optional workbook rebuilds.
 
 ## Availability refresh
 
@@ -213,9 +186,12 @@ Shared handles identify listings; release variants still determine edition prici
 
 When a listing changes handle, add a reviewed mapping for the new handle to the same item and edition, with
 `replaceUrl: true`. Keep the old handle mapping without that flag so historical cache and news entries still resolve
-without restoring the obsolete handle. Mappings live in `local-data/kdm-catalog/kdm-shop-mappings.json`;
-this local file is Git-ignored, so keep a copy if you need to preserve historical mappings when clearing temporary files.
+without restoring the obsolete handle. Commit these reviewed decisions in `scripts/catalog/data/shop-mappings.json`.
 A different release needs its own edition. A shared listing that splits into different listings becomes edition-level handles.
+Reviewed superseded preorder aliases keep those IDs with a `retired` reason in the shared mapping. They are excluded from monthly
+imports; current catalog handles still own stock and purchase links. A preorder bundle is not superseded merely because its components shipped.
+The exact handle `another-preorder-item-test` is an owner-confirmed internal shop test, excluded without a catalog item or ownership mapping.
+The exact handle `mystery-t-shirt` is a random shirt assortment, excluded as a listing rather than a distinct collectible design.
 Homebrew editions retain their manually assigned availability during shop availability refreshes.
 
 CCG projects use digital `Digital Files` editions and `prices: [0]`. Unfinished projects keep `upcoming` without availability.

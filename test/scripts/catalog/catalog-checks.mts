@@ -1,4 +1,4 @@
-import { catalogTemp, catalogLocal } from "#scripts/catalog/paths.mts";
+import { catalogTemp, catalogLocal, catalogData } from "#scripts/catalog/paths.mts";
 import assert from "node:assert/strict";
 import { mkdtemp, mkdir, readFile, rm, utimes, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
@@ -11,7 +11,8 @@ import { FetchHttpClient } from "effect/http";
 import { planUpdate as prepareUpdate, productExclusion, releaseGaps } from "#scripts/catalog/update.mts";
 import { resolveReleases } from "#scripts/catalog/releases.mts";
 import { catalogListing, productUrl, ShopClient } from "#scripts/catalog/shop.mts";
-import { applyReview } from "#scripts/catalog/commands/update-catalog.mts";
+import { applyReview } from "#scripts/catalog/review/apply.mts";
+import { itemDifferences } from "#scripts/catalog/review/details.mts";
 import { refreshAvailability } from "#scripts/catalog/commands/refresh-catalog-availability.mts";
 import { availabilityFromUrls } from "#scripts/catalog/availability.mts";
 import { categories, type Catalog, type Product } from "#scripts/catalog/types.mts";
@@ -22,7 +23,18 @@ import { applyTags, loadTags, tagSchema, organizeTags, type Tags } from "#script
 import { prefixedId } from "#scripts/catalog/identity.mts";
 
 function fixturePath(root: string, path: string) {
-  return join(/^(kdm-tags|imports\/)/.test(path) ? catalogLocal(root) : /^reports\//.test(path) ? catalogTemp(root) : root, path);
+  return join(/^tags/.test(path) ? catalogData(root) : /^reports\//.test(path) ? catalogTemp(root) : root, path);
+}
+
+function tagReviewDetails() {
+  return {
+    date: "tags-only" as const,
+    preparedAt: "2026-10-01T00:00:00Z",
+    mappingsHash: createHash("sha256").update("").digest("hex"),
+    excluded: 0,
+    warnings: [],
+    validation: { items: 0, editions: 0, importRows: 0, schemas: "passed", references: "passed", cycles: "none" },
+  };
 }
 
 test("equivalent editions reject missing, self, chained, and incompatible references", async () => {
@@ -147,19 +159,19 @@ test("deleted local tag files fall back to saved catalog assignments", async (t)
   const root = join(workspace, "static/kdm/catalog");
   await mkdir(root, { recursive: true });
   await mkdir(catalogTemp(root), { recursive: true });
-  await mkdir(catalogLocal(root), { recursive: true });
+  await mkdir(catalogData(root), { recursive: true });
   t.after(() => rm(workspace, { recursive: true, force: true }));
   const catalog = empty();
   catalog.content.aya = { name: "Aya", kind: "model", tags: ["aya", "female"] };
   await writeFile(join(root, "data.json"), JSON.stringify(catalog));
   const master = await loadTags(root);
-  assert.equal(master.local, false);
+  assert.equal(master.reviewed, false);
   assert.deepEqual(master.tags.content.aya, ["aya", "female"]);
   assert.deepEqual(JSON.parse(master.schemaText).$defs.tag.enum, ["aya", "female", "in-stock"]);
   applyTags(catalog, master.tags);
   assert.deepEqual(catalog.content.aya.tags, ["aya", "female"]);
-  await assert.rejects(readFile(join(catalogLocal(root), "kdm-tags.json")), { code: "ENOENT" });
-  await writeFile(join(catalogLocal(root), "kdm-tags.json"), "invalid json");
+  await assert.rejects(readFile(join(catalogData(root), "tags.json")), { code: "ENOENT" });
+  await writeFile(join(catalogData(root), "tags.json"), "invalid json");
   await assert.rejects(loadTags(root));
 });
 
@@ -200,7 +212,7 @@ function releasePrices(variants: Product["variants"], previous: number[] = []) {
     mapping: {
       category: "content",
       itemId: "example",
-      variantEditions: Object.fromEntries(variants.map((variant) => [String(variant.id), "Sim"])),
+      variantEditionIds: Object.fromEntries(variants.map((variant) => [String(variant.id), "sim"])),
     },
   }).releases[0]!.prices;
 }
@@ -306,7 +318,7 @@ test("cached Death Pink and Second Run names match their distinct catalog editio
         resolveReleases(
           { name: "Bust", tags: [] },
           { ...listing, variants: [listing.variants[1]!] },
-          { policy: "update", mapping: { category: "content", itemId: "bust", edition: "Bust: First Run" } },
+          { policy: "update", mapping: { category: "content", itemId: "bust", editionLabel: "Bust: First Run" } },
         ).releases[0]!.label,
         "Bust: Second Run",
       );
@@ -374,9 +386,11 @@ test("availability refresh downloads all pages, preserves raw snapshots, and cha
   catalog.content.aya = {
     name: "Aya",
     tags: ["aya"],
-    url: "/products/aya",
-    editions: [{ label: "Plastic", prices: [3000], releaseDate: "2020-01-01" }],
+    handle: "aya",
+    editions: [{ id: "plastic", label: "Plastic", format: "physical", prices: [3000], releaseDate: "2020-01-01" }],
   };
+  await writeFile(join(root, "static/kdm/catalog/data.schema.json"), await readFile("static/kdm/catalog/data.schema.json"));
+  normalizeItem(catalog.content.aya);
   await writeFile(path, JSON.stringify(catalog));
   const raw = (handle: string, available: boolean) => ({
     ...product({ handle }),
@@ -457,21 +471,21 @@ test("format mappings preserve release selectors and cannot remove standard game
   assert.equal(
     resolveReleases({ name: "Example", tags: [] }, data, {
       policy: "update",
-      mapping: { category: "content", itemId: "example", edition: "Painters" },
+      mapping: { category: "content", itemId: "example", editionLabel: "Painters" },
     }).releases[0]!.label,
     "Painters",
   );
   assert.equal(
     resolveReleases({ name: "Example", tags: [] }, data, {
       policy: "update",
-      mapping: { category: "content", itemId: "example", edition: "Bust: First Run" },
+      mapping: { category: "content", itemId: "example", editionLabel: "Bust: First Run" },
     }).releases[0]!.label,
     "Bust: Encore",
   );
   const review = planUpdate(
     catalog,
     [source(data)],
-    { "morgan-bust": { category: "content", itemId: "morgan", edition: "Bust: First Run", gameplay: false } },
+    { "morgan-bust": { category: "content", itemId: "morgan", editionLabel: "Bust: First Run", gameplay: false } },
     [],
   );
   assert.equal(review.catalog.content.morgan?.gameplay, true);
@@ -527,7 +541,7 @@ test("an undated Encore inherits the curated First Run date", () => {
   const review = planUpdate(
     catalog,
     [source(data)],
-    { owl: { category: "content", itemId: "owl", edition: "First Run", releaseDate: "2024-02-29" } },
+    { owl: { category: "content", itemId: "owl", editionLabel: "First Run", releaseDate: "2024-02-29" } },
     [],
   );
   assert.equal(review.catalog.content.owl?.editions?.find((edition) => edition.label === "First Run")?.releaseDate, "2024-02-29");
@@ -567,7 +581,7 @@ test("digital additions preserve a known physical listing and default gameplay t
   const plan = planUpdate(
     catalog,
     [source(product())],
-    { "kds-rene": { category: "content", itemId: "rene", edition: "Sim", gameplay: true } },
+    { "kds-rene": { category: "content", itemId: "rene", editionLabel: "Sim", gameplay: true } },
     [],
   );
   assert.equal(plan.unresolved.length, 0);
@@ -582,7 +596,7 @@ test("digital additions preserve a known physical listing and default gameplay t
     planUpdate(
       plan.catalog,
       [source(product())],
-      { "kds-rene": { category: "content", itemId: "rene", edition: "Sim", gameplay: true } },
+      { "kds-rene": { category: "content", itemId: "rene", editionLabel: "Sim", gameplay: true } },
       [],
     ).changes.length,
     0,
@@ -600,16 +614,16 @@ test("the digital core selects one key and excludes physical keys and multipacks
   const plan = planUpdate(
     catalog,
     [source(product({ handle: "kingdom-death-simulator-1", variants }))],
-    { "kingdom-death-simulator-1": { category: "content", itemId: "core", edition: "Sim", variantIds: [2] } },
+    { "kingdom-death-simulator-1": { category: "content", itemId: "core", editionLabel: "Sim", variantIds: [2] } },
     [],
   );
   assert.deepEqual(plan.catalog.content.core?.editions?.[0]?.prices, [2000]);
   assert.equal(plan.catalog.content.core?.editions?.length, 1);
 });
 
-test("price corrections do not invent sales from an old MSRP or a reversed compare-at price", () => {
-  assert.deepEqual(releasePrices([product().variants[0]!], [1000]), [700]);
-  assert.deepEqual(releasePrices([{ ...product().variants[0]!, price: 9000, compare_at_price: 8000 }], [8000]), [9000]);
+test("price history retains earlier prices and compare-at amounts across price changes", () => {
+  assert.deepEqual(releasePrices([product().variants[0]!], [1000]), [700, 1000]);
+  assert.deepEqual(releasePrices([{ ...product().variants[0]!, price: 9000, compare_at_price: 8000 }], [8000]), [8000, 9000]);
   assert.deepEqual(releasePrices([{ ...product().variants[0]!, price: 6500, compare_at_price: 8000 }], [5000, 8000]), [5000, 6500, 8000]);
 });
 
@@ -620,7 +634,7 @@ test("master tags replace existing and mapping tags without guessing or merging 
   const plan = prepareUpdate(
     before,
     [source(product())],
-    { "kds-rene": { category: "content", itemId: "rene", edition: "Sim" } },
+    { "kds-rene": { category: "content", itemId: "rene", editionLabel: "Sim" } },
     [],
     tags,
   );
@@ -653,13 +667,13 @@ test("the editor schema validates vocabulary and preserves author assignments", 
   const root = join(workspace, "static/kdm/catalog");
   await mkdir(root, { recursive: true });
   await mkdir(catalogTemp(root), { recursive: true });
-  await mkdir(catalogLocal(root), { recursive: true });
+  await mkdir(catalogData(root), { recursive: true });
   t.after(() => rm(workspace, { recursive: true, force: true }));
   const schema = tagSchema(["aya", "female"]);
   assert.ok(!JSON.stringify(schema).includes('"aya":'));
-  await writeFile(join(catalogLocal(root), "kdm-tags.schema.json"), JSON.stringify(schema));
-  const path = join(catalogLocal(root), "kdm-tags.json");
-  await writeFile(path, JSON.stringify({ $schema: "./kdm-tags.schema.json", ...tagFile({ aya: ["female", "aya"] }) }));
+  await writeFile(join(catalogData(root), "tags.schema.json"), JSON.stringify(schema));
+  const path = join(catalogData(root), "tags.json");
+  await writeFile(path, JSON.stringify({ $schema: "./tags.schema.json", ...tagFile({ aya: ["female", "aya"] }) }));
   assert.deepEqual((await loadTags(root)).tags, tagFile({ aya: ["female", "aya"] }));
   await writeFile(path, JSON.stringify(tagFile({ "any-item-id": ["female"] })));
   assert.deepEqual((await loadTags(root)).tags, tagFile({ "any-item-id": ["female"] }));
@@ -674,7 +688,7 @@ test("tag edits invalidate a prepared review before catalog writes", async (t) =
   const root = join(workspace, "static/kdm/catalog");
   await mkdir(root, { recursive: true });
   await mkdir(catalogTemp(root), { recursive: true });
-  await mkdir(catalogLocal(root), { recursive: true });
+  await mkdir(catalogData(root), { recursive: true });
   t.after(() => rm(workspace, { recursive: true, force: true }));
   const catalog = empty();
   catalog.content.aya = { name: "Aya", kind: "model", tags: ["aya"] };
@@ -684,15 +698,15 @@ test("tag edits invalidate a prepared review before catalog writes", async (t) =
   await writeFile(join(root, "data.json"), catalogText);
   await writeFile(join(root, "data.schema.json"), "{}");
   await writeFile(news, "{}");
-  await writeFile(join(catalogLocal(root), "kdm-tags.schema.json"), schemaText);
-  await writeFile(join(catalogLocal(root), "kdm-tags.json"), JSON.stringify(tagFile({ aya: ["female"] })));
+  await writeFile(join(catalogData(root), "tags.schema.json"), schemaText);
+  await writeFile(join(catalogData(root), "tags.json"), JSON.stringify(tagFile({ aya: ["female"] })));
   const hash = (s: string) => createHash("sha256").update(s).digest("hex");
   await assert.rejects(
     applyReview(
       {
         baselineHash: hash(catalogText),
         schemaHash: hash("{}"),
-        newsHash: hash("{}"),
+        ...tagReviewDetails(),
         tagsHash: hash(JSON.stringify(tagFile({ aya: ["aya"] }))),
         tagSchemaHash: hash(schemaText),
         changes: [],
@@ -711,7 +725,7 @@ test("applying reviewed tags works without local imports, mappings, or reports a
   const root = join(workspace, "static/kdm/catalog");
   await mkdir(root, { recursive: true });
   await mkdir(catalogTemp(root), { recursive: true });
-  await mkdir(catalogLocal(root), { recursive: true });
+  await mkdir(catalogData(root), { recursive: true });
   t.after(() => rm(workspace, { recursive: true, force: true }));
   const before = empty();
   before.content.aya = {
@@ -749,21 +763,27 @@ test("applying reviewed tags works without local imports, mappings, or reports a
   const inputs = {
     "data.json": JSON.stringify(before),
     "data.schema.json": schema,
-    "kdm-tags.json": JSON.stringify(tags),
-    "kdm-tags.schema.json": JSON.stringify(tagSchema(["aya", "neko", "death-high"])),
+    "tags.json": JSON.stringify(tags),
+    "tags.schema.json": JSON.stringify(tagSchema(["aya", "neko", "death-high"])),
     "news.json": "{}",
   };
   for (const [path, text] of Object.entries(inputs)) await writeFile(fixturePath(root, path), text);
   const plan = prepareUpdate(before, [], {}, [], tags);
+  const changes = plan.changes.map(({ category, itemId, before, after }) => ({
+    category,
+    itemId,
+    differences: itemDifferences(before, after),
+    after,
+  }));
   const hash = (s: string) => createHash("sha256").update(s).digest("hex");
   await applyReview(
     {
       baselineHash: hash(inputs["data.json"]),
       schemaHash: hash(schema),
-      newsHash: hash("{}"),
-      tagsHash: hash(inputs["kdm-tags.json"]),
-      tagSchemaHash: hash(inputs["kdm-tags.schema.json"]),
-      changes: plan.changes,
+      ...tagReviewDetails(),
+      tagsHash: hash(inputs["tags.json"]),
+      tagSchemaHash: hash(inputs["tags.schema.json"]),
+      changes,
       unresolved: [],
     },
     root,
@@ -772,7 +792,7 @@ test("applying reviewed tags works without local imports, mappings, or reports a
   const applied = JSON.parse(await readFile(join(root, "data.json"), "utf8"));
   assert.deepEqual(Object.keys(applied.content), ["aya", "neko"]);
   assert.deepEqual(applied.content.neko, { ...before.content.neko, tags: tags.content.neko!.toSorted() });
-  const master = JSON.parse(await readFile(join(catalogLocal(root), "kdm-tags.json"), "utf8"));
+  const master = JSON.parse(await readFile(join(catalogData(root), "tags.json"), "utf8"));
   assert.deepEqual(Object.keys(master.content), ["aya", "neko"]);
   assert.deepEqual(master.content.neko, tags.content.neko!.toSorted());
   const report = JSON.parse(await readFile(join(catalogTemp(root), "reports/kdm-merge-report.json"), "utf8"));
@@ -783,7 +803,7 @@ test("applying reviewed tags works without local imports, mappings, or reports a
   );
   assert.equal(update.changes, undefined, "The summary should not repeat full catalog snapshots");
   const archived = JSON.parse(gunzipSync(await readFile(join(catalogLocal(root), update.archive))).toString("utf8"));
-  assert.deepEqual(archived.changes, plan.changes, "The complete review remains recoverable from its archive");
+  assert.deepEqual(archived.changes, changes, "The complete review remains recoverable from its archive");
   assert.equal(archived.appliedAt, update.appliedAt);
 });
 
@@ -791,7 +811,7 @@ test("a verified price replaces an estimate even when its amount is unchanged", 
   const catalog = empty();
   catalog.content.aya = { name: "Aya", tags: ["aya"], gameplay: true, editions: [{ label: "Sim", prices: [700], priceEstimated: true }] };
   const data = product({ handle: "kds-aya" });
-  const plan = planUpdate(catalog, [source(data)], { [data.handle]: { category: "content", itemId: "aya", edition: "Sim" } }, []);
+  const plan = planUpdate(catalog, [source(data)], { [data.handle]: { category: "content", itemId: "aya", editionLabel: "Sim" } }, []);
   assert.deepEqual(plan.catalog.content.aya?.editions?.[0]?.prices, [700]);
   assert.equal(plan.catalog.content.aya?.editions?.[0]?.priceEstimated, undefined);
   assert.equal(plan.changes.length, 1);
@@ -895,7 +915,7 @@ test("an added digital edition preserves an inherited physical URL", () => {
   const plan = planUpdate(
     catalog,
     [source(product())],
-    { "kds-rene": { category: "content", itemId: "rene", edition: "Sim", gameplay: true } },
+    { "kds-rene": { category: "content", itemId: "rene", editionLabel: "Sim", gameplay: true } },
     [],
   );
   assert.equal(plan.catalog.content.rene?.url, undefined);
@@ -1087,9 +1107,8 @@ test("applying a review persists ordering even when no item facts changed", asyn
   const root = join(workspace, "static/kdm/catalog");
   await mkdir(root, { recursive: true });
   await mkdir(catalogTemp(root), { recursive: true });
-  await mkdir(catalogLocal(root), { recursive: true });
+  await mkdir(catalogData(root), { recursive: true });
   t.after(() => rm(workspace, { recursive: true, force: true }));
-  await mkdir(join(catalogLocal(root), "imports"));
   await mkdir(join(catalogTemp(root), "reports"));
   const before = empty();
   const item = (name: string, tags: string[], releaseDate: string) => ({
@@ -1105,11 +1124,9 @@ test("applying a review persists ordering even when no item facts changed", asyn
   const files = {
     "data.json": JSON.stringify(before),
     "data.schema.json": schema,
-    "kdm-tags.json": JSON.stringify(tags),
-    "kdm-tags.schema.json": JSON.stringify(tagSchema(["aya", "neko", "death-high"])),
+    "tags.json": JSON.stringify(tags),
+    "tags.schema.json": JSON.stringify(tagSchema(["aya", "neko", "death-high"])),
     "news.json": "{}",
-    "imports/kdm-import-records.json": JSON.stringify({ records: [] }),
-    "imports/kdm-import-records.schema.json": "{}",
     "reports/kdm-merge-report.json": JSON.stringify({ validation: {} }),
   };
   for (const [path, text] of Object.entries(files)) await writeFile(fixturePath(root, path), text);
@@ -1120,9 +1137,9 @@ test("applying a review persists ordering even when no item facts changed", asyn
     {
       baselineHash: hash(files["data.json"]),
       schemaHash: hash(schema),
-      newsHash: hash("{}"),
-      tagsHash: hash(files["kdm-tags.json"]),
-      tagSchemaHash: hash(files["kdm-tags.schema.json"]),
+      ...tagReviewDetails(),
+      tagsHash: hash(files["tags.json"]),
+      tagSchemaHash: hash(files["tags.schema.json"]),
       changes: [],
       unresolved: [],
     },
@@ -1132,7 +1149,7 @@ test("applying a review persists ordering even when no item facts changed", asyn
   const after = JSON.parse(await readFile(join(root, "data.json"), "utf8"));
   assert.deepEqual(after, before);
   assert.deepEqual(Object.keys(after.content), ["aya", "neko"]);
-  const master = JSON.parse(await readFile(join(catalogLocal(root), "kdm-tags.json"), "utf8"));
+  const master = JSON.parse(await readFile(join(catalogData(root), "tags.json"), "utf8"));
   assert.deepEqual(Object.keys(master.content), Object.keys(after.content));
 });
 
@@ -1291,12 +1308,12 @@ test("shop updates preserve permanent IDs and reject a new release that would re
     title: "Rene",
     variants: [{ ...product().variants[0]!, title: "Encore", requires_shipping: true }],
   });
-  const updated = planUpdate(catalog, [source(listing)], { rene: { category: "content", itemId: "rene", edition: "Encore" } }, []);
+  const updated = planUpdate(catalog, [source(listing)], { rene: { category: "content", itemId: "rene", editionLabel: "Encore" } }, []);
   assert.equal(updated.catalog.content.rene!.editions![0]!.id, "first-run");
   assert.equal(updated.catalog.content.rene!.editions![0]!.label, "Encore");
   listing.variants[0]!.title = "First Run";
   assert.throws(
-    () => planUpdate(catalog, [source(listing)], { rene: { category: "content", itemId: "rene", edition: "First Run" } }, []),
+    () => planUpdate(catalog, [source(listing)], { rene: { category: "content", itemId: "rene", editionLabel: "First Run" } }, []),
     /Duplicate edition ID: first-run; review/,
   );
   assert.equal(catalog.content.rene!.editions!.length, 1);
@@ -1398,7 +1415,7 @@ test("a box contents listing does not manufacture separate catalog items", () =>
   const plan = planUpdate(
     before,
     [source(data)],
-    { [data.handle]: { category: "content", itemId: "set-survivors-of-death-3", edition: "Plastic" } },
+    { [data.handle]: { category: "content", itemId: "set-survivors-of-death-3", editionLabel: "Plastic" } },
     [],
   );
   assert.deepEqual(Object.keys(plan.catalog.content), ["set-survivors-of-death-3"]);
@@ -1428,7 +1445,7 @@ test("standalone art prints are excluded while miniature contents mentioning pri
   const included = planUpdate(
     before,
     [source(miniature)],
-    { [miniature.handle]: { category: "content", itemId: "aya", edition: "First Run" } },
+    { [miniature.handle]: { category: "content", itemId: "aya", editionLabel: "First Run" } },
     [],
   );
   assert.equal(included.excluded.length, 0);
@@ -1450,7 +1467,7 @@ test("temporary preorder links stay in announcement evidence without replacing e
   const plan = planUpdate(
     catalog,
     [source(data)],
-    { [data.handle]: { category: "content", itemId: "core", edition: "1.6", replaceUrl: true } },
+    { [data.handle]: { category: "content", itemId: "core", editionLabel: "1.6", replaceUrl: true } },
     [
       {
         date: "2026-02-27",
@@ -1493,17 +1510,35 @@ test("applying a stale review cannot overwrite newer catalog edits", async (t) =
   const root = join(workspace, "static/kdm/catalog");
   await mkdir(root, { recursive: true });
   await mkdir(catalogTemp(root), { recursive: true });
-  await mkdir(catalogLocal(root), { recursive: true });
+  await mkdir(catalogData(root), { recursive: true });
   t.after(() => rm(workspace, { recursive: true, force: true }));
   await mkdir(join(catalogTemp(root), "reports"));
   const path = join(root, "data.json");
   await writeFile(path, JSON.stringify(empty()));
+  await writeFile(join(root, "data.schema.json"), "{}");
   const baselineHash = createHash("sha256")
     .update(await readFile(path))
     .digest("hex");
   await writeFile(path, JSON.stringify({ ...empty(), content: { newer: { name: "Newer", gameplay: false } } }));
   await assert.rejects(
-    applyReview({ baselineHash, schemaHash: "unused", newsHash: "unused", changes: [], unresolved: [] }, root, "unused"),
+    applyReview(
+      {
+        preparedAt: "2026-10-01T00:00:00Z",
+        date: "tags-only",
+        baselineHash,
+        schemaHash: "0".repeat(64),
+        tagsHash: "0".repeat(64),
+        tagSchemaHash: "0".repeat(64),
+        mappingsHash: "0".repeat(64),
+        changes: [],
+        unresolved: [],
+        excluded: 0,
+        warnings: [],
+        validation: { items: 0, editions: 0, importRows: 0, schemas: "passed", references: "passed", cycles: "none" },
+      },
+      root,
+      "unused",
+    ),
     /Catalog changed/,
   );
   assert.ok((await readFile(path, "utf8")).includes("Newer"));
@@ -1582,8 +1617,8 @@ test("a curated handle replacement keeps old cached listings mapped to the same 
   const id = "sim";
   catalog.content.rene = { name: "Rene", tags: ["rene"], handle: "old-rene", editions: [{ id, label: "Sim", prices: [700] }] };
   const mappings = {
-    "old-rene": { category: "content" as const, itemId: "rene", edition: "Sim" },
-    "kds-rene": { category: "content" as const, itemId: "rene", edition: "Sim", replaceUrl: true },
+    "old-rene": { category: "content" as const, itemId: "rene", editionLabel: "Sim" },
+    "kds-rene": { category: "content" as const, itemId: "rene", editionLabel: "Sim", replaceUrl: true },
   };
   const updated = planUpdate(catalog, [source(product())], mappings, []).catalog;
   assert.equal(updated.content.rene!.handle, "kds-rene");

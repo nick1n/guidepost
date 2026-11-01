@@ -1,29 +1,11 @@
 import { readFile } from "node:fs/promises";
-import { resolve } from "node:path";
-import { Ajv2020 } from "ajv/dist/2020.js";
-import {
-  decodeWorkbookMap,
-  workbookLocator,
-  releaseColumns,
-  type ReleaseColumn,
-  type WorkbookMap,
-  type MappingRow,
-  type WorkbookTarget,
-} from "#lib/types/workbook.ts";
-import { publishFiles } from "./publication.mts";
-import type { Catalog } from "./types.mts";
-import { editionByLabel } from "./identity.mts";
-
-type SourceRef = { category: WorkbookTarget["category"]; itemId: string; edition?: string };
-type ImportRow = SourceRef & {
-  sheet: MappingRow["sheet"];
-  row: number;
-  name: string;
-  relatedItems?: SourceRef[];
-  ownershipScope?: "source-row";
-  releaseEditions?: Partial<Record<ReleaseColumn, SourceRef[]>>;
-};
-export type WorkbookImports = { workbook: string; records: ImportRow[] };
+import { join, resolve } from "node:path";
+import { decodeWorkbookMap, workbookLocator, releaseColumns, type WorkbookMap, type WorkbookTarget } from "#lib/types/workbook.ts";
+import { publishFiles } from "../publication.mts";
+import type { Catalog } from "../types.mts";
+import { importTarget, readImports, type Reference, type WorkbookImports } from "./imports.mts";
+import { readOptional } from "../inputs.mts";
+import { catalogData } from "../paths.mts";
 const rowKey = workbookLocator;
 const targetKey = (target: WorkbookTarget) => `${target.category}/${target.contentId}/${target.editionId}`;
 
@@ -40,35 +22,12 @@ export function buildWorkbookMap(imports: WorkbookImports, catalog: Catalog, pre
     usedRows.add(key);
     const old = oldRows.get(key);
     if (old && old.name !== record.name) throw new Error(`Workbook row identity changed at ${key}; review required`);
-    const resolveTarget = (ref: SourceRef, former: WorkbookTarget | undefined, slot: string): WorkbookTarget => {
-      const item = catalog[ref.category]?.[ref.itemId];
-      if (!item) throw new Error(`Unknown workbook item at ${key} ${slot}: ${ref.category}/${ref.itemId}`);
+    const resolveTarget = (ref: Reference, former: WorkbookTarget | undefined, slot: string): WorkbookTarget => {
+      const target = importTarget(ref, catalog);
       if (former && (former.category !== ref.category || former.contentId !== ref.itemId))
         throw new Error(`Workbook reference changed at ${key} ${slot}; review required`);
-      const editions = item.editions ?? [];
-      if (!ref.edition) {
-        if (editions.length) throw new Error(`Ambiguous workbook item at ${key} ${slot}: ${ref.itemId} has editions`);
-        const editionId = ref.category === "bundles" ? "bundle" : "item";
-        if (former && former.editionId !== editionId) throw new Error(`Workbook edition changed at ${key} ${slot}; review required`);
-        return { category: ref.category, contentId: ref.itemId, editionId };
-      }
-      const matches = editions.filter((candidate) => candidate.label === ref.edition);
-      let edition;
-      if (former) {
-        const retained = editions.find((candidate) => candidate.id === former.editionId);
-        if (!retained) throw new Error(`Mapped edition disappeared at ${key} ${slot}: ${former.editionId}`);
-        if (former.sourceEdition !== ref.edition && retained.label !== ref.edition)
-          throw new Error(`Workbook edition reference changed at ${key} ${slot}; review required`);
-        if (matches.length && !matches.includes(retained))
-          throw new Error(`Workbook edition now resolves to another ID at ${key} ${slot}; review required`);
-        edition = retained;
-      } else {
-        // Legacy workbook labels describe standalone products unless only included releases exist.
-        const otherEditions = matches.filter((candidate) => !candidate.includedOnly);
-        edition = editionByLabel(otherEditions.length ? otherEditions : matches, ref.edition);
-      }
-      if (!edition?.id) throw new Error(`Unknown workbook edition at ${key} ${slot}: ${ref.itemId}/${ref.edition}`);
-      return { category: ref.category, contentId: ref.itemId, editionId: edition.id, sourceEdition: ref.edition };
+      if (former && former.editionId !== target.editionId) throw new Error(`Workbook edition changed at ${key} ${slot}; review required`);
+      return target;
     };
     if (old && (old.related?.length ?? 0) !== (record.relatedItems?.length ?? 0))
       throw new Error(`Workbook related references changed at ${key}; review required`);
@@ -117,40 +76,73 @@ export function buildWorkbookMap(imports: WorkbookImports, catalog: Catalog, pre
   };
 }
 
-export async function writeWorkbookMap(root = process.cwd(), options: { signal?: AbortSignal } = {}) {
+export function normalizeWorkbookMap(value: unknown, catalog: Catalog): WorkbookMap {
+  const map = decodeWorkbookMap(value);
+  const reference = (target: WorkbookTarget): Reference => ({
+    category: target.category,
+    itemId: target.contentId,
+    editionId: target.editionId,
+  });
+  return decodeWorkbookMap(
+    buildWorkbookMap(
+      {
+        workbook: map.source.workbook,
+        records: map.rows.map((row) => ({
+          sheet: row.sheet,
+          row: row.row,
+          name: row.name,
+          ...reference(row.primary),
+          ...(row.related ? { relatedItems: row.related.map(reference) } : {}),
+          ...(row.ownershipScope ? { ownershipScope: row.ownershipScope } : {}),
+          ...(row.releaseEditions
+            ? {
+                releaseEditions: Object.fromEntries(
+                  Object.entries(row.releaseEditions).map(([column, targets]) => [column, targets.map(reference)]),
+                ),
+              }
+            : {}),
+        })),
+      },
+      catalog,
+    ),
+  );
+}
+
+export async function readWorkbookMap(root: string, catalog: Catalog) {
+  const path = join(root, "workbook-map.json");
+  const text = await readOptional(path);
+  if (text === undefined) return undefined;
+  return { map: normalizeWorkbookMap(JSON.parse(text), catalog), path, text };
+}
+
+export async function writeWorkbookMap(root = process.cwd(), options: { signal?: AbortSignal; imports?: string } = {}) {
   options.signal?.throwIfAborted();
   const catalogRoot = resolve(root, "static/kdm/catalog");
   const mapPath = resolve(catalogRoot, "workbook-map.json");
-  const importsPath = resolve(root, "local-data/kdm-catalog/imports/kdm-import-records.json");
-  const importsSchemaPath = resolve(root, "local-data/kdm-catalog/imports/kdm-import-records.schema.json");
   const catalogPath = resolve(catalogRoot, "data.json");
   const schemaPath = resolve(catalogRoot, "workbook-map.schema.json");
-  const [importsText, importsSchemaText, catalogText, schemaText, oldText] = await Promise.all([
-    readFile(importsPath, "utf8"),
-    readFile(importsSchemaPath, "utf8"),
+  const [source, catalogText, schemaText, oldText] = await Promise.all([
+    options.imports ? readImports(resolve(root, options.imports), join(catalogData(catalogRoot), "import-records.schema.json")) : undefined,
     readFile(catalogPath, "utf8"),
     readFile(schemaPath, "utf8"),
-    readFile(mapPath, "utf8").catch((error: NodeJS.ErrnoException) => {
-      if (error.code === "ENOENT") return undefined;
-      throw error;
-    }),
+    readOptional(mapPath),
   ]);
-  const imports = JSON.parse(importsText) as WorkbookImports;
-  const importValidator = new Ajv2020({ allErrors: true, strict: false });
-  const checkImports = importValidator.compile(JSON.parse(importsSchemaText));
-  if (!checkImports(imports))
-    throw new Error("Workbook import schema errors: " + importValidator.errorsText(checkImports.errors, { separator: "\n" }));
+  if (!source && oldText === undefined) throw new Error("No committed workbook map; provide --imports PATH to create one.");
   const catalog = JSON.parse(catalogText) as Catalog;
   const previous = oldText === undefined ? undefined : decodeWorkbookMap(JSON.parse(oldText));
-  const map = decodeWorkbookMap(buildWorkbookMap(imports, catalog, previous));
+  const map = source ? decodeWorkbookMap(buildWorkbookMap(source.imports, catalog, previous)) : normalizeWorkbookMap(previous, catalog);
   await publishFiles([{ path: mapPath, json: map }], {
     baselines: [
-      { path: importsPath, text: importsText, message: "Workbook imports changed during generation; rerun to preserve your edits." },
-      {
-        path: importsSchemaPath,
-        text: importsSchemaText,
-        message: "Workbook import schema changed during generation; rerun to validate current records.",
-      },
+      ...(source
+        ? [
+            { path: source.path, text: source.text, message: "Workbook imports changed during generation; rerun to preserve your edits." },
+            {
+              path: source.schemaPath,
+              text: source.schemaText,
+              message: "Workbook import schema changed during generation; rerun to validate current records.",
+            },
+          ]
+        : []),
       {
         path: catalogPath,
         text: catalogText,

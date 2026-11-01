@@ -99,6 +99,7 @@ test("offline refresh publishes tag-only repairs when cached stock and date are 
     const folder = join(catalogCache(directory), "shopify-products");
     await mkdir(directory, { recursive: true });
     await mkdir(folder, { recursive: true });
+    await writeFile(join(directory, "data.schema.json"), await readFile("static/kdm/catalog/data.schema.json", "utf8"));
     const page = join(folder, "products-page-1.json");
     await writeFile(
       page,
@@ -126,7 +127,8 @@ test("offline refresh publishes tag-only repairs when cached stock and date are 
       name: "Example",
       tags: ["model"],
       handle: "example",
-      editions: [{ label: "Resin", available: true, shop: "in-stock" }],
+      kind: "model",
+      editions: [{ id: "resin", label: "Resin", format: "physical", materials: ["Resin"], available: true, shop: "in-stock" }],
     };
     await writeFile(path, JSON.stringify(data));
     const result = await refreshAvailability({ catalog: path, offline: true });
@@ -148,6 +150,7 @@ test("offline refresh publishes sort-only tag repairs when cached stock and date
     const folder = join(catalogCache(directory), "shopify-products");
     await mkdir(folder, { recursive: true });
     await mkdir(directory, { recursive: true });
+    await writeFile(join(directory, "data.schema.json"), await readFile("static/kdm/catalog/data.schema.json", "utf8"));
     const page = join(folder, "products-page-1.json");
     await writeFile(
       page,
@@ -175,7 +178,8 @@ test("offline refresh publishes sort-only tag repairs when cached stock and date
       name: "Example",
       tags: ["model", "in-stock"],
       handle: "example",
-      editions: [{ label: "Resin", available: true, shop: "in-stock" }],
+      kind: "model",
+      editions: [{ id: "resin", label: "Resin", format: "physical", materials: ["Resin"], available: true, shop: "in-stock" }],
     };
     await writeFile(path, JSON.stringify(data));
     const result = await refreshAvailability({ catalog: path, offline: true });

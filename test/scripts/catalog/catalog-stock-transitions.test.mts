@@ -64,8 +64,8 @@ test("reviewed listing replacement invalidates stock without trusting individual
     before,
     evidence,
     {
-      old: { category: "content", itemId: "example", edition: "Resin" },
-      replacement: { category: "content", itemId: "example", edition: "Resin", replaceUrl: true },
+      old: { category: "content", itemId: "example", editionId: "resin" },
+      replacement: { category: "content", itemId: "example", editionId: "resin", replaceUrl: true },
     },
     [],
     { content: { example: ["model"] }, accessories: {}, bundles: {}, homebrew: {}, "included-only": {} },
@@ -115,7 +115,7 @@ test("individual product metadata preserves snapshot availability and stock for 
       const result = planUpdate(
         before,
         [{ data, checkedAt: "2026-10-13T00:00:00Z", url: "https://shop.kingdomdeath.com/products/current.js" }],
-        { current: { category: "content", itemId: "example", edition: "Resin" } },
+        { current: { category: "content", itemId: "example", editionId: "resin" } },
         [],
         { content: { example: ["model"] }, accessories: {}, bundles: {}, homebrew: {}, "included-only": {} },
       );
@@ -135,7 +135,7 @@ test("metadata importing creates releases without deriving availability from the
     const result = planUpdate(
       before,
       [{ data, checkedAt: "2026-10-13T00:00:00Z", url: "https://shop.kingdomdeath.com/products/current.js" }],
-      { current: { category: "content", itemId: "example", edition: "Resin" } },
+      { current: { category: "content", itemId: "example", editionLabel: "Resin" } },
       [],
       { content: { example: ["model"] }, accessories: {}, bundles: {}, homebrew: {}, "included-only": {} },
     );

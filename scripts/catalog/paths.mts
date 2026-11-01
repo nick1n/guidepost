@@ -9,6 +9,10 @@ export function catalogLocal(root: string) {
   return resolve(root, "../../../local-data/kdm-catalog");
 }
 
+export function catalogData(root: string) {
+  return resolve(root, "../../../scripts/catalog/data");
+}
+
 export function catalogCache(root: string) {
   return resolve(root, "../../../.cache/kdm-catalog");
 }

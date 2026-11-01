@@ -1,6 +1,7 @@
 import { NodeRuntime, NodeServices } from "@effect/platform-node";
-import { Effect, Option, Schema } from "effect";
+import { Cause, Effect, Option, Schema } from "effect";
 import { Command, Flag } from "effect/cli";
+import { CatalogInputError } from "./review/schema.mts";
 
 export const optionalString = (name: string) => Flag.String(name).pipe(Flag.optional, Flag.map(Option.getOrUndefined));
 export const offline = Flag.Boolean("offline").pipe(
@@ -38,5 +39,20 @@ export const workflow = Effect.fn("CatalogCLI.workflow")(<A,>(run: (signal: Abor
 );
 
 export function runCommand<Name extends string, Input, ContextInput>(command: Command.Command<Name, Input, ContextInput, CommandError>) {
-  command.pipe(Command.run({ version: "0.1.0" }), Effect.provide(NodeServices.layer), NodeRuntime.runMain);
+  command.pipe(
+    Command.run({ version: "0.1.0" }),
+    Effect.catchCause((cause) => {
+      const reason = cause.reasons[0];
+      if (cause.reasons.length !== 1 || !reason || !Cause.isFailReason(reason)) return Effect.failCause(cause);
+      const error = reason.error;
+      if (!(error instanceof CommandError) || !(error.cause instanceof CatalogInputError)) return Effect.failCause(cause);
+      const message = error.cause.message;
+      return Effect.sync(() => {
+        console.error(message);
+        process.exitCode = 1;
+      });
+    }),
+    Effect.provide(NodeServices.layer),
+    NodeRuntime.runMain,
+  );
 }

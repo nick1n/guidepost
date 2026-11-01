@@ -1,4 +1,4 @@
-import { readFile, stat } from "node:fs/promises";
+import { readFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { Command } from "effect/cli";
@@ -6,77 +6,55 @@ import { catalog, offline, fetch, offlineMode, runCommand, workflow } from "../c
 import { publishFiles } from "../publication.mts";
 import { availabilityFromUrls } from "../availability.mts";
 import { organizeCatalog } from "../order.mts";
-import { catalogTemp, catalogCache } from "../paths.mts";
-import { ShopClient, shopProduct } from "../shop.mts";
-import type { Catalog, Product } from "../types.mts";
+import { catalogTemp } from "../paths.mts";
+import { readSnapshot, type SnapshotOptions } from "../snapshot.mts";
+import { validateCatalog } from "../validate.mts";
+import type { Catalog } from "../types.mts";
+import { captureWorkbookInputs } from "../inputs.mts";
 
-export async function refreshAvailability(
-  options: { catalog?: string; offline?: boolean; signal?: AbortSignal; client?: Pick<ShopClient, "get"> } = {},
-) {
+export async function refreshAvailability(options: SnapshotOptions = {}) {
   options.signal?.throwIfAborted();
   const path = resolve(options.catalog ?? "static/kdm/catalog/data.json");
   const original = await readFile(path, "utf8");
+  const schemaPath = join(dirname(path), "data.schema.json");
+  const schemaText = await readFile(schemaPath, "utf8");
+  const workbookInputs = await captureWorkbookInputs(dirname(path));
   const catalog: Catalog = JSON.parse(original);
   const previousShopUpdated = catalog.shopUpdated;
   const offline = options.offline !== false;
-  const folder = join(catalogCache(dirname(path)), "shopify-products");
-  const client = options.client ?? new ShopClient({ refresh: true, signal: options.signal });
-  const pages: { products: unknown[] }[] = [];
-  const products: Product[] = [];
-  const cacheTimes: number[] = [];
-  for (const page of [1, 2]) {
-    options.signal?.throwIfAborted();
-    const cachePath = join(folder, `products-page-${page}.json`);
-    const raw = offline
-      ? JSON.parse(
-          await readFile(cachePath, "utf8").catch((error: NodeJS.ErrnoException) => {
-            if (error.code === "ENOENT")
-              throw new Error(`No saved shop page ${page}; run pnpm catalog:availability --fetch to download it.`);
-            throw error;
-          }),
-        )
-      : (await client.get(`https://shop.kingdomdeath.com/products.json?limit=250&page=${page}`)).data;
-    if (!raw || typeof raw !== "object" || !Array.isArray((raw as { products?: unknown }).products))
-      throw new Error(`Invalid products page ${page}; catalog availability was not changed.`);
-    if (offline) cacheTimes.push((await stat(cachePath)).mtimeMs);
-    const response = raw as { products: unknown[] };
-    const normalized = response.products.map((value) => shopProduct(value, "json"));
-    if (
-      normalized.some((product) => !product.variants.length || product.variants.some((variant) => typeof variant.available !== "boolean"))
-    )
-      throw new Error(`Missing variant availability on page ${page}; catalog availability was not changed.`);
-    pages.push(response);
-    products.push(...normalized);
-    if (response.products.length > 250 || (page === 2 && response.products.length === 250))
-      throw new Error("Shop snapshot exceeds two pages; catalog availability was not changed.");
-  }
-  if (!products.length) throw new Error("Shop returned no products; catalog availability was not changed.");
-  const checkedAt = new Date(offline ? Math.min(...cacheTimes) : Date.now()).toISOString();
+  const { products, checkedAt, files, baselines, pages, folder } = await readSnapshot(options);
   const result = availabilityFromUrls(catalog, products, checkedAt.slice(0, 10));
+  const organizedCatalog = organizeCatalog(catalog);
+  await validateCatalog(organizedCatalog, schemaPath);
   const reportPath = join(catalogTemp(dirname(path)), "reports/availability-refresh.json");
   await publishFiles(
     [
-      ...(offline ? [] : pages.map((page, index) => ({ path: join(folder, `products-page-${index + 1}.json`), json: page }))),
+      ...files,
       ...(result.changed || result.shopChanged || result.tagsChanged || catalog.shopUpdated !== previousShopUpdated
-        ? [{ path, json: organizeCatalog(catalog) }]
+        ? [{ path, json: organizedCatalog }]
         : []),
       {
         path: reportPath,
         json: {
           checkedAt,
           offline,
-          pages: pages.length,
+          pages,
           products: products.length,
           ...result,
         },
       },
     ],
     {
-      baselines: [{ path, text: original, message: "Catalog changed during refresh; rerun to preserve those edits." }],
+      baselines: [
+        { path, text: original, message: "Catalog changed during refresh; rerun to preserve those edits." },
+        { path: schemaPath, text: schemaText, message: "Schema changed during refresh; rerun to preserve those edits." },
+        ...baselines,
+        ...workbookInputs,
+      ],
       signal: options.signal,
     },
   );
-  return { ...result, pages: pages.length, products: products.length, catalog: path, folder };
+  return { ...result, pages, products: products.length, catalog: path, folder };
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

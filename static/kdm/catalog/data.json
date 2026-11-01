@@ -41,6 +41,7 @@
         "2023-10-02",
         "2023-10-31",
         "2023-11-24",
+        "2023-11-27",
         "2023-12-25",
         "2024-01-31",
         "2024-02-29",
@@ -202,7 +203,7 @@
         { "id": "sim", "label": "Sim", "available": true, "format": "digital", "handle": "kds-dung-beetle-knight-expansion", "prices": [700], "releaseDate": "2023-11-24", "shop": "in-stock", "simulator": true },
         { "id": "1-3", "label": "1.3", "format": "physical", "materials": ["Plastic"], "prices": [3000, 6000], "releaseDate": "2016-02-16" },
         { "id": "1-6", "label": "1.6", "available": true, "format": "physical", "handle": "dung-beetle-expansion-1-6", "materials": ["Plastic"], "prices": [6500, 8000], "releaseDate": "2021-11-26", "shop": "in-stock" },
-        { "id": "1-7", "label": "1.7", "available": true, "format": "physical", "handle": "dung-beetle-knight-expansion-1-7", "materials": ["Plastic"], "prices": [9000], "releaseDate": "2026-09-30", "shop": "in-stock" }
+        { "id": "1-7", "label": "1.7", "available": true, "format": "physical", "handle": "dung-beetle-knight-expansion-1-7", "materials": ["Plastic"], "prices": [8000, 9000], "releaseDate": "2026-09-30", "shop": "in-stock" }
       ],
       "gameplay": true,
       "includes": [
@@ -480,7 +481,7 @@
         { "id": "sim", "label": "Sim", "available": true, "format": "digital", "handle": "kds-slenderman-expansion", "prices": [700], "releaseDate": "2023-11-24", "shop": "in-stock", "simulator": true },
         { "id": "1-3", "label": "1.3", "format": "physical", "materials": ["Plastic"], "prices": [4000, 6000], "releaseDate": "2016-02-16" },
         { "id": "1-6", "label": "1.6", "format": "physical", "handle": "slenderman-expansion-1-6", "materials": ["Plastic"], "prices": [6500, 8000], "releaseDate": "2021-11-26", "shop": "out-of-stock" },
-        { "id": "1-7", "label": "1.7", "available": true, "format": "physical", "handle": "slenderman-expansion-1-7", "materials": ["Plastic"], "prices": [9000], "releaseDate": "2026-09-30", "shop": "in-stock" }
+        { "id": "1-7", "label": "1.7", "available": true, "format": "physical", "handle": "slenderman-expansion-1-7", "materials": ["Plastic"], "prices": [8000, 9000], "releaseDate": "2026-09-30", "shop": "in-stock" }
       ],
       "gameplay": true,
       "includes": [
@@ -1732,9 +1733,10 @@
     },
     "champion-weaponsmith": {
       "editions": [
-        { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Resin"], "numbered": true, "prices": [3000], "releaseDate": "2017-02-14", "runSize": 500 },
-        { "id": "encore", "label": "Encore", "format": "physical", "materials": ["Resin"], "prices": [3000], "releaseDate": "2017-02-14" }
+        { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Resin"], "numbered": true, "prices": [3000], "releaseDate": "2017-02-14", "runSize": 500, "shop": "out-of-stock" },
+        { "id": "encore", "label": "Encore", "format": "physical", "materials": ["Resin"], "prices": [3000], "releaseDate": "2017-02-14", "shop": "out-of-stock" }
       ],
+      "handle": "champion-weaponsmith",
       "kind": "model",
       "name": "Champion Weaponsmith",
       "notes": "This model comes with two distinct lower body options.",
@@ -1746,7 +1748,7 @@
       "announcements": ["2023-03-31", "2026-05-29"],
       "editions": [
         { "id": "first-run", "label": "First Run", "format": "physical", "gameplay": false, "handle": "stone-wrecker", "materials": ["Photoresin"], "numbered": true, "prices": [3000], "releaseDate": "2023-03-31", "runSize": 500, "shop": "out-of-stock", "size": "30" },
-        { "id": "deathgrey", "label": "Deathgrey", "format": "physical", "gameplay": false, "handle": "stone-wrecker", "materials": ["Photoresin"], "numbered": true, "prices": [3500], "releaseDate": "2023-03-31", "runSize": 350, "shop": "out-of-stock", "size": "30" },
+        { "id": "deathgrey", "label": "Deathgrey", "format": "physical", "gameplay": false, "handle": "stone-wrecker", "materials": ["Deathgrey"], "numbered": true, "prices": [3500], "releaseDate": "2023-03-31", "runSize": 350, "shop": "out-of-stock", "size": "30" },
         { "id": "encore", "label": "Encore", "format": "physical", "gameplay": false, "handle": "stone-wrecker", "materials": ["Photoresin"], "prices": [3000], "releaseDate": "2023-03-31", "shop": "out-of-stock", "size": "30" },
         { "id": "box", "label": "Box", "format": "physical", "handle": "stone-wrecker-1", "materials": ["Plastic"], "prices": [3400], "releaseDate": "2026-05-29", "shop": "missing" }
       ],
@@ -1769,8 +1771,8 @@
     "chef-male": {
       "announcements": ["2026-05-29"],
       "editions": [
-        { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Resin"], "numbered": true, "prices": [3400], "releaseDate": "2016-09-17", "runSize": 500, "shop": "out-of-stock" },
-        { "id": "encore", "label": "Encore", "available": true, "format": "physical", "materials": ["Resin"], "prices": [3400], "releaseDate": "2016-09-17", "shop": "in-stock" }
+        { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Resin"], "numbered": true, "prices": [2700, 3400], "releaseDate": "2016-09-17", "runSize": 500, "shop": "out-of-stock" },
+        { "id": "encore", "label": "Encore", "available": true, "format": "physical", "materials": ["Resin"], "prices": [2700, 3400], "releaseDate": "2016-09-17", "shop": "in-stock" }
       ],
       "handle": "chef-male",
       "kind": "model",
@@ -1972,7 +1974,19 @@
       "announcements": ["2019-10-31", "2024-09-30", "2025-10-31"],
       "editions": [
         { "id": "first-run", "label": "First Run", "format": "physical", "handle": "death-high-disciple-of-the-witch-one", "materials": ["Photoresin"], "numbered": true, "prices": [2700, 3400], "releaseDate": "2019-10-31", "runSize": 500, "shop": "out-of-stock", "size": "30" },
-        { "id": "deathgrey", "label": "Deathgrey", "format": "physical", "handle": "death-high-disciple-of-the-witch-one", "materials": ["Deathgrey"], "numbered": true, "prices": [3000, 3900], "releaseDate": "2019-10-31", "runSize": 150, "shop": "out-of-stock", "size": "30" },
+        {
+          "id": "deathgrey",
+          "label": "Deathgrey",
+          "format": "physical",
+          "handle": "death-high-disciple-of-the-witch-one",
+          "materials": ["Deathgrey"],
+          "numbered": true,
+          "prices": [3000, 3500, 3900],
+          "releaseDate": "2019-10-31",
+          "runSize": 150,
+          "shop": "out-of-stock",
+          "size": "30"
+        },
         { "id": "encore", "label": "Encore", "format": "physical", "handle": "death-high-disciple-of-the-witch-one", "materials": ["Photoresin"], "prices": [2700, 3400], "releaseDate": "2019-10-31", "shop": "out-of-stock", "size": "30" },
         { "id": "resculpt-encore", "label": "Resculpt: Encore", "format": "physical", "handle": "death-high-disciple-of-the-witch-one-2024", "materials": ["Photoresin"], "prices": [3000], "releaseDate": "2024-09-30", "shop": "out-of-stock", "size": "30" }
       ],
@@ -2610,7 +2624,7 @@
       "announcements": ["2024-01-31", "2024-07-26"],
       "editions": [
         { "id": "box", "label": "Box", "available": true, "format": "physical", "handle": "early-survivor-zelda", "materials": ["Plastic"], "prices": [3400], "releaseDate": "2024-01-31", "shop": "in-stock" },
-        { "id": "bust", "label": "Bust", "format": "physical", "gameplay": false, "materials": ["Photoresin"], "numbered": true, "prices": [7500], "releaseDate": "2024-02-29", "runSize": 400, "size": "120" }
+        { "id": "bust", "label": "Bust", "format": "physical", "gameplay": false, "handle": "zelda-bust", "materials": ["Photoresin"], "numbered": true, "prices": [7500], "releaseDate": "2024-02-29", "runSize": 400, "shop": "out-of-stock", "size": "120" }
       ],
       "gameplay": true,
       "kind": "box",
@@ -4252,7 +4266,7 @@
       "announcements": ["2023-06-12"],
       "editions": [
         { "id": "deathgrey", "label": "Deathgrey", "format": "physical", "materials": ["Deathgrey"], "numbered": true, "prices": [3500], "releaseDate": "2023-06-12", "runSize": 250, "shop": "out-of-stock" },
-        { "id": "photoresin", "label": "Photoresin", "format": "physical", "materials": ["Photoresin"], "prices": [3000], "releaseDate": "2023-06-12", "shop": "missing" }
+        { "id": "encore", "label": "Encore", "format": "physical", "materials": ["Photoresin"], "prices": [3000], "releaseDate": "2023-06-12", "shop": "out-of-stock" }
       ],
       "handle": "mist-variant",
       "kind": "model",
@@ -4337,11 +4351,12 @@
     "mox-the-healer": {
       "aliases": ["Mox The Healer Deathgrey M2 Edition"],
       "editions": [
-        { "id": "first-run", "label": "First Run", "beta": true, "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [3200], "releaseDate": "2025-03-03", "runSize": 500 },
-        { "id": "deathgrey", "label": "Deathgrey", "beta": true, "format": "physical", "materials": ["Deathgrey"], "numbered": true, "prices": [3700], "releaseDate": "2025-03-03", "runSize": 250 },
-        { "id": "encore", "label": "Encore", "beta": true, "format": "physical", "materials": ["Photoresin"], "prices": [3200], "releaseDate": "2025-03-03" }
+        { "id": "first-run", "label": "First Run", "beta": true, "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [3200], "releaseDate": "2025-03-03", "runSize": 500, "shop": "out-of-stock" },
+        { "id": "deathgrey", "label": "Deathgrey", "beta": true, "format": "physical", "materials": ["Deathgrey"], "numbered": true, "prices": [3700], "releaseDate": "2025-03-03", "runSize": 250, "shop": "out-of-stock" },
+        { "id": "encore", "label": "Encore", "beta": true, "format": "physical", "materials": ["Photoresin"], "prices": [3200], "releaseDate": "2025-03-03", "shop": "out-of-stock" }
       ],
       "gameplay": true,
+      "handle": "mox-the-healer",
       "kind": "beta",
       "name": "Mox The Healer",
       "size": "30",
@@ -4546,7 +4561,7 @@
     },
     "orc-boss": {
       "announcements": ["2025-06-30"],
-      "editions": [{ "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Plastic"], "numbered": true, "prices": [12500], "releaseDate": "2025-06-30", "runSize": 200, "shop": "out-of-stock" }],
+      "editions": [{ "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Resin"], "numbered": true, "prices": [12500], "releaseDate": "2025-06-30", "runSize": 200, "shop": "out-of-stock" }],
       "handle": "orc-boss",
       "kind": "model",
       "name": "Orc Boss",
@@ -4583,8 +4598,8 @@
       "aliases": ["Pariah (Resin)", "Pariah - Bust"],
       "announcements": ["2024-05-31"],
       "editions": [
-        { "id": "first-run", "label": "First Run", "expansion": "Pariah", "format": "physical", "materials": ["Resin"], "numbered": true, "prices": [4000], "releaseDate": "2016-06-17", "runSize": 500, "size": "50" },
-        { "id": "encore", "label": "Encore", "expansion": "Pariah", "format": "physical", "materials": ["Resin"], "prices": [4000], "releaseDate": "2016-06-17", "size": "50" },
+        { "id": "first-run", "label": "First Run", "expansion": "Pariah", "format": "physical", "handle": "pariah", "materials": ["Resin"], "numbered": true, "prices": [4000], "releaseDate": "2016-06-17", "runSize": 500, "shop": "out-of-stock", "size": "50" },
+        { "id": "encore", "label": "Encore", "expansion": "Pariah", "format": "physical", "handle": "pariah", "materials": ["Resin"], "prices": [4000], "releaseDate": "2016-06-17", "shop": "out-of-stock", "size": "50" },
         { "id": "bust", "label": "Bust", "format": "physical", "handle": "pariah-bust", "materials": ["Photoresin"], "numbered": true, "prices": [7500], "releaseDate": "2024-05-31", "runSize": 250, "shop": "out-of-stock", "size": "120" },
         { "id": "plastic", "label": "Plastic", "expansion": "Pariah", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "releaseDate": "2025-09-30" }
       ],
@@ -4656,7 +4671,7 @@
       "editions": [
         { "id": "first-run", "label": "First Run", "format": "physical", "gameplay": false, "materials": ["Resin"], "numbered": true, "prices": [2500], "releaseDate": "2015-07-01", "runSize": 500, "size": "30" },
         { "id": "encore", "label": "Encore", "format": "physical", "gameplay": false, "materials": ["Resin"], "prices": [2500], "releaseDate": "2015-07-01", "size": "30" },
-        { "id": "box", "label": "Box", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseDate": "2024-08-29", "size": "30" }
+        { "id": "box", "label": "Box", "format": "physical", "handle": "percival-1", "materials": ["Plastic"], "prices": [2500], "releaseDate": "2024-08-29", "shop": "out-of-stock", "size": "30" }
       ],
       "gameplay": true,
       "kind": "box",
@@ -4786,14 +4801,14 @@
       "aliases": ["Pinup Apotheosis (Remastered)"],
       "editions": [
         { "id": "resin", "label": "Resin", "format": "physical", "materials": ["Resin"], "prices": [2600], "releaseDate": "2016-02-14" },
-        { "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "name": "remaster", "prices": [3000], "releaseDate": "2020-12-12" },
+        { "id": "plastic", "label": "Plastic", "available": true, "format": "physical", "handle": "pinup-apotheosis-1", "materials": ["Plastic"], "name": "remaster", "prices": [3000], "releaseDate": "2020-12-12", "shop": "in-stock" },
         { "id": "plastic-included", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "releaseDate": "2020-12-12" }
       ],
       "kind": "model",
       "name": "Pinup Apotheosis",
       "notes": "Inspired by the dreamy illustrations of the art-nouveau era.",
       "size": "30",
-      "tags": ["female", "plastic", "generic", "resin", "pinup", "2016", "2020", "resculpt", "remaster", "apotheosis"]
+      "tags": ["female", "plastic", "generic", "in-stock", "resin", "pinup", "2016", "2020", "resculpt", "remaster", "apotheosis"]
     },
     "pinup-architect": {
       "editions": [
@@ -5735,7 +5750,7 @@
       "editions": [
         { "id": "first-run", "label": "First Run", "format": "physical", "gameplay": false, "materials": ["Resin"], "numbered": true, "prices": [2700], "releaseDate": "2017-05-26", "runSize": 500 },
         { "id": "encore", "label": "Encore", "format": "physical", "gameplay": false, "materials": ["Resin"], "prices": [2700], "releaseDate": "2017-05-26" },
-        { "id": "box", "label": "Box", "format": "physical", "handle": "ringtail-vixen-wb", "materials": ["Plastic"], "prices": [3400], "releaseDate": "2019-08-16", "shop": "out-of-stock" }
+        { "id": "box", "label": "Box", "format": "physical", "handle": "ringtail-vixen-wb", "materials": ["Plastic"], "prices": [2500, 3400], "releaseDate": "2019-08-16", "shop": "out-of-stock" }
       ],
       "gameplay": true,
       "kind": "box",
@@ -5894,11 +5909,12 @@
       "aliases": ["Sci-Fi Erza Deathgrey M2 Edition", "Sci-Fi Erza Deathgrey", "Sci Fi Erza (Deathgrey M2)"],
       "announcements": ["2019-08-16", "2022-11-25", "2023-08-28"],
       "editions": [
-        { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [2700], "releaseDate": "2019-08-16", "runSize": 500 },
-        { "id": "deathgrey", "label": "Deathgrey", "format": "physical", "materials": ["Deathgrey"], "numbered": true, "prices": [3500], "releaseDate": "2019-08-16", "runSize": 100 },
-        { "id": "encore", "label": "Encore", "format": "physical", "materials": ["Photoresin"], "prices": [2700], "releaseDate": "2019-08-16" },
-        { "id": "deathgrey-m2", "label": "Deathgrey M2", "format": "physical", "handle": "sci-fi-erza-1", "materials": ["Deathgrey"], "numbered": true, "prices": [3500], "releaseDate": "2023-08-28", "runSize": 500, "shop": "out-of-stock" }
+        { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [2700], "releaseDate": "2019-08-16", "runSize": 500, "shop": "out-of-stock" },
+        { "id": "deathgrey", "label": "Deathgrey", "format": "physical", "materials": ["Deathgrey"], "numbered": true, "prices": [3500], "releaseDate": "2019-08-16", "runSize": 100, "shop": "out-of-stock" },
+        { "id": "encore", "label": "Encore", "format": "physical", "materials": ["Photoresin"], "prices": [2700], "releaseDate": "2019-08-16", "shop": "out-of-stock" },
+        { "id": "deathgrey-m2", "label": "Deathgrey M2", "format": "physical", "materials": ["Deathgrey"], "numbered": true, "prices": [3500], "releaseDate": "2023-08-28", "runSize": 500, "shop": "out-of-stock" }
       ],
+      "handle": "sci-fi-erza-1",
       "kind": "model",
       "name": "Sci-Fi Erza",
       "notes": "First model available in Deathgrey resin.\n\nFor Gen Con 2023, Sci-fi Erza was remade in brand new Deathgrey M2.",
@@ -6664,7 +6680,7 @@
         { "id": "first-run", "label": "First Run", "beta": true, "format": "physical", "handle": "sunlantern-armor-aya", "materials": ["Photoresin"], "numbered": true, "prices": [3000], "releaseDate": "2023-11-24", "runSize": 500, "shop": "missing", "size": "30" },
         { "id": "deathgrey", "label": "Deathgrey", "beta": true, "format": "physical", "handle": "sunlantern-armor-aya", "materials": ["Deathgrey"], "numbered": true, "prices": [3500], "releaseDate": "2023-11-24", "runSize": 250, "shop": "missing", "size": "30" },
         { "id": "encore", "label": "Encore", "beta": true, "format": "physical", "handle": "sunlantern-armor-aya", "materials": ["Photoresin"], "prices": [3000], "releaseDate": "2023-11-24", "shop": "missing", "size": "30" },
-        { "id": "box", "label": "Box", "format": "physical", "handle": "sunlantern-armor-aya", "materials": ["Plastic"], "prices": [3000], "releaseDate": "2024-11-29", "shop": "missing", "size": "30" },
+        { "id": "box", "label": "Box", "format": "physical", "handle": "sunlantern-armor-aya", "materials": ["Plastic"], "prices": [3000, 6000], "releaseDate": "2024-11-29", "shop": "missing", "size": "30" },
         { "id": "painters", "label": "Painters", "format": "physical", "gameplay": false, "materials": ["Photoresin"], "prices": [6000], "releaseDate": "2024-11-29", "size": "50" }
       ],
       "gameplay": true,
@@ -6718,9 +6734,10 @@
     },
     "super-savior": {
       "editions": [
-        { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Resin"], "numbered": true, "prices": [2700], "releaseDate": "2013-07-12", "runSize": 450 },
-        { "id": "encore", "label": "Encore", "format": "physical", "materials": ["Resin"], "prices": [2700], "releaseDate": "2013-07-12" }
+        { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Resin"], "numbered": true, "prices": [2700], "releaseDate": "2013-07-12", "runSize": 450, "shop": "out-of-stock" },
+        { "id": "encore", "label": "Encore", "format": "physical", "materials": ["Resin"], "prices": [2700], "releaseDate": "2013-07-12", "shop": "out-of-stock" }
       ],
+      "handle": "super-savior",
       "kind": "model",
       "name": "Super Savior",
       "notes": "The first run card has gold writing instead of black.",
@@ -7213,8 +7230,8 @@
     },
     "warrior-of-the-sun-male": {
       "editions": [
-        { "id": "first-run", "label": "First Run", "format": "physical", "materials": ["Resin"], "numbered": true, "prices": [3000], "releaseDate": "2013-11-01", "runSize": 450 },
-        { "id": "encore", "label": "Encore", "format": "physical", "materials": ["Resin"], "prices": [3000], "releaseDate": "2013-11-01" },
+        { "id": "first-run", "label": "First Run", "format": "physical", "handle": "warrior-of-the-sun-male", "materials": ["Resin"], "numbered": true, "prices": [3000], "releaseDate": "2013-11-01", "runSize": 450, "shop": "out-of-stock" },
+        { "id": "encore", "label": "Encore", "format": "physical", "handle": "warrior-of-the-sun-male", "materials": ["Resin"], "prices": [3000], "releaseDate": "2013-11-01", "shop": "out-of-stock" },
         { "id": "plastic", "label": "Plastic", "expansion": "Campaigns of Death", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseWindow": "2026 Q4" },
         { "id": "plastic-included", "label": "Plastic", "expansion": "Campaigns of Death", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "releaseWindow": "2026-Q4" }
       ],

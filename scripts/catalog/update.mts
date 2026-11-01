@@ -1,6 +1,6 @@
 import { isDeepStrictEqual } from "node:util";
 import { categories, type Catalog, type Category, type Evidence, type Mapping, type Product, type Variant } from "./types.mts";
-import { resolveReleases } from "./releases.mts";
+import { mappingIssue, resolveReleases } from "./releases.mts";
 import { catalogListing, productUrl } from "./shop.mts";
 import { clearChangedListings, listingSnapshot, normalizeCatalog } from "./normalize.mts";
 import { organizeCatalog, compareEditions } from "./order.mts";
@@ -15,7 +15,13 @@ export function normalized(value: string) {
     .replace(/^(?:kds|kingdomdeathsimulator)/, "");
 }
 
-export function productExclusion(handle: string, title = "") {
+export function productExclusion(handle: string, title = "", mapping?: Mapping) {
+  if (mapping?.retired) return "Retired listing: " + mapping.retired;
+  if (handle === "another-preorder-item-test") return "Internal shop test listing; not an ownable product";
+  if (handle === "mystery-t-shirt") return "Random shirt assortment; not a distinct catalog product";
+  if (/^kickstarter-/i.test(handle) || /^kickstarter\b/i.test(title)) return "Kickstarter listings are excluded from the catalog";
+  if (/(?:^|-)card-sleeves?(?:-|$)|(?:^|-)sleeve-set(?:-|$)/i.test(handle) || /\bcard sleeves?\b/i.test(title))
+    return "Card sleeves are excluded from the catalog";
   if (/(?:^|-)art-?prints?(?:-|$)/i.test(handle) || /\bart\s+prints?\b/i.test(title))
     return "Art prints are excluded from the catalog for now";
 }
@@ -30,6 +36,16 @@ export function releaseGaps(catalog: Catalog) {
       .map((edition) => ({ itemId, edition: edition.label })),
   );
   return { missingEditions, missingDates };
+}
+
+export function catalogChanges(before: Catalog, after: Catalog) {
+  return categories.flatMap((category) =>
+    Object.entries(after[category]).flatMap(([itemId, item]) =>
+      isDeepStrictEqual(before[category][itemId], item)
+        ? []
+        : [{ category, itemId, before: before[category][itemId] ?? null, after: item }],
+    ),
+  );
 }
 
 function match(catalog: Catalog, product: Product, mappings: Record<string, Mapping>) {
@@ -69,7 +85,6 @@ function match(catalog: Catalog, product: Product, mappings: Record<string, Mapp
     mapping: {
       category,
       itemId,
-      ...(edition?.length === 1 || formatMatches ? { edition: edition![0]!.label } : {}),
       ...(gameplay.length === 1 ? { gameplay: gameplay[0] } : {}),
     },
     confidence: urlMatches ? "url" : "name",
@@ -95,12 +110,23 @@ export function planUpdate(
     variants: Variant[];
     confidence: string;
   }[] = [];
-  const warnings: string[] = [];
   const excluded: { handle: string; reason: string }[] = [];
+  const announcementsByHandle = new Map<string, Set<string>>();
+  for (const row of news) {
+    let handle: string;
+    try {
+      handle = productUrl(row.shopUrl).split("/").at(-1)!;
+    } catch {
+      continue;
+    }
+    const dates = announcementsByHandle.get(handle) ?? new Set<string>();
+    dates.add(row.date);
+    announcementsByHandle.set(handle, dates);
+  }
   for (const source of evidence) {
     const product = source.data;
     const exclusion =
-      productExclusion(product.handle, product.title) ??
+      productExclusion(product.handle, product.title, mappings[product.handle]) ??
       (mappings[product.handle]?.create?.accessoryType === "art-print" ? "Art prints are excluded from the catalog for now" : undefined);
     if (exclusion) {
       excluded.push({ handle: product.handle, reason: exclusion });
@@ -111,12 +137,37 @@ export function planUpdate(
       unresolved.push({ handle: product.handle, reason: result.confidence, candidates: result.candidates });
       continue;
     }
-    const mapping = result.mapping;
+    const mapping: Mapping = result.mapping;
     const temporary = /pre-?order/i.test(product.handle);
     let item = catalog[mapping.category][mapping.itemId];
     if (!item && mapping.create) item = catalog[mapping.category][mapping.itemId] = { ...structuredClone(mapping.create), tags: [] };
     if (!item) {
       unresolved.push({ handle: product.handle, reason: "Mapping refers to a missing item" });
+      continue;
+    }
+    const issue = mappingIssue(item, product, mapping);
+    if (issue) {
+      unresolved.push({ handle: product.handle, reason: issue });
+      continue;
+    }
+    const digital = product.variants.every((v) => !v.requires_shipping);
+    if (digital && !item.editions && item.url) {
+      if (item.urls?.length || item.priceMinimum) {
+        unresolved.push({ handle: product.handle, reason: "Existing physical alternatives require a curated edition mapping" });
+        continue;
+      }
+      item.editions = [
+        { id: editionId("Box"), label: "Box", url: item.url, ...(item.price !== undefined ? { prices: [item.price] } : {}) },
+      ];
+    }
+    const resolved = resolveReleases(item, product, { policy: "update", mapping });
+    if (resolved.issue) {
+      unresolved.push({ handle: product.handle, reason: resolved.issue, candidates: [mapping.itemId] });
+      continue;
+    }
+    const selectedVariants = resolved.variants;
+    if (!selectedVariants.length) {
+      unresolved.push({ handle: product.handle, reason: "Mapped variants are absent from the current listing" });
       continue;
     }
     // Work with listing URLs internally; normalization writes compact handles.
@@ -130,29 +181,10 @@ export function planUpdate(
         delete edition.handle;
       }
     }
-    const digital = product.variants.every((v) => !v.requires_shipping);
-    if (digital && !item.editions && item.url) {
-      if (item.urls?.length || item.priceMinimum) {
-        unresolved.push({ handle: product.handle, reason: "Existing physical alternatives require a curated edition mapping" });
-        continue;
-      }
-      item.editions = [
-        { id: editionId("Box"), label: "Box", url: item.url, ...(item.price !== undefined ? { prices: [item.price] } : {}) },
-      ];
-    }
-    const resolved = resolveReleases(item, product, { policy: "update", mapping });
-    const selectedVariants = resolved.variants;
-    if (!selectedVariants.length) {
-      unresolved.push({ handle: product.handle, reason: "Mapped variants are absent from the current listing" });
-      continue;
-    }
-    for (const variant of selectedVariants) {
-      if (variant.compare_at_price !== null && variant.compare_at_price > 0 && variant.compare_at_price < variant.price)
-        warnings.push(
-          `${product.handle}: compare-at price ${variant.compare_at_price} is below price ${variant.price}; it is not treated as a sale.`,
-        );
-    }
-    if (mapping.category === "accessories" && ["shirt", "dice", "art-print"].includes(item.accessoryType ?? "")) {
+    if (
+      (mapping.category === "bundles" && !item.editions?.length) ||
+      (mapping.category === "accessories" && ["shirt", "dice", "art-print"].includes(item.accessoryType ?? ""))
+    ) {
       const prices = [...new Set(selectedVariants.map((v) => v.price))];
       item.price = Math.min(...prices);
       if (prices.length > 1) item.priceMinimum = true;
@@ -172,7 +204,7 @@ export function planUpdate(
         delete edition.priceEstimated;
         if (!temporary && (!edition.url || mapping.replaceUrl)) edition.url = "/products/" + product.handle;
         if (label !== "Sim" && materials) edition.materials = materials;
-        if (mapping.releaseDate && (!mapping.edition || mapping.edition === label)) {
+        if (mapping.releaseDate && (!mapping.editionId || mapping.editionId === edition.id)) {
           edition.releaseDate = mapping.releaseDate;
           delete edition.releaseWindow;
         }
@@ -193,16 +225,8 @@ export function planUpdate(
         if (Object.hasOwn(edition, "gameplay") && edition.gameplay === item.gameplay) delete edition.gameplay;
       item.editions.sort(compareEditions);
     }
-    const announcements = news
-      .filter((row) => {
-        try {
-          return productUrl(row.shopUrl) === productUrl("/products/" + product.handle);
-        } catch {
-          return false;
-        }
-      })
-      .map((row) => row.date);
-    if (announcements.length) item.announcements = [...new Set([...(item.announcements ?? []), ...announcements])].sort();
+    const announcements = announcementsByHandle.get(product.handle);
+    if (announcements?.size) item.announcements = [...new Set([...(item.announcements ?? []), ...announcements])].sort();
     sources.push({
       handle: product.handle,
       itemId: mapping.itemId,
@@ -223,12 +247,6 @@ export function planUpdate(
   for (const category of categories) for (const item of Object.values(catalog[category])) item.editions?.sort(compareEditions);
   applyTags(catalog, tags, mappings);
   organizeCatalog(catalog);
-  const changes = categories.flatMap((category) =>
-    Object.entries(catalog[category]).flatMap(([itemId, item]) =>
-      isDeepStrictEqual(before[category][itemId], item)
-        ? []
-        : [{ category, itemId, before: before[category][itemId] ?? null, after: item }],
-    ),
-  );
-  return { catalog, changes, sources, unresolved, excluded, warnings: [...new Set(warnings)], releaseGaps: releaseGaps(catalog) };
+  const changes = catalogChanges(before, catalog);
+  return { catalog, changes, sources, unresolved, excluded, warnings: [] as string[], releaseGaps: releaseGaps(catalog) };
 }

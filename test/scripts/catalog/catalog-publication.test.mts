@@ -6,11 +6,11 @@ import { gzipSync } from "node:zlib";
 import { resolveConfig } from "prettier";
 import { afterEach, expect, it, vi } from "vitest";
 import { publishFiles, PublicationError } from "#scripts/catalog/publication.mts";
-import { applyReview } from "#scripts/catalog/commands/update-catalog.mts";
+import { applyReview } from "#scripts/catalog/review/apply.mts";
 import { refreshAvailability } from "#scripts/catalog/commands/refresh-catalog-availability.mts";
-import { writeWorkbookMap } from "#scripts/catalog/workbook.mts";
+import { writeWorkbookMap } from "#scripts/catalog/workbook/map.mts";
 import { fillEditions } from "#scripts/catalog/commands/fill-catalog-editions.mts";
-import { catalogTemp, catalogLocal } from "#scripts/catalog/paths.mts";
+import { catalogTemp, catalogData } from "#scripts/catalog/paths.mts";
 import { loadTags } from "#scripts/catalog/tags.mts";
 
 // Faults and preparation races use internal dependencies; callers still use the real filesystem.
@@ -277,7 +277,7 @@ async function catalogFixture(editions = true) {
   return { root, folder, path, catalog, original, newsPath };
 }
 
-it.each(["catalog", "schema", "news", "mappings", "tags", "tag schema", "merge report"])(
+it.each(["catalog", "schema", "news", "mappings", "tags", "tag schema", "merge report", "workbook map", "workbook schema"])(
   "review application preserves a late edit to %s and publishes nothing",
   async (input) => {
     const { root, folder, path, catalog, original, newsPath } = await catalogFixture();
@@ -287,10 +287,12 @@ it.each(["catalog", "schema", "news", "mappings", "tags", "tag schema", "merge r
       catalog: path,
       schema: join(folder, "data.schema.json"),
       news: newsPath,
-      mappings: join(catalogLocal(folder), "kdm-shop-mappings.json"),
-      tags: join(catalogLocal(folder), "kdm-tags.json"),
-      "tag schema": join(catalogLocal(folder), "kdm-tags.schema.json"),
+      mappings: join(catalogData(folder), "shop-mappings.json"),
+      tags: join(catalogData(folder), "tags.json"),
+      "tag schema": join(catalogData(folder), "tags.schema.json"),
       "merge report": join(catalogTemp(folder), "reports/kdm-merge-report.json"),
+      "workbook map": join(folder, "workbook-map.json"),
+      "workbook schema": join(folder, "workbook-map.schema.json"),
     };
     const target = targets[input as keyof typeof targets];
     vi.mocked(resolveConfig).mockImplementationOnce(async () => {
@@ -301,16 +303,28 @@ it.each(["catalog", "schema", "news", "mappings", "tags", "tag schema", "merge r
     await expect(
       applyReview(
         {
+          preparedAt: "2026-10-01T00:00:00Z",
+          date: "monthly",
           baselineHash: hash(original),
           schemaHash: hash(await readFile(targets.schema, "utf8")),
           newsHash: hash(await readFile(newsPath, "utf8")),
           tagsHash: hash(master.text),
           tagSchemaHash: hash(master.schemaText),
+          mappingsHash: hash(""),
+          excluded: 0,
+          warnings: [],
+          validation: { items: 1, editions: 1, importRows: 0, schemas: "passed", references: "passed", cycles: "none" },
+          monthly: {
+            posts: {},
+            importsHash: null,
+            checkedAt: "2026-10-01T00:00:00Z",
+            availability: { checked: 0, available: 0, changed: 0, shopChanged: 0, tagsChanged: 0, unmatched: 0 },
+          },
           changes: [
             {
               category: "content",
               itemId: "example",
-              before: catalog.content.example,
+              differences: [{ field: "description", change: "added", after: "Reviewed" }],
               after: { ...catalog.content.example, description: "Reviewed" },
             },
           ],
@@ -334,10 +348,17 @@ const product = {
   variants: [{ id: 1, title: "Resin", price: 1000, requires_shipping: true, available: true }],
 };
 
-it("availability refresh preserves an edit made while preparing its publication", async () => {
+it.each(["catalog", "workbook map", "workbook schema"])("availability refresh preserves a late edit to %s", async (input) => {
   const { root, path } = await catalogFixture();
+  const targets = {
+    catalog: path,
+    "workbook map": join(root, "static/kdm/catalog/workbook-map.json"),
+    "workbook schema": join(root, "static/kdm/catalog/workbook-map.schema.json"),
+  };
+  const target = targets[input as keyof typeof targets];
   vi.mocked(resolveConfig).mockImplementationOnce(async () => {
-    await writeFile(path, "late user edit");
+    await mkdir(dirname(target), { recursive: true });
+    await writeFile(target, "late user edit");
     return null;
   });
   await expect(
@@ -347,18 +368,24 @@ it("availability refresh preserves an edit made while preparing its publication"
       client: { get: async (url) => ({ url, checkedAt: "2026-10-09", data: { products: [product] } }) },
     }),
   ).rejects.toMatchObject({ published: [] });
-  expect(await readFile(path, "utf8")).toBe("late user edit");
+  expect(await readFile(target, "utf8")).toBe("late user edit");
   await expect(readFile(join(root, "temp/kdm-catalog/reports/availability-refresh.json"))).rejects.toMatchObject({ code: "ENOENT" });
   expect(await temporaryFiles(root)).toEqual([]);
 });
 
-it("edition retrieval preserves mappings created during final publication preparation", async () => {
+it.each(["mappings", "workbook map", "workbook schema"])("edition retrieval preserves a late edit to %s", async (input) => {
   const { root, path, folder, original } = await catalogFixture(false);
-  const mappingsPath = join(catalogLocal(folder), "kdm-shop-mappings.json");
+  const mappingsPath = join(catalogData(folder), "shop-mappings.json");
+  const targets = {
+    mappings: mappingsPath,
+    "workbook map": join(folder, "workbook-map.json"),
+    "workbook schema": join(folder, "workbook-map.schema.json"),
+  };
+  const editedPath = targets[input as keyof typeof targets];
   vi.mocked(resolveConfig).mockImplementation(async (target, options) => {
     if (target === mappingsPath) {
-      await mkdir(dirname(mappingsPath), { recursive: true });
-      await writeFile(mappingsPath, "late mapping edit");
+      await mkdir(dirname(editedPath), { recursive: true });
+      await writeFile(editedPath, "late user edit");
     }
     return actualPrettier.resolveConfig(target, options);
   });
@@ -366,7 +393,7 @@ it("edition retrieval preserves mappings created during final publication prepar
     fillEditions({ catalog: path, client: { get: async (url) => ({ url, checkedAt: "2026-10-09", data: product }) } }),
   ).rejects.toMatchObject({ published: [] });
   expect(await readFile(path, "utf8")).toBe(original);
-  expect(await readFile(mappingsPath, "utf8")).toBe("late mapping edit");
+  expect(await readFile(editedPath, "utf8")).toBe("late user edit");
   const report = JSON.parse(await readFile(join(catalogTemp(folder), "reports/edition-retrieval.json"), "utf8"));
   expect(report.complete).toBe(false);
   expect(report.applied).toBe(false);
@@ -380,7 +407,7 @@ async function workbookFixture(existing = true) {
   const targets = {
     catalog: base.path,
     imports: join(importsFolder, "kdm-import-records.json"),
-    importSchema: join(importsFolder, "kdm-import-records.schema.json"),
+    importSchema: join(catalogData(base.folder), "import-records.schema.json"),
     mapSchema: join(base.folder, "workbook-map.schema.json"),
     map: join(base.folder, "workbook-map.json"),
   };
@@ -388,9 +415,10 @@ async function workbookFixture(existing = true) {
     targets.imports,
     JSON.stringify({
       workbook: "Products.xlsx",
-      records: [{ sheet: "KDM Miniatures", row: 2, name: "Example", category: "content", itemId: "example", edition: "Resin" }],
+      records: [{ sheet: "KDM Miniatures", row: 2, name: "Example", category: "content", itemId: "example", editionId: "resin" }],
     }),
   );
+  await mkdir(catalogData(base.folder), { recursive: true });
   await writeFile(targets.importSchema, JSON.stringify({ type: "object", required: ["workbook", "records"] }));
   await writeFile(targets.mapSchema, await readFile("static/kdm/catalog/workbook-map.schema.json"));
   const map = {
@@ -402,7 +430,7 @@ async function workbookFixture(existing = true) {
         sheet: "KDM Miniatures",
         row: 2,
         name: "Example",
-        primary: { category: "content", contentId: "example", editionId: "resin", sourceEdition: "Resin" },
+        primary: { category: "content", contentId: "example", editionId: "resin" },
       },
     ],
   };
@@ -413,7 +441,7 @@ async function workbookFixture(existing = true) {
 
 it("publishes a new workbook map and retains its permanent edition ID after a label changes", async () => {
   const { root, targets, catalog, map } = await workbookFixture(false);
-  expect(await writeWorkbookMap(root)).toEqual(map);
+  expect(await writeWorkbookMap(root, { imports: targets.imports })).toEqual(map);
   catalog.content.example.editions![0].label = "Renamed resin";
   await writeFile(targets.catalog, JSON.stringify(catalog));
   expect(await writeWorkbookMap(root)).toEqual(map);
@@ -429,7 +457,7 @@ it.each(["catalog", "imports", "importSchema", "mapSchema", "map"] as const)(
       await writeFile(targets[input], "late user edit");
       return null;
     });
-    await expect(writeWorkbookMap(root)).rejects.toMatchObject({ published: [], pending: [targets.map] });
+    await expect(writeWorkbookMap(root, { imports: targets.imports })).rejects.toMatchObject({ published: [], pending: [targets.map] });
     expect(await readFile(targets[input], "utf8")).toBe("late user edit");
     if (input !== "map") expect(await readFile(targets.map, "utf8")).toBe(mapText);
     expect(await temporaryFiles(root)).toEqual([]);
@@ -442,7 +470,7 @@ it("workbook generation preserves a map created during preparation", async () =>
     await writeFile(targets.map, "new user map");
     return null;
   });
-  await expect(writeWorkbookMap(root)).rejects.toMatchObject({ published: [] });
+  await expect(writeWorkbookMap(root, { imports: targets.imports })).rejects.toMatchObject({ published: [] });
   expect(await readFile(targets.map, "utf8")).toBe("new user map");
   expect(await temporaryFiles(root)).toEqual([]);
 });
@@ -461,4 +489,27 @@ it("workbook cancellation and replacement failures leave the existing map intact
   await expect(writeWorkbookMap(root)).rejects.toMatchObject({ published: [], pending: [targets.map] });
   expect(await readFile(targets.map, "utf8")).toBe(mapText);
   expect(await temporaryFiles(root)).toEqual([]);
+});
+
+it.each(["catalog", "mapSchema", "map"] as const)("default workbook normalization guards %s", async (input) => {
+  const { root, targets, mapText } = await workbookFixture();
+  await writeFile(targets.imports, "invalid private input");
+  await rm(targets.importSchema);
+  vi.mocked(resolveConfig).mockImplementationOnce(async () => {
+    await writeFile(targets[input], "late user edit");
+    return null;
+  });
+  await expect(writeWorkbookMap(root)).rejects.toMatchObject({ published: [] });
+  expect(await readFile(targets[input], "utf8")).toBe("late user edit");
+  if (input !== "map") expect(await readFile(targets.map, "utf8")).toBe(mapText);
+  expect(await temporaryFiles(root)).toEqual([]);
+});
+
+it("default workbook maintenance requires a committed map and ignores private inputs", async () => {
+  const { root, targets, map } = await workbookFixture(false);
+  await expect(writeWorkbookMap(root)).rejects.toThrow("provide --imports PATH");
+  await writeFile(targets.map, JSON.stringify(map));
+  await writeFile(targets.imports, "invalid private input");
+  await rm(targets.importSchema);
+  expect(await writeWorkbookMap(root)).toEqual(map);
 });

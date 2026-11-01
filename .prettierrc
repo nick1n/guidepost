@@ -2,7 +2,7 @@
   "plugins": ["prettier-plugin-svelte"],
   "printWidth": 140,
   "overrides": [
-    { "files": "local-data/kdm-catalog/kdm-tags.json", "options": { "printWidth": 1000 } },
+    { "files": "scripts/catalog/data/tags.json", "options": { "printWidth": 1000 } },
     { "files": "static/kdm/catalog/data.json", "options": { "printWidth": 280, "objectWrap": "collapse" } },
     { "files": "static/kdm/catalog/data.schema.json", "options": { "objectWrap": "collapse" } }
   ]

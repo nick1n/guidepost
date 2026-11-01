@@ -22,7 +22,7 @@ const raw = {
 
 test("edition retrieval groups warehouses, preserves Ajax cents, and keeps release selectors", () => {
   const result = productEditions({ name: "Example", tags: ["generic"], releaseDate: "2025-01-01" }, shopProduct(raw, "ajax"));
-  assert.deepEqual(result.selectors, { 11: "First Run", 12: "First Run", 13: "Encore" });
+  assert.deepEqual(result.selectors, { 11: "first-run", 12: "first-run", 13: "encore" });
   assert.equal(result.editions.length, 2);
   assert.match(result.editions[0]!.id!, /^[a-z0-9]+(?:-[a-z0-9]+)*$/);
   assert.notEqual(result.editions[0]!.id, result.editions[1]!.id);
@@ -76,8 +76,8 @@ test("retrieval writes editions and mappings while failed listings retain their 
       item.editions.map((edition: { id: string }) => edition.id),
       ["first-run", "encore"],
     );
-    const mappings = JSON.parse(await readFile(join(root, "local-data/kdm-catalog/kdm-shop-mappings.json"), "utf8"));
-    assert.equal(mappings.example.variantEditions[13], "Encore");
+    const mappings = JSON.parse(await readFile(join(root, "scripts/catalog/data/shop-mappings.json"), "utf8"));
+    assert.equal(mappings.example.variantEditionIds[13], "encore");
   } finally {
     await rm(root, { recursive: true, force: true });
   }
@@ -124,8 +124,8 @@ test("default retrieval client publishes editions from its offline Ajax cache", 
       JSON.parse(await readFile(path, "utf8")).content.example.editions.map((edition: { id: string }) => edition.id),
       ["first-run", "encore"],
     );
-    const mappings = JSON.parse(await readFile(join(root, "local-data/kdm-catalog/kdm-shop-mappings.json"), "utf8"));
-    assert.deepEqual(mappings.example.variantEditions, { 11: "First Run", 12: "First Run", 13: "Encore" });
+    const mappings = JSON.parse(await readFile(join(root, "scripts/catalog/data/shop-mappings.json"), "utf8"));
+    assert.deepEqual(mappings.example.variantEditionIds, { 11: "first-run", 12: "first-run", 13: "encore" });
   } finally {
     await rm(root, { recursive: true, force: true });
   }

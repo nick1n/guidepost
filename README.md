@@ -106,7 +106,8 @@ Screenshots and reports go to `temp/browser-verification/`.
 | `static/kdm/catalog/`               | Live catalog, schemas, and product-only workbook map            |
 | `test/client/`, `test/scripts/`     | Tests grouped by feature and tooling area                       |
 | `docs/`                             | Architecture, catalog rules, workflows, and design notes        |
-| `local-data/kdm-catalog/`           | Retained imports, reviewed tags, shop mappings, and archives    |
+| `scripts/catalog/data/`             | Shared reviewed tags, shop mappings, import schemas, and ledger |
+| `local-data/kdm-catalog/`           | Personal workbook, raw import records, and archives             |
 | `.cache/`                           | Downloaded evidence and request coordination                    |
 | `temp/`                             | Reports, browser verification, and scratch output               |
 
@@ -127,12 +128,13 @@ Catalog commands use local files and caches by default. Add `--fetch` for networ
 
 ```bash
 pnpm catalog:validate
-pnpm catalog:update --sim --fetch
+pnpm catalog:update --fetch
+pnpm catalog:apply
 pnpm catalog:availability
 pnpm catalog:workbook
 ```
 
-See each command's `--help` output and the workflow guide before applying staged catalog changes.
+`catalog:update --fetch` prepares the monthly review; inspect it before `catalog:apply` publishes it. See the workflow guide for weekly availability refreshes and specialist commands.
 
 ### Generated files
 
@@ -144,12 +146,13 @@ Run `pnpm generate:types` after editing these sources. Development, checks, and 
 | [Core editions](src/lib/gen/core-editions.json)                                                                           | [data.json](static/kdm/catalog/data.json)               |
 | [Workbook map schema](static/kdm/catalog/workbook-map.schema.json)                                                        | [workbook.ts](src/lib/types/workbook.ts)                |
 
-The [workbook map](static/kdm/catalog/workbook-map.json) uses a separate command, `pnpm catalog:workbook`, and requires the live catalog and local workbook import records.
+The [workbook map](static/kdm/catalog/workbook-map.json) uses `pnpm catalog:workbook` to validate and normalize the committed product-only map. To rebuild it, pass the private records explicitly with `pnpm catalog:workbook --imports local-data/kdm-catalog/imports/kdm-import-records.json`; the tracked `scripts/catalog/data/import-records.schema.json` validates them.
 
 ### Local data
 
-Back up `local-data/kdm-catalog/`. Its reviewed imports, tags, shop mappings, and archives are needed to reproduce catalog work.
-The folder is Git-ignored; do not commit personal workbook cells.
+Shared reviewed inputs and applied catalog/news ledger changes belong in version control together. Keep the original XLSX and raw
+`kdm-import-records.json` in Git-ignored `local-data/kdm-catalog/`; never commit personal workbook cells. Shopify/news caches stay in
+`.cache/`, and generated reports stay in `temp/`.
 
 ## Known warnings
 

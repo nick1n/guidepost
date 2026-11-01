@@ -16,6 +16,9 @@ import {
   pageData,
   saveReport,
   updateReport,
+  refreshNews,
+  NewsRefreshError,
+  postFingerprints,
 } from "#scripts/news/scrape-shop-links.mts";
 
 const news = "https://kingdomdeath.com/news";
@@ -24,6 +27,140 @@ const post = { date: "2026-08-31T21:59:34+00:00", title: "Sale", postUrl: `${new
 const page = (data: unknown) =>
   `<script id="__NEXT_DATA__" type="application/json">${JSON.stringify({ props: { pageProps: { data } } })}</script>`;
 const story = (slug: string) => ({ date: post.date, title: "Sale", slug });
+
+test("post fingerprints preserve existing bytes, repeated announcements, and zero-link posts", () => {
+  const report = newReport();
+  const repeated = { ...post, postUrl: `${news}/repeat` };
+  const empty = { ...post, postUrl: `${news}/empty` };
+  report.posts = [post, repeated, empty].map((entry) => ({ ...entry, status: "read" }));
+  report.posts.push(
+    { ...post, postUrl: `${news}/failed`, status: "read", error: "Refresh failed" },
+    { ...post, postUrl: `${news}/unread`, status: "unread" },
+  );
+  report.links = [
+    { ...post, itemName: "Rene", shopUrl: shop + "rene" },
+    { ...repeated, itemName: "Aya", shopUrl: shop + "aya" },
+    { ...post, itemName: "Aya", shopUrl: shop + "aya" },
+  ];
+  const legacy = Object.fromEntries(
+    report.posts
+      .filter((entry) => entry.status === "read" && !entry.error)
+      .map((entry) => [
+        entry.postUrl,
+        createHash("sha256")
+          .update(
+            JSON.stringify({
+              date: entry.date,
+              title: entry.title,
+              links: report.links.filter((link) => link.postUrl === entry.postUrl).map(({ itemName, shopUrl }) => ({ itemName, shopUrl })),
+            }),
+          )
+          .digest("hex"),
+      ]),
+  );
+  assert.deepEqual(postFingerprints(report), legacy);
+  assert.deepEqual(Object.keys(legacy), [post.postUrl, repeated.postUrl, empty.postUrl]);
+  assert.deepEqual(postFingerprints(report), postFingerprints(structuredClone(report)));
+  for (const change of ["date", "title", "itemName", "shopUrl", "order"] as const) {
+    const changed = structuredClone(report);
+    if (change === "date") changed.posts[0]!.date = "2026-09-01";
+    else if (change === "title") changed.posts[0]!.title = "Another sale";
+    else if (change === "order") changed.links.reverse();
+    else changed.links[0]![change] += " changed";
+    assert.notEqual(postFingerprints(changed)[post.postUrl], legacy[post.postUrl], change);
+  }
+});
+
+test("fetch refreshes the index and only new or failed articles, with explicit historical refresh", async (t) => {
+  const output = await mkdtemp(join(tmpdir(), "kdm-news-refresh-"));
+  t.after(() => rm(output, { recursive: true, force: true }));
+  const report = newReport();
+  report.linkHistoryVersion = 3;
+  report.posts = [
+    { ...post, status: "read" },
+    { ...post, postUrl: `${news}/failed`, status: "unread" },
+  ];
+  report.links = [{ ...post, itemName: "Aya", shopUrl: shop + "aya" }];
+  await saveReport(report, output);
+  const requested: [string, boolean | undefined][] = [];
+  const downloader = {
+    requests: 0,
+    async get(url: string, cached?: boolean) {
+      requested.push([url, cached]);
+      this.requests++;
+      return url === news
+        ? page({ stories: [story("old"), story("new"), story("failed")] })
+        : page({ article: { body: `<a href="${shop}rene">Rene</a>` } });
+    },
+  };
+  const refreshed = await refreshNews({ output, cache: output, fetch: true, downloader });
+  assert.deepEqual(requested, [
+    [news, false],
+    [`${news}/new`, false],
+    [`${news}/failed`, false],
+  ]);
+  assert.equal(refreshed.links.find((link) => link.postUrl === post.postUrl)?.itemName, "Aya");
+  requested.length = 0;
+  await refreshNews({ output, cache: output, fetch: true, refreshPosts: true, downloader });
+  assert.deepEqual(
+    requested.map(([url]) => url),
+    [news, post.postUrl, `${news}/new`, `${news}/failed`],
+  );
+});
+
+test("offline refresh reprocesses cached history without network and checkpoints missing articles for retry", async (t) => {
+  const output = await mkdtemp(join(tmpdir(), "kdm-news-offline-"));
+  t.after(() => rm(output, { recursive: true, force: true }));
+  const cachePage = (url: string, html: string) => writeFile(join(output, createHash("sha256").update(url).digest("hex") + ".html"), html);
+  await cachePage(news, page({ stories: [story("old"), story("new")] }));
+  await cachePage(post.postUrl, page({ article: { body: `<a href="${shop}aya">Aya</a>` } }));
+  const fetchMock = t.mock.method(globalThis, "fetch", () => {
+    throw new Error("Unexpected network");
+  });
+  await assert.rejects(refreshNews({ output, cache: output, refreshPosts: true }), NewsRefreshError);
+  const partial = await loadReport(output);
+  assert.equal(partial.posts.find((entry) => entry.postUrl === `${news}/new`)?.status, "unread");
+  assert.equal(partial.links[0]?.itemName, "Aya");
+  await cachePage(`${news}/new`, page({ article: { body: `<a href="${shop}rene">Rene</a>` } }));
+  const retried = await refreshNews({ output, cache: output });
+  assert.equal(retried.complete, true);
+  assert.equal(retried.skippedPostsThisRun, 1);
+  assert.equal(fetchMock.mock.callCount(), 0);
+  const refreshed = await refreshNews({ output, cache: output, refreshPosts: true });
+  assert.equal(refreshed.processedPostsThisRun, 2);
+  assert.equal(fetchMock.mock.callCount(), 0);
+});
+
+test("interruption preserves the checkpoint and propagates the abort reason", async (t) => {
+  const output = await mkdtemp(join(tmpdir(), "kdm-news-abort-"));
+  t.after(() => rm(output, { recursive: true, force: true }));
+  const controller = new AbortController();
+  const reason = new Error("Stop refresh");
+  const requested: string[] = [];
+  await assert.rejects(
+    refreshNews({
+      output,
+      cache: output,
+      fetch: true,
+      signal: controller.signal,
+      downloader: {
+        requests: 0,
+        async get(url) {
+          requested.push(url);
+          if (url === news) return page({ stories: [story("new"), story("later")] });
+          controller.abort(reason);
+          throw reason;
+        },
+      },
+    }),
+    (error) => error === reason,
+  );
+  assert.deepEqual(requested, [news, `${news}/new`]);
+  const saved = JSON.parse(await readFile(join(output, "shop-links.json"), "utf8"));
+  assert.equal(saved.complete, false);
+  assert.equal(saved.posts[0].status, "unread");
+  assert.ok(saved.finishedAt);
+});
 
 test("release names, entities and image duplicates survive the TS conversion", () => {
   const links = extractLinks(
@@ -166,6 +303,7 @@ test("incremental run processes only new and failed articles, skips zero-link po
     [`${news}/failed`, false],
   ]);
   assert.equal(checkpoints, 2);
+  assert.equal("discoveredPostUrls" in report, false);
   assert.equal(report.links.length, 2);
   assert.equal(report.complete, true);
   await updateReport(

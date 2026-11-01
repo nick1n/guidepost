@@ -1,10 +1,10 @@
 import { hasStock } from "./stock.mts";
-import { catalogLocal } from "./paths.mts";
 import { readFile } from "node:fs/promises";
-import { dirname, join } from "node:path";
+import { dirname } from "node:path";
 import { Ajv2020 } from "ajv/dist/2020.js";
 import { compareEditions } from "./order.mts";
-import { categories, type Catalog, type Category } from "./types.mts";
+import { categories, type Catalog } from "./types.mts";
+import { readWorkbookMap } from "./workbook/map.mts";
 import { normalizeItem } from "./normalize.mts";
 import { organizeCatalog } from "./order.mts";
 import { prefixedId } from "./identity.mts";
@@ -155,30 +155,11 @@ export async function validateCatalog(catalog: Catalog, schemaPath = "static/kdm
     visited.add(id);
   }
   for (const id of items.keys()) walk(id);
-  type Ref = { category: Category; itemId: string; edition?: string };
-  const importsRoot = join(catalogLocal(dirname(schemaPath)), "imports");
-  const importText = await readFile(join(importsRoot, "kdm-import-records.json"), "utf8").catch((error: unknown) => {
-    if (error instanceof Error && "code" in error && error.code === "ENOENT") return undefined;
-    throw error;
-  });
-  const imports: { records: (Ref & { relatedItems?: Ref[]; releaseEditions?: Record<string, Ref[]> })[] } =
-    importText !== undefined ? JSON.parse(importText) : { records: [] };
-  if (importText !== undefined) {
-    const checkImports = ajv.compile(JSON.parse(await readFile(join(importsRoot, "kdm-import-records.schema.json"), "utf8")));
-    if (!checkImports(imports)) throw new Error("Import schema errors: " + ajv.errorsText(checkImports.errors, { separator: "\n" }));
-  }
-  for (const record of imports.records) {
-    for (const ref of [record, ...(record.relatedItems ?? []), ...Object.values(record.releaseEditions ?? {}).flat()]) {
-      const item = catalog[ref.category][ref.itemId];
-      if (!item) throw new Error("Missing imported item: " + ref.itemId);
-      if (ref.edition && !item.editions?.some((edition) => edition.label === ref.edition))
-        throw new Error("Missing imported edition: " + ref.itemId + "/" + ref.edition);
-    }
-  }
+  const source = await readWorkbookMap(dirname(schemaPath), catalog);
   return {
     items: items.size,
     editions: [...items.values()].reduce((count, item) => count + (item.editions?.length ?? 0), 0),
-    importRows: imports.records.length,
+    importRows: source?.map.rows.length ?? 0,
     schemas: "passed",
     references: "passed",
     cycles: "none",

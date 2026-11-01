@@ -1,4 +1,4 @@
-import { catalogLocal } from "./paths.mts";
+import { catalogData } from "./paths.mts";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { Ajv2020 } from "ajv/dist/2020.js";
@@ -52,13 +52,15 @@ export function organizeTags(catalog: Catalog, tags: Tags) {
   ) as Tags;
 }
 
-export async function loadTags(root: string) {
-  const text = await readFile(join(catalogLocal(root), "kdm-tags.json"), "utf8").catch((error: unknown) => {
-    if (error instanceof Error && "code" in error && error.code === "ENOENT") return undefined;
-    throw error;
-  });
+export async function loadTags(root: string, captured?: { catalog: Catalog; text: string | undefined; schemaText: string | undefined }) {
+  const text = captured
+    ? captured.text
+    : await readFile(join(catalogData(root), "tags.json"), "utf8").catch((error: unknown) => {
+        if (error instanceof Error && "code" in error && error.code === "ENOENT") return undefined;
+        throw error;
+      });
   if (text === undefined) {
-    const catalog: Catalog = JSON.parse(await readFile(join(root, "data.json"), "utf8"));
+    const catalog: Catalog = captured ? captured.catalog : JSON.parse(await readFile(join(root, "data.json"), "utf8"));
     const tags = Object.fromEntries(
       categories.map((category) => [
         category,
@@ -66,15 +68,16 @@ export async function loadTags(root: string) {
       ]),
     ) as Tags;
     const vocabulary = [...new Set(categories.flatMap((category) => Object.values(tags[category]).flat()))].sort();
-    return { tags, text: JSON.stringify(tags), schemaText: JSON.stringify(tagSchema(vocabulary)), local: false };
+    return { tags, text: JSON.stringify(tags), schemaText: JSON.stringify(tagSchema(vocabulary)), reviewed: false };
   }
-  const schemaText = await readFile(join(catalogLocal(root), "kdm-tags.schema.json"), "utf8");
+  const schemaText = captured ? captured.schemaText : await readFile(join(catalogData(root), "tags.schema.json"), "utf8");
+  if (schemaText === undefined) throw new Error("Master tags require tags.schema.json");
   const value = JSON.parse(text);
   const ajv = new Ajv2020({ strict: false, allErrors: true });
   const check = ajv.compile<Record<string, unknown>>(JSON.parse(schemaText));
   if (!check(value)) throw new Error("Master tag errors: " + ajv.errorsText(check.errors, { separator: "\n" }));
   const { $schema, ...tags } = value;
-  return { tags: tags as Tags, text, schemaText, local: true };
+  return { tags: tags as Tags, text, schemaText, reviewed: true };
 }
 
 export function applyTags(catalog: Catalog, tags: Tags, mappings: Record<string, Mapping> = {}) {
@@ -97,7 +100,7 @@ export function applyTags(catalog: Catalog, tags: Tags, mappings: Record<string,
   if (missing.length || extra.length)
     throw new Error(
       [
-        missing.length ? "Add reviewed tags to kdm-tags.json for: " + missing.join(", ") : "",
+        missing.length ? "Add reviewed tags to tags.json for: " + missing.join(", ") : "",
         extra.length ? "Unknown master tag item IDs: " + extra.join(", ") : "",
       ]
         .filter(Boolean)
@@ -139,5 +142,5 @@ export function checkTags(catalog: Catalog, tags: Tags, mappings: Record<string,
   for (const category of categories)
     for (const id of Object.keys(catalog[category]))
       if (JSON.stringify(catalog[category][id]!.tags.toSorted()) !== JSON.stringify(expected[category][id]!.tags.toSorted()))
-        throw new Error("Catalog tags differ from kdm-tags.json for " + id + "; regenerate the review with pnpm catalog:tags");
+        throw new Error("Catalog tags differ from tags.json for " + id + "; regenerate the review with pnpm catalog:tags");
 }
