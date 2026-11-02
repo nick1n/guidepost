@@ -60,6 +60,7 @@ See [AGENTS.md](AGENTS.md) for coding conventions and required checks.
 | Command             | Purpose                            |
 | ------------------- | ---------------------------------- |
 | `pnpm check`        | Check Svelte and TypeScript        |
+| `pnpm check:build`  | Verify built HTML and assets       |
 | `pnpm test:run`     | Run all Vitest tests once          |
 | `pnpm test:client`  | Run client-facing app tests        |
 | `pnpm test:scripts` | Run build and catalog script tests |
@@ -70,6 +71,10 @@ See [AGENTS.md](AGENTS.md) for coding conventions and required checks.
 | `pnpm format:check` | Check formatting                   |
 
 Use `pnpm test` for watch mode.
+
+Pull requests run the shared site build workflow with `/guidepost` as the base path. Pushes to `main` and manual runs on `main`
+validate, build, check the artifact, and run the production collection startup browser test before deploying to GitHub Pages.
+The `github-pages` environment must allow only the `main` branch. GitHub Actions use major version tags, with weekly update checks by Dependabot.
 
 ### Browser tests
 

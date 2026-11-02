@@ -1,0 +1,65 @@
+name: Build site
+
+on:
+  workflow_call:
+    inputs:
+      upload-pages:
+        type: boolean
+        default: false
+      base-path:
+        type: string
+        default: ""
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Set up pnpm and Node.js
+        uses: pnpm/setup@v3
+        with:
+          runtime: node@26
+          cache: true
+          install: false
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Configure GitHub Pages
+        if: inputs.upload-pages
+        id: pages
+        uses: actions/configure-pages@v6
+
+      - name: Check
+        run: pnpm check
+
+      - name: Test app
+        run: pnpm test:client
+
+      - name: Validate catalog
+        run: pnpm catalog:validate
+
+      - name: Test artifact checks
+        run: node --test test/scripts/build/site-checks.mts
+
+      - name: Build and verify site
+        env:
+          BASE_PATH: ${{ inputs.upload-pages && steps.pages.outputs.base_path || inputs.base-path }}
+        run: |
+          pnpm build
+          pnpm check:build
+          pnpm test:collection-startup
+
+      - name: Upload GitHub Pages artifact
+        if: inputs.upload-pages
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: build

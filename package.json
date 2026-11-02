@@ -32,6 +32,7 @@
     "build": "pnpm generate:types && vite build",
     "preview": "vite preview",
     "check": "pnpm generate:types && svelte-kit sync && svelte-check --tsconfig ./tsconfig.json && tsc --project src/service-worker/tsconfig.json --noEmit",
+    "check:build": "node scripts/check-build.mts",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },
@@ -47,7 +48,7 @@
     "@effect/platform-node": "^4.1.1",
     "@effect/vitest": "^4.1.1",
     "@iconify-json/game-icons": "^1.2.4",
-    "@iconify-json/lucide": "^1.2.149",
+    "@iconify-json/lucide": "^1.2.150",
     "@iconify-json/material-symbols": "^1.2.97",
     "@sveltejs/adapter-static": "^4.0.1",
     "@sveltejs/kit": "^3.1.1",
