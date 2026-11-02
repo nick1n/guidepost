@@ -140,15 +140,16 @@ Product checkboxes, badges, filters, counts, and value use recorded `owned` valu
 inclusions, equivalences, and `completedBy` recipes. Each recipe requires all references; alternatives are independent. Coverage never records
 ownership or supplies new contents. Inclusion lists may be partial, so progress counts only listed contents.
 
-`toggleEditionOwned()` and `setEditionOwned()` clear the product's missing override. Checking also clears its wish and exact included
-descendants' missing overrides in one save. For bundles, checking also records ownership of the exact included editions, including nested
+`toggleOwned()` and `setOwned()` clear the product's missing override. Checking also clears its wish and exact included
+descendants' missing overrides in one save. For bundles and named sets (`kind: "set"`), checking also records ownership of the exact included editions, including nested
 contents, and clears their wishes while preserving copy numbers. Other products do not record child acquisitions.
-Unchecking a bundle also clears ownership and missing overrides on its exact included descendants in the same save, preserving
+Unchecking a bundle or named set also clears ownership and missing overrides on its exact included descendants in the same save, preserving
 copy numbers and wishes. Unchecking other products preserves descendants and their overrides.
 Missing components do not change product ownership.
 
 `toggleIncludedOwned()` clears component ownership when unchecked, keeping `missing: true` only if another source still covers it.
-Checking removes the override, restoring coverage or recording an acquisition if needed. Missing overrides block the exact edition
+Checking removes the override, restoring coverage or recording an acquisition if needed. Exact contents supplied by an owned bundle or named set also regain their recorded ownership when rechecked.
+Missing overrides block the exact edition
 and its supplied descendants; independent sources can still supply those descendants.
 
 Saved edits omit false defaults and absent copy numbers, deleting empty entries. Patches retain false values to clear fields;

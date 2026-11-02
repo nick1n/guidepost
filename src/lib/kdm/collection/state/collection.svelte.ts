@@ -47,6 +47,10 @@ function collectionNotReadyError(operation: CollectionError["operation"], itemId
   });
 }
 
+function acquiresContents(item: EditionSelection["item"] | undefined) {
+  return item?.category === "bundles" || item?.kind === "set";
+}
+
 function ownershipPatch(owned: boolean): EntryState {
   return owned ? { owned: true, wished: false, missing: false } : { owned: false, missing: false };
 }
@@ -353,11 +357,12 @@ export class Collection {
     const [itemId, editionId] = yield* decodeKey(key);
     const shouldOwn = owned ?? !this.coverage.edition(itemId, editionId).covered;
     const restored = { ...this.state, [key]: { ...entry, owned: false, missing: false } };
-    const supplied = this.catalog.coverage(restored).edition(itemId, editionId).covered;
+    const supplied = this.catalog.coverage(restored).edition(itemId, editionId);
     if (!shouldOwn) {
-      return yield* this.commitMany({ [key]: { owned: false, missing: supplied } });
+      return yield* this.commitMany({ [key]: { owned: false, missing: supplied.covered } });
     }
-    return yield* supplied ? this.setMissing(key, false) : this.setOwned(key, true);
+    const acquired = supplied.source === "included" && supplied.via.some(({ item }) => acquiresContents(item));
+    return yield* supplied.covered && !acquired ? this.setMissing(key, false) : this.setOwned(key, true);
   });
 
   toggleWish = Effect.fn("Collection.toggleWish")({ self: this }, function (key: string) {
@@ -386,11 +391,12 @@ export class Collection {
     const patch: CollectionPatch = Object.fromEntries(keys.map((key) => [key, ownershipPatch(owned)]));
     for (const key of keys) {
       const [itemId, editionId] = yield* decodeKey(key);
-      const bundle = this.catalog.byId.get(itemId)?.category === "bundles";
-      if (!owned && !bundle) continue;
+      const item = this.catalog.byId.get(itemId);
+      const acquireIncluded = acquiresContents(item);
+      if (!owned && !acquireIncluded) continue;
       for (const child of this.catalog.includedEditions(itemId, editionId)) {
         const childKey = collectionKey(child.item.id, child.edition.id);
-        if (bundle) patch[childKey] = ownershipPatch(owned);
+        if (acquireIncluded) patch[childKey] = ownershipPatch(owned);
         else if (this.get(childKey).missing) patch[childKey] = { ...patch[childKey], missing: false };
       }
     }

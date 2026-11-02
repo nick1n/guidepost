@@ -54,6 +54,7 @@ Current data rules:
   Distinct themes, remasters, and unmatched models remain separate.
   Morgan's bust belongs to Morgan the Savior; White Speaker painter's scale belongs to White Speaker Koshka (formerly White Speaker).
   Senior Death High Allister and Thief Variant remain separate.
+- For content items, Naked packaging belongs in the edition label, not the title or ID prefix. Keep the shop's original title as an alias. Bundles retain their Naked titles and ID prefixes.
 - Gameplay defaults to false. Item `gameplay` appears only when true; editions store an override only when different. `gameplayContent` and notes belong on the item. Alternative names use `aliases`; `alt` is removed.
 - Edition availability defaults to false. Store `available: true` only when at least one matching variant or warehouse in the two-page shop snapshot is available. Metadata imports preserve existing stock and availability when the listing is unchanged; new editions wait for `catalog:availability`.
 - `shop` stores `in-stock`, `out-of-stock`, or `missing` on editions, or on items without editions. Shared `shopUpdated` is a `YYYY-MM-DD` refresh date.

@@ -1038,18 +1038,18 @@
       "editions": [{ "id": "box", "label": "Preorder", "format": "physical", "materials": ["Plastic"], "prices": [15000, 20000], "releaseWindow": "2030" }],
       "gameplay": true,
       "includes": [
-        { "item": "disciple-of-the-witch-1", "editionId": "plastic-included", "parentEditionIds": ["box"] },
-        { "item": "disciple-of-the-witch-2", "editionId": "plastic-included", "parentEditionIds": ["box"] },
-        { "item": "disciple-of-the-witch-3", "editionId": "plastic-included", "parentEditionIds": ["box"] },
-        { "item": "disciple-of-the-witch-4", "editionId": "plastic-included", "parentEditionIds": ["box"] },
-        { "item": "disciple-of-the-witch-5-6", "editionId": "plastic-included", "parentEditionIds": ["box"] },
+        { "item": "disciple-of-the-witch-1", "editionId": "plastic", "parentEditionIds": ["box"] },
+        { "item": "disciple-of-the-witch-2", "editionId": "plastic", "parentEditionIds": ["box"] },
+        { "item": "disciple-of-the-witch-3", "editionId": "plastic", "parentEditionIds": ["box"] },
+        { "item": "disciple-of-the-witch-4", "editionId": "plastic", "parentEditionIds": ["box"] },
+        { "item": "disciple-of-the-witch-6", "editionId": "plastic", "parentEditionIds": ["box"] },
         { "item": "flower-witch", "editionId": "plastic-included", "parentEditionIds": ["box"] },
         { "item": "goblin-guard", "editionId": "plastic-included", "parentEditionIds": ["box"] },
         { "item": "goblin-dragon", "editionId": "plastic", "parentEditionIds": ["box"] }
       ],
       "kind": "expansion",
       "name": "Abyssal Woods Expansion",
-      "tags": ["gameplay", "upcoming", "expansion", "expansions-of-death-vol-2", "preorder", "2030", "abyssal-woods"]
+      "tags": ["gameplay", "upcoming", "expansion", "expansions-of-death-vol-2", "preorder", "abyssal-woods", "2030"]
     },
     "expansion-ivory-dragon": {
       "editions": [{ "id": "box", "label": "Preorder", "format": "physical", "materials": ["Plastic"], "prices": [10000, 15000], "releaseWindow": "2030" }],
@@ -1228,7 +1228,7 @@
       "name": "Dragon King Armor Kit",
       "notes": "The Naked edition includes two Dragon King armor-kit sprues making four miniatures, plus four plastic bases. It comes without artwork or retail packaging.",
       "size": "30",
-      "tags": ["female", "plastic", "in-stock", "male", "2015", "2016", "2021", "naked", "armor-kit", "monster-dragon-king", "pot-star"]
+      "tags": ["female", "plastic", "in-stock", "male", "2016", "2015", "2021", "naked", "armor-kit", "monster-dragon-king", "pot-star"]
     },
     "armor-kit-gorment": {
       "aliases": ["Naked Gorm Armor Kit", "Gorm Armor Kit"],
@@ -1238,7 +1238,7 @@
       "name": "Gorment Armor Kit",
       "notes": "The Naked edition includes two Gorm armor-kit sprues making four miniatures, plus four plastic bases and inserts. It comes without artwork or retail packaging.",
       "size": "30",
-      "tags": ["female", "plastic", "in-stock", "male", "2015", "2016", "2021", "naked", "armor-kit", "monster-gorm"]
+      "tags": ["female", "plastic", "in-stock", "male", "2016", "2015", "2021", "naked", "armor-kit", "monster-gorm"]
     },
     "armor-kit-green-knight": {
       "editions": [{ "id": "naked", "label": "Naked", "expansion": "Green Knight Armor", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseDate": "2016-09-17" }],
@@ -1311,7 +1311,7 @@
       "name": "Spider Silk Armor Kit",
       "notes": "The Naked edition includes four miniatures with plastic bases and inserts, without artwork or retail packaging.",
       "size": "30",
-      "tags": ["female", "plastic", "male", "2015", "2016", "2021", "naked", "armor-kit", "monster-spidicules"]
+      "tags": ["female", "plastic", "male", "2016", "2015", "2021", "naked", "armor-kit", "monster-spidicules"]
     },
     "armor-kit-unarmored": {
       "editions": [
@@ -1720,6 +1720,15 @@
       "name": "Caster Hunter",
       "size": "30",
       "tags": ["female", "generic", "photoresin", "deathgrey", "2021"]
+    },
+    "cat-doctors": {
+      "aliases": ["Naked Cat Doctors"],
+      "announcements": ["2025-11-28"],
+      "editions": [{ "id": "plastic", "label": "Naked", "format": "physical", "materials": ["Plastic"], "prices": [4500], "releaseDate": "2025-11-28", "shop": "missing" }],
+      "handle": "naked-cat-doctors",
+      "kind": "model",
+      "name": "Cat Doctors",
+      "tags": ["female", "plastic", "2025", "naked", "cat"]
     },
     "cat-eater-enchantress": {
       "announcements": ["2026-10-30"],
@@ -2493,13 +2502,12 @@
       "editions": [
         { "id": "first-run", "label": "First Run", "expansion": "Abyssal Woods", "format": "physical", "handle": "disciple-of-the-witch-one", "materials": ["Resin"], "numbered": true, "prices": [3000], "releaseDate": "2015-10-31", "runSize": 500, "shop": "out-of-stock" },
         { "id": "encore", "label": "Encore", "format": "physical", "handle": "disciple-of-the-witch-one", "materials": ["Resin"], "prices": [3000], "releaseDate": "2015-10-31", "shop": "out-of-stock" },
-        { "id": "plastic-included", "label": "Plastic", "expansion": "Abyssal Woods", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "releaseDate": "2016-10-28" },
-        { "id": "plastic", "label": "Plastic", "expansion": "Abyssal Woods", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseWindow": "2030" }
+        { "id": "plastic", "label": "Naked", "expansion": "Abyssal Woods", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "releaseDate": "2016-10-28" }
       ],
       "kind": "model",
       "name": "Disciple of the Witch 1",
       "size": "30",
-      "tags": ["female", "plastic", "generic", "resin", "2015", "upcoming", "2030", "abyssal-woods", "disciple-of-the-witch"]
+      "tags": ["female", "plastic", "generic", "resin", "2016", "2015", "abyssal-woods", "disciple-of-the-witch"]
     },
     "disciple-of-the-witch-2": {
       "aliases": ["Disciple of the Witch - Two"],
@@ -2507,52 +2515,48 @@
       "editions": [
         { "id": "first-run", "label": "First Run", "expansion": "Abyssal Woods", "format": "physical", "handle": "disciple-of-the-witch-two", "materials": ["Resin"], "numbered": true, "prices": [3400], "releaseDate": "2015-10-31", "runSize": 500, "shop": "out-of-stock" },
         { "id": "encore", "label": "Encore", "format": "physical", "handle": "disciple-of-the-witch-two", "materials": ["Resin"], "prices": [3400], "releaseDate": "2015-10-31", "shop": "out-of-stock" },
-        { "id": "plastic-included", "label": "Plastic", "expansion": "Abyssal Woods", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "releaseDate": "2016-10-28" },
-        { "id": "plastic", "label": "Plastic", "expansion": "Abyssal Woods", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseWindow": "2030" }
+        { "id": "plastic", "label": "Naked", "expansion": "Abyssal Woods", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "releaseDate": "2016-10-28" }
       ],
       "kind": "model",
       "name": "Disciple of the Witch 2",
       "size": "30",
-      "tags": ["female", "plastic", "generic", "resin", "2015", "upcoming", "2030", "abyssal-woods", "disciple-of-the-witch"]
+      "tags": ["female", "plastic", "generic", "resin", "2016", "2015", "abyssal-woods", "disciple-of-the-witch"]
     },
     "disciple-of-the-witch-3": {
       "editions": [
         { "id": "first-run", "label": "First Run", "expansion": "Abyssal Woods", "format": "physical", "materials": ["Resin"], "numbered": true, "prices": [2500], "releaseDate": "2015-10-31", "runSize": 500 },
         { "id": "encore", "label": "Encore", "format": "physical", "materials": ["Resin"], "prices": [2500], "releaseDate": "2015-10-31" },
-        { "id": "plastic-included", "label": "Plastic", "expansion": "Abyssal Woods", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "releaseDate": "2016-10-28" },
-        { "id": "plastic", "label": "Plastic", "expansion": "Abyssal Woods", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseWindow": "2030" }
+        { "id": "plastic", "label": "Naked", "expansion": "Abyssal Woods", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "releaseDate": "2016-10-28" }
       ],
       "kind": "model",
       "name": "Disciple of the Witch 3",
       "size": "30",
-      "tags": ["female", "plastic", "generic", "2015", "upcoming", "2030", "abyssal-woods", "disciple-of-the-witch"]
+      "tags": ["plastic", "generic", "male", "2016", "2015", "abyssal-woods", "disciple-of-the-witch"]
     },
     "disciple-of-the-witch-4": {
       "editions": [
         { "id": "first-run", "label": "First Run", "expansion": "Abyssal Woods", "format": "physical", "materials": ["Resin"], "numbered": true, "prices": [2500], "releaseDate": "2015-10-31", "runSize": 500 },
         { "id": "encore", "label": "Encore", "format": "physical", "materials": ["Resin"], "prices": [2500], "releaseDate": "2015-10-31" },
-        { "id": "plastic-included", "label": "Plastic", "expansion": "Abyssal Woods", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "releaseDate": "2016-10-28" },
-        { "id": "plastic", "label": "Plastic", "expansion": "Abyssal Woods", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseWindow": "2030" }
+        { "id": "plastic", "label": "Naked", "expansion": "Abyssal Woods", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "releaseDate": "2016-10-28" }
       ],
       "kind": "model",
       "name": "Disciple of the Witch 4",
       "size": "30",
-      "tags": ["female", "plastic", "generic", "2015", "upcoming", "2030", "abyssal-woods", "disciple-of-the-witch"]
+      "tags": ["plastic", "generic", "male", "2016", "2015", "abyssal-woods", "disciple-of-the-witch"]
     },
-    "disciple-of-the-witch-5-6": {
-      "aliases": ["Disciple of the Witch - Six"],
+    "disciple-of-the-witch-6": {
+      "aliases": ["Disciple of the Witch - Six", "Disciple of the Witch 5/6"],
       "announcements": ["2024-10-31"],
       "editions": [
         { "id": "first-run", "label": "First Run", "expansion": "Abyssal Woods", "format": "physical", "handle": "disciple-of-the-witch-six", "materials": ["Resin"], "numbered": true, "prices": [3000], "releaseDate": "2015-10-31", "runSize": 500, "shop": "out-of-stock" },
         { "id": "encore", "label": "Encore", "format": "physical", "handle": "disciple-of-the-witch-six", "materials": ["Resin"], "prices": [3000], "releaseDate": "2015-10-31", "shop": "out-of-stock" },
-        { "id": "plastic-included", "label": "Plastic", "expansion": "Abyssal Woods", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "releaseDate": "2016-10-28" },
-        { "id": "plastic", "label": "Plastic", "expansion": "Abyssal Woods", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseWindow": "2030" }
+        { "id": "plastic", "label": "Naked", "expansion": "Abyssal Woods", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "releaseDate": "2016-10-28" }
       ],
       "kind": "model",
-      "name": "Disciple of the Witch 5/6",
+      "name": "Disciple of the Witch 6",
       "notes": "The earlier releases had 'Five' on the small art card.",
       "size": "30",
-      "tags": ["female", "plastic", "generic", "resin", "2015", "upcoming", "2030", "abyssal-woods", "disciple-of-the-witch"]
+      "tags": ["female", "plastic", "generic", "resin", "2016", "2015", "abyssal-woods", "disciple-of-the-witch"]
     },
     "distracted": {
       "announcements": ["2020-07-17"],
@@ -2833,6 +2837,15 @@
       "requires": ["expansion-dung-beetle-knight", "expansion-gorm", "expansion-spidicules", "expansion-sunstalker"],
       "tags": ["gameplay", "in-stock", "gear", "knight", "2016", "2021", "expansion", "sim", "armor", "pot-sun", "expansions-of-death-vol-1"]
     },
+    "experiment-of-death": {
+      "editions": [{ "id": "plastic", "label": "Naked", "format": "physical", "materials": ["PVC"], "prices": [2500], "releaseDate": "2012-06-01" }],
+      "includes": [{ "item": "wet-nurse", "editionId": "pvc-included" }],
+      "kind": "model",
+      "name": "Experiment of Death",
+      "notes": "The original release contained PVC Wet Nurse and Pinup Twilight Knight miniatures, with 180 units produced. Stock was replenished three times in 2013, followed by a final Naked release in 2014.",
+      "size": "30 & 50",
+      "tags": ["plastic", "monster", "knight", "pinup", "naked", "2014", "2012", "monster-wet-nurse"]
+    },
     "fade": {
       "editions": [{ "id": "box", "label": "Box", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseDate": "2016-08-16" }],
       "gameplay": true,
@@ -2930,7 +2943,7 @@
       "kind": "model",
       "name": "Flower Witch",
       "size": "50",
-      "tags": ["female", "plastic", "generic", "upcoming", "2014", "2030", "abyssal-woods"]
+      "tags": ["female", "plastic", "generic", "upcoming", "2014", "abyssal-woods", "2030"]
     },
     "forge-god": {
       "aliases": ["Forge God - Archival Remaster"],
@@ -3084,7 +3097,7 @@
       "kind": "model",
       "name": "Goblin Guard",
       "size": "50",
-      "tags": ["female", "plastic", "generic", "2016", "upcoming", "2030", "abyssal-woods", "guard"]
+      "tags": ["female", "plastic", "generic", "2016", "upcoming", "abyssal-woods", "2030", "guard"]
     },
     "gold-smoke-knight": {
       "aliases": ["Gold Smoke Knight (Resin)", "Gold Smoke Knight Bust"],
@@ -4405,30 +4418,6 @@
       "size": "30",
       "tags": ["female", "plastic", "generic", "knight", "2014", "twilight-knight", "crossover"]
     },
-    "naked-cat-doctors": {
-      "announcements": ["2025-11-28"],
-      "editions": [{ "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [4500], "releaseDate": "2025-11-28", "shop": "missing" }],
-      "handle": "naked-cat-doctors",
-      "kind": "model",
-      "name": "Naked Cat Doctors",
-      "tags": ["female", "plastic", "2025", "naked", "cat"]
-    },
-    "naked-experiment-of-death": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["PVC"], "prices": [2500], "releaseDate": "2012-06-01" }],
-      "includes": [{ "item": "wet-nurse", "editionId": "pvc-included" }],
-      "kind": "model",
-      "name": "Experiment of Death",
-      "notes": "The original release contained PVC Wet Nurse and Pinup Twilight Knight miniatures, with 180 units produced. Stock was replenished three times in 2013, followed by a final Naked release in 2014.",
-      "size": "30 & 50",
-      "tags": ["plastic", "monster", "knight", "pinup", "naked", "2014", "2012", "monster-wet-nurse"]
-    },
-    "naked-survivor-kit": {
-      "editions": [{ "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseDate": "2015-09-03" }],
-      "kind": "model",
-      "name": "Naked Survivor Kit",
-      "size": "30",
-      "tags": ["female", "plastic", "generic", "core", "survivor", "2015", "naked"]
-    },
     "necromancer": {
       "aliases": ["Necromancer - Archival Remaster", "Necromancer - Archival Remaster Deathgrey M2 Edition", "Necromancer Remaster"],
       "announcements": ["2023-10-31", "2024-10-31", "2025-10-31"],
@@ -5161,7 +5150,7 @@
       "kind": "model",
       "name": "Pinup Nightmare Ram Armor",
       "notes": "The resin Pinup Nightmare Ram Armor was renamed Pinup Ramette for its Plastic release in Pinups of Death IV.\n\nPainter's Scale: selected by winners of the 2022 Pinup Painting Contest and limited to 250 prints.",
-      "tags": ["female", "plastic", "generic", "photoresin", "resin", "pinup", "painters-scale", "2016", "armor", "nightmare-ram"]
+      "tags": ["female", "plastic", "generic", "photoresin", "resin", "pinup", "2016", "painters-scale", "armor", "nightmare-ram"]
     },
     "pinup-nightmare-ram-armor-male": {
       "editions": [
@@ -5373,7 +5362,7 @@
       "kind": "model",
       "name": "Pinup Storm Knight Armor",
       "notes": "Renamed from Pinup Storm Armor to Pinup Storm Knight Armor for Pinups of Death III.\n\nPainter's Scale: selected by winners of the 2022 Pinup Painting Contest and limited to 450 prints.",
-      "tags": ["female", "plastic", "generic", "in-stock", "photoresin", "resin", "knight", "pinup", "painters-scale", "2016", "armor"]
+      "tags": ["female", "plastic", "generic", "in-stock", "photoresin", "resin", "knight", "pinup", "2016", "painters-scale", "armor"]
     },
     "pinup-sunstalker-dancer": {
       "aliases": ["Sunstalker Dancer Bust", "Pinup Sunstalker Dancer - Painter's Scale", "Sunstalker Dancer - Painters Scale"],
@@ -6182,20 +6171,21 @@
       "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "survivor", "terrain", "2024", "resource", "settlement-location", "innovation", "core-survivor", "lucy", "erza", "allister", "zachary", "anniversary"]
     },
     "set-disciples-of-the-witch": {
+      "aliases": ["Naked Disciples of the Witch"],
       "announcements": ["2026-10-30"],
       "editions": [{ "id": "naked", "label": "Naked", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [4500], "releaseDate": "2026-10-30", "shop": "in-stock" }],
       "handle": "naked-disciples-of-the-witch",
       "includes": [
-        { "item": "disciple-of-the-witch-1", "editionId": "plastic-included" },
-        { "item": "disciple-of-the-witch-2", "editionId": "plastic-included" },
-        { "item": "disciple-of-the-witch-3", "editionId": "plastic-included" },
-        { "item": "disciple-of-the-witch-4", "editionId": "plastic-included" },
-        { "item": "disciple-of-the-witch-5-6", "editionId": "plastic-included" }
+        { "item": "disciple-of-the-witch-1", "editionId": "plastic" },
+        { "item": "disciple-of-the-witch-2", "editionId": "plastic" },
+        { "item": "disciple-of-the-witch-3", "editionId": "plastic" },
+        { "item": "disciple-of-the-witch-4", "editionId": "plastic" },
+        { "item": "disciple-of-the-witch-6", "editionId": "plastic" }
       ],
       "kind": "set",
-      "name": "Naked Disciples of the Witch",
-      "notes": "Contains Disciples 1, 2, 3, 4, and 6 (cataloged as 5/6). Miniatures only, without packaging or artwork.",
-      "tags": ["female", "plastic", "generic", "in-stock", "2026", "naked", "abyssal-woods", "disciple-of-the-witch"]
+      "name": "Disciples of the Witch",
+      "notes": "Contains Disciples 1, 2, 3, 4, and 6. Miniatures only, without packaging or artwork.",
+      "tags": ["female", "plastic", "generic", "in-stock", "male", "2026", "naked", "abyssal-woods", "disciple-of-the-witch"]
     },
     "set-echoes-of-death": {
       "announcements": ["2019-03-27"],
@@ -6819,6 +6809,14 @@
       "notes": "The Plastic version was offered in the Naked Promo Collection on Black Friday 2015.",
       "size": "30",
       "tags": ["female", "plastic", "survivor", "2015", "candy", "cola"]
+    },
+    "survivor-kit": {
+      "aliases": ["Naked Survivor Kit"],
+      "editions": [{ "id": "plastic", "label": "Naked", "format": "physical", "materials": ["Plastic"], "prices": [2500], "releaseDate": "2015-09-03" }],
+      "kind": "model",
+      "name": "Survivor Kit",
+      "size": "30",
+      "tags": ["female", "plastic", "generic", "male", "core", "survivor", "2015", "naked"]
     },
     "swashbuckler": {
       "announcements": ["2019-03-27", "2020-01-22"],
@@ -7958,7 +7956,7 @@
       ],
       "kind": "model",
       "name": "Goblin Dragon",
-      "tags": ["plastic", "monster", "2023", "upcoming", "naked", "2030", "abyssal-woods"]
+      "tags": ["plastic", "monster", "2023", "upcoming", "naked", "abyssal-woods", "2030"]
     },
     "godhand": {
       "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Gambler's Chest", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "releaseDate": "2023-11-24" }],
@@ -9267,11 +9265,11 @@
     "halloween-trick-or-treat-bag": {
       "editions": [{ "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [10000], "releaseDate": "2016-10-28" }],
       "includes": [
-        { "item": "disciple-of-the-witch-1", "editionId": "plastic-included" },
-        { "item": "disciple-of-the-witch-2", "editionId": "plastic-included" },
-        { "item": "disciple-of-the-witch-3", "editionId": "plastic-included" },
-        { "item": "disciple-of-the-witch-4", "editionId": "plastic-included" },
-        { "item": "disciple-of-the-witch-5-6", "editionId": "plastic-included" },
+        { "item": "disciple-of-the-witch-1", "editionId": "plastic" },
+        { "item": "disciple-of-the-witch-2", "editionId": "plastic" },
+        { "item": "disciple-of-the-witch-3", "editionId": "plastic" },
+        { "item": "disciple-of-the-witch-4", "editionId": "plastic" },
+        { "item": "disciple-of-the-witch-6", "editionId": "plastic" },
         { "item": "flower-witch", "editionId": "plastic-included" },
         { "item": "set-halloween-survivors", "editionId": "plastic-included" }
       ],
@@ -9666,7 +9664,7 @@
         { "item": "disciple-of-the-witch-2", "editionId": "first-run" },
         { "item": "disciple-of-the-witch-3", "editionId": "first-run" },
         { "item": "disciple-of-the-witch-4", "editionId": "first-run" },
-        { "item": "disciple-of-the-witch-5-6", "editionId": "first-run" },
+        { "item": "disciple-of-the-witch-6", "editionId": "first-run" },
         { "item": "dragon-king", "editionId": "plastic" },
         { "item": "armor-kit-dragon-king", "editionId": "naked" },
         { "item": "dragon-king-tyrant", "editionId": "plastic" },
@@ -9707,7 +9705,7 @@
         { "item": "mountain-man", "editionId": "first-run" },
         { "item": "murder-victim", "editionId": "plastic" },
         { "item": "murderer", "editionId": "plastic" },
-        { "item": "naked-survivor-kit", "editionId": "plastic" },
+        { "item": "survivor-kit", "editionId": "plastic" },
         { "item": "neko-twilight-knight", "editionId": "first-run" },
         { "item": "nightmare-adam", "editionId": "plastic" },
         { "item": "nightmare-ram", "editionId": "first-run" },
@@ -9808,7 +9806,7 @@
         { "item": "young-survivor-rachel", "editionId": "plastic" }
       ],
       "name": "Satan Pledge",
-      "tags": ["gameplay", "upcoming", "2030", "satan", "kickstarter"]
+      "tags": ["gameplay", "upcoming", "satan", "2030", "kickstarter"]
     },
     "starting-survivor-set": {
       "aliases": ["Starting Survivor Set (Kingdom Death: Monster 1.6 + Gambler's Chest)"],

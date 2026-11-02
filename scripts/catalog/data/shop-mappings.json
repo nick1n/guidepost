@@ -547,7 +547,7 @@
   },
   "naked-cat-doctors": {
     "category": "content",
-    "itemId": "naked-cat-doctors",
+    "itemId": "cat-doctors",
     "releaseDate": "2025-11-28",
     "editionId": "plastic"
   },
@@ -2382,7 +2382,7 @@
   },
   "disciple-of-the-witch-six": {
     "category": "content",
-    "itemId": "disciple-of-the-witch-5-6"
+    "itemId": "disciple-of-the-witch-6"
   },
   "distracted": {
     "category": "content",

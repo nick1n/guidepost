@@ -603,7 +603,7 @@ describe("review catalog facts", () => {
     expect(data.homebrew.model.editions).toBeUndefined();
   });
 
-  it("leaves unreviewed live bundle components unpriced", () => {
+  it("leaves included-only bundle components unpriced", () => {
     expect(reviewIndex(catalog as Catalog).bundlePricing("halloween-trick-or-treat-bag", "plastic")).toEqual({
       total: 0,
       missing: 0,

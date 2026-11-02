@@ -694,6 +694,7 @@
     display: flex;
     flex-wrap: wrap;
     align-items: center;
+    margin-inline-start: auto;
     gap: 0.375rem;
   }
   .badge {

@@ -4378,15 +4378,15 @@
       "sheet": "KDM Miniatures",
       "row": 513,
       "name": "Disciple of the Witch 5/6",
-      "primary": { "category": "content", "contentId": "disciple-of-the-witch-5-6", "editionId": "first-run" },
+      "primary": { "category": "content", "contentId": "disciple-of-the-witch-6", "editionId": "first-run" },
       "related": [
-        { "category": "content", "contentId": "disciple-of-the-witch-5-6", "editionId": "encore" },
-        { "category": "content", "contentId": "disciple-of-the-witch-5-6", "editionId": "plastic" }
+        { "category": "content", "contentId": "disciple-of-the-witch-6", "editionId": "encore" },
+        { "category": "content", "contentId": "disciple-of-the-witch-6", "editionId": "plastic" }
       ],
       "ownershipScope": "source-row",
       "releaseEditions": {
-        "M": [{ "category": "content", "contentId": "disciple-of-the-witch-5-6", "editionId": "first-run" }],
-        "N": [{ "category": "content", "contentId": "disciple-of-the-witch-5-6", "editionId": "encore" }]
+        "M": [{ "category": "content", "contentId": "disciple-of-the-witch-6", "editionId": "first-run" }],
+        "N": [{ "category": "content", "contentId": "disciple-of-the-witch-6", "editionId": "encore" }]
       }
     },
     {
@@ -4465,8 +4465,8 @@
       "sheet": "KDM Miniatures",
       "row": 525,
       "name": "Naked Survivor Kit",
-      "primary": { "category": "content", "contentId": "naked-survivor-kit", "editionId": "plastic" },
-      "releaseEditions": { "O": [{ "category": "content", "contentId": "naked-survivor-kit", "editionId": "plastic" }] }
+      "primary": { "category": "content", "contentId": "survivor-kit", "editionId": "plastic" },
+      "releaseEditions": { "O": [{ "category": "content", "contentId": "survivor-kit", "editionId": "plastic" }] }
     },
     {
       "sheet": "KDM Miniatures",
@@ -5471,8 +5471,8 @@
       "sheet": "KDM Miniatures",
       "row": 614,
       "name": "Experiment of Death (PVC Wet Nurse & Pinup Twilight Knight)",
-      "primary": { "category": "content", "contentId": "naked-experiment-of-death", "editionId": "plastic" },
-      "releaseEditions": { "O": [{ "category": "content", "contentId": "naked-experiment-of-death", "editionId": "plastic" }] }
+      "primary": { "category": "content", "contentId": "experiment-of-death", "editionId": "plastic" },
+      "releaseEditions": { "O": [{ "category": "content", "contentId": "experiment-of-death", "editionId": "plastic" }] }
     },
     {
       "sheet": "KDM Miniatures",

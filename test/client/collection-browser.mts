@@ -1,4 +1,4 @@
-import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { runBrowser } from "./browser-harness.mts";
 
 type StoredRow = { contentId: string; state: { owned?: boolean } };
@@ -181,6 +181,50 @@ await runBrowser(
       assert(await evaluate("location.hash === '#/accessories'"), `Ownership filtering stays out of the URL at ${width}px`);
       await saveScreenshot(`temp/browser-verification/collection-hash-${width}.png`);
     }
+    const card = (id: string) => `document.getElementById(${JSON.stringify(`card-body-${id}`)})?.closest('article')`;
+    const disciple = card("disciple-of-the-witch-6");
+    const disciples = card("set-disciples-of-the-witch");
+    const data = JSON.parse(await readFile("static/kdm/catalog/data.json", "utf8"));
+    const label = data.content["disciple-of-the-witch-6"].editions.find((edition: { id: string }) => edition.id === "plastic").label;
+    await send("Emulation.setDeviceMetricsOverride", { width: 590, height: 900, deviceScaleFactor: 1, mobile: false });
+    await navigate(new URL("/kdm/collection/#/content?q=disciple%20of%20the%20witch", base).href);
+    await waitFor(`${disciples} !== undefined`);
+    await evaluate(`${disciples}.scrollIntoView()`);
+    const setOwned = `${disciples}.querySelector('.editions input[type=checkbox]')`;
+    await waitFor(`${setOwned} && !${setOwned}.disabled`);
+    await evaluate(`${setOwned}.click()`);
+    await waitFor(`${setOwned}.checked`);
+    const component = `${disciples}.querySelector('.contents input[aria-label*="Disciple of the Witch 6,"]')`;
+    await evaluate(`${disciples}.querySelector('.contents summary').click()`);
+    await waitFor(`${component}?.checked===true`);
+    await evaluate(`${component}.click()`);
+    await waitFor(`${component}?.checked===false`);
+    await evaluate(`${component}.click()`);
+    await waitFor(`${component}?.checked===true`);
+    await evaluate(`${disciple}.scrollIntoView()`);
+    await saveScreenshot("temp/browser-verification/disciples-component-restored.png");
+    const owned = `${disciple}.querySelector('input[aria-label=${JSON.stringify(`Remove ownership of Disciple of the Witch 6, ${label}`)}]')`;
+    assert(await evaluate(`${owned}?.checked`), "Rechecking an included Disciple restores its individual ownership checkbox");
+    for (const width of [590, 390, 1280]) {
+      await send("Emulation.setDeviceMetricsOverride", { width, height: 900, deviceScaleFactor: 1, mobile: width === 390 });
+      await evaluate(`${disciple}.scrollIntoView(); new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))`);
+      assert(
+        await evaluate(
+          `(()=>{const e=${disciple}.querySelector('.edition-summary:not(.inactive)');const b=e.querySelector('.badges').getBoundingClientRect();return !e.querySelector('.edition-value') && Math.abs(b.right-e.getBoundingClientRect().right)<1})()`,
+        ),
+        `Included-only edition has no price and Models only badge stays right at ${width}px`,
+      );
+      await saveScreenshot(`temp/browser-verification/disciples-after-${width}.png`);
+    }
+    await evaluate(`${setOwned}.click()`);
+    await waitFor(`${setOwned}.checked===false`);
+    await evaluate(`${setOwned}.click()`);
+    await waitFor(`${setOwned}.checked===true`);
+    assert(
+      await evaluate(`${disciple}.querySelectorAll('.edition').length===3`),
+      "Disciples have one Plastic edition after acquiring the set",
+    );
+    assert(await evaluate(`${owned}?.checked`), "Rechecking the set owns the canonical Plastic model");
     assert(errors.length === 0, "No browser runtime exceptions, window errors, or error logs");
     await saveScreenshot("temp/browser-verification/ownership.png");
     await writeFile("temp/browser-verification/report.json", JSON.stringify({ report, errors }, null, 2));

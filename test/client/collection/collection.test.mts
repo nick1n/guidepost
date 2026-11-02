@@ -21,6 +21,77 @@ const core = collectionKey("core", "1.6");
 const expansion = collectionKey("dragon-king", "1.6");
 const dice = collectionKey("dice", "1.6");
 
+it.effect("Naked Disciples set repeatedly acquires the five canonical Plastic models", () =>
+  Effect.gen(function* () {
+    const collection = new Collection(data);
+    const store = makeStore();
+    yield* collection.setStore(store);
+    const parent = collectionKey("set-disciples-of-the-witch", "naked");
+    const child = collectionKey("disciple-of-the-witch-1", "plastic");
+    yield* collection.setCopyNumber(child, 42);
+    yield* collection.toggleWish(child);
+    yield* collection.setMissing(child, true);
+    const before = collection.state;
+    const acquire = collection.toggleOwned(parent, true);
+    expect(collection.state).toBe(before);
+    store.failNextSave("unavailable");
+    expect(Exit.isFailure(yield* Effect.exit(acquire))).toBe(true);
+    expect(collection.state).toEqual(before);
+    expect(store.state).toEqual(before);
+    for (const owned of [true, false, true]) {
+      const writes = store.writes;
+      yield* collection.toggleOwned(parent, owned);
+      expect(store.writes).toBe(writes + 1);
+      expect(collection.get(child)).toEqual(owned ? { owned: true, copyNumber: 42 } : { copyNumber: 42 });
+      for (const suffix of ["1", "2", "3", "4", "6"]) {
+        const id = `disciple-of-the-witch-${suffix}`;
+        expect(collection.getEdition(id, "plastic").owned === true).toBe(owned);
+        expect(collection.coverage.edition(id, "plastic").covered).toBe(owned);
+      }
+    }
+    expect(collection.getEdition("disciple-of-the-witch-1", "first-run")).toEqual({});
+    expect(store.state).toEqual(collection.state);
+  }),
+);
+
+for (const [itemId, editionId] of [
+  ["set-disciples-of-the-witch", "naked"],
+  ["halloween-trick-or-treat-bag", "plastic"],
+]) {
+  it.effect(`rechecking a Disciple inside ${itemId} restores the individual acquisition`, () =>
+    Effect.gen(function* () {
+      const collection = new Collection(data);
+      const store = makeStore();
+      yield* collection.setStore(store);
+      const parent = collectionKey(itemId, editionId);
+      const child = collectionKey("disciple-of-the-witch-6", "plastic");
+      yield* collection.setCopyNumber(child, 42);
+      yield* collection.toggleOwned(parent, true);
+      for (let cycle = 0; cycle < 2; cycle++) {
+        yield* collection.toggleIncludedOwned(child, false);
+        expect(collection.get(parent).owned).toBe(true);
+        expect(collection.get(child)).toEqual({ missing: true, copyNumber: 42 });
+        yield* collection.toggleWish(child);
+        const before = collection.state;
+        const restore = collection.toggleIncludedOwned(child, true);
+        expect(collection.state).toBe(before);
+        store.failNextSave("unavailable");
+        expect(Exit.isFailure(yield* Effect.exit(restore))).toBe(true);
+        expect(collection.state).toEqual(before);
+        expect(store.state).toEqual(before);
+        const writes = store.writes;
+        yield* collection.toggleIncludedOwned(child, true);
+        expect(store.writes).toBe(writes + 1);
+        expect(collection.coverage.edition("disciple-of-the-witch-6", "plastic").covered).toBe(true);
+        expect(collection.get(child)).toEqual({ owned: true, copyNumber: 42 });
+      }
+      yield* collection.refresh();
+      expect(collection.get(child)).toEqual({ owned: true, copyNumber: 42 });
+      expect(store.state).toEqual(collection.state);
+    }),
+  );
+}
+
 it("catalog readiness distinguishes an absent source from an installed empty catalog", () => {
   const empty: Catalog = { content: {}, "included-only": {}, accessories: {}, bundles: {}, homebrew: {} };
   const collection = new Collection();
@@ -566,7 +637,14 @@ it.effect("bulk ownership writes dedupe keys, clear wishes when owning, and pres
 
 it.effect("included checkboxes mark supplied contents missing and restore them without an acquisition", () =>
   Effect.gen(function* () {
-    const collection = new Collection(bundleCatalog());
+    const catalog = bundleCatalog();
+    catalog.content.set = {
+      ...catalog.bundles.set,
+      kind: "box",
+      editions: [{ id: "bundle", label: "Box", format: "physical" }],
+    };
+    delete catalog.bundles.set;
+    const collection = new Collection(catalog);
     const parent = collectionKey("set", "bundle");
     const child = collectionKey("model", "plastic");
     const f = makeStore({ [parent]: { owned: true } });
