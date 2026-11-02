@@ -9,6 +9,9 @@ on:
       base-path:
         type: string
         default: ""
+      test-scripts:
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -48,7 +51,12 @@ jobs:
         run: pnpm catalog:validate
 
       - name: Test artifact checks
+        if: ${{ !inputs.test-scripts }}
         run: node --test test/scripts/build/site-checks.mts
+
+      - name: Test scripts
+        if: inputs.test-scripts
+        run: pnpm test:scripts
 
       - name: Build and verify site
         env:

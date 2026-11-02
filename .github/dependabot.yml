@@ -1,6 +1,20 @@
 version: 2
+multi-ecosystem-groups:
+  dependencies:
+    schedule:
+      interval: monthly
+
 updates:
   - package-ecosystem: github-actions
     directory: /
-    schedule:
-      interval: weekly
+    patterns: ["*"]
+    multi-ecosystem-group: dependencies
+
+  - package-ecosystem: npm
+    directory: /
+    patterns: ["*"]
+    multi-ecosystem-group: dependencies
+    ignore:
+      # Upgrade the UnoCSS family together after reviewing the scoped integration patch.
+      - dependency-name: unocss
+      - dependency-name: "@unocss/*"
