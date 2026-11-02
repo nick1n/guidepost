@@ -15,6 +15,9 @@ updates:
     patterns: ["*"]
     multi-ecosystem-group: dependencies
     ignore:
+      # SvelteKit and svelte-check require the TypeScript 6 JavaScript compiler API.
+      - dependency-name: typescript
+        update-types: ["version-update:semver-major"]
       # Upgrade the UnoCSS family together after reviewing the scoped integration patch.
       - dependency-name: unocss
       - dependency-name: "@unocss/*"
