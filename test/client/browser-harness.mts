@@ -62,7 +62,29 @@ export async function runBrowser(profilePrefix: string, diagnosticExpression: st
     new Error(
       `Chrome debugger did not start: ${executable} (exit ${chrome.exitCode}, signal ${chrome.signalCode})\n${launchError?.message ?? ""}\n${stderr}`,
     );
+  let closed = false;
+  const exited = new Promise<void>((resolve) => {
+    chrome.once("close", () => {
+      closed = true;
+      resolve();
+    });
+  });
+  const waitForExit = async () => {
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    try {
+      return await Promise.race([
+        exited.then(() => true),
+        new Promise<false>((resolve) => {
+          timer = setTimeout(() => resolve(false), 5000);
+        }),
+      ]);
+    } finally {
+      clearTimeout(timer);
+    }
+  };
   let socket: WebSocket | undefined;
+  let closeBrowser: (() => void) | undefined;
+  let failed = false;
   try {
     let target;
     for (let attempt = 0; attempt < 40; attempt++) {
@@ -83,6 +105,7 @@ export async function runBrowser(profilePrefix: string, diagnosticExpression: st
       connection.onerror = reject;
     });
     let sequence = 0;
+    closeBrowser = () => connection.send(JSON.stringify({ id: ++sequence, method: "Browser.close" }));
     const pending = new Map<
       number,
       { resolve: (reply: Reply) => void; reject: (reason: unknown) => void; timer: ReturnType<typeof setTimeout> }
@@ -148,13 +171,26 @@ export async function runBrowser(profilePrefix: string, diagnosticExpression: st
         "window.addEventListener('error', event => console.error('window.error', event.message, event.error)); window.addEventListener('unhandledrejection', event => console.error('unhandledrejection', event.reason));",
     });
     await run({ base, send, evaluate, waitFor, click, errors, report, assert, saveScreenshot });
+  } catch (error) {
+    failed = true;
+    throw error;
   } finally {
-    socket?.close();
-    if (chrome.pid && chrome.exitCode === null && chrome.signalCode === null) {
-      const exited = new Promise<void>((resolve) => chrome.once("exit", () => resolve()));
-      chrome.kill();
-      await Promise.race([exited, new Promise((resolve) => setTimeout(resolve, 5000))]);
+    try {
+      if (chrome.pid && !closed) {
+        if (socket?.readyState === WebSocket.OPEN && closeBrowser) closeBrowser();
+        else chrome.kill();
+        if (!(await waitForExit())) {
+          chrome.kill("SIGKILL");
+          if (!(await waitForExit())) throw new Error(`Chrome did not exit; keeping its profile at ${profile}`);
+        }
+      }
+      // Chrome subprocesses can briefly retain profile files after the browser process exits.
+      await rm(profile, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 });
+    } catch (error) {
+      if (failed) console.error("Browser cleanup also failed:", error);
+      else throw error;
+    } finally {
+      socket?.close();
     }
-    await rm(profile, { recursive: true, force: true });
   }
 }
