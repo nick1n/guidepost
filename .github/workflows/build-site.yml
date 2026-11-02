@@ -58,13 +58,18 @@ jobs:
         if: inputs.test-scripts
         run: pnpm test:scripts
 
-      - name: Build and verify site
+      - name: Build and verify artifact
         env:
           BASE_PATH: ${{ inputs.upload-pages && steps.pages.outputs.base_path || inputs.base-path }}
         run: |
           pnpm build
           pnpm check:build
-          pnpm test:collection-startup
+
+      - name: Test collection startup in Chrome
+        env:
+          BASE_PATH: ${{ inputs.upload-pages && steps.pages.outputs.base_path || inputs.base-path }}
+          CHROME_PATH: /usr/bin/google-chrome
+        run: pnpm test:collection-startup
 
       - name: Upload GitHub Pages artifact
         if: inputs.upload-pages

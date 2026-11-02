@@ -11,6 +11,8 @@ let responseStatus = 200;
 let mismatch = false;
 let catalogGate: Promise<void> | undefined;
 let scriptGate: Promise<void> | undefined;
+let documentGate: Promise<void> | undefined;
+const shellReady = "document.documentElement?.hasAttribute('data-glass') && document.querySelector('.startup') !== null";
 const types: Record<string, string> = {
   ".html": "text/html",
   ".js": "text/javascript",
@@ -29,6 +31,14 @@ const server = createServer(async (request, response) => {
       return;
     }
     const local = decodeURIComponent(path.slice(prefix.length));
+    if (local === "/__browser-navigation__/") {
+      response.writeHead(200, { "Content-Type": "text/html", "Cache-Control": "no-store" });
+      // Commit a document without its root, as can happen while a real response is still arriving.
+      response.write("<!doctype html>");
+      await documentGate;
+      response.end('<html data-glass><body><div class="startup">Loading</div></body></html>');
+      return;
+    }
     const file = resolve(root, `.${local.endsWith("/") ? `${local}index.html` : local}`);
     if (relative(root, file).startsWith("..")) {
       response.writeHead(403).end();
@@ -72,7 +82,7 @@ await mkdir("temp/browser-verification/collection-startup", { recursive: true })
 try {
   await runBrowser(
     "collection-startup",
-    "JSON.stringify({text:document.body.innerText.slice(0,1000),seen:window.startupCards})",
+    "JSON.stringify({text:document.body?.innerText.slice(0,1000),seen:window.startupCards})",
     async ({ send, evaluate, waitFor, assert, errors, report, saveScreenshot }) => {
       await send("Network.enable");
       await send("Page.addScriptToEvaluateOnNewDocument", {
@@ -123,12 +133,29 @@ try {
         };
       };
 
+      let releaseDocument: () => void = () => {};
+      documentGate = new Promise<void>((done) => {
+        releaseDocument = done;
+      });
+      await navigate("/__browser-navigation__/");
+      await waitFor(`location.pathname === ${JSON.stringify(`${prefix}/__browser-navigation__/`)} && document.documentElement === null`);
+      const shell = waitFor(`(() => { window.shellPolled = true; return ${shellReady}; })()`);
+      // Observe rejection immediately while the fixture waits for proof that the predicate ran.
+      shell.catch(() => {});
+      try {
+        await waitFor("window.shellPolled === true");
+      } finally {
+        releaseDocument();
+      }
+      await shell;
+      assert(true, "Shell readiness tolerates a navigation whose document root has not arrived yet");
+
       for (const width of [390, 1280]) {
         await send("Emulation.setDeviceMetricsOverride", { width, height: 900, deviceScaleFactor: 1, mobile: width === 390 });
         requests.length = 0;
         const release = gateCatalog();
         await navigate("/kdm/collection/#/content/woe-white-speaker");
-        await waitFor("document.documentElement.hasAttribute('data-glass') && document.querySelector('.startup') !== null");
+        await waitFor(shellReady);
         assert(
           await evaluate("document.querySelectorAll('article').length === 0 && document.body.innerText.includes('Loading catalog...')"),
           `Delayed startup shows the shell without cards at ${width}px`,
@@ -189,7 +216,7 @@ try {
       requests.length = 0;
       const release = gateCatalog();
       await navigate("/kdm/collection/#/content/woe-white-speaker");
-      await waitFor("document.documentElement.hasAttribute('data-glass') && document.querySelector('.startup') !== null");
+      await waitFor(shellReady);
       // Use a known item from the live catalog, so the latest destination has an exact assertion.
       const data = JSON.parse(await readFile("static/kdm/catalog/data.json", "utf8"));
       const accessory = Object.keys(data.accessories)[0];
@@ -226,7 +253,7 @@ try {
       await writeFile("temp/browser-verification/collection-startup/report.json", JSON.stringify({ report, requests, errors }, null, 2));
     },
   );
-  await runBrowser("collection-offline", "document.body.innerText.slice(0,1000)", async ({ send, evaluate, waitFor, assert, errors }) => {
+  await runBrowser("collection-offline", "document.body?.innerText.slice(0,1000)", async ({ send, evaluate, waitFor, assert, errors }) => {
     await send("Network.enable");
     await send("Page.navigate", { url: `${origin}${prefix}/kdm/collection/#/content/woe-white-speaker` });
     await waitFor("document.querySelector('.catalog article input[type=checkbox]:not(:disabled)') !== null");
