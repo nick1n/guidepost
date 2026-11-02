@@ -7,11 +7,13 @@ multi-ecosystem-groups:
 updates:
   - package-ecosystem: github-actions
     directory: /
+    rebase-strategy: disabled
     patterns: ["*"]
     multi-ecosystem-group: dependencies
 
   - package-ecosystem: npm
     directory: /
+    rebase-strategy: disabled
     patterns: ["*"]
     multi-ecosystem-group: dependencies
     ignore:

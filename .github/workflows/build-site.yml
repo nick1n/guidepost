@@ -52,7 +52,7 @@ jobs:
 
       - name: Test artifact checks
         if: ${{ !inputs.test-scripts }}
-        run: node --test test/scripts/build/site-checks.mts
+        run: node --test test/scripts/build/site-checks.mts test/scripts/build/browser-checks.mts
 
       - name: Test scripts
         if: inputs.test-scripts

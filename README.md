@@ -75,10 +75,11 @@ Use `pnpm test` for watch mode.
 Pull requests run the shared site build workflow with `/guidepost` as the base path, including build and catalog script tests.
 Pushes to `main` and manual runs on `main`
 validate, build, check the artifact, and run the production collection startup browser test before deploying to GitHub Pages.
+Pushes changing only the Dependabot configuration or Markdown files skip deployment.
 The `github-pages` environment must allow only the `main` branch. GitHub Actions use major version tags.
 Dependabot groups package and action version updates into one monthly PR. TypeScript major upgrades remain manual until SvelteKit
 and svelte-check support the new compiler API; UnoCSS packages remain manual while the scoped integration patch is required.
-Review and merge updates after CI passes.
+Automatic rebasing is disabled for new dependency PRs; update their branches manually when needed, then review and merge after CI passes.
 
 ### Browser tests
 

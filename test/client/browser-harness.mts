@@ -17,18 +17,24 @@ type Context = {
   saveScreenshot: (path: string) => Promise<void>;
 };
 
-export async function runBrowser(profilePrefix: string, diagnosticExpression: string, run: (context: Context) => Promise<void>) {
-  const base = new URL(process.argv.slice(2).find((arg) => arg !== "--") ?? "http://127.0.0.1:5173");
-  if (!["localhost", "127.0.0.1", "[::1]"].includes(base.hostname)) throw new Error("Use a local test server.");
+export function findBrowser(exists = existsSync, preferred = process.env.CHROME_PATH) {
   const executable = [
-    process.env.CHROME_PATH,
+    preferred,
     "C:/Program Files/Google/Chrome/Application/chrome.exe",
     "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe",
     "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
-    "/usr/bin/chromium",
+    // The packaged Chrome has Ubuntu's sandbox profile; runner Chromium is a development snapshot.
     "/usr/bin/google-chrome",
-  ].find((path) => path && existsSync(path));
+    "/usr/bin/chromium",
+  ].find((path) => path && exists(path));
   if (!executable) throw new Error("Install Chrome/Chromium or set CHROME_PATH. No browser is downloaded automatically.");
+  return executable;
+}
+
+export async function runBrowser(profilePrefix: string, diagnosticExpression: string, run: (context: Context) => Promise<void>) {
+  const base = new URL(process.argv.slice(2).find((arg) => arg !== "--") ?? "http://127.0.0.1:5173");
+  if (!["localhost", "127.0.0.1", "[::1]"].includes(base.hostname)) throw new Error("Use a local test server.");
+  const executable = findBrowser();
   const profile = await mkdtemp(join(tmpdir(), `guidepost-${profilePrefix}-`));
   const chrome = spawn(
     executable,
@@ -41,12 +47,26 @@ export async function runBrowser(profilePrefix: string, diagnosticExpression: st
       `--user-data-dir=${profile}`,
       "about:blank",
     ],
-    { windowsHide: true, stdio: "ignore" },
+    { windowsHide: true, stdio: ["ignore", "ignore", "pipe"] },
   );
+  let stderr = "";
+  chrome.stderr.setEncoding("utf8");
+  chrome.stderr.on("data", (chunk: string) => {
+    stderr = (stderr + chunk).slice(-4096);
+  });
+  let launchError: Error | undefined;
+  chrome.on("error", (error) => {
+    launchError = error;
+  });
+  const startupError = () =>
+    new Error(
+      `Chrome debugger did not start: ${executable} (exit ${chrome.exitCode}, signal ${chrome.signalCode})\n${launchError?.message ?? ""}\n${stderr}`,
+    );
   let socket: WebSocket | undefined;
   try {
     let target;
     for (let attempt = 0; attempt < 40; attempt++) {
+      if (launchError || chrome.exitCode !== null || chrome.signalCode !== null) throw startupError();
       try {
         const port = (await readFile(join(profile, "DevToolsActivePort"), "utf8")).split("\n")[0];
         target = await (await fetch(`http://127.0.0.1:${port}/json/new?about:blank`, { method: "PUT" })).json();
@@ -55,7 +75,7 @@ export async function runBrowser(profilePrefix: string, diagnosticExpression: st
         await new Promise((resolve) => setTimeout(resolve, 250));
       }
     }
-    if (!target) throw new Error("Chrome debugger did not start");
+    if (!target) throw startupError();
     const connection = new WebSocket(target.webSocketDebuggerUrl);
     socket = connection;
     await new Promise<void>((resolve, reject) => {
@@ -130,7 +150,7 @@ export async function runBrowser(profilePrefix: string, diagnosticExpression: st
     await run({ base, send, evaluate, waitFor, click, errors, report, assert, saveScreenshot });
   } finally {
     socket?.close();
-    if (chrome.exitCode === null) {
+    if (chrome.pid && chrome.exitCode === null && chrome.signalCode === null) {
       const exited = new Promise<void>((resolve) => chrome.once("exit", () => resolve()));
       chrome.kill();
       await Promise.race([exited, new Promise((resolve) => setTimeout(resolve, 5000))]);
