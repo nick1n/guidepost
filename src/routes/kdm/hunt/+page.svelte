@@ -26,7 +26,7 @@
 
 <script lang="ts">
   import { onDestroy, untrack } from "svelte";
-  import { SvelteSet } from "svelte/reactivity";
+  import { SvelteMap } from "svelte/reactivity";
   import { createHashRoute } from "#lib/app/navigation/hash-route.svelte.ts";
   import { getHuntPreferences } from "#lib/kdm/hunt/preferences.svelte.ts";
   import HuntPicker from "#lib/kdm/hunt/HuntPicker.svelte";
@@ -50,8 +50,8 @@
     }),
   );
   const request = $derived({ event: card, show: wantedFace, images: targetImages });
-  const loaded = new SvelteSet<string>();
-  const failed = new SvelteSet<string>();
+  const imageStatus = new SvelteMap<string, "loaded" | "failed">();
+  const attempts = new SvelteMap<string, number>();
   // Accept a new artwork snapshot only when selection or drawing allows it to start loading.
   let artwork = $state.raw<typeof request>();
   let rotation = $state(0);
@@ -64,7 +64,7 @@
   let selectionTimer: Timeout;
   let firstRand = $state(0);
   let secondRand = $state(0);
-  let retry = $state(0);
+  let retry = 0;
   let picker: HuntPicker;
   let slideElement = $state<HTMLDivElement>();
   let exitingElement = $state<HTMLDivElement>();
@@ -85,8 +85,8 @@
   const sources = $derived(
     canLoad ? [requestedImages.front, requestedImages.back, ...(requestedImages.reverse ? [requestedImages.reverse] : [])] : [],
   );
-  const loading = $derived(!canLoad || sources.some((src) => !loaded.has(src)));
-  const loadError = $derived(sources.some((src) => failed.has(src)));
+  const loading = $derived(!canLoad || sources.some((src) => imageStatus.get(src) !== "loaded"));
+  const loadError = $derived(sources.some((src) => imageStatus.get(src) === "failed"));
   const busy = $derived(drawing || loading || selecting || !!exitingElement || images.front !== requestedImages.front);
   const first = $derived(drawing ? firstRand : Math.floor(card / 10));
   const second = $derived(drawing ? secondRand : card % 10);
@@ -121,8 +121,8 @@
   }
 
   function flip(direction?: "left" | "right") {
-    hasClicked = true;
     if (flipping || busy || loadError || !cardElement) return;
+    hasClicked = true;
     flipDirection = direction ?? (showCard ? "left" : "right");
     const hiddenFace: HuntFace = images.reverse ? "reverse" : "back";
     const show = showCard ? hiddenFace : "front";
@@ -248,13 +248,12 @@
   function imageEvents(path: string) {
     return {
       onload() {
-        failed.delete(path);
-        loaded.add(path);
+        imageStatus.set(path, "loaded");
         // Initial loads and retries have no visible card whose outro can commit the artwork.
         if (!slideElement && !exitingElement) commitImages();
       },
       onerror() {
-        failed.add(path);
+        imageStatus.set(path, "failed");
       },
     };
   }
@@ -263,8 +262,9 @@
     const button = event.currentTarget as HTMLButtonElement;
     retryFocus = button.ownerDocument.activeElement === button ? { front: requestedImages.front, retry: retry + 1 } : undefined;
     for (const src of sources) {
-      loaded.delete(src);
-      failed.delete(src);
+      if (imageStatus.get(src) !== "failed") continue;
+      imageStatus.delete(src);
+      attempts.set(src, retry + 1);
     }
     retry += 1;
   }
@@ -320,11 +320,11 @@
 <main style:--duration-flip={`${duration}ms`} {@attach swipe({ directions: ["left", "right", "up"], onSwipe: swipeHunt })}>
   <h1 class="visually-hidden">Hunt events</h1>
   <div hidden>
-    {#key retry}
-      {#each sources as src (src)}
+    {#each sources as src (src)}
+      {#key attempts.get(src) ?? 0}
         <img src={cardAsset(src)} alt="" {...imageEvents(src)} />
-      {/each}
-    {/key}
+      {/key}
+    {/each}
   </div>
   <div class="stage" style:--aspect={images.aspectRatio}>
     {#if !busy && !loadError}
@@ -344,7 +344,12 @@
         >
           <img class="back" src={cardAsset(backFace)} alt="" aria-hidden="true" />
           <img class="front" src={cardAsset(images.front)} alt="" aria-hidden="true" />
-          {#if !hasClicked && !showCard}<span class="ripple" aria-hidden="true"></span>{/if}
+          {#if !hasClicked && !showCard}
+            <span class="tap-hint" aria-hidden="true">
+              <span class="ripple"></span>
+              <span class="tap-icon i-material-symbols:touch-app"></span>
+            </span>
+          {/if}
         </button>
       </div>
     {/if}
@@ -442,19 +447,39 @@
   .front {
     transform: rotateY(180deg);
   }
-  .ripple {
-    --size-ripple: 25rem;
+  .tap-hint {
+    --duration-hint: 4s;
+    --delay-hint: 5s;
+    /* The touch-app icon's index fingertip is at (8.5, 6) in its 24px viewBox. */
+    --tap-x: calc(100% * 8.5 / 24);
+    --tap-y: 25%;
+    display: grid;
     position: absolute;
-    /* Render at full size so the animation only scales down. */
-    inline-size: var(--size-ripple);
-    block-size: var(--size-ripple);
     inset-block-start: 50%;
     inset-inline-start: 50%;
-    border: calc(var(--size-ripple) / 10) solid var(--foreground);
-    border-radius: 50%;
-    animation: ripple 2s 5s ease-out infinite;
-    opacity: 0;
+    translate: calc(-1 * var(--tap-x)) calc(-1 * var(--tap-y));
+    color: var(--foreground);
+    /* The expanding wave must not extend the card's clickable area. */
     pointer-events: none;
+  }
+  .tap-icon {
+    --size-icon: 4rem;
+    transform-origin: var(--tap-x) var(--tap-y);
+    animation: tap-hint var(--duration-hint) var(--delay-hint) ease-in-out infinite;
+    opacity: 0;
+  }
+  .ripple {
+    --size-ripple: 12rem;
+    position: absolute;
+    inline-size: var(--size-ripple);
+    block-size: var(--size-ripple);
+    inset-block-start: var(--tap-y);
+    inset-inline-start: var(--tap-x);
+    translate: -50% -50%;
+    border: 0.25rem solid var(--foreground);
+    border-radius: 50%;
+    animation: ripple var(--duration-hint) var(--delay-hint) ease-out infinite;
+    opacity: 0;
   }
   .load-status {
     grid-area: 1 / 1;
@@ -570,13 +595,33 @@
     cursor: default;
     opacity: 0.5;
   }
-  @keyframes ripple {
-    from {
-      transform: translate(-50%, -50%) scale(0);
-      opacity: 0.8;
+  @keyframes tap-hint {
+    0%,
+    35%,
+    100% {
+      transform: translateY(-0.375rem);
+      opacity: 0;
     }
-    to {
-      transform: translate(-50%, -50%) scale(1);
+    10%,
+    25% {
+      opacity: 0.75;
+    }
+    18% {
+      transform: translateY(0) scale(0.9);
+    }
+  }
+  @keyframes ripple {
+    0%,
+    18% {
+      transform: scale(0.12);
+      opacity: 0;
+    }
+    19% {
+      opacity: 0.5;
+    }
+    40.5%,
+    100% {
+      transform: scale(1);
       opacity: 0;
     }
   }
@@ -593,8 +638,11 @@
     .die {
       transition: none;
     }
-    .ripple {
+    .tap-hint {
       display: none;
+    }
+    .tap-icon,
+    .ripple {
       animation: none;
     }
   }

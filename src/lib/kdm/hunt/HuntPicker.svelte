@@ -6,6 +6,7 @@
   import { flushSync } from "svelte";
   import { createSwipeDismiss } from "#lib/swipe-dismiss.svelte.ts";
   import KdIcon from "#lib/components/KdIcon.svelte";
+  import DragHandle from "#lib/components/DragHandle.svelte";
   import { selectDigit } from "./cards.ts";
 
   let { card, onselect }: { card: number; onselect: (card: number) => void } = $props();
@@ -55,6 +56,10 @@
     numberPlace = column ? activePlace : 10;
   }
 
+  function selectedDigit(place: number) {
+    return place === 10 ? Math.floor(card / 10) : card % 10;
+  }
+
   function focusDigit(place: number, digit: number) {
     dialog.querySelector<HTMLButtonElement>(`[data-place="${place}"] [data-digit="${digit}"]`)?.focus();
   }
@@ -76,13 +81,12 @@
       if (event.repeat) return;
       chooseDigit(numberPlace, Number(event.key));
       numberPlace = numberPlace === 10 ? 1 : 10;
-      focusDigit(numberPlace, numberPlace === 10 ? Math.floor(card / 10) : card % 10);
+      focusDigit(numberPlace, selectedDigit(numberPlace));
       return;
     }
     const button = (event.target as Element).closest<HTMLButtonElement>("button[data-digit]");
     const place = button ? Number(button.closest<HTMLElement>("[data-place]")?.dataset.place) : activePlace;
-    const selected = place === 10 ? Math.floor(card / 10) : card % 10;
-    const index = digits.indexOf(selected);
+    const index = digits.indexOf(selectedDigit(place));
     let digit: number;
     switch (event.key) {
       case "ArrowUp":
@@ -101,7 +105,7 @@
       case "ArrowRight": {
         event.preventDefault();
         const next = event.key === "ArrowLeft" ? 10 : 1;
-        focusDigit(next, next === 10 ? Math.floor(card / 10) : card % 10);
+        focusDigit(next, selectedDigit(next));
         return;
       }
       default:
@@ -127,7 +131,7 @@
 >
   <div class="sheet">
     <header data-drag-handle>
-      <span class="grip" aria-hidden="true"></span>
+      <DragHandle />
       <h2 id={`${id}-title`}>Select hunt event</h2>
       <p id={`${id}-keys`} class="visually-hidden">
         Use Up and Down to select a digit and Left and Right to switch columns. Number keys alternate between tens and ones. Enter or Escape
@@ -136,7 +140,7 @@
     </header>
     <div class="dice">
       {#each [10, 1] as place (place)}
-        {@const selected = place === 10 ? Math.floor(card / 10) : card % 10}
+        {@const selected = selectedDigit(place)}
         <fieldset class={place === 1 ? "ones" : undefined} data-place={place}>
           <legend>{place === 10 ? "tens" : "ones"}</legend>
           <div class="stack">
@@ -229,16 +233,8 @@
   header {
     display: grid;
     justify-items: center;
-    padding: 0.75rem 1rem 1rem;
-    gap: 0.75rem;
-    cursor: grab;
-    touch-action: none;
-  }
-  .grip {
-    inline-size: 2.5rem;
-    block-size: 0.25rem;
-    border-radius: var(--radius-control);
-    background: var(--grey-6);
+    padding: 0 1rem;
+    gap: 0.5rem;
   }
   h2 {
     font-weight: var(--font-bold);
@@ -301,10 +297,10 @@
         100% 0,
         calc(100% - 0.375rem) 50%,
         100% 100%,
-        calc(100% - 0.5rem) 100%,
-        calc(100% - 0.5rem) calc(100% - 0.25rem),
-        0.5rem calc(100% - 0.25rem),
-        0.5rem 100%,
+        calc(100% - 0.625rem) 100%,
+        calc(100% - 0.625rem) calc(100% - 0.25rem),
+        0.625rem calc(100% - 0.25rem),
+        0.625rem 100%,
         0 100%,
         0.375rem 50%
       );

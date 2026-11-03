@@ -101,6 +101,30 @@ await runBrowser(
       await frames();
     };
 
+    await send("Network.enable");
+    await send("Network.setBlockedURLs", { urls: ["*fen-72.png"] });
+    await send("Page.navigate", { url: new URL("/kdm/hunt/#/72/fen", base).href });
+    await waitFor("document.querySelector('.retry')");
+    await key("f", "KeyF", 70);
+    await send("Network.setBlockedURLs", { urls: [] });
+    await evaluate("document.querySelector('.retry').click()");
+    await ready();
+    assert(
+      await evaluate(`${state(72, "card back")} && !!document.querySelector('.tap-hint')`),
+      "Flip shortcuts while artwork is unavailable preserve the initial hint",
+    );
+    assert(
+      await evaluate(`(()=>{
+        const hint=document.querySelector('.tap-hint'),icon=hint.querySelector('.tap-icon'),wave=hint.querySelector('.ripple');
+        const a=getComputedStyle(icon),b=getComputedStyle(wave);
+        return a.animationDuration===b.animationDuration && a.animationDelay===b.animationDelay;
+      })()`),
+      "Hand and wave share their animation duration and delay",
+    );
+    await key("f", "KeyF", 70);
+    await ready();
+    assert(await evaluate(`${state(72, "front")} && !document.querySelector('.tap-hint')`), "An accepted flip dismisses the hint");
+
     await navigate("#/73/kekasi/reverse");
     assert(
       await evaluate(`(()=>{
@@ -355,12 +379,20 @@ await runBrowser(
       "Failed artwork retains the requested URL and leaves drawing available",
     );
     assert(await evaluate(`${live}.textContent.trim()===''`), "Failed artwork does not announce a card as ready");
+    await evaluate(
+      `window.huntHealthyImages=[...document.querySelectorAll('main > div[hidden] img')].filter(i=>i.complete&&i.naturalWidth>0)`,
+    );
+    assert(await evaluate("window.huntHealthyImages.length>0"), "Failed artwork retains successfully loaded images");
     await send("Network.setBlockedURLs", { urls: [] });
     await evaluate("document.querySelector('.retry').focus()");
     await waitFor("document.activeElement.matches('.retry')");
     await key("Enter", "Enter", 13);
     await ready();
     assert(await evaluate(`${state(79, "front")} && document.activeElement===${card}`), "Keyboard retry loads the card and restores focus");
+    assert(
+      await evaluate("window.huntHealthyImages.every(i=>i.isConnected)"),
+      "Retry preserves successful image elements instead of restarting their loads",
+    );
     assert(await evaluate(announced(79, "front")), "Successful retry announces the loaded card");
 
     await send("Emulation.setEmulatedMedia", { features: [{ name: "prefers-reduced-motion", value: "no-preference" }] });
@@ -376,6 +408,6 @@ await runBrowser(
     );
     assert(await evaluate(`window.huntIntervals.size===${idleIntervals}`), "Leaving during a draw releases its dice timer");
     assert(errors.length === 0, `No browser runtime errors: ${JSON.stringify(errors)}`);
-    await writeFile("temp/browser-verification/hunt-report.json", JSON.stringify({ report, errors }, null, 2));
+    await writeFile("temp/browser-verification/hunt-report.json", JSON.stringify({ report, errors }, null, 2), "utf8");
   },
 );

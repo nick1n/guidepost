@@ -227,6 +227,16 @@ button {
   cursor: pointer;
 }
 
+[data-drag-handle] {
+  cursor: grab;
+  touch-action: none;
+}
+
+[data-drag-handle]:active,
+[data-dragging="true"] [data-drag-handle] {
+  cursor: grabbing;
+}
+
 :where(a, button, input, select, textarea, [role="button"]):focus-visible {
   outline: var(--border-width) solid var(--accent);
   outline-offset: var(--border-width);

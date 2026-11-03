@@ -142,6 +142,8 @@ Use Material Symbols through UnoCSS, for example `class="search-icon i-material-
 
 Keep `--size-icon` overrides on icon elements so the value does not unintentionally reach nested icons. This convention applies to UnoCSS icons; `KdIcon` uses font sizing, and icon containers still need their own layout dimensions.
 
+UnoCSS icons use CSS masks. Filters run before clipping and masking, so shadows and outer glows on the masked icon itself are clipped away. If an icon needs a shadow or outer glow, apply the filter to an unmasked, unclipped wrapper. Before retaining a decorative filter, toggle it on the rendered element against its actual background and verify the intended visible effect.
+
 Safelist icon classes in [uno.config.ts](uno.config.ts) when extraction is unreliable. Verify production CSS if an icon works only in development.
 
 ## Scripts

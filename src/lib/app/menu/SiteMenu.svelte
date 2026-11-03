@@ -23,6 +23,7 @@
   import { currencies, defaultEuroRate } from "#lib/app/currency/model.ts";
   import { getNotificationLog } from "#lib/app/notifications/notification-log.svelte.ts";
   import ConfirmDialog from "#lib/components/ConfirmDialog.svelte";
+  import DragHandle from "#lib/components/DragHandle.svelte";
   import Select from "#lib/components/Select.svelte";
   import ToggleButton from "#lib/components/ToggleButton.svelte";
   import { MenuSession } from "./menu-session.ts";
@@ -212,8 +213,8 @@
         data-dragging={dismissal.distance > 0}
         style:translate={dismissal.distance > 0 ? `0 ${dismissal.distance}px` : undefined}
       >
-        <div class="grip" data-drag-handle aria-hidden="true"><span></span></div>
-        <header>
+        <DragHandle />
+        <header data-drag-handle>
           <h2 id={`${id}-heading`}>
             {#if view !== "main"}
               <button class="back" type="button" onclick={back}>
@@ -524,24 +525,8 @@
     inline-size: var(--toggle-size);
     block-size: var(--toggle-size);
   }
-  .grip {
-    display: grid;
-    flex: none;
-    place-items: center;
-    block-size: 1.25rem;
-    cursor: grab;
-    touch-action: none;
-
-    & span {
-      inline-size: 2.5rem;
-      block-size: 0.25rem;
-      border-radius: var(--radius-control);
-      background: var(--grey-6);
-    }
-  }
   header {
     flex: none;
-    touch-action: pan-x;
     border-block-end: var(--border-width) solid var(--grey-7);
   }
   h2 {
