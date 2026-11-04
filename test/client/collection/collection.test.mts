@@ -2,6 +2,7 @@ import { it, expect } from "@effect/vitest";
 import { Cause, Deferred, Effect, Exit, Fiber, Layer, Queue, Stream } from "effect";
 import { reportAction } from "#lib/app/actions.ts";
 import { Notifications } from "#lib/app/notifications/notifications.ts";
+import { NotificationLog } from "#lib/app/notifications/notification-log.svelte.ts";
 import { Collection } from "#lib/kdm/collection/state/collection.svelte.ts";
 import { CollectionError } from "#lib/kdm/collection/state/collection-errors.ts";
 import { StoreError } from "#lib/kdm/collection/state/collection-store.ts";
@@ -20,6 +21,30 @@ const data = catalogJson as Catalog;
 const core = collectionKey("core", "1.6");
 const expansion = collectionKey("dragon-king", "1.6");
 const dice = collectionKey("dice", "1.6");
+
+it.effect("marking a product owned signals the menu activity pulse after saving", () =>
+  Effect.gen(function* () {
+    const collection = new Collection(data);
+    const store = makeStore();
+    const log = new NotificationLog();
+    const notifications = Notifications.layerWith(log.record);
+    yield* collection.setStore(store);
+    expect(log.latestInfo).toBeUndefined();
+
+    yield* reportAction(collection.toggleOwned(core, true), { success: "Core marked as owned." }).pipe(Effect.provide(notifications));
+
+    expect(store.state[core]?.owned).toBe(true);
+    expect(log.notices[0]).toMatchObject({ kind: "success", message: "Core marked as owned." });
+    expect(log.latestInfo?.id).toBe(log.notices[0].id);
+    const pulse = log.latestInfo;
+
+    yield* reportAction(collection.toggleOwned(core, true), { success: "Core marked as owned." }).pipe(Effect.provide(notifications));
+
+    expect(log.notices).toHaveLength(1);
+    expect(log.latestInfo).toBe(pulse);
+    expect(log.unreadError).toBeUndefined();
+  }),
+);
 
 it.effect("Naked Disciples set repeatedly acquires the five canonical Plastic models", () =>
   Effect.gen(function* () {

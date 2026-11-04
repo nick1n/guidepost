@@ -83,26 +83,27 @@ Automatic rebasing is disabled for new dependency PRs; update their branches man
 
 ### Browser tests
 
-Install Chrome or Chromium; set `CHROME_PATH` if needed. Build the site and start a development server before running all suites:
+Install Chrome or Chromium; set `CHROME_PATH` if needed. Build the site and start a production preview before running all suites:
 
 ```bash
 pnpm build
-pnpm dev
+pnpm preview
 # In another terminal:
-pnpm test:browser
+pnpm test:browser --url http://127.0.0.1:4173
 ```
 
-Run individual files by name or repository-relative path. Multiple files are accepted; `--list` shows available suites:
+Run individual suites by path relative to `test/browser/` or the repository root. Multiple files are accepted; `--list` shows available suites:
 
 ```bash
-pnpm test:browser menu-browser.mts hunt-browser.mts
-pnpm test:browser test/client/collection-browser.mts --url http://localhost:5173
+pnpm test:browser app/menu.test.mts hunt.test.mts
+pnpm test:browser test/browser/collection/interactions.test.mts --url http://localhost:5173
 pnpm test:browser --list
 ```
 
-Suites run sequentially and stop at the first failure. Most use the running development server at `http://127.0.0.1:5173`;
-`--url` overrides that address. Startup and error-page suites require a production build and start their own servers.
-Screenshots and reports go to `temp/browser-verification/`.
+Suites run sequentially and stop at the first failure. Most use a running app server, defaulting to `http://127.0.0.1:5173`;
+`--url` overrides that address. Production preview avoids development-server reloads during a test. Startup and error-page suites require a production build and start their own servers.
+Screenshots and reports go to `temp/browser-verification/<suite>/`. Each run writes `report.json`; failures also capture page diagnostics
+and a screenshot when the browser is available.
 
 ### Project layout
 
@@ -117,6 +118,7 @@ Screenshots and reports go to `temp/browser-verification/`.
 | `scripts/catalog/`, `scripts/news/` | Catalog implementation and news scraping                        |
 | `static/kdm/catalog/`               | Live catalog, schemas, and product-only workbook map            |
 | `test/client/`, `test/scripts/`     | Tests grouped by feature and tooling area                       |
+| `test/browser/`                     | Headless browser suites, shared support, and browser fixtures   |
 | `docs/`                             | Architecture, catalog rules, workflows, and design notes        |
 | `scripts/catalog/data/`             | Shared reviewed tags, shop mappings, import schemas, and ledger |
 | `local-data/kdm-catalog/`           | Personal workbook, raw import records, and archives             |

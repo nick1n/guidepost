@@ -60,6 +60,33 @@ it("releases only the active menu action registration", () => {
   expect(close).toHaveBeenCalledOnce();
 });
 
+it("signals info and success messages independently of unread errors", () => {
+  const log = new NotificationLog();
+  const now = vi.spyOn(Date, "now").mockReturnValue(1000);
+  try {
+    expect(log.latestInfo).toBeUndefined();
+    log.record({ kind: "error", message: "Error", timestamp: 0 });
+    const error = log.unreadError;
+    log.record({ kind: "info", message: "Information", timestamp: 0 });
+    expect(log.latestInfo).toEqual({ id: 1, recordedAt: 1000 });
+    expect(log.unreadError).toBe(error);
+    log.record({ kind: "success", message: "Saved", timestamp: 0 });
+    expect(log.latestInfo).toEqual({ id: 2, recordedAt: 1000 });
+    expect(log.unreadError).toBe(error);
+    now.mockReturnValue(2000);
+    log.record({ kind: "info", message: "More information", timestamp: 0 });
+    expect(log.latestInfo).toEqual({ id: 3, recordedAt: 2000 });
+    const info = log.latestInfo;
+    log.record({ kind: "error", message: "Another error", timestamp: 0 });
+    expect(log.latestInfo).toBe(info);
+    log.acknowledgeErrors();
+    expect(log.latestInfo?.id).toBe(3);
+    expect(new NotificationLog().latestInfo).toBeUndefined();
+  } finally {
+    now.mockRestore();
+  }
+});
+
 it("keeps showdown settings for the app session while cleaning up route-owned summary and alignment", () => {
   const display = new ShowdownDisplay();
   const firstSummary = (() => {}) as Snippet;

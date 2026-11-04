@@ -285,9 +285,11 @@ Collection -> OptimisticStore -> DexieStore (CollectionStore)
 - `Notifications` currently uses injected Effect logging; visible toasts are planned. Initialize with `{ success: false }` to avoid startup save announcements.
 - Reusable dialogs use ordinary callbacks and close immediately on confirmation. They own focus, dismissal, and closing-animation guards; the parent owns persistence/workflows. Quick Start assumes core ownership and navigates independently of saving, even on failure.
 
-Client-facing tests live in `test/client/`, using Vitest 5 and the version-aligned `@effect/vitest` adapter. Build and catalog script tests live
+Client-facing Vitest tests live in `test/client/`, using Vitest 5 and the version-aligned `@effect/vitest` adapter. Build and catalog script tests live
 in `test/scripts/` and import tooling through `#scripts/*`. Prefer `it.effect`, injected services, `Deferred`, and `TestClock`.
 Preserve existing regression coverage when refactoring.
+
+Browser suites live in `test/browser/` as `.test.mts` files grouped by feature. Keep their shared support and browser-only fixtures in that directory.
 
 ## PWA and service worker
 

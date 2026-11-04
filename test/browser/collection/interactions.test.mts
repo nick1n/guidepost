@@ -1,19 +1,25 @@
-import { mkdir, readFile, writeFile } from "node:fs/promises";
-import { runBrowser } from "./browser-harness.mts";
+import { readFile } from "node:fs/promises";
+import { runBrowser } from "../support/harness.mts";
 
 type StoredRow = { contentId: string; state: { owned?: boolean } };
 
-await mkdir("temp/browser-verification", { recursive: true });
 await runBrowser(
-  "browser",
-  "document.body.innerText.slice(0,4000)",
-  async ({ base, send, evaluate, waitFor, click, errors, report, assert, saveScreenshot }) => {
+  { name: "collection", diagnostics: "document.body.innerText.slice(0,4000)" },
+  async ({ base, send, evaluate, waitFor, activate, assert, saveScreenshot, frames, viewport }) => {
     const rows = async () => {
       const records = await evaluate<StoredRow[]>(
-        `(async()=>{await new Promise(r=>setTimeout(r,200));const db=await new Promise((r,j)=>{const q=indexedDB.open('guidepost');q.onsuccess=()=>r(q.result);q.onerror=()=>j(q.error)});try{return await new Promise((r,j)=>{const q=db.transaction('entries','readonly').objectStore('entries').getAll();q.onsuccess=()=>r(q.result);q.onerror=()=>j(q.error)})}finally{db.close()}})()`,
+        `(async()=>{const db=await new Promise((r,j)=>{const q=indexedDB.open('guidepost');q.onsuccess=()=>r(q.result);q.onerror=()=>j(q.error)});try{return await new Promise((r,j)=>{const q=db.transaction('entries','readonly').objectStore('entries').getAll();q.onsuccess=()=>r(q.result);q.onerror=()=>j(q.error)})}finally{db.close()}})()`,
       );
       if (!Array.isArray(records)) throw new Error("Expected stored collection rows");
       return records;
+    };
+    const savedRows = async (matches: (rows: StoredRow[]) => unknown) => {
+      let saved: StoredRow[] = [];
+      await waitFor(async () => {
+        saved = await rows();
+        return matches(saved);
+      });
+      return saved;
     };
     const navigate = async (url: string) => {
       await send("Page.navigate", { url });
@@ -23,7 +29,7 @@ await runBrowser(
       await waitFor("document.querySelector('article input[type=checkbox]:not(:disabled)') !== null");
     };
     const coreUrl = new URL("/kdm/collection/#/content?q=kingdom%20death%20monster", base).href;
-    await send("Emulation.setDeviceMetricsOverride", { width: 1280, height: 900, deviceScaleFactor: 1, mobile: false });
+    await viewport(1280);
     await navigate(coreUrl);
     async function progress(label: string, expected: number) {
       const selector = `document.querySelector('input[aria-label="${label}"]').closest('.edition')`;
@@ -42,10 +48,10 @@ await runBrowser(
       assert(await evaluate(settled), `Grey right-to-left animated progress at ${expected}%`);
     }
     await progress("Have Kingdom Death: Monster, 1.6", 0);
-    await click("Have Kingdom Death: Monster, 1.6");
+    await activate("Have Kingdom Death: Monster, 1.6");
     await evaluate("document.querySelector('.edition-detail:not(.inactive) details.contents summary').click()");
     await progress("Remove ownership of Kingdom Death: Monster, 1.6", 100);
-    await click("View Kingdom Death: Monster, 1.3, includes gameplay");
+    await activate("View Kingdom Death: Monster, 1.3, includes gameplay");
     assert(
       await evaluate(
         "[...document.querySelectorAll('.edition-detail:not(.inactive) .included-owned')].some(e=>e.textContent.trim().startsWith('Owned:'))",
@@ -66,9 +72,9 @@ await runBrowser(
       "Included contents stay open when editions change",
     );
     for (const width of [1280, 390]) {
-      await send("Emulation.setDeviceMetricsOverride", { width, height: 900, deviceScaleFactor: 1, mobile: width === 390 });
+      await viewport(width, 900, width === 390);
       await progress("Have Kingdom Death: Monster, 1.3", partial);
-      await saveScreenshot(`temp/browser-verification/collection-${width}.png`);
+      await saveScreenshot(`collection-${width}.png`);
     }
     await send("Emulation.setEmulatedMedia", { features: [{ name: "prefers-reduced-motion", value: "reduce" }] });
     assert(
@@ -76,26 +82,26 @@ await runBrowser(
       "Reduced motion removes progress animation duration",
     );
     await send("Emulation.setEmulatedMedia", { features: [] });
-    await click("View Kingdom Death: Monster, 1.6, includes gameplay");
-    await click("Mark Butcher, Plastic missing");
+    await activate("View Kingdom Death: Monster, 1.6, includes gameplay");
+    await activate("Mark Butcher, Plastic missing");
     await waitFor("document.querySelector('.edition-detail:not(.inactive) .contents-count').textContent.includes('19 of 20 owned')");
     assert(
       await evaluate("document.querySelector('input[aria-label=\"Remove ownership of Kingdom Death: Monster, 1.6\"]').checked"),
       "Missing component leaves product owned",
     );
-    await click("Remove ownership of Kingdom Death: Monster, 1.6");
-    await click("Have Kingdom Death: Monster, 1.6");
+    await activate("Remove ownership of Kingdom Death: Monster, 1.6");
+    await activate("Have Kingdom Death: Monster, 1.6");
     await waitFor("document.querySelector('.edition-detail:not(.inactive) .contents-count').textContent.includes('20 of 20')");
-    let saved = await rows();
+    let saved = await savedRows((rows) => rows.length === 1 && rows[0].contentId === "core" && rows[0].state.owned);
     assert(
       saved.length === 1 && saved[0].contentId === "core" && saved[0].state.owned,
       "Rechecking restores contents and removes missing record",
     );
-    await click("Remove ownership of Kingdom Death: Monster, 1.6");
-    await click("Have Butcher, Plastic");
-    await click("Have Kingdom Death: Monster, 1.6");
-    await click("Remove ownership of Kingdom Death: Monster, 1.6");
-    saved = await rows();
+    await activate("Remove ownership of Kingdom Death: Monster, 1.6");
+    await activate("Have Butcher, Plastic");
+    await activate("Have Kingdom Death: Monster, 1.6");
+    await activate("Remove ownership of Kingdom Death: Monster, 1.6");
+    saved = await savedRows((rows) => rows.length === 1 && rows[0].contentId === "butcher" && rows[0].state.owned);
     assert(
       saved.length === 1 && saved[0].contentId === "butcher" && saved[0].state.owned,
       "Removing product preserves separately acquired component and removes empty product row",
@@ -107,27 +113,31 @@ await runBrowser(
     );
     await evaluate("document.querySelector('.edition-detail:not(.inactive) details.contents summary').click()");
     await waitFor("document.querySelector('input[aria-label=\"Mark Butcher, Plastic missing\"]')?.checked === true");
+    saved = await savedRows((rows) => rows.some((r) => r.contentId === "butcher" && r.state.owned));
     assert(
-      (await rows()).some((r) => r.contentId === "butcher" && r.state.owned),
+      saved.some((r) => r.contentId === "butcher" && r.state.owned),
       "Separate component ownership survives reload",
     );
-    await click("Mark Butcher, Plastic missing");
+    await activate("Mark Butcher, Plastic missing");
     await waitFor("document.querySelector('input[aria-label=\"Have Butcher, Plastic\"]')?.checked === false");
-    assert((await rows()).length === 0, "Unchecking a standalone component removes its empty record without a missing override");
+    assert(
+      (await savedRows((rows) => rows.length === 0)).length === 0,
+      "Unchecking a standalone component removes its empty record without a missing override",
+    );
     for (const width of [1280, 390]) {
-      await send("Emulation.setDeviceMetricsOverride", { width, height: 900, deviceScaleFactor: 1, mobile: width === 390 });
+      await viewport(width, 900, width === 390);
       await navigate(new URL("/kdm/collection/", base).href);
       await evaluate("document.querySelectorAll('article')[80].scrollIntoView()");
       await waitFor("!document.querySelectorAll('article')[80].querySelector('.pending')");
-      await evaluate("new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)))");
+      await frames();
       const height = await evaluate<number>("document.querySelectorAll('article')[80].getBoundingClientRect().height");
       await evaluate("scrollTo(0, 0); new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)))");
       await evaluate("document.querySelector('.collapse-all').click()");
       await waitFor("document.querySelectorAll('article')[80].querySelector('.card-body').hidden");
-      await evaluate("new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)))");
+      await frames();
       await evaluate("document.querySelector('.collapse-all').click()");
       await waitFor("!document.querySelectorAll('article')[80].querySelector('.card-body').hidden");
-      await evaluate("new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)))");
+      await frames();
       assert(
         Math.abs((await evaluate<number>("document.querySelectorAll('article')[80].getBoundingClientRect().height")) - height) < 1,
         `Offscreen card retains its expanded height after collapse and expand at ${width}px`,
@@ -140,7 +150,7 @@ await runBrowser(
       await send("Input.insertText", { text: value });
     };
     for (const width of [1280, 390]) {
-      await send("Emulation.setDeviceMetricsOverride", { width, height: 900, deviceScaleFactor: 1, mobile: width === 390 });
+      await viewport(width, 900, width === 390);
       await navigate(new URL("/kdm/collection/#/accessories?q=dice&tag=dice", base).href);
       await waitFor(
         `${category("Accessories")}.getAttribute('aria-pressed') === 'true' && document.querySelector('#catalog-search').value === 'dice'`,
@@ -167,11 +177,11 @@ await runBrowser(
       await evaluate("history.forward()");
       await waitFor(`${category("Homebrew")}.getAttribute('aria-pressed') === 'true'`);
       assert(true, `Native hash changes and Back/Forward restore categories at ${width}px`);
-      await click("Open menu");
+      await activate("Open menu");
       await waitFor("document.querySelector('dialog[data-swipe-ignore]')?.open");
       await evaluate(`${category("Accessories")}.click()`);
       await waitFor(`${category("Accessories")}.getAttribute('aria-pressed') === 'true'`);
-      if (await evaluate("document.querySelector('dialog[data-swipe-ignore]')?.open")) await click("Close menu");
+      if (await evaluate("document.querySelector('dialog[data-swipe-ignore]')?.open")) await activate("Close menu");
       await waitFor("!document.querySelector('dialog[data-swipe-ignore]')?.open");
       assert(
         await evaluate("location.hash === '#/accessories' && document.querySelector('#catalog-search').value === ''"),
@@ -179,14 +189,14 @@ await runBrowser(
       );
       await evaluate("document.querySelector('.stat-owned').click()");
       assert(await evaluate("location.hash === '#/accessories'"), `Ownership filtering stays out of the URL at ${width}px`);
-      await saveScreenshot(`temp/browser-verification/collection-hash-${width}.png`);
+      await saveScreenshot(`collection-hash-${width}.png`);
     }
     const card = (id: string) => `document.getElementById(${JSON.stringify(`card-body-${id}`)})?.closest('article')`;
     const disciple = card("disciple-of-the-witch-6");
     const disciples = card("set-disciples-of-the-witch");
     const data = JSON.parse(await readFile("static/kdm/catalog/data.json", "utf8"));
     const label = data.content["disciple-of-the-witch-6"].editions.find((edition: { id: string }) => edition.id === "plastic").label;
-    await send("Emulation.setDeviceMetricsOverride", { width: 590, height: 900, deviceScaleFactor: 1, mobile: false });
+    await viewport(590, 900, false);
     await navigate(new URL("/kdm/collection/#/content?q=disciple%20of%20the%20witch", base).href);
     await waitFor(`${disciples} !== undefined`);
     await evaluate(`${disciples}.scrollIntoView()`);
@@ -202,11 +212,11 @@ await runBrowser(
     await evaluate(`${component}.click()`);
     await waitFor(`${component}?.checked===true`);
     await evaluate(`${disciple}.scrollIntoView()`);
-    await saveScreenshot("temp/browser-verification/disciples-component-restored.png");
+    await saveScreenshot("disciples-component-restored.png");
     const owned = `${disciple}.querySelector('input[aria-label=${JSON.stringify(`Remove ownership of Disciple of the Witch 6, ${label}`)}]')`;
     assert(await evaluate(`${owned}?.checked`), "Rechecking an included Disciple restores its individual ownership checkbox");
     for (const width of [590, 390, 1280]) {
-      await send("Emulation.setDeviceMetricsOverride", { width, height: 900, deviceScaleFactor: 1, mobile: width === 390 });
+      await viewport(width, 900, width === 390);
       await evaluate(`${disciple}.scrollIntoView(); new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))`);
       assert(
         await evaluate(
@@ -214,7 +224,7 @@ await runBrowser(
         ),
         `Included-only edition has no price and Models only badge stays right at ${width}px`,
       );
-      await saveScreenshot(`temp/browser-verification/disciples-after-${width}.png`);
+      await saveScreenshot(`disciples-after-${width}.png`);
     }
     await evaluate(`${setOwned}.click()`);
     await waitFor(`${setOwned}.checked===false`);
@@ -225,8 +235,7 @@ await runBrowser(
       "Disciples have one Plastic edition after acquiring the set",
     );
     assert(await evaluate(`${owned}?.checked`), "Rechecking the set owns the canonical Plastic model");
-    assert(errors.length === 0, "No browser runtime exceptions, window errors, or error logs");
-    await saveScreenshot("temp/browser-verification/ownership.png");
-    await writeFile("temp/browser-verification/report.json", JSON.stringify({ report, errors }, null, 2));
+
+    await saveScreenshot("ownership.png");
   },
 );

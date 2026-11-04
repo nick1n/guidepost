@@ -52,7 +52,7 @@ jobs:
 
       - name: Test artifact checks
         if: ${{ !inputs.test-scripts }}
-        run: node --test test/scripts/build/site-checks.mts test/scripts/build/browser-checks.mts
+        run: node --test test/scripts/build/site-checks.mts test/scripts/browser/connection-checks.mts
 
       - name: Test scripts
         if: inputs.test-scripts
@@ -69,7 +69,7 @@ jobs:
         env:
           BASE_PATH: ${{ inputs.upload-pages && steps.pages.outputs.base_path || inputs.base-path }}
           CHROME_PATH: /usr/bin/google-chrome
-        run: pnpm test:browser collection-startup-browser.mts
+        run: pnpm test:browser collection/startup.test.mts
 
       - name: Upload GitHub Pages artifact
         if: inputs.upload-pages

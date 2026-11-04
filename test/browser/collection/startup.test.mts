@@ -1,8 +1,8 @@
 ﻿import { createServer } from "node:http";
-import { readFile, mkdir, writeFile } from "node:fs/promises";
+import { readFile } from "node:fs/promises";
 import { resolve, relative, extname } from "node:path";
 import { gzipSync } from "node:zlib";
-import { runBrowser } from "./browser-harness.mts";
+import { runBrowser } from "../support/harness.mts";
 
 const root = resolve("build");
 const prefix = process.env.BASE_PATH ?? "";
@@ -76,14 +76,16 @@ await new Promise<void>((done) => server.listen(0, "127.0.0.1", done));
 const address = server.address();
 if (!address || typeof address === "string") throw new Error("Fixture server did not start");
 const origin = `http://127.0.0.1:${address.port}`;
-process.argv = [...process.argv.slice(0, 2), origin];
-await mkdir("temp/browser-verification/collection-startup", { recursive: true });
 
 try {
   await runBrowser(
-    "collection-startup",
-    "JSON.stringify({text:document.body?.innerText.slice(0,1000),seen:window.startupCards})",
-    async ({ send, evaluate, waitFor, assert, errors, report, saveScreenshot }) => {
+    {
+      name: "collection-startup",
+      diagnostics: "JSON.stringify({text:document.body?.innerText.slice(0,1000),seen:window.startupCards})",
+      base: origin,
+    },
+    async ({ send, evaluate, waitFor, assert, saveScreenshot, frames, viewport, details }) => {
+      details.requests = requests;
       await send("Network.enable");
       await send("Page.addScriptToEvaluateOnNewDocument", {
         source: `
@@ -111,10 +113,10 @@ try {
         );
       };
       const ready = () => waitFor("document.querySelector('.catalog article input[type=checkbox]:not(:disabled)') !== null");
-      const frame = () => evaluate("new Promise(done => requestAnimationFrame(() => requestAnimationFrame(done)))");
+
       const only = async (id: string) => {
         await ready();
-        await frame();
+        await frames();
         assert(
           await evaluate(
             `document.querySelectorAll('.catalog article').length === 1 && window.startupCards.length === 1 && window.startupCards[0].id === ${JSON.stringify(id)}`,
@@ -151,7 +153,7 @@ try {
       assert(true, "Shell readiness tolerates a navigation whose document root has not arrived yet");
 
       for (const width of [390, 1280]) {
-        await send("Emulation.setDeviceMetricsOverride", { width, height: 900, deviceScaleFactor: 1, mobile: width === 390 });
+        await viewport(width, 900, width === 390);
         requests.length = 0;
         const release = gateCatalog();
         await navigate("/kdm/collection/#/content/woe-white-speaker");
@@ -160,7 +162,7 @@ try {
           await evaluate("document.querySelectorAll('article').length === 0 && document.body.innerText.includes('Loading catalog...')"),
           `Delayed startup shows the shell without cards at ${width}px`,
         );
-        await saveScreenshot(`temp/browser-verification/collection-startup/pending-${width}.png`);
+        await saveScreenshot(`pending-${width}.png`);
         await evaluate("document.querySelector('[data-menu-trigger]').click()");
         await waitFor("document.querySelector('dialog[data-swipe-ignore]')?.open");
         assert(
@@ -175,14 +177,14 @@ try {
         release();
         await only("woe-white-speaker");
         assert(requests.length === 1, `In-flight JSON preload is consumed once at ${width}px`);
-        await saveScreenshot(`temp/browser-verification/collection-startup/item-${width}.png`);
+        await saveScreenshot(`item-${width}.png`);
         await spa("/credits/");
         await waitFor(`location.pathname === ${JSON.stringify(`${prefix}/credits/`)} && !document.querySelector('.catalog')`);
         requests.length = 0;
         await evaluate("window.startupCards = []");
         await spa("/kdm/collection/#/accessories");
         await ready();
-        await frame();
+        await frames();
         assert(
           await evaluate("window.startupCards.length > 0 && window.startupCards.every(item => item.category === 'accessories')"),
           `Client re-entry initializes the fresh category at ${width}px`,
@@ -232,7 +234,7 @@ try {
         await evaluate("document.querySelectorAll('article').length === 0"),
         "Catalog failure keeps cards unmounted and offers inline retry",
       );
-      await saveScreenshot("temp/browser-verification/collection-startup/error.png");
+      await saveScreenshot("error.png");
       responseStatus = 200;
       await evaluate("document.querySelector('.startup button').click()");
       await only("woe-white-speaker");
@@ -248,41 +250,40 @@ try {
       await evaluate("document.querySelector('.item-navigation button').click()");
       await ready();
       assert(await evaluate("location.hash === ''"), "The item exit returns to its category");
-
-      assert(errors.length === 0, "No browser runtime exceptions or unexpected error logs");
-      await writeFile("temp/browser-verification/collection-startup/report.json", JSON.stringify({ report, requests, errors }, null, 2));
     },
   );
-  await runBrowser("collection-offline", "document.body?.innerText.slice(0,1000)", async ({ send, evaluate, waitFor, assert, errors }) => {
-    await send("Network.enable");
-    await send("Page.navigate", { url: `${origin}${prefix}/kdm/collection/#/content/woe-white-speaker` });
-    await waitFor("document.querySelector('.catalog article input[type=checkbox]:not(:disabled)') !== null");
-    await waitFor("navigator.serviceWorker.controller !== null");
-    await waitFor(`(async () => {
+  await runBrowser(
+    { name: "collection-offline", diagnostics: "document.body?.innerText.slice(0,1000)", base: origin },
+    async ({ send, evaluate, waitFor, assert }) => {
+      await send("Network.enable");
+      await send("Page.navigate", { url: `${origin}${prefix}/kdm/collection/#/content/woe-white-speaker` });
+      await waitFor("document.querySelector('.catalog article input[type=checkbox]:not(:disabled)') !== null");
+      await waitFor("navigator.serviceWorker.controller !== null");
+      await waitFor(`(async () => {
       for (const name of await caches.keys()) {
         const cache = await caches.open(name);
         if (await cache.match(${JSON.stringify(`${prefix}/kdm/collection/`)}) && await cache.match(${JSON.stringify(`${prefix}/kdm/catalog/data.json`)})) return true;
       }
       return false;
     })()`);
-    await send("Network.emulateNetworkConditions", { offline: true, latency: 0, downloadThroughput: -1, uploadThroughput: -1 });
-    try {
-      await evaluate("window.offlineReloadSentinel = true");
-      await send("Page.reload");
-      await waitFor(
-        "!window.offlineReloadSentinel && document.querySelector('.catalog article input[type=checkbox]:not(:disabled)') !== null",
-      );
-      assert(
-        await evaluate(
-          "document.querySelectorAll('.catalog article').length === 1 && document.querySelector('#card-body-woe-white-speaker') !== null",
-        ),
-        "The real service worker retains the shell and catalog for an exact-item offline reload",
-      );
-      assert(errors.length === 0, "Offline reload has no browser runtime exceptions");
-    } finally {
-      await send("Network.emulateNetworkConditions", { offline: false, latency: 0, downloadThroughput: -1, uploadThroughput: -1 });
-    }
-  });
+      await send("Network.emulateNetworkConditions", { offline: true, latency: 0, downloadThroughput: -1, uploadThroughput: -1 });
+      try {
+        await evaluate("window.offlineReloadSentinel = true");
+        await send("Page.reload");
+        await waitFor(
+          "!window.offlineReloadSentinel && document.querySelector('.catalog article input[type=checkbox]:not(:disabled)') !== null",
+        );
+        assert(
+          await evaluate(
+            "document.querySelectorAll('.catalog article').length === 1 && document.querySelector('#card-body-woe-white-speaker') !== null",
+          ),
+          "The real service worker retains the shell and catalog for an exact-item offline reload",
+        );
+      } finally {
+        await send("Network.emulateNetworkConditions", { offline: false, latency: 0, downloadThroughput: -1, uploadThroughput: -1 });
+      }
+    },
+  );
 } finally {
   server.closeAllConnections();
   await new Promise<void>((done) => server.close(() => done()));

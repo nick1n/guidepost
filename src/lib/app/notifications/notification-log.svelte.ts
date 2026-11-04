@@ -7,6 +7,11 @@ export class NotificationLog {
   notices = $state.raw<(Notice & { id: number })[]>([]);
   #nextId = 0;
   #unreadError = $state<{ id: number; recordedAt: number }>();
+  #latestInfo = $state<{ id: number; recordedAt: number }>();
+
+  get latestInfo() {
+    return this.#latestInfo;
+  }
 
   get unreadError() {
     return this.#unreadError;
@@ -20,6 +25,7 @@ export class NotificationLog {
     const id = this.#nextId++;
     this.notices = [{ ...notice, id }, ...this.notices].slice(0, historyLimit);
     if (notice.kind === "error") this.#unreadError = { id, recordedAt: Date.now() };
+    else this.#latestInfo = { id, recordedAt: Date.now() };
   };
 }
 

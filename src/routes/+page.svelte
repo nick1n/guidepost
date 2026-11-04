@@ -157,6 +157,7 @@
   import { collectionKey } from "#lib/types/collection.ts";
   const collection = getCollection();
   const actions = getActions();
+  const logoSrc = asset("logo/guidepost-min.svg");
 
   let landing: HTMLElement;
   let ownershipDialog: Modal;
@@ -176,7 +177,7 @@
     let active = true;
     // Decode the rendered SVG's source through the browser image cache before revealing it.
     const logo = new Image();
-    logo.src = asset("logo/guidepost-min.svg");
+    logo.src = logoSrc;
     void Promise.allSettled([document.fonts.ready, logo.decode()]).then(() => {
       if (active) ready = true;
     });
@@ -294,9 +295,9 @@
   <span id="new-tab-description" hidden>Opens in a new tab</span>
 
   <header>
-    <h1><button class="wordmark" type="button" tabindex="-1" aria-disabled={relighting} {onpointerdown} {onclick}>Guidepost</button></h1>
+    <h1><button type="button" tabindex="-1" aria-disabled={relighting} {onpointerdown} {onclick}>Guidepost</button></h1>
     <p class="tagline">
-      <button class="wordmark" type="button" tabindex="-1" aria-disabled={relighting} {onpointerdown} {onclick}>
+      <button type="button" tabindex="-1" aria-disabled={relighting} {onpointerdown} {onclick}>
         tools left here for the next player
       </button>
     </p>
@@ -396,7 +397,7 @@
               <stop class="lantern-ember" offset="100%" />
             </radialGradient>
           </defs>
-          <image href={asset("logo/guidepost-min.svg")} width="850" height="1100" />
+          <image href={logoSrc} width="850" height="1100" />
           <g class="light-output">
             <path
               class="lantern-glass"
@@ -422,17 +423,10 @@
     --color-lantern-honey: #ffc66d;
     --color-makerworld: #08bf08;
     --color-muted-hover: var(--foreground);
-    --color-shadow-edge: color-mix(var(--background) 90%, transparent);
     --gap-tool: round(clamp(0.5rem, 0.8vh, 0.75rem), 1px);
     --layer-backdrop: -1;
-    --offset-tagline: 2px;
     --position-glow-x: min(35%, 10rem);
     --position-glow-y: 12rem;
-    --position-guidepost-orb-x: 50%;
-    --position-guidepost-orb-y: 44%;
-    --shadow-title:
-      -1px 0 0 var(--color-shadow-edge), 1px 0 0 var(--color-shadow-edge), 0 -1px 0 var(--color-shadow-edge),
-      0 1px 0 var(--color-shadow-edge), 0 2px 4px color-mix(var(--background) 55%, transparent);
     --shift-hover: -0.5rem;
     --shift-x: 0px;
     --shift-y: 0px;
@@ -449,7 +443,6 @@
     --size-glow-candle: clamp(16rem, 32vw, 26rem);
     --size-glow-flicker: clamp(18rem, 38vw, 32rem);
     --size-glow-pulse: clamp(28rem, 68vw, 58rem);
-    --size-guidepost: clamp(23rem, 55vw, 38rem);
     --gradient-light-ambient:
       radial-gradient(circle at center, #fba15321 0%, transparent 36%),
       radial-gradient(ellipse closest-side at center in oklch, #f16c3736 0%, #b7453024 44%, #6c282514 76%, transparent 100%);
@@ -487,6 +480,12 @@
   }
 
   header {
+    --color-shadow-edge: color-mix(var(--background) 90%, transparent);
+    /* --color-shadow-edge: var(--background); */
+    --shadow-title:
+      -1px 0 0 var(--color-shadow-edge), 1px 0 0 var(--color-shadow-edge), 0 -1px 0 var(--color-shadow-edge),
+      0 1px 0 var(--color-shadow-edge), 0 2px 4px color-mix(var(--background) 55%, transparent), 0 0 0.5rem var(--foreground);
+
     position: relative;
     z-index: 1;
     inline-size: fit-content;
@@ -496,6 +495,9 @@
     line-height: var(--line-height-none);
     text-align: right;
     text-shadow: var(--shadow-title);
+    translate: calc(-1 * var(--shift-x)) calc(-1 * var(--shift-y));
+    /* Composite the text so fractional parallax does not snap glyphs to pixel rows. */
+    will-change: translate;
   }
 
   h1 {
@@ -506,15 +508,7 @@
     text-box: trim-both cap alphabetic;
   }
 
-  :is(.wordmark, .guidepost) {
-    padding: 0;
-    border: 0;
-    background: transparent;
-  }
-
-  .wordmark {
-    font: inherit;
-    letter-spacing: inherit;
+  button {
     text-shadow: inherit;
   }
 
@@ -522,7 +516,7 @@
     position: relative;
     z-index: 1;
     contain: inline-size;
-    margin-block-start: var(--offset-tagline);
+    margin-block-start: 2px;
     text-align: center;
   }
 
@@ -716,10 +710,13 @@
     position: absolute;
     inset-block-end: var(--position-glow-y);
     inset-inline-start: var(--position-glow-x);
-    translate: calc(-50% + var(--shift-x)) calc(50% + var(--shift-y));
   }
 
   .guidepost {
+    --position-guidepost-orb-x: 50%;
+    --position-guidepost-orb-y: 44%;
+    --size-guidepost: clamp(23rem, 55vw, 38rem);
+
     inline-size: var(--size-guidepost);
     pointer-events: auto;
     transform-origin: var(--position-guidepost-orb-x) var(--position-guidepost-orb-y);
@@ -845,6 +842,7 @@
 
   .glow-source {
     aspect-ratio: 1;
+    translate: calc(-50% + var(--shift-x)) calc(50% + var(--shift-y));
     mix-blend-mode: screen;
 
     &.ambient {
@@ -1046,13 +1044,17 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
+    header {
+      will-change: auto;
+    }
+
     .is-relighting .light-output {
       animation-name: relight-reduced;
     }
     .is-relighting :is(image, header) {
       animation-name: guidepost-dim-reduced;
     }
-    .glow {
+    :is(header, .glow) {
       --shift-x: 0px;
       --shift-y: 0px;
     }

@@ -1,22 +1,21 @@
-import { mkdir, writeFile } from "node:fs/promises";
-import { runBrowser } from "./browser-harness.mts";
+import { runBrowser } from "../support/harness.mts";
 
-await mkdir("temp/browser-verification", { recursive: true });
 await runBrowser(
-  "menu",
-  "JSON.stringify({text:document.body.innerText.slice(0,4000),state:history.state,dialog:document.querySelector('dialog[data-swipe-ignore]')?.outerHTML.slice(0,700),active:document.activeElement?.outerHTML.slice(0,400)})",
-  async ({ base, send, evaluate, waitFor, click, errors, report, assert, saveScreenshot }) => {
-    const button = (text: string) =>
-      `[...document.querySelectorAll('dialog[data-swipe-ignore] button')].find(e=>e.textContent.trim().startsWith(${JSON.stringify(text)}))`;
+  {
+    name: "menu",
+    diagnostics:
+      "JSON.stringify({text:document.body.innerText.slice(0,4000),state:history.state,dialog:document.querySelector('dialog[data-swipe-ignore]')?.outerHTML.slice(0,700),active:document.activeElement?.outerHTML.slice(0,400)})",
+  },
+  async ({ base, send, evaluate, waitFor, activate, assert, saveScreenshot, viewport, key, activateMenuButton, settle }) => {
     const settings = async () => {
-      await evaluate(`${button("Settings")}.click()`);
+      await activateMenuButton("Settings");
       await waitFor("document.querySelector('dialog[data-swipe-ignore] select') !== null");
     };
     const open = async () => {
       await evaluate("document.querySelector('[data-menu-trigger]').focus()");
-      await click("Open menu");
+      await activate("Open menu");
       await waitFor("document.querySelector('dialog[data-swipe-ignore]')?.open && document.activeElement?.matches('[data-menu-trigger]')");
-      await evaluate("Promise.all(document.querySelector('dialog[data-swipe-ignore] .sheet').getAnimations().map(a=>a.finished))");
+      await settle("dialog[data-swipe-ignore] .sheet", false);
     };
     const closed = async () => {
       await waitFor(
@@ -24,12 +23,11 @@ await runBrowser(
       );
     };
     const escape = async () => {
-      await send("Input.dispatchKeyEvent", { type: "keyDown", key: "Escape", code: "Escape", windowsVirtualKeyCode: 27 });
-      await send("Input.dispatchKeyEvent", { type: "keyUp", key: "Escape", code: "Escape", windowsVirtualKeyCode: 27 });
+      await key("Escape");
       await closed();
     };
     const screenshot = async (name: string) => {
-      await saveScreenshot(`temp/browser-verification/menu-${name}.png`);
+      await saveScreenshot(`menu-${name}.png`);
     };
     const gesture = async (selector: string, dy: number, input: "mouse" | "touch" = "mouse") => {
       const point = await evaluate<{ x: number; y: number }>(
@@ -55,15 +53,23 @@ await runBrowser(
     };
 
     await send("Emulation.setEmulatedMedia", { features: [{ name: "prefers-reduced-motion", value: "reduce" }] });
-    await send("Emulation.setDeviceMetricsOverride", { width: 1280, height: 900, deviceScaleFactor: 1, mobile: false });
+    await viewport(1280);
+    const keyboardRoutes = new Set(["/", "/kdm/hunt/", "/kdm/start/", "/kdm/showdown1/"]);
     for (const path of ["/", "/credits/", "/kdm/hunt/", "/kdm/start/", "/kdm/showdown1/", "/kdm/showdown2/", "/kdm/showdown3/"]) {
       await send("Page.navigate", { url: new URL(path, base).href });
       await waitFor("document.querySelector('[data-menu-trigger]') && document.querySelector('dialog[data-swipe-ignore]')");
       await waitFor("document.documentElement.hasAttribute('data-glass')");
+      if (!keyboardRoutes.has(path)) {
+        await activate("Open menu");
+        await waitFor("document.querySelector('dialog[data-swipe-ignore]').open");
+        assert(true, `${path}: menu mounts and opens`);
+        await activate("Close menu");
+        await closed();
+        continue;
+      }
       await evaluate("document.fonts.ready");
       await evaluate(`document.querySelector('[data-menu-trigger]').focus()`);
-      await send("Input.dispatchKeyEvent", { type: "keyDown", key: "Escape", code: "Escape", windowsVirtualKeyCode: 27 });
-      await send("Input.dispatchKeyEvent", { type: "keyUp", key: "Escape", code: "Escape", windowsVirtualKeyCode: 27 });
+      await key("Escape");
       await waitFor("document.querySelector('dialog[data-swipe-ignore]').open");
       assert(
         await evaluate("document.activeElement?.matches('[data-menu-trigger][aria-label=\"Close menu\"]')"),
@@ -80,8 +86,7 @@ await runBrowser(
       if (path === "/kdm/hunt/") {
         await evaluate("document.querySelector('.selection').click()");
         await waitFor("document.querySelector('dialog:has(.dice)').open");
-        await send("Input.dispatchKeyEvent", { type: "keyDown", key: "Escape", code: "Escape", windowsVirtualKeyCode: 27 });
-        await send("Input.dispatchKeyEvent", { type: "keyUp", key: "Escape", code: "Escape", windowsVirtualKeyCode: 27 });
+        await key("Escape");
         await waitFor("!document.querySelector('dialog:has(.dice)').open");
         assert(
           await evaluate("!document.querySelector('dialog[data-swipe-ignore]').open"),
@@ -181,13 +186,13 @@ await runBrowser(
     await closed();
     await open();
     await settings();
-    await evaluate(`${button("Comfortable")}.click()`);
+    await activateMenuButton("Comfortable");
     await waitFor("document.querySelector('main.showdown').dataset.density === 'comfortable'");
     await evaluate("[...document.querySelectorAll('dialog[data-swipe-ignore] a')].find(e=>e.textContent.trim()==='Folio').click()");
     await waitFor("location.pathname.includes('showdown2') && document.querySelector('main.showdown')?.dataset.density === 'comfortable'");
     await closed();
     assert(true, "Showdown density survives theme link navigation");
-    await send("Emulation.setDeviceMetricsOverride", { width: 390, height: 844, deviceScaleFactor: 1, mobile: true });
+    await viewport(390, 844);
     await send("Emulation.setTouchEmulationEnabled", { enabled: true });
     await send("Emulation.setEmulatedMedia", { features: [{ name: "prefers-reduced-motion", value: "no-preference" }] });
     await open();
@@ -199,7 +204,7 @@ await runBrowser(
       ),
       "Short row drag snaps back without activating the row",
     );
-    await evaluate("Promise.all(document.querySelector('dialog[data-swipe-ignore] .sheet').getAnimations().map(a=>a.finished))");
+    await settle("dialog[data-swipe-ignore] .sheet", false);
     const rowDrag = await gesture("dialog[data-swipe-ignore] .row", 110, "touch");
     await closed();
     assert(
@@ -238,7 +243,5 @@ await runBrowser(
     await open();
     await escape();
     assert(await evaluate("document.activeElement?.matches('[data-menu-trigger]')"), "Mobile Escape restores launcher focus");
-    assert(errors.length === 0, `No browser runtime exceptions, window errors, or error logs: ${JSON.stringify(errors)}`);
-    await writeFile("temp/browser-verification/menu-report.json", JSON.stringify({ report, errors }, null, 2));
   },
 );

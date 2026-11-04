@@ -1,10 +1,14 @@
 import { spawn } from "node:child_process";
 import { readdir } from "node:fs/promises";
-import { resolve } from "node:path";
+import { join, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const directory = new URL("./", import.meta.url);
-const files = (await readdir(directory)).filter((file) => file.endsWith("-browser.mts") && file !== "run-browser.mts").sort();
+const root = fileURLToPath(directory);
+const files = (await readdir(directory, { recursive: true, withFileTypes: true }))
+  .filter((entry) => entry.isFile() && entry.name.endsWith(".test.mts"))
+  .map((entry) => relative(root, join(entry.parentPath, entry.name)).split(sep).join("/"))
+  .sort();
 const args = process.argv.slice(2).filter((arg) => arg !== "--");
 const selected: string[] = [];
 let url: string | undefined;
@@ -25,7 +29,7 @@ try {
       }
       continue;
     }
-    const file = files.find((file) => resolve("test/client", file) === resolve(arg) || file === arg);
+    const file = files.find((file) => resolve(root, file) === resolve(root, arg) || resolve(root, file) === resolve(arg));
     if (!file) throw new Error(`Unknown browser test: ${arg}. Use --list to see available files.`);
     if (!selected.includes(file)) selected.push(file);
   }
@@ -34,10 +38,16 @@ try {
   process.exit(1);
 }
 
-for (const file of selected.length ? selected : files) {
+const suite = selected.length ? selected : files;
+const started = performance.now();
+const elapsed = () => `${((performance.now() - started) / 1000).toFixed(1)}s`;
+let passed = 0;
+
+for (const file of suite) {
   console.log(`\nRunning ${file}`);
-  const child = spawn(process.execPath, [fileURLToPath(new URL(file, directory)), ...(url ? [url] : [])], {
+  const child = spawn(process.execPath, [fileURLToPath(new URL(file, directory))], {
     stdio: "inherit",
+    env: { ...process.env, ...(url ? { BROWSER_TEST_URL: url } : {}) },
     windowsHide: true,
   });
   const code = await new Promise<number>((done) => {
@@ -47,5 +57,13 @@ for (const file of selected.length ? selected : files) {
     });
     child.once("exit", (code) => done(code ?? 1));
   });
-  if (code !== 0) process.exit(code);
+  if (code !== 0) {
+    console.error(
+      `\nBrowser tests failed: ${file} (exit ${code}). ${passed} passed, 1 failed, ${suite.length - passed - 1} not run (${elapsed()}).`,
+    );
+    process.exit(code);
+  }
+  passed++;
 }
+
+console.log(`\nBrowser tests passed: ${passed} file${passed === 1 ? "" : "s"} (${elapsed()}).`);

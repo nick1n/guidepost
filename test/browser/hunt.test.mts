@@ -1,19 +1,26 @@
-import { mkdir, writeFile } from "node:fs/promises";
-import { runBrowser } from "./browser-harness.mts";
+import { runBrowser } from "./support/harness.mts";
 
-await mkdir("temp/browser-verification", { recursive: true });
 await runBrowser(
-  "hunt",
-  "JSON.stringify({url:location.href,text:document.body.innerText,active:document.activeElement?.getAttribute('aria-label')})",
-  async ({ base, send, evaluate, waitFor, click, assert, errors, report, saveScreenshot }) => {
+  {
+    name: "hunt",
+    diagnostics:
+      "JSON.stringify({url:location.href,text:document.body.innerText,active:document.activeElement?.getAttribute('aria-label')})",
+  },
+  async ({ base, send, evaluate, waitFor, activate, assert, saveScreenshot, frames, viewport, key, activateMenuButton, settle }) => {
     await send("Page.addScriptToEvaluateOnNewDocument", {
       source: `
         window.huntIntervals = new Set();
+        window.huntIntervalTicks = new Map();
         const startInterval = window.setInterval.bind(window);
         const stopInterval = window.clearInterval.bind(window);
-        window.setInterval = (...args) => {
-          const id = startInterval(...args);
+        window.setInterval = (callback, delay, ...args) => {
+          const tick = (...values) => {
+            window.huntIntervalTicks.set(id, (window.huntIntervalTicks.get(id) ?? 0) + 1);
+            return callback.apply(window, values);
+          };
+          const id = startInterval(typeof callback === 'function' ? tick : callback, delay, ...args);
           window.huntIntervals.add(id);
+          window.huntIntervalTicks.set(id, 0);
           return id;
         };
         window.clearInterval = (id) => {
@@ -27,7 +34,7 @@ await runBrowser(
     const picker = "document.querySelector('dialog:has(.dice)')";
     const menu = "document.querySelector('dialog[data-swipe-ignore]')";
     const option = "document.querySelector('select[id$=\"-option\"]')";
-    const frames = () => evaluate("new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))");
+
     const ready = async () => {
       // Card intros start on the frame after insertion.
       await frames();
@@ -43,36 +50,25 @@ await runBrowser(
     };
     const state = (event: number, face: string) => `${card}?.getAttribute('aria-label')==='Flip hunt event ${event}, showing ${face}'`;
     const announced = (event: number, face: string) => `${live}?.textContent.trim()==='Hunt event ${event}, ${face}.'`;
-    const key = async (key: string, code = key, windowsVirtualKeyCode = key.charCodeAt(0)) => {
-      await send("Input.dispatchKeyEvent", {
-        type: "keyDown",
-        key,
-        code,
-        windowsVirtualKeyCode,
-        ...(key === "Enter" ? { text: "\r" } : {}),
-      });
-      await send("Input.dispatchKeyEvent", { type: "keyUp", key, code, windowsVirtualKeyCode });
-      await frames();
-    };
     const openPicker = async () => {
       await evaluate("document.querySelector('.selection').focus();document.querySelector('.selection').click()");
       await waitFor(`${picker}.open`);
-      await evaluate(`Promise.all(${picker}.getAnimations({subtree:true}).map(a=>a.finished.catch(()=>{})))`);
+      await settle("dialog:has(.dice)");
     };
     const closedPicker = async () => {
       await waitFor(`!${picker}.open && getComputedStyle(${picker}).display==='none'`);
       assert(await evaluate("document.activeElement.matches('.selection')"), "Picker dismissal restores selection focus");
     };
     const settings = async () => {
-      await click("Open menu");
-      await evaluate(`[...${menu}.querySelectorAll('button')].find(b=>b.textContent.trim().startsWith('Settings')).click()`);
+      await activate("Open menu");
+      await activateMenuButton("Settings");
       await waitFor(option);
     };
     const closeMenu = async () => {
       await evaluate("document.querySelector('[data-menu-trigger]').click()");
       await waitFor(`${menu}.querySelector('.navigation')`);
       await frames();
-      await click("Close menu");
+      await activate("Close menu");
       await waitFor(`!${menu}.open && getComputedStyle(${menu}).display==='none'`);
     };
     const artwork = (value: string) =>
@@ -139,7 +135,7 @@ await runBrowser(
       [1280, "no-preference"],
       [390, "reduce"],
     ] as const) {
-      await send("Emulation.setDeviceMetricsOverride", { width, height: 844, deviceScaleFactor: 1, mobile: width === 390 });
+      await viewport(width, 844, width === 390);
       await send("Emulation.setEmulatedMedia", { features: [{ name: "prefers-reduced-motion", value: motion }] });
       await navigate("#/1/fen/front");
       assert(
@@ -153,6 +149,7 @@ await runBrowser(
       if (motion === "no-preference") {
         await waitFor(`${card}.getAnimations().some(a=>a.transitionProperty==='transform')`);
         await evaluate(`window.huntFlip=${card}.getAnimations().find(a=>a.transitionProperty==='transform');window.huntFlip.pause()`);
+        // Keep the animation paused beyond its normal duration to catch premature timer-based completion.
         await evaluate("new Promise(resolve=>setTimeout(resolve,600))");
         assert(
           await evaluate(`${card}.getAttribute('aria-disabled')==='true' && document.querySelector('.random').disabled`),
@@ -172,20 +169,22 @@ await runBrowser(
       assert(await evaluate(state(1, "card back")), "Reload restores the linked face");
 
       await openPicker();
-      await click("tens 0");
-      await click("ones 0");
+      await activate("tens 0");
+      await activate("ones 0");
       await evaluate(`${picker}.querySelector('.close').click()`);
       await closedPicker();
       await ready();
       assert(await evaluate(`${state(0, "card back")} && location.hash==='#/0/fen'`), "Picker selects 00 and conceals the event");
 
-      const idleIntervals = await evaluate<number>("window.huntIntervals.size");
+      const idleTimers = await evaluate<number[]>("[...window.huntIntervals]");
+      const idleIntervals = idleTimers.length;
       await evaluate(
         "window.huntRandom=Math.random;Math.random=()=>0.42;document.querySelector('.random').click();Math.random=window.huntRandom",
       );
       await waitFor("location.hash==='#/42/fen'");
       if (motion === "no-preference") {
         await pauseExit();
+        // Keep the animation paused beyond its normal duration to catch premature timer-based completion.
         await evaluate("new Promise(resolve=>setTimeout(resolve,600))");
         assert(
           await evaluate("document.querySelector('.front').src.endsWith('fen-0.png') && document.querySelector('.random').disabled"),
@@ -195,12 +194,15 @@ await runBrowser(
           await evaluate(`${state(0, "card back")} && ${live}.textContent.trim()===''`),
           "Pending draw keeps the outgoing card's label and waits to announce the incoming card",
         );
-        await saveScreenshot(`temp/browser-verification/hunt-${width}-drawing.png`);
+        await saveScreenshot(`hunt-${width}-drawing.png`);
         assert(await evaluate(`window.huntIntervals.size===${idleIntervals + 1}`), "A paused draw keeps one dice timer active");
         await send("Emulation.setEmulatedMedia", { features: [{ name: "prefers-reduced-motion", value: "reduce" }] });
         await frames();
         await evaluate("window.huntRandom=Math.random;window.huntRolls=0;Math.random=()=>{window.huntRolls++;return 0.9}");
-        await evaluate("new Promise(resolve=>setTimeout(resolve,450))");
+        // Reduced motion keeps the interval alive but skips rolling. Observe two actual callbacks.
+        const timer = await evaluate<number>(`[...window.huntIntervals].find(id => !${JSON.stringify(idleTimers)}.includes(id))`);
+        const ticks = await evaluate<number>(`window.huntIntervalTicks.get(${timer})`);
+        await waitFor(`window.huntIntervalTicks.get(${timer}) >= ${ticks + 2}`);
         assert(await evaluate("window.huntRolls===0"), "Enabling reduced motion stops dice updates during a paused draw");
         await send("Emulation.setEmulatedMedia", { features: [{ name: "prefers-reduced-motion", value: "no-preference" }] });
         await waitFor("window.huntRolls>0");
@@ -216,7 +218,7 @@ await runBrowser(
         await evaluate("document.documentElement.scrollWidth<=innerWidth && document.documentElement.scrollHeight<=innerHeight+2"),
         `${width}px: card and controls fit the viewport`,
       );
-      await saveScreenshot(`temp/browser-verification/hunt-${width}.png`);
+      await saveScreenshot(`hunt-${width}.png`);
     }
 
     // Gesture edge cases also have unit coverage in test/client/gestures/.
@@ -253,14 +255,14 @@ await runBrowser(
       await evaluate(`!${picker}.open && ${state(11, "card back")}`),
       "Typing, modifiers, composition, and held keys do not trigger shortcuts",
     );
-    await click("Open menu");
+    await activate("Open menu");
     await key("r", "KeyR", 82);
     await key("/", "Slash", 191);
     await key("ArrowLeft", "ArrowLeft", 37);
     assert(await evaluate(`!${picker}.open && ${state(11, "card back")}`), "Open menu blocks hunt shortcuts");
-    await click("Close menu");
+    await activate("Close menu");
 
-    await send("Emulation.setDeviceMetricsOverride", { width: 844, height: 390, deviceScaleFactor: 1, mobile: true });
+    await viewport(844, 390, true);
     await openPicker();
     assert(
       await evaluate(
@@ -271,7 +273,7 @@ await runBrowser(
     await swipe("dialog:has(.dice) header", 0, 110);
     await closedPicker();
 
-    await send("Emulation.setDeviceMetricsOverride", { width: 1280, height: 844, deviceScaleFactor: 1, mobile: false });
+    await viewport(1280, 844);
     await send("Emulation.setEmulatedMedia", { features: [{ name: "prefers-reduced-motion", value: "no-preference" }] });
     await navigate("#/42/fen/front");
     await evaluate(
@@ -399,7 +401,7 @@ await runBrowser(
     const idleIntervals = await evaluate<number>("window.huntIntervals.size");
     await evaluate("document.querySelector('.random').click()");
     await pauseExit();
-    await click("Open menu");
+    await activate("Open menu");
     await evaluate(`${menu}.querySelector('.navigation a').click()`);
     await waitFor("document.querySelector('main.landing')");
     assert(
@@ -407,7 +409,5 @@ await runBrowser(
       "Home removes hunt controls immediately, even during a paused exit",
     );
     assert(await evaluate(`window.huntIntervals.size===${idleIntervals}`), "Leaving during a draw releases its dice timer");
-    assert(errors.length === 0, `No browser runtime errors: ${JSON.stringify(errors)}`);
-    await writeFile("temp/browser-verification/hunt-report.json", JSON.stringify({ report, errors }, null, 2), "utf8");
   },
 );
