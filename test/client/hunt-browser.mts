@@ -264,7 +264,7 @@ await runBrowser(
     await openPicker();
     assert(
       await evaluate(
-        `(()=>{const d=${picker},r=d.getBoundingClientRect(),c=d.querySelector('.close').getBoundingClientRect(),dice=d.querySelector('.dice');return r.top>=0&&r.bottom<=innerHeight&&c.bottom<=r.bottom&&dice.scrollHeight>dice.clientHeight})()`,
+        `(()=>{const d=${picker},r=d.getBoundingClientRect(),c=d.querySelector('.close').getBoundingClientRect(),body=d.querySelector('.body');return r.top>=0&&r.bottom<=innerHeight&&c.bottom<=r.bottom&&body.scrollHeight>body.clientHeight})()`,
       ),
       "Short-screen picker scrolls its dice and keeps Close visible",
     );

@@ -448,6 +448,7 @@
     transform: rotateY(180deg);
   }
   .tap-hint {
+    --size-tap: 4rem;
     --duration-hint: 4s;
     --delay-hint: 5s;
     /* The touch-app icon's index fingertip is at (8.5, 6) in its 24px viewBox. */
@@ -463,7 +464,7 @@
     pointer-events: none;
   }
   .tap-icon {
-    --size-icon: 4rem;
+    --size-icon: var(--size-tap);
     transform-origin: var(--tap-x) var(--tap-y);
     animation: tap-hint var(--duration-hint) var(--delay-hint) ease-in-out infinite;
     opacity: 0;
@@ -476,7 +477,7 @@
     inset-block-start: var(--tap-y);
     inset-inline-start: var(--tap-x);
     translate: -50% -50%;
-    border: 0.25rem solid var(--foreground);
+    border: calc(var(--size-tap) * 2 / 24) solid var(--foreground);
     border-radius: 50%;
     animation: ripple var(--duration-hint) var(--delay-hint) ease-out infinite;
     opacity: 0;
@@ -492,8 +493,11 @@
       z-index: 2;
     }
   }
+  :is(.retry, .selection, .random) {
+    min-inline-size: var(--size-control);
+    min-block-size: var(--size-control);
+  }
   .retry {
-    min-block-size: 2.75rem;
     margin-block-start: 0.75rem;
     padding-inline: 1rem;
     border: var(--border-width) solid var(--accent);
@@ -513,7 +517,6 @@
     display: flex;
     align-items: center;
     justify-self: start;
-    min-block-size: var(--size-floating-control);
     padding-inline: 0.375rem;
     gap: 0.75rem;
     border-radius: var(--radius-control);
@@ -574,7 +577,6 @@
     align-items: center;
     justify-content: space-between;
     inline-size: 8rem;
-    min-block-size: 2.75rem;
     padding: 0.5rem;
     border: var(--border-width) solid var(--grey-7);
     border-radius: var(--radius-control);
@@ -613,15 +615,21 @@
   @keyframes ripple {
     0%,
     18% {
-      transform: scale(0.12);
+      inline-size: calc(var(--size-ripple) * 0.12);
+      block-size: calc(var(--size-ripple) * 0.12);
       opacity: 0;
     }
-    19% {
-      opacity: 0.5;
+    19%,
+    25% {
+      opacity: 0.75;
+    }
+    35% {
+      opacity: 0;
     }
     40.5%,
     100% {
-      transform: scale(1);
+      inline-size: var(--size-ripple);
+      block-size: var(--size-ripple);
       opacity: 0;
     }
   }

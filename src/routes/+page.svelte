@@ -147,7 +147,7 @@
   import { Effect } from "effect";
   import { onDestroy, onMount } from "svelte";
   import type { PointerEventHandler } from "svelte/elements";
-  import ConfirmDialog from "#lib/components/ConfirmDialog.svelte";
+  import Modal from "#lib/components/Modal.svelte";
   import TrailBackground from "#lib/components/TrailBackground.svelte";
   import VersionPicker from "#lib/kdm/catalog/ui/VersionPicker.svelte";
   import { navigate } from "#lib/app/navigation/navigate.ts";
@@ -159,7 +159,7 @@
   const actions = getActions();
 
   let landing: HTMLElement;
-  let ownershipDialog: { show: Noop };
+  let ownershipDialog: Modal;
   let quickStartTrigger: HTMLAnchorElement | undefined;
   let selectedCoreVersion = $state<string | undefined>(latestCoreVersion);
   let lightingFrame: number | undefined;
@@ -246,16 +246,14 @@
   }
 
   function confirmCoreOwnership() {
-    const version = selectedCoreVersion;
+    if (!selectedCoreVersion) return;
+    const edition = coreVersions.find((edition) => edition.id === selectedCoreVersion);
     const save = Effect.suspend(() => {
-      if (!version) return Effect.succeed(false);
-      const edition = coreVersions.find((edition) => edition.id === version);
       if (!edition) return Effect.succeed(false);
       const key = collectionKey(coreId, edition.id);
       if (collection.get(key).owned) return Effect.succeed(false);
       return collection.setManyOwned([key], true);
     });
-    const edition = coreVersions.find((edition) => edition.id === version);
     actions.run(save, {
       success: edition ? `${editionName({ item: { name: "Kingdom Death: Monster" }, edition })} marked as owned.` : false,
     });
@@ -297,7 +295,7 @@
 
   <header>
     <h1><button class="wordmark" type="button" tabindex="-1" aria-disabled={relighting} {onpointerdown} {onclick}>Guidepost</button></h1>
-    <p>
+    <p class="tagline">
       <button class="wordmark" type="button" tabindex="-1" aria-disabled={relighting} {onpointerdown} {onclick}>
         tools left here for the next player
       </button>
@@ -353,14 +351,15 @@
     {/each}
   </nav>
 
-  <ConfirmDialog
+  <Modal
     bind:this={ownershipDialog}
     title="Core game required"
     description="The quick start prologue showdown requires the **Kingdom Death: Monster** core box. Please choose the version you own to add it to your collection."
-    confirmLabel="Add and continue"
+    icon="i-material-symbols:warning-outline"
+    ondismiss={restoreQuickStartFocus}
     onconfirm={confirmCoreOwnership}
+    confirmLabel="Add and continue"
     confirmDisabled={!selectedCoreVersion}
-    oncancel={restoreQuickStartFocus}
   >
     <VersionPicker
       versions={coreVersions}
@@ -369,7 +368,7 @@
       groupLabel="Kingdom Death: Monster core version"
       focusActive
     />
-  </ConfirmDialog>
+  </Modal>
 
   <div class="glow">
     <div class="lantern">
@@ -519,7 +518,7 @@
     text-shadow: inherit;
   }
 
-  p {
+  .tagline {
     position: relative;
     z-index: 1;
     contain: inline-size;

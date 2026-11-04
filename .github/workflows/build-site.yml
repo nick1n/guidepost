@@ -69,7 +69,7 @@ jobs:
         env:
           BASE_PATH: ${{ inputs.upload-pages && steps.pages.outputs.base_path || inputs.base-path }}
           CHROME_PATH: /usr/bin/google-chrome
-        run: pnpm test:collection-startup
+        run: pnpm test:browser collection-startup-browser.mts
 
       - name: Upload GitHub Pages artifact
         if: inputs.upload-pages

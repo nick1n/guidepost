@@ -107,6 +107,10 @@
   --text-2xl: 2rem;
   --text-num-input: 1.625rem;
 
+  --size-control-default: 44px;
+  --size-control-compact: 32px;
+  --size-control-comfortable: 56px;
+  --size-control: var(--size-control-default);
   --size-icon-control: 1.5rem;
   --size-floating-control: 2.75rem;
   --inset-floating-control: 0.75rem;
@@ -188,6 +192,14 @@
   --gear-center: #efe7e6;
   --gear-outside: #dcd3d0;
   --gear-box-background: #cbc9c4;
+}
+
+:root[data-density="compact"] {
+  --size-control: var(--size-control-compact);
+}
+
+:root[data-density="comfortable"] {
+  --size-control: var(--size-control-comfortable);
 }
 
 /* Theme transitions honor reduced motion; components own their animation and position changes. */
@@ -272,14 +284,4 @@ textarea {
   min-block-size: 3lh !important;
   field-sizing: content;
   resize: vertical;
-}
-
-.content {
-  p {
-    font-size: 0.75rem;
-
-    + p {
-      margin-block-start: 0.25rem;
-    }
-  }
 }

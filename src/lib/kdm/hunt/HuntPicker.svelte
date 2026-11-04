@@ -3,51 +3,26 @@
 </script>
 
 <script lang="ts">
-  import { flushSync } from "svelte";
-  import { createSwipeDismiss } from "#lib/swipe-dismiss.svelte.ts";
   import KdIcon from "#lib/components/KdIcon.svelte";
-  import DragHandle from "#lib/components/DragHandle.svelte";
+  import Modal from "#lib/components/Modal.svelte";
   import { selectDigit } from "./cards.ts";
 
   let { card, onselect }: { card: number; onselect: (card: number) => void } = $props();
   const id = $props.id();
-  let dialog: HTMLDialogElement;
-  let open = $state(false);
+  let dialog = $state<HTMLDialogElement>();
+  let modal: Modal;
   let numberPlace = 10;
   let activePlace = 10;
-  const dismissal = createSwipeDismiss(close);
 
   export function show() {
-    // Include the sheet's transitions when guarding a closing dialog, including paused exits.
-    if (
-      !dialog.isConnected ||
-      dialog.open ||
-      dialog.getAnimations({ subtree: true }).some((animation) => animation.playState !== "finished")
-    )
-      return;
+    if (!modal.show()) return;
     numberPlace = 10;
     activePlace = 10;
-    dismissal.reset();
-    dialog.showModal();
-    open = true;
-    dialog.querySelector<HTMLButtonElement>('[aria-pressed="true"]')?.focus();
+    dialog?.querySelector<HTMLButtonElement>('[aria-pressed="true"]')?.focus();
   }
 
   function close() {
-    if (!dialog.open) return;
-    // Re-enable transitions after dragging before removing the native open state.
-    flushSync(() => dismissal.reset());
-    dialog.close();
-    open = false;
-  }
-
-  function onclick(event: MouseEvent) {
-    if (event.target === dialog) close();
-  }
-
-  function oncancel(event: Event) {
-    event.preventDefault();
-    close();
+    modal.close();
   }
 
   function onfocusin(event: FocusEvent) {
@@ -61,7 +36,7 @@
   }
 
   function focusDigit(place: number, digit: number) {
-    dialog.querySelector<HTMLButtonElement>(`[data-place="${place}"] [data-digit="${digit}"]`)?.focus();
+    dialog?.querySelector<HTMLButtonElement>(`[data-place="${place}"] [data-digit="${digit}"]`)?.focus();
   }
 
   function chooseDigit(place: number, digit: number) {
@@ -70,7 +45,7 @@
   }
 
   function onkeydown(event: KeyboardEvent) {
-    if (!dialog.open || event.altKey || event.ctrlKey || event.metaKey || event.isComposing) return;
+    if (!dialog?.open || event.altKey || event.ctrlKey || event.metaKey || event.isComposing) return;
     if (event.key === "Enter") {
       event.preventDefault();
       if (!event.repeat) close();
@@ -116,134 +91,46 @@
   }
 </script>
 
-<div class={["scrim", open && "is-open"]} aria-hidden="true"></div>
-<dialog
-  bind:this={dialog}
-  aria-labelledby={`${id}-title`}
-  aria-describedby={`${id}-keys`}
-  data-dragging={dismissal.distance > 0}
-  style:--drag={`${dismissal.distance}px`}
-  {onclick}
-  {oncancel}
-  {onkeydown}
-  {onfocusin}
-  {@attach dismissal.attach}
->
-  <div class="sheet">
-    <header data-drag-handle>
-      <DragHandle />
-      <h2 id={`${id}-title`}>Select hunt event</h2>
-      <p id={`${id}-keys`} class="visually-hidden">
-        Use Up and Down to select a digit and Left and Right to switch columns. Number keys alternate between tens and ones. Enter or Escape
-        closes the dialog.
-      </p>
-    </header>
-    <div class="dice">
-      {#each [10, 1] as place (place)}
-        {@const selected = selectedDigit(place)}
-        <fieldset class={place === 1 ? "ones" : undefined} data-place={place}>
-          <legend>{place === 10 ? "tens" : "ones"}</legend>
-          <div class="stack">
-            {#each digits as digit (digit)}
-              <button
-                class={["die", place === 10 && "light"]}
-                type="button"
-                aria-label={`${place === 10 ? "tens" : "ones"} ${digit}`}
-                aria-pressed={selected === digit}
-                tabindex={selected === digit ? 0 : -1}
-                data-digit={digit}
-                onclick={() => chooseDigit(place, digit)}
-              >
-                <span>
-                  {#if digit === 0}<KdIcon i="lantern" />{:else}{digit}{/if}
-                </span>
-              </button>
-            {/each}
-          </div>
-        </fieldset>
-      {/each}
-    </div>
-    <footer><button class="close" type="button" onclick={close}>Close</button></footer>
+<Modal bind:this={modal} bind:element={dialog} title="Select hunt event" descriptionId={id + "-keys"} {onkeydown} {onfocusin}>
+  <p id={id + "-keys"} class="visually-hidden">
+    Use Up and Down to select a digit and Left and Right to switch columns. Number keys alternate between tens and ones. Enter or Escape
+    closes the dialog.
+  </p>
+  <div class="dice">
+    {#each [10, 1] as place (place)}
+      {@const selected = selectedDigit(place)}
+      <fieldset class={place === 1 ? "ones" : undefined} data-place={place}>
+        <legend>{place === 10 ? "tens" : "ones"}</legend>
+        <div class="stack">
+          {#each digits as digit (digit)}
+            <button
+              class={["die", place === 10 && "light"]}
+              type="button"
+              aria-label={`${place === 10 ? "tens" : "ones"} ${digit}`}
+              aria-pressed={selected === digit}
+              tabindex={selected === digit ? 0 : -1}
+              data-digit={digit}
+              onclick={() => chooseDigit(place, digit)}
+            >
+              <span>
+                {#if digit === 0}<KdIcon i="lantern" />{:else}{digit}{/if}
+              </span>
+            </button>
+          {/each}
+        </div>
+      </fieldset>
+    {/each}
   </div>
-</dialog>
+  {#snippet footer()}
+    <button class="close" type="button" onclick={close}>Close</button>
+  {/snippet}
+</Modal>
 
 <style>
-  .scrim {
-    z-index: 4;
-    position: fixed;
-    inset: 0;
-    background: #00000080;
-    opacity: 0;
-    visibility: hidden;
-    transition:
-      opacity var(--duration-fast),
-      visibility var(--duration-fast);
-
-    &.is-open {
-      opacity: 1;
-      visibility: visible;
-    }
-  }
-  dialog {
-    inline-size: max-content;
-    max-inline-size: calc(100% - 2rem);
-    max-block-size: calc(var(--viewport-height) - 2rem);
-    margin: auto;
-    padding: 0;
-    overflow: visible;
-    border: 0;
-    background: transparent;
-    color: var(--foreground);
-    transition:
-      display var(--duration-fast),
-      overlay var(--duration-fast);
-    transition-behavior: allow-discrete;
-    &[open] {
-      display: grid;
-    }
-    &::backdrop {
-      background: transparent;
-    }
-  }
-  .sheet {
-    display: grid;
-    grid-template-rows: auto minmax(0, 1fr) auto;
-    min-block-size: 0;
-    max-block-size: inherit;
-    translate: 0 calc(50dvh + 50%);
-    border: var(--border-width) solid var(--grey-7);
-    border-radius: var(--radius-card);
-    background: var(--surface-glass);
-    backdrop-filter: var(--filter-glass);
-    box-shadow:
-      0 1rem 4rem #00000099,
-      inset 0 1px #ffffff0a;
-    opacity: 0;
-    transition:
-      opacity var(--duration-fast) var(--ease-standard),
-      translate var(--duration-fast) var(--ease-standard);
-  }
-  dialog[open] .sheet {
-    translate: 0 var(--drag);
-    opacity: 1;
-  }
-  dialog[data-dragging="true"] .sheet {
-    transition: none;
-  }
-  header {
-    display: grid;
-    justify-items: center;
-    padding: 0 1rem;
-    gap: 0.5rem;
-  }
-  h2 {
-    font-weight: var(--font-bold);
-    font-size: var(--text-lg);
-    font-family: var(--font-display);
-  }
   .close {
     inline-size: 100%;
-    min-block-size: 2.75rem;
+    min-inline-size: var(--size-control);
+    min-block-size: var(--size-control);
     padding: 0.5rem 1rem;
     border: var(--border-width) solid var(--grey-6);
     border-radius: var(--radius-control);
@@ -256,18 +143,19 @@
       background: var(--grey-7);
     }
   }
-  footer {
-    padding: 0.5rem 1rem 1rem;
-  }
   .dice {
+    --gap-dice: 2.5rem;
+    /* Larger rotated dice need more edge space to keep their outlines inside the scroll area. */
+    --space-dice: max(1rem, calc(var(--size-control) - 2rem));
     display: grid;
-    grid-template-columns: repeat(2, max-content);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     justify-content: center;
+    justify-self: center;
+    inline-size: calc(var(--size-control) * 42 / 11 + var(--gap-dice) + 2 * var(--space-dice));
+    max-inline-size: 100%;
     min-block-size: 0;
-    padding-inline: 1rem;
-    overflow-y: auto;
-    overscroll-behavior-y: contain;
-    gap: 2.5rem;
+    padding-inline: var(--space-dice);
+    gap: var(--gap-dice);
   }
   fieldset {
     display: grid;
@@ -313,18 +201,19 @@
     text-align: center;
   }
   .stack {
+    /* Preserve the original staggered geometry as the control size changes. */
     display: grid;
-    grid-template-rows: repeat(9, 2.25rem) 2.75rem;
-    inline-size: 5.25rem;
+    grid-template-rows: repeat(9, calc(var(--size-control) * 9 / 11)) var(--size-control);
+    inline-size: min(100%, calc(var(--size-control) * 21 / 11));
     padding-inline: 0.125rem;
-    padding-block-end: 1.125rem;
+    padding-block-end: calc(var(--size-control) * 9 / 22);
   }
   .die {
     display: grid;
     place-items: center;
     justify-self: end;
-    inline-size: 2.75rem;
-    block-size: 2.75rem;
+    inline-size: var(--size-control);
+    block-size: var(--size-control);
     rotate: 45deg;
     border: var(--border-width) solid var(--grey-4);
     border-radius: var(--radius-control);
@@ -362,18 +251,6 @@
     justify-self: start;
     &:nth-child(even) {
       justify-self: end;
-    }
-  }
-  @starting-style {
-    dialog[open] .sheet {
-      translate: 0 calc(50dvh + 50%);
-      opacity: 0;
-    }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .sheet,
-    dialog[open] .sheet {
-      translate: 0 var(--drag);
     }
   }
 </style>

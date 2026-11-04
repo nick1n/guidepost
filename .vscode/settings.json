@@ -161,6 +161,7 @@
     "onadd",
     "onback",
     "onconfirmed",
+    "ondismiss",
     "onexpand",
     "onhold",
     "onnavigate",

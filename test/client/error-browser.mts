@@ -6,7 +6,7 @@ import { runBrowser } from "./browser-harness.mts";
 
 const assets = resolve("build/_app/immutable/assets");
 const stylesheet = (await readdir(assets).catch(() => [])).find((name) => name.startsWith("unocss-svelte-scoped-global."));
-if (!stylesheet) throw new Error("Missing production icon stylesheet. Run pnpm build before pnpm test:error-browser.");
+if (!stylesheet) throw new Error("Missing production icon stylesheet. Run pnpm build before pnpm test:browser error-browser.mts.");
 
 const fixture = resolve("test/client/fixtures/retry");
 const kit = resolve(fixture, "kit.ts");

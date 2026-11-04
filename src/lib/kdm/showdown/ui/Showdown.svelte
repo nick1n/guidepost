@@ -381,10 +381,6 @@
     --feedback-brightness: 1.12;
     --scale-control-compact: calc(32 / 44);
     --scale-control-content: 1;
-    --size-control-compact: calc(var(--size-control-default) * var(--scale-control-compact));
-    --size-control-default: 44px;
-    --size-control-comfortable: 56px;
-    --size-control: var(--size-control-default);
     --size-number-max: 48px;
     --size-column: 20rem;
 
@@ -395,11 +391,7 @@
     font-variant-numeric: lining-nums tabular-nums;
   }
   .showdown[data-density="compact"] {
-    --size-control: var(--size-control-compact);
     --scale-control-content: var(--scale-control-compact);
-  }
-  .showdown[data-density="comfortable"] {
-    --size-control: var(--size-control-comfortable);
   }
   .showdown :global(:where(a[href], button, input:not([type="hidden"]), select, textarea, summary, [role="button"], [role="link"])) {
     min-inline-size: var(--size-control);

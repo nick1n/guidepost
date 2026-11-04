@@ -15,6 +15,8 @@
     place-items: center;
     inline-size: var(--size-floating-control);
     block-size: var(--size-floating-control);
+    min-inline-size: var(--size-control);
+    min-block-size: var(--size-control);
     border: var(--border-width) solid var(--grey-7);
     border-radius: var(--radius-control);
     background: color-mix(var(--card) 67%, transparent);

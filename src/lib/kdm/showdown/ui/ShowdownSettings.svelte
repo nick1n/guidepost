@@ -37,7 +37,7 @@
 
 <section aria-labelledby={`${id}-heading`}>
   <h3 id={`${id}-heading`}>Showdown</h3>
-  <p>Display preferences apply to all showdown themes for this session.</p>
+  <p>Control size also applies to hunt controls and modals. Display preferences apply to all showdown themes for this session.</p>
   {#if display.summary}
     <div class="summary">{@render display.summary()}</div>
   {/if}

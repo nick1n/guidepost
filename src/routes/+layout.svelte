@@ -43,7 +43,7 @@
   setCurrencyPreferences(new CurrencyPreferences(preferences));
   setDatePreferences(new DatePreferences(preferences));
   const glass = setGlassPreferences(new GlassPreferences(preferences));
-  setShowdownDisplay(new ShowdownDisplay());
+  const display = setShowdownDisplay(new ShowdownDisplay());
   const hunts = setHuntPreferences(new HuntPreferences(log.record));
   const actions = setActions(createActions(Notifications.layerWith(log.record)));
   setHashNavigation(createHashNavigation(actions.run));
@@ -81,6 +81,12 @@
   $effect(() => {
     document.documentElement.dataset.glass = String(glass.enabled);
     return () => delete document.documentElement.dataset.glass;
+  });
+
+  // Controls outside the showdown, including top-level dialogs, must follow changes to the session's density setting.
+  $effect(() => {
+    document.documentElement.dataset.density = display.settings.density;
+    return () => delete document.documentElement.dataset.density;
   });
 
   onMount(() => {

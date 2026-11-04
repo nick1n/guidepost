@@ -45,7 +45,8 @@
   }
 
   button {
-    min-inline-size: 2.75rem;
+    min-inline-size: var(--size-control);
+    min-block-size: var(--size-control);
     border-radius: var(--radius-control);
     padding: 0.25rem 0.5rem;
     background: var(--panel);
@@ -58,6 +59,14 @@
     &[aria-pressed="true"] {
       background: var(--accent);
       color: var(--accent-foreground);
+    }
+
+    &:is(:hover, :focus-visible) {
+      background: var(--grey-8);
+
+      &[aria-pressed="true"] {
+        background: var(--blue-4);
+      }
     }
   }
 </style>

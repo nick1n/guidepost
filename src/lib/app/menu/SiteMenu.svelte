@@ -22,7 +22,7 @@
   import { getCurrencyPreferences } from "#lib/app/currency/preferences.svelte.ts";
   import { currencies, defaultEuroRate } from "#lib/app/currency/model.ts";
   import { getNotificationLog } from "#lib/app/notifications/notification-log.svelte.ts";
-  import ConfirmDialog from "#lib/components/ConfirmDialog.svelte";
+  import Modal from "#lib/components/Modal.svelte";
   import DragHandle from "#lib/components/DragHandle.svelte";
   import Select from "#lib/components/Select.svelte";
   import ToggleButton from "#lib/components/ToggleButton.svelte";
@@ -43,7 +43,7 @@
   let { onreset }: { onreset: () => Effect.Effect<void, ResetError> } = $props();
   let resetting = $state(false);
   let resetError = $state("");
-  let resetDialog: ConfirmDialog;
+  let resetDialog: Modal;
   const id = $props.id();
   let view = $state<keyof typeof titles>("main");
   let content: HTMLDivElement;
@@ -392,11 +392,12 @@
   </div>
 </div>
 
-<ConfirmDialog
+<Modal
   bind:this={resetDialog}
   title="Reset saved data?"
   description="This permanently deletes all data from every app database in this browser, including all collections, ownership, wishlists, missing-content marks, copy numbers, and app and hunt settings. The app will reload with default settings. This cannot be undone. Export a backup from your collection first if you want to keep it."
   confirmLabel="Reset saved data"
+  variant="destructive"
   confirmDisabled={resetting}
   onconfirm={resetData}
 />

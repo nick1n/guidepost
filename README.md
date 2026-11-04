@@ -83,23 +83,25 @@ Automatic rebasing is disabled for new dependency PRs; update their branches man
 
 ### Browser tests
 
-Install Chrome or Chromium; set `CHROME_PATH` if needed. Menu, collection, and hunt checks require a running development server:
-
-```bash
-pnpm test:menu-browser -- http://localhost:5173
-pnpm test:collection-browser -- http://localhost:5173
-pnpm test:hunt-browser -- http://localhost:5173
-```
-
-Startup and error-page checks require a production build:
+Install Chrome or Chromium; set `CHROME_PATH` if needed. Build the site and start a development server before running all suites:
 
 ```bash
 pnpm build
-pnpm test:collection-startup
-pnpm test:error-browser
+pnpm dev
+# In another terminal:
+pnpm test:browser
 ```
 
-These cover initial routing, catalog loading and reuse, retry feedback, layout stability, and cancellation.
+Run individual files by name or repository-relative path. Multiple files are accepted; `--list` shows available suites:
+
+```bash
+pnpm test:browser menu-browser.mts hunt-browser.mts
+pnpm test:browser test/client/collection-browser.mts --url http://localhost:5173
+pnpm test:browser --list
+```
+
+Suites run sequentially and stop at the first failure. Most use the running development server at `http://127.0.0.1:5173`;
+`--url` overrides that address. Startup and error-page suites require a production build and start their own servers.
 Screenshots and reports go to `temp/browser-verification/`.
 
 ### Project layout
