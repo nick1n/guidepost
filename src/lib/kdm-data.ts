@@ -1,21 +1,20 @@
 import type { Currency, Edition, Item } from "#lib/types/index.ts";
 
-const priceFormatters = {
-  USD: {
-    whole: new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }),
-    fractional: new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 2, maximumFractionDigits: 2 }),
-  },
-  EUR: {
-    whole: new Intl.NumberFormat("en-US", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }),
-    fractional: new Intl.NumberFormat("en-US", { style: "currency", currency: "EUR", minimumFractionDigits: 2, maximumFractionDigits: 2 }),
-  },
-} satisfies Record<Currency, Record<"whole" | "fractional", Intl.NumberFormat>>;
+const currencyLocales: Readonly<Record<string, string>> = {
+  USD: "en-US",
+  EUR: "de-DE",
+  GBP: "en-GB",
+  CAD: "en-CA",
+  AUD: "en-AU",
+  JPY: "ja-JP",
+};
 
-const totalFormatters = new Map<string, { whole: Intl.NumberFormat; fractional: Intl.NumberFormat; precision: number }>();
+const currencyFormatters = new Map<string, { whole: Intl.NumberFormat; fractional: Intl.NumberFormat; precision: number }>();
 
 export function formatPrice(cents?: number, currency: Currency = "USD") {
   if (cents == null) return "Not priced";
-  const formatter = cents % 100 === 0 ? priceFormatters[currency].whole : priceFormatters[currency].fractional;
+  const formatters = getFormatters(currency);
+  const formatter = cents % 100 === 0 ? formatters.whole : formatters.fractional;
   return formatter.format(cents / 100);
 }
 
@@ -32,18 +31,24 @@ export function formatPriceTotals(totals: Partial<Record<Currency, number>>, cur
       total += (cents / from) * to;
     }
   }
-  let formatters = totalFormatters.get(currency);
+  const formatters = getFormatters(currency);
+  const amount = Math.round((total / 100) * formatters.precision) / formatters.precision;
+  return (Number.isInteger(amount) ? formatters.whole : formatters.fractional).format(amount);
+}
+
+function getFormatters(currency: string) {
+  let formatters = currencyFormatters.get(currency);
   if (!formatters) {
-    const fractional = new Intl.NumberFormat(undefined, { style: "currency", currency });
+    const locale = currencyLocales[currency] ?? "en-US";
+    const fractional = new Intl.NumberFormat(locale, { style: "currency", currency });
     formatters = {
-      whole: new Intl.NumberFormat(undefined, { style: "currency", currency, maximumFractionDigits: 0 }),
+      whole: new Intl.NumberFormat(locale, { style: "currency", currency, maximumFractionDigits: 0 }),
       fractional,
       precision: 10 ** (fractional.resolvedOptions().maximumFractionDigits ?? 2),
     };
-    totalFormatters.set(currency, formatters);
+    currencyFormatters.set(currency, formatters);
   }
-  const amount = Math.round((total / 100) * formatters.precision) / formatters.precision;
-  return (Number.isInteger(amount) ? formatters.whole : formatters.fractional).format(amount);
+  return formatters;
 }
 
 export function editionMaterials(edition: Edition) {

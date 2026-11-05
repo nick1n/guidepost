@@ -338,7 +338,6 @@
               target={i.href.startsWith("http") ? "_blank" : undefined}
               aria-describedby={i.href.startsWith("http") ? "new-tab-description" : undefined}
               onclick={i.requiresCore ? openQuickStart : undefined}
-              data-sveltekit-preload-data={i.href === resolve("/kdm/collection") ? false : undefined}
             >
               {@render toolContent(i)}
             </a>
@@ -481,7 +480,6 @@
 
   header {
     --color-shadow-edge: color-mix(var(--background) 90%, transparent);
-    /* --color-shadow-edge: var(--background); */
     --shadow-title:
       -1px 0 0 var(--color-shadow-edge), 1px 0 0 var(--color-shadow-edge), 0 -1px 0 var(--color-shadow-edge),
       0 1px 0 var(--color-shadow-edge), 0 2px 4px color-mix(var(--background) 55%, transparent), 0 0 0.5rem var(--foreground);

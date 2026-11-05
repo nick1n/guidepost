@@ -7,34 +7,38 @@ import { ShowdownDisplay } from "#lib/kdm/showdown/display.svelte.ts";
 it("retains only the newest 100 notices with stable distinct IDs and an app-scoped history", () => {
   const log = new NotificationLog();
   const record = log.record;
-  for (let index = 0; index < 105; index++) record({ kind: "info", message: `Notice ${index}`, timestamp: index });
+  for (let index = 0; index < 105; index++) record({ kind: index === 0 ? "error" : "info", message: `Notice ${index}`, timestamp: index });
   expect(log.notices).toHaveLength(100);
   expect(log.notices[0]).toMatchObject({ id: 104, message: "Notice 104" });
   expect(log.notices.at(-1)).toMatchObject({ id: 5, message: "Notice 5" });
   expect(new Set(log.notices.map(({ id }) => id)).size).toBe(100);
+  expect(log.unread?.id).toBe(104);
+  expect(log.unreadKind).toBe("error");
   expect(new NotificationLog().notices).toEqual([]);
 });
 
-it("signals each new error until acknowledged without retriggering for other notices", () => {
+it("signals each new notice in its own color while unread errors retain priority", () => {
   const log = new NotificationLog();
-  log.record({ kind: "info", message: "Information", timestamp: 0 });
-  expect(log.unreadError).toBeUndefined();
+  expect(log.unread).toBeUndefined();
+  expect(log.unreadKind).toBeUndefined();
   const now = vi.spyOn(Date, "now").mockReturnValue(1000);
   try {
-    log.record({ kind: "error", message: "First error", timestamp: 0 });
-    expect(log.unreadError).toEqual({ id: 1, recordedAt: 1000 });
-    const first = log.unreadError;
     log.record({ kind: "success", message: "Saved", timestamp: 0 });
-    expect(log.unreadError).toBe(first);
+    expect(log.unread).toEqual({ id: 0, recordedAt: 1000, kind: "success" });
+    expect(log.unreadKind).toBe("success");
+    log.record({ kind: "error", message: "First error", timestamp: 0 });
+    expect(log.unread).toEqual({ id: 1, recordedAt: 1000, kind: "error" });
+    expect(log.unreadKind).toBe("error");
+    log.record({ kind: "info", message: "Information", timestamp: 0 });
+    expect(log.unread).toEqual({ id: 2, recordedAt: 1000, kind: "info" });
+    expect(log.unreadKind).toBe("error");
     now.mockReturnValue(2000);
+    log.record({ kind: "success", message: "Saved again", timestamp: 0 });
+    expect(log.unread).toEqual({ id: 3, recordedAt: 2000, kind: "success" });
+    expect(log.unreadKind).toBe("error");
     log.record({ kind: "error", message: "Second error", timestamp: 0 });
-    expect(log.unreadError).toEqual({ id: 3, recordedAt: 2000 });
-    log.acknowledgeErrors();
-    expect(log.unreadError).toBeUndefined();
-    expect(log.notices).toHaveLength(4);
-    log.record({ kind: "error", message: "Later error", timestamp: 0 });
-    expect(log.unreadError?.id).toBe(4);
-    expect(new NotificationLog().unreadError).toBeUndefined();
+    expect(log.unread).toEqual({ id: 4, recordedAt: 2000, kind: "error" });
+    expect(log.unreadKind).toBe("error");
   } finally {
     now.mockRestore();
   }
@@ -60,31 +64,28 @@ it("releases only the active menu action registration", () => {
   expect(close).toHaveBeenCalledOnce();
 });
 
-it("signals info and success messages independently of unread errors", () => {
+it("acknowledges drawer activity without deleting history or replaying the menu pulse", () => {
   const log = new NotificationLog();
-  const now = vi.spyOn(Date, "now").mockReturnValue(1000);
-  try {
-    expect(log.latestInfo).toBeUndefined();
-    log.record({ kind: "error", message: "Error", timestamp: 0 });
-    const error = log.unreadError;
-    log.record({ kind: "info", message: "Information", timestamp: 0 });
-    expect(log.latestInfo).toEqual({ id: 1, recordedAt: 1000 });
-    expect(log.unreadError).toBe(error);
-    log.record({ kind: "success", message: "Saved", timestamp: 0 });
-    expect(log.latestInfo).toEqual({ id: 2, recordedAt: 1000 });
-    expect(log.unreadError).toBe(error);
-    now.mockReturnValue(2000);
-    log.record({ kind: "info", message: "More information", timestamp: 0 });
-    expect(log.latestInfo).toEqual({ id: 3, recordedAt: 2000 });
-    const info = log.latestInfo;
-    log.record({ kind: "error", message: "Another error", timestamp: 0 });
-    expect(log.latestInfo).toBe(info);
-    log.acknowledgeErrors();
-    expect(log.latestInfo?.id).toBe(3);
-    expect(new NotificationLog().latestInfo).toBeUndefined();
-  } finally {
-    now.mockRestore();
-  }
+  log.record({ kind: "success", message: "Saved", timestamp: 0 });
+  log.record({ kind: "error", message: "Failed", timestamp: 0 });
+  const history = log.notices;
+
+  log.acknowledge();
+
+  expect(log.unread).toBeUndefined();
+  expect(log.unreadKind).toBeUndefined();
+  expect(log.notices).toBe(history);
+  expect(log.notices).toHaveLength(2);
+  log.record({ kind: "info", message: "New message", timestamp: 0 });
+  expect(log.unread).toMatchObject({ id: 2, kind: "info" });
+  expect(log.unreadKind).toBe("info");
+  log.acknowledge();
+  log.acknowledge();
+  log.record({ kind: "error", message: "Another failure", timestamp: 0 });
+  expect(log.unread).toMatchObject({ id: 3, kind: "error" });
+  expect(log.unreadKind).toBe("error");
+  expect(new NotificationLog().unread).toBeUndefined();
+  expect(new NotificationLog().unreadKind).toBeUndefined();
 });
 
 it("keeps showdown settings for the app session while cleaning up route-owned summary and alignment", () => {

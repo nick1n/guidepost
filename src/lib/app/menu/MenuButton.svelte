@@ -6,6 +6,8 @@
   const menu = getSiteMenu();
   const log = getNotificationLog();
   const id = $props.id();
+  const pulse = $derived(log.unread);
+  const hasUnreadError = $derived(log.unreadKind === "error");
   const action = $derived.by(() => {
     if (!menu.open) return { label: "Open menu", icon: "menu", run: () => menu.onopen() };
     if (menu.onback) return { label: "Back to menu", icon: "back", run: menu.onback };
@@ -22,7 +24,7 @@
   data-menu-trigger
   aria-haspopup="dialog"
   aria-expanded={menu.open}
-  aria-describedby={log.unreadError ? `${id}-error` : undefined}
+  aria-describedby={hasUnreadError ? `${id}-error` : undefined}
   {onclick}
 >
   {#key action.icon}
@@ -36,24 +38,18 @@
       aria-hidden="true"
     ></span>
   {/key}
-  {#if log.latestInfo}
-    {#key log.latestInfo.id}
+  {#if pulse}
+    {#key pulse.id}
+      <!-- Preserve the pulse's age when navigation remounts the menu button. -->
       <span
-        class="notification-dot info-pulse"
+        class={["notification-dot", hasUnreadError ? "persistent" : "transient"]}
+        data-kind={pulse.kind}
         aria-hidden="true"
-        style:animation-delay={`${Math.min(0, log.latestInfo.recordedAt - Date.now())}ms`}
+        style:animation-delay={`${Math.min(0, pulse.recordedAt - Date.now())}ms`}
       ></span>
     {/key}
   {/if}
-  {#if log.unreadError}
-    {#key log.unreadError.id}
-      <!-- Preserve the pulse's age when navigation remounts the menu button. -->
-      <span
-        class="notification-dot error-dot"
-        aria-hidden="true"
-        style:animation-delay={`${Math.min(0, log.unreadError.recordedAt - Date.now())}ms`}
-      ></span>
-    {/key}
+  {#if hasUnreadError}
     <span class="visually-hidden" id={`${id}-error`}>New error in the notification log</span>
   {/if}
 </FloatingButton>
@@ -64,61 +60,72 @@
   }
 
   .notification-dot {
-    --dot-color: var(--destructive);
+    --dot-color: var(--accent-blue);
 
     position: absolute;
-    inset-block-start: 0.125rem;
-    inset-inline-start: 0.125rem;
     inline-size: 0.875rem;
     block-size: 0.875rem;
-    border: 0.125rem solid var(--card);
+    inset-inline-start: 0.125rem;
+    inset-block-start: 0.125rem;
+    border: var(--border-width) solid var(--card);
     border-radius: 50%;
-    background: var(--dot-color);
+    background: var(--dot-rest-color, var(--dot-color));
     animation: notification-pop var(--duration-slow) var(--ease-standard);
 
-    &.info-pulse {
-      --dot-color: var(--accent-blue);
+    &.transient {
       --dot-end-opacity: 0;
       --dot-end-scale: 0.75;
 
       opacity: 0;
     }
+    &.persistent {
+      --dot-rest-color: var(--destructive);
+    }
+    &[data-kind="error"] {
+      --dot-color: var(--destructive);
+    }
+    &[data-kind="success"] {
+      --dot-color: var(--accent-green);
+    }
   }
 
   @keyframes notification-pop {
     0% {
-      opacity: 0;
       transform: scale(0.5);
+      background: var(--dot-color);
+      opacity: 0;
     }
     18% {
-      opacity: 1;
       transform: scale(1.25);
+      opacity: 1;
     }
     30%,
     65% {
-      opacity: 1;
       transform: scale(1);
+      background: var(--dot-color);
+      opacity: 1;
     }
     100% {
-      opacity: var(--dot-end-opacity, 1);
       transform: scale(var(--dot-end-scale, 1));
+      background: var(--dot-rest-color, var(--dot-color));
+      opacity: var(--dot-end-opacity, 1);
     }
   }
 
   @keyframes icon-change {
     from {
-      opacity: 0;
       transform: scale(0.5);
+      opacity: 0;
     }
     to {
-      opacity: 1;
       transform: none;
+      opacity: 1;
     }
   }
 
   @media (prefers-reduced-motion: reduce) {
     .control-icon,
-    .notification-dot:is(.info-pulse, .error-dot) {
+    .notification-dot {
       animation: none;
     }
   }

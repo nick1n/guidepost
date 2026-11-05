@@ -186,8 +186,7 @@ anchoring. The collection page disposes card resources on unmount and owns focus
 Load the full catalog only through the collection route. The root layout initializes an empty catalog. Quick Start directly imports
 generated [core-editions.json](src/lib/gen/core-editions.json), containing only playable core editions' IDs and labels in catalog order, excluding Resin;
 `pnpm generate:types` refreshes it from the live catalog. Catalog helpers receive data explicitly. Switching to
-the full catalog must preserve the owner's snapshot and pending writes. Disable collection-link hover data preloading and keep
-the full catalog and collection HTML out of service-worker precaching; cache them after collection is visited.
+the full catalog must preserve the owner's snapshot and pending writes.
 
 ### Catalog workflow and decisions
 

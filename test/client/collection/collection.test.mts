@@ -29,20 +29,20 @@ it.effect("marking a product owned signals the menu activity pulse after saving"
     const log = new NotificationLog();
     const notifications = Notifications.layerWith(log.record);
     yield* collection.setStore(store);
-    expect(log.latestInfo).toBeUndefined();
+    expect(log.unread).toBeUndefined();
 
     yield* reportAction(collection.toggleOwned(core, true), { success: "Core marked as owned." }).pipe(Effect.provide(notifications));
 
     expect(store.state[core]?.owned).toBe(true);
     expect(log.notices[0]).toMatchObject({ kind: "success", message: "Core marked as owned." });
-    expect(log.latestInfo?.id).toBe(log.notices[0].id);
-    const pulse = log.latestInfo;
+    expect(log.unread?.id).toBe(log.notices[0].id);
+    const pulse = log.unread;
 
     yield* reportAction(collection.toggleOwned(core, true), { success: "Core marked as owned." }).pipe(Effect.provide(notifications));
 
     expect(log.notices).toHaveLength(1);
-    expect(log.latestInfo).toBe(pulse);
-    expect(log.unreadError).toBeUndefined();
+    expect(log.unread).toBe(pulse);
+    expect(log.unreadKind).toBe("success");
   }),
 );
 

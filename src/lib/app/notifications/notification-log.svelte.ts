@@ -2,30 +2,36 @@ import { createContext } from "svelte";
 import type { Notice } from "./notifications.ts";
 
 const historyLimit = 100;
+type Entry = Readonly<Notice & { id: number }>;
 
 export class NotificationLog {
-  notices = $state.raw<(Notice & { id: number })[]>([]);
+  #notices = $state.raw<readonly Entry[]>([]);
   #nextId = 0;
-  #unreadError = $state<{ id: number; recordedAt: number }>();
-  #latestInfo = $state<{ id: number; recordedAt: number }>();
+  #unread = $state.raw<Readonly<{ id: number; recordedAt: number; kind: Notice["kind"] }>>();
+  #hasUnreadError = $state(false);
 
-  get latestInfo() {
-    return this.#latestInfo;
+  get notices() {
+    return this.#notices;
   }
 
-  get unreadError() {
-    return this.#unreadError;
+  get unread() {
+    return this.#unread;
   }
 
-  acknowledgeErrors() {
-    this.#unreadError = undefined;
+  get unreadKind() {
+    return this.#hasUnreadError ? "error" : this.#unread?.kind;
+  }
+
+  acknowledge() {
+    this.#unread = undefined;
+    this.#hasUnreadError = false;
   }
 
   record = (notice: Notice) => {
     const id = this.#nextId++;
-    this.notices = [{ ...notice, id }, ...this.notices].slice(0, historyLimit);
-    if (notice.kind === "error") this.#unreadError = { id, recordedAt: Date.now() };
-    else this.#latestInfo = { id, recordedAt: Date.now() };
+    this.#notices = [{ ...notice, id }, ...this.#notices].slice(0, historyLimit);
+    this.#unread = { id, recordedAt: Date.now(), kind: notice.kind };
+    if (notice.kind === "error") this.#hasUnreadError = true;
   };
 }
 

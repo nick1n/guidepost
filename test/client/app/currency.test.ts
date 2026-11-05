@@ -108,7 +108,7 @@ it.effect("unblocks the offline fallback after an initial rate request fails", (
     expect(money.formatTotals({ USD: 12000 })).toBe("$120");
     money.setCurrency("EUR");
     expect(money.ready).toBe(true);
-    expect(money.formatTotals({ EUR: 10000 })).toBe("€100");
+    expect(money.formatTotals({ EUR: 10000 })).toBe("100\u00a0€");
     yield* Fiber.interrupt(session);
   }),
 );
@@ -271,15 +271,15 @@ it.effect("uses the default euro estimate offline without treating it as a fresh
     const refresh = preferences.refresh(f.storage).pipe(Effect.provideService(FetchHttpClient.Fetch, f.fetch));
     expect(preferences.formatTotals({ USD: 11300, EUR: 10000 })).toBe("$226");
     preferences.setCurrency("EUR");
-    expect(preferences.formatTotals({ USD: 11300, EUR: 10000 })).toBe("€200");
+    expect(preferences.formatTotals({ USD: 11300, EUR: 10000 })).toBe("200\u00a0€");
     expect(preferences.date).toBeUndefined();
     f.fetch.mockRejectedValueOnce(new TypeError("Offline"));
     yield* Effect.exit(refresh);
-    expect(preferences.formatTotals({ USD: 11300, EUR: 10000 })).toBe("€200");
+    expect(preferences.formatTotals({ USD: 11300, EUR: 10000 })).toBe("200\u00a0€");
     expect(preferences.unavailable).toBe(true);
     expect(f.cache.put).not.toHaveBeenCalled();
     preferences.setCurrency("GBP");
-    expect(preferences.formatTotals({ USD: 11300, EUR: 10000 })).toBe("$113 + €100");
+    expect(preferences.formatTotals({ USD: 11300, EUR: 10000 })).toBe("$113 + 100\u00a0€");
     yield* refresh;
     expect(f.fetch).toHaveBeenCalledTimes(2);
     expect(preferences.unavailable).toBe(false);
@@ -292,13 +292,13 @@ it.effect("uses the default euro estimate offline without treating it as a fresh
 it("converts mixed totals via their common EUR base and respects currency fraction digits", () => {
   const table = { USD: 1.2, GBP: 0.8, JPY: 160 };
   expect(formatPriceTotals({ USD: 12000, EUR: 10000 }, "USD", table)).toBe("$240");
-  expect(formatPriceTotals({ USD: 12000, EUR: 10000 }, "EUR", table)).toBe("€200");
+  expect(formatPriceTotals({ USD: 12000, EUR: 10000 }, "EUR", table)).toBe("200\u00a0€");
   expect(formatPriceTotals({ USD: 12000, EUR: 10000 }, "GBP", table)).toBe("£160");
-  expect(formatPriceTotals({ EUR: 101 }, "JPY", table)).toBe("¥162");
+  expect(formatPriceTotals({ EUR: 101 }, "JPY", table)).toBe("￥162");
   expect(formatPriceTotals({ USD: 10001 }, "USD")).toBe("$100.01");
-  expect(formatPriceTotals({ USD: 10000, EUR: 10000 })).toBe("$100 + €100");
+  expect(formatPriceTotals({ USD: 10000, EUR: 10000 })).toBe("$100 + 100\u00a0€");
   expect(formatPriceTotals({ USD: 10000 }, "GBP", { USD: 1.2 })).toBe("$100");
-  expect(formatPriceTotals({}, "EUR")).toBe("€0");
+  expect(formatPriceTotals({}, "EUR")).toBe("0\u00a0€");
 });
 
 it("defaults old preference records to USD and accepts only supported currency choices", () => {

@@ -27,7 +27,7 @@ const server = await createServer({
   resolve: {
     alias: [
       { find: /^#lib\//, replacement: `${resolve("src/lib").replaceAll("\\", "/")}/` },
-      ...["$app/navigation", "$app/paths", "$app/state"].map((find) => ({ find, replacement: kit })),
+      ...["$app/navigation", "$app/paths", "$app/state", "$app/manifest"].map((find) => ({ find, replacement: kit })),
     ],
   },
   server: { host: "127.0.0.1", port: 0, fs: { allow: [resolve(".")] } },
@@ -111,6 +111,23 @@ try {
             assert(await evaluate(`window.retryTest.notices.length === ${notices}`), `Unmount silences late ${outcome} at ${scenario}`);
           }
         }
+      }
+
+      for (const path of ["/kdm/collections", "/unknown-page"]) {
+        await send("Page.navigate", { url: `${origin}?missing=${encodeURIComponent(path)}` });
+        await waitFor("window.retryTest !== undefined && document.querySelector('main h1')?.textContent === 'Page not found'");
+        assert(await evaluate(`${button} === null`), `404 hides retry for ${path}`);
+        assert(await evaluate("document.querySelector('main .home').classList.contains('primary')"), "404 emphasizes the directory link");
+        assert(await evaluate("document.querySelector('main .retry-status') === null"), "404 has no reserved retry feedback space");
+        if (path === "/kdm/collections") {
+          assert(
+            await evaluate("document.querySelector('main .suggestion a')?.getAttribute('href') === '/kdm/collection'"),
+            "A close URL gets the known collection destination",
+          );
+        } else {
+          assert(await evaluate("document.querySelector('main .suggestion') === null"), "Unrelated URLs have no suggestion");
+        }
+        assert(await evaluate("window.retryTest.attempts.length === 0"), "404 never navigates automatically");
       }
     },
   );

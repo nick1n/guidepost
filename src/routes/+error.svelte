@@ -6,10 +6,12 @@
   import { online } from "svelte/reactivity/window";
   import { getActions } from "#lib/app/actions.ts";
   import { navigate } from "#lib/app/navigation/navigate.ts";
+  import { suggestPage } from "#lib/app/navigation/route-suggestion.ts";
 
   const actions = getActions();
   const offline = $derived(online.current === false);
   const missing = $derived(page.status === 404);
+  const suggestion = $derived(missing ? suggestPage(page.url) : undefined);
   const title = $derived(missing ? "Page not found" : offline ? "You're offline" : "This page couldn't open");
   let retrying = $state(false);
   let retryFailed = $state(false);
@@ -48,9 +50,11 @@
 
 <main>
   <div class="message">
-    <span class="status-icon i-material-symbols:error-outline" aria-hidden="true"></span>
-    <p class="status">Error <span class="code">{page.status}</span></p>
-    <h1>{title}</h1>
+    <header>
+      <p class="status">Error <span class="code">{page.status}</span></p>
+      <span class="status-icon i-material-symbols:error-outline" aria-hidden="true"></span>
+      <h1>{title}</h1>
+    </header>
     <p class="description">
       {#if missing}
         This page may have moved, or the address may be incorrect. Return to Guidepost to find your way.
@@ -61,18 +65,27 @@
       {/if}
     </p>
 
+    {#if suggestion}
+      <p class="suggestion">
+        <span>Did you mean?</span>
+        <a href={suggestion.href}>{suggestion.path}<span class="i-material-symbols:arrow-forward" aria-hidden="true"></span></a>
+      </p>
+    {/if}
+
     <div class="actions">
-      <button type="button" {onclick} disabled={retrying}>Try again</button>
-      <a class="home" href={resolve("/")}>Back to Guidepost</a>
+      {#if !missing}<button type="button" {onclick} disabled={retrying}>Try again</button>{/if}
+      <a class={["home", missing && "primary"]} href={resolve("/")}>Back to Guidepost</a>
     </div>
-    <p class="retry-status" role="status">
-      <span class={[!retryFailed && "is-hidden"]} aria-hidden={!retryFailed}>
-        We couldn't retry. Reload the page or return to Guidepost.
-      </span>
-      {#if retrying}
-        <span>Opening the page...</span>
-      {/if}
-    </p>
+    {#if !missing}
+      <p class="retry-status" role="status">
+        <span class={[!retryFailed && "is-hidden"]} aria-hidden={!retryFailed}>
+          We couldn't retry. Reload the page or return to Guidepost.
+        </span>
+        {#if retrying}
+          <span>Opening the page...</span>
+        {/if}
+      </p>
+    {/if}
   </div>
 </main>
 
@@ -81,30 +94,35 @@
     display: grid;
     place-items: center;
     inline-size: min(100%, 68rem);
-    min-block-size: calc(var(--viewport-height) - var(--border-width));
     margin-inline: auto;
     padding: clamp(1rem, 4vw, 2.5rem);
   }
 
   .message {
     inline-size: min(100%, 42rem);
-    margin-inline: auto;
     padding: clamp(1.5rem, 4vw, 2rem);
     border: var(--border-width) solid var(--color-divider);
     border-radius: var(--radius-card);
     background: radial-gradient(ellipse at top left, color-mix(var(--red-4) 16%, transparent), transparent 65%), var(--panel);
   }
 
+  header {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.375rem 0;
+    align-items: start;
+  }
+
   .status-icon {
     --size-icon: 3rem;
-    margin-block-end: 1rem;
+    grid-row: 1 / 3;
+    grid-column: 2;
     color: var(--accent);
   }
 
   .status {
     display: flex;
     align-items: center;
-    margin-block-end: 0.75rem;
     gap: 0.75rem;
     color: var(--muted-foreground);
     font-size: var(--text-sm);
@@ -118,6 +136,7 @@
   }
 
   h1 {
+    grid-column: 1;
     font-weight: var(--font-bold);
     font-size: clamp(2rem, 6vw, 3.5rem);
     line-height: var(--line-height-tight);
@@ -139,8 +158,13 @@
     gap: 0.75rem 1.5rem;
   }
 
-  button {
+  button,
+  .home {
     min-block-size: 2.75rem;
+  }
+
+  button,
+  .primary {
     padding: 0.75rem 1.25rem;
     border-radius: var(--radius-control);
     background: var(--accent);
@@ -161,11 +185,44 @@
   .home {
     display: inline-flex;
     align-items: center;
-    min-block-size: 2.75rem;
-    color: var(--muted-foreground);
+    &:not(.primary) {
+      color: var(--muted-foreground);
 
-    &:hover {
-      color: var(--foreground);
+      &:hover {
+        color: var(--foreground);
+      }
+    }
+  }
+
+  .suggestion {
+    display: grid;
+    gap: 0.5rem;
+    margin-block-start: 1.25rem;
+    color: var(--muted-foreground);
+    font-size: var(--text-md);
+
+    a {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      border: var(--border-width) solid var(--color-divider);
+      border-radius: var(--radius-control);
+      background: var(--background);
+      color: var(--accent);
+      font-size: 1rem;
+      overflow-wrap: anywhere;
+      transition: var(--transition-colors);
+
+      &:hover {
+        border-color: var(--accent);
+        background: var(--card);
+      }
+    }
+
+    [aria-hidden] {
+      flex-shrink: 0;
     }
   }
 

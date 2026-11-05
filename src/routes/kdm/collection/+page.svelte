@@ -56,6 +56,7 @@
   main {
     --size-catalog: 72rem;
 
+    inline-size: 100%;
     max-inline-size: var(--size-catalog);
     margin-inline: auto;
     padding-block-end: 2rem;

@@ -1,9 +1,9 @@
 <script module lang="ts">
   const titles = { main: "Menu", account: "Account", notifications: "Notification log", settings: "Settings", workbook: "Import workbook" };
   const noticePresentation = {
-    error: { icon: "i-material-symbols:error-outline", prefix: "Error: " },
+    error: { icon: "i-material-symbols:warning-outline", prefix: "Error: " },
     success: { icon: "i-material-symbols:check-circle-outline", prefix: "Success: " },
-    info: { icon: "i-material-symbols:info-outline", prefix: "" },
+    info: { icon: "i-material-symbols:error-outline", prefix: "Info: " },
   };
 </script>
 
@@ -62,6 +62,7 @@
   let updateTimer: Timeout;
   let online = $state(true);
   const latest = $derived(log.notices[0]);
+  const notificationKind = $derived(log.unreadKind);
   const hasNavbar = $derived(page.route.id?.startsWith("/kdm/showdown") || page.route.id === "/kdm/hunt");
 
   function record(message: string, kind: "info" | "error" = "info") {
@@ -113,7 +114,7 @@
 
   async function showView(next: typeof view) {
     view = next;
-    if (next === "notifications") log.acknowledgeErrors();
+    if (next === "notifications") log.acknowledge();
     menu.onback = next === "main" ? undefined : back;
     await tick();
     content.scrollTop = 0;
@@ -254,16 +255,35 @@
                   <span class="copy"><strong>Settings</strong><span>Display and gameplay options</span></span>
                   <span class="chevron i-material-symbols:chevron-right" aria-hidden="true"></span>
                 </button>
-                <button class="row" type="button" onclick={() => showView("notifications")}>
-                  <span class="row-icon i-material-symbols:notifications-outline" aria-hidden="true"></span>
+                <button
+                  class="row"
+                  type="button"
+                  data-kind={notificationKind}
+                  aria-describedby={notificationKind ? `${id}-notification-status` : undefined}
+                  onclick={() => showView("notifications")}
+                >
+                  <span class="bell" aria-hidden="true">
+                    <span class="row-icon i-material-symbols:notifications-outline"></span>
+                    {#if notificationKind}
+                      <span class="log-dot"></span>
+                    {/if}
+                  </span>
                   <span class="copy">
-                    <strong>Notification log <span class="count">{log.notices.length}</span></strong>
+                    <strong>
+                      Notification log
+                      <span class="count">{log.notices.length}</span>
+                    </strong>
                     <span class="activity-detail">
                       <span class="latest">{latest?.message ?? "No activity yet"}</span>
                       {#if latest}<time datetime={new Date(latest.timestamp).toISOString()}>{dates.formatTime(latest.timestamp)}</time>{/if}
                     </span>
                   </span>
                   <span class="chevron i-material-symbols:chevron-right" aria-hidden="true"></span>
+                  {#if notificationKind}
+                    <span class="visually-hidden" id={`${id}-notification-status`}>
+                      {notificationKind === "error" ? "Unread errors in the notification log" : "New activity in the notification log"}
+                    </span>
+                  {/if}
                 </button>
               </div>
             {/if}
@@ -413,19 +433,19 @@
     inset-inline-end: max(0.5rem, env(safe-area-inset-right));
   }
   .scrim {
+    visibility: hidden;
     z-index: 4;
     position: fixed;
     inset: 0;
     background: #00000080;
     opacity: 0;
-    visibility: hidden;
     transition:
       opacity var(--duration-fast),
       visibility var(--duration-fast);
 
     &.is-open {
-      opacity: 1;
       visibility: visible;
+      opacity: 1;
     }
   }
   @property --width-menu-end {
@@ -444,20 +464,20 @@
     initial-value: 0px;
   }
   .placement {
+    container-type: size;
     z-index: 5;
     position: fixed;
     inset: anchor(--menu-trigger bottom) 0 0 anchor(--menu-trigger left);
-    container-type: size;
     pointer-events: none;
   }
   .anchor {
     /* Capture the viewport space before this container follows the button's own bounds. */
     --width-menu-end: 100cqw;
     --toggle-padding-block: 100cqh;
+    container-type: size;
 
     position: fixed;
     inset: anchor(--menu-trigger top) anchor(--menu-trigger right) anchor(--menu-trigger bottom) anchor(--menu-trigger left);
-    container-type: size;
   }
   dialog {
     --space-menu: 0.75rem;
@@ -498,8 +518,8 @@
     border-inline-end: 0;
     border-block-end: 0;
     border-start-start-radius: clamp(0px, calc((var(--viewport-width, 100vw) - 24rem) * 1e5), var(--radius-card));
-    background: var(--surface-glass);
     backdrop-filter: var(--filter-glass);
+    background: var(--surface-glass);
     box-shadow:
       0 1rem 4rem #00000099,
       inset 0 1px #ffffff0a;
@@ -566,9 +586,9 @@
   }
   .reset-settings {
     display: grid;
-    gap: 0.5rem;
     margin-block-start: 1.25rem;
     padding-block-start: 1rem;
+    gap: 0.5rem;
     border-block-start: var(--border-width) solid var(--grey-7);
   }
   .rate-note {
@@ -600,11 +620,11 @@
       radial-gradient(ellipse 85% 180% at 8% 50% in oklch, #ffb25140 0%, #fb823b33 24%, #d440301a 58%, transparent 100%), var(--background);
 
     &::after {
-      content: "";
       position: absolute;
       inset: calc(-1 * var(--border-width));
       border: var(--border-width) solid var(--grey-7);
       border-radius: inherit;
+      content: "";
       pointer-events: none;
     }
     & .row-icon {
@@ -633,8 +653,8 @@
     initial-value: 0deg;
   }
   .update-border {
-    position: absolute;
     z-index: 1;
+    position: absolute;
     inset: calc(-1 * var(--border-width));
     padding: var(--border-width);
     border-radius: inherit;
@@ -646,12 +666,12 @@
       var(--green-8) 135deg,
       var(--green-7) 180deg
     );
+    animation: update-border-turn 2s linear both;
     mask:
       linear-gradient(#000 0 0) content-box,
       linear-gradient(#000 0 0);
     mask-composite: exclude;
     pointer-events: none;
-    animation: update-border-turn 2s linear both;
   }
   @keyframes update-border-turn {
     from {
@@ -721,6 +741,32 @@
     flex: none;
     color: var(--accent);
   }
+  [data-kind] {
+    --notice-color: var(--accent-blue);
+  }
+  [data-kind="error"] {
+    --notice-color: var(--destructive);
+  }
+  [data-kind="success"] {
+    --notice-color: var(--accent-green);
+  }
+  .bell {
+    --accent: var(--notice-color, var(--accent-blue));
+    display: flex;
+
+    position: relative;
+    flex: none;
+  }
+  .log-dot {
+    position: absolute;
+    inline-size: 0.875rem;
+    block-size: 0.875rem;
+    inset-block-start: -0.25rem;
+    inset-inline-start: -0.25rem;
+    border: 0.125rem solid var(--card);
+    border-radius: 50%;
+    background: var(--notice-color);
+  }
   .chevron {
     --size-icon: 1.25rem;
     flex: none;
@@ -743,10 +789,23 @@
     white-space: nowrap;
   }
   .count {
-    margin-inline-start: 0.25rem;
-    color: var(--muted-foreground);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-inline-size: 1.5rem;
+    min-block-size: 1.25rem;
+    margin-inline-start: 0.375rem;
+    padding: 0.125rem 0.375rem;
+    border-radius: 0.375rem;
+    background: var(--notice-color, var(--card));
+    color: var(--contrast-foreground);
     font-size: var(--text-sm);
+    line-height: var(--line-height-none);
     font-variant-numeric: tabular-nums;
+    vertical-align: middle;
+  }
+  [data-kind] .count {
+    color: var(--contrast);
   }
   .navigation {
     display: grid;
@@ -861,17 +920,11 @@
   .notice-icon {
     --size-icon: 1.25rem;
     flex: none;
-    color: var(--accent);
-  }
-  .notice[data-kind="error"] .notice-icon,
-  .error {
-    color: var(--red-3);
-  }
-  .notice[data-kind="success"] .notice-icon {
-    color: var(--accent-green);
+    color: var(--notice-color);
   }
   .error {
     padding: 0.75rem;
+    color: var(--red-3);
     font-size: var(--text-sm);
   }
   button:disabled {

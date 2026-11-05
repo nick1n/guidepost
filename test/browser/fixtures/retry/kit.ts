@@ -4,9 +4,11 @@ let settle: { resolve: () => void; reject: (cause: Error) => void } | undefined;
 export const attempts: Attempt[] = [];
 export const notices: string[] = [];
 
+const requestedPath = new URLSearchParams(window.location.search).get("missing");
+export const routes = [{ id: "/kdm/collection", page: true, endpoint: false }];
 export const page = {
-  url: new URL("/retry-route/", window.location.origin),
-  status: 500,
+  url: new URL(requestedPath ?? "/retry-route/", window.location.origin),
+  status: requestedPath ? 404 : 500,
   error: { message: "Fixture page failed to load." },
 };
 
