@@ -306,13 +306,11 @@
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
     overflow: hidden;
-    /* border: 2px solid var(--color-divider); */
     border-radius: var(--radius-control);
     background: var(--panel);
   }
   strong {
     color: var(--identity-3);
-    font-weight: var(--font-bold);
     font-size: var(--text-sm);
     line-height: var(--line-height-snug);
   }

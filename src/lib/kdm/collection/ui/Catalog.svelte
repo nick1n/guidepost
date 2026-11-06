@@ -816,10 +816,6 @@
     inline-size: 2.25rem;
     border-radius: var(--radius-control);
     color: var(--muted-foreground);
-
-    &:focus-visible {
-      outline: var(--border-width) solid var(--accent);
-    }
   }
   .tag-filters {
     grid-row: 2;

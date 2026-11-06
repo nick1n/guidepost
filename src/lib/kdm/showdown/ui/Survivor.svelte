@@ -816,7 +816,6 @@
 <style>
   .more {
     position: relative;
-    user-select: none;
     -webkit-touch-callout: none;
     display: flex;
     align-items: center;

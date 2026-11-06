@@ -535,7 +535,6 @@
   }
   .sections-button {
     position: relative;
-    user-select: none;
     -webkit-touch-callout: none;
   }
   .sections-button .menu-icon {

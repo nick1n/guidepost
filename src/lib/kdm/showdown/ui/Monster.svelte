@@ -450,7 +450,6 @@
   }
   button.more {
     position: relative;
-    user-select: none;
     -webkit-touch-callout: none;
   }
   .more-label {

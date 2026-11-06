@@ -105,7 +105,6 @@
 
     &.is-dragging {
       cursor: grabbing;
-      user-select: none;
     }
   }
 

@@ -321,7 +321,6 @@
   }
   .copy {
     display: grid;
-    gap: 0.25rem;
   }
   .copy > small {
     line-height: var(--line-height-snug);

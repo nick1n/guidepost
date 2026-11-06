@@ -262,7 +262,6 @@
   }
   li {
     display: flex;
-    align-items: stretch;
   }
   .entry {
     display: grid;
@@ -385,7 +384,6 @@
     li {
       position: relative;
       overflow: clip;
-      gap: 0;
       background: var(--accent-red);
     }
     .entry {
@@ -409,7 +407,6 @@
       inline-size: 4.5rem;
       inset-block: 0;
       inset-inline-end: 0;
-      border-radius: 0;
       background: var(--accent-red);
       color: var(--foreground);
     }

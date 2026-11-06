@@ -696,7 +696,6 @@
     display: grid;
     flex: 1;
     min-inline-size: 0;
-    gap: 0.25rem;
 
     & > :is(span, time) {
       color: var(--muted-foreground);
@@ -789,23 +788,11 @@
     white-space: nowrap;
   }
   .count {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-inline-size: 1.5rem;
-    min-block-size: 1.25rem;
     margin-inline-start: 0.375rem;
     padding: 0.125rem 0.375rem;
     border-radius: 0.375rem;
     background: var(--notice-color, var(--card));
-    color: var(--contrast-foreground);
-    font-size: var(--text-sm);
-    line-height: var(--line-height-none);
     font-variant-numeric: tabular-nums;
-    vertical-align: middle;
-  }
-  [data-kind] .count {
-    color: var(--contrast);
   }
   .navigation {
     display: grid;

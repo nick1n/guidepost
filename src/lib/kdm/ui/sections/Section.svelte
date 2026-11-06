@@ -176,7 +176,6 @@
     align-items: center;
     min-inline-size: 0;
     padding: 0.25rem 0.375rem;
-    user-select: none;
     -webkit-touch-callout: none;
     color: var(--identity-3);
     text-align: start;
@@ -184,7 +183,6 @@
   small {
     display: flex;
     column-gap: 0.625rem;
-    row-gap: 0;
     grid-row: 2;
     grid-column: 1;
     flex-wrap: wrap;

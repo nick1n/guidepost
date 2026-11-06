@@ -87,7 +87,6 @@
   output {
     min-inline-size: 1.5rem;
     color: var(--foreground);
-    font-size: var(--text-sm);
     font-variant-numeric: lining-nums tabular-nums;
     text-align: center;
   }
@@ -160,7 +159,6 @@
   }
   .journey .rail {
     block-size: 0.625rem;
-    inset-block-start: calc(50% - 0.25rem);
   }
   .journey .milestone {
     transform: translate(-50%, -50%);
