@@ -77,6 +77,8 @@ A correspondence between rows and release choices in a particular workbook snaps
 
 ## Campaign (proposed)
 
+These terms describe the [campaign proposal](docs/kdm-campaign-design.md), not implemented collection behavior.
+
 **Content selection**:
 Gameplay chosen for a campaign from content covered by a user's collection at selection time. The selection retains its edition and rules version independently of later collection changes.
 

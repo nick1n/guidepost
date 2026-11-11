@@ -28,7 +28,6 @@ updates or commit/push changes.
 Locate the repository root from this skill's location. Read these current files rather than relying on another thread's history:
 
 - [AGENTS.md](../../../AGENTS.md) for conventions and required checks.
-- [README.md](../../../README.md#catalog) for commands.
 - [Catalog guide](../../../docs/kdm-catalog.md) for identity, editions, inclusions, and reviewed exceptions.
 - [Catalog workflows](../../../docs/catalog-workflows.md) for evidence, staging, publication, and tag maintenance.
 

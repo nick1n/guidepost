@@ -1,6 +1,6 @@
 ---
 name: svelte-code-writer
-description: CLI tools for Svelte 5 documentation lookup and code analysis. MUST be used whenever creating, editing or analyzing any Svelte component (.svelte) or Svelte module (.svelte.ts/.svelte.js). If possible, this skill should be executed within the svelte-file-editor agent for optimal results.
+description: CLI tools for Svelte 5 documentation lookup and code analysis. MUST be used whenever creating, editing or analyzing any Svelte component (.svelte) or Svelte module (.svelte.ts/.svelte.js).
 ---
 
 ## CLI tools
@@ -45,8 +45,8 @@ Analyzes Svelte code and suggests fixes for common issues.
 **Examples:**
 
 ```bash
-# Analyze inline code (escape $ as \$)
-npx @sveltejs/mcp svelte-autofixer '<script>let count = \$state(0);</script>'
+# Analyze inline code with literal shell quoting
+npx @sveltejs/mcp svelte-autofixer '<script>let count = $state(0);</script>'
 
 # Analyze a file
 npx @sveltejs/mcp svelte-autofixer ./src/lib/Component.svelte
@@ -55,7 +55,7 @@ npx @sveltejs/mcp svelte-autofixer ./src/lib/Component.svelte
 npx @sveltejs/mcp svelte-autofixer ./Component.svelte --svelte-version 4
 ```
 
-**Important:** When passing code with runes (`$state`, `$derived`, etc.) via the terminal, escape the `$` character as `\$` to prevent shell variable substitution.
+**Shell quoting:** Prefer passing a file path. For inline code, use shell-appropriate literal quoting. PowerShell single-quoted strings preserve `$state`; do not insert a backslash into the Svelte source.
 
 ## Workflow
 

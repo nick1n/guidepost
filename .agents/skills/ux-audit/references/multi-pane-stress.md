@@ -8,16 +8,16 @@ The 2026-04-29 vite-flare-starter vertical-text-in-spaces bug only manifested at
 
 For every app with > 1 collapsible pane, run this matrix:
 
-| Viewport | Panes | What to capture | Common bug class |
-|----------|-------|-----------------|------------------|
-| **1920** | All open | Baseline screenshot | Should always work |
-| **1440** | All open | Common dev resolution | Slight squeeze visible here |
-| **1280** | All open | Where layout collapses start | **High-bug zone** |
-| **1024** | All open | Tablet landscape | **Catastrophic-bug zone** |
-| 1024 | 2-pane (drop one) | Verify graceful degradation | Should fold cleanly |
-| 1024 | 1-pane (mobile-style) | Should fold cleanly | Edge: orphan controls |
-| 768 | Default (most collapsed) | Tablet portrait | Touch targets, stacking |
-| 375 | Mobile baseline | Mobile | Hamburger nav, sheet UX |
+| Viewport | Panes                    | What to capture              | Common bug class            |
+| -------- | ------------------------ | ---------------------------- | --------------------------- |
+| **1920** | All open                 | Baseline screenshot          | Should always work          |
+| **1440** | All open                 | Common dev resolution        | Slight squeeze visible here |
+| **1280** | All open                 | Where layout collapses start | **High-bug zone**           |
+| **1024** | All open                 | Tablet landscape             | **Catastrophic-bug zone**   |
+| 1024     | 2-pane (drop one)        | Verify graceful degradation  | Should fold cleanly         |
+| 1024     | 1-pane (mobile-style)    | Should fold cleanly          | Edge: orphan controls       |
+| 768      | Default (most collapsed) | Tablet portrait              | Touch targets, stacking     |
+| 375      | Mobile baseline          | Mobile                       | Hamburger nav, sheet UX     |
 
 For each combination:
 
@@ -42,20 +42,22 @@ This catches the catastrophic case where text wraps one character per line — o
   for (const el of all) {
     const r = el.getBoundingClientRect();
     if (r.width === 0 || r.height === 0) continue;
-    const text = (el.innerText || '').trim();
+    const text = (el.innerText || "").trim();
     if (text.length < 5) continue;
     // Heuristic: very narrow column AND multi-line. Tune ratio: chars vs lines.
     if (r.width < 30 && r.height > r.width * 3) {
       findings.push({
-        selector: el.tagName.toLowerCase() + (el.id ? `#${el.id}` : '') +
-                  (el.className && typeof el.className === 'string' ? '.' + el.className.split(/\s+/).slice(0, 2).join('.') : ''),
+        selector:
+          el.tagName.toLowerCase() +
+          (el.id ? `#${el.id}` : "") +
+          (el.className && typeof el.className === "string" ? "." + el.className.split(/\s+/).slice(0, 2).join(".") : ""),
         width: r.width.toFixed(1),
         height: r.height.toFixed(1),
-        textPreview: text.slice(0, 30) + (text.length > 30 ? '…' : ''),
+        textPreview: text.slice(0, 30) + (text.length > 30 ? "…" : ""),
       });
     }
   }
-  console.warn('Vertical-text-stack candidates:', findings);
+  console.warn("Vertical-text-stack candidates:", findings);
   return findings;
 })();
 ```
@@ -66,20 +68,20 @@ This catches the catastrophic case where text wraps one character per line — o
 // Detect children that overflow their parents in horizontal direction
 (function detectHorizontalOverflow() {
   const findings = [];
-  const all = document.querySelectorAll('*');
+  const all = document.querySelectorAll("*");
   for (const el of all) {
     if (el.scrollWidth - el.clientWidth > 1) {
       const r = el.getBoundingClientRect();
       if (r.width === 0) continue;
       findings.push({
-        selector: el.tagName.toLowerCase() + (el.id ? `#${el.id}` : ''),
+        selector: el.tagName.toLowerCase() + (el.id ? `#${el.id}` : ""),
         scrollWidth: el.scrollWidth,
         clientWidth: el.clientWidth,
         overflow: el.scrollWidth - el.clientWidth,
       });
     }
   }
-  console.warn('Horizontal overflow candidates:', findings.slice(0, 20));
+  console.warn("Horizontal overflow candidates:", findings.slice(0, 20));
   return findings;
 })();
 ```
@@ -97,14 +99,14 @@ This catches the catastrophic case where text wraps one character per line — o
     // Heuristic: pane primary content with width < 200px is almost always wrong on desktop
     if (r.width < 200 && r.height > 100) {
       findings.push({
-        selector: el.tagName.toLowerCase() + (el.id ? `#${el.id}` : ''),
+        selector: el.tagName.toLowerCase() + (el.id ? `#${el.id}` : ""),
         width: r.width.toFixed(1),
         height: r.height.toFixed(1),
-        suspect: 'pane width < 200px on what looks like primary content — verify min-width or fold-trigger',
+        suspect: "pane width < 200px on what looks like primary content — verify min-width or fold-trigger",
       });
     }
   }
-  console.warn('Min-content collapse candidates:', findings);
+  console.warn("Min-content collapse candidates:", findings);
   return findings;
 })();
 ```
@@ -118,16 +120,18 @@ If you don't know which panes the app has, discover them:
 (function discoverPanes() {
   const found = [];
   // Look for explicit pane markers
-  document.querySelectorAll('[data-pane], aside, [role="complementary"], .sidebar, .drawer, .sheet, [data-sidebar], [data-drawer]').forEach(el => {
-    const r = el.getBoundingClientRect();
-    if (r.width === 0) return;
-    found.push({
-      selector: el.tagName.toLowerCase() + (el.id ? `#${el.id}` : '') + (el.dataset.pane ? `[data-pane="${el.dataset.pane}"]` : ''),
-      width: r.width.toFixed(1),
-      role: el.getAttribute('role') || el.dataset.pane || 'unlabeled',
+  document
+    .querySelectorAll('[data-pane], aside, [role="complementary"], .sidebar, .drawer, .sheet, [data-sidebar], [data-drawer]')
+    .forEach((el) => {
+      const r = el.getBoundingClientRect();
+      if (r.width === 0) return;
+      found.push({
+        selector: el.tagName.toLowerCase() + (el.id ? `#${el.id}` : "") + (el.dataset.pane ? `[data-pane="${el.dataset.pane}"]` : ""),
+        width: r.width.toFixed(1),
+        role: el.getAttribute("role") || el.dataset.pane || "unlabeled",
+      });
     });
-  });
-  console.log('Probable panes:', found);
+  console.log("Probable panes:", found);
   return found;
 })();
 ```
@@ -137,25 +141,30 @@ Look for the controls that toggle them — usually a hamburger button, a chevron
 ## Common bug patterns by combination
 
 ### 1280px, all panes open
+
 - **Vertical text stacking** — main column squeezed below word-min-width. Cause: `min-w-0` on a flex container without setting a `min-w-[260px]` on the children. **Always log a finding here.**
 - **Truncated headings without ellipsis** — `text-truncate` not applied to a flex child.
 - **Overlapping panes** — z-index conflicts at the boundary.
 
 ### 1024px, all panes open
+
 - **Catastrophic squeeze** — main pane drops below readable width. Should auto-fold one of the panes.
 - **Buttons clipped or wrapped weirdly** — toolbar items push to a second line.
 - **Modal trap** — opening a modal at this size makes it unfit-the-screen, no escape.
 
 ### 1024px, 1 pane (mobile-style)
+
 - **Orphan controls** — buttons that only existed in the closed-pane don't reappear in the simplified layout.
 - **Filter / sort lost** — interactions wired only to the desktop layout.
 
 ### 768px, default
+
 - **Touch targets** — < 48×48px. Apple HIG / Material both require this.
 - **Stacked layouts that look broken** — components stacked but not gap'd.
 - **Text adjacent to actions** — copy that wraps under a button it was supposed to label.
 
 ### 375px, mobile
+
 - **Sheet UX broken** — bottom sheets that don't dismiss / don't render full-height.
 - **Hamburger nav** — opens but can't close, or closes when it shouldn't.
 - **Forms below the fold** — Send / Save buttons require scroll to reach.
@@ -183,8 +192,8 @@ Reproduce:
 Observed: message text wraps one character per line — vertical column ~24px wide.
 Expected: message text wraps at word boundaries within the available column width (≥ 260px).
 Evidence:
-  - .jez/audit-evidence/2026-04-29/spaces-1280-3panes.png
-  - .jez/audit-evidence/2026-04-29/spaces-1280-3panes-devtools.png
+  - temp/browser-verification/2026-04-29/spaces-1280-3panes.png
+  - temp/browser-verification/2026-04-29/spaces-1280-3panes-devtools.png
 Suspected location: src/client/modules/spaces/pages/SpacePage.tsx:200 — `<main className="flex-1 min-w-0">`
 Suggested fix: Replace `min-w-0` with `min-w-[260px]` to enforce minimum readable width, OR auto-fold the members pane at lg breakpoint.
 ```
@@ -195,19 +204,19 @@ If running Playwright, this loop captures the full matrix in ~2 minutes per rout
 
 ```ts
 const viewports = [1920, 1440, 1280, 1024, 768, 375];
-const paneCombos = ['all-open', '2-open', '1-open', 'all-closed'];
+const paneCombos = ["all-open", "2-open", "1-open", "all-closed"];
 
 for (const vw of viewports) {
   for (const combo of paneCombos) {
     await page.setViewportSize({ width: vw, height: 800 });
-    await openPanes(page, combo);   // helper specific to the app
+    await openPanes(page, combo); // helper specific to the app
     await page.evaluate(detectVerticalTextStacks);
     await page.screenshot({ path: `evidence/${route}-${vw}-${combo}.png` });
   }
 }
 ```
 
-For Chrome MCP, the loop is run interactively — same protocol, manual viewport changes.
+With an interactive browser tool, follow the same protocol using its supported viewport controls.
 
 ## When to skip multi-pane stress
 

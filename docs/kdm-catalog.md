@@ -1,7 +1,7 @@
 # KDM catalog guide
 
-The catalog combines the previous app catalog, workbook, and cached news. Data and schema live in `static/kdm/catalog/`;
-archives live in `local-data/kdm-catalog/archives/kdm-data.json` and `local-data/kdm-catalog/archives/kdm-data.schema.json`. See [README](../README.md#catalog) for commands.
+The catalog combines the previous app catalog, workbook, and cached news. See [shared and local data](catalog-workflows.md#shared-and-local-data)
+for maintenance inputs, archives, caches, and reports.
 
 | File                                                                                                              | Purpose                                     |
 | ----------------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
@@ -38,6 +38,12 @@ Inclusions and upgrades provide content coverage, never product ownership. Lists
 reviewed again. Runtime rules live in [ownership and coverage](kdm-architecture.md#product-ownership-and-content-coverage).
 
 Current data rules:
+
+- Preserve reviewed kinds. Models with gameplay use `kind: "box"`; sculpt prototypes do not establish Beta gameplay. Bundle gameplay respects included editions and overrides.
+- Use the schema's edition-label enum. Add child items only for separately cataloged products or reviewed components, not every miniature in a box.
+- `requires` lists dependencies beyond core and its contents; omit empty arrays. Keep optional, partial, and campaign-specific restrictions in notes without repeating dependencies.
+- Future Box releases use `Preorder` and Plastic material. Items with future releases retain `upcoming`.
+- Deduplicate aliases without case or punctuation variants. Preserve reviewed monster role and family tags; do not guess roles. Shirts and dice retain `monster-...` tags but omit `monster`. Tyrant retains Dragon King and Tyrant family tags.
 
 - Use inclusion `shortLabel` only when the parent makes part of the canonical name redundant, such as `Model`, `Armor`, or `Gameplay content`. It applies only within that relationship. Keep canonical names for unrelated contents and named variants.
 - `included-only` contains items whose editions are all explicitly marked `includedOnly: true`. Mixed items retain their existing category and that flag on included-only editions. Parent `includes` references remain valid across categories.
@@ -96,27 +102,13 @@ source anchors, plus primary, related, and release-column references to stable e
 general personal values stay scoped to the source row. The map contains product references only, never owned, wished, copy, comment,
 or raw cell values. Sheet and row numbers locate this workbook snapshot rather than serving as permanent IDs. Regeneration rejects
 changed row identities and unresolved references for review. Validated normalized-row import/export workflows exist in
-[collection-transfer.ts](../src/lib/kdm/collection/state/collection-transfer.ts); XLSX parsing, writing, and controls are deferred. Exports reject unmapped entries and values
+[collection-transfer.ts](../src/lib/kdm/collection/state/collection-transfer.ts); XLSX parsing, writing, and controls load on demand in the browser. Exports reject unmapped entries and values
 that a shared row cannot represent. JSON backups preserve a complete collection snapshot.
 
 Catalog validation checks committed workbook map references by permanent edition ID, independent of private records and mutable edition labels.
 Shop mappings are optional; unresolved products stay in review. Mappings use `editionId` and `variantEditionIds` for existing editions;
 labels are discovery hints for new releases. See [catalog workflows](catalog-workflows.md) for the mapping format.
-Reviewed mappings, tags, schemas, and the news ledger live in tracked `scripts/catalog/data/`. Private import records remain under Git-ignored
-`local-data/kdm-catalog/imports/`; snapshots stay in `.cache/kdm-catalog/shopify-products/`, and reports in `temp/kdm-catalog/reports/`.
-Custom workspaces use the same directory layout. See [catalog workflows](catalog-workflows.md) for shared files and optional workbook rebuilds.
-
-## Availability refresh
-
-`pnpm catalog:availability --fetch` downloads `/products.json?limit=250&page=N` into
-`.cache/kdm-catalog/shopify-products/products-page-N.json`, at least 35 seconds apart. After all pages succeed, it updates edition
-`available` fields, `shop` states, and the shared `shopUpdated` date. Handles or legacy URLs identify listings; names and optional mappings are unused.
-Release variants distinguish First Run, Encore, and format-qualified runs. Any matching warehouse in stock makes an edition available;
-unmatched or ambiguous editions omit the field. Details go to `temp/kdm-catalog/reports/availability-refresh.json`.
-
-Without `--fetch`, the command applies saved pages and uses their oldest modification date for `shopUpdated`.
-`--catalog path/to/static/kdm/catalog/data.json` selects another catalog.
-Failed downloads preserve snapshots and catalog; concurrent catalog edits prevent publication.
+See [workbook workflows](catalog-workflows.md#workbook-map) for optional rebuilds and publication safeguards.
 
 ## Item notes and review decisions
 

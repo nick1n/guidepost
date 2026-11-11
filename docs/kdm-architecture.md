@@ -18,6 +18,8 @@ Collection -> OptimisticStore -> DexieStore (CollectionStore)
 [OptimisticStore](../src/lib/kdm/collection/state/optimistic-store.ts) applies field patches immediately and serializes persistence.
 [DexieStore](../src/lib/kdm/collection/state/dexie-store.ts) implements [CollectionStore](../src/lib/kdm/collection/state/collection-store.ts), saving complete owner snapshots
 by writing changed rows and removing omitted entries. Revision checks, row changes, and metadata updates share one IndexedDB transaction.
+The optimistic store keeps confirmed state plus pending field patches. Failed patches are removed without overwriting newer edits. Only persistence waits in the queue; batch related changes in one `saveMany()` transaction.
+
 Warm loads are read-only; the `ownerId` index serves reads and entry primary keys serve writes.
 
 [Database](../src/lib/app/database.ts) defines the version-one `guidepost` database with `entries`, `metadata`, and `preferences`
@@ -26,7 +28,7 @@ one session does not interrupt another. The old collection and preference databa
 
 Dexie loads after the browser mounts the app. A metadata `liveQuery` subscription reports stale snapshots through the store interface.
 `Collection` blocks edits and offers an explicit refresh without replacing its current state. Observations never authorize writing
-against a newer revision. `CollectionSession` owns startup and monitoring in one Effect scope, stopping subscriptions before
+against a newer revision, and local saves must not report themselves as stale. `CollectionSession` owns startup and monitoring in one Effect scope, stopping subscriptions before
 closing the database connection on teardown. Transactional revision checks also reject competing writes before a notification arrives.
 
 Observer failures block editing without discarding the current snapshot. The layout forwards collection readiness to the session,
@@ -49,6 +51,7 @@ Read-only pending, failed, and error getters expose one private state, separate 
 
 The app's [action runner](../src/lib/app/actions.ts) is provided through Svelte context and runs collection commands, navigation, and settings resets.
 It reports notifications through injected Effect logging and accepts feature-owned tagged errors without importing their implementations.
+Run startup actions with `{ success: false }` to suppress save announcements. Keep reactive state out of the action runner and preserve feature-owned errors until reporting.
 Collection success messages stay in [messages.ts](../src/lib/kdm/collection/messages.ts).
 
 Actions inspect the full Effect cause. Any interruption suppresses failure notifications, even when the cause also contains a typed failure.
@@ -74,6 +77,8 @@ See [workbook mapping](kdm-catalog.md#workbook-mapping) for row-sharing rules.
 Metadata schema version 1 validates records; it is separate from Dexie's database version and provides no migration.
 The collection queue has no durable undo. After release, table/index changes need Dexie upgrades, and incompatible records need a
 compatibility or migration policy with preservation tests.
+
+Reusable dialogs use callbacks and close immediately on confirmation. They own focus, dismissal, and closing-animation guards; parents own persistence. Quick Start navigates independently of its ownership save, even on failure.
 
 ## Collection browsing
 
@@ -136,11 +141,22 @@ No scheduled background refresh is used.
 
 ## Product ownership and content coverage
 
+Choose the command by the control's purpose. These methods take a stable collection entry key:
+
+| Intent                                     | Collection command                 |
+| ------------------------------------------ | ---------------------------------- |
+| Toggle a product checkbox                  | `toggleOwned(key, owned?)`         |
+| Change an included-content control         | `toggleIncludedOwned(key, owned?)` |
+| Explicitly record or remove an acquisition | `setOwned(key, owned)`             |
+
+Run these Effects through the app's action runner. Do not substitute the product toggle for an included-content toggle:
+the former defaults to recorded ownership, while the latter defaults to derived coverage and manages missing overrides.
+
 Product checkboxes, badges, filters, counts, and value use recorded `owned` values. Included rows use derived `coverage` from acquisitions,
 inclusions, equivalences, and `completedBy` recipes. Each recipe requires all references; alternatives are independent. Coverage never records
 ownership or supplies new contents. Inclusion lists may be partial, so progress counts only listed contents.
 
-`toggleOwned()` and `setOwned()` clear the product's missing override. Checking also clears its wish and exact included
+Product ownership commands clear the product's missing override. Checking also clears its wish and exact included
 descendants' missing overrides in one save. For bundles and named sets (`kind: "set"`), checking also records ownership of the exact included editions, including nested
 contents, and clears their wishes while preserving copy numbers. Other products do not record child acquisitions.
 Unchecking a bundle or named set also clears ownership and missing overrides on its exact included descendants in the same save, preserving

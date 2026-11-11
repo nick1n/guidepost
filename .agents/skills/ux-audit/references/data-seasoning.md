@@ -8,15 +8,15 @@ Scenario 11 — Data Seasoning — closes it.
 
 ## Why time-shaped data matters
 
-| Quantity test misses | Time-shaped catches |
-|---|---|
-| Today / Yesterday dividers don't exist | Day 1 horizon — single-item pluralisation, returning-user feel |
-| Cron-driven side effects (routine_runs, scheduled emails) never fire in fresh seed | Day 7 horizon — recurring jobs have actually run ~50 times |
-| Notification badge overflow (47 unread, 99+) | Day 30 horizon — counters break at real volumes |
-| Sort order meaning (newest at top) | Day 30 — does "recent" still feel useful with a month of activity? |
-| Search-with-history (200 saved memories, 50 conversations) | Day 30 — search latency, result ranking, fuzzy match performance |
-| Chart bucketing (per-day vs per-week vs per-month) | Day 30 — UI must adapt or it's unreadable |
-| TanStack Query invalidation cascade | Day 30 — many keys = visible re-render storms |
+| Quantity test misses                                                               | Time-shaped catches                                                |
+| ---------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| Today / Yesterday dividers don't exist                                             | Day 1 horizon — single-item pluralisation, returning-user feel     |
+| Cron-driven side effects (routine_runs, scheduled emails) never fire in fresh seed | Day 7 horizon — recurring jobs have actually run ~50 times         |
+| Notification badge overflow (47 unread, 99+)                                       | Day 30 horizon — counters break at real volumes                    |
+| Sort order meaning (newest at top)                                                 | Day 30 — does "recent" still feel useful with a month of activity? |
+| Search-with-history (200 saved memories, 50 conversations)                         | Day 30 — search latency, result ranking, fuzzy match performance   |
+| Chart bucketing (per-day vs per-week vs per-month)                                 | Day 30 — UI must adapt or it's unreadable                          |
+| TanStack Query invalidation cascade                                                | Day 30 — many keys = visible re-render storms                      |
 
 ## The four horizons
 
@@ -25,6 +25,7 @@ Scenario 11 — Data Seasoning — closes it.
 What's there: nothing. Brand new account, no history, no peers.
 
 Test:
+
 - Every list/queue/observability surface is empty
 - Onboarding affordances visible? "Open Routines" / "Add your first" / "Get started" CTAs present?
 - Dimmed placeholders that hint at structure ("Your inbox will appear here")
@@ -36,10 +37,11 @@ Test:
 What's there: a handful of items, all created today. Maybe one created yesterday.
 
 Test:
+
 - "Today" divider appears
 - "Yesterday" divider appears (single item is fine)
 - Pluralisation correct ("1 message" vs "2 messages") at every count boundary
-- Returning-user feel: signing in for the second time, does the data feel like *yours* or like demo content?
+- Returning-user feel: signing in for the second time, does the data feel like _yours_ or like demo content?
 - Activity feed renders with one entry without looking hollow
 - Mention picker / assignee dropdown shows just the founder + one teammate (does it work with 2 humans?)
 - Pagination doesn't show controls when there's nothing to paginate
@@ -49,6 +51,7 @@ Test:
 What's there: 50-100 items spread across the week. Some recurring (cron-fired routines have run ~50 times), some one-off, some old (>3 days), some today.
 
 Test:
+
 - "This week" / "Older than X" boundaries
 - Pagination first appears here — does it work at the breakpoint?
 - Weekly summaries / digests visible? Do they read as useful?
@@ -62,6 +65,7 @@ Test:
 What's there: 200+ items, distributed across a month, with realistic mix (some pending, some decided, some archived). Notification counters in tens.
 
 Test:
+
 - Notification bell / unread badge: does it show "47" cleanly, or "99+" at the cap?
 - Header counters break at any threshold (some apps clip at 9, 99, 999)?
 - Sort order — does "newest first" still feel useful, or is recent stuff buried?
@@ -69,12 +73,13 @@ Test:
 - Chart bucketing — do charts that worked at Day 7 stay readable, or become a wall of bars?
 - TanStack Query invalidation: trigger an action that should invalidate multiple keys; observe re-render storm or smooth transition
 - Memory / saved-state surfaces: 500+ saved items — does the UI scale?
-- "Snooze" / "Archive" / "Mark all read" affordances present? At Day 30 the user *needs* them
+- "Snooze" / "Archive" / "Mark all read" affordances present? At Day 30 the user _needs_ them
 - Empty state path tested — mark all read, does the empty state still work?
 
 ## Surfaces this applies to
 
 For most apps:
+
 - Lists / tables (clients, projects, files, contacts)
 - Queues (Inbox, Approvals, Pending)
 - Observability (agent_runs, audit logs, activity feeds)
@@ -87,23 +92,23 @@ Skip the scenario only if the app has zero time-distributed data — a one-shot 
 
 ## Severity guide
 
-| Symptom | Severity |
-|---------|----------|
-| Notification badge overflows or breaks visually at 47+ unread | High |
-| Sort order becomes meaningless at Day 30 (recent buried) | High |
-| Pagination breaks at Day 7 horizon | High |
-| Charts unreadable at Day 30 (no per-week / per-month bucketing) | High |
-| TanStack Query invalidation visibly cascades for >2s at Day 30 | High |
-| Empty-state CTA wrong for Day 30 (e.g. shown after mark-all-read) | High |
-| Missing Today/Yesterday dividers when data warrants | Medium |
-| Single-item pluralisation off ("1 messages") | Medium |
-| Cron observability surface melts at Day 7 (168 entries) | Medium-High depending on UI |
-| Search latency >500ms at 500 saved items | Medium |
-| Activity feed feels hollow at Day 1 (one entry) | Low (hard to fix without diluting signal) |
+| Symptom                                                           | Severity                                  |
+| ----------------------------------------------------------------- | ----------------------------------------- |
+| Notification badge overflows or breaks visually at 47+ unread     | High                                      |
+| Sort order becomes meaningless at Day 30 (recent buried)          | High                                      |
+| Pagination breaks at Day 7 horizon                                | High                                      |
+| Charts unreadable at Day 30 (no per-week / per-month bucketing)   | High                                      |
+| TanStack Query invalidation visibly cascades for >2s at Day 30    | High                                      |
+| Empty-state CTA wrong for Day 30 (e.g. shown after mark-all-read) | High                                      |
+| Missing Today/Yesterday dividers when data warrants               | Medium                                    |
+| Single-item pluralisation off ("1 messages")                      | Medium                                    |
+| Cron observability surface melts at Day 7 (168 entries)           | Medium-High depending on UI               |
+| Search latency >500ms at 500 saved items                          | Medium                                    |
+| Activity feed feels hollow at Day 1 (one entry)                   | Low (hard to fix without diluting signal) |
 
 ## Project-side seed-script architecture
 
-The audit assumes the project provides seasoning seeds. The example below uses **Cloudflare Workers + Drizzle + tsx**; for Prisma / TypeORM / Sequelize / ActiveRecord (Rails) / Django ORM / Laravel Eloquent / WordPress / raw SQL equivalents, see [project-adaptation.md](project-adaptation.md) "Seed-script architectures by ORM".
+Use existing isolated fixtures where available. The Cloudflare Workers example below illustrates varied test data, not Guidepost setup instructions. Follow [project adaptation](project-adaptation.md); do not create seeding infrastructure or modify personal data just to run this recipe.
 
 ```
 scripts/
@@ -133,6 +138,7 @@ package.json:
 ```
 
 Each horizon script:
+
 - Resets the test-auth user's data
 - Calls factories with horizon-appropriate parameters (date ranges, counts, mix of states)
 - Logs what was seeded so the audit report can cite "seeded with day-7 fixture: 75 inbox items, 12 routines, 30 memories"
@@ -168,15 +174,15 @@ Don't try to manually create 250 inbox items via UI — that's not the audit's j
 
 ## Known seasoning-sensitive surfaces in common apps
 
-| App type | Surfaces likely to need seasoning |
-|----------|-----------------------------------|
-| Chat / messaging | Conversations list, message history, mention pickers, unread counters |
-| Inbox / queue | Inbox list, Approvals, Pending, Mark-all-read affordances |
-| AI / agent | agent_runs observability, prompt history, memory search, routine_runs |
-| Project management | Project list, task lists, activity feeds, assignee pickers |
-| Email | Inbox, Sent, Drafts, threads |
-| CMS / docs | Recent edits, version history, search |
-| E-commerce | Order history, abandoned cart, recently viewed |
+| App type           | Surfaces likely to need seasoning                                     |
+| ------------------ | --------------------------------------------------------------------- |
+| Chat / messaging   | Conversations list, message history, mention pickers, unread counters |
+| Inbox / queue      | Inbox list, Approvals, Pending, Mark-all-read affordances             |
+| AI / agent         | agent_runs observability, prompt history, memory search, routine_runs |
+| Project management | Project list, task lists, activity feeds, assignee pickers            |
+| Email              | Inbox, Sent, Drafts, threads                                          |
+| CMS / docs         | Recent edits, version history, search                                 |
+| E-commerce         | Order history, abandoned cart, recently viewed                        |
 
 Document which surfaces are seasoning-sensitive in the project's CLAUDE.md so future audits know where to escalate.
 

@@ -7,19 +7,9 @@ import references and map generation. Shared catalog rules and file handling sta
 
 The live app reads [static/kdm/catalog/data.json](../static/kdm/catalog/data.json).
 Run `pnpm exec prettier --write static/kdm/catalog/data.json` after direct edits; its override keeps short records compact.
-Its [schema](../static/kdm/catalog/data.schema.json) generates [kdm-data.d.ts](../src/lib/types/gen/kdm-data.d.ts).
-Run `pnpm generate:types` after schema changes. It also generates [core-editions.json](../src/lib/gen/core-editions.json) for Quick Start,
-with playable core edition IDs and labels in catalog order, excluding Resin. Development, checks, and builds regenerate these files;
-the dev server watches schema and catalog changes. Do not edit generated files.
+See [generated files](#generated-files) for source contracts and regeneration commands.
 
-The full catalog loads through the collection route. Quick Start imports the smaller edition list and saves ownership by stable keys.
-Opening collection preserves ownership and pending saves. The service worker caches the catalog and collection HTML after a visit,
-including filtered collection URLs. Font and gesture playground HTML and the legacy WOFF fallback also cache after use;
-WOFF2 and shared app code are precached.
-
-The [catalog guide](kdm-catalog.md) covers identity, data rules, mappings, and reviewed product decisions.
-Item IDs are object keys; explicit editions have permanent IDs independent of mutable labels.
-Edition-less items use synthetic `item` IDs, or `bundle` for bundles. Review new shop labels before adding editions.
+Runtime loading and caching are described in the [architecture](kdm-architecture.md).
 
 Shop mappings in `scripts/catalog/data/shop-mappings.json` select an item with `category` and `itemId`.
 `editionId` selects the listing's default edition; `variantEditionIds` maps Shopify variant IDs to edition IDs and overrides that default.
@@ -30,11 +20,9 @@ Mark reviewed superseded listings with a `retired` reason to exclude them from i
 Current catalog handles determine stock and purchase links. Keep unreplaced or ambiguous preorders active for review;
 a bundle is not superseded merely because its components shipped.
 
-Reviewed maintenance state lives in `scripts/catalog/data/` and belongs in Git. Private workbook sources and archives stay under
-`local-data/kdm-catalog/`; response caches belong under `.cache/kdm-catalog/shopify-products/`, and generated reports under
-`temp/kdm-catalog/reports/`. These private and generated directories remain Git-ignored.
+See [shared and local data](#shared-and-local-data) for tracked inputs, private workbooks, caches, and reports.
 
-### Review new listings with Codex
+## Review new listings with Codex
 
 Invoke [$kdm-catalog-update](../.agents/skills/kdm-catalog-update/SKILL.md) in a new thread for this repository to review saved evidence,
 find existing matches, and check products in the update's news articles for missing tags, including already matched items and restocks.
@@ -42,7 +30,7 @@ Confirm proposed matches, new items, and tag updates before applying them. Appen
 evidence, or supply handles with decisions such as `new beta` or `matches item-id / edition-id`. Supplied decisions carry through without
 repeated confirmation; a supplied list limits the review to those products unless a broader review is requested.
 
-### Prepare an update
+## Prepare an update
 
 ```bash
 pnpm catalog:update --fetch
@@ -84,7 +72,7 @@ Use `--help` for command options.
 Multi-file publication is not transactional. After a partial failure, inspect the reported published and pending paths before rerunning.
 Ctrl+C waits for publication or checkpoint cleanup; edition retrieval checkpoints remain incomplete until final publication.
 
-### Edit tags
+## Edit tags
 
 `scripts/catalog/data/tags.json` supplies exact reviewed assignments. Keep every category and item ID, with at least one tag per item.
 Vocabulary lives in `scripts/catalog/data/tags.schema.json` under `$defs.tag.enum`;
@@ -100,7 +88,7 @@ Tag staging needs no news or shop data and replaces tag arrays. `pnpm catalog:ap
 `pnpm catalog:tags --apply` stages and applies immediately, syncing the shared master file. Commit reviewed tag edits with the applied catalog.
 Catalog tags sort by frequency, with alphabetical ties; master tag arrays stay alphabetical.
 
-### Refresh availability or fill editions
+## Refresh availability or fill editions
 
 | Command                             | Effect                                  |
 | ----------------------------------- | --------------------------------------- |
@@ -120,7 +108,7 @@ Edition retrieval groups warehouses by release and leaves failed listings unchan
 Both commands reject concurrent catalog edits and write reports to `temp/kdm-catalog/reports/` as
 `availability-refresh.json` and `edition-retrieval.json`.
 
-### Workbook map
+## Workbook map
 
 `pnpm catalog:workbook` validates and normalizes the committed [workbook-map.json](../static/kdm/catalog/workbook-map.json) against the live catalog.
 No private workbook files are needed. The map connects source rows and release columns to stable catalog IDs,
@@ -137,14 +125,13 @@ without explicit editions. Primary, related, and release-column references retai
 be assigned reviewed IDs before import; do not guess ambiguous matches. Personal cells never enter the map. Publication guards the catalog,
 source records when supplied, schemas, and previous map against late edits.
 
-[src/lib/types/workbook.ts](../src/lib/types/workbook.ts) owns the mapping and normalized-row contract.
-`pnpm generate:types` derives [workbook-map.schema.json](../static/kdm/catalog/workbook-map.schema.json); edit the contract instead of the generated schema.
+The mapping and normalized-row contract is listed under [generated files](#generated-files).
 Runtime validation also rejects duplicate sheet/row locators. XLSX transfers load the product-only map on demand.
 
 `pnpm catalog:workbook-template` rebuilds the committed template from `local-data/kdm-catalog/imports/KDM Collection Sheets.xlsx`,
 validating mapped names and removing personal data. Keep the source Git-ignored and review the sanitized template before publication.
 
-### Live shop links
+## Live shop links
 
 `pnpm check:shop-links` displays the saved summary. Add `--fetch` to check catalog listings and write
 `temp/kdm-catalog/reports/shop-links.json`. Link checks leave the catalog unchanged.
@@ -163,15 +150,36 @@ resumes an incomplete run using results less than 24 hours old. A completed run 
 Failures, including rate limits or HEAD rejection, are recorded only in the link report.
 HEAD responses never change stock, availability, or `shopUpdated`.
 
+## Generated files
+
+Edit the source contracts, not generated files, then run `pnpm generate:types`. Development, checks, and builds also generate them;
+the dev server watches schema and catalog changes.
+
+| Generated output                                                                                                                | Source                                                     |
+| ------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| [Catalog types](../src/lib/types/gen/kdm-data.d.ts) and [browser validator](../src/lib/gen/catalog-validator.js) (with `.d.ts`) | [data.schema.json](../static/kdm/catalog/data.schema.json) |
+| [Core editions](../src/lib/gen/core-editions.json)                                                                              | [data.json](../static/kdm/catalog/data.json)               |
+| [Workbook map schema](../static/kdm/catalog/workbook-map.schema.json)                                                           | [workbook.ts](../src/lib/types/workbook.ts)                |
+
+`workbook.ts` owns both the mapping and normalized-row schemas and types. The generated core edition list supplies Quick Start with
+playable core edition IDs and labels in catalog order, excluding Resin.
+
 ## Shared and local data
 
 Commit the maintenance files under `scripts/catalog/data/`: `shop-mappings.json`, `tags.json`, `tags.schema.json`, `news-imports.json`, and
 `import-records.schema.json`. Commit applied catalog and ledger changes together so another maintainer can continue without replaying imported news.
 The committed workbook map contains product references only. Normal maintenance does not read private workbook records.
 
-Keep original workbooks, personal import records, and archives under Git-ignored `local-data/kdm-catalog/`. Back those up separately if needed.
-Shopify response caches stay in `.cache/kdm-catalog/shopify-products/`, news caches in `.cache/kingdom-death-news/`, generated reports in
-`temp/kdm-catalog/reports/`, and request coordination in `.cache/kdm-shop/`.
+Keep these directories Git-ignored. Back up private inputs and archives separately if needed. Custom workspaces use the same layout.
+
+| Directory                              | Contents                                                                |
+| -------------------------------------- | ----------------------------------------------------------------------- |
+| `local-data/kdm-catalog/imports/`      | Original workbooks and personal import records                          |
+| `local-data/kdm-catalog/archives/`     | Catalog snapshots, including `kdm-data.json` and `kdm-data.schema.json` |
+| `.cache/kdm-catalog/shopify-products/` | Shopify responses                                                       |
+| `.cache/kingdom-death-news/`           | News pages                                                              |
+| `.cache/kdm-shop/`                     | Request timing and coordination                                         |
+| `temp/kdm-catalog/reports/`            | Generated reviews and reports                                           |
 
 Use `--fetch` for every network path; missing local inputs should be reported with instructions rather than downloaded automatically.
 
@@ -179,6 +187,6 @@ Use `--fetch` for every network path; missing local inputs should be reported wi
 
 Older ignored files do not move with Git. Compare any reviewed local mappings, tags, vocabulary, or news ledger against the files in
 `scripts/catalog/data/` before replacing shared state; loaders no longer read local copies as overrides.
-Keep private workbooks and import records under `local-data/kdm-catalog/imports/`, and archives under `local-data/kdm-catalog/archives/`.
+Move private inputs and archives to the directories above.
 Do not overwrite the committed workbook map from older personal records without reviewing row identities and edition IDs.
 Run `pnpm catalog:validate` after reconciling shared edits. Caches and reports need no migration for a fresh clone; use `--fetch` to obtain missing caches.

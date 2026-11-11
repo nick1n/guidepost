@@ -2,7 +2,7 @@
 
 Beyond the 9 scenarios in [scenario-tests.md](scenario-tests.md), these recipes catch the failure modes that scenarios miss. Each recipe has a how-to, what-it-catches, and severity guide.
 
-Run all relevant recipes during Phase 5 of the audit. Skip recipes that genuinely don't apply (no print stylesheet on a chat app).
+Run all relevant recipes during the audit's applicable stress checks. Skip recipes that genuinely don't apply (no print stylesheet on a chat app).
 
 ## 1. Race conditions
 
@@ -11,6 +11,7 @@ Run all relevant recipes during Phase 5 of the audit. Skip recipes that genuinel
 **How**: Click any Send / Save / Submit button twice in rapid succession (< 200ms apart).
 
 **What it catches**:
+
 - Duplicate creation (two records, two messages, two payments)
 - Optimistic UI desync (one click goes through optimistically, second click finds the optimistic state and acts on it)
 - Disabled-state race (button disables but second click already queued)
@@ -22,6 +23,7 @@ Run all relevant recipes during Phase 5 of the audit. Skip recipes that genuinel
 **How**: Type into an input, then `Tab` or click outside without waiting for autocomplete / validation.
 
 **What it catches**:
+
 - Validation that runs after blur but the form already submitted via Enter
 - Autocomplete that completes after blur, leaving stale value
 - onChange handlers firing after onSubmit
@@ -31,6 +33,7 @@ Run all relevant recipes during Phase 5 of the audit. Skip recipes that genuinel
 **How**: Click a list item, then before it loads, click a different list item.
 
 **What it catches**:
+
 - Stale data shown (old item's data leaks into new item's view)
 - Cancelled-fetch handling (TanStack Query / SWR — abort missed)
 - Loading spinner stuck
@@ -40,6 +43,7 @@ Run all relevant recipes during Phase 5 of the audit. Skip recipes that genuinel
 **How**: Browser DevTools → Network → Slow 3G (or set request throttling to 100kbps download / 400ms latency).
 
 **What it catches**:
+
 - Loading states that disappear after 200ms (real users see them)
 - Skeleton screens never showing (data arrives too fast in dev)
 - Timeouts (button-disable for 60s with no progress hint)
@@ -53,6 +57,7 @@ Run all relevant recipes during Phase 5 of the audit. Skip recipes that genuinel
 **How**: Browser DevTools → Rendering → Emulate CSS media `(prefers-reduced-motion: reduce)` → matches.
 
 **What it catches**:
+
 - Animations that ignore the preference (still slide, still fade)
 - Spring physics on scroll (causes motion sickness for users who set the pref)
 - Auto-playing videos
@@ -66,6 +71,7 @@ Run all relevant recipes during Phase 5 of the audit. Skip recipes that genuinel
 **How**: Inspect the longest copy on each page and replace with a synthetic 50+ character string. Or, if i18n exists, switch to `de`.
 
 **What it catches**:
+
 - Truncation without tooltip (`overflow: hidden` cuts off important info)
 - Wrap into 4+ lines breaking layout
 - Buttons that grow beyond their parent container
@@ -75,6 +81,7 @@ Run all relevant recipes during Phase 5 of the audit. Skip recipes that genuinel
 **How**: Set `dir="rtl"` on `<html>` (or switch to `ar` / `he` if i18n exists).
 
 **What it catches**:
+
 - Icons that should mirror but don't (chevron-right pointing wrong way)
 - Layouts assuming left-to-right (sidebar on wrong side)
 - Padding-left vs margin-inline-start drift
@@ -84,6 +91,7 @@ Run all relevant recipes during Phase 5 of the audit. Skip recipes that genuinel
 **How**: Replace copy with CJK strings (Chinese / Japanese / Korean) for the longest fields.
 
 **What it catches**:
+
 - Line-height insufficient for character ascenders
 - Font-family fallback ugly in CJK
 - Text rendering as squares (missing font subset)
@@ -91,6 +99,7 @@ Run all relevant recipes during Phase 5 of the audit. Skip recipes that genuinel
 ## 5. Empty / saturated states
 
 ### Empty
+
 - Lists with 0 items
 - Conversations with 0 messages
 - Projects with 0 files / tasks
@@ -98,11 +107,13 @@ Run all relevant recipes during Phase 5 of the audit. Skip recipes that genuinel
 - New user with 0 history
 
 ### Saturated
+
 - Lists with 1000+ items (pagination, virtualisation, performance)
 - Conversation with 200+ messages (scroll-to-bottom, performance)
 - Project with 50+ tagged categories (filter UX)
 
 ### Long content edges
+
 - Single field with 100+ characters (overflow, tooltip, truncate)
 - Single field with 5000-word paste (textarea behaviour, save semantics)
 - Filename with special characters (`O'Brien.pdf`, `café.csv`, emoji, `<script>` injection check)
@@ -112,6 +123,7 @@ Run all relevant recipes during Phase 5 of the audit. Skip recipes that genuinel
 **How**: Browser DevTools → Network → Offline. Then perform an action.
 
 **What it catches**:
+
 - Silent failures (no error shown)
 - Optimistic UI without rollback
 - Queue / retry UX (Tauri / Notion / Linear show "queued" — does this app?)
@@ -124,6 +136,7 @@ Run all relevant recipes during Phase 5 of the audit. Skip recipes that genuinel
 **How**: Browser DevTools → Rendering → Emulate CSS media → `print`. OR `Ctrl+P` to open the print preview.
 
 **What it catches**:
+
 - Invisible content (white text on white background after print rules apply)
 - Sidebar / nav still showing (should typically be hidden)
 - Page breaks landing mid-content
@@ -136,6 +149,7 @@ Run all relevant recipes during Phase 5 of the audit. Skip recipes that genuinel
 **How**: Browser DevTools → Rendering → Emulate CSS media → `forced-colors: active`. OR Windows High Contrast.
 
 **What it catches**:
+
 - Elements that disappear (background-only highlights without borders)
 - Icons rendering as squares
 - Focus rings invisible in forced colours
@@ -148,6 +162,7 @@ Run all relevant recipes during Phase 5 of the audit. Skip recipes that genuinel
 **How**: Unplug the mouse. Walk the entire app with Tab / Shift+Tab / Enter / Space / Arrow keys / Escape.
 
 **What it catches**:
+
 - Focus traps in modals (can't Tab out)
 - Hidden focus states (can't see where you are)
 - Skipped focusable elements
@@ -162,6 +177,7 @@ Run all relevant recipes during Phase 5 of the audit. Skip recipes that genuinel
 **How**: Mac: VoiceOver (Cmd+F5). Windows: NVDA (free download).
 
 **What it catches**:
+
 - Unlabeled buttons ("Click here" landmarks, icons without aria-label)
 - Decorative images announced
 - Form fields with no associated label
@@ -175,6 +191,7 @@ Run all relevant recipes during Phase 5 of the audit. Skip recipes that genuinel
 **How**: Right-click on every interactive element. Long-press (touch device emulation).
 
 **What it catches**:
+
 - Context menus not implemented where they should be
 - Default browser context menu showing on a custom widget
 - Long-press selecting text on a card meant to be tappable
@@ -185,6 +202,7 @@ Run all relevant recipes during Phase 5 of the audit. Skip recipes that genuinel
 **How**: Click Submit, then immediately click browser back before the action completes.
 
 **What it catches**:
+
 - Server still processes the action; user lands on previous screen with no idea
 - Optimistic UI rolled back but server confirmed (state inconsistency)
 - Navigation guards not present on dirty forms
@@ -196,6 +214,7 @@ Run all relevant recipes during Phase 5 of the audit. Skip recipes that genuinel
 **How**: Close the browser tab mid-task. Reopen. Use browser's "Reopen Closed Tab" or navigate to the URL.
 
 **What it catches**:
+
 - Drafts not saved (autosave gap)
 - "Continue where you left off" missing
 - Local storage cleared on tab close
@@ -206,6 +225,7 @@ Run all relevant recipes during Phase 5 of the audit. Skip recipes that genuinel
 **How**: Open the app in two tabs side by side. Modify a record in tab A. Switch to tab B. Modify the same record.
 
 **What it catches**:
+
 - Stale state in tab B (no sync)
 - Conflict resolution UX (last-write-wins silently)
 - Real-time updates (or absence)
@@ -216,6 +236,7 @@ Run all relevant recipes during Phase 5 of the audit. Skip recipes that genuinel
 **How**: Modify a known localStorage / IndexedDB key to an old version's format. Reload.
 
 **What it catches**:
+
 - App crashes on schema mismatch
 - Silent reset of user state
 - Missing migration logic
@@ -317,14 +338,14 @@ For every form discovered in element exhaustion:
 
 ### Severity guide
 
-| Failure mode | Severity |
-|---|---|
-| User input silently lost / corrupted on save | Critical |
-| User input rejected without clear error message | High |
-| Display renders mangled (HTML entities visible, encoding garbage) | High |
-| Search misses normalised matches (Maria/María) | Medium |
-| File upload rejects legitimate format | Medium |
-| Filename special chars displayed weirdly but file otherwise works | Low |
+| Failure mode                                                      | Severity |
+| ----------------------------------------------------------------- | -------- |
+| User input silently lost / corrupted on save                      | Critical |
+| User input rejected without clear error message                   | High     |
+| Display renders mangled (HTML entities visible, encoding garbage) | High     |
+| Search misses normalised matches (Maria/María)                    | Medium   |
+| File upload rejects legitimate format                             | Medium   |
+| Filename special chars displayed weirdly but file otherwise works | Low      |
 
 This recipe is **mandatory for any app accepting user content**. Skip only for builder-mode reference pages and read-only displays.
 
@@ -332,31 +353,32 @@ This recipe is **mandatory for any app accepting user content**. Skip only for b
 
 A stress test produces findings whose severity follows these defaults:
 
-| Recipe failure | Default severity |
-|---|---|
-| Double-click produces duplicates | Critical |
-| Slow-network shows no skeleton | High |
-| Reduced-motion ignored | High |
-| Long German breaks layout | High |
-| RTL mirroring missing on icons | Medium |
-| Offline silently loses data | Critical |
-| Print stylesheet absent (where plausible) | Medium |
-| Forced-colors elements disappear | High |
-| Focus trap in modal | Critical |
-| Screen reader: unlabeled primary action | Critical |
-| Tab-restore loses draft | High |
-| Multi-tab: stale state | Medium |
+| Recipe failure                            | Default severity |
+| ----------------------------------------- | ---------------- |
+| Double-click produces duplicates          | Critical         |
+| Slow-network shows no skeleton            | High             |
+| Reduced-motion ignored                    | High             |
+| Long German breaks layout                 | High             |
+| RTL mirroring missing on icons            | Medium           |
+| Offline silently loses data               | Critical         |
+| Print stylesheet absent (where plausible) | Medium           |
+| Forced-colors elements disappear          | High             |
+| Focus trap in modal                       | Critical         |
+| Screen reader: unlabeled primary action   | Critical         |
+| Tab-restore loses draft                   | High             |
+| Multi-tab: stale state                    | Medium           |
 
 Promote findings with stacked failures (e.g. slow-network AND no skeleton AND no progress text → Critical).
 
 ## When to skip a recipe
 
 Skip recipes that don't apply:
+
 - Print stylesheet on a chat app — skip
 - RTL on an English-only app — skip but note that future i18n will need it
 - Offline mode on a tool that legitimately requires connectivity — note the connection requirement instead
 
-Don't skip recipes that *should* apply but the team hasn't implemented yet — those produce findings.
+Don't skip recipes that _should_ apply but the team hasn't implemented yet — those produce findings.
 
 ## Coverage publication
 

@@ -8,6 +8,9 @@ compatibility: Requires Effect v4. Examples are reviewed against the version doc
 
 # Effect
 
+## Project conventions
+
+Read [Guidepost Effect conventions](../../../docs/effect-conventions.md) before implementation, including the full installed `node_modules/effect/AGENTS.md` and relevant references. Project action and persistence boundaries take precedence over the generic defaults below.
 Use current Effect v4 APIs and the production defaults in this skill. Established project conventions still take precedence unless the task is explicitly changing them.
 
 ## Source Rule
