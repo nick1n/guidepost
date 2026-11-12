@@ -161,6 +161,9 @@ vite.config.ts.timestamp-*
 /temp/
 /%SystemDrive%/
 
+# Local agent skill aliases; canonical skills live in .agents/skills
+/.claude/skills/
+
 # Generated news CSV
 /scripts/news/shop-links.csv
 

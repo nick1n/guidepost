@@ -19,6 +19,18 @@ See [AGENTS.md](../AGENTS.md) for required checks and [UI conventions](ui-conven
 
 Use `pnpm test` for watch mode.
 
+## Agent skills
+
+Track project skills only under `.agents/skills/`. Local aliases under `.claude/skills/` are ignored by Git.
+To expose the Effect skill to Claude on Windows, create a junction from the repository root in PowerShell:
+
+```powershell
+New-Item -ItemType Directory -Force .claude/skills
+New-Item -ItemType Junction -Path .claude/skills/effect -Target (Resolve-Path .agents/skills/effect).Path
+```
+
+Skip creation if the junction already exists. Edit skills through `.agents/skills/`; do not force-add the aliases to Git.
+
 ## Deployment and dependencies
 
 Pull requests run the shared site build workflow with `/guidepost` as the base path, including build and catalog script tests.
