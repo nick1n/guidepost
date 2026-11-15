@@ -91,11 +91,11 @@
 <style>
   .rail {
     display: flex;
-    gap: var(--tag-gap, 0.25rem);
     min-inline-size: 0;
-    overflow-x: auto;
     margin-inline: var(--tag-margin, 0);
     padding: var(--tag-rail-padding, 0.25rem 0.75rem);
+    overflow-x: auto;
+    gap: var(--tag-gap, 0.25rem);
     cursor: grab;
     scrollbar-width: none;
 
@@ -110,8 +110,8 @@
 
   button {
     flex-shrink: 0;
-    border-radius: 99px;
     padding: var(--tag-padding, 0.25rem 0.5rem);
+    border-radius: 99px;
     background: var(--panel);
     color: var(--tag-color, var(--foreground));
     font-size: var(--tag-font-size, inherit);

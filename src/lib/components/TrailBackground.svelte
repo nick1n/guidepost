@@ -200,21 +200,21 @@
     --color-trail: #8a6038;
 
     position: absolute;
-    inset: 0;
     inline-size: 100%;
     block-size: 100%;
-    opacity: 0.1;
-    mix-blend-mode: color-dodge;
+    inset: 0;
     fill: none;
     stroke: var(--color-trail);
-    stroke-width: 1.5;
     stroke-linecap: round;
+    stroke-width: 1.5;
+    mix-blend-mode: color-dodge;
+    opacity: 0.1;
   }
 
   .marker {
-    opacity: var(--opacity-marker, 1);
     fill: var(--background);
     stroke-width: 1;
+    opacity: var(--opacity-marker, 1);
   }
 
   .reveal {

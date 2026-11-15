@@ -290,8 +290,8 @@
     pointer-events: none;
   }
   .mark-foreground {
-    position: relative;
     z-index: 1;
+    position: relative;
   }
   .chevron {
     --size-icon: 1rem;
@@ -378,8 +378,8 @@
     &.divided {
       padding-inline-start: 0.125rem;
       border-radius: 99px;
-      border-inline-start: 2px solid var(--color-divider);
       corner-shape: squircle;
+      border-inline-start: 2px solid var(--color-divider);
       box-shadow: -0.25rem 0 0.375rem -0.25rem var(--color-divider);
     }
   }

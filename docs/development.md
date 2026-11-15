@@ -19,6 +19,13 @@ See [AGENTS.md](../AGENTS.md) for required checks and [UI conventions](ui-conven
 
 Use `pnpm test` for watch mode.
 
+`pnpm format` also sorts CSS declarations in stylesheets and Svelte `<style>` blocks using
+`prettier-plugin-css-order` with SMACSS ordering (box properties, borders, backgrounds, then text).
+Shorthand and longhand overrides retain their relative order to preserve behavior.
+`pnpm format:check` checks the same ordering.
+The `css-declaration-sorter` patch adds `corner-shape` beside the radius properties in SMACSS order.
+Remove the patch when the upstream SMACSS list includes it, and verify both CSS and Svelte formatting after upgrading.
+
 ## Agent skills
 
 Track project skills only under `.agents/skills/`. Local aliases under `.claude/skills/` are ignored by Git.

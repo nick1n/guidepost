@@ -463,15 +463,15 @@
 
     &.loading {
       display: grid;
-      align-items: center;
-      position: fixed;
       z-index: 2;
-      inset-block-end: max(0.5rem, env(safe-area-inset-bottom));
-      inset-inline: 1rem;
+      position: fixed;
+      align-items: center;
       inline-size: fit-content;
       max-inline-size: calc(100% - 2rem);
       block-size: var(--size-floating-control);
       margin: 0 auto;
+      inset-block-end: max(0.5rem, env(safe-area-inset-bottom));
+      inset-inline: 1rem;
       padding-block: 0.5rem;
       text-align: center;
     }

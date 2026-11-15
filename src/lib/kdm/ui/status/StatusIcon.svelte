@@ -132,12 +132,12 @@
   @keyframes pulse {
     0%,
     100% {
-      opacity: 1;
       scale: 1.125;
+      opacity: 1;
     }
     50% {
-      opacity: 0.2;
       scale: 1;
+      opacity: 0.2;
     }
   }
 </style>

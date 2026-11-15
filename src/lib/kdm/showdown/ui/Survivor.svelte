@@ -1139,8 +1139,8 @@
       color: var(--identity-ink);
     }
     &:disabled {
-      opacity: 0.45;
       cursor: not-allowed;
+      opacity: 0.45;
     }
   }
   .rows {

@@ -1750,3 +1750,29 @@ test("stock evidence distinguishes sold out, unknown matches, and synthetic list
   assert.equal(availabilityFromUrls(catalog, listings, checkedAt).shopChanged, 1);
   assert.equal(catalog.bundles.example.shop, undefined);
 });
+
+test("sort keys group items without changing identities and master tags follow catalog order", () => {
+  const catalog = empty();
+  catalog.content = {
+    "seed-pattern-survivor-ingama": { name: "Ingama", tags: ["survivor"] },
+    "astri-the-promised": { name: "Astri", sortKey: "seed-pattern-survivor-astri-the-promised", tags: ["survivor"] },
+    "azure-knight": { name: "Azure Knight", tags: ["knight"] },
+    core: { name: "Core", kind: "core", sortKey: "zzz", tags: ["core"] },
+    "seed-pattern-survivor-astri-the-promised": { name: "Equal key", tags: ["survivor"] },
+  };
+  const original = structuredClone(catalog);
+  const tags = tagFile(Object.fromEntries(Object.entries(catalog.content).map(([id, item]) => [id, item.tags])));
+  organizeCatalog(catalog);
+  const expected = [
+    "core",
+    "azure-knight",
+    "astri-the-promised",
+    "seed-pattern-survivor-astri-the-promised",
+    "seed-pattern-survivor-ingama",
+  ];
+  assert.deepEqual(Object.keys(catalog.content), expected);
+  assert.deepEqual(Object.keys(organizeTags(catalog, tags).content), expected);
+  assert.deepEqual(catalog, original);
+  organizeCatalog(catalog);
+  assert.deepEqual(Object.keys(catalog.content), expected);
+});

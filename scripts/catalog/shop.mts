@@ -1,8 +1,8 @@
 import { formatLockConflict } from "./locks.mts";
-import { createHash } from "node:crypto";
+import { createHash, randomBytes } from "node:crypto";
 import { access, mkdir, open, readFile, unlink, writeFile } from "node:fs/promises";
 import { join, resolve } from "node:path";
-import { Cache, Clock, Effect, Exit, Schema, Semaphore } from "effect";
+import { Cache, Clock, Config, Effect, Exit, Redacted, Schema, Semaphore } from "effect";
 import { FetchHttpClient, HttpClient } from "effect/http";
 import { decodeShopCache, decodeShopProduct, ShopFailure, ShopResponse } from "./shop-schema.mts";
 import type { Edition, Item } from "./types.mts";
@@ -24,6 +24,9 @@ export class ShopError extends Schema.TaggedError<ShopError>()("ShopError", {
       message:
         `Shop HTTP ${status}: ${url}.` +
         (status === 429 ? " Stopped without retrying." : "") +
+        (status >= 400 && new URL(url).origin === "https://shop.kingdomdeath.com"
+          ? " Set KDM_SHOP_CART_COOKIE to a valid cart cookie value from your browser (the value only, without cart=), then rerun with --fetch."
+          : "") +
         (retryAt === undefined ? "" : ` Retry-After indicates ${new Date(retryAt).toISOString()}.`) +
         (cached ? " Cached response." : ""),
     });
@@ -70,6 +73,20 @@ export function productUrl(value: string) {
 }
 
 export const shopProduct = decodeShopProduct;
+
+export const shopRequestHeaders = Effect.fn("Shop.requestHeaders")(function* (url: string) {
+  const headers: Record<string, string> = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36",
+    Accept: "application/json",
+  };
+  if (new URL(url).origin !== "https://shop.kingdomdeath.com") return headers;
+  const configured = yield* Config.Redacted("KDM_SHOP_CART_COOKIE").pipe(Config.withDefault(Redacted.make("")));
+  const cart = Redacted.value(configured) || randomBytes(24).toString("base64url");
+  if (!/^[\x21-\x2B\x2D-\x3A\x3C-\x5B\x5D-\x7E]+$/.test(cart))
+    return yield* new ShopRequestError({ url, message: "KDM_SHOP_CART_COOKIE must contain only the cart cookie value." });
+  headers.Cookie = "cart=" + cart;
+  return headers;
+});
 
 const cacheFile = (cache: string, url: string) => join(cache, createHash("sha256").update(url).digest("hex") + ".json");
 const gates = new Map<string, { semaphore: Semaphore.Semaphore; users: number }>();
@@ -124,9 +141,9 @@ export const withShopRequest = Effect.fn("Shop.request")(function* <A, E, R>(
   options: { cache?: string; delay?: number } = {},
 ) {
   const directory = resolve(options.cache ?? ".cache/kdm-shop");
-  const delay = options.delay ?? 35;
-  if (!Number.isFinite(delay) || delay < 35)
-    return yield* new ShopRequestError({ url, message: "Shop requests require at least 35 seconds between starts" });
+  const delay = options.delay ?? 61;
+  if (!Number.isFinite(delay) || delay < 61)
+    return yield* new ShopRequestError({ url, message: "Shop requests require at least 61 seconds between starts" });
   return yield* serialized(
     "request:" + directory,
     Effect.scoped(
@@ -193,8 +210,8 @@ export class ShopClient {
 
   constructor(options: Options = {}) {
     this.options = options;
-    if (options.delay !== undefined && (!Number.isFinite(options.delay) || options.delay < 35))
-      throw new Error("Shop requests require at least 35 seconds between starts");
+    if (options.delay !== undefined && (!Number.isFinite(options.delay) || options.delay < 61))
+      throw new Error("Shop requests require at least 61 seconds between starts");
     if (options.maxAgeMs !== undefined && (Number.isNaN(options.maxAgeMs) || options.maxAgeMs < 0))
       throw new Error("Shop cache age must be nonnegative");
     this.directory = resolve(options.cache ?? ".cache/kdm-shop");
@@ -242,13 +259,8 @@ export class ShopClient {
             return yield* withProgress(
               `Fetching ${url}`,
               Effect.gen({ self: this }, function* () {
-                const response = yield* HttpClient.get(url, {
-                  headers: {
-                    "User-Agent":
-                      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36",
-                    Accept: "application/json",
-                  },
-                });
+                const headers = yield* shopRequestHeaders(url);
+                const response = yield* HttpClient.get(url, { headers });
                 request.status = response.status;
                 const now = yield* Clock.currentTimeMillis;
                 const checkedAt = new Date(now).toISOString();

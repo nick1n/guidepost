@@ -269,10 +269,10 @@
   }
   .ripple {
     position: absolute;
-    inset-inline-start: var(--point-x);
-    inset-block-start: var(--point-y);
     inline-size: calc(var(--radius-ripple) * 2);
     block-size: calc(var(--radius-ripple) * 2);
+    inset-block-start: var(--point-y);
+    inset-inline-start: var(--point-x);
     translate: -50% -50%;
     border-radius: 50%;
     background: var(--foreground);

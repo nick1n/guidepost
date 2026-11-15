@@ -2040,7 +2040,7 @@
       "sheet": "KDM Miniatures",
       "row": 265,
       "name": "Astri the Promised - Painter's Scale",
-      "primary": { "category": "content", "contentId": "astri-the-promised", "editionId": "painters" }
+      "primary": { "category": "content", "contentId": "seed-pattern-survivor-astri-the-promised", "editionId": "painters" }
     },
     {
       "sheet": "KDM Miniatures",
@@ -2331,20 +2331,22 @@
       "sheet": "KDM Miniatures",
       "row": 296,
       "name": "Astri the Promised",
-      "primary": { "category": "content", "contentId": "astri-the-promised", "editionId": "first-run" },
-      "related": [{ "category": "content", "contentId": "astri-the-promised", "editionId": "encore" }],
+      "primary": { "category": "content", "contentId": "seed-pattern-survivor-astri-the-promised", "editionId": "first-run" },
+      "related": [{ "category": "content", "contentId": "seed-pattern-survivor-astri-the-promised", "editionId": "encore" }],
       "ownershipScope": "source-row",
       "releaseEditions": {
-        "M": [{ "category": "content", "contentId": "astri-the-promised", "editionId": "first-run" }],
-        "N": [{ "category": "content", "contentId": "astri-the-promised", "editionId": "encore" }]
+        "M": [{ "category": "content", "contentId": "seed-pattern-survivor-astri-the-promised", "editionId": "first-run" }],
+        "N": [{ "category": "content", "contentId": "seed-pattern-survivor-astri-the-promised", "editionId": "encore" }]
       }
     },
     {
       "sheet": "KDM Miniatures",
       "row": 297,
       "name": "Astri the Promised Deathgrey",
-      "primary": { "category": "content", "contentId": "astri-the-promised", "editionId": "deathgrey" },
-      "releaseEditions": { "M": [{ "category": "content", "contentId": "astri-the-promised", "editionId": "deathgrey" }] }
+      "primary": { "category": "content", "contentId": "seed-pattern-survivor-astri-the-promised", "editionId": "deathgrey" },
+      "releaseEditions": {
+        "M": [{ "category": "content", "contentId": "seed-pattern-survivor-astri-the-promised", "editionId": "deathgrey" }]
+      }
     },
     {
       "sheet": "KDM Miniatures",

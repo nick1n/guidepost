@@ -409,10 +409,10 @@
       max(0.5rem, env(safe-area-inset-left));
     /* Keep animations within the viewport while allowing the card to cross the footer. */
     overflow: clip;
-    touch-action: pinch-zoom;
     gap: 0.5rem;
     background:
       radial-gradient(ellipse at 50% 40%, color-mix(var(--hunt-event-background) 15%, transparent), transparent 70%), var(--background);
+    touch-action: pinch-zoom;
   }
   .stage {
     container-type: size;

@@ -44,9 +44,9 @@
     inline-size: 100%;
     block-size: 100%;
     stroke: currentColor;
-    stroke-width: 1.5;
     stroke-linecap: round;
     stroke-linejoin: round;
+    stroke-width: 1.5;
   }
   .solid {
     fill: currentColor;

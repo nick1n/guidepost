@@ -168,9 +168,9 @@
     color: var(--accent-foreground);
     &::before,
     &::after {
-      content: "";
-      position: absolute;
       z-index: -1;
+      position: absolute;
+      content: "";
     }
     &::before {
       inset: 0 -0.75rem;

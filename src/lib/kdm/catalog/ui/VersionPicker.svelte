@@ -47,8 +47,8 @@
   button {
     min-inline-size: var(--size-control);
     min-block-size: var(--size-control);
-    border-radius: var(--radius-control);
     padding: 0.25rem 0.5rem;
+    border-radius: var(--radius-control);
     background: var(--panel);
     color: var(--foreground);
     font-variant-numeric: tabular-nums;

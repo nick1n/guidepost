@@ -65,7 +65,7 @@ it("paces all hosts together, keeps stock dates, and refreshes completed fetch r
       { catalog, cache: join(dirname(catalog), "shop-cache"), offline: false },
       dependencies,
     );
-    expect(requests.map(({ time: instant }) => instant - requests[0].time)).toEqual([0, 35000, 70000, 105000]);
+    expect(requests.map(({ time: instant }) => instant - requests[0].time)).toEqual([0, 61000, 122000, 183000]);
     expect(JSON.parse(await readFile(catalog, "utf8")).shopUpdated).toBe("2025-01-01");
     expect(JSON.parse(await readFile(checkpoint, "utf8")).complete).toBe(true);
     expect(JSON.parse(await readFile(report, "utf8")).listings.every((row: { checkedAt?: string }) => row.checkedAt)).toBe(true);
@@ -134,7 +134,7 @@ it("retains checkpoints on cancellation and resumes recent requests with shop pa
       },
     );
     expect(requests).toHaveLength(3);
-    expect(requests[2] - Date.parse("2026-01-01T00:00:00Z")).toBe(140000);
+    expect(requests[2] - Date.parse("2026-01-01T00:00:00Z")).toBe(244000);
   });
 });
 
@@ -211,7 +211,7 @@ it("paces resumed requests after cancellation during an unfinished HEAD", async 
         },
       },
     );
-    expect(requests[0] - start).toBe(35000);
+    expect(requests[0] - start).toBe(61000);
   });
 });
 
@@ -328,7 +328,7 @@ it.each(["legacy-start", "completion"])("shared request timing ignores %s checkp
         },
       },
     );
-    expect(shopRequests[0] - start).toBe(source === "completion" ? 105_000 : 35_000);
+    expect(shopRequests[0] - start).toBe(source === "completion" ? 183_000 : 61_000);
     expect(JSON.parse(await readFile(checkpoint, "utf8")).starts).toBeUndefined();
   });
 });

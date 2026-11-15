@@ -630,11 +630,11 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 0.5rem;
     block-size: 2.75rem;
     padding-inline: 0.375rem;
-    font-size: var(--text-xs);
+    gap: 0.5rem;
     color: var(--muted-foreground);
+    font-size: var(--text-xs);
   }
   .density {
     font-variant-numeric: tabular-nums;
@@ -646,20 +646,20 @@
   }
   .field-label {
     display: block;
-    text-align: center;
+    color: var(--muted-foreground);
     font-size: var(--text-xs);
     line-height: 1.4;
-    color: var(--muted-foreground);
+    text-align: center;
   }
   .arena {
-    position: relative;
     display: grid;
+    position: relative;
     place-items: center;
     block-size: var(--size-arena);
   }
   .control {
-    position: relative;
     display: grid;
+    position: relative;
     place-items: center;
     inline-size: min(var(--size-gesture), 100%);
     block-size: var(--size-gesture);
@@ -677,8 +677,8 @@
       background: var(--gesture-fill);
     }
     &[data-ready="true"] {
-      color: var(--color-gesture);
       border-color: var(--color-gesture);
+      color: var(--color-gesture);
     }
     &[aria-pressed="true"] {
       background: var(--gesture-fill);
@@ -688,8 +688,8 @@
     }
   }
   .value {
-    font-size: var(--text-control);
     font-weight: var(--font-bold);
+    font-size: var(--text-control);
     font-variant-numeric: tabular-nums;
   }
   .small-icon {
@@ -700,12 +700,12 @@
   }
   .progress {
     position: absolute;
-    inset: 0.125rem;
     inline-size: calc(100% - 0.25rem);
     block-size: calc(100% - 0.25rem);
-    pointer-events: none;
+    inset: 0.125rem;
     rotate: -90deg;
     opacity: var(--opacity-progress, 0);
+    pointer-events: none;
   }
   .track,
   .fill {
@@ -729,13 +729,13 @@
     stroke-dashoffset: 0;
   }
   .corner {
-    position: absolute;
-    inset-block-end: -0.25rem;
-    inset-inline-end: -0.25rem;
     display: grid;
+    position: absolute;
     place-items: center;
     inline-size: 1.125rem;
     block-size: 1.125rem;
+    inset-block-end: -0.25rem;
+    inset-inline-end: -0.25rem;
     border: 2px solid var(--background);
     border-radius: 50%;
     background: var(--color-gesture);
@@ -743,19 +743,19 @@
   }
   .grip {
     position: absolute;
-    inset-block-start: 0.375rem;
     inline-size: 0.875rem;
     block-size: 0.25rem;
+    inset-block-start: 0.375rem;
     border-block: 1px solid var(--muted-foreground);
   }
   .fold {
     position: absolute;
-    inset-block-start: 0.375rem;
     inline-size: 0.75rem;
     block-size: 0.375rem;
-    border-block-start: 1px solid var(--color-gesture);
-    border-inline: 1px solid var(--color-gesture);
+    inset-block-start: 0.375rem;
     border-radius: 50% 50% 0 0;
+    border-inline: 1px solid var(--color-gesture);
+    border-block-start: 1px solid var(--color-gesture);
   }
   .rails,
   .compass {
@@ -765,8 +765,8 @@
   }
   .rail,
   .cue {
-    position: absolute;
     display: grid;
+    position: absolute;
     place-items: center;
     inline-size: 1.25rem;
     block-size: 0.875rem;
@@ -791,8 +791,8 @@
   }
   .left,
   .right {
-    inset-block-start: calc(50% + 0.75rem);
     inline-size: 1rem;
+    inset-block-start: calc(50% + 0.75rem);
   }
   .left {
     inset-inline-end: calc(50% + 0.25rem);
@@ -808,8 +808,8 @@
   .field[data-direction="down"] .down,
   .field[data-direction="left"] .left,
   .field[data-direction="right"] .right {
-    opacity: 1;
     color: var(--color-gesture);
+    opacity: 1;
   }
   .field[data-phase="menu"] :is(.rails, .compass, .loop-stage) {
     visibility: hidden;
@@ -826,18 +826,18 @@
   .bead,
   .spark {
     position: absolute;
-    inset-block-start: 0;
-    inset-inline-start: 0;
-    inline-size: 0.375rem;
-    block-size: 0.375rem;
-    border-radius: 50%;
-    background: var(--color-gesture);
     offset-anchor: 50% 50%;
     offset-rotate: 0deg;
+    inline-size: 0.375rem;
+    block-size: 0.375rem;
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    border-radius: 50%;
+    background: var(--color-gesture);
   }
   .comet {
-    offset-path: inset(3px round var(--radius-gesture));
     offset-distance: 0%;
+    offset-path: inset(3px round var(--radius-gesture));
     &.reverse {
       offset-distance: 50%;
       background: var(--foreground);
@@ -861,8 +861,8 @@
     stroke-width: 1;
   }
   .bead {
-    offset-path: path("M 42 38 C 48 20 36 6 22 6 C 8 6 -4 20 2 38 C -4 56 8 70 22 70 C 36 70 48 56 42 38");
     offset-distance: var(--distance-loop);
+    offset-path: path("M 42 38 C 48 20 36 6 22 6 C 8 6 -4 20 2 38 C -4 56 8 70 22 70 C 36 70 48 56 42 38");
   }
   .courier {
     position: absolute;
@@ -880,13 +880,13 @@
   }
   .menu,
   .editor {
+    display: grid;
+    z-index: 1;
     position: absolute;
     inset-block-start: 0.25rem;
     inset-inline: 0.375rem;
-    z-index: 1;
-    display: grid;
-    gap: 0.125rem 0.25rem;
     padding: 0.25rem;
+    gap: 0.125rem 0.25rem;
     border: 1px solid var(--color-gesture);
     border-radius: var(--radius-control);
     background: var(--panel);
@@ -895,13 +895,13 @@
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
   .menu-label {
-    grid-column: 1 / -1;
     display: flex;
+    grid-column: 1 / -1;
     justify-content: space-between;
     gap: 0.5rem;
+    color: var(--foreground);
     font-size: var(--text-xs);
     line-height: 1.4;
-    color: var(--foreground);
   }
   .menu-note {
     color: var(--muted-foreground);
@@ -936,14 +936,14 @@
     }
     .path-menu[data-routed="true"] .choice {
       position: absolute;
-      inset-block-start: 0;
-      inset-inline-start: 0;
+      offset-anchor: 50% 50%;
+      offset-distance: 100%;
+      offset-position: auto;
+      offset-rotate: 0deg;
       inline-size: var(--size-choice);
       block-size: 2.75rem;
-      offset-position: auto;
-      offset-anchor: 50% 50%;
-      offset-rotate: 0deg;
-      offset-distance: 100%;
+      inset-block-start: 0;
+      inset-inline-start: 0;
     }
   }
   .editor {
@@ -967,23 +967,23 @@
     align-items: center;
     min-block-size: 2.75rem;
     padding-inline: 0.375rem 2.75rem;
+    color: var(--muted-foreground);
     font-size: var(--text-xs);
     line-height: 1.4;
-    color: var(--muted-foreground);
   }
   .preview-button {
-    position: absolute;
-    inset-block-end: 0;
-    inset-inline-end: 0;
     display: grid;
+    position: absolute;
     place-items: center;
     inline-size: 2.75rem;
     block-size: 2.75rem;
+    inset-block-end: 0;
+    inset-inline-end: 0;
     border-radius: var(--radius-control);
     color: var(--muted-foreground);
     &:hover {
-      color: var(--foreground);
       background: var(--card);
+      color: var(--foreground);
     }
   }
   .demo-touch {
@@ -1135,29 +1135,29 @@
   @keyframes demo-tap {
     0%,
     100% {
-      opacity: 0;
       scale: 1.5;
+      opacity: 0;
     }
     20%,
     70% {
-      opacity: 1;
       scale: 1;
+      opacity: 1;
     }
   }
   @keyframes demo-swipe {
     0%,
     100% {
-      opacity: 0;
       translate: 0 0.75rem;
+      opacity: 0;
     }
     20% {
-      opacity: 1;
       translate: 0 0.75rem;
+      opacity: 1;
     }
     65%,
     85% {
-      opacity: 1;
       translate: 0 -2rem;
+      opacity: 1;
     }
   }
   @media (prefers-reduced-motion: no-preference) {

@@ -1,15 +1,49 @@
 import { expect, it } from "@effect/vitest";
-import { Cause, Clock, Deferred, Duration, Effect, Exit, Fiber, Logger, Queue } from "effect";
+import { Cause, Clock, ConfigProvider, Deferred, Duration, Effect, Exit, Fiber, Logger, Queue } from "effect";
 import { FetchHttpClient } from "effect/http";
 import { TestClock } from "effect/testing";
 import { createHash } from "node:crypto";
 import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { ShopClient } from "#scripts/catalog/shop.mts";
+import { ShopClient, ShopError, shopRequestHeaders } from "#scripts/catalog/shop.mts";
 
 const url = "https://shop.kingdomdeath.com/products/test.js";
 const otherUrl = "https://shop.kingdomdeath.com/products/other.js";
+
+it.effect("sends only the configured cart cookie to the exact HTTPS shop origin", () =>
+  Effect.gen(function* () {
+    const headers = yield* shopRequestHeaders(url);
+    expect(headers.Cookie).toBe("cart=test-cart%3Fkey%3Dtest-key");
+    expect(headers["User-Agent"]).toContain("Chrome/157.0.0.0");
+    for (const target of ["https://kingdomdeath.com/news", "https://example.com", "http://shop.kingdomdeath.com/products/test.js"])
+      expect((yield* shopRequestHeaders(target)).Cookie).toBeUndefined();
+  }).pipe(Effect.provide(ConfigProvider.layer(ConfigProvider.fromUnknown({ KDM_SHOP_CART_COOKIE: "test-cart%3Fkey%3Dtest-key" })))),
+);
+
+it.effect("generates a random cart cookie without configuration and rejects a full cookie header", () =>
+  Effect.gen(function* () {
+    const generated = shopRequestHeaders(url).pipe(Effect.provide(ConfigProvider.layer(ConfigProvider.fromUnknown({}))));
+    const first = (yield* generated).Cookie;
+    expect(first).toMatch(/^cart=[A-Za-z0-9_-]{32}$/);
+    expect((yield* generated).Cookie).not.toBe(first);
+    const failure = yield* Effect.flip(
+      shopRequestHeaders(url).pipe(
+        Effect.provide(ConfigProvider.layer(ConfigProvider.fromUnknown({ KDM_SHOP_CART_COOKIE: "cart=value; jwt=secret" }))),
+      ),
+    );
+    expect(failure.message).not.toContain("secret");
+    expect(failure.message).toContain("only the cart cookie value");
+  }),
+);
+
+it("explains how to supply a valid cart cookie after a shop error", () => {
+  for (const status of [403, 404, 429, 500]) {
+    expect(new ShopError(status, url).message).toContain("Set KDM_SHOP_CART_COOKIE to a valid cart cookie value from your browser");
+    expect(new ShopError(status, "https://example.com/product").message).not.toContain("KDM_SHOP_CART_COOKIE");
+  }
+  expect(new ShopError(429, url, true).message).toContain("--fetch");
+});
 const now = Date.parse("2026-10-10T00:00:00.000Z");
 const cacheFile = (cache: string, key = url) => join(cache, createHash("sha256").update(key).digest("hex") + ".json");
 const directory = Effect.acquireRelease(
@@ -32,7 +66,7 @@ const observedClock = Effect.gen(function* () {
       ...clock,
       sleep: (duration: Duration.Duration) => Queue.offer(sleeps, Duration.toMillis(duration)).pipe(Effect.andThen(clock.sleep(duration))),
     },
-    pacing: Queue.take(sleeps).pipe(Effect.repeat({ until: (duration) => duration === 35_000 })),
+    pacing: Queue.take(sleeps).pipe(Effect.repeat({ until: (duration) => duration === 61_000 })),
     waiting: (milliseconds: number) => Queue.take(sleeps).pipe(Effect.repeat({ until: (duration) => duration === milliseconds })),
     timeout: Queue.take(sleeps).pipe(Effect.repeat({ until: (duration) => duration === 40_000 })),
   };
@@ -110,11 +144,11 @@ it.effect("reports the wait and active URL, without logging cached reads as down
     expect(messages).toEqual([]);
     const fiber = yield* Effect.forkChild(get);
     yield* observer.pacing;
-    expect(messages).toEqual([expect.stringContaining(`Waiting 35s before fetching ${url}`)]);
-    yield* TestClock.adjust(35_000);
+    expect(messages).toEqual([expect.stringContaining(`Waiting 61s before fetching ${url}`)]);
+    yield* TestClock.adjust(61_000);
     yield* Fiber.join(fiber);
     expect(messages).toEqual([
-      expect.stringContaining(`Waiting 35s before fetching ${url}`),
+      expect.stringContaining(`Waiting 61s before fetching ${url}`),
       expect.stringContaining(`Fetching ${url}`),
       expect.stringContaining(`HTTP 200 ${url}`),
     ]);
@@ -131,7 +165,7 @@ it.effect.each(["120", new Date(now + 120_000).toUTCString(), "10"])(
       yield* TestClock.setTime(now);
       const cache = yield* directory;
       const cooldown = retryAfter === "10" ? 10_000 : 120_000;
-      const wait = Math.max(35_000, cooldown);
+      const wait = Math.max(61_000, cooldown);
       const observer = yield* observedClock;
       let calls = 0;
       const fetch: typeof globalThis.fetch = async () => {
@@ -269,7 +303,7 @@ it.effect("sends fixed headers and refuses redirects, then preserves disk HTTP n
     expect(requests[0].redirect).toBe("error");
     const headers = new Headers(requests[0].headers);
     expect(headers.get("accept")).toBe("application/json");
-    expect(headers.get("user-agent")).toContain("Chrome/155.0.0.0");
+    expect(headers.get("user-agent")).toContain("Chrome/157.0.0.0");
     yield* missingLock(cache);
   }).pipe(Effect.scoped),
 );
@@ -287,13 +321,13 @@ it.effect("paces separate clients sharing a directory and persists their start t
       .getEffect(otherUrl)
       .pipe(Effect.provideService(FetchHttpClient.Fetch, fetch), Effect.provideService(Clock.Clock, observer.clock), Effect.forkChild);
     yield* observer.pacing;
-    yield* TestClock.adjust(34_999);
+    yield* TestClock.adjust(60_999);
     expect(second.requests).toHaveLength(0);
     yield* TestClock.adjust(1);
     yield* Fiber.join(fiber);
-    expect(Date.parse(second.requests[0].startedAt) - Date.parse(first.requests[0].startedAt)).toBe(35_000);
+    expect(Date.parse(second.requests[0].startedAt) - Date.parse(first.requests[0].startedAt)).toBe(61_000);
     const state = yield* Effect.promise(() => readFile(join(cache, "last-request.json"), "utf8"));
-    expect(JSON.parse(state)).toEqual({ startedAt: now + 35_000 });
+    expect(JSON.parse(state)).toEqual({ startedAt: now + 61_000 });
     yield* missingLock(cache);
   }).pipe(Effect.scoped),
 );
@@ -346,7 +380,7 @@ it.effect("refresh bypasses settled memory and disk but deduplicates concurrent 
     expect(calls).toBe(1);
     const next = yield* get().pipe(Effect.provideService(Clock.Clock, observer.clock), Effect.forkChild);
     yield* observer.pacing;
-    yield* TestClock.adjust(35_000);
+    yield* TestClock.adjust(61_000);
     expect((yield* Fiber.join(next)).data).toBe("second");
     expect(calls).toBe(2);
   }).pipe(Effect.scoped),
@@ -375,7 +409,7 @@ it.effect("interrupting a paced lookup releases the lock and allows the next req
     yield* missingLock(cache);
     const next = yield* Effect.forkChild(get());
     yield* observer.pacing;
-    yield* TestClock.adjust(35_000);
+    yield* TestClock.adjust(61_000);
     yield* Fiber.join(next);
     expect(calls).toBe(1);
     yield* missingLock(cache);
@@ -440,7 +474,7 @@ it.effect("cancelling the last shared waiter aborts transport and removes the lo
     yield* missingLock(cache);
     const next = yield* Effect.forkChild(get());
     yield* observer.pacing;
-    yield* TestClock.adjust(35_000);
+    yield* TestClock.adjust(61_000);
     expect((yield* Fiber.join(next)).data).toBe("recovered");
     expect(calls).toBe(2);
     yield* missingLock(cache);

@@ -304,8 +304,8 @@
     text-align: start;
 
     &:disabled {
-      opacity: 0.5;
       cursor: default;
+      opacity: 0.5;
     }
     &:enabled:hover {
       background: var(--card);
@@ -335,8 +335,8 @@
   }
   .feedback {
     position: absolute;
-    inset-inline: 0;
     inset-block-end: 0;
+    inset-inline: 0;
   }
   strong {
     font-weight: var(--font-bold);
@@ -358,8 +358,8 @@
   }
   section {
     display: grid;
-    gap: 0.75rem;
     margin-block-end: 1rem;
+    gap: 0.75rem;
   }
   section p {
     margin: 0;

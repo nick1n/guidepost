@@ -315,8 +315,8 @@
       --target-9: var(--red-9);
     }
     &:disabled {
-      opacity: 0.45;
       cursor: not-allowed;
+      opacity: 0.45;
     }
     &.active {
       border-color: var(--color-target);

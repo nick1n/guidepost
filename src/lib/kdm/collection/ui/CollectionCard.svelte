@@ -569,9 +569,9 @@
     --space-edition-control: 0.25rem;
     --gap-edition: 0.5rem;
     --size-edition-control: 1.5rem;
-    container-type: inline-size;
     /* Keep the header's paint containment independent of the body's visibility. */
     contain: paint;
+    container-type: inline-size;
     overflow: hidden;
     border-radius: var(--radius-card);
     background: var(--card);
@@ -615,10 +615,10 @@
       5.5rem + max(1, var(--edition-count)) * var(--size-edition-row) + var(--notes-count) * 2.125rem + var(--requirements-count) * 2rem +
         var(--contents-count) * 1.625rem + var(--copy-count) * 3rem
     );
-
-    content-visibility: auto;
     /* display:none removes the box while collapsed, preserving its last expanded measurement. */
     contain-intrinsic-block-size: auto var(--size-body-placeholder);
+
+    content-visibility: auto;
     padding: var(--space-card);
     &.pending {
       min-block-size: calc(var(--size-body-placeholder) + 2 * var(--space-card));

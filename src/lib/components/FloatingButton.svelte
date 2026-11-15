@@ -14,20 +14,20 @@
     display: grid;
     place-items: center;
     inline-size: var(--size-floating-control);
-    block-size: var(--size-floating-control);
     min-inline-size: var(--size-control);
+    block-size: var(--size-floating-control);
     min-block-size: var(--size-control);
     border: var(--border-width) solid var(--grey-7);
     border-radius: var(--radius-control);
-    background: color-mix(var(--card) 67%, transparent);
     backdrop-filter: blur(1.5px);
+    background: color-mix(var(--card) 67%, transparent);
     color: var(--foreground);
     touch-action: manipulation;
 
     &[data-menu-trigger] {
-      anchor-name: --menu-trigger;
-      position: relative;
       z-index: 6;
+      position: relative;
+      anchor-name: --menu-trigger;
     }
 
     &:is(:focus, :active) {

@@ -221,7 +221,7 @@ it.effect(
           ),
         );
         expect(output.failed).toBe(true);
-        if (args[0] === "--delay") expect(output.text).toContain("--delay must be a finite number of at least 35 seconds");
+        if (args[0] === "--delay") expect(output.text).toContain("--delay must be a finite number of at least 61 seconds");
         expect(yield* Effect.promise(() => readdir(directory))).toEqual([]);
       }
     }).pipe(Effect.scoped),

@@ -24,9 +24,9 @@
 
   nav {
     display: grid;
-    gap: 0.75rem;
-    margin-block-start: 1.5rem;
     justify-items: start;
+    margin-block-start: 1.5rem;
+    gap: 0.75rem;
   }
 
   a {

@@ -89,7 +89,7 @@ export function organizeCatalog<T extends Catalog | AppCatalog>(catalog: T) {
       if (category === "homebrew" && item.tags.includes("ccg")) return 0;
       return category === "content" ? (item.kind === "core" ? 0 : item.kind === "expansion" ? 1 : 2) : 2;
     };
-    // Keep core and expansions first in content, and CCG first in homebrew; otherwise sort by ID.
+    // Keep core and expansions first in content, and CCG first in homebrew; otherwise sort by the optional sort key, falling back to ID.
     entries.sort(([leftId, left], [rightId, right]) => {
       const a = rank(left);
       const b = rank(right);
@@ -97,7 +97,7 @@ export function organizeCatalog<T extends Catalog | AppCatalog>(catalog: T) {
       if (a === 1) {
         return compareDates(itemDate(left), itemDate(right)) || leftId.localeCompare(rightId, "en");
       }
-      return leftId.localeCompare(rightId, "en");
+      return (left.sortKey ?? leftId).localeCompare(right.sortKey ?? rightId, "en") || leftId.localeCompare(rightId, "en");
     });
     catalog[category] = Object.fromEntries(entries);
   }

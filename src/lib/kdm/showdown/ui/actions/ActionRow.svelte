@@ -67,10 +67,10 @@
   .read {
     display: block;
     grid-column: 1;
-    cursor: pointer;
     min-inline-size: 0;
     padding: 0.375rem 0.5rem;
     text-align: start;
+    cursor: pointer;
 
     &::-webkit-details-marker {
       display: none;
@@ -106,11 +106,11 @@
   .preview {
     display: block;
     overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
     color: var(--muted-foreground);
     font-size: var(--text-xs);
     line-height: var(--line-height-snug);
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
   .spend {
     grid-row: 1;

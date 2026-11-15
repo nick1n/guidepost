@@ -13,8 +13,8 @@ Successfully exported articles, including those with no retained links, are skip
 
 The scraper reads article bodies, including newsletters and Kickstarter content hosted on the news site. It excludes navigation and
 never requests Kickstarter, product pages, images, or tracking redirects. All network requests share the catalog CLI's persisted
-35-second request gate, including the transition from news to shop downloads. Use `pnpm scrape:news --fetch --delay 60` to slow news requests further;
-values below 35 seconds are rejected. Cached pages require no wait.
+61-second request gate, including the transition from news to shop downloads. Use `pnpm scrape:news --fetch --delay 90` to slow news requests further;
+values below 61 seconds are rejected. Cached pages require no wait.
 
 Results checkpoint after each post:
 

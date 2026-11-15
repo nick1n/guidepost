@@ -1,6 +1,6 @@
 {
   "$schema": "./data.schema.json",
-  "shopUpdated": "2026-11-01",
+  "shopUpdated": "2026-11-14",
   "content": {
     "core": {
       "aliases": ["Collector's Resin Edition Kingdom Death Core 1.0", "Monster 1.5 Core Game", "Kingdom Death Monster 1.5", "Monster 1.6 Core Game", "Kingdom Death Monster 1.6", "KINGDOM DEATH"],
@@ -1342,21 +1342,7 @@
       ],
       "kind": "box",
       "name": "Ashbloom of Dedheim",
-      "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "2025", "painters-scale", "pattern", "bust", "seed", "dedheim", "ashbloom"]
-    },
-    "astri-the-promised": {
-      "aliases": ["Astri the Promised Deathgrey", "Astri", "Astri the Promised - Painter's Scale"],
-      "announcements": ["2021-04-05", "2022-06-01", "2024-04-02"],
-      "editions": [
-        { "id": "first-run", "label": "First Run", "format": "physical", "handle": "astri-the-promised", "materials": ["Photoresin"], "numbered": true, "prices": [3000], "releaseDate": "2021-04-05", "runSize": 500, "shop": "out-of-stock", "size": "30" },
-        { "id": "deathgrey", "label": "Deathgrey", "format": "physical", "handle": "astri-the-promised", "materials": ["Deathgrey"], "numbered": true, "prices": [3500], "releaseDate": "2021-04-05", "runSize": 150, "shop": "out-of-stock", "size": "30" },
-        { "id": "encore", "label": "Encore", "format": "physical", "handle": "astri-the-promised", "materials": ["Photoresin"], "prices": [3000], "releaseDate": "2021-04-05", "shop": "out-of-stock", "size": "30" },
-        { "id": "painters", "label": "Painters", "format": "physical", "handle": "astri-the-promised-painters-scale", "materials": ["Photoresin"], "prices": [5000], "releaseDate": "2022-05-31", "shop": "missing", "size": "50" }
-      ],
-      "kind": "model",
-      "name": "Astri the Promised",
-      "notes": "Two head options (helmet and no helmet).\n\nPainters: First painter's scale photoresin. 950 produced (fabricated on demand).",
-      "tags": ["female", "photoresin", "deathgrey", "painters-scale", "2021", "astri"]
+      "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "2025", "painters-scale", "pattern", "bust", "seed", "a-tier", "dedheim", "ashbloom"]
     },
     "azure-knight": {
       "announcements": ["2019-05-15"],
@@ -1778,7 +1764,7 @@
       "gameplayContent": "Character Card",
       "kind": "box",
       "name": "Character - Stone Wrecker",
-      "tags": ["female", "plastic", "generic", "gameplay", "photoresin", "2023", "deathgrey", "ability", "character"]
+      "tags": ["female", "plastic", "generic", "gameplay", "photoresin", "2023", "deathgrey", "ability", "character", "b-tier"]
     },
     "chef-female": {
       "editions": [
@@ -1886,7 +1872,7 @@
       "handle": "dark-confidant",
       "kind": "model",
       "name": "Dark Confidant",
-      "tags": ["female", "generic", "gameplay", "gear", "photoresin", "deathgrey", "2025", "beta", "diorama"]
+      "tags": ["female", "generic", "gameplay", "gear", "photoresin", "deathgrey", "2025", "beta", "diorama", "c-tier"]
     },
     "dark-elf": {
       "editions": [
@@ -2421,7 +2407,7 @@
       "kind": "box",
       "name": "Deathmas - Cockroach Queen",
       "notes": "Painters: 400 printed.\n\nThe plastic model with gameplay was first released during Deathmas sale 2024.",
-      "tags": ["female", "plastic", "gameplay", "gear", "photoresin", "2023", "deathgrey", "painters-scale", "seasonal", "beta", "resource", "ai", "vermin", "deathmas"]
+      "tags": ["female", "plastic", "gameplay", "gear", "photoresin", "2023", "deathgrey", "painters-scale", "seasonal", "beta", "resource", "ai", "vermin", "deathmas", "c-tier"]
     },
     "deathmas-gunborg": {
       "aliases": ["Deathmas Gunborg Sleighs - Painter's Scale"],
@@ -2452,7 +2438,7 @@
       ],
       "kind": "model",
       "name": "Deathmas Percival",
-      "tags": ["female", "plastic", "2024", "painters-scale", "seasonal", "deathmas", "percival", "doggo"]
+      "tags": ["female", "plastic", "2024", "painters-scale", "seasonal", "b-tier", "deathmas", "percival", "doggo"]
     },
     "dermacentaur": {
       "announcements": ["2026-06-30", "2026-10-30"],
@@ -2816,7 +2802,7 @@
       "kind": "beta",
       "name": "Estate Hero - Male",
       "size": "30",
-      "tags": ["generic", "gameplay", "gear", "male", "photoresin", "deathgrey", "2025", "seasonal", "beta"]
+      "tags": ["generic", "gameplay", "gear", "male", "photoresin", "deathgrey", "2025", "seasonal", "beta", "d-tier"]
     },
     "expansion-green-knight-armor": {
       "aliases": ["Green Knight"],
@@ -2916,7 +2902,7 @@
       "handle": "male-fighter",
       "kind": "beta",
       "name": "Fighter - Male",
-      "tags": ["generic", "gameplay", "gear", "male", "deathgrey", "2025", "beta", "fighter"]
+      "tags": ["generic", "gameplay", "gear", "male", "deathgrey", "2025", "beta", "fighter", "d-tier", "large-scale"]
     },
     "flower-knight": {
       "aliases": ["Flower Knight (Resin)", "Flower Knight Bust"],
@@ -2925,12 +2911,12 @@
         { "id": "first-run", "label": "First Run", "expansion": "Flower Knight", "format": "physical", "materials": ["Resin"], "numbered": true, "prices": [3000], "releaseDate": "2011-12-10", "runSize": 200, "size": "30" },
         { "id": "encore", "label": "Encore", "expansion": "Flower Knight", "format": "physical", "materials": ["Resin"], "prices": [3000], "releaseDate": "2011-12-10", "size": "30" },
         { "id": "plastic", "label": "Plastic", "expansion": "Flower Knight", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "releaseDate": "2016-02-16" },
-        { "id": "bust", "label": "Bust", "available": true, "format": "physical", "handle": "flower-knight-bust", "prices": [25000], "releaseDate": "2025-08-29", "shop": "in-stock" }
+        { "id": "bust", "label": "Bust", "format": "physical", "handle": "flower-knight-bust", "prices": [25000], "releaseDate": "2025-08-29", "shop": "out-of-stock" }
       ],
       "kind": "model",
       "name": "Flower Knight",
       "notes": "First Run and early encores came with a black plastic base.",
-      "tags": ["plastic", "monster", "in-stock", "knight", "2016", "quarry", "bust", "2011", "node-2-quarry", "monster-flower-knight"]
+      "tags": ["plastic", "monster", "knight", "2016", "quarry", "bust", "2011", "node-2-quarry", "monster-flower-knight"]
     },
     "flower-witch": {
       "announcements": ["2019-03-27", "2021-04-05"],
@@ -2998,7 +2984,7 @@
       "kind": "beta",
       "name": "Frozen Survivor - Camellia",
       "size": "30",
-      "tags": ["female", "gameplay", "gear", "deathgrey", "survivor", "2025", "beta", "frozen-survivor", "camellia"]
+      "tags": ["female", "gameplay", "gear", "deathgrey", "survivor", "2025", "beta", "c-tier", "frozen-survivor", "camellia"]
     },
     "frozen-survivor-cyclamen": {
       "announcements": ["2026-01-30"],
@@ -3181,7 +3167,7 @@
       "handle": "great-game-hunter-bravado",
       "kind": "model",
       "name": "Great Game Hunter Bravado",
-      "tags": ["male", "deathgrey", "2025", "great-game-hunter", "bravado"]
+      "tags": ["male", "deathgrey", "2025", "great-game-hunter", "c-tier", "bravado"]
     },
     "great-game-hunter-julius": {
       "aliases": ["Great Game Hunter (Male) - Julius"],
@@ -3386,7 +3372,7 @@
       "name": "Holiday White Speaker Nico",
       "notes": "A Christmas holiday release, packaged in either a white box with silver bows or a green box with black bows. The Plastic miniature is also part of Promos of Death.",
       "size": "30",
-      "tags": ["female", "plastic", "gameplay", "photoresin", "2024", "2015", "painters-scale", "seasonal", "promo", "white-speaker", "deathmas", "nico"]
+      "tags": ["female", "plastic", "gameplay", "photoresin", "2024", "painters-scale", "2015", "seasonal", "promo", "white-speaker", "deathmas", "nico"]
     },
     "hollowheart-rene": {
       "aliases": ["Hollowheart Rene - Painter's Scale"],
@@ -3462,7 +3448,7 @@
       "handle": "indomitable-survivor-ballistic-brayonet-belvedere",
       "kind": "box",
       "name": "Indomitable Survivor - Ballistic Brayonet Belvedere",
-      "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "survivor", "2026", "pattern", "resource", "indomitable-survivor", "belvedere"]
+      "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "survivor", "2026", "pattern", "resource", "indomitable-survivor", "s-tier", "belvedere"]
     },
     "indomitable-survivor-dashing-reaper-paleun": {
       "aliases": ["Indomitable - Dashing Reaper Paleun"],
@@ -3473,7 +3459,7 @@
       "kind": "box",
       "name": "Indomitable Survivor - Dashing Reaper Paleun",
       "size": "30",
-      "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "survivor", "2025", "pattern", "resource", "indomitable-survivor", "paleun"]
+      "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "survivor", "2025", "pattern", "resource", "indomitable-survivor", "a-tier", "paleun"]
     },
     "indomitable-survivor-fated-dagger-domino": {
       "announcements": ["2025-09-30"],
@@ -3482,7 +3468,7 @@
       "handle": "indomitable-survivor-fated-dagger-domino",
       "kind": "box",
       "name": "Indomitable Survivor - Fated Dagger Domino",
-      "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "survivor", "2025", "pattern", "resource", "indomitable-survivor", "domino"]
+      "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "survivor", "2025", "pattern", "resource", "indomitable-survivor", "c-tier", "domino"]
     },
     "indomitable-survivor-greatest-gaxe-morg": {
       "aliases": ["kds morg"],
@@ -3517,7 +3503,7 @@
       ],
       "kind": "box",
       "name": "Indomitable Survivor - Heartleech Baselard Rene",
-      "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "survivor", "2026", "pattern", "resource", "sim", "indomitable-survivor", "rene"]
+      "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "survivor", "2026", "pattern", "resource", "sim", "indomitable-survivor", "rene", "f-tier"]
     },
     "indomitable-survivor-longclaw-lenore": {
       "aliases": ["Longclaw Lenore", "Longclaw Lenore - Painter's Scale"],
@@ -3550,7 +3536,7 @@
       "handle": "indomitable-survivor-oblouk-shield-arco",
       "kind": "box",
       "name": "Indomitable Survivor - Oblouk Shield Arco",
-      "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "survivor", "2025", "pattern", "resource", "indomitable-survivor", "arco"]
+      "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "survivor", "2025", "pattern", "resource", "indomitable-survivor", "b-tier", "arco"]
     },
     "indomitable-survivor-poison-partisan-ritika": {
       "aliases": ["Indomitable - Poison Partisan Ritika"],
@@ -3560,7 +3546,7 @@
       "handle": "indomitable-survivor-poison-partisan-ritika",
       "kind": "box",
       "name": "Indomitable Survivor - Poison Partisan Ritika",
-      "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "survivor", "2025", "pattern", "resource", "indomitable-survivor", "ritika"]
+      "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "survivor", "2025", "pattern", "resource", "indomitable-survivor", "a-tier", "ritika"]
     },
     "indomitable-survivor-pulverizing-star-venus": {
       "announcements": ["2026-06-30"],
@@ -3569,7 +3555,7 @@
       "handle": "indomitable-survivor-pulverizing-star-venus",
       "kind": "box",
       "name": "Indomitable Survivor - Pulverizing Star Venus",
-      "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "survivor", "2026", "pattern", "resource", "indomitable-survivor", "venus"]
+      "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "survivor", "2026", "pattern", "resource", "indomitable-survivor", "b-tier", "venus"]
     },
     "indomitable-survivor-roaring-harmonica-kale": {
       "aliases": ["Indomitable - Roaring Harmonica Kale"],
@@ -3582,7 +3568,7 @@
       "kind": "box",
       "name": "Indomitable Survivor - Roaring Harmonica Kale",
       "size": "30",
-      "tags": ["plastic", "gameplay", "in-stock", "gear", "male", "survivor", "2025", "pattern", "resource", "sim", "indomitable-survivor", "kale"]
+      "tags": ["plastic", "gameplay", "in-stock", "gear", "male", "survivor", "2025", "pattern", "resource", "sim", "indomitable-survivor", "c-tier", "kale", "large-scale"]
     },
     "indomitable-survivor-stampede-glaive-xell": {
       "aliases": ["Stampede Glaive - Xell"],
@@ -3608,7 +3594,7 @@
       "kind": "box",
       "name": "Indomitable Survivor - Tachyon Nodachi Rubi",
       "size": "30",
-      "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "survivor", "2025", "pattern", "resource", "sim", "indomitable-survivor", "rubi"]
+      "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "survivor", "2025", "pattern", "resource", "sim", "indomitable-survivor", "b-tier", "rubi"]
     },
     "indomitable-survivor-thumping-timpani-ledla": {
       "announcements": ["2024-09-30"],
@@ -3627,7 +3613,7 @@
       "handle": "indomitable-survivor-toxicimitar-badar",
       "kind": "box",
       "name": "Indomitable Survivor - Toxicimitar Badar",
-      "tags": ["plastic", "gameplay", "in-stock", "gear", "male", "survivor", "2025", "pattern", "resource", "indomitable-survivor", "badar"]
+      "tags": ["plastic", "gameplay", "in-stock", "gear", "male", "survivor", "2025", "pattern", "resource", "indomitable-survivor", "a-tier", "badar"]
     },
     "indomitable-survivor-tyrant-slayer-scarlet": {
       "aliases": ["Indomitable - Tyrant Slayer Scarlet"],
@@ -3637,7 +3623,7 @@
       "handle": "indomitable-survivor-tyrant-slayer-scarlet",
       "kind": "box",
       "name": "Indomitable Survivor - Tyrant Slayer Scarlet",
-      "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "survivor", "2025", "pattern", "resource", "indomitable-survivor", "scarlet"]
+      "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "survivor", "2025", "pattern", "resource", "indomitable-survivor", "c-tier", "scarlet"]
     },
     "inferno-snake-fighter": {
       "aliases": ["Inferno Snake Fighter Deathgrey M2 Edition"],
@@ -3676,7 +3662,7 @@
       ],
       "kind": "model",
       "name": "Investment Sniper Punctual Bride",
-      "tags": ["female", "generic", "gameplay", "gear", "photoresin", "deathgrey", "2025", "painters-scale", "beta", "hunt-event", "diorama"]
+      "tags": ["female", "generic", "gameplay", "gear", "photoresin", "deathgrey", "2025", "painters-scale", "beta", "hunt-event", "diorama", "s-tier"]
     },
     "iron-succubus": {
       "announcements": ["2026-02-27"],
@@ -3952,7 +3938,7 @@
       "kind": "box",
       "name": "Legendary Character - Hollow",
       "notes": "Four Hollow miniatures portray her early survivor, aspirant, arena, and sacrifice stages. Includes the Hollow legendary character card, Blindside glossary, Aspirant Headband / Serpent Cuirass / Serpent Fang patterns and gear, Anointed Headband / Sacrificial Headband / Stoic Mask rare gear, and Empty Vessel survivor status. Gen Con 2026 premiere. Use only one legendary character card per campaign.",
-      "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "survivor", "2026", "pattern", "ability", "character", "legendary", "hollow", "legendary-character"]
+      "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "survivor", "2026", "pattern", "ability", "character", "legendary", "s-tier", "hollow", "legendary-character"]
     },
     "legendary-character-lantern-armor-aya": {
       "aliases": [
@@ -3996,7 +3982,7 @@
       ],
       "kind": "box",
       "name": "Legendary Character - Snow the Savior",
-      "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "2025", "innovation", "secret-fighting-art", "ability", "savior", "character", "legendary", "snow", "legendary-character"]
+      "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "2025", "innovation", "secret-fighting-art", "ability", "savior", "character", "a-tier", "legendary", "snow", "legendary-character"]
     },
     "level-2-butcher-prototype": {
       "announcements": ["2026-08-31"],
@@ -4396,7 +4382,7 @@
       "kind": "beta",
       "name": "Mox The Healer",
       "size": "30",
-      "tags": ["female", "gameplay", "gear", "deathgrey", "2025", "beta", "pillar", "starting-survivor", "mox"]
+      "tags": ["female", "gameplay", "gear", "deathgrey", "2025", "beta", "b-tier", "pillar", "starting-survivor", "mox"]
     },
     "murderer": {
       "aliases": ["Murderer Bust"],
@@ -4679,7 +4665,7 @@
       "tags": ["female", "generic", "deathgrey", "2020"]
     },
     "percival": {
-      "aliases": ["Percival", "Percival (Plastic Resculpt)"],
+      "aliases": ["Percival (Resin)", "Percival (Plastic Resculpt)"],
       "editions": [
         { "id": "first-run", "label": "First Run", "format": "physical", "gameplay": false, "materials": ["Resin"], "numbered": true, "prices": [2500], "releaseDate": "2015-07-01", "runSize": 500, "size": "30" },
         { "id": "encore", "label": "Encore", "format": "physical", "gameplay": false, "materials": ["Resin"], "prices": [2500], "releaseDate": "2015-07-01", "size": "30" },
@@ -4687,7 +4673,7 @@
       ],
       "gameplay": true,
       "kind": "box",
-      "name": "Percival (Resin)",
+      "name": "Percival",
       "notes": "Percival was fully re-sculpted for her hard plastic incarnation.",
       "tags": ["female", "plastic", "gameplay", "knight", "2024", "2015", "hunt-event", "promo", "secret-fighting-art", "resculpt", "percival", "white-box", "black-knight"]
     },
@@ -4766,7 +4752,7 @@
       ],
       "kind": "box",
       "name": "Pillar - Fade",
-      "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "survivor", "2025", "sim", "hunt-event", "pillar", "fade"]
+      "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "survivor", "2025", "sim", "hunt-event", "b-tier", "pillar", "fade"]
     },
     "pillar-forge-priest": {
       "aliases": ["Forge Priest"],
@@ -4782,7 +4768,7 @@
       "kind": "box",
       "name": "Pillar - Forge Priest",
       "size": "30",
-      "tags": ["female", "plastic", "generic", "gameplay", "in-stock", "gear", "terrain", "2026", "2017", "naked", "2011", "pillar", "minion"]
+      "tags": ["plastic", "generic", "gameplay", "in-stock", "gear", "terrain", "2026", "2017", "naked", "2011", "a-tier", "pillar", "minion"]
     },
     "pillar-percival": {
       "announcements": ["2025-07-22", "2025-09-30"],
@@ -4793,7 +4779,7 @@
       "gameplay": true,
       "kind": "box",
       "name": "Pillar - Percival",
-      "tags": ["female", "plastic", "gameplay", "in-stock", "survivor", "2025", "sim", "hunt-event", "secret-fighting-art", "pillar", "percival"]
+      "tags": ["female", "plastic", "gameplay", "in-stock", "survivor", "2025", "sim", "hunt-event", "secret-fighting-art", "b-tier", "pillar", "percival"]
     },
     "pillar-summer-grimmory": {
       "aliases": ["Summer Grimmory", "Summer Grimmory (Beta)"],
@@ -4807,7 +4793,7 @@
       "kind": "beta",
       "name": "Pillar - Summer Grimmory",
       "requires": ["expansion-sunstalker"],
-      "tags": ["gameplay", "male", "photoresin", "2025", "seasonal", "beta", "pot-sun", "diorama", "pillar", "summer", "trait", "grimmory"]
+      "tags": ["gameplay", "male", "photoresin", "2025", "painters-scale", "seasonal", "beta", "pot-sun", "diorama", "pillar", "summer", "trait", "grimmory", "d-tier"]
     },
     "pinup-apotheosis": {
       "aliases": ["Pinup Apotheosis (Remastered)"],
@@ -4912,7 +4898,7 @@
       ],
       "kind": "model",
       "name": "Pinup Dragon Sacrifice",
-      "tags": ["female", "plastic", "generic", "monster", "resin", "pinup", "2015", "painters-scale", "quarry", "promo", "monster-dragon-king", "node-3-quarry"]
+      "tags": ["female", "plastic", "generic", "monster", "resin", "pinup", "painters-scale", "2015", "quarry", "promo", "monster-dragon-king", "node-3-quarry"]
     },
     "pinup-dung-ball": {
       "editions": [
@@ -5032,14 +5018,14 @@
       "announcements": ["2019-10-31", "2020-10-30", "2022-10-31", "2023-10-31", "2024-10-31", "2025-10-31", "2026-10-30"],
       "editions": [
         { "id": "resin", "label": "Resin", "format": "physical", "handle": "halloween-special-pinup-twilight-knight", "materials": ["Resin"], "prices": [2700], "releaseDate": "2014-10-31", "shop": "out-of-stock", "size": "30" },
-        { "id": "box", "label": "Box", "available": true, "format": "physical", "handle": "plastic-halloween-pinup-twilight-knight", "materials": ["Plastic"], "prices": [2500, 2600], "releaseDate": "2018-10-31", "shop": "in-stock", "size": "30" },
+        { "id": "box", "label": "Box", "format": "physical", "handle": "plastic-halloween-pinup-twilight-knight", "materials": ["Plastic"], "prices": [2500, 2600], "releaseDate": "2018-10-31", "shop": "out-of-stock", "size": "30" },
         { "id": "painters", "label": "Painters", "format": "physical", "gameplay": false, "handle": "halloween-twilight-knight-painters-scale", "materials": ["Photoresin"], "prices": [6000], "releaseDate": "2023-10-31", "shop": "missing", "size": "50" }
       ],
       "gameplay": true,
       "kind": "box",
       "name": "Halloween Special Pinup Twilight Knight",
       "notes": "Exclusive to All Hallows Eve. First released as a resin (small box), and in 2018 as plastic (large box).\n\nPainters: 400 printed.",
-      "tags": ["female", "plastic", "generic", "gameplay", "in-stock", "gear", "resin", "knight", "pinup", "painters-scale", "seasonal", "promo", "2014", "twilight-knight", "halloween"]
+      "tags": ["female", "plastic", "generic", "gameplay", "gear", "resin", "knight", "pinup", "painters-scale", "seasonal", "promo", "2014", "twilight-knight", "halloween"]
     },
     "pinup-honeycomb-weaver": {
       "aliases": ["Pinup Honeycomb Weaver - Painter's Scale"],
@@ -5378,7 +5364,7 @@
       "kind": "model",
       "name": "Pinup Sunstalker Dancer",
       "notes": "Resin release contains two body options.\n\nBust: Only 250 were sold as First Runs. Nevertheless, the Collector's Edition card reads 'of 500'. 450 encores.\n\nPainters: Painter's Scale version of a model chosen by winners of the Pinup Painting Contest 2022; limited to 250 prints.",
-      "tags": ["female", "plastic", "generic", "monster", "photoresin", "resin", "pinup", "2015", "painters-scale", "quarry", "pot-sun", "bust", "monster-sunstalker", "node-3-quarry", "dancer"]
+      "tags": ["female", "plastic", "generic", "monster", "photoresin", "resin", "pinup", "painters-scale", "2015", "quarry", "pot-sun", "bust", "monster-sunstalker", "node-3-quarry", "dancer"]
     },
     "pinup-survivor-aya": {
       "editions": [
@@ -5452,7 +5438,7 @@
       "kind": "model",
       "name": "Pinup Twilight Witch",
       "notes": "Painters: Painter's Scale version of a model chosen by winners of the Pinup Painting Contest 2022; limited to 200 prints.",
-      "tags": ["female", "plastic", "generic", "photoresin", "resin", "pinup", "2015", "painters-scale"]
+      "tags": ["female", "plastic", "generic", "photoresin", "resin", "pinup", "painters-scale", "2015"]
     },
     "pinup-valentines-day-twilight-knight": {
       "aliases": ["Valentine's Pinup Twilight Knight"],
@@ -5584,7 +5570,7 @@
       "kind": "box",
       "name": "Priestess Percival",
       "size": "30",
-      "tags": ["female", "plastic", "gameplay", "gear", "deathgrey", "2025", "2024", "beta", "pot-sun", "percival", "priestess"]
+      "tags": ["female", "plastic", "gameplay", "gear", "deathgrey", "2025", "2024", "beta", "pot-sun", "b-tier", "percival", "priestess"]
     },
     "priests-of-the-sun": {
       "aliases": ["Priests of the Sun / People of the Sun (Sun Miko & Sun Priest)"],
@@ -5801,7 +5787,7 @@
       "editions": [
         { "id": "first-run", "label": "First Run", "beta": true, "format": "physical", "materials": ["Photoresin"], "numbered": true, "prices": [3400], "releaseDate": "2026-10-30", "shop": "out-of-stock" },
         { "id": "deathgrey", "label": "Deathgrey", "beta": true, "format": "physical", "materials": ["Deathgrey"], "numbered": true, "prices": [3900], "releaseDate": "2026-10-30", "shop": "out-of-stock" },
-        { "id": "encore", "label": "Encore", "available": true, "beta": true, "format": "physical", "materials": ["Photoresin"], "prices": [3400], "releaseDate": "2026-10-30", "shop": "in-stock" }
+        { "id": "encore", "label": "Encore", "beta": true, "format": "physical", "materials": ["Photoresin"], "prices": [3400], "releaseDate": "2026-10-30", "shop": "out-of-stock" }
       ],
       "gameplay": true,
       "gameplayContent": "The Counterculture beta character card; Heritage Breaker beta rare gear card",
@@ -5809,7 +5795,7 @@
       "kind": "beta",
       "name": "Rune",
       "size": "30",
-      "tags": ["female", "gameplay", "in-stock", "gear", "photoresin", "deathgrey", "2026", "beta", "character", "rune"]
+      "tags": ["female", "gameplay", "gear", "photoresin", "deathgrey", "2026", "beta", "character", "rune"]
     },
     "samurai": {
       "editions": [
@@ -6082,14 +6068,31 @@
       "tags": ["female", "plastic", "gameplay", "gear", "2023", "pattern", "beta", "armor", "core-survivor", "2022", "pot-sun", "lucy", "vermin"]
     },
     "seed-pattern-survivor-astri-the-promised": {
-      "announcements": ["2026-09-30"],
-      "editions": [{ "id": "box", "label": "Box", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [3400], "releaseDate": "2026-09-30", "shop": "in-stock" }],
+      "aliases": ["Astri the Promised Deathgrey", "Astri", "Astri the Promised - Painter's Scale", "Seed Pattern Survivor - Astri the Promised"],
+      "announcements": ["2021-04-05", "2022-06-01", "2024-04-02", "2026-09-30"],
+      "editions": [
+        { "id": "first-run", "label": "First Run", "format": "physical", "gameplay": false, "handle": "astri-the-promised", "materials": ["Photoresin"], "numbered": true, "prices": [3000], "releaseDate": "2021-04-05", "runSize": 500, "shop": "out-of-stock", "size": "30" },
+        { "id": "deathgrey", "label": "Deathgrey", "format": "physical", "gameplay": false, "handle": "astri-the-promised", "materials": ["Deathgrey"], "numbered": true, "prices": [3500], "releaseDate": "2021-04-05", "runSize": 150, "shop": "out-of-stock", "size": "30" },
+        { "id": "encore", "label": "Encore", "format": "physical", "gameplay": false, "handle": "astri-the-promised", "materials": ["Photoresin"], "prices": [3000], "releaseDate": "2021-04-05", "shop": "out-of-stock", "size": "30" },
+        { "id": "painters", "label": "Painters", "format": "physical", "gameplay": false, "handle": "astri-the-promised-painters-scale", "materials": ["Photoresin"], "prices": [5000], "releaseDate": "2022-05-31", "shop": "missing", "size": "50" },
+        {
+          "id": "box",
+          "label": "Box",
+          "available": true,
+          "format": "physical",
+          "handle": "seed-pattern-survivor-astri-the-promised",
+          "materials": ["Plastic"],
+          "name": "Seed Pattern Survivor - Astri the Promised",
+          "prices": [3400],
+          "releaseDate": "2026-09-30",
+          "shop": "in-stock"
+        }
+      ],
       "gameplay": true,
-      "handle": "seed-pattern-survivor-astri-the-promised",
       "kind": "box",
-      "name": "Seed Pattern Survivor - Astri the Promised",
-      "notes": "Includes Cleaner Bird Cloak and Seeker Lantern seed pattern cards, matching gear cards, and Seed Pattern rules. Gen Con 2026 premiere.",
-      "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "survivor", "2026", "pattern", "seed", "astri"]
+      "name": "Astri the Promised",
+      "notes": "Two head options (helmet and no helmet).\n\nPainters: First painter's scale photoresin. 950 produced (fabricated on demand).\n\nBox: Includes Cleaner Bird Cloak and Seeker Lantern seed pattern cards, matching gear cards, and Seed Pattern rules. Gen Con 2026 premiere.",
+      "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "photoresin", "deathgrey", "survivor", "2026", "painters-scale", "pattern", "2021", "seed", "s-tier", "astri"]
     },
     "seed-pattern-survivor-ingama": {
       "announcements": ["2026-01-30"],
@@ -6098,7 +6101,7 @@
       "handle": "seed-pattern-ingama",
       "kind": "box",
       "name": "Seed Pattern Survivor - Ingama",
-      "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "survivor", "2026", "pattern", "seed", "ingama"]
+      "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "survivor", "2026", "pattern", "seed", "b-tier", "ingama"]
     },
     "seed-pattern-survivor-jackel": {
       "aliases": ["Seed Pattern - Jackel"],
@@ -6110,7 +6113,7 @@
       "kind": "box",
       "name": "Seed Pattern Survivor - Jackel",
       "size": "30",
-      "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "survivor", "2025", "pattern", "seed", "jackel"]
+      "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "survivor", "2025", "pattern", "seed", "b-tier", "jackel"]
     },
     "seed-pattern-survivor-willow": {
       "aliases": ["Willow / Seed Pattern - Willow", "Seed Pattern - Willow"],
@@ -6131,7 +6134,7 @@
       "handle": "seed-pattern-zaniyah",
       "kind": "box",
       "name": "Seed Pattern Survivor - Zaniyah",
-      "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "survivor", "2026", "pattern", "seed", "zaniyah"]
+      "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "survivor", "2026", "pattern", "seed", "a-tier", "zaniyah"]
     },
     "sen": {
       "aliases": ["Sen Deathgrey M2 Edition", "Sen Variant - Painter's Scale"],
@@ -6437,7 +6440,7 @@
       "handle": "survivors-of-death-2",
       "kind": "set",
       "name": "Survivors of Death II",
-      "tags": ["female", "plastic", "generic", "gameplay", "in-stock", "gear", "male", "survivor", "2025", "pattern", "resource", "fighting-art", "knowledge", "seed", "strain", "collective-cognition", "impairment"]
+      "tags": ["female", "plastic", "generic", "gameplay", "in-stock", "gear", "male", "survivor", "2025", "pattern", "resource", "fighting-art", "knowledge", "seed", "strain", "a-tier", "collective-cognition", "impairment"]
     },
     "set-survivors-of-death-3": {
       "announcements": ["2026-09-30"],
@@ -6448,7 +6451,7 @@
       "kind": "set",
       "name": "Survivors of Death III",
       "notes": "The Troubadour Troupe set includes Lyra, Melody, Harmony, and Sage miniatures; four character cards; the Troubadour Troupe pillar; Band innovation; Demise Stridulation strain milestone; Blind Rocker vermin; Discord Cricket strange resource; and Resonance Headset pattern and gear. The shop recommends a Gambler's Chest campaign for the Feasting Songs collective cognition milestone (CC 23) and Ardent, Elegant, and Dueling Soundscape knowledge cards. Gen Con 2026 premiere.",
-      "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "survivor", "2026", "pattern", "resource", "innovation", "knowledge", "ability", "character", "strain", "pillar", "vermin", "collective-cognition", "impairment", "harmony", "lyra", "melody", "sage"]
+      "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "survivor", "2026", "pattern", "resource", "innovation", "knowledge", "ability", "character", "strain", "pillar", "vermin", "collective-cognition", "s-tier", "impairment", "harmony", "lyra", "melody", "sage"]
     },
     "shadow-box-holy-lands": {
       "announcements": ["2026-04-01"],
@@ -6732,7 +6735,7 @@
       "kind": "box",
       "name": "Sunlantern Armor - Aya",
       "notes": "Painters: 250 printed.",
-      "tags": ["female", "plastic", "gameplay", "gear", "2023", "deathgrey", "2024", "painters-scale", "pattern", "beta", "resource", "armor", "pot-sun", "aya"]
+      "tags": ["female", "plastic", "gameplay", "gear", "2023", "deathgrey", "2024", "painters-scale", "pattern", "beta", "resource", "armor", "pot-sun", "aya", "a-tier"]
     },
     "sunstalker-adult": {
       "aliases": ["Sunstalker Adult (Resin)"],
@@ -7101,7 +7104,7 @@
       "gameplay": true,
       "kind": "vignette",
       "name": "Vignette of Death: Screaming Nukealope",
-      "tags": ["gameplay", "monster", "in-stock", "gear", "2025", "terrain", "quarry", "resource", "sim", "settlement-location", "fighting-art", "secret-fighting-art", "ai", "strain", "node-2-quarry", "vignette", "minion", "monster-screaming-nukealope"]
+      "tags": ["gameplay", "monster", "in-stock", "gear", "2025", "terrain", "quarry", "resource", "sim", "settlement-location", "fighting-art", "secret-fighting-art", "ai", "strain", "node-2-quarry", "s-tier", "vignette", "minion", "monster-screaming-nukealope"]
     },
     "vignette-of-death-super-survivors": {
       "aliases": ["Super Survivors (Set of 4 plus Super Dung Beetle Knight)"],
@@ -7256,7 +7259,7 @@
       "kind": "model",
       "name": "Wanderer - Preacher",
       "requires": ["expansion-gamblers-chest"],
-      "tags": ["female", "plastic", "generic", "gameplay", "in-stock", "gear", "2026", "innovation", "fighting-art", "disorder", "knowledge", "wanderer", "arc-survivor", "preacher"]
+      "tags": ["female", "plastic", "generic", "gameplay", "in-stock", "gear", "2026", "innovation", "fighting-art", "disorder", "knowledge", "s-tier", "wanderer", "arc-survivor", "preacher", "best-of"]
     },
     "warlords": {
       "editions": [
@@ -7493,7 +7496,7 @@
       "handle": "woe-grimmory",
       "kind": "model",
       "name": "Woe Grimmory",
-      "tags": ["gameplay", "gear", "male", "photoresin", "deathgrey", "2025", "beta", "grimmory"]
+      "tags": ["gameplay", "gear", "male", "photoresin", "deathgrey", "2025", "beta", "a-tier", "grimmory"]
     },
     "woe-white-speaker": {
       "announcements": ["2026-06-30"],

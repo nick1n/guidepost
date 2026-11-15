@@ -68,9 +68,9 @@
     display: grid;
     align-content: center;
     justify-items: center;
-    gap: 0.75rem;
     min-block-size: 24rem;
     padding: 1rem;
+    gap: 0.75rem;
     color: var(--muted-foreground);
     text-align: center;
   }

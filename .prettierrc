@@ -1,5 +1,7 @@
 {
-  "plugins": ["prettier-plugin-svelte"],
+  "plugins": ["prettier-plugin-svelte", "prettier-plugin-css-order"],
+  "cssDeclarationSorterOrder": "smacss",
+  "cssDeclarationSorterKeepOverrides": true,
   "printWidth": 140,
   "overrides": [
     { "files": "scripts/catalog/data/tags.json", "options": { "printWidth": 1000 } },

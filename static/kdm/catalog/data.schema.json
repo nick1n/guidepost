@@ -146,6 +146,11 @@
           "uniqueItems": true,
           "minItems": 1,
           "description": "Additional product URLs for an item without editions."
+        },
+        "sortKey": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+          "description": "Optional catalog ordering key, used instead of the item ID within its existing group. Does not change item identity; equal keys sort by ID."
         }
       }
     },

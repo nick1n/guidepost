@@ -19,16 +19,16 @@
 <style>
   .cost {
     display: inline-flex;
-    align-items: center;
     flex-shrink: 0;
+    align-items: center;
     gap: 0.25rem;
     color: var(--color-action-cost, var(--identity));
     font-size: 1.125rem;
     white-space: nowrap;
 
     &.free {
-      font-size: var(--text-sm);
       font-weight: var(--font-bold);
+      font-size: var(--text-sm);
     }
   }
 </style>

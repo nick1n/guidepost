@@ -109,8 +109,8 @@
   header {
     display: grid;
     grid-template-columns: 1fr auto;
-    gap: 0.375rem 0;
     align-items: start;
+    gap: 0.375rem 0;
   }
 
   .status-icon {
@@ -196,8 +196,8 @@
 
   .suggestion {
     display: grid;
-    gap: 0.5rem;
     margin-block-start: 1.25rem;
+    gap: 0.5rem;
     color: var(--muted-foreground);
     font-size: var(--text-md);
 
@@ -205,8 +205,8 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 0.75rem;
       padding: 0.75rem 1rem;
+      gap: 0.75rem;
       border: var(--border-width) solid var(--color-divider);
       border-radius: var(--radius-control);
       background: var(--background);

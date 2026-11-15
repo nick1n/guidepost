@@ -355,7 +355,7 @@ export class Downloader {
     options: { cache: string; delay: number; requestCache?: string; offline?: boolean; signal?: AbortSignal },
     download = downloadNewsPage,
   ) {
-    if (!Number.isFinite(options.delay) || options.delay < 35) throw new Error("News requests require at least 35 seconds between starts");
+    if (!Number.isFinite(options.delay) || options.delay < 61) throw new Error("News requests require at least 61 seconds between starts");
     this.options = options;
     this.download = download;
   }
@@ -461,7 +461,7 @@ const newsFlags = {
   fetch,
   output: Flag.String("output").pipe(Flag.withDefault("scripts/news")),
   cache: Flag.String("cache").pipe(Flag.withDefault(".cache/kingdom-death-news")),
-  delay: Flag.String("delay").pipe(Flag.withDefault("35")),
+  delay: Flag.String("delay").pipe(Flag.withDefault("61")),
   "request-cache": optionalString("request-cache"),
   "refresh-posts": Flag.Boolean("refresh-posts").pipe(Flag.withDefault(false)),
 };
@@ -487,8 +487,8 @@ export class NewsRefreshError extends Error {
 export async function refreshNews(options: RefreshOptions = {}): Promise<Report> {
   const output = options.output ?? "scripts/news";
   const cache = options.cache ?? ".cache/kingdom-death-news";
-  const delay = options.delay ?? 35;
-  if (!Number.isFinite(delay) || delay < 35) throw new Error("--delay must be a finite number of at least 35 seconds");
+  const delay = options.delay ?? 61;
+  if (!Number.isFinite(delay) || delay < 61) throw new Error("--delay must be a finite number of at least 61 seconds");
   // Validate before writing anything, so a damaged checkpoint cannot erase earlier results.
   options.signal?.throwIfAborted();
   const report = await loadReport(output);

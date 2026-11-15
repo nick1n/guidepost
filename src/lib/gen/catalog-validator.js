@@ -231,6 +231,12 @@ var e = (e, t) => () => (t || (e((t = { exports: {} }).exports, t, t.exports), (
             minItems: 1,
             description: "Additional product URLs for an item without editions.",
           },
+          sortKey: {
+            type: "string",
+            pattern: "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+            description:
+              "Optional catalog ordering key, used instead of the item ID within its existing group. Does not change item identity; equal keys sort by ID.",
+          },
         },
       },
       f = {
@@ -2656,6 +2662,30 @@ var e = (e, t) => () => (t || (e((t = { exports: {} }).exports, t, t.exports), (
               keyword: "type",
               params: { type: "array" },
               message: "must be array",
+            };
+            (c === null ? (c = [e]) : c.push(e), l++);
+          }
+        }
+        if (e.sortKey !== void 0) {
+          let n = e.sortKey;
+          if (typeof n == "string") {
+            if (!h.test(n)) {
+              let e = {
+                instancePath: t + "/sortKey",
+                schemaPath: "#/properties/sortKey/pattern",
+                keyword: "pattern",
+                params: { pattern: "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
+                message: 'must match pattern "^[a-z0-9]+(?:-[a-z0-9]+)*$"',
+              };
+              (c === null ? (c = [e]) : c.push(e), l++);
+            }
+          } else {
+            let e = {
+              instancePath: t + "/sortKey",
+              schemaPath: "#/properties/sortKey/type",
+              keyword: "type",
+              params: { type: "string" },
+              message: "must be string",
             };
             (c === null ? (c = [e]) : c.push(e), l++);
           }

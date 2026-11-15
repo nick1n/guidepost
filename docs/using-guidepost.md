@@ -33,7 +33,7 @@ Share a hunt card using `/kdm/hunt/#/event/art/face`, for example `/kdm/hunt/#/1
 
 - Events: `0` through `99` (`0` is event 100).
 - Artwork: `ccg`, `fen`, or `kekasi`.
-- Face: `front`, `back`, or `reverse` for cards with a special reverse.
+- Face: `front`, `back`, or `reverse` for cards with a second side.
 
 Links default to event 1, CCG artwork, and the back face, so `#/1` is enough. Opening a link leaves saved artwork preferences unchanged.
 Card controls update the URL without adding browser history entries.

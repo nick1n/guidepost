@@ -165,10 +165,10 @@
     border-block-end: 2px solid var(--identity-7);
   }
   .section-header {
-    position: relative;
-    border-radius: inherit;
     display: grid;
+    position: relative;
     grid-template-columns: minmax(0, 1fr) auto;
+    border-radius: inherit;
   }
   .toggle {
     display: grid;

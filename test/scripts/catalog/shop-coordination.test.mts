@@ -30,7 +30,7 @@ const observedClock = Effect.gen(function* () {
       ...clock,
       sleep: (duration: Duration.Duration) => Queue.offer(sleeps, Duration.toMillis(duration)).pipe(Effect.andThen(clock.sleep(duration))),
     },
-    pacing: Queue.take(sleeps).pipe(Effect.repeat({ until: (duration) => duration === 35_000 })),
+    pacing: Queue.take(sleeps).pipe(Effect.repeat({ until: (duration) => duration === 61_000 })),
   };
 });
 
@@ -52,18 +52,18 @@ it.effect("news index refreshes and uncached articles share pacing while cached 
       );
     const controller = new AbortController();
     yield* Effect.addFinalizer(() => Effect.sync(() => controller.abort()));
-    const downloader = new Downloader({ cache: pages, requestCache: cache, delay: 35, signal: controller.signal }, download);
+    const downloader = new Downloader({ cache: pages, requestCache: cache, delay: 61, signal: controller.signal }, download);
     const index = "https://kingdomdeath.com/news";
     const get = (url: string, cached: boolean) => Effect.tryPromise(() => downloader.get(url, cached));
     yield* get(index, false);
     for (const url of [index, index + "/example"]) {
       const next = yield* Effect.forkChild(get(url, false));
       yield* observer.pacing;
-      yield* TestClock.adjust(35_000);
+      yield* TestClock.adjust(61_000);
       yield* Fiber.join(next);
     }
     yield* get(index + "/example", true);
-    expect(starts).toEqual([now, now + 35_000, now + 70_000]);
+    expect(starts).toEqual([now, now + 61_000, now + 122_000]);
     expect(downloader.requests).toBe(3);
     yield* missingLock(cache);
   }).pipe(Effect.scoped),
@@ -92,13 +92,13 @@ it.effect("paces every redirect hop, including redirects to another host", () =>
     for (let hop = 1; hop <= 2; hop++) {
       yield* observer.pacing;
       expect(urls).toHaveLength(hop);
-      yield* TestClock.adjust(34_999);
+      yield* TestClock.adjust(60_999);
       expect(urls).toHaveLength(hop);
       yield* TestClock.adjust(1);
     }
     expect(yield* Fiber.join(checking)).toEqual({ status: 204, ok: true });
     expect(urls).toEqual(["https://example.com/first", "https://example.com/second", "https://shop.kingdomdeath.com/final"]);
-    expect(starts).toEqual([now, now + 35_000, now + 70_000]);
+    expect(starts).toEqual([now, now + 61_000, now + 122_000]);
     yield* missingLock(cache);
   }).pipe(Effect.scoped),
 );
@@ -138,11 +138,11 @@ it.effect.each([
     const next = yield* Effect.forkChild(run(nextKind));
     yield* Effect.raceFirst(observer.pacing, Fiber.join(next));
     expect(starts).toEqual([now]);
-    yield* TestClock.adjust(34_999);
+    yield* TestClock.adjust(60_999);
     expect(starts).toEqual([now]);
     yield* TestClock.adjust(1);
     yield* Fiber.join(next);
-    expect(starts).toEqual([now, now + 35_000]);
+    expect(starts).toEqual([now, now + 61_000]);
     yield* missingLock(cache);
   }).pipe(Effect.scoped),
 );
@@ -161,7 +161,7 @@ it.effect.each(["gate", "client"] as const)("coordinates the shared gate and cli
         (startedAt) =>
           Effect.gen(function* () {
             starts.push("gate");
-            expect(startedAt).toBe(firstKind === "gate" ? now : now + 35_000);
+            expect(startedAt).toBe(firstKind === "gate" ? now : now + 61_000);
             if (held) {
               yield* Deferred.succeed(entered, undefined);
               yield* Deferred.await(release);
@@ -189,12 +189,12 @@ it.effect.each(["gate", "client"] as const)("coordinates the shared gate and cli
     yield* Deferred.succeed(release, undefined);
     yield* Fiber.join(first);
     yield* observer.pacing;
-    yield* TestClock.adjust(34_999);
+    yield* TestClock.adjust(60_999);
     expect(starts).toHaveLength(1);
     yield* TestClock.adjust(1);
     yield* Fiber.join(second);
     expect(starts).toHaveLength(2);
-    expect(JSON.parse(yield* state(cache))).toEqual({ startedAt: now + 35_000 });
+    expect(JSON.parse(yield* state(cache))).toEqual({ startedAt: now + 61_000 });
     yield* missingLock(cache);
   }).pipe(Effect.scoped),
 );
@@ -229,7 +229,7 @@ it.effect.each(["failure", "interruption"] as const)("releases the shared lock a
     ).pipe(Effect.provideService(Clock.Clock, observer.clock), Effect.forkChild);
     yield* observer.pacing;
     expect(called).toBe(false);
-    yield* TestClock.adjust(35_000);
+    yield* TestClock.adjust(61_000);
     yield* Fiber.join(next);
     expect(called).toBe(true);
     yield* missingLock(cache);

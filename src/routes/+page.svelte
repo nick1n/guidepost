@@ -483,17 +483,17 @@
     --shadow-title:
       -1px 0 0 var(--color-shadow-edge), 1px 0 0 var(--color-shadow-edge), 0 -1px 0 var(--color-shadow-edge),
       0 1px 0 var(--color-shadow-edge), 0 2px 4px color-mix(var(--background) 55%, transparent), 0 0 0.5rem var(--foreground);
+    z-index: 1;
 
     position: relative;
-    z-index: 1;
     inline-size: fit-content;
     margin-inline-start: auto;
-    padding-block-start: var(--space-page);
     padding-inline: var(--space-page);
+    padding-block-start: var(--space-page);
+    translate: calc(-1 * var(--shift-x)) calc(-1 * var(--shift-y));
     line-height: var(--line-height-none);
     text-align: right;
     text-shadow: var(--shadow-title);
-    translate: calc(-1 * var(--shift-x)) calc(-1 * var(--shift-y));
     /* Composite the text so fractional parallax does not snap glyphs to pixel rows. */
     will-change: translate;
   }
@@ -502,8 +502,8 @@
     font-weight: var(--font-bold);
     font-size: var(--text-hero);
     font-family: var(--font-display);
-    letter-spacing: var(--letter-spacing-tight);
     text-box: trim-both cap alphabetic;
+    letter-spacing: var(--letter-spacing-tight);
   }
 
   button {
@@ -511,17 +511,17 @@
   }
 
   .tagline {
-    position: relative;
-    z-index: 1;
     contain: inline-size;
+    z-index: 1;
+    position: relative;
     margin-block-start: 2px;
     text-align: center;
   }
 
   nav {
-    position: relative;
-    z-index: 1;
     display: grid;
+    z-index: 1;
+    position: relative;
     inline-size: fit-content;
     max-inline-size: 100%;
     margin-inline-start: auto;
@@ -716,10 +716,10 @@
     --size-guidepost: clamp(23rem, 55vw, 38rem);
 
     inline-size: var(--size-guidepost);
-    pointer-events: auto;
     transform-origin: var(--position-guidepost-orb-x) var(--position-guidepost-orb-y);
     translate: calc(0% - var(--position-guidepost-orb-x) + var(--shift-x)) calc(100% - var(--position-guidepost-orb-y) + var(--shift-y));
     rotate: -9deg;
+    pointer-events: auto;
   }
 
   svg {
@@ -755,8 +755,8 @@
     }
     9%,
     50% {
-      opacity: 0;
       filter: brightness(1);
+      opacity: 0;
     }
     58% {
       opacity: 0.18;
@@ -780,8 +780,8 @@
       opacity: 0.86;
     }
     100% {
-      opacity: 1;
       filter: brightness(var(--brightness-relit));
+      opacity: 1;
     }
   }
 
@@ -833,8 +833,8 @@
       opacity: 0;
     }
     100% {
-      opacity: 1;
       filter: brightness(var(--brightness-relit));
+      opacity: 1;
     }
   }
 

@@ -261,6 +261,10 @@ export interface Item {
    * @minItems 1
    */
   urls?: string[];
+  /**
+   * Optional catalog ordering key, used instead of the item ID within its existing group. Does not change item identity; equal keys sort by ID.
+   */
+  sortKey?: string;
 }
 export interface CompletionAlternative {
   /**

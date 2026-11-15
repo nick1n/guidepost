@@ -1,0 +1,24 @@
+diff --git a/dist/main.cjs b/dist/main.cjs
+index 06b5498075718ffd21b336c597a4820468529733..11d2086af9379b9b8e2f422f38ab712936c92064 100644
+--- a/dist/main.cjs
++++ b/dist/main.cjs
+@@ -2354,6 +2354,7 @@ const properties = [
+   'border-top-left-radius',
+   'border-bottom-right-radius',
+   'border-bottom-left-radius',
++  'corner-shape',
+   'border-inline',
+   'border-inline-color',
+   'border-inline-style',
+diff --git a/src/orders/smacss.mjs b/src/orders/smacss.mjs
+index 67923dea2e951b1a2a3cb60f8604dc009a1b3dd8..d19f09fd73e2136720540da7c24264d92897a446 100644
+--- a/src/orders/smacss.mjs
++++ b/src/orders/smacss.mjs
+@@ -179,6 +179,7 @@ export const properties = [
+   'border-top-left-radius',
+   'border-bottom-right-radius',
+   'border-bottom-left-radius',
++  'corner-shape',
+   'border-inline',
+   'border-inline-color',
+   'border-inline-style',

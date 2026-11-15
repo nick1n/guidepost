@@ -290,8 +290,8 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    font-size: var(--text-sm);
     color: var(--muted-foreground);
+    font-size: var(--text-sm);
   }
   .back {
     min-block-size: 2.75rem;
@@ -301,20 +301,20 @@
   }
 
   h1 {
-    font-family: var(--font-display);
-    font-size: clamp(2.5rem, 8vw, 4.5rem);
     font-weight: var(--font-bold);
+    font-size: clamp(2.5rem, 8vw, 4.5rem);
     line-height: var(--line-height-none);
+    font-family: var(--font-display);
     letter-spacing: var(--letter-spacing-tight);
   }
   h2 {
-    font-family: var(--font-display);
-    font-size: clamp(1.25rem, 3vw, 1.75rem);
     font-weight: var(--font-bold);
+    font-size: clamp(1.25rem, 3vw, 1.75rem);
+    font-family: var(--font-display);
   }
   h3 {
-    font-size: var(--text-lg);
     font-weight: var(--font-bold);
+    font-size: var(--text-lg);
   }
   section {
     margin-block-start: 2.5rem;
@@ -324,8 +324,8 @@
     flex-wrap: wrap;
     align-items: baseline;
     justify-content: space-between;
-    gap: 0.5rem 1rem;
     margin-block-end: 0.75rem;
+    gap: 0.5rem 1rem;
   }
   .section-heading > span {
     color: var(--muted-foreground);
@@ -352,9 +352,9 @@
   }
   .controls {
     display: grid;
-    gap: 1.5rem;
     margin-block-start: 2.5rem;
     padding-block: 1.5rem;
+    gap: 1.5rem;
     border-block: 1px solid var(--color-divider);
   }
   .hue-control {
@@ -439,8 +439,8 @@
     table-layout: fixed;
   }
   th {
-    text-align: start;
     font-weight: var(--font-bold);
+    text-align: start;
   }
   .matrix th:not(:first-child) {
     text-align: center;
@@ -448,8 +448,8 @@
   small {
     display: block;
     margin-block-start: 0.25rem;
-    font-size: var(--text-xs);
     font-weight: var(--font-normal);
+    font-size: var(--text-xs);
   }
   td {
     vertical-align: middle;
@@ -457,8 +457,8 @@
   .matrix td > code {
     display: block;
     margin-block-start: 0.5rem;
-    text-align: center;
     font-size: 0.625rem;
+    text-align: center;
   }
   .lightness {
     text-align: center;
@@ -485,14 +485,14 @@
   }
   .inspection {
     display: grid;
-    gap: 1rem;
     margin-block-start: 1rem;
+    gap: 1rem;
   }
   .selected-details {
     display: grid;
     align-content: start;
-    gap: 0.5rem;
     padding: 1rem;
+    gap: 0.5rem;
     border: 1px solid var(--color-divider);
     border-radius: var(--radius-control);
     background: var(--panel);
@@ -502,8 +502,8 @@
     font-family: monospace;
   }
   .selected-details > code {
-    overflow-wrap: anywhere;
     font-size: var(--text-sm);
+    overflow-wrap: anywhere;
   }
   .face-pair {
     display: grid;
@@ -528,12 +528,12 @@
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-around;
-    gap: 0.5rem;
     margin-block: 0.75rem;
+    gap: 0.5rem;
   }
   .colored-type {
-    font-size: clamp(2rem, 6vw, 3.5rem);
     font-weight: var(--font-bold);
+    font-size: clamp(2rem, 6vw, 3.5rem);
   }
   .filled-type {
     display: grid;
@@ -541,8 +541,8 @@
     inline-size: 3rem;
     block-size: 3rem;
     border-radius: var(--radius-control);
-    font-size: 1.75rem;
     font-weight: var(--font-bold);
+    font-size: 1.75rem;
   }
   .face > span {
     font-size: var(--text-xs);
@@ -562,21 +562,21 @@
     display: grid;
     grid-template-columns: 6fr 3fr 1fr;
     margin-block-start: 0.75rem;
-    border-radius: var(--radius-control);
     overflow: hidden;
+    border-radius: var(--radius-control);
   }
   .ratio > div {
     display: grid;
     align-content: center;
-    gap: 0.25rem;
     padding: 0.75rem 0.25rem;
-    text-align: center;
+    gap: 0.25rem;
     font-size: var(--text-sm);
+    text-align: center;
   }
   .mockups {
     display: grid;
-    gap: 1rem;
     margin-block-start: 1rem;
+    gap: 1rem;
   }
   .mockup {
     padding: 1rem;
@@ -587,8 +587,8 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
-    gap: 0.5rem;
     margin-block-end: 1rem;
+    gap: 0.5rem;
     font-size: var(--text-sm);
   }
   .mockup-content {
@@ -599,9 +599,9 @@
   .mockup-content > div {
     display: grid;
     align-content: center;
-    gap: 0.5rem;
     min-inline-size: 0;
     padding: 0.75rem 0.375rem;
+    gap: 0.5rem;
     border-radius: var(--radius-control);
     font-size: var(--text-xs);
   }
@@ -618,18 +618,17 @@
     text-align: center;
   }
   .demo-accent > span {
-    writing-mode: vertical-rl;
     justify-self: center;
+    writing-mode: vertical-rl;
   }
   details {
     margin-block-start: 1.5rem;
   }
   summary {
-    cursor: pointer;
     font-size: var(--text-md);
+    cursor: pointer;
   }
   pre {
-    user-select: text;
     max-block-size: 24rem;
     margin-block-start: 0.75rem;
     padding: 1rem;
@@ -638,6 +637,7 @@
     border-radius: var(--radius-control);
     background: var(--panel);
     font-size: var(--text-sm);
+    user-select: text;
   }
   .metric-note {
     margin-block: 0.5rem 1rem;

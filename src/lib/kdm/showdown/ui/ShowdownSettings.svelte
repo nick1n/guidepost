@@ -135,9 +135,9 @@
     gap: 1.25rem;
   }
   h3 {
-    font-family: var(--font-display);
-    font-size: var(--text-lg);
     font-weight: var(--font-bold);
+    font-size: var(--text-lg);
+    font-family: var(--font-display);
   }
   p {
     color: var(--muted-foreground);
@@ -154,8 +154,8 @@
   }
   legend {
     margin-block-end: 0.5rem;
-    font-size: var(--text-md);
     font-weight: var(--font-bold);
+    font-size: var(--text-md);
   }
   a {
     display: flex;
@@ -202,8 +202,8 @@
   }
   summary {
     padding-block: 0.75rem;
-    cursor: pointer;
     font-size: var(--text-md);
+    cursor: pointer;
   }
   dl {
     display: grid;

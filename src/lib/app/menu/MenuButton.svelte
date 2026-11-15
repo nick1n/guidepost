@@ -65,8 +65,8 @@
     position: absolute;
     inline-size: 0.875rem;
     block-size: 0.875rem;
-    inset-inline-start: 0.125rem;
     inset-block-start: 0.125rem;
+    inset-inline-start: 0.125rem;
     border: var(--border-width) solid var(--card);
     border-radius: 50%;
     background: var(--dot-rest-color, var(--dot-color));

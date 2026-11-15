@@ -7,3 +7,4 @@ packageImportMethod: clone-or-copy
 
 patchedDependencies:
   "@unocss/svelte-scoped@66.12.0": patches/@unocss__svelte-scoped@66.12.0.patch
+  css-declaration-sorter@7.4.0: patches/css-declaration-sorter@7.4.0.patch

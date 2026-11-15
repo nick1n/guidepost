@@ -255,8 +255,8 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 1rem;
     margin-block-end: 3rem;
+    gap: 1rem;
   }
   .small-icon {
     --size-icon: 1.125rem;
@@ -266,8 +266,8 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    font-size: var(--text-sm);
     color: var(--muted-foreground);
+    font-size: var(--text-sm);
   }
   .back {
     min-block-size: 2.75rem;
@@ -280,17 +280,17 @@
     flex-wrap: wrap;
     align-items: end;
     justify-content: space-between;
-    gap: 1.5rem;
     margin-block-end: 2rem;
+    gap: 1.5rem;
   }
   h1 {
     display: flex;
     align-items: baseline;
     gap: 0.375rem;
-    font-family: var(--font-display);
-    font-size: clamp(2.75rem, 6vw, 4.75rem);
     font-weight: var(--font-bold);
+    font-size: clamp(2.75rem, 6vw, 4.75rem);
     line-height: 1.05;
+    font-family: var(--font-display);
     letter-spacing: var(--letter-spacing-tight);
   }
   .intro-note {
@@ -307,8 +307,8 @@
     display: flex;
     align-items: center;
     gap: 0.375rem;
-    font-size: var(--text-sm);
     color: var(--muted-foreground);
+    font-size: var(--text-sm);
   }
   .legend-icon {
     --size-icon: 1.5rem;
@@ -319,8 +319,8 @@
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
-    gap: 1rem;
     padding-block: 1rem;
+    gap: 1rem;
     border-block: 1px solid var(--color-divider);
   }
   .filters {
@@ -335,8 +335,8 @@
     color: var(--muted-foreground);
     font-size: var(--text-sm);
     &[aria-pressed="true"] {
-      color: var(--foreground);
       background: var(--card);
+      color: var(--foreground);
     }
   }
   .settings {
@@ -350,8 +350,8 @@
   }
   legend {
     margin-block-end: 0.25rem;
-    font-size: var(--text-xs);
     color: var(--muted-foreground);
+    font-size: var(--text-xs);
   }
   .sizes {
     display: flex;
@@ -363,8 +363,8 @@
     min-block-size: 2.75rem;
     padding-inline: 0.75rem;
     border-radius: calc(var(--radius-control) - 0.125rem);
-    font-size: var(--text-sm);
     color: var(--muted-foreground);
+    font-size: var(--text-sm);
     &[aria-pressed="true"] {
       background: var(--card);
       color: var(--foreground);
@@ -373,10 +373,10 @@
   .timing {
     display: grid;
     grid-template-columns: 1fr auto;
-    gap: 0.25rem 0.625rem;
     inline-size: 7.5rem;
-    font-size: var(--text-xs);
+    gap: 0.25rem 0.625rem;
     color: var(--muted-foreground);
+    font-size: var(--text-xs);
   }
   output {
     color: var(--foreground);
@@ -391,12 +391,12 @@
   .setting {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
     min-block-size: 2.75rem;
     padding-inline: 0.5rem;
+    gap: 0.5rem;
     border-radius: var(--radius-control);
-    font-size: var(--text-sm);
     color: var(--muted-foreground);
+    font-size: var(--text-sm);
     &[aria-pressed="true"] {
       color: var(--accent);
     }
@@ -410,8 +410,8 @@
     border-radius: var(--radius-control);
     color: var(--muted-foreground);
     &:hover {
-      color: var(--foreground);
       background: var(--card);
+      color: var(--foreground);
     }
   }
   .studies {
@@ -428,9 +428,9 @@
   .card-heading {
     display: flex;
     align-items: center;
-    gap: 0.625rem;
     margin-block-end: 0.875rem;
     padding-inline: 0.75rem;
+    gap: 0.625rem;
   }
   .study-id {
     color: var(--muted-foreground);
@@ -438,8 +438,8 @@
     font-variant-numeric: tabular-nums;
   }
   h2 {
-    font-size: var(--text-md);
     font-weight: var(--font-bold);
+    font-size: var(--text-md);
   }
   .category {
     margin-inline-start: auto;
@@ -451,8 +451,8 @@
   }
   .description {
     min-block-size: 3lh;
-    padding-inline: 0.75rem;
     margin-block-end: 1rem;
+    padding-inline: 0.75rem;
     color: var(--muted-foreground);
     font-size: var(--text-sm);
     line-height: 1.7;
@@ -465,8 +465,8 @@
   }
   .takeaway {
     padding-inline: 0.75rem;
-    font-size: var(--text-xs);
     color: var(--muted-foreground);
+    font-size: var(--text-xs);
     line-height: 1.7;
   }
   aside {
@@ -478,8 +478,8 @@
   .aside-heading {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
     margin-block-end: 0.625rem;
+    gap: 0.5rem;
     color: var(--accent);
   }
   aside p {
@@ -494,16 +494,16 @@
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
-    gap: 1rem;
     padding-block-start: 2rem;
+    gap: 1rem;
     color: var(--muted-foreground);
     font-size: var(--text-xs);
   }
   .showdown-link {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
     min-block-size: 2.75rem;
+    gap: 0.5rem;
     font-size: var(--text-sm);
     &:hover {
       color: var(--foreground);
