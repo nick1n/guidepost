@@ -54,7 +54,7 @@ function reviewTags(items: readonly Pick<Item, "tags">[]) {
 
 export function reviewShopUrl(item: Item, edition: Edition) {
   if (edition.includedOnly) return;
-  const handle = item.handle ?? edition.handle;
+  const handle = edition.handle ?? item.handle;
   return handle ? "https://shop.kingdomdeath.com/products/" + handle : (edition.url ?? item.url);
 }
 

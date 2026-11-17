@@ -2242,7 +2242,7 @@
   },
   "badar": {
     "category": "content",
-    "itemId": "badar"
+    "itemId": "indomitable-survivor-toxicimitar-badar"
   },
   "barbarian-allister": {
     "category": "content",
@@ -2421,7 +2421,7 @@
   },
   "elsbeth": {
     "category": "content",
-    "itemId": "elsbeth",
+    "itemId": "character-elsbeth",
     "editionId": "box"
   },
   "energy-potion-maker": {
@@ -2487,7 +2487,7 @@
   },
   "guinevere": {
     "category": "content",
-    "itemId": "guinevere",
+    "itemId": "character-guinevere",
     "editionId": "box"
   },
   "halloween-lucy": {
@@ -3159,5 +3159,10 @@
     "itemId": "lucy-of-dedheim",
     "releaseDate": "2026-10-30",
     "editionId": "painters"
+  },
+  "percival-1": {
+    "category": "content",
+    "itemId": "pillar-percival",
+    "editionId": "promo"
   }
 }

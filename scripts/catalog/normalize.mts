@@ -90,9 +90,7 @@ export function normalizeItem(item: Item) {
     item.handle = handles[0];
     for (const edition of item.editions!) delete edition.handle;
   } else if (item.handle && item.editions) {
-    // A new listing splits a formerly shared handle into explicit edition handles.
-    for (const edition of item.editions) edition.handle ??= item.handle;
-    delete item.handle;
+    for (const edition of item.editions) if (edition.handle === item.handle) delete edition.handle;
   }
   inheritEncoreDates(item);
   if (typeof item.alt === "string") {

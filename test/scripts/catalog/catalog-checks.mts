@@ -533,6 +533,7 @@ test("an undated Encore inherits the curated First Run date", () => {
   const data = product({
     handle: "owl",
     title: "Owl",
+    description: "<ul><li>Photoresin miniature</li></ul>",
     variants: [
       { id: 1, title: "First Run", price: 3000, compare_at_price: null, requires_shipping: true, sku: "First" },
       { id: 2, title: "Encore", price: 3000, compare_at_price: null, requires_shipping: true, sku: "Encore" },
@@ -1306,6 +1307,7 @@ test("shop updates preserve permanent IDs and reject a new release that would re
   const listing = product({
     handle: "rene",
     title: "Rene",
+    description: "<ul><li>Photoresin miniature</li></ul>",
     variants: [{ ...product().variants[0]!, title: "Encore", requires_shipping: true }],
   });
   const updated = planUpdate(catalog, [source(listing)], { rene: { category: "content", itemId: "rene", editionLabel: "Encore" } }, []);

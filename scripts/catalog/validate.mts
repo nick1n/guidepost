@@ -33,6 +33,15 @@ export async function validateCatalog(catalog: Catalog, schemaPath = "static/kdm
       if (item.tags.includes("in-stock") !== inStock)
         throw new Error("Derived in-stock tag must match explicit edition shop states: " + category + "/" + id);
       const includedOnly = !!item.editions?.length && item.editions.every((edition) => edition.includedOnly);
+      if (category === "content" || category === "included-only") {
+        const gameplay = item.editions?.length
+          ? item.editions.some((edition) => (edition.gameplay ?? item.gameplay) === true)
+          : item.gameplay === true;
+        if (item.tags.includes("gameplay") && !gameplay)
+          throw new Error("Gameplay tag requires a gameplay-bearing release: " + category + "/" + id);
+        if (gameplay && item.tags.includes("beta") && !item.editions?.some((edition) => edition.beta))
+          throw new Error("Beta tag requires a Beta edition: " + category + "/" + id);
+      }
       if (category === "included-only" && !includedOnly)
         throw new Error("Included-only item has a standalone or unconfirmed edition: " + id);
       if (category === "content" && includedOnly) throw new Error("Move included-only item to included-only: " + id);

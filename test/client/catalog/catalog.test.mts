@@ -820,6 +820,13 @@ describe("review catalog facts", () => {
     expect(
       reviewShopUrl({ name: "Aya", tags: [], url: "/products/aya" }, { id: "aya-first-run", label: "First Run", format: "physical" }),
     ).toBe("/products/aya");
+    const shared = { name: "Aya", tags: [], handle: "aya" };
+    expect(reviewShopUrl(shared, { id: "first-run", label: "First Run", format: "physical" })).toBe(
+      "https://shop.kingdomdeath.com/products/aya",
+    );
+    expect(reviewShopUrl(shared, { id: "painters", label: "Painters", format: "physical", handle: "aya-painters" })).toBe(
+      "https://shop.kingdomdeath.com/products/aya-painters",
+    );
     expect(
       reviewShopUrl(
         { name: "Aya", tags: [], url: "/products/aya" },

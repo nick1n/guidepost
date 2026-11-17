@@ -61,7 +61,7 @@ export function shopLinkUrl(value: string, base = "https://shop.kingdomdeath.com
 
 // Shared handles apply to every edition; external links remain URLs.
 export function catalogListing(item: Item, edition?: Edition) {
-  const handle = item.handle ?? edition?.handle;
+  const handle = edition?.handle ?? item.handle;
   return handle ? "https://shop.kingdomdeath.com/products/" + handle : (edition?.url ?? item.url);
 }
 

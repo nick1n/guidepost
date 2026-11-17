@@ -420,7 +420,7 @@
       "sheet": "KDM Miniatures",
       "row": 55,
       "name": "Guinevere",
-      "primary": { "category": "content", "contentId": "guinevere", "editionId": "box" }
+      "primary": { "category": "content", "contentId": "character-guinevere", "editionId": "box" }
     },
     {
       "sheet": "KDM Miniatures",
@@ -634,8 +634,8 @@
       "sheet": "KDM Miniatures",
       "row": 80,
       "name": "Elsbeth",
-      "primary": { "category": "content", "contentId": "elsbeth", "editionId": "box" },
-      "releaseEditions": { "O": [{ "category": "content", "contentId": "elsbeth", "editionId": "box" }] }
+      "primary": { "category": "content", "contentId": "character-elsbeth", "editionId": "box" },
+      "releaseEditions": { "O": [{ "category": "content", "contentId": "character-elsbeth", "editionId": "box" }] }
     },
     {
       "sheet": "KDM Miniatures",
@@ -2046,20 +2046,22 @@
       "sheet": "KDM Miniatures",
       "row": 266,
       "name": "Badar",
-      "primary": { "category": "content", "contentId": "badar", "editionId": "first-run" },
-      "related": [{ "category": "content", "contentId": "badar", "editionId": "encore" }],
+      "primary": { "category": "content", "contentId": "indomitable-survivor-toxicimitar-badar", "editionId": "first-run" },
+      "related": [{ "category": "content", "contentId": "indomitable-survivor-toxicimitar-badar", "editionId": "encore" }],
       "ownershipScope": "source-row",
       "releaseEditions": {
-        "M": [{ "category": "content", "contentId": "badar", "editionId": "first-run" }],
-        "N": [{ "category": "content", "contentId": "badar", "editionId": "encore" }]
+        "M": [{ "category": "content", "contentId": "indomitable-survivor-toxicimitar-badar", "editionId": "first-run" }],
+        "N": [{ "category": "content", "contentId": "indomitable-survivor-toxicimitar-badar", "editionId": "encore" }]
       }
     },
     {
       "sheet": "KDM Miniatures",
       "row": 267,
       "name": "Badar Deathgrey",
-      "primary": { "category": "content", "contentId": "badar", "editionId": "deathgrey" },
-      "releaseEditions": { "M": [{ "category": "content", "contentId": "badar", "editionId": "deathgrey" }] }
+      "primary": { "category": "content", "contentId": "indomitable-survivor-toxicimitar-badar", "editionId": "deathgrey" },
+      "releaseEditions": {
+        "M": [{ "category": "content", "contentId": "indomitable-survivor-toxicimitar-badar", "editionId": "deathgrey" }]
+      }
     },
     {
       "sheet": "KDM Miniatures",
@@ -4064,8 +4066,8 @@
       "sheet": "KDM Miniatures",
       "row": 484,
       "name": "Fade",
-      "primary": { "category": "content", "contentId": "fade", "editionId": "box" },
-      "releaseEditions": { "O": [{ "category": "content", "contentId": "fade", "editionId": "box" }] }
+      "primary": { "category": "content", "contentId": "pillar-fade", "editionId": "promo" },
+      "releaseEditions": { "O": [{ "category": "content", "contentId": "pillar-fade", "editionId": "promo" }] }
     },
     {
       "sheet": "KDM Miniatures",
@@ -4809,16 +4811,16 @@
       "sheet": "KDM Miniatures",
       "row": 554,
       "name": "Percival",
-      "primary": { "category": "content", "contentId": "percival", "editionId": "first-run" },
+      "primary": { "category": "content", "contentId": "pillar-percival", "editionId": "first-run" },
       "related": [
-        { "category": "content", "contentId": "percival", "editionId": "encore" },
-        { "category": "content", "contentId": "percival", "editionId": "box" }
+        { "category": "content", "contentId": "pillar-percival", "editionId": "encore" },
+        { "category": "content", "contentId": "pillar-percival", "editionId": "promo" }
       ],
       "ownershipScope": "source-row",
       "releaseEditions": {
-        "M": [{ "category": "content", "contentId": "percival", "editionId": "first-run" }],
-        "N": [{ "category": "content", "contentId": "percival", "editionId": "encore" }],
-        "O": [{ "category": "content", "contentId": "percival", "editionId": "box" }]
+        "M": [{ "category": "content", "contentId": "pillar-percival", "editionId": "first-run" }],
+        "N": [{ "category": "content", "contentId": "pillar-percival", "editionId": "encore" }],
+        "O": [{ "category": "content", "contentId": "pillar-percival", "editionId": "promo" }]
       }
     },
     {

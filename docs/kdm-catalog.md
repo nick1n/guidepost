@@ -62,6 +62,10 @@ Current data rules:
   Senior Death High Allister and Thief Variant remain separate.
 - For content items, Naked packaging belongs in the edition label, not the title or ID prefix. Keep the shop's original title as an alias. Bundles retain their Naked titles and ID prefixes.
 - Gameplay defaults to false. Item `gameplay` appears only when true; editions store an override only when different. `gameplayContent` and notes belong on the item. Alternative names use `aliases`; `alt` is removed.
+- Gameplay and Beta search tags do not set release flags. For content items, a `gameplay` tag requires at least one gameplay-bearing release;
+  a gameplay-bearing item tagged `beta` requires a Beta edition. Beta sculpt/prototype tags alone do not establish gameplay.
+  Review every edition separately, including physical releases when a Sim edition already has gameplay. Set `beta: true` on confirmed
+  Beta gameplay editions, use `kind: "beta"` for all-Beta items, and preserve explicit model-only overrides and unconfirmed editions.
 - Edition availability defaults to false. Store `available: true` only when at least one matching variant or warehouse in the two-page shop snapshot is available. Metadata imports preserve existing stock and availability when the listing is unchanged; new editions wait for `catalog:availability`.
 - `shop` stores `in-stock`, `out-of-stock`, or `missing` on editions, or on items without editions. Shared `shopUpdated` is a `YYYY-MM-DD` refresh date.
   Clear the affected `shop` and edition `available` fields after manually changing its handle or external URL.
@@ -111,6 +115,16 @@ labels are discovery hints for new releases. See [catalog workflows](catalog-wor
 See [workbook workflows](catalog-workflows.md#workbook-map) for optional rebuilds and publication safeguards.
 
 ## Item notes and review decisions
+
+Fade's 2016 promotional release and later physical and Sim releases belong to `pillar-fade`, displayed as Pillar - Fade.
+The 2016 release is labeled `Promo` and uses edition ID `promo` because the merged item's `box` ID already identifies the 2025 release.
+Workbook references formerly pointing to `fade` / `box` now point to `pillar-fade` / `promo`. All three editions have gameplay;
+this grouping does not establish content equivalence between releases.
+
+Percival's original resin releases, 2024 promo, and later Pillar releases share `pillar-percival`.
+The resin editions retain `first-run` and `encore` and remain model-only. The 2024 release is `promo`, labeled `Promo`,
+while `box` continues to identify the 2025 Pillar release. Workbook references formerly under `percival` follow those moved editions;
+the historical `percival-1` shop listing maps to the promo. Grouping does not establish content equivalence.
 
 Item `notes` describe contents, sculpt differences, packaging, production history, and useful release details for collectors.
 Keep maintenance instructions, source comparisons, and matching decisions here or in local reports.
@@ -173,7 +187,8 @@ Boxed 1.5 and 1.6 rulebooks use the matching standalone `1-5` and `1-6` IDs. Ret
 ## Shop handles
 
 Kingdom Death product listings use `handle`, matching the cached Shopify product handle. Build shop links as
-`https://shop.kingdomdeath.com/products/` plus the handle. An item-level handle applies to every edition.
+`https://shop.kingdomdeath.com/products/` plus the handle. An item-level handle supplies the default; an edition handle overrides it.
+Keep a shared default on the item and put only differing handles on editions. Normalization and updates preserve this arrangement.
 Without it, only editions with their own handle have a shop link. External listings, including homebrew, retain `url`.
 Shared handles identify listings; release variants still determine edition pricing and availability.
 

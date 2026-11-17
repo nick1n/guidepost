@@ -30,6 +30,13 @@ Confirm proposed matches, new items, and tag updates before applying them. Appen
 evidence, or supply handles with decisions such as `new beta` or `matches item-id / edition-id`. Supplied decisions carry through without
 repeated confirmation; a supplied list limits the review to those products unless a broader review is requested.
 
+Reconcile gameplay/Beta tags with `kind`, item `gameplay`, and every edition's `gameplay` and `beta` flags in the same review.
+Check physical, Sim, painter's scale, and bust releases separately. A tag-only update does not classify their contents.
+`catalog:validate` rejects gameplay tags without a gameplay-bearing content release and gameplay-bearing Beta-tagged items without a Beta edition.
+`catalog:update` also stages a decision when listed gameplay contents lack a corresponding physical release flag, including unchanged listings.
+Explicit model-only decisions and cosmetic replacement-card artwork are preserved. These checks flag evidence for review; they do not infer
+new facts or replace release-specific confirmation. Resolve classification decisions in the catalog, then regenerate the review.
+
 ## Prepare an update
 
 ```bash

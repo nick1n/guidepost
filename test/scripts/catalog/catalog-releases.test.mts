@@ -12,6 +12,34 @@ function listing(variants: Variant[], facts: Partial<Product> = {}): Product {
   return { id: 1, title: "Example", handle: "example", description: "", variants, ...facts };
 }
 
+test("normalization and shop updates retain a shared item handle with a painter override", () => {
+  const item = {
+    name: "Example",
+    tags: ["female"],
+    handle: "example",
+    editions: [
+      { id: "first-run", label: "First Run", format: "physical" as const, numbered: true as const },
+      { id: "encore", label: "Encore", format: "physical" as const, handle: "example" },
+      { id: "painters", label: "Painters", format: "physical" as const, handle: "example-painters", shop: "missing" as const },
+    ],
+  };
+  normalizeItem(item);
+  expect(item.handle).toBe("example");
+  expect(item.editions.map((edition) => edition.handle)).toEqual([undefined, undefined, "example-painters"]);
+  const catalog: Catalog = { content: { example: item }, "included-only": {}, accessories: {}, bundles: {}, homebrew: {} };
+  const result = planUpdate(
+    catalog,
+    [{ data: listing([variant(1, "First Run"), variant(2, "Encore")]), checkedAt: "2026-11-17T00:00:00Z", url: "/products/example" }],
+    {},
+    [],
+    { content: { example: ["female"] }, "included-only": {}, accessories: {}, bundles: {}, homebrew: {} },
+  );
+  expect(result.unresolved).toEqual([]);
+  expect(result.catalog.content.example!.handle).toBe("example");
+  expect(result.catalog.content.example!.editions!.map((edition) => edition.handle)).toEqual([undefined, undefined, "example-painters"]);
+  expect(result.catalog.content.example!.editions![2]!.shop).toBe("missing");
+});
+
 test.each(["Encore", "Painters: Encore", "Bust: Encore"])("does not infer numbering from Deathgrey material for %s", (label) => {
   const edition: Edition = { id: "encore", label, materials: ["Deathgrey"] };
   normalizeItem({ name: "Example", tags: [], editions: [edition] });

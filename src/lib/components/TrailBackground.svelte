@@ -7,14 +7,13 @@
   const maxTrails = 7;
 
   function coordinates(x: number, y: number) {
-    return `${Math.trunc(x)},${Math.trunc(y)}`;
+    return `${Math.round(x * 10) / 10},${Math.round(y * 10) / 10}`;
   }
 
-  function curve(points: Point[], closed = false) {
-    const at = (index: number) =>
-      points[closed ? (index + points.length) % points.length : Math.max(0, Math.min(points.length - 1, index))];
+  function curve(points: Point[]) {
+    const at = (index: number) => points[Math.max(0, Math.min(points.length - 1, index))];
     let d = `M${coordinates(points[0].x, points[0].y)}`;
-    for (let i = 0; i < points.length - (closed ? 0 : 1); i++) {
+    for (let i = 0; i < points.length - 1; i++) {
       const previous = at(i - 1);
       const start = at(i);
       const end = at(i + 1);
@@ -22,43 +21,70 @@
       d += ` C${coordinates(start.x + (end.x - previous.x) / 6, start.y + (end.y - previous.y) / 6)}`;
       d += ` ${coordinates(end.x - (next.x - start.x) / 6, end.y - (next.y - start.y) / 6)} ${coordinates(end.x, end.y)}`;
     }
-    return closed ? `${d}Z` : d;
+    return d;
+  }
+
+  function createContours(elevation: (x: number, y: number) => number) {
+    const columns = 84;
+    const rows = 54;
+    const stride = columns + 1;
+    const interval = 0.065;
+    const contours = Array.from({ length: 23 }, (_, i) => ({ d: "", index: (i + 1) % 5 === 0 }));
+    const samples = Array.from({ length: stride * (rows + 1) }, (_, i) => {
+      const x = (i % stride) * 20 - 40;
+      const y = Math.floor(i / stride) * 20 - 40;
+      return { x, y, height: elevation(x, y) };
+    });
+
+    for (let row = 0; row < rows; row++) {
+      for (let column = 0; column < columns; column++) {
+        const i = row * stride + column;
+        const [a, b, c, d] = [samples[i], samples[i + 1], samples[i + stride + 1], samples[i + stride]];
+        // Triangles give each elevation an unambiguous crossing, including at saddles.
+        // Separate segments share endpoints, so no sorting or curve stitching is needed.
+        for (const triangle of [
+          [a, b, c],
+          [a, c, d],
+        ]) {
+          const heights = triangle.map((point) => point.height);
+          const first = Math.max(1, Math.floor(Math.min(...heights) / interval) + 1);
+          const last = Math.min(contours.length, Math.floor(Math.max(...heights) / interval));
+          for (let level = first; level <= last; level++) {
+            const height = level * interval;
+            const crossings = triangle.flatMap((start, edge) => {
+              const end = triangle[(edge + 1) % 3];
+              if (start.height > height === end.height > height) return [];
+              const t = (height - start.height) / (end.height - start.height);
+              return [coordinates(start.x + (end.x - start.x) * t, start.y + (end.y - start.y) * t)];
+            });
+            contours[level - 1].d += "M" + crossings.join("L");
+          }
+        }
+      }
+    }
+    return contours.filter((contour) => contour.d);
   }
 
   function createTerrain(random = Math.random) {
-    // Separate regions keep randomized contours apart and the mountain circuit on screen.
-    const mountain = { x: 480 + random() * 440, y: 400 + random() * 100, width: 180, height: 145, phase: 2.1, levels: 6 };
-    const contours = [
-      { x: 200 + random() * 900, y: 10 + random() * 20, width: 430, height: 150, phase: 0.4, levels: 3 },
-      mountain,
-      { x: 250 + random() * 900, y: 960 + random() * 60, width: 480, height: 130, phase: 4.2, levels: 3 },
-      { x: 1350 + random() * 90, y: 340 + random() * 300, width: 100, height: 450, phase: 1.3, levels: 4 },
-      { x: 120 + random() * 35, y: 420 + random() * 180, width: 75, height: 95, phase: 3.4, levels: 4 },
-    ].flatMap((hill) => {
-      const gaps = Array.from({ length: hill.levels - 1 }, () => 0.4 + random() * 1.6);
-      const totalGap = gaps.reduce((sum, gap) => sum + gap, 0);
-      const depthRange = hill.levels === 6 ? 0.8 : (hill.levels - 1) * 0.18;
-      const phase = hill.phase + random() * Math.PI * 2;
-      const slopePhase = random() * Math.PI * 2;
-      const relief = 0.08 + random() * 0.08;
-      const detail = 0.03 + random() * 0.03;
-      let depth = 0;
-
-      return Array.from({ length: hill.levels }, (_, level) => {
-        if (level > 0) depth += (gaps[level - 1] / totalGap) * depthRange;
-        const points = Array.from({ length: 32 }, (_, i) => {
-          const angle = (i / 32) * Math.PI * 2;
-          // Shared waves preserve nesting while gaps widen and tighten around each slope.
-          const radius = 1 + relief * Math.sin(angle * 3 + phase) + detail * Math.cos(angle * 5 - phase);
-          const slope = 0.9 + 0.18 * Math.sin(angle + slopePhase) + 0.04 * Math.cos(angle * 2 + phase);
-          const scale = 1 - depth * slope;
-          return {
-            x: hill.x + Math.cos(angle) * hill.width * radius * scale,
-            y: hill.y + Math.sin(angle) * hill.height * radius * scale,
-          };
-        });
-        return curve(points, true);
-      });
+    const mountain = { x: 480 + random() * 440, y: 400 + random() * 100, width: 180, height: 145 };
+    const hills = [
+      { ...mountain, rise: 1.3 },
+      { x: 160, y: 120, width: 340, height: 220, rise: 1.1 },
+      { x: 1100, y: 40, width: 420, height: 180, rise: 1.2 },
+      { x: 1380, y: 670, width: 260, height: 390, rise: 1.4 },
+      { x: 670, y: 1030, width: 460, height: 240, rise: 1.2 },
+      { x: 80, y: 700, width: 190, height: 300, rise: 0.9 },
+    ];
+    const phase = random() * Math.PI * 2;
+    const contours = createContours((x, y) => {
+      // Broad bends and finer relief warp every elevation together, preserving natural nesting.
+      const warpedX = x + 55 * Math.sin(y / 170 + phase) + 22 * Math.sin((x + y) / 45);
+      const warpedY = y + 45 * Math.sin(x / 210 - phase) + 18 * Math.cos((x - y) / 38);
+      return hills.reduce((height, hill) => {
+        const dx = (warpedX - hill.x) / hill.width;
+        const dy = (warpedY - hill.y) / hill.height;
+        return height + hill.rise * Math.exp(-(dx * dx + dy * dy));
+      }, 0);
     });
 
     // An expanding loop leaves room between the approach and departure paths.
@@ -173,9 +199,9 @@
 </script>
 
 {#if contours.length}
-  <svg viewBox="0 0 1600 1000" preserveAspectRatio="none" aria-hidden="true" focusable="false">
-    {#each contours as d (d)}
-      <path {d} />
+  <svg viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
+    {#each contours as contour (contour.d)}
+      <path d={contour.d} class={["contour", contour.index && "index-contour"]} />
     {/each}
     {#each trails as trail (trail.id)}
       {@const trailMask = `${maskId}-${trail.id}`}
@@ -211,10 +237,22 @@
     opacity: 0.1;
   }
 
+  .contour {
+    opacity: 0.5;
+  }
+
+  g {
+    stroke-width: 3.5;
+  }
+
   .marker {
     fill: var(--background);
     stroke-width: 1;
     opacity: var(--opacity-marker, 1);
+  }
+
+  .index-contour {
+    stroke-width: 2.5;
   }
 
   .reveal {

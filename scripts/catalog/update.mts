@@ -1,5 +1,5 @@
 import { isDeepStrictEqual } from "node:util";
-import { categories, type Catalog, type Category, type Evidence, type Mapping, type Product, type Variant } from "./types.mts";
+import { categories, type Catalog, type Category, type Evidence, type Item, type Mapping, type Product, type Variant } from "./types.mts";
 import { mappingIssue, resolveReleases } from "./releases.mts";
 import { catalogListing, productUrl } from "./shop.mts";
 import { clearChangedListings, listingSnapshot, normalizeCatalog } from "./normalize.mts";
@@ -91,6 +91,28 @@ function match(catalog: Catalog, product: Product, mappings: Record<string, Mapp
   };
 }
 
+function gameplayIssue(item: Item, resolved: ReturnType<typeof resolveReleases>, mapping: Mapping) {
+  if (mapping.category !== "content" && mapping.category !== "included-only") return;
+  // Contents are review evidence, never automatic classification. Art cards and
+  // prototype sculpts do not establish gameplay; explicit model-only decisions win.
+  const gameplayRows = resolved.contents.filter(
+    (row) =>
+      !/\bcards? with new artwork\b/i.test(row) &&
+      /\bgear\b|\b(?:hunt|settlement) event\b|\b(?:seed )?pattern cards?\b|\b(?:fighting art|innovation|disorder|knowledge|resource|pillar|monster trait) cards?\b|\brulebook\b/i.test(
+        row,
+      ),
+  );
+  if (!gameplayRows.length) return;
+  const beta = gameplayRows.some((row) => /\bbeta\b/i.test(row));
+  for (const { edition, label } of resolved.releases) {
+    if (label === "Sim" || edition?.simulator || mapping.gameplay === false || edition?.gameplay === false) continue;
+    const id = edition?.id ?? label;
+    if (beta && !edition?.beta) return `Review Beta gameplay classification for ${id}; listed contents include Beta gameplay`;
+    if (!(mapping.gameplay ?? edition?.gameplay ?? item.gameplay))
+      return `Review gameplay classification for ${id}; listed contents include gameplay`;
+  }
+}
+
 export function planUpdate(
   before: Catalog,
   evidence: Evidence[],
@@ -161,8 +183,9 @@ export function planUpdate(
       ];
     }
     const resolved = resolveReleases(item, product, { policy: "update", mapping });
-    if (resolved.issue) {
-      unresolved.push({ handle: product.handle, reason: resolved.issue, candidates: [mapping.itemId] });
+    const classification = resolved.issue ?? gameplayIssue(item, resolved, mapping);
+    if (classification) {
+      unresolved.push({ handle: product.handle, reason: classification, candidates: [mapping.itemId] });
       continue;
     }
     const selectedVariants = resolved.variants;
@@ -244,6 +267,13 @@ export function planUpdate(
       if (previous) clearChangedListings(item, listingSnapshot(previous));
     }
   normalizeCatalog(catalog);
+  for (const category of categories)
+    for (const [id, item] of Object.entries(catalog[category])) {
+      const handle = before[category][id]?.handle;
+      if (!handle || item.handle || !item.editions?.some((edition) => edition.handle === handle)) continue;
+      item.handle = handle;
+      for (const edition of item.editions) if (edition.handle === handle) delete edition.handle;
+    }
   for (const category of categories) for (const item of Object.values(catalog[category])) item.editions?.sort(compareEditions);
   applyTags(catalog, tags, mappings);
   organizeCatalog(catalog);
