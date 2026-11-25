@@ -33,6 +33,7 @@
 <script lang="ts">
   import TagRail from "#lib/kdm/collection/ui/TagRail.svelte";
   import KdIcon from "#lib/components/KdIcon.svelte";
+  import ModelScaleIcon from "#lib/kdm/ui/ModelScaleIcon.svelte";
   import HoldRipple from "#lib/components/gestures/HoldRipple.svelte";
   import {
     reviewShopLink,
@@ -44,7 +45,7 @@
     reviewIncludedEditionLabel,
     reviewRequirements,
   } from "#lib/catalog-view.ts";
-  import { editionGameplay, editionMaterials, formatPrice } from "#lib/kdm-data.ts";
+  import { editionGameplay, editionMaterials, editionModelScales, formatPrice } from "#lib/kdm-data.ts";
   import { onDestroy } from "svelte";
   import { SvelteSet } from "svelte/reactivity";
   import { getCollection } from "#lib/kdm/collection/state/collection.svelte.ts";
@@ -425,6 +426,8 @@
   {@const contents = includedCoverage(edition)}
   {@const hasContents = contents.children.length > 0}
   {@const gameplay = editionGameplay(item, edition)}
+  {@const modelScales = editionModelScales(item, edition)}
+  {@const scaleDescription = modelScales.map(({ label }) => label).join(" and ")}
   {@const gameplayDescription = edition.beta ? ", includes beta gameplay" : ", includes gameplay"}
   {@const price = reviewPrice(item, edition)}
   {@const detail = [...new Set([edition.name, ...(edition.format === "digital" ? ["Digital"] : editionMaterials(edition))])]
@@ -453,12 +456,22 @@
       {/if}
     </label>
     <button
-      class="edition-label"
+      class={["edition-label", modelScales.length > 0 && "has-scale"]}
       type="button"
       aria-pressed={active}
       aria-label="View {item.name}, {edition.label}{gameplay ? gameplayDescription : ''}"
+      aria-describedby={modelScales.length ? `scale-${item.id}-${edition.id}` : undefined}
+      title={scaleDescription || undefined}
       onclick={() => selectEdition(edition)}
     >
+      {#if modelScales.length}
+        <span class="model-scales" aria-hidden="true">
+          {#each modelScales as { scale } (scale)}
+            <ModelScaleIcon {scale} class="model-scale" --size-icon="1.25rem" --color-model-scale="var(--blue-2)" />
+          {/each}
+        </span>
+        <span class="visually-hidden" id={`scale-${item.id}-${edition.id}`}>{scaleDescription}</span>
+      {/if}
       <span class="edition-name">
         <strong class="edition-title">{edition.label}</strong>
         {#if detail}<span class="edition-meta">{detail}</span>{/if}
@@ -859,6 +872,11 @@
     line-height: var(--line-height-snug);
     text-align: start;
 
+    &.has-scale {
+      grid-template-columns: auto minmax(0, 1fr);
+      column-gap: 0.375rem;
+    }
+
     &::after {
       position: absolute;
       inset: 0;
@@ -875,6 +893,10 @@
   }
   .edition-meta {
     text-transform: lowercase;
+  }
+  .model-scales {
+    display: inline-flex;
+    gap: 0.125rem;
   }
   .edition-release {
     display: grid;

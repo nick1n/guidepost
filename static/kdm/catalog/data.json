@@ -3689,30 +3689,18 @@
       "aliases": ["Kingdom Death: Simulator - Dwelling Key", "Kingdom Death: Simulator - Illusionist Key", "Illusionist Key", "Kingdom Death: Simulator - Master Dwelling Key Set"],
       "announcements": ["2022-11-25", "2022-11-28", "2023-08-28", "2023-10-02", "2023-11-24", "2023-11-27", "2024-11-29", "2025-11-28"],
       "editions": [
-        { "id": "dwelling-key", "label": "Dwelling Key", "format": "physical", "handle": "kingdom-death-simulator", "materials": ["Digital"], "prices": [2000], "releaseDate": "2022-11-25", "shop": "missing" },
-        {
-          "id": "master-dwelling-key",
-          "label": "Master Dwelling Key",
-          "format": "physical",
-          "handle": "kingdom-death-simulator-1",
-          "includesAllSim": true,
-          "materials": ["Photoresin"],
-          "name": "First Run",
-          "numbered": true,
-          "prices": [30000],
-          "releaseDate": "2022-11-25",
-          "runSize": 500,
-          "shop": "out-of-stock"
-        },
-        { "id": "illusionist-key", "label": "Illusionist Key", "format": "physical", "handle": "kingdom-death-illusionist-key", "materials": ["Plastic"], "prices": [3500], "releaseDate": "2023-08-28", "shop": "missing" }
+        { "id": "dwelling-key", "label": "Dwelling Key", "available": true, "format": "physical", "materials": ["Digital"], "prices": [2000], "releaseDate": "2022-11-25", "shop": "in-stock" },
+        { "id": "master-dwelling-key", "label": "Master Dwelling Key", "format": "physical", "includesAllSim": true, "materials": ["Photoresin"], "numbered": true, "prices": [30000, 32000], "releaseDate": "2022-11-25", "runSize": 500, "shop": "out-of-stock" },
+        { "id": "illusionist-key", "label": "Illusionist Key", "available": true, "format": "physical", "materials": ["Plastic"], "prices": [3500], "releaseDate": "2023-08-28", "shop": "in-stock" }
       ],
       "gameplay": true,
       "gameplayContent": "Dwelling Key and Illusionist Key: Core in KD:Sim. Master Dwelling Key: all current and future Sim editions.",
+      "handle": "kingdom-death-simulator-1",
       "includes": [{ "item": "core", "editionId": "sim", "parentEditionIds": ["dwelling-key", "illusionist-key"] }],
       "kind": "simulator",
       "name": "Kingdom Death: Simulator",
       "notes": "Dwelling Key grants access to the Simulator Core game. Illusionist Key grants the same access and includes a small dwelling art card.\n\nMaster Dwelling Key grants access to all current and future Sim releases. The physical set includes the Master Key, Dwelling Key, charm, keyring, and collector's certificate.\n\nThe First Run certificate was unnumbered. Of 500 Master Keys offered, about 430 were sold.",
-      "tags": ["gameplay", "core", "sim", "2022", "dwelling-key", "illusionist-key", "master-key"]
+      "tags": ["gameplay", "in-stock", "core", "sim", "2022", "dwelling-key", "illusionist-key", "master-key"]
     },
     "kings-man": {
       "aliases": ["King's Man / Kings Men", "King's Man (Resin)"],

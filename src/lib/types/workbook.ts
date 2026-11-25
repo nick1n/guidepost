@@ -2,6 +2,7 @@ import { Schema } from "effect";
 import { EntryStateSchema } from "./collection.ts";
 
 export const sheets = ["KDM Miniatures", "Shirt Catalog", "Dice Catalog"] as const;
+export const simulatorSheet = "KDM Simulator";
 export const releaseColumns = ["M", "N", "O"] as const;
 export type WorkbookSheet = (typeof sheets)[number];
 

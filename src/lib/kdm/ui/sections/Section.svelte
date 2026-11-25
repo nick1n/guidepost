@@ -249,6 +249,41 @@
   .add :global(.action-icon) {
     font-size: 1.125rem;
   }
+  :global(.vigil) .section {
+    border: 0;
+  }
+  :global(.vigil) .heading {
+    font:
+      normal 1.125rem/1.2 Georgia,
+      serif;
+  }
+  :global(.vigil) .heading::after {
+    flex: 1;
+    margin-inline: 0.375rem;
+    border-block-end: 1px solid var(--identity-7);
+    content: "";
+  }
+  :global(.vigil) .toggle[aria-expanded="true"] .heading::after {
+    border-block-end: 3px double var(--identity-6);
+  }
+  :global(.vigil) .toggle {
+    row-gap: 0.125rem;
+    min-block-size: max(3rem, var(--size-control));
+    padding: 0.5rem 0.625rem;
+    color: var(--identity-1);
+  }
+  :global(.vigil) .section-icon {
+    --size-icon: 1rem;
+    display: inline-block;
+    color: var(--identity-4);
+  }
+  :global(.vigil) .add {
+    border-inline-start: 1px solid var(--identity-8);
+  }
+  :global(.vigil) .content {
+    padding: 0.5rem;
+    background: var(--panel);
+  }
   :global(.folio) .section {
     margin-block: 0.25rem;
     border: 0;

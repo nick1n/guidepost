@@ -14,6 +14,7 @@
   import StatusIcon from "#lib/kdm/ui/status/StatusIcon.svelte";
   import {
     makeSheet,
+    isReady,
     statusText,
     tokenTotal,
     availableActions,
@@ -28,6 +29,7 @@
     { name: "Obsidian", className: "obsidian" },
     { name: "Folio", className: "folio" },
     { name: "Signal", className: "signal" },
+    { name: "Vigil", className: "vigil" },
   ] as const;
   const alignments = { left: "start", center: "center", right: "end", free: "nearest" } as const;
 
@@ -102,6 +104,8 @@
     const sheet = sheets[index - 1];
     const dodgeAvailable = availableActions(sheet);
     const dodge = dodgeAvailable ? "Dodge available" : "Dodge unavailable";
+    if (variant === 4)
+      return `${dashboardName(index)}, ${statusText(sheet)}, ${tokenTotal(sheet)} tokens, ${dodge}, ${resourceText(index)}`;
     let action: string;
     if (monsterTurn) action = dodgeAvailable ? ", press again when selected to Dodge" : "";
     else action = `, ${resourceText(index)}, press again when selected to toggle Acted`;
@@ -116,26 +120,40 @@
     active = index;
     const panel = rail.children[index] as HTMLElement;
     panel.getAnimations().forEach((animation) => animation.cancel());
-    panel.animate(
-      [
-        { backgroundColor: getComputedStyle(panel).getPropertyValue("--identity-7") },
-        { backgroundColor: getComputedStyle(panel).backgroundColor },
-      ],
-      { duration: prefersReducedMotion.current ? 0 : 800, easing: "ease-out" },
-    );
+    if (variant !== 4)
+      panel.animate(
+        [
+          { backgroundColor: getComputedStyle(panel).getPropertyValue("--identity-7") },
+          { backgroundColor: getComputedStyle(panel).backgroundColor },
+        ],
+        { duration: prefersReducedMotion.current ? 0 : 800, easing: "ease-out" },
+      );
     alignDashboard(index);
   }
   function selectSurvivor(index: number) {
     const wasSelected = active === index;
     jump(index);
-    if (index === 0 || !wasSelected) return;
+    if (variant === 4 || index === 0 || !wasSelected) return;
     if (monsterTurn) useDodge(sheets[index - 1]);
     else toggleActed(sheets[index - 1]);
   }
 
   function onscroll() {
     const panels = Array.from(rail.children) as HTMLElement[];
-    if (rail.clientWidth >= panels[0].clientWidth * 2) return;
+    if (rail.clientWidth >= panels[0].clientWidth * 2) {
+      if (variant !== 4) return;
+      const viewport = rail.getBoundingClientRect();
+      const visible = panels.filter((panel) => {
+        const { left, width } = panel.getBoundingClientRect();
+        const center = left + width / 2;
+        return center >= viewport.left && center <= viewport.right;
+      });
+      if (visible.length && !visible.includes(panels[active])) {
+        const first = panels.indexOf(visible[0]);
+        active = Math.max(first, Math.min(active, first + visible.length - 1));
+      }
+      return;
+    }
     const inset = parseFloat(getComputedStyle(rail).paddingInlineStart);
     active = panels.reduce(
       (closest, panel, index) =>
@@ -149,6 +167,10 @@
   function advance() {
     if (monsterTurn) {
       beginSurvivorTurn();
+      if (variant === 4 && active === 0) {
+        const ready = sheets.findIndex(isReady);
+        jump(ready < 0 ? 1 : ready + 1);
+      }
       return;
     }
     round += 1;
@@ -247,7 +269,15 @@
       <div class="panel" style:--identity={person.color} style:--identity-ink={person.ink}>
         <!-- Each independent scroll region must be keyboard scrollable. -->
         <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
-        <div class="dashboard" role="region" aria-label={`${dashboardName(index)} dashboard`} tabindex="0">
+        <div
+          class="dashboard"
+          role="region"
+          aria-label={`${dashboardName(index)} dashboard`}
+          tabindex="0"
+          onfocusin={() => {
+            if (variant === 4) active = index;
+          }}
+        >
           <div class="content">
             {#if index === 0}
               <Monster
@@ -349,10 +379,11 @@
       </span>
     </button>
 
-    <button class="icon-button" aria-label="Undo">
-      <span class="menu-icon control-icon i-material-symbols:undo" aria-hidden="true"></span>
-    </button>
-
+    {#if variant !== 4}
+      <button class="icon-button" aria-label="Undo">
+        <span class="menu-icon control-icon i-material-symbols:undo" aria-hidden="true"></span>
+      </button>
+    {/if}
     <MenuButton />
   </footer>
 </main>
@@ -551,6 +582,62 @@
     color: var(--muted-foreground);
     font-size: var(--text-sm);
   }
+  .vigil {
+    container-type: inline-size;
+  }
+  .vigil .workspace {
+    --size-panel: 100cqi;
+  }
+  .vigil .dashboard {
+    padding-block: 0.5rem;
+  }
+  .vigil footer {
+    grid-template-columns: var(--size-control) minmax(0, 1fr) var(--size-control);
+    padding: 0.25rem max(0.25rem, env(safe-area-inset-right)) max(0.25rem, env(safe-area-inset-bottom))
+      max(0.25rem, env(safe-area-inset-left));
+    gap: 0.25rem;
+  }
+  .vigil .roster {
+    gap: 0.25rem;
+  }
+  .vigil .advance {
+    column-gap: 0.625rem;
+    background: var(--color-monster);
+  }
+  .vigil .turn-label {
+    font-size: var(--text-sm);
+  }
+  .vigil .next-label {
+    font-weight: var(--font-bold);
+  }
+  @media (min-width: 44rem) {
+    .vigil .workspace {
+      --size-panel: 50cqi;
+    }
+  }
+  @media (min-width: 66rem) {
+    .vigil .workspace {
+      --size-panel: calc(100cqi / 3);
+    }
+  }
+  @media (min-width: 88rem) {
+    .vigil .workspace {
+      --size-panel: 25cqi;
+    }
+  }
+  @media (min-width: 110rem) {
+    .vigil .workspace {
+      --size-panel: 20cqi;
+    }
+  }
+  @media (pointer: coarse) {
+    .vigil {
+      --size-control: max(2.75rem, var(--size-control-default));
+    }
+    .vigil[data-density="comfortable"] {
+      --size-control: var(--size-control-comfortable);
+    }
+  }
   .folio .workspace {
     --size-panel: max(var(--size-column), calc((100% - 1.5rem) / 5));
 
@@ -612,6 +699,10 @@
           var(--size-control),
           1fr
         );
+      gap: 0.5rem;
+    }
+    .vigil footer {
+      grid-template-columns: 1fr auto var(--size-control) 13rem 1fr;
       gap: 0.5rem;
     }
     .roster,

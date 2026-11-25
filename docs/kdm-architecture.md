@@ -68,7 +68,7 @@ Guidepost exports retain edition IDs and collection state for reimport; unknown 
 Original workbook imports ignore unchecked cells, blanks, and copy-number placeholders. Earlier v1/v2 exports remain supported.
 Closing the drawer preserves work; unmounting interrupts it, and owner changes invalidate previews and downloads.
 
-Exports preserve the three-tab template and cover physical model products, shirts, dice, and original workbook bundles.
+Exports preserve the three source tabs and add a KDM Simulator tab generated from Simulator editions and access keys.
 The product projection owns eligibility, release grouping, and classification.
 Shared model rows retain separate edition states and whether the included model was supplied. Unchanged imports preserve acquisitions;
 unchecking a supplied model records a missing-component override, and checking it again clears that override without creating standalone ownership.

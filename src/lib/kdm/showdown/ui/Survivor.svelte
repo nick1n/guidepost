@@ -715,6 +715,21 @@
     </div>
   </header>
 
+  {#if variant === 4}
+    <div class="turn-tools">
+      <p>{sheet.remaining.movement} movement <span>/</span> {sheet.remaining.activation} activation</p>
+      {#if survivorTurn}
+        <button class="turn-action" aria-pressed={sheet.statuses.includes("status:act")} onclick={act}>
+          {sheet.statuses.includes("status:act") ? "Undo acted" : "Mark acted"}
+        </button>
+      {:else}
+        <button class="turn-action" disabled={!availableActions(sheet)} onclick={dodge}
+          >{availableActions(sheet) ? "Dodge" : "Dodge unavailable"}</button
+        >
+      {/if}
+    </div>
+  {/if}
+
   {#if variant === 3}
     <Section title="Survivor Attributes" meta={[`Mov ${sheet.attributes[0] ?? 0}`, `Ins ${sheet.armorValues[0] ?? 0}`]}>
       {@render statistics()}
@@ -736,7 +751,7 @@
       {@render conditions()}
     </Section>
   {:else}
-    {#if variant === 2}
+    {#if variant === 2 || variant === 4}
       <Section title="Vital Signs" meta={[`Mov ${sheet.attributes[0] ?? 0}`, `Ins ${sheet.armorValues[0] ?? 0}`]}>
         {@render statistics()}
         {@render protection()}
@@ -745,7 +760,7 @@
       <Section title="Attributes" meta={`Mov ${sheet.attributes[0] ?? 0}`}>{@render statistics()}</Section>
       <Section title="Insanity & Armor" meta={`Ins ${sheet.armorValues[0] ?? 0}`}>{@render protection()}</Section>
     {/if}
-    <Section title="Status" meta={statusItems(sheet)} onaction={act} showAction={survivorTurn} actionLabel="Act">
+    <Section title="Status" meta={statusItems(sheet)} onaction={act} showAction={survivorTurn && variant !== 4} actionLabel="Act">
       {@render conditions()}
     </Section>
     <Section title="Actions">
@@ -756,7 +771,7 @@
       meta="Dodge"
       restricted={!sheet.restrict.survival ? "Cannot use" : ""}
       onaction={dodge}
-      showAction={Boolean(availableActions(sheet))}
+      showAction={Boolean(availableActions(sheet)) && (variant !== 4 || survivorTurn)}
       actionLabel="Dodge"
     >
       {@render survivalActions()}
@@ -814,6 +829,33 @@
 </div>
 
 <style>
+  .turn-tools {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 0.625rem;
+    gap: 0.5rem;
+    background: var(--identity-9);
+    font-size: var(--text-sm);
+  }
+  .turn-tools span {
+    color: var(--identity-4);
+  }
+  .turn-action {
+    padding-inline: 0.875rem;
+    border: 1px solid var(--identity-5);
+    border-radius: var(--radius-control);
+    background: var(--identity-8);
+    color: var(--identity-1);
+  }
+  .turn-action:disabled {
+    border-color: var(--identity-8);
+    color: var(--muted-foreground);
+  }
+  .turn-action[aria-pressed="true"] {
+    background: var(--identity-2);
+    color: var(--contrast);
+  }
   .more {
     position: relative;
     -webkit-touch-callout: none;

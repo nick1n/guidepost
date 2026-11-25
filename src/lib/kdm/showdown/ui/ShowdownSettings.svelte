@@ -11,6 +11,7 @@
     { label: "Obsidian", href: "/kdm/showdown1" },
     { label: "Folio", href: "/kdm/showdown2" },
     { label: "Signal", href: "/kdm/showdown3" },
+    { label: "Vigil", href: "/kdm/showdown4" },
   ] as const;
   const statuses = [
     ["status:threat", "Threat", "Marked as a threat"],
@@ -89,7 +90,7 @@
   </fieldset>
   <fieldset>
     <legend>Theme</legend>
-    <nav class="options" aria-label="Showdown themes">
+    <nav class="options themes" aria-label="Showdown themes">
       {#each themes as theme (theme.href)}
         <a
           href={resolve(theme.href)}
@@ -180,6 +181,9 @@
     grid-template-columns: repeat(3, minmax(0, 1fr));
     align-items: center;
     gap: 0.25rem;
+  }
+  .themes {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .snap {
     grid-template-columns: repeat(4, minmax(0, 1fr));

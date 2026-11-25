@@ -58,3 +58,24 @@ export function editionMaterials(edition: Edition) {
 export function editionGameplay(item: Partial<Item>, edition: Edition) {
   return (Object.hasOwn(edition, "gameplay") ? edition.gameplay : item.gameplay) === true;
 }
+
+/** Scale comes only from reviewed tags; millimeter sizes are unrelated. */
+export function editionModelScales(item: Pick<Item, "tags" | "editions">, edition: Edition) {
+  if (edition.format !== "physical" || edition.simulator) return [];
+  const painters = /^Painters(?::|$)/u.test(edition.label);
+  const separatePainters = item.editions?.some((release) => /^Painters(?::|$)/u.test(release.label));
+  const scales = [
+    { tag: "scale-tiny", scale: "tiny", label: "Tiny scale" },
+    { tag: "scale-small", scale: "small", label: "Small scale" },
+    { tag: "scale-medium", scale: "medium", label: "Medium scale" },
+    { tag: "scale-large", scale: "large", label: "Large scale" },
+    { tag: "scale-painters", scale: "xl", label: "Painter’s scale" },
+  ] as const;
+  return scales
+    .filter(({ tag }) => {
+      if (!item.tags.includes(tag)) return false;
+      if (painters) return tag === "scale-painters";
+      return tag !== "scale-painters" || !separatePainters;
+    })
+    .map(({ scale, label }) => ({ scale, label }));
+}

@@ -18,9 +18,18 @@ import { strFromU8, strToU8, unzipSync, zipSync } from "fflate";
 import { columnIndex, elements, parseXml, serializeXml, setCell } from "#lib/kdm/collection/workbook/xml.ts";
 import { templateBytes } from "#lib/kdm/collection/workbook/template.ts";
 import { releasePairs, workbookProducts } from "#lib/kdm/collection/workbook/products.ts";
-import { metadataColumn, templateMarker, sheets, releaseColumns, type WorkbookSheet, type TemplateEntry } from "#lib/types/workbook.ts";
+import {
+  metadataColumn,
+  templateMarker,
+  sheets,
+  simulatorSheet,
+  releaseColumns,
+  type WorkbookSheet,
+  type TemplateEntry,
+} from "#lib/types/workbook.ts";
 
 const data = catalogJson as Catalog;
+const exportedSheets = [...sheets, simulatorSheet];
 const products = workbookProducts(reviewEntries(data), mapping);
 const first = mapping.rows[0];
 const key = collectionKey(first.primary.contentId, first.primary.editionId);
@@ -72,7 +81,7 @@ it.effect("exports boolean cells as checkbox controls instead of overflowing TRU
     assert.match(strFromU8(archive["[Content_Types].xml"]), /ContentType="application\/vnd.ms-excel.featurepropertybag\+xml"/u);
     const styles = elements(parseXml(strFromU8(archive["xl/styles.xml"])), "cellXfs")[0];
     const formats = elements(styles, "xf");
-    for (let sheet = 1; sheet <= 3; sheet++) {
+    for (let sheet = 1; sheet <= exportedSheets.length; sheet++) {
       const document = parseXml(strFromU8(archive[`xl/worksheets/sheet${sheet}.xml`]));
       for (const cell of elements(document, "c").filter((cell) => cell.getAttribute("t") === "b")) {
         const style = formats[Number(cell.getAttribute("s"))];
@@ -93,7 +102,7 @@ it.effect("excludes homebrew rows and saved homebrew state from the official col
       reviewEntries(data),
     );
     const archive = unzipSync(bytes);
-    for (let sheet = 1; sheet <= 3; sheet++) {
+    for (let sheet = 1; sheet <= exportedSheets.length; sheet++) {
       const document = parseXml(strFromU8(archive[`xl/worksheets/sheet${sheet}.xml`]));
       for (const cell of elements(document, "c").filter((cell) => cell.getAttribute("r")?.startsWith(metadataColumn))) {
         const raw = elements(cell, "t")
@@ -176,7 +185,9 @@ it("adds a missing Encore to the existing First Run row without creating another
   const item = reviewEntries(data).find((item) => item.id === id)!;
   const source = mapping.rows.find((row) => row.primary.contentId === id)!;
   const products = workbookProducts([item], { ...mapping, rows: [source] });
-  const [plan] = products.planRows([], [{ name: source.sheet, rows: [{ row: source.row, name: source.name, material: "Resin" }] }]);
+  const {
+    plans: [plan],
+  } = products.planRows([], [{ name: source.sheet, rows: [{ row: source.row, name: source.name, material: "Resin" }] }]);
   assert.equal(plan.rows.size, 1);
   assert.equal(plan.additions.length, 0);
   assert.equal(plan.rows.get(source.row)?.name, source.name);
@@ -199,7 +210,9 @@ it("plans separate product rows for different materials while preserving indepen
     ...mapping,
     rows: [],
   });
-  const [plan] = products.planRows(
+  const {
+    plans: [plan],
+  } = products.planRows(
     [
       { sheet: "Guidepost collection", row: 3, name: "Model", contentId: id, editionId: "first", owned: true, copyNumber: 12 },
       { sheet: "Guidepost collection", row: 4, name: "Model", contentId: id, editionId: "encore", wished: true },
@@ -259,11 +272,14 @@ function productRows(workbook: ExcelJS.Workbook, contentId: string) {
   return rows;
 }
 
-function editWorkbook(bytes: Uint8Array<ArrayBuffer>, edit: (worksheet: (name: WorkbookSheet) => Document) => void) {
+function editWorkbook(
+  bytes: Uint8Array<ArrayBuffer>,
+  edit: (worksheet: (name: WorkbookSheet | typeof simulatorSheet) => Document) => void,
+) {
   const archive = unzipSync(bytes);
   const documents = new Map<string, Document>();
   edit((name) => {
-    const path = `xl/worksheets/sheet${sheets.indexOf(name) + 1}.xml`;
+    const path = `xl/worksheets/sheet${exportedSheets.indexOf(name) + 1}.xml`;
     let document = documents.get(path);
     if (!document) {
       document = parseXml(strFromU8(archive[path]));
@@ -484,6 +500,50 @@ it.effect("limits the miniatures tab to physical models and model-containing pro
       }
     });
     for (const name of ["Shirt Catalog", "Dice Catalog"]) assert.ok(workbook.getWorksheet(name)!.rowCount > 10);
+  }),
+);
+
+it.effect("exports Simulator releases and reimports edited ownership and wishes", () =>
+  Effect.gen(function* () {
+    const key = collectionKey("kingdom-death-simulator", "master-dwelling-key");
+    const core = collectionKey("core", "sim");
+    const gorm = collectionKey("expansion-gorm", "sim");
+    const snapshot = { [key]: { owned: true, copyNumber: 42 }, [gorm]: { wished: true } };
+    const collection = new Collection(data);
+    yield* collection.setStore(makeStore(snapshot));
+    const bytes = yield* writeWorkbook(yield* collection.exportWorkbook(), reviewEntries(data));
+    const workbook = new ExcelJS.Workbook();
+    yield* Effect.promise(() => workbook.xlsx.load(bytes.buffer));
+    const sheet = workbook.getWorksheet(simulatorSheet)!;
+    assert.deepEqual(
+      Array.from({ length: 7 }, (_, index) => sheet.getRow(1).getCell(index + 1).value),
+      ["Owned", "Product", "Wanted", "Release date", "Type", "Gameplay", "MSRP"],
+    );
+    assert.ok(sheet.getColumn(metadataColumn).hidden);
+    const view = sheet.views[0];
+    assert.equal(view.state, "frozen");
+    assert.ok(view.state === "frozen");
+    assert.deepEqual([view.xSplit, view.ySplit], [2, 1]);
+    assert.equal(sheet.autoFilter, `A1:G${sheet.rowCount}`);
+    const coreRow = sheet.getRows(2, sheet.rowCount - 1)?.find((row) => row.getCell("B").value === "Kingdom Death: Monster");
+    assert.ok(coreRow);
+    assert.equal(coreRow.getCell("A").value, false);
+    assert.deepEqual(coreRow.getCell("D").value, new Date("2022-11-25T00:00:00Z"));
+    assert.equal(typeof coreRow.getCell("G").value, "number");
+
+    const edited = editWorkbook(bytes, (worksheet) => {
+      const document = worksheet(simulatorSheet);
+      const [coreRow] = xmlProductRows(document, "core", "sim");
+      const [gormRow] = xmlProductRows(document, "expansion-gorm", "sim");
+      assert.ok(coreRow && gormRow);
+      setCell(coreRow, "A", true);
+      setCell(gormRow, "C", false);
+    });
+    const target = new Collection(data);
+    const store = makeStore();
+    yield* target.setStore(store);
+    yield* target.importWorkbook(resolveDrafts(yield* readWorkbook(file(edited))));
+    assert.deepEqual(store.state, { [key]: snapshot[key], [core]: { owned: true } });
   }),
 );
 
@@ -723,7 +783,9 @@ it("keeps ambiguous releases, named variants, and differently scaled models sepa
     tags: ["generic"],
   }));
   const projection = workbookProducts(items, { ...mapping, rows: [] });
-  const [plan] = projection.planRows([], [{ name: "KDM Miniatures", rows: [] }]);
+  const {
+    plans: [plan],
+  } = projection.planRows([], [{ name: "KDM Miniatures", rows: [] }]);
   for (const id of ["exact", "naked", "namedMatch"]) assert.equal(plan.additions.filter((row) => row.item.id === id).length, 1, id);
   for (const id of ["ambiguous", "scaled", "named", "unknownVariant"]) {
     const rows = plan.additions.filter((row) => row.item.id === id);
@@ -737,7 +799,9 @@ it("keeps ambiguous releases, named variants, and differently scaled models sepa
     ...mapping,
     rows: [{ sheet: "KDM Miniatures", row: 2, name: "naked", primary: { category: "content", contentId: "naked", editionId: "included" } }],
   });
-  const [retained] = mapped.planRows([], [{ name: "KDM Miniatures", rows: [{ row: 2, name: "naked", material: "Resin" }] }]);
+  const {
+    plans: [retained],
+  } = mapped.planRows([], [{ name: "KDM Miniatures", rows: [{ row: 2, name: "naked", material: "Resin" }] }]);
   assert.deepEqual(
     retained.rows.get(2)!.entries.map(({ editionId, column }) => [editionId, column]),
     [
@@ -984,9 +1048,9 @@ it.effect("preserves the original tabs, styles, drawings, columns, views, and re
     yield* Effect.promise(() => workbook.xlsx.load(bytes.buffer));
     assert.deepEqual(
       workbook.worksheets.map((sheet) => sheet.name),
-      ["KDM Miniatures", "Shirt Catalog", "Dice Catalog"],
+      exportedSheets,
     );
-    for (let sheet = 1; sheet <= 3; sheet++) {
+    for (let sheet = 1; sheet <= sheets.length; sheet++) {
       const path = `xl/worksheets/sheet${sheet}.xml`;
       const source = parseXml(strFromU8(original[path]));
       const result = parseXml(strFromU8(exported[path]));
@@ -1109,7 +1173,7 @@ it.effect("preserves the original tabs, styles, drawings, columns, views, and re
   }),
 );
 
-it.effect("adds every model, shirt, and dice edition to the correct tab even when it is not owned", () =>
+it.effect("adds every workbook edition to the correct tab even when it is not owned", () =>
   Effect.gen(function* () {
     const bytes = yield* writeWorkbook([], reviewEntries(data));
     const workbook = new ExcelJS.Workbook();
@@ -1133,12 +1197,14 @@ it.effect("adds every model, shirt, and dice edition to the correct tab even whe
       let sheet = "KDM Miniatures";
       if (item.accessoryType === "shirt") sheet = "Shirt Catalog";
       else if (item.accessoryType === "dice") sheet = "Dice Catalog";
-      for (const edition of reviewEditions(item))
+      for (const edition of reviewEditions(item)) {
+        const expected = edition.simulator || item.kind === "simulator" ? simulatorSheet : sheet;
         assert.equal(
           identities.get(collectionKey(item.id, edition.id)),
-          products.accepts(item.id, edition.id) ? sheet : undefined,
+          expected === simulatorSheet || products.accepts(item.id, edition.id) ? expected : undefined,
           `${item.id}/${edition.id}`,
         );
+      }
       const first = item.editions?.find((edition) => edition.label === "First Run");
       const encore = item.editions?.find((edition) => edition.label === "Encore");
       if (
@@ -1333,7 +1399,7 @@ it.effect("exports the core 1.6 edition selected in the app without a missing wo
   }),
 );
 
-it.effect("model workbook exports round trip selected model and accessory editions without changing excluded local entries", () =>
+it.effect("workbook exports round trip all listed editions without changing excluded local entries", () =>
   Effect.gen(function* () {
     let index = 0;
     const snapshot = Object.fromEntries(
@@ -1365,10 +1431,12 @@ it.effect("model workbook exports round trip selected model and accessory editio
       reviewEntries(data)
         .filter((item) => item.category !== "homebrew")
         .flatMap((item) =>
-          products.editions(item).map((edition) => {
-            const key = collectionKey(item.id, edition.id);
-            return [key, snapshot[key]];
-          }),
+          reviewEditions(item)
+            .filter((edition) => edition.simulator || item.kind === "simulator" || products.accepts(item.id, edition.id))
+            .map((edition) => {
+              const key = collectionKey(item.id, edition.id);
+              return [key, snapshot[key]];
+            }),
         ),
     );
     assert.deepEqual(store.state, expected);

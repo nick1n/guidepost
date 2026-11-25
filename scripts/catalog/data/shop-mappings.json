@@ -1,10 +1,14 @@
 {
   "kingdom-death-simulator-1": {
     "category": "content",
-    "itemId": "core",
-    "gameplay": true,
-    "variantIds": [42048655753399],
-    "editionId": "sim"
+    "itemId": "kingdom-death-simulator",
+    "replaceUrl": true,
+    "variantIds": [42048655818935, 42048655786167, 42048655753399],
+    "variantEditionIds": {
+      "42048655818935": "master-dwelling-key",
+      "42048655786167": "illusionist-key",
+      "42048655753399": "dwelling-key"
+    }
   },
   "kds-gamblers-chest": {
     "category": "content",

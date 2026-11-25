@@ -329,7 +329,23 @@ export function workbookProducts(items: readonly CatalogEntry[], mapping: Workbo
       return { rows, removed, additions };
     });
     for (const key of states.keys()) if (!represented.has(key)) throw new Error(`Unknown catalog edition ${key}.`);
-    return plans;
+    const simulator = items.flatMap((item) => {
+      if (item.category === "homebrew") return [];
+      const editions = reviewEditions(item).filter((edition) => edition.simulator || item.kind === "simulator");
+      return editions.map((edition) => ({
+        item,
+        edition,
+        name: item.kind === "simulator" ? edition.label : `${item.name}${editions.length > 1 ? ` (${edition.label})` : ""}`,
+        entry: {
+          contentId: item.id,
+          editionId: edition.id,
+          label: edition.label,
+          material: "",
+          state: snapshot[collectionKey(item.id, edition.id)] ?? {},
+        },
+      }));
+    });
+    return { plans, simulator };
   };
   return { accepts, editions, classifications, planRows };
 }

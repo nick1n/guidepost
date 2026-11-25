@@ -6,9 +6,10 @@
   import InlineMarkdown from "#lib/components/InlineMarkdown.svelte";
   import KdIcon from "#lib/components/KdIcon.svelte";
   import Section from "#lib/kdm/ui/sections/Section.svelte";
+  import QuarryHeader from "./QuarryHeader.svelte";
   import ShowdownEmblem from "./ShowdownEmblem.svelte";
   import StatusIcon from "#lib/kdm/ui/status/StatusIcon.svelte";
-  import { type TokenCount } from "#lib/kdm/showdown/sheet.ts";
+  import { tokenNet, type TokenCount } from "#lib/kdm/showdown/sheet.ts";
   import { survivors } from "#lib/kdm/showdown/fixtures.ts";
   import { SectionControls, setSectionControls } from "#lib/kdm/ui/sections/sections.ts";
 
@@ -58,7 +59,9 @@
   }
 
   function isSectionHidden(title: string) {
-    return title === "Showdown Setup" || title === "Resource Deck" || (title === "Tokens" && !tokenCount);
+    return (
+      title === "Showdown Setup" || (title === "Resource Deck" && (variant !== 4 || !resourceCount)) || (title === "Tokens" && !tokenCount)
+    );
   }
 
   export function hasSection(title: string) {
@@ -205,17 +208,29 @@
   </div>
 {/snippet}
 
-<header>
-  <div class="encounter">
-    <p class="level">Prologue Level 1</p>
-    <div class={["round", !monsterTurn && "survivor-turn"]} aria-live="polite">
-      <div>{monsterTurn ? "Monster's Turn" : "Survivors' Turn"}</div>
-      <div>Round {round}</div>
+{#if variant === 4}
+  <QuarryHeader
+    life={stats.life}
+    movement={(stats.movement ?? 0) + tokenNet(values[0])}
+    toughness={(stats.toughness ?? 0) + tokenNet(values[5])}
+    {knockedDown}
+    onwound={() => (stats.life = Math.max(0, stats.life - 1))}
+    onrestore={() => stats.life++}
+    ontoggle={toggleKnockedDown}
+  />
+{:else}
+  <header>
+    <div class="encounter">
+      <p class="level">Prologue Level 1</p>
+      <div class={["round", !monsterTurn && "survivor-turn"]} aria-live="polite">
+        <div>{monsterTurn ? "Monster's Turn" : "Survivors' Turn"}</div>
+        <div>Round {round}</div>
+      </div>
     </div>
-  </div>
-  <ShowdownEmblem {variant} {awakening} />
-  <h2>White Lion</h2>
-</header>
+    <ShowdownEmblem {variant} {awakening} />
+    <h2>White Lion</h2>
+  </header>
+{/if}
 
 <Section
   title={variant === 2 ? "Attributes" : "Monster Attributes"}
@@ -226,24 +241,34 @@
     `Spd ${signedModifier(stats.speed)}`,
     `Dmg ${signedModifier(stats.damage)}`,
   ]}
+  showAction={variant !== 4}
   onaction={() => stats.life--}
   actionLabel="Wound"
 >
   {@render statistics()}
 </Section>
 
-<Section title="Status" meta={[knockedDown ? "Knocked Down" : ""]} onaction={onturn} showAction={monsterTurn} actionLabel="End Turn">
-  <div class="state">
-    <button class={["toggle", monsterTurn && "active"]} aria-pressed={monsterTurn} onclick={onturn}>
-      <StatusIcon icon="turn" active={monsterTurn} context="legend" /> Monster's Turn
-    </button>
-    <button class={["toggle", knockedDown && "active"]} aria-pressed={knockedDown} onclick={toggleKnockedDown}>
-      <StatusIcon icon="status:knocked-down" active={knockedDown} context="legend" /> Knocked Down
-    </button>
-  </div>
-</Section>
+{#if variant !== 4}
+  <Section title="Status" meta={[knockedDown ? "Knocked Down" : ""]} onaction={onturn} showAction={monsterTurn} actionLabel="End Turn">
+    <div class="state">
+      <button class={["toggle", monsterTurn && "active"]} aria-pressed={monsterTurn} onclick={onturn}>
+        <StatusIcon icon="turn" active={monsterTurn} context="legend" /> Monster's Turn
+      </button>
+      <button class={["toggle", knockedDown && "active"]} aria-pressed={knockedDown} onclick={toggleKnockedDown}>
+        <StatusIcon icon="status:knocked-down" active={knockedDown} context="legend" /> Knocked Down
+      </button>
+    </div>
+  </Section>
+{/if}
 
-<Section title="Basic Action" meta={["Spd 2", "Acc 2+", "Dmg 1"]} onaction={() => true} actionLabel="Perform">
+<Section
+  title="Basic Action"
+  open={variant === 4}
+  meta={["Spd 2", "Acc 2+", "Dmg 1"]}
+  showAction={variant !== 4}
+  onaction={() => true}
+  actionLabel="Perform"
+>
   <h3><strong>Pick</strong> Target</h3>
   <ol class="targets">
     <li>closest survivor, in field of view</li>
@@ -263,7 +288,7 @@
   <p class="trigger hidden"><strong>Special Trigger</strong> On a hit, resolve the attack's additional effects.</p>
 </Section>
 
-<Section title="Instinct: **Sniff**" onaction={() => true} actionLabel="Perform">
+<Section title="Instinct: **Sniff**" showAction={variant !== 4} onaction={() => true} actionLabel="Perform">
   <p>
     The White Lion sniffs the air and ends its turn. Until the end of the next round, all survivors are now threats, despite any effects
     that say otherwise.
@@ -274,32 +299,36 @@
 <Section title="Common Actions" meta={activeMoods}>
   <div class="actions">
     {#each actions as action (action.name)}
-      <button
-        class={["action", !action.mood && "wide", action.mood && moodCounts[action.name] && "active"]}
-        aria-label={moodLabel(action.name)}
-        aria-pressed={action.mood && action.name !== bloodthirsty ? Boolean(moodCounts[action.name]) : undefined}
-        onclick={action.mood ? () => toggleMood(action.name) : undefined}
-      >
-        <span><InlineMarkdown text={action.name} /></span>
-        {#if action.mood}
-          <span class="action-state">
-            {#if action.name === bloodthirsty}
-              {#if moodCounts[action.name]}
-                <span class="action-count" aria-hidden="true">{moodCounts[action.name]}</span>
+      {#if variant === 4 && !action.mood}
+        <p class="action wide"><InlineMarkdown text={action.name} /></p>
+      {:else}
+        <button
+          class={["action", !action.mood && "wide", action.mood && moodCounts[action.name] && "active"]}
+          aria-label={moodLabel(action.name)}
+          aria-pressed={action.mood && action.name !== bloodthirsty ? Boolean(moodCounts[action.name]) : undefined}
+          onclick={action.mood ? () => toggleMood(action.name) : undefined}
+        >
+          <span><InlineMarkdown text={action.name} /></span>
+          {#if action.mood}
+            <span class="action-state">
+              {#if action.name === bloodthirsty}
+                {#if moodCounts[action.name]}
+                  <span class="action-count" aria-hidden="true">{moodCounts[action.name]}</span>
+                {:else}
+                  <span class="action-control i-material-symbols:add-circle-outline" aria-hidden="true"></span>
+                {/if}
               {:else}
-                <span class="action-control i-material-symbols:add-circle-outline" aria-hidden="true"></span>
+                <span
+                  class={["action-control", moodCounts[action.name] ? "i-material-symbols:toggle-on" : "i-material-symbols:toggle-off"]}
+                  aria-hidden="true"
+                ></span>
               {/if}
-            {:else}
-              <span
-                class={["action-control", moodCounts[action.name] ? "i-material-symbols:toggle-on" : "i-material-symbols:toggle-off"]}
-                aria-hidden="true"
-              ></span>
-            {/if}
-          </span>
-        {:else}
-          <span class="action-arrow i-material-symbols:arrow-forward" aria-hidden="true"></span>
-        {/if}
-      </button>
+            </span>
+          {:else}
+            <span class="action-arrow i-material-symbols:arrow-forward" aria-hidden="true"></span>
+          {/if}
+        </button>
+      {/if}
     {/each}
   </div>
 </Section>
@@ -332,7 +361,7 @@
       {/snippet}
     </HoldRipple>
   {:else}
-    <div id={`${id}-${section.replaceAll(" ", "-")}`} hidden={!showMore && !(section === "Tokens" && tokenCount)}>
+    <div id={`${id}-${section.replaceAll(" ", "-")}`} hidden={!showMore && (section === "Setup" || isSectionHidden(section))}>
       {#if section === "Tokens"}
         <Section title="Attribute Tokens" meta={`${tokenCount} Tokens`}>
           <AttributeTokens
@@ -345,6 +374,7 @@
       {:else if section === "Resource Deck"}
         <Section
           title="Resource Deck"
+          showAction={variant !== 4}
           meta={`${resourceCount || "None"} Drawn`}
           onaction={() => true}
           actionLabel="Draw"
@@ -364,7 +394,7 @@
               <label class="visually-hidden" for={`${id}-${resource.name.toLowerCase().replaceAll(" ", "-")}-quantity`}>
                 {resource.name} quantity
               </label>
-              {#if variant === 3}
+              {#if variant === 3 || variant === 4}
                 <div class="resource-stepper">
                   <button
                     aria-label={`Decrease ${resource.name} quantity`}

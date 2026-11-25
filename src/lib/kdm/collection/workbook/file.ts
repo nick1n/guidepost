@@ -4,6 +4,7 @@ import mappingJson from "#catalog/workbook-map.json";
 import {
   decodeWorkbookMap,
   sheets,
+  simulatorSheet,
   releaseColumns,
   workbookLocator,
   WorkbookRowsSchema,
@@ -213,23 +214,27 @@ function readTemplate(workbook: Sheet[]): Draft[] {
   for (const sheet of workbook) {
     if (cell(sheet, 1, metadataColumn).value !== templateMarker) continue;
     const miniature = sheet.sheet === "KDM Miniatures";
+    const simulator = sheet.sheet === simulatorSheet;
+    const headerRows = miniature || simulator ? 1 : 2;
+    const nameColumn = miniature || simulator ? "B" : "C";
+    const ownColumn = miniature || simulator ? "A" : "B";
     const byRow = new Map<number, Metadata>();
     sheet.data.forEach((_line, index) => {
       const number = index + 1;
       const raw = cell(sheet, number, metadataColumn).value;
-      if (number <= (miniature ? 1 : 2) || raw === null || raw === undefined || raw === "") return;
+      if (number <= headerRows || raw === null || raw === undefined || raw === "") return;
       const metadata = decodeMetadata(raw);
       byRow.set(number, metadata);
     });
     const matchProduct = workbookIdentities(byRow);
     sheet.data.forEach((_line, index) => {
       const number = index + 1;
-      if (number <= (miniature ? 1 : 2)) return;
-      const name = text(cell(sheet, number, miniature ? "B" : "C"));
+      if (number <= headerRows) return;
+      const name = text(cell(sheet, number, nameColumn));
       if (typeof name !== "string" || !name) return;
       const metadata = matchProduct(number, { name, ...(miniature ? { material: text(cell(sheet, number, "H")) } : {}) });
       if (!metadata) {
-        if (byRow.has(number) || checkbox(cell(sheet, number, miniature ? "A" : "B")))
+        if (byRow.has(number) || checkbox(cell(sheet, number, ownColumn)))
           throw invalid(
             "import",
             `Product identity changed at ${sheet.sheet}, ${number}. Keep the original product names and materials when editing the workbook.`,
@@ -272,6 +277,23 @@ function readTemplate(workbook: Sheet[]): Draft[] {
         }
       }
       const changed = (column: string) => (text(getCell(column)) ?? null) !== (metadata.baseline[column] ?? null);
+      if (simulator) {
+        const [entry] = metadata.entries;
+        if (!entry) return;
+        const owned = changed(ownColumn) ? checkbox(getCell(ownColumn)) : undefined;
+        const wished = (changed("C") ? checkbox(getCell("C")) : undefined) ?? (owned ? false : undefined);
+        if (owned !== undefined || wished !== undefined)
+          add(
+            entry,
+            {
+              ...(owned === undefined ? {} : { owned }),
+              ...(owned ? { missing: false } : {}),
+              ...(wished === undefined ? {} : { wished }),
+            },
+            true,
+          );
+        return;
+      }
       const ownership = (entries: Metadata["entries"], owned: boolean) => {
         for (const group of modelGroups(entries))
           for (const entry of owned ? preferred(group, "owned") : group)
@@ -285,7 +307,6 @@ function readTemplate(workbook: Sheet[]): Draft[] {
               true,
             );
       };
-      const ownColumn = miniature ? "A" : "B";
       if (changed(ownColumn)) {
         const owned = checkbox(getCell(ownColumn));
         if (owned !== undefined) {

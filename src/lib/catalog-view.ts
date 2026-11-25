@@ -144,7 +144,7 @@ export function reviewGameplayFirst(items: readonly CatalogEntry[]) {
 export function reviewBadges(item: Item) {
   const editions = reviewEditions(item);
   return {
-    gameplay: editions.some((edition) => editionGameplay(item, edition) && (!edition.beta || edition.gameplay === true)),
+    gameplay: editions.some((edition) => editionGameplay(item, edition) && !edition.beta),
     beta: editions.some((edition) => edition.beta),
   };
 }
@@ -196,7 +196,7 @@ export function reviewIndex(catalog: Catalog) {
 
 /** Relationship resolution and its caches share the lifetime of one catalog index. */
 function indexRelationships(entries: readonly CatalogEntry[], byId: ReadonlyMap<string, CatalogEntry>) {
-  const sim = entries.filter((item) => item.editions?.some((edition) => edition.simulator === true));
+  const sim = entries.filter((item) => item.category !== "bundles" && item.editions?.some((edition) => edition.simulator === true));
 
   function findInclusions(id: string, editionId: string) {
     const item = byId.get(id);

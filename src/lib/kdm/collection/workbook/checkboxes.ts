@@ -1,18 +1,16 @@
 import { strFromU8, strToU8 } from "fflate";
-import { sheets } from "#lib/types/workbook.ts";
 import { elements, parseXml, serializeXml, spreadsheetNamespace } from "./xml.ts";
 
 const namespace = "http://schemas.microsoft.com/office/spreadsheetml/2022/featurepropertybag";
 
 // Excel's in-cell controls require both a style extension and the linked feature-property part.
 // Boolean cell values alone render as TRUE/FALSE in the template's narrow checkbox columns.
-export function addCheckboxes(archive: Record<string, Uint8Array>) {
+export function addCheckboxes(archive: Record<string, Uint8Array>, worksheetPaths: readonly string[]) {
   const styles = parseXml(strFromU8(archive["xl/styles.xml"]));
   const formats = elements(styles, "cellXfs")[0];
   const original = elements(formats, "xf");
   const controls = new Map<number, number>();
-  for (let sheet = 1; sheet <= sheets.length; sheet++) {
-    const path = `xl/worksheets/sheet${sheet}.xml`;
+  for (const path of worksheetPaths) {
     const document = parseXml(strFromU8(archive[path]));
     for (const cell of elements(document, "c").filter((cell) => cell.getAttribute("t") === "b")) {
       const index = Number(cell.getAttribute("s"));

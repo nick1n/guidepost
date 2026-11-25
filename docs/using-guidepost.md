@@ -24,7 +24,8 @@ otherwise amounts stay in their original currencies. Converted totals are estima
 
 Use **Import workbook** or **Export workbook** in the collection menu to transfer KDM Collection Sheets or Guidepost exports.
 Imports preview changes and ask you to resolve ambiguous editions. Original sheets merge checked products, wishes, and copy numbers;
-blank and unchecked cells leave saved values unchanged. Exports preserve the original three-tab layout and retain collection data for reimport.
+blank and unchecked cells leave saved values unchanged. Exports include a **KDM Simulator** tab with digital releases, bundles, and access keys.
+You can edit its **Owned** and **Wanted** checkboxes and reimport the workbook.
 Files are processed in your browser without uploads.
 
 ### Hunt links

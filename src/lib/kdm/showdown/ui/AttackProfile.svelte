@@ -35,6 +35,7 @@
   } = $props();
 
   let odds = $derived(attack ? attackOdds(attack) : null);
+  let ledger = $derived(variant === 2 || variant === 4);
   let marked = $derived(variant === 3 && (title === "Founding Stone" || title === "Fist & Tooth"));
 </script>
 
@@ -107,10 +108,10 @@
           <span class="weapon-mark i-game-icons:fist" aria-hidden="true"></span>
         {/if}
         <span class={["heading", marked && "mark-foreground"]}>
-          <strong class={variant === 2 ? "with-icon" : undefined}>
-            {#if variant === 2 && title === "Founding Stone"}
+          <strong class={ledger ? "with-icon" : undefined}>
+            {#if ledger && title === "Founding Stone"}
               <span class="title-icon i-game-icons:rock" aria-hidden="true"></span>
-            {:else if variant === 2 && title === "Fist & Tooth"}
+            {:else if ledger && title === "Fist & Tooth"}
               <span class="title-icon i-game-icons:fist" aria-hidden="true"></span>
             {/if}
             <span>{title}</span>
@@ -128,7 +129,7 @@
       </summary>
       {#if odds}
         <div class="odds">
-          {#if variant === 2}
+          {#if ledger}
             <div class="folio-board">
               <p class="folio-heading"><span>Attack ledger</span><b class="folio-dice">{attack.speed}d10</b></p>
               <p class="roll">
@@ -137,6 +138,7 @@
               </p>
               {@render distribution("Hits", "hit", odds.hits)}
               {@render distribution("Wounds", "wound", odds.wounds)}
+              {#if variant === 4}{@render distribution("Crits", "crit", odds.crits)}{/if}
               {@render weaponKeywords(attack.keywords)}
             </div>
           {:else if variant === 3}

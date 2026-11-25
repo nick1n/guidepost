@@ -984,6 +984,22 @@ describe("Simulator key access", () => {
       ]);
   });
 
+  it("excludes Sim bundles while retaining their individual contents", () => {
+    const data = catalog();
+    data.bundles["expansions-of-death"] = {
+      name: "Expansions of Death",
+      tags: [],
+      editions: [{ id: "sim", label: "Sim", format: "digital", simulator: true }],
+      includes: [{ item: "expansion-flower-knight", editionId: "flower-knight-sim", parentEditionIds: ["sim"] }],
+    };
+    const index = reviewIndex(data);
+    const contents = index.inclusions("kingdom-death-simulator", "simulator-master-dwelling-key");
+    expect(contents.map(({ item }) => item)).toEqual(["core", "expansion-flower-knight"]);
+    const coverage = index.coverage({ [collectionKey("kingdom-death-simulator", "simulator-master-dwelling-key")]: { owned: true } });
+    expect(coverage.edition("expansion-flower-knight", "flower-knight-sim").covered).toBe(true);
+    expect(coverage.edition("expansions-of-death", "sim").covered).toBe(false);
+  });
+
   it("automatically adds future Sim editions without granting physical ownership", () => {
     const data = catalog();
     expect(reviewIndex(data).inclusions("kingdom-death-simulator", "simulator-master-dwelling-key")).toHaveLength(2);

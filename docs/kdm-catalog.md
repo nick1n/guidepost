@@ -86,7 +86,7 @@ Current data rules:
 - Exact dates remain edition `releaseDate`, formatted YYYY-MM-DD. Imprecise dates use `releaseWindow`; future quarters use YYYY Qn. Unknown run counts are omitted. Released expansion dates use the public shop launch announcement when only a month was documented.
 - Every explicit edition records `format: "physical"` or `format: "digital"`. Sim entitlements also record `simulator: true`; digital 3D Files do not grant simulator access. Known `materials` and `numbered: true` are explicit facts. A release-specific `name` can supply alternate display wording.
 - `includes` remains on the item. Child `editionId` selects a stable release ID on the referenced child item, and `parentEditionIds` selects releases on the containing item. IDs can repeat across different items. Sim references require explicit parent editions, which can include physical keys that grant digital access. Physical expansion contents are scoped to physical editions. Reverse membership is derived. Satan Pledge preserves its 184 exact release references.
-- Simulator keys share the `kingdom-death-simulator` content item. Dwelling Key and Illusionist Key include Core's Sim edition. Master Dwelling Key's `includesAllSim: true` dynamically grants all current and future `simulator: true` editions, without physical ownership.
+- Simulator keys share the `kingdom-death-simulator` content item. Dwelling Key and Illusionist Key include Core's Sim edition. Master Dwelling Key's `includesAllSim: true` dynamically grants all current and future non-bundle `simulator: true` editions, without physical ownership. Sim bundles are excluded because their individual contents are already granted.
 - Both catalog and master tag files share category and item ordering. Content starts with core, then expansions sorted by release date, then all remaining items alphabetically by `sortKey ?? itemId`. Homebrew puts CCG-tagged items first, sorting each group alphabetically by `sortKey ?? itemId`. Other categories sort alphabetically by `sortKey ?? itemId` within their existing groups. Optional `sortKey` uses lowercase kebab-case and changes ordering only, never identity; equal keys sort by item ID. The master tags file follows this catalog item order. Editions sort with Sim first, then by release date or release window, oldest first. Undated editions come last. Equal dates use the established release-label order as a tie-breaker.
 - Item fields are alphabetical. Edition fields start with `id`, then `label`; inclusion-object fields start with `item`, followed by alphabetical fields. Catalog write commands preserve this property order; array contents and their established ordering remain unchanged.
 
@@ -205,3 +205,7 @@ Homebrew editions retain their manually assigned availability during shop availa
 CCG projects use digital `Digital Files` editions and `prices: [0]`. Unfinished projects keep `upcoming` without availability.
 
 `kings-coin-prize` remains unavailable despite Shopify stock because it is a promotional prize.
+
+The simulator keys share the current `kingdom-death-simulator-1` listing, resolved by its three individual key variants.
+The older `kingdom-death-simulator` and `kingdom-death-illusionist-key` mappings remain historical aliases.
+Master Dwelling Key has no First Run display qualifier; its edition ID remains unchanged.

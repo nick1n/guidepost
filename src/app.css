@@ -229,6 +229,8 @@ html:has(.scrollbar-stable) {
 }
 
 body {
+  /* Contain page margins within the viewport-height body. */
+  display: flow-root;
   min-block-size: var(--viewport-height);
   color: var(--foreground);
   font-family: var(--font-sans);

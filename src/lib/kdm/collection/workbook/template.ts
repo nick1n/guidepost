@@ -16,6 +16,7 @@ import { editionGameplay } from "#lib/kdm-data.ts";
 import { cloneRow, columnIndex, elements, parseXml, renumberRow, serializeXml, setCell, spreadsheetNamespace } from "./xml.ts";
 import { addCheckboxes } from "./checkboxes.ts";
 import { workbookProducts } from "./products.ts";
+import { addSimulatorSheet } from "./simulator.ts";
 
 const checked = (entry: TemplateEntry) =>
   !(entry.sharedWith && entry.state.missing) && (entry.state.owned === true || (entry.supplied === true && entry.state.missing !== true));
@@ -58,7 +59,7 @@ export function writeTemplate(input: readonly CollectionWorkbookRow[], mapping: 
     const rows = new Map(elements(document, "row").map((row) => [Number(row.getAttribute("r")), row]));
     return { name, path, document, data, rows };
   });
-  const plans = products.planRows(
+  const { plans, simulator } = products.planRows(
     input,
     documents.map(({ name, rows }) => ({
       name,
@@ -254,7 +255,12 @@ export function writeTemplate(input: readonly CollectionWorkbookRow[], mapping: 
     if (name.getAttribute("name") === "_xlnm._FilterDatabase")
       name.textContent = `'KDM Miniatures'!$A$1:$AH$${lastRows.get("KDM Miniatures")}`;
   }
+  const miniatures = documents[0];
+  const header = miniatures.rows.get(1);
+  const body = miniatures.rows.get(2);
+  if (!header || !body) throw new Error("The KDM Miniatures template has no styled header or product row.");
+  const simulatorPath = addSimulatorSheet(archive, workbook, miniatures.document, header, body, simulator);
   archive["xl/workbook.xml"] = strToU8(serializeXml(workbook));
-  addCheckboxes(archive);
+  addCheckboxes(archive, [...documents.map(({ path }) => path), simulatorPath]);
   return zipSync(archive, { level: 6 });
 }

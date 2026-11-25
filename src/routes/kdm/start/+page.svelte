@@ -14,6 +14,7 @@
     <a href={resolve("/kdm/showdown1")}>Showdown draft 1</a>
     <a href={resolve("/kdm/showdown2")}>Showdown draft 2</a>
     <a href={resolve("/kdm/showdown3")}>Showdown draft 3</a>
+    <a href={resolve("/kdm/showdown4")}>Showdown draft 4</a>
   </nav>
 </main>
 
