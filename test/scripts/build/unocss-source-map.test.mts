@@ -1,10 +1,12 @@
 import { mkdtemp, rm, writeFile } from "node:fs/promises";
-import { SourceMap } from "node:module";
+import { SourceMap, createRequire } from "node:module";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import UnoCSS from "@unocss/svelte-scoped/vite";
 import { build } from "vite";
 import { expect, it } from "vitest";
+
+// Load the plugin through Node so Vitest cannot transform its placeholder literal.
+const { default: UnoCSS } = createRequire(import.meta.url)("@unocss/svelte-scoped/vite") as typeof import("@unocss/svelte-scoped/vite");
 
 it("UnoCSS placeholder replacement preserves source locations after the inserted stylesheet", async () => {
   const directory = await mkdtemp(join(tmpdir(), "guidepost-unocss-map-"));

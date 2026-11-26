@@ -1264,7 +1264,8 @@
               "type": "object",
               "properties": {
                 "game-icons": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
-                "rotate": { "type": "string", "pattern": "^[+-]?(?:[0-9]+(?:\\.[0-9]+)?|\\.[0-9]+)(?:deg|grad|rad|turn)$" }
+                "rotate": { "type": "string", "pattern": "^[+-]?(?:[0-9]+(?:\\.[0-9]+)?|\\.[0-9]+)(?:deg|grad|rad|turn)$" },
+                "mirror": { "enum": ["x", "y", "both"] }
               },
               "required": ["game-icons"],
               "additionalProperties": false

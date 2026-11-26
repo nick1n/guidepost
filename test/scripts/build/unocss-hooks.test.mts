@@ -1,9 +1,12 @@
 import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import UnoCSS from "@unocss/svelte-scoped/vite";
+import { createRequire } from "node:module";
 import { createServer } from "vite";
 import { expect, it } from "vitest";
+
+// Load the plugin through Node so Vitest cannot transform its placeholder literal.
+const { default: UnoCSS } = createRequire(import.meta.url)("@unocss/svelte-scoped/vite") as typeof import("@unocss/svelte-scoped/vite");
 
 it.each([true, false])("registers only the supported stylesheet hooks (SvelteKit: %s)", async (sveltekit) => {
   const directory = await mkdtemp(join(tmpdir(), "guidepost-unocss-hooks-"));

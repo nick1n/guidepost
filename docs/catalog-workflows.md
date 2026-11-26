@@ -169,6 +169,7 @@ HEAD responses never change stock, availability, or `shopUpdated`.
 Edit the source contracts, not generated files, then run `pnpm generate:types`. Development, checks, and builds also generate them;
 the dev server watches schema and catalog changes. UnoCSS reads innovation artwork from `static/kdm/data/core.json`.
 Use an icon string such as `"game-icons:fist"`, or an object such as `{ "game-icons": "meeple-circle", "rotate": "30deg" }` for rotated artwork.
+Use `"mirror": "x"` for horizontal mirroring, `"y"` for vertical mirroring, or `"both"` for both axes. Mirroring applies before rotation.
 
 | Generated output                                                                                                                | Source                                                     |
 | ------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |

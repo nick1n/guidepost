@@ -70,7 +70,11 @@
 
           {#if card.artwork}
             <div class="art" aria-hidden="true">
-              <span class={["illustration", card.artwork]} style:--artwork-rotation={card.artworkRotation}></span>
+              <span
+                class={["illustration", card.artwork]}
+                style:--artwork-rotation={card.artworkRotation}
+                style:--artwork-scale={card.artworkScale}
+              ></span>
             </div>
           {/if}
 
@@ -174,7 +178,6 @@
     --card-padding: 0.875rem;
     padding: var(--card-padding);
     transform: perspective(55rem);
-    border: var(--border-width) solid var(--innovation-highlight);
     border-radius: var(--radius-card);
     background: linear-gradient(var(--paper), var(--grey-0) 45%, var(--paper));
     box-shadow: 0 0.75rem 1.5rem color-mix(var(--contrast) 35%, transparent);
@@ -217,7 +220,7 @@
     place-items: center;
     inline-size: 1.75rem;
     block-size: 3rem;
-    inset-block-start: calc(-1 * var(--card-padding) - 0.125rem);
+    inset-block-start: calc(-1 * var(--card-padding));
     inset-inline-start: 0;
     padding-block-end: 0.375rem;
     background: var(--innovation-highlight);
@@ -237,12 +240,14 @@
   .illustration {
     --size-icon: 5.75rem;
     rotate: var(--artwork-rotation, none);
+    scale: var(--artwork-scale, none);
   }
 
   .highlight,
   .passive {
     text-align: center;
     white-space: pre-line;
+    text-wrap: balance;
   }
 
   .highlight {

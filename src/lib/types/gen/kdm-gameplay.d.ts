@@ -1110,6 +1110,7 @@ export interface BaseItem {
     | {
         "game-icons": string;
         rotate?: string;
+        mirror?: "x" | "y" | "both";
       };
   source?: Sources;
   type?: "normal" | "special" | "strain";

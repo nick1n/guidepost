@@ -32,7 +32,7 @@
     },
     "innovation:nightmare-training": {
       "name": "Nightmare Training",
-      "icon": "game-icons:fist",
+      "icon": { "game-icons": "fist", "mirror": "x", "rotate": "-75deg" },
       "keywords": ["education", "symposium-consequence"],
       "action": {
         "action:nightmare-training": {
