@@ -1,7 +1,7 @@
 import type { Catalog, Item } from "#lib/types/index.ts";
 import { describe, expect, it } from "vitest";
 import { collectionKey, type CollectionSnapshot } from "#lib/types/collection.ts";
-import catalog from "#catalog/data.json";
+import catalog from "#static/kdm/catalog/data.json";
 import { editionGameplay, editionMaterials } from "#lib/kdm-data.ts";
 import {
   reviewEditions,

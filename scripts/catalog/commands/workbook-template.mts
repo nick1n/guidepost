@@ -1,13 +1,15 @@
+import { normalizeWhitespace } from "#lib/helpers.ts";
 import { readFile, writeFile } from "node:fs/promises";
 import { strFromU8, strToU8, unzipSync, zipSync } from "fflate";
 import { elements, parseXml, serializeXml, setCell } from "#lib/kdm/collection/workbook/xml.ts";
 import { decodeWorkbookMap, sheets } from "#lib/types/workbook.ts";
+import mappingJson from "#static/kdm/catalog/workbook-map.json" with { type: "json" };
 
 // A local-only source, never fetched. Keep product information and workbook features, removing personal collection cells.
 const source = "local-data/kdm-catalog/imports/KDM Collection Sheets.xlsx";
 const destination = "src/lib/kdm/collection/workbook/template.xlsx";
 const archive = unzipSync(await readFile(source));
-const mapping = decodeWorkbookMap(JSON.parse(await readFile("static/kdm/catalog/workbook-map.json", "utf8")));
+const mapping = decodeWorkbookMap(mappingJson);
 const sharedDocument = parseXml(strFromU8(archive["xl/sharedStrings.xml"]));
 const shared = elements(sharedDocument, "si");
 for (let sheet = 1; sheet <= sheets.length; sheet++) {
@@ -22,7 +24,8 @@ for (let sheet = 1; sheet <= sheets.length; sheet++) {
     if (expected) {
       const model = elements(row, "c").find((cell) => cell.getAttribute("r") === `${sheet === 1 ? "B" : "C"}${number}`);
       const index = Number(model && elements(model, "v")[0]?.textContent);
-      const actual = shared[index]?.textContent?.trim().replace(/\s+/gu, " ");
+      const text = shared[index]?.textContent;
+      const actual = text == null ? undefined : normalizeWhitespace(text);
       if (actual !== expected.name)
         throw new Error(`Workbook identity changed at ${name}, ${number}. Review the mapping before generating a template.`);
     }

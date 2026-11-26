@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { clamp } from "#lib/helpers.ts";
   import type { ListEntry } from "#lib/kdm/showdown/sheet.ts";
   import Section from "#lib/kdm/ui/sections/Section.svelte";
 
@@ -126,7 +127,7 @@
       gesture.target.setPointerCapture(event.pointerId);
     }
     event.preventDefault();
-    dragOffset = Math.max(-72, Math.min(0, gesture.base + x));
+    dragOffset = clamp(-72, gesture.base + x, 0);
   }
 
   function onpointerup(event: PointerEvent) {

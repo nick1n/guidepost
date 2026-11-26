@@ -1,8 +1,9 @@
-import { readFile } from "node:fs/promises";
+import assert from "node:assert/strict";
+import data from "#static/kdm/catalog/data.json" with { type: "json" };
 import { runBrowser } from "../support/harness.mts";
 
-const data = JSON.parse(await readFile("static/kdm/catalog/data.json", "utf8"));
-const core = data.content.core.editions.find((edition: { label: string }) => edition.label === "1.6");
+const core = data.content.core.editions.find((edition) => edition.label === "1.6");
+assert(core?.prices?.length, "Expected prices for the Core 1.6 fixture");
 const cents = Math.max(...core.prices);
 const gbp = new Intl.NumberFormat("en-US", { style: "currency", currency: "GBP", maximumFractionDigits: 0 }).format(cents / 150);
 

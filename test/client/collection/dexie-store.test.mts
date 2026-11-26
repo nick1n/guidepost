@@ -6,7 +6,7 @@ import { Deferred, Effect, Fiber, Queue, Stream } from "effect";
 import { DexieStore } from "#lib/kdm/collection/state/dexie-store.ts";
 import { OptimisticStore } from "#lib/kdm/collection/state/optimistic-store.ts";
 import { StoreError } from "#lib/kdm/collection/state/collection-store.ts";
-import catalogJson from "#catalog/data.json";
+import catalogJson from "#static/kdm/catalog/data.json";
 import { collectionKey, entryId, type Catalog } from "#lib/types/index.ts";
 import { databaseFixture } from "../fixtures/database.ts";
 

@@ -11,8 +11,8 @@ import { normalizeSnapshot } from "#lib/types/collection.ts";
 import { vi } from "vitest";
 import { makeStore } from "./test-store.ts";
 import { FetchHttpClient } from "effect/http";
-import catalogJson from "#catalog/data.json";
-import workbookMap from "#catalog/workbook-map.json";
+import catalogJson from "#static/kdm/catalog/data.json";
+import workbookMap from "#static/kdm/catalog/workbook-map.json";
 
 vi.mock("$app/paths", () => ({ asset: (path: string) => `https://guidepost.test/test-base/${path}` }));
 const workbookFetch: typeof globalThis.fetch = async () => Response.json(workbookMap);

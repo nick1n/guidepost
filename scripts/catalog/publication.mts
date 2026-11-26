@@ -1,3 +1,4 @@
+import { errorMessage } from "#lib/helpers.ts";
 import { randomUUID } from "node:crypto";
 import { mkdir, open, readFile, rename, unlink } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
@@ -13,7 +14,7 @@ export class PublicationError extends Error {
   readonly cleanupFailures: readonly CleanupFailure[];
 
   constructor(cause: unknown, published: readonly string[], pending: readonly string[], cleanupFailures: readonly CleanupFailure[]) {
-    const reason = cause instanceof Error ? cause.message : String(cause);
+    const reason = errorMessage(cause);
     const progress = published.length
       ? `Published files: ${published.join(", ")}. Pending files: ${pending.join(", ") || "none"}.`
       : "No files were published.";

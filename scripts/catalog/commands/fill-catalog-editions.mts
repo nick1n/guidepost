@@ -1,3 +1,5 @@
+import { readOptional } from "#scripts/read-optional.mts";
+import { errorMessage } from "#lib/helpers.ts";
 import { readFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -12,7 +14,7 @@ import { normalized } from "../update.mts";
 import { productEditions } from "../releases.mts";
 import { validateCatalog } from "../validate.mts";
 import { parseMappings } from "../mappings.mts";
-import { captureWorkbookInputs, readOptional } from "../inputs.mts";
+import { captureWorkbookInputs } from "../inputs.mts";
 import type { Catalog } from "../types.mts";
 
 export async function fillEditions(
@@ -80,7 +82,7 @@ export async function fillEditions(
         itemId,
         name: item.name,
         ...(url ? { url } : {}),
-        reason: error instanceof Error ? error.message : String(error),
+        reason: errorMessage(error),
       });
       console.log(`${report.reachable.length + report.unreachable.length}/${targets.length}: ${itemId}, not retrieved`);
     }

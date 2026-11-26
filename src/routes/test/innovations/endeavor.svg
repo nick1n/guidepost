@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+  <!-- Endeavor glyph from kd-icons-v1.woff, with its outer contour simplified to a circle. -->
+  <circle cx="12" cy="12" r="12" fill="currentColor"/>
+  <polygon
+    fill="white"
+    transform="scale(0.1)"
+    points="155,133 212,115 199,75 143,94 143,29 97,29 97,94 41,75 28,115 85,133 48,186 82,211 120,160 158,211 192,186"
+  />
+</svg>

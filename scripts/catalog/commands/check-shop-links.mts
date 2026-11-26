@@ -1,3 +1,5 @@
+import { readOptional } from "#scripts/read-optional.mts";
+import { errorMessage } from "#lib/helpers.ts";
 import { Clock, Duration, Effect, Schema } from "effect";
 import { FetchHttpClient, HttpClient } from "effect/http";
 import { Command } from "effect/cli";
@@ -69,17 +71,13 @@ export async function checkShopLinks(
   const now = dependencies.now ?? Date.now;
   const wait = dependencies.wait ?? ((milliseconds, signal) => sleep(milliseconds, undefined, { signal }));
   const check = dependencies.check;
-  const catalogPath = options.catalog
-    ? resolve(options.catalog)
-    : fileURLToPath(new URL("../../../static/kdm/catalog/data.json", import.meta.url));
+  const catalogPath = options.catalog ? resolve(options.catalog) : fileURLToPath(import.meta.resolve("#static/kdm/catalog/data.json"));
   const reportPath = join(catalogTemp(dirname(catalogPath)), "reports/shop-links.json");
   const checkpointPath = join(dirname(reportPath), "shop-links-checkpoint.json");
   signal.throwIfAborted();
   if (options.offline !== false) {
-    const text = await readFile(reportPath, "utf8").catch((error: NodeJS.ErrnoException) => {
-      if (error.code === "ENOENT") throw new Error("No saved link-check report; run pnpm check:shop-links --fetch to create one.");
-      throw error;
-    });
+    const text = await readOptional(reportPath);
+    if (text === undefined) throw new Error("No saved link-check report; run pnpm check:shop-links --fetch to create one.");
     const report = Schema.decodeUnknownSync(
       Schema.Struct({
         checkedAt: Schema.String,
@@ -104,10 +102,7 @@ export async function checkShopLinks(
     signal.throwIfAborted();
     const baseline = await readFile(catalogPath, "utf8");
     const catalog: Catalog = JSON.parse(baseline);
-    const saved = await readFile(checkpointPath, "utf8").catch((error: NodeJS.ErrnoException) => {
-      if (error.code === "ENOENT") return undefined;
-      throw error;
-    });
+    const saved = await readOptional(checkpointPath);
     const checkpoint = (() => {
       if (!saved) return undefined;
       try {
@@ -191,7 +186,7 @@ export async function checkShopLinks(
               } catch (error) {
                 signal.throwIfAborted();
                 if (error instanceof ShopRequestError || (error instanceof ShopError && error.status === 429)) throw error;
-                console.warn(`Failed ${listing}: ${error instanceof Error ? error.message : String(error)}`);
+                console.warn(`Failed ${listing}: ${errorMessage(error)}`);
                 return { status: null, ok: false, checkedAt: new Date(now()).toISOString() };
               }
             };

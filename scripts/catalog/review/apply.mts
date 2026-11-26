@@ -1,3 +1,4 @@
+import { readOptional } from "#scripts/read-optional.mts";
 import { catalogTemp, catalogLocal, catalogData } from "../paths.mts";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
@@ -10,7 +11,7 @@ import type { Review } from "./schema.mts";
 export type { Review } from "./schema.mts";
 import { checkTags, organizeTags, sortCatalogTags } from "../tags.mts";
 import { organizeCatalog } from "../order.mts";
-import { captureInputs, digest, readOptional } from "../inputs.mts";
+import { captureInputs, digest } from "../inputs.mts";
 
 export function reviewPath(root: string) {
   return join(catalogTemp(root), "reports/kdm-update-review.json");

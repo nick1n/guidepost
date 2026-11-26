@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { clamp } from "#lib/helpers.ts";
   import { prefersReducedMotion } from "svelte/motion";
   import "#lib/kdm/ui/stats.css";
   import MenuButton from "#lib/app/menu/MenuButton.svelte";
@@ -150,7 +151,7 @@
       });
       if (visible.length && !visible.includes(panels[active])) {
         const first = panels.indexOf(visible[0]);
-        active = Math.max(first, Math.min(active, first + visible.length - 1));
+        active = clamp(first, active, first + visible.length - 1);
       }
       return;
     }

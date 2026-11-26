@@ -1,4 +1,5 @@
 <script module lang="ts">
+  import { clamp } from "#lib/helpers.ts";
   import { defaultBlueHue } from "./palette.ts";
 
   const hueRange = { min: 225, max: 300 };
@@ -14,7 +15,7 @@
   function normalizeHue(value: string | number | null | undefined) {
     if (value == null || (typeof value === "string" && !value.trim())) return defaultBlueHue;
     const hue = Number(value);
-    return Number.isFinite(hue) ? Math.min(hueRange.max, Math.max(hueRange.min, Math.round(hue))) : defaultBlueHue;
+    return Number.isFinite(hue) ? clamp(hueRange.min, Math.round(hue), hueRange.max) : defaultBlueHue;
   }
 </script>
 

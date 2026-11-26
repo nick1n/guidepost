@@ -1,3 +1,5 @@
+import { readOptional } from "#scripts/read-optional.mts";
+import { errorMessage, normalizeWhitespace } from "#lib/helpers.ts";
 import { Effect, Schema } from "effect";
 import { FetchHttpClient, HttpClient } from "effect/http";
 import { createHash } from "node:crypto";
@@ -51,9 +53,6 @@ export function postFingerprints(report: Pick<Report, "posts" | "links">): Recor
       ]),
   );
 }
-
-const clean = (text: string) => text.replace(/\s+/g, " ").trim();
-const message = (error: unknown) => (error instanceof Error ? error.message : String(error));
 
 function record(value: unknown): Record<string, unknown> {
   if (!value || typeof value !== "object" || Array.isArray(value)) throw new Error("Expected an object in source data");
@@ -116,10 +115,10 @@ function usefulLabel(text: string) {
 }
 
 function deriveName(anchor: Anchor, url: URL): [string, number] {
-  const label = clean(anchor.text.join(""));
+  const label = normalizeWhitespace(anchor.text.join(""));
   if (usefulLabel(label)) return [label, 3];
   if (/^(?:read|learn) more[.!]?$/i.test(label) && anchor.line.filter((part) => typeof part !== "string").length === 1) {
-    const context = clean(anchor.line.filter((part) => typeof part === "string").join("")).replace(
+    const context = normalizeWhitespace(anchor.line.filter((part) => typeof part === "string").join("")).replace(
       /^[\s\-:|\u2013\u2014]+|[\s\-:|\u2013\u2014]+$/g,
       "",
     );
@@ -127,7 +126,7 @@ function deriveName(anchor: Anchor, url: URL): [string, number] {
       return [context, 4];
     }
   }
-  const alt = clean(anchor.alt.join(" "));
+  const alt = normalizeWhitespace(anchor.alt.join(" "));
   if (usefulLabel(alt)) return [alt, 2];
   const slug = url.pathname.replace(/\/$/, "").split("/").at(-1) ?? "";
   let decoded = slug;
@@ -267,11 +266,8 @@ export async function recoverCachedHistory(report: Report, cache: string) {
   let postsMissingCache = 0;
   for (const metadata of report.posts.filter((entry) => entry.status === "read")) {
     const path = join(cache, createHash("sha256").update(metadata.postUrl).digest("hex") + ".html");
-    let html: string;
-    try {
-      html = await readFile(path, "utf8");
-    } catch (error) {
-      if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
+    const html = await readOptional(path);
+    if (html === undefined) {
       postsMissingCache++;
       continue;
     }
@@ -365,11 +361,8 @@ export class Downloader {
   async get(url: string, cached = true) {
     const path = join(this.options.cache, createHash("sha256").update(url).digest("hex") + ".html");
     if (cached || this.options.offline) {
-      try {
-        return await readFile(path, "utf8");
-      } catch (error) {
-        if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
-      }
+      const html = await readOptional(path);
+      if (html !== undefined) return html;
     }
     if (this.options.offline) throw new Error("No cached news page: " + url + "; run pnpm scrape:news --fetch to download it.");
     this.requests++;
@@ -401,7 +394,7 @@ export async function updateReport(
   if (!Array.isArray(index.stories) || !index.stories.length) throw new Error("News index has no stories");
   const posts = index.stories.map((value) => {
     const story = record(value);
-    return post({ date: story.date, title: clean(string(story.title)), postUrl: `${newsUrl}/${string(story.slug)}` });
+    return post({ date: story.date, title: normalizeWhitespace(string(story.title)), postUrl: `${newsUrl}/${string(story.slug)}` });
   });
   if (new Set(posts.map((entry) => entry.postUrl)).size !== posts.length) throw new Error("News index has duplicate slugs");
   report.discoveredPosts = posts.length;
@@ -433,7 +426,9 @@ export async function updateReport(
       failed = true;
       const previous = report.posts[position];
       entry =
-        previous?.status === "read" ? { ...previous, error: message(error) } : { ...metadata, status: "unread", error: message(error) };
+        previous?.status === "read"
+          ? { ...previous, error: errorMessage(error) }
+          : { ...metadata, status: "unread", error: errorMessage(error) };
       if (position === -1) report.posts.push(entry);
       else report.posts[position] = entry;
       await persist();
@@ -517,7 +512,7 @@ export async function refreshNews(options: RefreshOptions = {}): Promise<Report>
   } catch (error) {
     if (options.signal?.aborted) throw error;
     report.complete = false;
-    report.errors.push(message(error));
+    report.errors.push(errorMessage(error));
     if (error instanceof ShopRequestError) throw error;
   } finally {
     report.finishedAt = new Date().toISOString();

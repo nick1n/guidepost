@@ -1,4 +1,5 @@
 <script module lang="ts">
+  import { clamp } from "#lib/helpers.ts";
   import type { Direction } from "./gesture";
 
   const initialValues = [6, 3, 8, 2, 5, 1];
@@ -13,7 +14,7 @@
   }
 
   function clampValue(value: number) {
-    return Math.max(minimum, Math.min(maximum, value));
+    return clamp(minimum, value, maximum);
   }
 </script>
 
@@ -158,7 +159,7 @@
     choiceWidth = field.width;
     const minX = row.left - bounds.left - menu.clientLeft + choiceWidth / 2;
     const maxX = row.right - bounds.left - menu.clientLeft - choiceWidth / 2;
-    const clampX = (x: number) => Math.max(minX, Math.min(maxX, x));
+    const clampX = (x: number) => clamp(minX, x, maxX);
     const paths: Partial<Record<Direction, string>> = {};
     for (const item of directions) {
       const slot = menu.querySelector<HTMLElement>(`[data-slot="${item}"]`)!.getBoundingClientRect();
@@ -208,7 +209,7 @@
     if (!pointer || event.pointerId !== pointer.id) return;
     const x = event.clientX - pointer.x;
     const y = event.clientY - pointer.y;
-    if (variant === "track" && !menuOpen) swipeTravel = Math.max(-1, Math.min(1, y / buttons[active].offsetHeight));
+    if (variant === "track" && !menuOpen) swipeTravel = clamp(-1, y / buttons[active].offsetHeight, 1);
     if (Math.hypot(x, y) > 10) {
       pointer.moved = true;
       clearHold();

@@ -1,10 +1,10 @@
+import { readOptional } from "#scripts/read-optional.mts";
 import { readFile } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import { decodeWorkbookMap, workbookLocator, releaseColumns, type WorkbookMap, type WorkbookTarget } from "#lib/types/workbook.ts";
 import { publishFiles } from "../publication.mts";
 import type { Catalog } from "../types.mts";
 import { importTarget, readImports, type Reference, type WorkbookImports } from "./imports.mts";
-import { readOptional } from "../inputs.mts";
 import { catalogData } from "../paths.mts";
 const rowKey = workbookLocator;
 const targetKey = (target: WorkbookTarget) => `${target.category}/${target.contentId}/${target.editionId}`;

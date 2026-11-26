@@ -1,3 +1,4 @@
+import { normalizeWhitespace } from "#lib/helpers.ts";
 import { strFromU8, strToU8 } from "fflate";
 import type { Document, Element } from "@xmldom/xmldom";
 import { reviewPrice } from "#lib/catalog-view.ts";
@@ -107,7 +108,7 @@ export function addSimulatorSheet(
       editionGameplay(item, edition) ? "Gameplay" : null,
       price === undefined ? null : price / 100,
     ];
-    const metadata = { name: name.trim().replace(/\s+/gu, " "), entries: [entry], baseline: { A: owned, C: wanted } } satisfies Metadata;
+    const metadata = { name: normalizeWhitespace(name), entries: [entry], baseline: { A: owned, C: wanted } } satisfies Metadata;
     appendRow(index + 2, body, bodyStyles, values, JSON.stringify(metadata));
   }
 

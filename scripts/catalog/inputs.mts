@@ -1,3 +1,4 @@
+import { readOptional } from "#scripts/read-optional.mts";
 import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
@@ -7,13 +8,6 @@ import { parseMappings } from "./mappings.mts";
 import type { Catalog } from "./types.mts";
 
 export const digest = (value: string) => createHash("sha256").update(value).digest("hex");
-
-export async function readOptional(path: string) {
-  return readFile(path, "utf8").catch((error: NodeJS.ErrnoException) => {
-    if (error.code === "ENOENT") return undefined;
-    throw error;
-  });
-}
 
 export async function loadMappings(root: string) {
   const path = join(catalogData(root), "shop-mappings.json");

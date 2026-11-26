@@ -1,3 +1,4 @@
+import { normalizeWhitespace } from "#lib/helpers.ts";
 import { strFromU8, strToU8, unzipSync, zipSync } from "fflate";
 import type { Element } from "@xmldom/xmldom";
 import templateUrl from "./template.xlsx?url&inline";
@@ -24,10 +25,6 @@ const checked = (entry: TemplateEntry) =>
 export function templateBytes() {
   const base64 = templateUrl.slice(templateUrl.indexOf(",") + 1);
   return Uint8Array.from(atob(base64), (character) => character.charCodeAt(0));
-}
-
-function normalizeName(value: string) {
-  return value.trim().replace(/\s+/gu, " ");
 }
 
 function cellValue(row: Element, column: string, shared: string[]) {
@@ -65,7 +62,7 @@ export function writeTemplate(input: readonly CollectionWorkbookRow[], mapping: 
       name,
       rows: [...rows].map(([number, row]) => ({
         row: number,
-        name: normalizeName(String(cellValue(row, name === "KDM Miniatures" ? "B" : "C", shared) ?? "")),
+        name: normalizeWhitespace(String(cellValue(row, name === "KDM Miniatures" ? "B" : "C", shared) ?? "")),
         material: cellValue(row, "H", shared),
       })),
     })),
@@ -89,7 +86,7 @@ export function writeTemplate(input: readonly CollectionWorkbookRow[], mapping: 
         for (const cell of cells) row.removeChild(cell);
       }
     const finish = (row: Element, entries: TemplateEntry[]) => {
-      const name = normalizeName(String(cellValue(row, miniature ? "B" : "C", shared) ?? ""));
+      const name = normalizeWhitespace(String(cellValue(row, miniature ? "B" : "C", shared) ?? ""));
       const baseline: Record<string, string | number | boolean | null> = {};
       const put = (column: string, value: string | number | boolean | null) => {
         setCell(row, column, value);
@@ -97,7 +94,7 @@ export function writeTemplate(input: readonly CollectionWorkbookRow[], mapping: 
       };
       put(miniature ? "A" : "B", entries.some(checked));
       if (miniature) {
-        baseline.H = normalizeName(String(cellValue(row, "H", shared) ?? "")) || null;
+        baseline.H = normalizeWhitespace(String(cellValue(row, "H", shared) ?? "")) || null;
         for (const [column, checked] of Object.entries(products.classifications(entries))) setCell(row, column, checked ? true : null);
         put("I", [...new Set(entries.filter(checked).map((entry) => entry.material || entry.label))].join(", ") || null);
         put(

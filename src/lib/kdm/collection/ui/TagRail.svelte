@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { identity } from "#lib/constants.ts";
+  import { identity } from "#lib/helpers.ts";
 
   type Props = {
     tags: string[];

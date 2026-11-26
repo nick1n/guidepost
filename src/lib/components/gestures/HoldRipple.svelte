@@ -1,4 +1,5 @@
 <script module lang="ts">
+  import { clamp } from "#lib/helpers.ts";
   import { DURATION_FAST, DURATION_HOLD } from "#lib/constants.ts";
 
   const rippleFadeDuration = 270;
@@ -66,7 +67,7 @@
     holding = false;
     if (!ripple) return;
     if (onhold && !ripple.complete) {
-      const progress = Math.min(1, Math.max(0, (performance.now() - rippleStarted - holdDelay) / (DURATION_HOLD - holdDelay)));
+      const progress = clamp(0, (performance.now() - rippleStarted - holdDelay) / (DURATION_HOLD - holdDelay), 1);
       ripple.scale += (1 - ripple.scale) * progress;
     }
     ripple.fading = true;

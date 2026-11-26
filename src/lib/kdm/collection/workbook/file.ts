@@ -1,6 +1,7 @@
+import { normalizeWhitespace } from "#lib/helpers.ts";
 import type { Sheet } from "read-excel-file/universal";
 import { Effect, Result, Schema } from "effect";
-import mappingJson from "#catalog/workbook-map.json";
+import mappingJson from "#static/kdm/catalog/workbook-map.json";
 import {
   decodeWorkbookMap,
   sheets,
@@ -71,7 +72,7 @@ function invalid(operation: TransferError["operation"], message: string) {
 // The parser returns cached formula results and visible text; it never evaluates formulas or follows links.
 function text(cell: Cell) {
   const input = cell.value;
-  return typeof input === "string" ? input.trim().replace(/\s+/gu, " ") : input;
+  return typeof input === "string" ? normalizeWhitespace(input) : input;
 }
 
 function checkbox(cell: Cell): boolean | undefined {

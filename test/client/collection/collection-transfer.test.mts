@@ -3,8 +3,8 @@ import { it } from "@effect/vitest";
 import { Cause, Deferred, Effect, Exit, Fiber, Result } from "effect";
 import { vi } from "vitest";
 import { FetchHttpClient } from "effect/http";
-import workbookMap from "#catalog/workbook-map.json";
-import catalogJson from "#catalog/data.json";
+import workbookMap from "#static/kdm/catalog/workbook-map.json";
+import catalogJson from "#static/kdm/catalog/data.json";
 import {
   decodeBackup,
   encodeBackup,

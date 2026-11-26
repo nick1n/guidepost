@@ -2,6 +2,7 @@
 import { readFile } from "node:fs/promises";
 import { resolve, relative, extname } from "node:path";
 import { gzipSync } from "node:zlib";
+import data from "#static/kdm/catalog/data.json" with { type: "json" };
 import { runBrowser } from "../support/harness.mts";
 
 const root = resolve("build");
@@ -220,7 +221,6 @@ try {
       await navigate("/kdm/collection/#/content/woe-white-speaker");
       await waitFor(shellReady);
       // Use a known item from the live catalog, so the latest destination has an exact assertion.
-      const data = JSON.parse(await readFile("static/kdm/catalog/data.json", "utf8"));
       const accessory = Object.keys(data.accessories)[0];
       await evaluate(`location.hash = '/accessories/' + ${JSON.stringify(accessory)}`);
       release();

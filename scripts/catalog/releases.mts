@@ -1,3 +1,4 @@
+import { normalizeWhitespace } from "#lib/helpers.ts";
 import { Parser } from "htmlparser2";
 import { editionByLabel, editionId } from "./identity.mts";
 import { catalogListing, productUrl } from "./shop.mts";
@@ -15,7 +16,7 @@ function contents(html: string) {
     },
     onclosetag(tag) {
       if (tag === "li" && current) {
-        rows.push(current.join("").replace(/\s+/g, " ").trim());
+        rows.push(normalizeWhitespace(current.join("")));
         current = undefined;
       }
     },

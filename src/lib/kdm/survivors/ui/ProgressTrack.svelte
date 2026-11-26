@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { clamp } from "#lib/helpers.ts";
   let {
     name,
     max,
@@ -10,7 +11,7 @@
   let next = $derived(marks.findIndex((mark) => value < mark));
   const id = $props.id();
   function setValue(next: number) {
-    value = Math.max(0, Math.min(max, Math.round(next || 0)));
+    value = clamp(0, Math.round(next || 0), max);
   }
   function oninput(event: Event) {
     setValue((event.currentTarget as HTMLInputElement).valueAsNumber);

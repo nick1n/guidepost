@@ -1,7 +1,7 @@
+import { readOptional } from "#scripts/read-optional.mts";
 import { stat } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { catalogCache } from "./paths.mts";
-import { readOptional } from "./inputs.mts";
 import { ShopClient, shopProduct } from "./shop.mts";
 import type { Product } from "./types.mts";
 

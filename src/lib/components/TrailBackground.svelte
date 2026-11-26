@@ -1,4 +1,5 @@
 <script module lang="ts">
+  import { clamp } from "#lib/helpers.ts";
   import { draw } from "svelte/transition";
 
   type Point = { x: number; y: number };
@@ -11,7 +12,7 @@
   }
 
   function curve(points: Point[]) {
-    const at = (index: number) => points[Math.max(0, Math.min(points.length - 1, index))];
+    const at = (index: number) => points[clamp(0, index, points.length - 1)];
     let d = `M${coordinates(points[0].x, points[0].y)}`;
     for (let i = 0; i < points.length - 1; i++) {
       const previous = at(i - 1);

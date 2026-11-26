@@ -1,3 +1,4 @@
+import { errorMessage } from "#lib/helpers.ts";
 import { Schema } from "effect";
 import { CatalogInputError } from "./review/schema.mts";
 import { categories } from "./types.mts";
@@ -46,7 +47,7 @@ export function parseMappings(text: string | undefined, path: string): Record<st
   try {
     return decode(value);
   } catch (cause) {
-    const detail = cause instanceof Error ? cause.message : String(cause);
+    const detail = errorMessage(cause);
     throw new CatalogInputError({ message: `Invalid mappings in ${path}; fix the indicated field and rerun. ${detail}`, cause });
   }
 }

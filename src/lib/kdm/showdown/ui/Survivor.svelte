@@ -5,6 +5,7 @@
   import ActionRow from "./actions/ActionRow.svelte";
   import AttackProfile from "./AttackProfile.svelte";
   import KdIcon from "#lib/components/KdIcon.svelte";
+  import { pluralize } from "#lib/helpers.ts";
   import Section from "#lib/kdm/ui/sections/Section.svelte";
   import Gear from "#lib/kdm/survivors/ui/Gear.svelte";
   import EntryList from "./sections/EntryList.svelte";
@@ -436,7 +437,7 @@
 
 {#snippet extraSection(name: string)}
   {#if name === "Tokens"}
-    <Section title="Tokens" meta={[`${tokens} Attribute Token${tokens === 1 ? "" : "s"}`, `${sheet.bleeding ?? 0} Bleeding`]}>
+    <Section title="Tokens" meta={[pluralize(tokens, "Attribute Token"), `${sheet.bleeding ?? 0} Bleeding`]}>
       {@render tokenControls()}
     </Section>
   {:else if name === "Trinkets"}

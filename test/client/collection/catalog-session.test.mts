@@ -7,7 +7,7 @@ import * as loader from "#lib/kdm/collection/catalog-loader.ts";
 import { Collection } from "#lib/kdm/collection/state/collection.svelte.ts";
 import { reportAction } from "#lib/app/actions.ts";
 import { Notifications } from "#lib/app/notifications/notifications.ts";
-import catalog from "#catalog/data.json";
+import catalog from "#static/kdm/catalog/data.json";
 
 const url = "https://guidepost.test/kdm/catalog/data.json";
 

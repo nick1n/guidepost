@@ -7,7 +7,7 @@ import { it } from "@effect/vitest";
 import { Cause, Deferred, Effect, Exit, Fiber } from "effect";
 import { vi } from "vitest";
 import { FetchHttpClient } from "effect/http";
-import catalogJson from "#catalog/data.json";
+import catalogJson from "#static/kdm/catalog/data.json";
 import { collectionKey, type Catalog, type Edition } from "#lib/types/index.ts";
 import { Collection } from "#lib/kdm/collection/state/collection.svelte.ts";
 import { previewWorkbookRows, TransferError } from "#lib/kdm/collection/state/collection-transfer.ts";

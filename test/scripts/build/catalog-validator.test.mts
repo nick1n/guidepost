@@ -2,8 +2,8 @@ import { execFileSync } from "node:child_process";
 import { readFile, stat } from "node:fs/promises";
 import Ajv2020 from "ajv/dist/2020.js";
 import { expect, it } from "vitest";
-import schema from "#catalog/data.schema.json";
-import catalog from "#catalog/data.json";
+import schema from "#static/kdm/catalog/data.schema.json";
+import catalog from "#static/kdm/catalog/data.json";
 import validate from "#lib/gen/catalog-validator.js";
 import { generateTypes, renderCatalogValidator, validatorPath } from "#scripts/generate-types.mts";
 

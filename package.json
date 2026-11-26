@@ -68,8 +68,8 @@
     "vitest": "^5.0.5"
   },
   "imports": {
-    "#catalog/*": "./static/kdm/catalog/*",
     "#lib/*": "./src/lib/*",
-    "#scripts/*": "./scripts/*"
+    "#scripts/*": "./scripts/*",
+    "#static/*": "./static/*"
   }
 }

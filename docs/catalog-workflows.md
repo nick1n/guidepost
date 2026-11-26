@@ -167,12 +167,14 @@ HEAD responses never change stock, availability, or `shopUpdated`.
 ## Generated files
 
 Edit the source contracts, not generated files, then run `pnpm generate:types`. Development, checks, and builds also generate them;
-the dev server watches schema and catalog changes.
+the dev server watches schema and catalog changes. UnoCSS reads innovation artwork from `static/kdm/data/core.json`.
+Use an icon string such as `"game-icons:fist"`, or an object such as `{ "game-icons": "meeple-circle", "rotate": "30deg" }` for rotated artwork.
 
 | Generated output                                                                                                                | Source                                                     |
 | ------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
 | [Catalog types](../src/lib/types/gen/kdm-data.d.ts) and [browser validator](../src/lib/gen/catalog-validator.js) (with `.d.ts`) | [data.schema.json](../static/kdm/catalog/data.schema.json) |
 | [Core editions](../src/lib/gen/core-editions.json)                                                                              | [data.json](../static/kdm/catalog/data.json)               |
+| [Gameplay types](../src/lib/types/gen/kdm-gameplay.d.ts)                                                                        | [schema.json](../static/kdm/data/schema.json)              |
 | [Workbook map schema](../static/kdm/catalog/workbook-map.schema.json)                                                           | [workbook.ts](../src/lib/types/workbook.ts)                |
 
 `workbook.ts` owns both the mapping and normalized-row schemas and types. The generated core edition list supplies Quick Start with

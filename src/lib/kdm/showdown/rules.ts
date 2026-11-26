@@ -1,3 +1,4 @@
+import { clamp } from "#lib/helpers.ts";
 import { tokenNet, type Sheet } from "./sheet";
 
 type WeaponStats = { speed: number; accuracy: number; strength: number; luck: number; keywords: readonly string[] };
@@ -9,7 +10,7 @@ const weaponStats = {
 
 type AttackWeapon = keyof typeof weaponStats;
 
-const clampTarget = (value: number) => Math.max(2, Math.min(10, value));
+const clampTarget = (value: number) => clamp(2, value, 10);
 
 export function formatTarget(value: number | null) {
   if (value === null) return "\u2212";

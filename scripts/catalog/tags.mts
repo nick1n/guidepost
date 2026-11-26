@@ -1,3 +1,4 @@
+import { readOptional } from "#scripts/read-optional.mts";
 import { catalogData } from "./paths.mts";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
@@ -53,12 +54,7 @@ export function organizeTags(catalog: Catalog, tags: Tags) {
 }
 
 export async function loadTags(root: string, captured?: { catalog: Catalog; text: string | undefined; schemaText: string | undefined }) {
-  const text = captured
-    ? captured.text
-    : await readFile(join(catalogData(root), "tags.json"), "utf8").catch((error: unknown) => {
-        if (error instanceof Error && "code" in error && error.code === "ENOENT") return undefined;
-        throw error;
-      });
+  const text = captured ? captured.text : await readOptional(join(catalogData(root), "tags.json"));
   if (text === undefined) {
     const catalog: Catalog = captured ? captured.catalog : JSON.parse(await readFile(join(root, "data.json"), "utf8"));
     const tags = Object.fromEntries(

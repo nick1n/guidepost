@@ -1,3 +1,4 @@
+import { readOptional } from "#scripts/read-optional.mts";
 import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -12,9 +13,11 @@ import { WorkbookMapSchema } from "#lib/types/workbook.ts";
 import { editionGameplay } from "#lib/kdm-data.ts";
 import type { Catalog } from "#lib/types/index.ts";
 
-export const schemaPath = fileURLToPath(new URL("../static/kdm/catalog/data.schema.json", import.meta.url));
-export const catalogPath = fileURLToPath(new URL("../static/kdm/catalog/data.json", import.meta.url));
-const workbookSchemaPath = fileURLToPath(new URL("../static/kdm/catalog/workbook-map.schema.json", import.meta.url));
+export const schemaPath = fileURLToPath(import.meta.resolve("#static/kdm/catalog/data.schema.json"));
+export const catalogPath = fileURLToPath(import.meta.resolve("#static/kdm/catalog/data.json"));
+export const gameplaySchemaPath = fileURLToPath(import.meta.resolve("#static/kdm/data/schema.json"));
+const gameplayTypesPath = fileURLToPath(new URL("../src/lib/types/gen/kdm-gameplay.d.ts", import.meta.url));
+const workbookSchemaPath = fileURLToPath(import.meta.resolve("#static/kdm/catalog/workbook-map.schema.json"));
 const outputPath = fileURLToPath(new URL("../src/lib/types/gen/kdm-data.d.ts", import.meta.url));
 const corePath = fileURLToPath(new URL("../src/lib/gen/core-editions.json", import.meta.url));
 
@@ -48,9 +51,7 @@ export async function renderCatalogValidator(schema: object) {
 }
 
 async function writeChanged(path: string, output: string) {
-  const previous = await readFile(path, "utf8").catch((error: NodeJS.ErrnoException) => {
-    if (error.code !== "ENOENT") throw error;
-  });
+  const previous = await readOptional(path);
   if (previous === output) return false;
   await mkdir(dirname(path), { recursive: true });
   await writeFile(path, output);
@@ -85,13 +86,7 @@ export async function generateCoreEditions() {
     ...(await resolveConfig(corePath)),
     parser: "json",
   });
-  const previous = await readFile(corePath, "utf8").catch((error) => {
-    if (error.code !== "ENOENT") throw error;
-  });
-  if (output === previous) return false;
-  await mkdir(dirname(corePath), { recursive: true });
-  await writeFile(corePath, output);
-  return true;
+  return writeChanged(corePath, output);
 }
 
 async function generateWorkbookSchema() {
@@ -103,32 +98,26 @@ async function generateWorkbookSchema() {
       parser: "json",
     },
   );
-  const previous = await readFile(workbookSchemaPath, "utf8").catch((error: NodeJS.ErrnoException) => {
-    if (error.code !== "ENOENT") throw error;
+  return writeChanged(workbookSchemaPath, output);
+}
+
+async function generateSchemaTypes(schema: string, outputPath: string, source: string) {
+  const output = await compileFromFile(schema, {
+    // The schemas check array cardinality; consumers work with ordinary arrays.
+    ignoreMinAndMaxItems: true,
+    style: (await resolveConfig(outputPath)) ?? {},
+    bannerComment: "/* Generated from " + source + ". Do not edit. Run pnpm generate:types to regenerate. */",
   });
-  if (output === previous) return false;
-  await writeFile(workbookSchemaPath, output);
-  return true;
+  return writeChanged(outputPath, output);
 }
 
 export async function generateTypes() {
   const validatorChanged = await generateCatalogValidator();
   const coreChanged = await generateCoreEditions();
   const workbookChanged = await generateWorkbookSchema();
-  const output = await compileFromFile(schemaPath, {
-    // Catalog validation checks array cardinality; consumers work with ordinary arrays.
-    ignoreMinAndMaxItems: true,
-    style: (await resolveConfig(outputPath)) ?? {},
-    bannerComment: "/* Generated from static/kdm/catalog/data.schema.json. Do not edit. Run pnpm generate:types to regenerate. */",
-  });
-  const previous = await readFile(outputPath, "utf8").catch((error) => {
-    if (error.code !== "ENOENT") throw error;
-  });
-  if (output === previous) return coreChanged || workbookChanged || validatorChanged;
-
-  await mkdir(dirname(outputPath), { recursive: true });
-  await writeFile(outputPath, output);
-  return true;
+  const catalogTypesChanged = await generateSchemaTypes(schemaPath, outputPath, "static/kdm/catalog/data.schema.json");
+  const gameplayTypesChanged = await generateSchemaTypes(gameplaySchemaPath, gameplayTypesPath, "static/kdm/data/schema.json");
+  return validatorChanged || coreChanged || workbookChanged || catalogTypesChanged || gameplayTypesChanged;
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

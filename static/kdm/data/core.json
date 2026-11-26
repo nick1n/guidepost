@@ -1,0 +1,158 @@
+{
+  "$schema": "./schema.json",
+  "innovation": {
+    "innovation:language": {
+      "name": "Language",
+      "keywords": ["starting-innovation"],
+      "highlight": "Survival Limit +1",
+      "description": "All survivors gain the **Encourage** survival action.",
+      "consequences": true,
+      "hook": { "gain": ["attr:survival-limit", "survival:encourage", "keyword:language-consequence"] }
+    },
+    "innovation:inner-lantern": {
+      "name": "Inner Lantern",
+      "keywords": ["faith", "language-consequence"],
+      "description": "The settlement finds the light within. All survivors gain the **Surge** survival action.",
+      "consequences": true,
+      "hook": { "gain": ["attr:survival-limit", "survival:surge", "keyword:inner-lantern-consequence"] }
+    },
+    "innovation:lantern-oven": {
+      "name": "Lantern Oven",
+      "keywords": ["science", "ammonia-consequence"],
+      "highlight": "Heat",
+      "description": "By agitating lanterns, a source of **Heat** becomes available to the settlement.\n**Departing Survivors** gain +1 survival.",
+      "consequences": true,
+      "hooks": [{ "gain": ["require:heat", "keyword:oven-consequence"] }, { "on": "depart", "gain": "attr:survival" }]
+    },
+    "innovation:clan-of-death": {
+      "name": "Clan of Death",
+      "keywords": ["home", "family-consequence"],
+      "description": "The enduring strength of your clan passes through generations.\nAll newborn survivors gain:\n+1 Accuracy +1 Strength +1 Evasion",
+      "hook": { "on": "newborn", "gain": ["attr:accuracy", "attr:strength", "attr:evasion"] }
+    },
+    "innovation:nightmare-training": {
+      "name": "Nightmare Training",
+      "icon": "game-icons:fist",
+      "keywords": ["education", "symposium-consequence"],
+      "action": {
+        "action:nightmare-training": {
+          "name": "**Train** - Lose 3 survival and roll 1d10",
+          "cost": ["endeavor"],
+          "select": "survivors",
+          "prompts": [
+            { "r": 1, "q": "*Accident.* Spend 1 survival or die." },
+            { "r": [2, 7], "q": "You may spend 1 survival and roll again." },
+            { "r": [8, 9], "q": "Gain +1 weapon proficiency level." },
+            { "r": [10], "q": "Gain +1 permanent accuracy or strength." }
+          ],
+          "hooks": ["TODO"]
+        }
+      }
+    },
+    "innovation:partnership": {
+      "name": "Partnership",
+      "icon": "game-icons:lovers",
+      "keywords": ["home", "hovel-consequence"],
+      "description": "**Partner - \"(Partner's Name)\"**: When you both **Arrive**, gain survival up to the survival limit. Partners may only nominate each other for [story] **Intimacy**. When a partner dies, the remaining partner gains a random disorder and loses this ability.",
+      "action": {
+        "action:partnership": {
+          "name": "Partnership",
+          "description": "Nominate two survivors. They pair off, and each gains the **Partner** ability. A survivor may be nominated for Partnership once per lifetime.",
+          "cost": [{ "token": "endeavor", "x": 2 }],
+          "select": "survivors",
+          "hooks": ["TODO"]
+        }
+      }
+    },
+    "innovation:heart-flute": {
+      "name": "Heart Flute",
+      "icon": "game-icons:heart-organ",
+      "keywords": ["music", "forbidden-dance-consequence"],
+      "description": "When a survivor uses the **Synchronized Strike** fighting art, their attack assist may spend 1 survival to change any monster [reaction] to a [reaction] **FAILURE** before any wound attempts are made. Limit once per attack.",
+      "action": {
+        "action:heart-flute": {
+          "name": "**Devil's Melody** - roll 1d10",
+          "cost": [{ "token": "endeavor", "x": 2 }],
+          "select": "survivors",
+          "prompts": [
+            { "r": [1, 5], "q": "*Sharp note.* You drop dead." },
+            {
+              "r": [6],
+              "q": "*You play a trill note.* Select any Nemesis monster. Add a **Special Showdown** with them (at the highest level you have not yet faced) to the timeline this year. You cannot endeavor here again this phase."
+            }
+          ],
+          "hooks": ["TODO"]
+        }
+      }
+    },
+    "innovation:petal-spiral": {
+      "name": "Petal Spiral",
+      "icon": "game-icons:sword-spin",
+      "source": "flower-knight",
+      "keywords": ["music", "forbidden-dance-consequence"],
+      "description": "Regardless of their Hunt XP, survivors may select Sword for their Weapon Proficiency.",
+      "action": {
+        "action:petal-spiral": {
+          "name": "**Trace petals** - roll 1d10",
+          "cost": ["endeavor"],
+          "select": "survivors",
+          "prompts": [
+            {
+              "r": [1, 3],
+              "q": "Lose 1 Flower resource. If you do, gain the **Flower Addiction** disorder and roll again. Otherwise, nothing happens."
+            },
+            { "r": [4, 5], "q": "Gain +2 survival and +1 understanding." },
+            {
+              "r": [6],
+              "q": "Gain +1 sword proficiency level."
+            }
+          ],
+          "hooks": ["TODO"]
+        }
+      }
+    },
+    "innovation:choreia": {
+      "name": "Choreia",
+      "icon": { "game-icons": "meeple-circle", "rotate": "30deg" },
+      "source": "spidicules",
+      "keywords": ["music", "forbidden-dance-consequence"],
+      "action": {
+        "action:choreia": {
+          "name": "**Spider Dance** - Nominate a male and a female survivor and roll 1d10",
+          "cost": [{ "token": "endeavor", "x": 2 }],
+          "select": "survivors",
+          "prompts": [
+            {
+              "r": [1, 7],
+              "q": "Beautiful Dancing!"
+            },
+            {
+              "r": [8, 9],
+              "q": "If both survivors depart this settlement phase, the male survivor gains the **Harvestman** fighting art."
+            },
+            {
+              "r": [10],
+              "q": "The female survivor devours the male. The male survivor is dead. The female survivor gains half of the male's Hunt XP (rounded down), one of their fighting arts, and the **Death Touch** secret fighting art."
+            }
+          ],
+          "hooks": ["TODO"]
+        }
+      }
+    },
+    "innovation:morgue": {
+      "name": "Morgue",
+      "icon": "game-icons:skull-in-jar",
+      "source": "gce",
+      "keywords": ["science", "lantern-oven-consequence"],
+      "highlight": "Cooling",
+      "description": "By creating a radiative chamber, a source of **Cooling** becomes available to the settlement.\n\nIf the settlement has **Cannibalize**, it harvests preserved bodies. At the start of the develop step, gain 1 random basic resource for every 10 survivors in your death count, rounded down.",
+      "hooks": [
+        { "gain": "require:cooling" },
+        {
+          "on": "settlement-develop",
+          "draw": { "deck:resource-basic": { "/": ["attr:death-count", 10], "rounding": "down" } }
+        }
+      ]
+    }
+  }
+}

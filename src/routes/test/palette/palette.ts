@@ -1,3 +1,4 @@
+import { clamp } from "#lib/helpers.ts";
 import themeCss from "../../../app.css?raw";
 
 type Color = { lightness: number; chroma: number; hue: number };
@@ -131,7 +132,7 @@ function describeShade(family: Family, level: number, { lightness, chroma, hue }
     rgb
       .map((value) => {
         const encoded = value <= 0.0031308 ? value * 12.92 : 1.055 * value ** (1 / 2.4) - 0.055;
-        return Math.round(Math.max(0, Math.min(1, encoded)) * 255)
+        return Math.round(clamp(0, encoded, 1) * 255)
           .toString(16)
           .padStart(2, "0");
       })

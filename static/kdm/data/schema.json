@@ -1,0 +1,1684 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Kingdom Death Monster schema",
+  "type": "object",
+  "properties": {
+    "$schema": { "type": "string" },
+    "ability": {
+      "type": "object",
+      "patternProperties": { "^ability:": { "$ref": "#/$defs/name-desc" } },
+      "additionalProperties": false
+    },
+    "action": {
+      "type": "object",
+      "patternProperties": { "^action:": { "$ref": "#/$defs/action-def" } },
+      "additionalProperties": false
+    },
+    "attribute": {
+      "type": "object",
+      "patternProperties": { "^attr:": { "$ref": "#/$defs/attribute-item" } },
+      "additionalProperties": false
+    },
+    "campaign": {
+      "type": "object",
+      "patternProperties": { "^campaign:": { "$ref": "#/$defs/base-item" } },
+      "additionalProperties": false
+    },
+    "character": {
+      "type": "object",
+      "patternProperties": { "^character:": { "$ref": "#/$defs/name-desc" } },
+      "additionalProperties": false
+    },
+    "deck": {
+      "type": "object",
+      "patternProperties": { "^deck:": { "$ref": "#/$defs/decks" } },
+      "additionalProperties": false
+    },
+    "disorder": {
+      "type": "object",
+      "patternProperties": { "^disorder:": { "$ref": "#/$defs/base-item" } },
+      "additionalProperties": false
+    },
+    "fightingArt": {
+      "type": "object",
+      "patternProperties": { "^fa:": { "$ref": "#/$defs/base-item" } },
+      "additionalProperties": false
+    },
+    "gear": {
+      "type": "object",
+      "patternProperties": { "^gear:": { "$ref": "#/$defs/gear-item" } },
+      "additionalProperties": false
+    },
+    "glossary": {
+      "type": "object",
+      "patternProperties": { "^glossary:": { "$ref": "#/$defs/name-desc" } },
+      "additionalProperties": false
+    },
+    "huntEvent": {
+      "type": "object",
+      "patternProperties": { "^he:": { "$ref": "#/$defs/base-item" } },
+      "additionalProperties": false
+    },
+    "impairment": {
+      "type": "object",
+      "patternProperties": { "^impairment:": { "$ref": "#/$defs/base-item" } },
+      "additionalProperties": false
+    },
+    "injury": {
+      "type": "object",
+      "patternProperties": { "^injury:": { "$ref": "#/$defs/name-desc" } },
+      "additionalProperties": false
+    },
+    "innovation": {
+      "type": "object",
+      "patternProperties": { "^innovation:": { "$ref": "#/$defs/base-item" } },
+      "additionalProperties": false
+    },
+    "keyword": {
+      "type": "object",
+      "patternProperties": { "^keyword:": { "$ref": "#/$defs/name-desc" } },
+      "additionalProperties": false
+    },
+    "knowledge": {
+      "type": "object",
+      "patternProperties": { "^knowledge:": { "$ref": "#/$defs/base-item" } },
+      "additionalProperties": false
+    },
+    "location": {
+      "type": "object",
+      "patternProperties": { "^location:": { "$ref": "#/$defs/base-item" } },
+      "additionalProperties": false
+    },
+    "milestone": {
+      "type": "object",
+      "patternProperties": { "^milestone:": { "$ref": "#/$defs/base-item" } },
+      "additionalProperties": false
+    },
+    "monster": {
+      "type": "object",
+      "patternProperties": { "^monster:": { "$ref": "#/$defs/monster-card" } },
+      "additionalProperties": false
+    },
+    "pattern": {
+      "type": "object",
+      "patternProperties": { "^pattern:": { "$ref": "#/$defs/pattern-card" } },
+      "additionalProperties": false
+    },
+    "phase": {
+      "type": "object",
+      "patternProperties": { "^phase:": { "$ref": "#/$defs/name-desc" } },
+      "additionalProperties": false
+    },
+    "pillar": {
+      "type": "object",
+      "patternProperties": { "^pillar:": { "$ref": "#/$defs/base-item" } },
+      "additionalProperties": false
+    },
+    "principle": {
+      "type": "object",
+      "patternProperties": { "^principle:": { "$ref": "#/$defs/base-item" } },
+      "additionalProperties": false
+    },
+    "proficiency": {
+      "type": "object",
+      "patternProperties": { "^proficiency:": { "$ref": "#/$defs/proficiency-card" } },
+      "additionalProperties": false
+    },
+    "require": {
+      "type": "object",
+      "patternProperties": { "^require:": { "$ref": "#/$defs/name-desc" } },
+      "additionalProperties": false
+    },
+    "resource": {
+      "type": "object",
+      "patternProperties": { "^resource:": { "$ref": "#/$defs/resource-card" } },
+      "additionalProperties": false
+    },
+    "rule": {
+      "type": "object",
+      "patternProperties": { "^rule:": { "$ref": "#/$defs/base-item" } },
+      "additionalProperties": false
+    },
+    "seed": {
+      "type": "object",
+      "patternProperties": { "^seed:": { "$ref": "#/$defs/pattern-card" } },
+      "additionalProperties": false
+    },
+    "set": {
+      "type": "object",
+      "patternProperties": { "^set:": { "$ref": "#/$defs/base-item" } },
+      "additionalProperties": false
+    },
+    "settlementEvent": {
+      "type": "object",
+      "patternProperties": { "^se:": { "$ref": "#/$defs/base-item" } },
+      "additionalProperties": false
+    },
+    "severe": {
+      "type": "object",
+      "patternProperties": { "^severe:": { "$ref": "#/$defs/base-item" } },
+      "additionalProperties": false
+    },
+    "status": {
+      "type": "object",
+      "patternProperties": { "^status:": { "$ref": "#/$defs/base-item" } },
+      "additionalProperties": false
+    },
+    "story": {
+      "type": "object",
+      "patternProperties": { "^story:": { "$ref": "#/$defs/base-item" } },
+      "additionalProperties": false
+    },
+    "survival": {
+      "type": "object",
+      "patternProperties": { "^survival:": { "$ref": "#/$defs/base-item" } },
+      "additionalProperties": false
+    },
+    "terrain": {
+      "type": "object",
+      "patternProperties": { "^terrain:": { "$ref": "#/$defs/terrain-card" } },
+      "additionalProperties": false
+    },
+    "token": {
+      "type": "object",
+      "patternProperties": { "^token:": { "$ref": "#/$defs/base-item" } },
+      "additionalProperties": false
+    },
+    "trauma": {
+      "type": "object",
+      "patternProperties": { "^trauma:": { "$ref": "#/$defs/base-item" } },
+      "additionalProperties": false
+    },
+    "type": {
+      "type": "object",
+      "patternProperties": { "^type:": { "$ref": "#/$defs/name-desc" } },
+      "additionalProperties": false
+    },
+    "variant": {
+      "type": "object",
+      "patternProperties": { "^variant:": { "$ref": "#/$defs/base-item" } },
+      "additionalProperties": false
+    },
+    "vermin": {
+      "type": "object",
+      "patternProperties": { "^vermin:": { "$ref": "#/$defs/base-item" } },
+      "additionalProperties": false
+    },
+    "vignette": {
+      "type": "object",
+      "patternProperties": { "^vignette:": { "$ref": "#/$defs/vignette-survivor" } },
+      "additionalProperties": false
+    },
+
+    "var": {
+      "type": "object",
+      "patternProperties": { "^var:": { "$ref": "#/$defs/name-desc" } },
+      "additionalProperties": false
+    },
+
+    "accessory": { "$ref": "#/$defs/content-item" },
+    "bundle": { "$ref": "#/$defs/content-item" },
+    "content": { "$ref": "#/$defs/content-item" }
+  },
+  "additionalProperties": false,
+
+  "$defs": {
+    "when": {
+      "oneOf": [{ "enum": ["gain", "loss", "equip", "limit", "perfect-hit"] }, { "$ref": "#/$defs/condition" }]
+    },
+    "x-num": { "oneOf": [{ "const": "x" }, { "type": "integer" }] },
+    "keywords": { "type": "array", "items": { "$ref": "#/$defs/keyword" } },
+    "per-def": {
+      "oneOf": [
+        { "$ref": "#/$defs/per" },
+        {
+          "type": "object",
+          "propertyNames": { "$ref": "#/$defs/per" },
+          "additionalProperties": { "$ref": "#/$defs/x-num" }
+        }
+      ]
+    },
+    "can-hook": {
+      "oneOf": [
+        { "enum": ["activate", "equip", "depart", "use-fighting-arts", "use-abilities", "glossary:ignore-hit"] },
+        { "$ref": "#/$defs/survival-prefixed" }
+      ]
+    },
+    "on-hook": {
+      "enum": [
+        "act",
+        "activate",
+        "affinity",
+        "aftermath:defeat",
+        "aftermath:victory",
+        "aftermath",
+        "archive",
+        "armor",
+        "arrival",
+        "attack",
+        "blind-spot",
+        "craft",
+        "critical",
+        "depart",
+        "disorder",
+        "equip",
+        "gain",
+        "gear-activated",
+        "heal",
+        "hunt",
+        "injury",
+        "newborn",
+        "perfect-hit",
+        "prompt",
+        "reaction",
+        "return",
+        "round-end",
+        "rounding",
+        "settlement-develop",
+        "settlement-end",
+        "settlement-start",
+        "severe",
+        "showdown-start",
+        "spend-survival",
+        "starting",
+        "status",
+        "suffer",
+        "survival",
+        "target",
+        "turn-end"
+      ]
+    },
+    "sources": {
+      "enum": [
+        "butcher",
+        "core",
+        "dragon-king",
+        "dung-beetle-knight",
+        "flower-knight",
+        "gce",
+        "gigalion",
+        "godhand",
+        "gold-smoke-knight",
+        "the-king",
+        "kings-man",
+        "lion-god",
+        "lion-knight",
+        "manhunter",
+        "parasite-queen",
+        "pariah",
+        "phoenix",
+        "screaming-antelope",
+        "screaming-god",
+        "spidicules",
+        "tyrant",
+        "watcher",
+        "white-lion"
+      ]
+    },
+    "sizes": { "enum": ["1x1", "2x2", "3x3", "4x4", "2x1", "1x3", "1x4", "2x3"] },
+    "nodes": { "enum": [1, 2, 3, 4] },
+    "phases": { "enum": ["showdown", "hunt", "settlement"] },
+    "hit-location": { "enum": ["head", "arms", "body", "waist", "legs", "random"], "default": "random" },
+    "affinity": { "enum": ["red", "green", "blue", "all"] },
+    "resource-types": { "enum": ["indomitable", "basic", "monster", "strange", "vermin"] },
+    "monster-types": { "enum": ["quarry", "nemesis", "core", "finale"] },
+    "action-types": { "enum": ["maneuver"] },
+    "glossary-prefixed": {
+      "enum": ["glossary:activation", "glossary:movement", "glossary:ignore-hit", "glossary:bash"]
+    },
+    "survival-prefixed": {
+      "enum": [
+        "survival:dash",
+        "survival:distractedCat",
+        "survival:dodge",
+        "survival:embolden",
+        "survival:enchantedReflection",
+        "survival:encourage",
+        "survival:endure",
+        "survival:fistPump",
+        "survival:hatedOnes",
+        "survival:leapingLure",
+        "survival:oath",
+        "survival:overcharge",
+        "survival:silentRebellion",
+        "survival:surge",
+        "survival:unforeseenStrike"
+      ]
+    },
+    "require-prefixed": { "enum": ["require:cooling", "require:heat"] },
+    "status": {
+      "enum": [
+        "acted",
+        "alive",
+        "blind-spot",
+        "blind",
+        "can-intimacy",
+        "can-partnership",
+        "catalyze",
+        "cease-to-exist",
+        "dead",
+        "deaf",
+        "death-count",
+        "departing",
+        "frenzied",
+        "insane",
+        "knocked-down",
+        "not-threat",
+        "removed",
+        "retired",
+        "returning",
+        "skip-next-hunt",
+        "standing",
+        "stinky",
+        "terrified"
+      ]
+    },
+    "status-prefixed": {
+      "enum": [
+        "status:act",
+        "status:alive",
+        "status:blind-spot",
+        "status:blind",
+        "status:can-intimacy",
+        "status:can-partnership",
+        "status:catalyze",
+        "status:cease-to-exist",
+        "status:dead",
+        "status:deaf",
+        "status:death-count",
+        "status:departing",
+        "status:frenzied",
+        "status:insane",
+        "status:knocked-down",
+        "status:not-threat",
+        "status:removed",
+        "status:retire",
+        "status:returning",
+        "status:skip-next-hunt",
+        "status:standing",
+        "status:stinky",
+        "status:terrified"
+      ]
+    },
+    "attribute-prefixed": {
+      "enum": [
+        "attr:accuracy",
+        "attr:act-activate",
+        "attr:act-bone",
+        "attr:act-movement",
+        "attr:affinity-blue",
+        "attr:affinity-green",
+        "attr:affinity-red",
+        "attr:armor-all",
+        "attr:armor-any",
+        "attr:armor-arms",
+        "attr:armor-body",
+        "attr:armor-head",
+        "attr:armor-legs",
+        "attr:armor-waist",
+        "attr:born",
+        "attr:brain-damage",
+        "attr:children",
+        "attr:collective-cognition",
+        "attr:courage",
+        "attr:damage",
+        "attr:death-count",
+        "attr:disposition",
+        "attr:draw-fighting-arts",
+        "attr:draw-innovations",
+        "attr:evasion",
+        "attr:hunt-xp",
+        "attr:insanity",
+        "attr:life",
+        "attr:lost-settlements",
+        "attr:luck",
+        "attr:lumi",
+        "attr:max-disorders",
+        "attr:max-fighting-arts",
+        "attr:max-knowledges",
+        "attr:monster-level",
+        "attr:movement-extra",
+        "attr:movement",
+        "attr:perfect-hit-range",
+        "attr:population",
+        "attr:proficiency",
+        "attr:roll-any",
+        "attr:roll-hunt-event",
+        "attr:roll-intimacy",
+        "attr:roll-scavenge",
+        "attr:roll-severe",
+        "attr:roll-straggler",
+        "attr:roll-trauma",
+        "attr:roll",
+        "attr:speed",
+        "attr:star",
+        "attr:strength",
+        "attr:survival-limit",
+        "attr:survival",
+        "attr:systemic-pressure",
+        "attr:torment",
+        "attr:toughness",
+        "attr:understanding",
+        "attr:wounds"
+      ]
+    },
+    "keyword": {
+      "enum": [
+        "ability",
+        "accessory",
+        "ammonia-consequence",
+        "ammunition",
+        "armor",
+        "arrow",
+        "art",
+        "axe",
+        "badge",
+        "balm",
+        "bone",
+        "music",
+        "education",
+        "symposium-consequence",
+        "hovel-consequence",
+        "forbidden-dance-consequence",
+        "bow",
+        "cleaver",
+        "cloth",
+        "club",
+        "completed-set-bonus",
+        "consumable",
+        "conviction-principle",
+        "cooking-recipe",
+        "copper",
+        "crimson-crocodile",
+        "crude",
+        "cult",
+        "dagger",
+        "deathmetal",
+        "diamond",
+        "dragon-king",
+        "dung",
+        "emotion",
+        "faith",
+        "family-consequence",
+        "feather",
+        "fighting-art",
+        "finesse",
+        "fish",
+        "fist-tooth",
+        "flammable",
+        "flower-knight",
+        "flower",
+        "fragile",
+        "frogdog",
+        "fungus",
+        "fur",
+        "gce",
+        "gold",
+        "gorm",
+        "grand-weapon",
+        "gun",
+        "heavy",
+        "herb",
+        "hide",
+        "hollow",
+        "holy",
+        "home",
+        "impairment",
+        "indomitable",
+        "inner-lantern-consequence",
+        "innovation",
+        "instrument",
+        "iron",
+        "item",
+        "jewelry",
+        "katana",
+        "katar",
+        "knowledge",
+        "language-consequence",
+        "lantern-oven-consequence",
+        "lantern",
+        "leather",
+        "legendary-ability",
+        "mask",
+        "melee",
+        "messenger",
+        "metal",
+        "milestone",
+        "noisy",
+        "novel",
+        "order",
+        "organ",
+        "other",
+        "oven-consequence",
+        "perfect",
+        "permanent-injury",
+        "phoenix",
+        "pickaxe",
+        "ranged",
+        "rawhide",
+        "science",
+        "scimitar",
+        "scrap",
+        "screaming-antelope",
+        "screaming-god",
+        "sculpture-consequence",
+        "scythe",
+        "secret-fighting-art",
+        "seed",
+        "set",
+        "settlement-event",
+        "shield",
+        "sickle",
+        "silk",
+        "skull",
+        "society-principle",
+        "soluble",
+        "spear",
+        "spidicules",
+        "starting-innovation",
+        "starting",
+        "stinky",
+        "stone",
+        "strain",
+        "sunstalker",
+        "survivor-status",
+        "sword",
+        "thrown",
+        "tool",
+        "two-handed",
+        "vegetable",
+        "vermin",
+        "weapon-proficiency",
+        "weapon",
+        "whip",
+        "white-lion"
+      ]
+    },
+    "keyword-prefixed": {
+      "enum": [
+        "keyword:ability",
+        "keyword:accessory",
+        "keyword:ammonia-consequence",
+        "keyword:ammunition",
+        "keyword:armor",
+        "keyword:arrow",
+        "keyword:art",
+        "keyword:axe",
+        "keyword:badge",
+        "keyword:balm",
+        "keyword:bone",
+        "keyword:bow",
+        "keyword:cleaver",
+        "keyword:cloth",
+        "keyword:club",
+        "keyword:completed-set-bonus",
+        "keyword:consumable",
+        "keyword:conviction-principle",
+        "keyword:cooking-recipe",
+        "keyword:copper",
+        "keyword:crimson-crocodile",
+        "keyword:crude",
+        "keyword:cult",
+        "keyword:dagger",
+        "keyword:deathmetal",
+        "keyword:diamond",
+        "keyword:dragon-king",
+        "keyword:dung",
+        "keyword:emotion",
+        "keyword:faith",
+        "keyword:family-consequence",
+        "keyword:feather",
+        "keyword:fighting-art",
+        "keyword:finesse",
+        "keyword:fish",
+        "keyword:fist-tooth",
+        "keyword:flammable",
+        "keyword:flower-knight",
+        "keyword:flower",
+        "keyword:fragile",
+        "keyword:frogdog",
+        "keyword:fungus",
+        "keyword:fur",
+        "keyword:gce",
+        "keyword:gold",
+        "keyword:gorm",
+        "keyword:grand-weapon",
+        "keyword:gun",
+        "keyword:heavy",
+        "keyword:herb",
+        "keyword:hide",
+        "keyword:hollow",
+        "keyword:home",
+        "keyword:impairment",
+        "keyword:indomitable",
+        "keyword:inner-lantern-consequence",
+        "keyword:innovation",
+        "keyword:instrument",
+        "keyword:iron",
+        "keyword:item",
+        "keyword:jewelry",
+        "keyword:katana",
+        "keyword:katar",
+        "keyword:knowledge",
+        "keyword:language-consequence",
+        "keyword:lantern-oven-consequence",
+        "keyword:lantern",
+        "keyword:leather",
+        "keyword:legendary-ability",
+        "keyword:mask",
+        "keyword:melee",
+        "keyword:messenger",
+        "keyword:metal",
+        "keyword:milestone",
+        "keyword:noisy",
+        "keyword:novel",
+        "keyword:order",
+        "keyword:organ",
+        "keyword:other",
+        "keyword:oven-consequence",
+        "keyword:perfect",
+        "keyword:permanent-injury",
+        "keyword:phoenix",
+        "keyword:pickaxe",
+        "keyword:ranged",
+        "keyword:rawhide",
+        "keyword:science",
+        "keyword:scimitar",
+        "keyword:scrap",
+        "keyword:screaming-antelope",
+        "keyword:screaming-god",
+        "keyword:sculpture-consequence",
+        "keyword:scythe",
+        "keyword:secret-fighting-art",
+        "keyword:seed",
+        "keyword:set",
+        "keyword:settlement-event",
+        "keyword:shield",
+        "keyword:sickle",
+        "keyword:silk",
+        "keyword:skull",
+        "keyword:society-principle",
+        "keyword:soluble",
+        "keyword:spear",
+        "keyword:spidicules",
+        "keyword:starting-innovation",
+        "keyword:starting",
+        "keyword:stinky",
+        "keyword:stone",
+        "keyword:strain",
+        "keyword:sunstalker",
+        "keyword:survivor-status",
+        "keyword:sword",
+        "keyword:thrown",
+        "keyword:tool",
+        "keyword:two-handed",
+        "keyword:vegetable",
+        "keyword:vermin",
+        "keyword:weapon-proficiency",
+        "keyword:weapon",
+        "keyword:whip",
+        "keyword:white-lion"
+      ]
+    },
+    "token-prefixed": {
+      "enum": [
+        "token:attribute-modifier",
+        "token:accuracy-negative",
+        "token:accuracy-positive",
+        "token:bleeding",
+        "token:charge",
+        "token:confidence",
+        "token:damage-negative",
+        "token:damage-positive",
+        "token:death",
+        "token:deflect",
+        "token:doom",
+        "token:endeavor",
+        "token:evasion-negative",
+        "token:evasion-positive",
+        "token:flinch",
+        "token:guilt",
+        "token:howling",
+        "token:luck-negative",
+        "token:luck-positive",
+        "token:mindlock",
+        "token:momentum",
+        "token:movement-negative",
+        "token:movement-positive",
+        "token:prep",
+        "token:priority-target",
+        "token:reroll",
+        "token:speed-negative",
+        "token:speed-positive",
+        "token:stink",
+        "token:strength-negative",
+        "token:strength-positive",
+        "token:systemic-pressure",
+        "token:torment",
+        "token:toughness-negative",
+        "token:toughness-positive",
+        "token:venom"
+      ]
+    },
+    "rule": {
+      "enum": [
+        "accessory",
+        "activation-limit",
+        "ammo-bow",
+        "ballad",
+        "barbed",
+        "blindside",
+        "block",
+        "center",
+        "cumbersome",
+        "cursed",
+        "deadly",
+        "devastating",
+        "frail",
+        "irreplaceable",
+        "outfit",
+        "paired",
+        "perfection",
+        "precision",
+        "razor-sharp",
+        "range",
+        "reach",
+        "refined",
+        "savage",
+        "sentient",
+        "sharp",
+        "slow",
+        "unique",
+        "unwieldy"
+      ]
+    },
+    "rule-prefixed": {
+      "enum": [
+        "rule:accessory",
+        "rule:activation-limit",
+        "rule:ammo-bow",
+        "rule:ballad",
+        "rule:barbed",
+        "rule:blindside",
+        "rule:block",
+        "rule:center",
+        "rule:cumbersome",
+        "rule:cursed",
+        "rule:deadly",
+        "rule:devastating",
+        "rule:frail",
+        "rule:irreplaceable",
+        "rule:outfit",
+        "rule:paired",
+        "rule:perfection",
+        "rule:precision",
+        "rule:razor-sharp",
+        "rule:range",
+        "rule:reach",
+        "rule:refined",
+        "rule:savage",
+        "rule:sentient",
+        "rule:sharp",
+        "rule:slow",
+        "rule:unique",
+        "rule:unwieldy"
+      ]
+    },
+    "deck-prefixed": {
+      "enum": [
+        "deck:character",
+        "deck:disorder",
+        "deck:fighting-art",
+        "deck:hunt-event",
+        "deck:innovation",
+        "deck:resource-basic",
+        "deck:resource-crimson-crocodile",
+        "deck:resource-dragon-king",
+        "deck:resource-dung-beetle-knight",
+        "deck:resource-flower-knight",
+        "deck:resource-frogdog",
+        "deck:resource-gorm",
+        "deck:resource-indomitable",
+        "deck:resource-king",
+        "deck:resource-lion-god",
+        "deck:resource-parasite-queen",
+        "deck:resource-phoenix",
+        "deck:resource-screaming-antelope",
+        "deck:resource-screaming-god",
+        "deck:resource-smog-singers",
+        "deck:resource-spidicules",
+        "deck:resource-strange",
+        "deck:resource-sunstalker",
+        "deck:resource-vermin",
+        "deck:resource-white-lion",
+        "deck:settlement-event",
+        "deck:tactic",
+        "deck:terrain"
+      ]
+    },
+    "per": { "enum": ["campaign", "round", "showdown", "hunt", "year", "lifetime"] },
+    "targets": {
+      "oneOf": [
+        { "enum": ["hunters", "survivors", "self", "other-hunters", "monster", "settlement"] },
+        { "type": "object", "properties": { "grid": { "$ref": "#/$defs/grid-def" } }, "additionalProperties": false }
+      ]
+    },
+    "suffer": {
+      "enum": [
+        "attr:brain-damage",
+        "attr:damage",
+        "glossary:bash",
+        "severe:dismembered-arm",
+        "severe:dismembered-leg",
+        "severe:intracranial-hemorrhage",
+        "trauma:frenzy"
+      ]
+    },
+    "var-prefixed": { "enum": ["var:block", "var:counter"] },
+    "preventable": {
+      "enum": ["principle:death", "survival:dodge", "rule:block", "token:deflect", "glossary:ignore-hit"]
+    },
+
+    "placement": {
+      "oneOf": [
+        { "enum": ["center", "edge", "anywhere"] },
+        {
+          "type": "array",
+          "items": {
+            "anyOf": [{ "type": "number" }, { "enum": ["monster", "edge", "terrain"] }, { "type": "string", "pattern": "^terrain:" }]
+          },
+          "minItems": 2
+        }
+      ],
+      "$comment": "TODO: need to refine this"
+    },
+
+    "math-item": {
+      "anyOf": [
+        { "type": "integer" },
+        { "enum": ["x", "1d10", "1d6", "1d5", "2d10", "all"] },
+        { "$ref": "#/$defs/attribute-prefixed" },
+        { "$ref": "#/$defs/calc" }
+      ]
+    },
+    "calc": {
+      "type": "object",
+      "properties": {
+        "/": { "type": "array", "minItems": 2, "maxItems": 2, "items": { "$ref": "#/$defs/math-item" } },
+        "+": { "type": "array", "minItems": 2, "items": { "$ref": "#/$defs/math-item" } },
+        "rounding": { "enum": ["down", "up"] }
+      },
+      "additionalProperties": false,
+      "minProperties": 1
+    },
+    "grid-props": {
+      "anyOf": [
+        { "$ref": "#/$defs/keyword-prefixed" },
+        { "$ref": "#/$defs/attribute-prefixed" },
+        { "type": "object", "properties": { "keywords": { "$ref": "#/$defs/keywords", "minItems": 2 } } }
+      ]
+    },
+    "grid-def": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "all": { "$ref": "#/$defs/grid-props" },
+            "any": { "$ref": "#/$defs/grid-props" },
+            "no": { "$ref": "#/$defs/grid-props" },
+            "atLeast": { "type": "integer" }
+          },
+          "additionalProperties": false
+        },
+        { "type": "string", "pattern": "^gear:" },
+        { "type": "array", "items": { "type": "string", "pattern": "^gear:" }, "minItems": 2 }
+      ]
+    },
+
+    "condition": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "count": { "type": "integer" },
+
+        "grid": { "$ref": "#/$defs/grid-def" },
+        "hit-location": { "$ref": "#/$defs/hit-location" },
+        "innovation": { "type": "string" },
+        "ability": { "type": "string" },
+        "keyword": { "$ref": "#/$defs/keyword" },
+        "keywords": { "type": "array", "items": { "$ref": "#/$defs/keyword" }, "minItems": 2 },
+        "monster": { "$ref": "#/$defs/monster-types" },
+        "phase": { "$ref": "#/$defs/phases" },
+        "status": { "$ref": "#/$defs/status" },
+        "target": { "$ref": "#/$defs/targets" },
+        "change": { "enum": ["gain", "loss"] },
+
+        "not": { "$ref": "#/$defs/status-prefixed" },
+        "and": { "type": "array", "items": { "$ref": "#/$defs/condition" }, "minItems": 2 },
+        "or": {
+          "type": "array",
+          "items": { "oneOf": [{ "$ref": "#/$defs/condition" }, { "type": "string", "pattern": "^location:.+$" }] },
+          "minItems": 2
+        }
+      },
+      "propertyNames": {
+        "oneOf": [
+          { "$ref": "#/$defs/attribute-prefixed" },
+          { "$ref": "#/$defs/token-prefixed" },
+          { "$ref": "#/$defs/deck-prefixed" },
+          {
+            "enum": [
+              "id",
+              "count",
+              "grid",
+              "hit-location",
+              "innovation",
+              "ability",
+              "keyword",
+              "keywords",
+              "monster",
+              "phase",
+              "status",
+              "target",
+              "change",
+              "atLeast",
+              "not",
+              "and",
+              "or"
+            ]
+          }
+        ]
+      },
+      "additionalProperties": {
+        "oneOf": [
+          { "type": "integer" },
+          { "const": "puzzle" },
+          {
+            "type": "object",
+            "properties": { "atLeast": { "type": "integer" }, "atMost": { "type": "integer" } },
+            "additionalProperties": false
+          }
+        ]
+      }
+    },
+
+    "payload-keys": {
+      "anyOf": [
+        { "$ref": "#/$defs/attribute-prefixed" },
+        { "$ref": "#/$defs/glossary-prefixed" },
+        { "$ref": "#/$defs/keyword-prefixed" },
+        { "$ref": "#/$defs/require-prefixed" },
+        { "$ref": "#/$defs/rule-prefixed" },
+        { "$ref": "#/$defs/status-prefixed" },
+        { "$ref": "#/$defs/survival-prefixed" },
+        { "$ref": "#/$defs/token-prefixed" },
+        { "$ref": "#/$defs/var-prefixed" },
+        {
+          "type": "string",
+          "pattern": "^(ability|action|disorder|fa|gear|impairment|innovation|milestone|pattern|principle|proficiency|require|resource|status):"
+        }
+      ]
+    },
+    "payload-item": {
+      "oneOf": [
+        { "$ref": "#/$defs/payload-keys" },
+        {
+          "type": "object",
+          "propertyNames": { "$ref": "#/$defs/payload-keys" },
+          "additionalProperties": { "$ref": "#/$defs/math-item" },
+          "minProperties": 1
+        }
+      ]
+    },
+    "card-draw": {
+      "oneOf": [
+        { "const": "x" },
+        { "$ref": "#/$defs/deck-prefixed" },
+        {
+          "type": "object",
+          "propertyNames": { "$ref": "#/$defs/deck-prefixed" },
+          "additionalProperties": {
+            "oneOf": [{ "type": "string", "pattern": "^(resource|terrain):" }, { "$ref": "#/$defs/math-item" }]
+          }
+        }
+      ]
+    },
+
+    "additions": { "type": "array", "items": { "$ref": "#/$defs/addition" }, "minItems": 2 },
+    "addition": {
+      "oneOf": [
+        { "type": "string", "pattern": "^(location|se|story):" },
+        {
+          "type": "object",
+          "patternProperties": {
+            "^(se|story):": {
+              "oneOf": [
+                { "$ref": "#/$defs/math-item" },
+                {
+                  "type": "object",
+                  "properties": { "offset": { "$ref": "#/$defs/math-item" }, "year": { "type": "integer" } },
+                  "additionalProperties": false
+                }
+              ]
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+
+    "hooks": {
+      "type": "array",
+      "items": { "anyOf": [{ "type": "string", "pattern": "^TODO" }, { "$ref": "#/$defs/hook" }] },
+      "$comment": "TODO: minItems: 2"
+    },
+    "hook": {
+      "type": "object",
+      "properties": {
+        "can": { "$ref": "#/$defs/can-hook" },
+        "on": {
+          "oneOf": [
+            { "$ref": "#/$defs/on-hook" },
+            { "$ref": "#/$defs/attribute-prefixed" },
+            { "$ref": "#/$defs/status-prefixed" },
+            { "$ref": "#/$defs/token-prefixed" },
+            { "type": "string", "pattern": "^(milestone|se):" }
+          ],
+          "default": "gain"
+        },
+        "when": { "$ref": "#/$defs/when" },
+        "listen": { "enum": ["all", "others", "self", "monster"], "default": "self" },
+        "gain": {
+          "anyOf": [{ "$ref": "#/$defs/payload-item" }, { "type": "array", "items": { "$ref": "#/$defs/payload-item" }, "minItems": 2 }]
+        },
+        "lose": {
+          "anyOf": [{ "$ref": "#/$defs/payload-item" }, { "type": "array", "items": { "$ref": "#/$defs/payload-item" }, "minItems": 2 }]
+        },
+        "suffer": {
+          "oneOf": [
+            { "$ref": "#/$defs/suffer" },
+            { "type": "array", "items": { "$ref": "#/$defs/suffer" }, "minItems": 2 },
+            {
+              "type": "object",
+              "propertyNames": { "$ref": "#/$defs/suffer" },
+              "additionalProperties": { "$ref": "#/$defs/math-item" }
+            }
+          ]
+        },
+        "archive": {
+          "oneOf": [
+            { "type": "boolean" },
+            { "type": "string" },
+            { "const": 1 },
+            {
+              "type": "object",
+              "propertyNames": {
+                "anyOf": [
+                  { "$ref": "#/$defs/attribute-prefixed" },
+                  { "$ref": "#/$defs/token-prefixed" },
+                  { "$ref": "#/$defs/status-prefixed" },
+                  { "type": "string", "pattern": "^gear:" }
+                ]
+              },
+              "additionalProperties": { "oneOf": [{ "const": "all" }, { "type": "integer" }] }
+            }
+          ]
+        },
+        "archives": { "type": "array", "items": { "$ref": "#/$defs/status-prefixed" }, "minItems": 2 },
+        "disable": { "type": "boolean" },
+        "disables": { "type": "array", "items": { "$ref": "#/$defs/keyword-prefixed" }, "minItems": 2 },
+        "prevent": { "oneOf": [{ "type": "boolean" }, { "$ref": "#/$defs/preventable" }] },
+        "prevents": { "type": "array", "items": { "$ref": "#/$defs/preventable" }, "minItems": 2 },
+        "placement": { "$ref": "#/$defs/placement" },
+        "ignore": { "$ref": "#/$defs/rule-prefixed" },
+        "insane": { "type": "boolean" },
+        "multiply": { "type": "integer" },
+        "duration": { "enum": ["round", "phase"] },
+        "wound": { "$ref": "#/$defs/x-num" },
+        "atLeast": { "oneOf": [{ "type": "integer" }, { "$ref": "#/$defs/attribute-prefixed" }] },
+        "fn": { "enum": ["epimorphosis", "equipArmor"] },
+        "tip": { "type": "string" },
+        "draw": { "$ref": "#/$defs/card-draw" },
+        "draws": { "type": "array", "items": { "$ref": "#/$defs/card-draw" }, "minItems": 2 },
+        "this": { "type": "object" },
+        "set": {
+          "type": "object",
+          "propertyNames": {
+            "anyOf": [
+              { "$ref": "#/$defs/attribute-prefixed" },
+              { "$ref": "#/$defs/token-prefixed" },
+              { "$ref": "#/$defs/status-prefixed" },
+              { "$ref": "#/$defs/keyword-prefixed" },
+              { "$ref": "#/$defs/var-prefixed" },
+              { "enum": ["proficiency", "type"] }
+            ]
+          },
+          "additionalProperties": { "oneOf": [{ "type": "string" }, { "type": "integer" }] }
+        },
+        "add": { "$ref": "#/$defs/addition" },
+        "adds": { "$ref": "#/$defs/additions" },
+        "target": { "$ref": "#/$defs/targets" },
+        "prompt": { "$ref": "#/$defs/prompt" },
+        "prompts": { "$ref": "#/$defs/prompts" },
+        "per": { "$ref": "#/$defs/per-def" },
+
+        "TODO": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+
+    "prompts": { "type": "array", "items": { "$ref": "#/$defs/prompt" }, "minItems": 2 },
+    "prompt": {
+      "type": "object",
+      "properties": {
+        "r": {
+          "oneOf": [
+            { "type": "integer", "$comment": "For single roll result" },
+            {
+              "type": "array",
+              "items": { "type": "integer", "minimum": 1, "default": 1 },
+              "maxItems": 2,
+              "minItems": 1,
+              "$comment": "Two numbers are the range or one number is X+"
+            }
+          ]
+        },
+        "q": { "type": "string" },
+        "type": { "enum": ["scavenge", "intimacy"] },
+        "select": { "$ref": "#/$defs/targets" },
+        "multiple": { "type": "boolean" },
+        "when": { "$ref": "#/$defs/when" },
+        "yes": { "$ref": "#/$defs/hook" },
+        "no": { "$ref": "#/$defs/hook" },
+        "hook": { "$ref": "#/$defs/hook" },
+        "hooks": { "$ref": "#/$defs/hooks" },
+        "prompt": { "$ref": "#/$defs/prompt" },
+        "prompts": { "$ref": "#/$defs/prompts" }
+      },
+      "anyOf": [{ "required": ["q"] }, { "required": ["r"] }],
+      "additionalProperties": false
+    },
+
+    "costs": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          { "enum": ["activate", "movement", "endeavor"] },
+          {
+            "type": "object",
+            "properties": {
+              "node": { "$ref": "#/$defs/nodes" },
+              "gear": { "type": "string" },
+              "keyword": { "$ref": "#/$defs/keyword" },
+              "keywords": { "type": "array", "items": { "$ref": "#/$defs/keyword" }, "minItems": 2 },
+              "resource": { "type": "string" },
+              "token": { "const": "endeavor" },
+              "x": { "type": "integer", "minimum": 1, "default": 1 }
+            },
+            "additionalProperties": false,
+            "minProperties": 1
+          }
+        ]
+      },
+      "minItems": 1
+    },
+
+    "action-def": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "type": { "$ref": "#/$defs/action-types" },
+        "cost": { "$ref": "#/$defs/costs" },
+        "optional": { "$ref": "#/$defs/costs" },
+        "select": { "$ref": "#/$defs/targets" },
+        "require": {
+          "oneOf": [
+            { "type": "string", "pattern": "^(location|innovation):.+$" },
+            { "$ref": "#/$defs/condition" },
+            { "$ref": "#/$defs/require-prefixed" }
+          ]
+        },
+        "gear": { "type": "string" },
+        "limit": { "type": "integer" },
+        "when": { "$ref": "#/$defs/when" },
+        "per": { "$ref": "#/$defs/per-def" },
+        "prompt": { "$ref": "#/$defs/prompt" },
+        "prompts": { "$ref": "#/$defs/prompts" },
+        "hook": { "$ref": "#/$defs/hook" },
+        "hooks": { "$ref": "#/$defs/hooks" }
+      },
+      "required": ["cost"],
+      "additionalProperties": false
+    },
+
+    "base-item": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "icon": {
+          "oneOf": [
+            { "type": "string" },
+            {
+              "type": "object",
+              "properties": {
+                "game-icons": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
+                "rotate": { "type": "string", "pattern": "^[+-]?(?:[0-9]+(?:\\.[0-9]+)?|\\.[0-9]+)(?:deg|grad|rad|turn)$" }
+              },
+              "required": ["game-icons"],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "source": { "$ref": "#/$defs/sources" },
+        "type": { "enum": ["normal", "special", "strain"] },
+        "flavor": { "type": "string" },
+        "effect": { "type": "string" },
+        "highlight": { "type": "string" },
+        "page": { "type": "string" },
+        "pillar": { "type": "integer" },
+        "limit": { "type": "integer" },
+        "consequences": { "type": "boolean" },
+        "numerical": { "type": "boolean" },
+        "permanent": { "type": "boolean" },
+        "keywords": { "$ref": "#/$defs/keywords" },
+        "action": {
+          "type": "object",
+          "patternProperties": { "^action:": { "$ref": "#/$defs/action-def" } },
+          "additionalProperties": false
+        },
+        "hook": { "$ref": "#/$defs/hook" },
+        "hooks": { "$ref": "#/$defs/hooks" },
+        "prompt": { "$ref": "#/$defs/prompt" },
+        "prompts": { "$ref": "#/$defs/prompts" },
+        "when": { "$ref": "#/$defs/condition" }
+      },
+      "required": ["name"],
+      "additionalProperties": false
+    },
+
+    "proficiency-card": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "specialization": { "type": "string" },
+        "mastery": { "type": "string" },
+        "source": { "$ref": "#/$defs/sources" },
+        "novel": { "type": "boolean", "default": false },
+        "keywords": { "$ref": "#/$defs/keywords" },
+        "hooks": { "type": "array", "items": { "anyOf": [{ "const": "TODO" }, { "$ref": "#/$defs/hook" }] } }
+      },
+      "required": ["name", "keywords", "specialization", "mastery", "hooks"],
+      "additionalProperties": false
+    },
+
+    "entityScopes": {
+      "enum": ["survivor", "arc", "hunter", "wanderer", "settlement", "monster", "global", "gear", "payload"]
+    },
+    "attribute-item": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "alt": { "type": "string" },
+        "base": {
+          "oneOf": [
+            { "type": "number" },
+            {
+              "type": "object",
+              "propertyNames": { "$ref": "#/$defs/entityScopes" },
+              "additionalProperties": { "type": "number" },
+              "minProperties": 1
+            }
+          ]
+        },
+        "min": { "type": "integer" },
+        "description": { "type": "string" },
+        "scopes": { "type": "array", "items": { "$ref": "#/$defs/entityScopes" }, "minItems": 1 }
+      },
+      "required": ["name", "base", "scopes"],
+      "additionalProperties": false
+    },
+
+    "gear-item": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "alt": { "type": "string" },
+        "source": { "$ref": "#/$defs/sources" },
+        "description": { "type": "string" },
+        "icon": { "type": "string" },
+        "type": { "enum": ["rare", "pattern", "seed", "starting"] },
+        "keywords": { "$ref": "#/$defs/keywords" },
+        "rules": {
+          "type": "array",
+          "items": {
+            "anyOf": [
+              { "$ref": "#/$defs/rule" },
+              {
+                "type": "object",
+                "propertyNames": { "$ref": "#/$defs/rule" },
+                "additionalProperties": { "type": "number" }
+              }
+            ]
+          }
+        },
+        "attributes": {
+          "type": "object",
+          "properties": {
+            "armor-any": { "type": "integer" },
+            "armor-head": { "type": "integer" },
+            "armor-arms": { "type": "integer" },
+            "armor-body": { "type": "integer" },
+            "armor-waist": { "type": "integer" },
+            "armor-legs": { "type": "integer" },
+            "speed": { "type": "integer" },
+            "accuracy": { "type": "integer" },
+            "strength": { "type": "integer" },
+            "luck": { "type": "integer" },
+            "evasion": { "type": "integer" }
+          },
+          "additionalProperties": false
+        },
+        "affinities": {
+          "type": "object",
+          "properties": {
+            "top": { "$ref": "#/$defs/affinity" },
+            "right": { "$ref": "#/$defs/affinity" },
+            "bottom": { "$ref": "#/$defs/affinity" },
+            "left": { "$ref": "#/$defs/affinity" }
+          },
+          "additionalProperties": false
+        },
+        "hook": { "$ref": "#/$defs/hook" },
+        "hooks": { "$ref": "#/$defs/hooks" },
+        "prompt": { "$ref": "#/$defs/prompt" },
+        "prompts": { "$ref": "#/$defs/prompts" }
+      },
+      "required": ["name"],
+      "additionalProperties": false
+    },
+
+    "content-item": {
+      "type": "object",
+      "patternProperties": {
+        "^[0-9a-z-:]+$": {
+          "type": "object",
+          "properties": {
+            "name": { "type": "string" },
+            "alt": { "type": "string" },
+            "beta": { "type": "boolean" },
+            "gameplay": { "type": "boolean" },
+            "url": { "type": "string" },
+            "date": { "type": "string" },
+            "tags": { "type": "array" },
+            "versions": { "type": "array", "items": { "type": "string" } },
+            "warehouses": { "type": "array", "items": { "type": "string" } },
+            "includes": { "type": "array", "items": { "type": "string" } },
+            "prices": { "type": "array", "items": { "type": "integer" } },
+            "colors": { "type": "array", "maxItems": 2, "items": { "type": "string" } }
+          },
+          "required": ["name", "tags"],
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "resource-card": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "type": { "$ref": "#/$defs/resource-types" },
+        "source": { "$ref": "#/$defs/sources" },
+        "flavor": { "type": "string" },
+        "description": { "type": "string" },
+        "icon": { "type": "string" },
+        "keywords": { "$ref": "#/$defs/keywords" },
+        "hook": { "$ref": "#/$defs/hook" },
+        "hooks": { "$ref": "#/$defs/hooks" }
+      },
+      "required": ["name", "keywords", "type"],
+      "additionalProperties": false
+    },
+
+    "decks": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "type": { "oneOf": [{ "$ref": "#/$defs/resource-types" }, { "enum": ["terrain"] }] },
+        "cards": {
+          "type": "object",
+          "patternProperties": { "^(resource|terrain):": { "type": "integer" } },
+          "additionalProperties": false
+        }
+      },
+      "required": ["name", "type", "cards"],
+      "additionalProperties": false
+    },
+
+    "name-desc": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "keywords": { "$ref": "#/$defs/keywords" },
+        "hook": { "$ref": "#/$defs/hook" },
+        "hooks": { "$ref": "#/$defs/hooks" }
+      },
+      "required": ["name"],
+      "additionalProperties": false
+    },
+
+    "pattern-card": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "keywords": { "$ref": "#/$defs/keywords" },
+        "limit": { "type": "integer" },
+        "num": { "type": "integer" },
+        "source": { "$ref": "#/$defs/sources" },
+        "era": { "$ref": "#/$defs/nodes" },
+        "icon": { "type": "string" },
+        "cost": { "$ref": "#/$defs/costs" },
+        "steps": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "color": { "enum": ["gray", "blue", "purple"] },
+              "icon": { "enum": ["anvil", "triangle", "hand", "bucket", "bubbles", "snap", "circle"] },
+              "verb": { "type": "string" },
+              "flavor": { "type": "string" },
+              "step": { "type": "string" },
+              "when": { "$ref": "#/$defs/condition" }
+            },
+            "required": ["color", "icon", "verb", "flavor", "step"],
+            "additionalProperties": false
+          },
+          "minItems": 3,
+          "maxItems": 3
+        },
+        "hook": { "$ref": "#/$defs/hook" },
+        "hooks": { "$ref": "#/$defs/hooks" },
+        "prompt": { "$ref": "#/$defs/prompt" },
+        "prompts": { "$ref": "#/$defs/prompts" },
+        "when": { "$ref": "#/$defs/condition" }
+      },
+      "required": ["name", "limit", "keywords", "cost"],
+      "additionalProperties": false
+    },
+
+    "vignette-survivor": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "source": { "$ref": "#/$defs/sources" },
+        "year": { "type": "integer" },
+        "grid": {
+          "type": "array",
+          "items": { "anyOf": [{ "type": "string", "pattern": "^gear:" }, { "const": 0 }] },
+          "minItems": 10,
+          "maxItems": 10
+        },
+        "survival": {
+          "type": "object",
+          "properties": {
+            "dodge": { "type": "integer", "default": 1 },
+            "encourage": { "type": "integer", "default": 0 },
+            "dash": { "type": "integer", "default": 0 },
+            "surge": { "type": "integer", "default": 0 }
+          },
+          "additionalProperties": false
+        },
+        "attributes": {
+          "type": "object",
+          "properties": {
+            "insanity": { "type": "integer", "default": 0 },
+            "hunt-xp": { "type": "integer", "default": 0 },
+            "armor-all": { "type": "integer", "default": 0 },
+            "armor-head": { "type": "integer", "default": 0 },
+            "armor-arms": { "type": "integer", "default": 0 },
+            "armor-body": { "type": "integer", "default": 0 },
+            "armor-waist": { "type": "integer", "default": 0 },
+            "armor-legs": { "type": "integer", "default": 0 },
+            "survival": { "type": "integer", "default": 0 },
+            "movement": { "type": "integer", "default": 5 },
+            "accuracy": { "type": "integer", "default": 0 },
+            "strength": { "type": "integer", "default": 0 },
+            "evasion": { "type": "integer", "default": 0 },
+            "luck": { "type": "integer", "default": 0 },
+            "speed": { "type": "integer", "default": 0 },
+            "courage": { "type": "integer", "default": 0 },
+            "understanding": { "type": "integer", "default": 0 },
+            "proficiency": { "type": "integer", "default": 0 },
+            "survival-dodge": { "type": "integer", "default": 0 },
+            "survival-encourage": { "type": "integer", "default": 0 },
+            "survival-dash": { "type": "integer", "default": 0 },
+            "survival-surge": { "type": "integer", "default": 0 }
+          },
+          "required": ["survival"],
+          "additionalProperties": false
+        },
+        "hook": { "$ref": "#/$defs/hook" },
+        "hooks": { "$ref": "#/$defs/hooks" }
+      },
+      "required": ["name", "description", "year", "source", "attributes"],
+      "additionalProperties": false
+    },
+
+    "terrain-card": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "source": { "$ref": "#/$defs/sources", "default": "core" },
+        "size": { "$ref": "#/$defs/sizes", "default": "1x1" },
+        "amount": { "$ref": "#/$defs/math-item", "default": 1 },
+        "cost": { "$ref": "#/$defs/costs" },
+        "description": { "type": "string" },
+        "placement": { "$ref": "#/$defs/placement" },
+        "setup": { "type": "string" },
+        "rules": {
+          "type": "array",
+          "items": { "enum": ["destructible", "impassable", "indestructible", "monster-impassable", "obstacle"] }
+        },
+        "hook": { "$ref": "#/$defs/hook" },
+        "hooks": { "$ref": "#/$defs/hooks" },
+        "prompt": { "$ref": "#/$defs/prompt" },
+        "prompts": { "$ref": "#/$defs/prompts" }
+      },
+      "required": ["name", "size", "placement"],
+      "additionalProperties": false
+    },
+
+    "monster-attack-profile": {
+      "type": "object",
+      "properties": {
+        "speed": { "type": "integer" },
+        "range": { "oneOf": [{ "type": "integer" }, { "const": "∞" }] },
+        "accuracy": { "oneOf": [{ "type": "integer" }, { "const": "∞" }] },
+        "damage": { "oneOf": [{ "type": "integer" }, { "const": "∞" }] },
+        "after-damage": { "type": "string" },
+        "hook": { "$ref": "#/$defs/hook" },
+        "prompt": { "$ref": "#/$defs/prompt" }
+      },
+      "required": ["speed", "accuracy", "damage"],
+      "additionalProperties": false
+    },
+
+    "monster-card": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "type": { "$ref": "#/$defs/monster-types" },
+        "node": { "$ref": "#/$defs/nodes" },
+        "description": { "type": "string" },
+        "size": { "$ref": "#/$defs/sizes", "default": "2x2" },
+        "levels": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "level": { "type": "integer" },
+              "b": { "type": "integer" },
+              "a": { "type": "integer" },
+              "l": { "type": "integer", "default": 0 },
+              "movement": { "oneOf": [{ "type": "integer" }, { "const": "∞" }] },
+              "toughness": { "type": "integer" },
+              "speed": { "type": "integer", "default": 0 },
+              "damage": { "type": "integer", "default": 0 },
+              "tokens": {
+                "type": "object",
+                "properties": { "accuracy": { "type": "integer" }, "luck": { "type": "integer" } },
+                "additionalProperties": false
+              },
+              "s": { "type": "array", "items": { "type": "string" } },
+              "hunt": { "type": "integer", "minimum": 0, "maximum": 12 },
+              "hook": { "$ref": "#/$defs/hook" },
+              "hooks": { "$ref": "#/$defs/hooks" }
+            },
+            "required": ["level", "b", "a", "movement", "toughness"],
+            "additionalProperties": false
+          },
+          "minItems": 1
+        },
+        "hunt-board": { "type": "array", "items": { "enum": [0, 1, 2, 3, "E"] }, "maxItems": 13, "minItems": 13 },
+        "placement": { "$ref": "#/$defs/placement" },
+        "hook": { "$ref": "#/$defs/hook" },
+        "hooks": { "$ref": "#/$defs/hooks" },
+        "instinct": {
+          "type": "object",
+          "properties": {
+            "name": { "type": "string" },
+            "description": { "type": "string" },
+            "prompt": { "$ref": "#/$defs/prompt" },
+            "hook": { "$ref": "#/$defs/hook" }
+          },
+          "required": ["name", "description"],
+          "additionalProperties": false
+        },
+        "action": {
+          "type": "array",
+          "items": {
+            "anyOf": [
+              { "const": "-▼-" },
+              { "type": "string" },
+              {
+                "type": "object",
+                "properties": {
+                  "pick": { "type": "array", "items": { "type": "string" }, "minItems": 2 },
+                  "move-attack": { "$ref": "#/$defs/monster-attack-profile" },
+                  "move-sync": { "$ref": "#/$defs/monster-attack-profile" }
+                },
+                "additionalProperties": false
+              }
+            ]
+          }
+        }
+      },
+      "required": ["name", "type", "levels", "instinct", "description", "placement"],
+      "additionalProperties": false
+    }
+  }
+}

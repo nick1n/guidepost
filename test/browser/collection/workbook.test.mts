@@ -4,7 +4,8 @@ import { resolve } from "node:path";
 import ExcelJS from "exceljs";
 import { runBrowser } from "../support/harness.mts";
 import { setTimeout } from "node:timers/promises";
-import type { WorkbookMap, WorkbookTarget } from "#lib/types/workbook.ts";
+import { decodeWorkbookMap, type WorkbookTarget } from "#lib/types/workbook.ts";
+import mappingJson from "#static/kdm/catalog/workbook-map.json" with { type: "json" };
 
 type Identity = Pick<WorkbookTarget, "contentId" | "editionId">;
 const identity = ({ contentId, editionId }: Identity) => JSON.stringify([contentId, editionId]);
@@ -12,7 +13,7 @@ const identity = ({ contentId, editionId }: Identity) => JSON.stringify([content
 const directory = resolve("temp/browser-verification/workbook");
 await mkdir(directory, { recursive: true });
 await rm(resolve(directory, "Guidepost collection.xlsx"), { force: true });
-const mapping: WorkbookMap = JSON.parse(await readFile("static/kdm/catalog/workbook-map.json", "utf8"));
+const mapping = decodeWorkbookMap(mappingJson);
 const fixtures = [
   { contentId: "indomitable-survivor-dashing-reaper-paleun", editionId: "box" },
   { contentId: "pinup-easter-twilight-knight", editionId: "resin" },

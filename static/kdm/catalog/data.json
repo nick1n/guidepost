@@ -117,6 +117,7 @@
       "notes": "The Resin edition was the only official release of the resin armor kits and antlered Screaming Antelope. Twenty-seven copies were sold, including three at $499.",
       "tags": [
         "female",
+        "plastic",
         "gameplay",
         "monster",
         "in-stock",
@@ -129,16 +130,16 @@
         "sim",
         "core-survivor",
         "dice",
-        "monster-phoenix",
         "lucy",
+        "monster-phoenix",
         "monster-white-lion",
         "erza",
         "campaign",
         "monster-butcher",
         "monster-screaming-antelope",
         "allister",
-        "showdown",
         "zachary",
+        "showdown",
         "monster-hand",
         "scale-small",
         "weapon-proficiency",
@@ -171,6 +172,7 @@
       "name": "Dragon King Expansion",
       "tags": [
         "female",
+        "plastic",
         "gameplay",
         "monster",
         "in-stock",
@@ -191,11 +193,11 @@
         "ai",
         "hit-location",
         "disorder",
-        "monster-dragon-king",
         "campaign",
-        "expansions-of-death-vol-1",
-        "pot-star",
+        "monster-dragon-king",
         "node-3-quarry",
+        "expansions-of-death-vol-1",
+        "pot-stars",
         "weapon-proficiency",
         "king"
       ]
@@ -220,6 +222,7 @@
       "name": "Dung Beetle Knight Expansion",
       "tags": [
         "female",
+        "plastic",
         "gameplay",
         "monster",
         "in-stock",
@@ -265,6 +268,7 @@
       "name": "Flower Knight Expansion",
       "tags": [
         "female",
+        "plastic",
         "gameplay",
         "monster",
         "in-stock",
@@ -309,6 +313,7 @@
       "name": "Gorm Expansion",
       "tags": [
         "female",
+        "plastic",
         "gameplay",
         "monster",
         "in-stock",
@@ -328,11 +333,11 @@
         "secret-fighting-art",
         "ai",
         "hit-location",
-        "disorder",
         "settlement-event",
+        "disorder",
+        "node-1-quarry",
         "monster-gorm",
-        "expansions-of-death-vol-1",
-        "node-1-quarry"
+        "expansions-of-death-vol-1"
       ]
     },
     "expansion-lion-god": {
@@ -352,6 +357,7 @@
       "name": "Lion God Expansion",
       "tags": [
         "female",
+        "plastic",
         "gameplay",
         "monster",
         "in-stock",
@@ -396,6 +402,7 @@
       "name": "Lion Knight Expansion",
       "tags": [
         "female",
+        "plastic",
         "gameplay",
         "monster",
         "in-stock",
@@ -413,8 +420,8 @@
         "ai",
         "hit-location",
         "disorder",
-        "expansions-of-death-vol-1",
         "nemesis",
+        "expansions-of-death-vol-1",
         "node-2-nemesis",
         "showdown",
         "monster-lion-knight",
@@ -437,7 +444,7 @@
       ],
       "kind": "expansion",
       "name": "Lonely Tree Expansion",
-      "tags": ["female", "gameplay", "monster", "in-stock", "male", "terrain", "2016", "resource", "2021", "expansion", "sim", "hunt-event", "ai", "hit-location", "expansions-of-death-vol-1", "monster-lonely-tree", "special-showdown"]
+      "tags": ["female", "plastic", "gameplay", "monster", "in-stock", "male", "terrain", "2016", "resource", "2021", "expansion", "sim", "hunt-event", "ai", "hit-location", "expansions-of-death-vol-1", "monster-lonely-tree", "special-showdown"]
     },
     "expansion-manhunter": {
       "announcements": ["2022-12-25", "2023-11-24"],
@@ -456,6 +463,7 @@
       "name": "Manhunter Expansion",
       "tags": [
         "female",
+        "plastic",
         "gameplay",
         "monster",
         "in-stock",
@@ -472,8 +480,8 @@
         "secret-fighting-art",
         "ai",
         "hit-location",
-        "expansions-of-death-vol-1",
         "nemesis",
+        "expansions-of-death-vol-1",
         "node-1-nemesis",
         "monster-manhunter"
       ]
@@ -497,6 +505,7 @@
       "name": "Slenderman Expansion",
       "tags": [
         "female",
+        "plastic",
         "gameplay",
         "monster",
         "in-stock",
@@ -513,10 +522,10 @@
         "secret-fighting-art",
         "ai",
         "hit-location",
-        "disorder",
         "settlement-event",
-        "expansions-of-death-vol-1",
+        "disorder",
         "nemesis",
+        "expansions-of-death-vol-1",
         "node-2-nemesis",
         "monster-slenderman",
         "dark"
@@ -540,6 +549,7 @@
       "name": "Spidicules Expansion",
       "tags": [
         "female",
+        "plastic",
         "gameplay",
         "monster",
         "in-stock",
@@ -559,8 +569,8 @@
         "secret-fighting-art",
         "ai",
         "hit-location",
-        "disorder",
         "settlement-event",
+        "disorder",
         "expansions-of-death-vol-1",
         "node-2-quarry",
         "monster-spidicules",
@@ -586,6 +596,7 @@
       "name": "Sunstalker Expansion",
       "tags": [
         "female",
+        "plastic",
         "gameplay",
         "monster",
         "in-stock",
@@ -608,9 +619,9 @@
         "hit-location",
         "disorder",
         "campaign",
+        "node-3-quarry",
         "expansions-of-death-vol-1",
         "monster-sunstalker",
-        "node-3-quarry",
         "weapon-proficiency"
       ]
     },
@@ -701,6 +712,7 @@
       "name": "Gambler's Chest Expansion",
       "tags": [
         "female",
+        "plastic",
         "gameplay",
         "monster",
         "in-stock",
@@ -717,14 +729,14 @@
         "campaign",
         "node-1-quarry",
         "node-2-nemesis",
-        "node-2-quarry",
         "finale-monster",
+        "node-2-quarry",
+        "core-monster",
         "monster-bone-eaters",
         "monster-crimson-crocodile",
         "monster-smog-singers",
         "scale-small",
         "arc-survivor",
-        "core-monster",
         "monster-atnas",
         "prologue",
         "scale-medium",
@@ -751,6 +763,7 @@
       "name": "Black Knight Expansion",
       "tags": [
         "female",
+        "plastic",
         "gameplay",
         "monster",
         "in-stock",
@@ -767,13 +780,13 @@
         "secret-fighting-art",
         "ai",
         "hit-location",
-        "disorder",
         "settlement-event",
+        "disorder",
         "expansions-of-death-vol-2",
         "knowledge",
-        "monster-black-knight",
-        "campaign",
         "nemesis",
+        "campaign",
+        "monster-black-knight",
         "node-3-nemesis",
         "collective-cognition",
         "tactics",
@@ -793,6 +806,7 @@
       "name": "Frogdog Expansion",
       "tags": [
         "female",
+        "plastic",
         "gameplay",
         "monster",
         "in-stock",
@@ -800,8 +814,8 @@
         "male",
         "terrain",
         "2024",
-        "pattern",
         "quarry",
+        "pattern",
         "resource",
         "expansion",
         "sim",
@@ -812,8 +826,8 @@
         "secret-fighting-art",
         "ai",
         "hit-location",
-        "disorder",
         "settlement-event",
+        "disorder",
         "expansions-of-death-vol-2",
         "knowledge",
         "node-1-quarry",
@@ -836,6 +850,7 @@
       "name": "Pariah Expansion",
       "tags": [
         "female",
+        "plastic",
         "gameplay",
         "monster",
         "in-stock",
@@ -851,8 +866,8 @@
         "secret-fighting-art",
         "ai",
         "hit-location",
-        "disorder",
         "settlement-event",
+        "disorder",
         "expansions-of-death-vol-2",
         "knowledge",
         "node-1-nemesis",
@@ -872,6 +887,7 @@
       "name": "Red Witches Expansion",
       "tags": [
         "female",
+        "plastic",
         "gameplay",
         "monster",
         "in-stock",
@@ -913,6 +929,7 @@
       "kind": "expansion",
       "name": "Screaming God Expansion",
       "tags": [
+        "plastic",
         "gameplay",
         "monster",
         "in-stock",
@@ -920,8 +937,8 @@
         "male",
         "terrain",
         "2026",
-        "pattern",
         "quarry",
+        "pattern",
         "resource",
         "expansion",
         "sim",
@@ -933,15 +950,15 @@
         "secret-fighting-art",
         "ai",
         "hit-location",
+        "settlement-event",
         "disorder",
         "node-4-quarry",
-        "settlement-event",
         "expansions-of-death-vol-2",
         "knowledge",
         "monster-screaming-god",
         "strain",
-        "pillar",
         "finale-monster",
+        "pillar",
         "collective-cognition",
         "vignette",
         "monster-parasite-queen"
@@ -966,7 +983,7 @@
       "kind": "expansion",
       "name": "Campaigns of Death",
       "notes": "Custom campaign construction rules, the strain system, and additional campaigns for the core game and original expansions.",
-      "tags": ["gameplay", "2026", "upcoming", "expansion", "expansions-of-death-vol-2", "preorder", "campaign", "campaigns-of-death", "pot-wise-one"]
+      "tags": ["plastic", "gameplay", "2026", "upcoming", "expansion", "expansions-of-death-vol-2", "campaign", "preorder", "campaigns-of-death", "pot-wise-one"]
     },
     "expansion-dead-armor": {
       "editions": [{ "id": "box", "label": "Preorder", "format": "physical", "materials": ["Plastic"], "prices": [2000, 2500], "releaseWindow": "2026-Q4" }],
@@ -974,7 +991,7 @@
       "kind": "expansion",
       "name": "Dead Armor Expansion",
       "notes": "Death Armor and Dead Armor refer to the same expansion.",
-      "tags": ["gameplay", "2026", "upcoming", "expansion", "expansions-of-death-vol-2", "preorder", "dead-armor"]
+      "tags": ["plastic", "gameplay", "2026", "upcoming", "resource", "expansion", "armor", "armor-kit", "expansions-of-death-vol-2", "preorder", "trait", "dead-armor", "set"]
     },
     "expansion-honeycomb-weaver": {
       "editions": [{ "id": "box", "label": "Preorder", "format": "physical", "materials": ["Plastic"], "prices": [5000, 7500], "releaseWindow": "2026-Q4" }],
@@ -982,14 +999,14 @@
       "includes": [{ "item": "armor-kit-steel-wax", "editionId": "plastic", "parentEditionIds": ["box"] }],
       "kind": "expansion",
       "name": "Honeycomb Weaver Expansion",
-      "tags": ["gameplay", "monster", "2026", "upcoming", "expansion", "expansions-of-death-vol-2", "preorder", "node-3-nemesis", "monster-honeycomb-weaver"]
+      "tags": ["plastic", "gameplay", "monster", "2026", "quarry", "upcoming", "expansion", "expansions-of-death-vol-2", "nemesis", "node-1-quarry", "node-3-quarry", "preorder", "monster-honeycomb-weaver", "monster-titan-bee"]
     },
     "expansion-first-hero": {
       "editions": [{ "id": "box", "label": "Preorder", "format": "physical", "materials": ["Plastic"], "prices": [3500, 7000], "releaseWindow": "2027" }],
       "gameplay": true,
       "kind": "expansion",
       "name": "First Hero Expansion",
-      "tags": ["gameplay", "monster", "upcoming", "expansion", "expansions-of-death-vol-2", "2027", "preorder", "core-monster", "monster-first-hero", "first-hero"]
+      "tags": ["plastic", "gameplay", "monster", "upcoming", "expansion", "expansions-of-death-vol-2", "2027", "preorder", "core-monster", "monster-first-hero", "first-hero"]
     },
     "expansion-nightmare-ram": {
       "editions": [{ "id": "box", "label": "Preorder", "format": "physical", "materials": ["Plastic"], "prices": [4000, 8000], "releaseWindow": "2027" }],
@@ -997,7 +1014,7 @@
       "includes": [{ "item": "nightmare-ram", "editionId": "plastic" }],
       "kind": "expansion",
       "name": "Nightmare Ram Expansion",
-      "tags": ["gameplay", "upcoming", "expansion", "expansions-of-death-vol-2", "2027", "preorder", "nightmare-ram"]
+      "tags": ["plastic", "gameplay", "quarry", "upcoming", "expansion", "expansions-of-death-vol-2", "2027", "node-3-quarry", "preorder", "minion", "nightmare-ram", "dungeon"]
     },
     "expansion-oblivion-mosquito": {
       "editions": [{ "id": "box", "label": "Preorder", "format": "physical", "materials": ["Plastic"], "prices": [5000, 9000], "releaseWindow": "2027" }],
@@ -1008,7 +1025,7 @@
       ],
       "kind": "expansion",
       "name": "Oblivion Mosquito Expansion",
-      "tags": ["gameplay", "monster", "upcoming", "quarry", "expansion", "expansions-of-death-vol-2", "2027", "preorder", "node-2-quarry", "monster-oblivion-mosquito"]
+      "tags": ["plastic", "gameplay", "monster", "quarry", "upcoming", "expansion", "expansions-of-death-vol-2", "2027", "preorder", "node-2-quarry", "monster-oblivion-mosquito"]
     },
     "expansion-gryphon": {
       "editions": [{ "id": "box", "label": "Preorder", "format": "physical", "materials": ["Plastic"], "prices": [7500, 15000], "releaseWindow": "2028" }],
@@ -1016,14 +1033,14 @@
       "includes": [{ "item": "gryphon", "editionId": "plastic" }],
       "kind": "expansion",
       "name": "Gryphon Expansion",
-      "tags": ["gameplay", "upcoming", "quarry", "expansion", "node-4-quarry", "expansions-of-death-vol-2", "preorder", "2028", "gryphon"]
+      "tags": ["plastic", "gameplay", "quarry", "upcoming", "expansion", "node-4-quarry", "expansions-of-death-vol-2", "preorder", "2028", "monster-gryphon", "gryphon"]
     },
     "expansion-silver-city": {
       "editions": [{ "id": "box", "label": "Preorder", "format": "physical", "materials": ["Plastic"], "prices": [6500, 10000], "releaseWindow": "2028" }],
       "gameplay": true,
       "kind": "expansion",
       "name": "Silver City Expansion",
-      "tags": ["gameplay", "upcoming", "expansion", "expansions-of-death-vol-2", "preorder", "campaign", "2028", "silver-city"]
+      "tags": ["plastic", "gameplay", "quarry", "upcoming", "expansion", "expansions-of-death-vol-2", "campaign", "preorder", "node-2-quarry", "2028", "silver-city", "dungeon"]
     },
     "expansion-inverted-mountain": {
       "editions": [{ "id": "box", "label": "Preorder", "format": "physical", "materials": ["Plastic"], "prices": [5000, 8000], "releaseWindow": "2029" }],
@@ -1036,7 +1053,8 @@
       ],
       "kind": "expansion",
       "name": "Inverted Mountain Expansion",
-      "tags": ["gameplay", "upcoming", "expansion", "expansions-of-death-vol-2", "preorder", "2029", "inverted-mountain"]
+      "requires": ["expansion-frogdog", "expansion-oblivion-mosquito", "expansion-nightmare-ram", "expansion-gryphon", "expansion-pariah", "expansion-red-witches", "expansion-black-knight"],
+      "tags": ["plastic", "gameplay", "upcoming", "expansion", "expansions-of-death-vol-2", "campaign", "preorder", "finale-monster", "core-monster", "2029", "inverted-mountain"]
     },
     "expansion-abyssal-woods": {
       "editions": [{ "id": "box", "label": "Preorder", "format": "physical", "materials": ["Plastic"], "prices": [15000, 20000], "releaseWindow": "2030" }],
@@ -1053,14 +1071,34 @@
       ],
       "kind": "expansion",
       "name": "Abyssal Woods Expansion",
-      "tags": ["gameplay", "upcoming", "expansion", "expansions-of-death-vol-2", "preorder", "abyssal-woods", "2030"]
+      "tags": [
+        "plastic",
+        "gameplay",
+        "quarry",
+        "upcoming",
+        "expansion",
+        "expansions-of-death-vol-2",
+        "nemesis",
+        "campaign",
+        "node-1-quarry",
+        "node-3-quarry",
+        "preorder",
+        "node-1-nemesis",
+        "node-2-nemesis",
+        "finale-monster",
+        "abyssal-woods",
+        "node-3-nemesis",
+        "core-monster",
+        "2030",
+        "monster-goblin"
+      ]
     },
     "expansion-ivory-dragon": {
       "editions": [{ "id": "box", "label": "Preorder", "format": "physical", "materials": ["Plastic"], "prices": [10000, 15000], "releaseWindow": "2030" }],
       "gameplay": true,
       "kind": "expansion",
       "name": "Ivory Dragon Expansion",
-      "tags": ["gameplay", "monster", "upcoming", "expansion", "expansions-of-death-vol-2", "preorder", "2030", "monster-ivory-dragon"]
+      "tags": ["plastic", "gameplay", "monster", "quarry", "upcoming", "expansion", "expansions-of-death-vol-2", "nemesis", "node-3-quarry", "preorder", "finale-monster", "node-3-nemesis", "2030", "monster-ivory-dragon"]
     },
     "10th-anniversary-white-speaker": {
       "announcements": ["2019-10-09"],
@@ -1232,7 +1270,7 @@
       "name": "Dragon King Armor Kit",
       "notes": "The Naked edition includes two Dragon King armor-kit sprues making four miniatures, plus four plastic bases. It comes without artwork or retail packaging.",
       "size": "30",
-      "tags": ["female", "plastic", "in-stock", "male", "2016", "2015", "2021", "naked", "armor-kit", "monster-dragon-king", "pot-star"]
+      "tags": ["female", "plastic", "in-stock", "male", "2016", "2015", "2021", "naked", "armor-kit", "monster-dragon-king", "pot-stars"]
     },
     "armor-kit-gorment": {
       "aliases": ["Naked Gorm Armor Kit", "Gorm Armor Kit"],
@@ -1443,7 +1481,7 @@
       "name": "Beyond the Wall",
       "notes": "Includes two body options. Also offered through Promos of Death.",
       "size": "30",
-      "tags": ["female", "plastic", "generic", "gameplay", "in-stock", "gear", "survivor", "white-box", "armor", "promo", "2012", "aya", "item"]
+      "tags": ["female", "plastic", "generic", "gameplay", "in-stock", "gear", "survivor", "white-box", "armor", "promo", "aya", "2012", "item"]
     },
     "biomech-butcher": {
       "announcements": ["2024-08-29"],
@@ -1681,7 +1719,7 @@
       "kind": "model",
       "name": "Butcher",
       "notes": "Bust: First Run was limited to 21 copies; ten were sold in person at Gen Con 2023 for $300. A later Collector's Edition run contained 200 busts.\n\nThe original miniature's First Run and Encore releases were packaged with a sculpted Butcher crest.",
-      "tags": ["plastic", "monster", "core", "2015", "bust", "monster-butcher", "2011", "node-1-nemesis"]
+      "tags": ["plastic", "monster", "core", "2015", "bust", "monster-butcher", "node-1-nemesis", "2011"]
     },
     "caster-hunter": {
       "aliases": ["Caster Hunter Deathgrey"],
@@ -2386,7 +2424,7 @@
       "kind": "model",
       "name": "Death High - White Speaker",
       "notes": "First Death High release.",
-      "tags": ["female", "generic", "photoresin", "2024", "death-high", "2018", "resculpt", "white-speaker"]
+      "tags": ["female", "generic", "photoresin", "2024", "death-high", "2018", "white-speaker", "resculpt"]
     },
     "death-high-zachary": {
       "announcements": ["2022-11-25"],
@@ -2855,7 +2893,7 @@
       ],
       "kind": "box",
       "name": "False Messengers",
-      "tags": ["female", "plastic", "generic", "gameplay", "in-stock", "gear", "2025", "white-box", "pattern", "disorder", "settlement-event", "pillar", "scale-small", "tier-f"]
+      "tags": ["female", "plastic", "generic", "gameplay", "in-stock", "gear", "2025", "white-box", "pattern", "settlement-event", "disorder", "pillar", "scale-small", "tier-f"]
     },
     "father-and-son": {
       "aliases": ["Father & Son - Painter's Scale", "Father and Son - Painters Scale"],
@@ -3123,7 +3161,7 @@
       ],
       "kind": "model",
       "name": "Gorm",
-      "tags": ["plastic", "monster", "2016", "quarry", "monster-gorm", "node-1-quarry", "2010"]
+      "tags": ["plastic", "monster", "2016", "quarry", "node-1-quarry", "monster-gorm", "2010"]
     },
     "grand-manner-portrait-simon": {
       "aliases": ["Grand Manner Portrait Simon - Painter's Scale"],
@@ -3243,7 +3281,7 @@
       ],
       "kind": "model",
       "name": "Gryphon",
-      "tags": ["plastic", "monster", "2016", "upcoming", "quarry", "node-4-quarry", "2028", "monster-gryphon"]
+      "tags": ["plastic", "monster", "2016", "quarry", "upcoming", "node-4-quarry", "2028", "monster-gryphon"]
     },
     "gunborg": {
       "aliases": ["Gunborg Deathgrey M2 Edition", "Gunborg - Painter's Scale"],
@@ -3711,7 +3749,7 @@
       ],
       "kind": "model",
       "name": "King's Man",
-      "tags": ["plastic", "monster", "core", "2015", "2011", "node-2-nemesis", "monster-kings-man"]
+      "tags": ["plastic", "monster", "core", "2015", "node-2-nemesis", "2011", "monster-kings-man"]
     },
     "kingslayer-twilight-knight": {
       "aliases": ["Kingslayer Twilight Knight - Painter's Scale"],
@@ -3917,7 +3955,7 @@
       "kind": "box",
       "name": "Legendary Character - Hollow",
       "notes": "Four Hollow miniatures portray her early survivor, aspirant, arena, and sacrifice stages. Includes the Hollow legendary character card, Blindside glossary, Aspirant Headband / Serpent Cuirass / Serpent Fang patterns and gear, Anointed Headband / Sacrificial Headband / Stoic Mask rare gear, and Empty Vessel survivor status. Gen Con 2026 premiere. Use only one legendary character card per campaign.",
-      "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "survivor", "2026", "white-box", "pattern", "ability", "character", "tier-a", "legendary", "hollow", "legendary-character"]
+      "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "survivor", "2026", "white-box", "pattern", "ability", "character", "tier-a", "legendary", "legendary-character", "hollow"]
     },
     "legendary-character-lantern-armor-aya": {
       "aliases": [
@@ -3947,7 +3985,7 @@
       "name": "Legendary Character - Lantern Armor Aya",
       "notes": "Painters: 500 printed.",
       "size": "35 & 54",
-      "tags": ["female", "plastic", "gameplay", "gear", "deathgrey", "2024", "scale-painters", "white-box", "beta", "armor", "2022", "aya", "ability", "character", "tier-s", "legendary", "legendary-character"]
+      "tags": ["female", "plastic", "gameplay", "gear", "deathgrey", "2024", "scale-painters", "white-box", "beta", "armor", "2022", "aya", "ability", "character", "legendary", "tier-s", "legendary-character"]
     },
     "legendary-character-snow-the-savior": {
       "announcements": ["2025-08-29"],
@@ -3962,7 +4000,7 @@
       ],
       "kind": "box",
       "name": "Legendary Character - Snow the Savior",
-      "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "2025", "white-box", "innovation", "secret-fighting-art", "tier-b", "ability", "savior", "character", "legendary", "scale-small", "snow", "legendary-character"]
+      "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "2025", "white-box", "innovation", "secret-fighting-art", "tier-b", "ability", "character", "savior", "legendary", "snow", "scale-small", "legendary-character"]
     },
     "level-2-butcher-prototype": {
       "announcements": ["2026-08-31"],
@@ -4310,7 +4348,7 @@
       "kind": "box",
       "name": "Morgan the Savior",
       "notes": "Kingdom Death's first official pinup demake. Morgan was originally illustrated as a pinup in 2011. The Box release depicts her at about 35 years old and includes a new Savior dream.\n\nBust: 250 copies were offered in the shop.",
-      "tags": ["female", "plastic", "gameplay", "resin", "pinup", "2024", "secret-fighting-art", "bust", "ability", "savior", "character", "morgan"]
+      "tags": ["female", "plastic", "gameplay", "resin", "pinup", "2024", "secret-fighting-art", "bust", "ability", "character", "savior", "morgan"]
     },
     "moss": {
       "aliases": ["Moss Deathgrey M2 Edition"],
@@ -4647,23 +4685,23 @@
       "kind": "box",
       "name": "Philosophies of Death: Gatherism",
       "requires": ["expansion-gamblers-chest"],
-      "tags": ["plastic", "gameplay", "in-stock", "gear", "2025", "terrain", "white-box", "pattern", "resource", "sim", "hunt-event", "knowledge", "tier-s", "gatherism", "philosophy", "philosophies-of-death"]
+      "tags": ["plastic", "gameplay", "in-stock", "gear", "gamblers-chest", "2025", "terrain", "white-box", "pattern", "resource", "sim", "hunt-event", "knowledge", "tier-s", "gatherism", "philosophy", "philosophies-of-death"]
     },
     "philosophies-of-death-heliocenterism": {
       "editions": [{ "id": "box", "label": "Preorder", "format": "physical", "materials": ["Plastic"], "prices": [6500], "releaseWindow": "2027" }],
       "gameplay": true,
       "kind": "box",
       "name": "Philosophies of Death: Heliocenterism",
-      "requires": ["expansion-gamblers-chest"],
-      "tags": ["gameplay", "upcoming", "2027", "preorder", "philosophy", "philosophies-of-death", "heliocenterism"]
+      "requires": ["expansion-gamblers-chest", "expansion-sunstalker"],
+      "tags": ["plastic", "gameplay", "gamblers-chest", "upcoming", "pot-sun", "2027", "preorder", "monster-sunstalker", "philosophy", "philosophies-of-death", "heliocenterism"]
     },
     "philosophies-of-death-starbound": {
       "editions": [{ "id": "box", "label": "Preorder", "format": "physical", "materials": ["Plastic"], "prices": [6500], "releaseWindow": "2027" }],
       "gameplay": true,
       "kind": "box",
       "name": "Philosophies of Death: Starbound",
-      "requires": ["expansion-gamblers-chest"],
-      "tags": ["gameplay", "upcoming", "2027", "preorder", "philosophy", "philosophies-of-death", "starbound"]
+      "requires": ["expansion-gamblers-chest", "expansion-dragon-king"],
+      "tags": ["plastic", "gameplay", "gamblers-chest", "upcoming", "monster-dragon-king", "2027", "preorder", "pot-stars", "philosophy", "monster-tyrant", "philosophies-of-death", "starbound"]
     },
     "phoenix": {
       "aliases": ["Phoenix (Resin)"],
@@ -5209,7 +5247,7 @@
       "kind": "model",
       "name": "Pinup Regeneration Suit",
       "size": "30",
-      "tags": ["female", "plastic", "generic", "monster", "resin", "pinup", "2015", "quarry", "monster-gorm", "node-1-quarry"]
+      "tags": ["female", "plastic", "generic", "monster", "resin", "pinup", "2015", "quarry", "node-1-quarry", "monster-gorm"]
     },
     "pinup-savior-morgan": {
       "editions": [
@@ -5320,7 +5358,7 @@
       "kind": "model",
       "name": "Pinup Sunstalker Dancer",
       "notes": "Resin release contains two body options.\n\nBust: Only 250 were sold as First Runs. Nevertheless, the Collector's Edition card reads 'of 500'. 450 encores.\n\nPainters: Painter's Scale version of a model chosen by winners of the Pinup Painting Contest 2022; limited to 250 prints.",
-      "tags": ["female", "plastic", "generic", "monster", "photoresin", "resin", "pinup", "scale-painters", "2015", "quarry", "pot-sun", "bust", "monster-sunstalker", "node-3-quarry", "dancer"]
+      "tags": ["female", "plastic", "generic", "monster", "photoresin", "resin", "pinup", "scale-painters", "2015", "quarry", "pot-sun", "bust", "node-3-quarry", "monster-sunstalker", "dancer"]
     },
     "pinup-survivor-aya": {
       "editions": [
@@ -5332,7 +5370,7 @@
       "name": "Pinup Survivor Aya",
       "notes": "Comes with helm option.",
       "size": "30",
-      "tags": ["female", "plastic", "resin", "survivor", "pinup", "2014", "2012", "aya"]
+      "tags": ["female", "plastic", "resin", "survivor", "pinup", "2014", "aya", "2012"]
     },
     "pinup-titan-bee-armor": {
       "editions": [
@@ -5357,7 +5395,7 @@
       "kind": "model",
       "name": "Pinup Twilight Knight Allison",
       "notes": "First version of this mini, released with a 11\"x17\" poster by Lokman Lam, his first KD illustration.",
-      "tags": ["female", "plastic", "resin", "knight", "pinup", "scale-painters", "2014", "twilight-knight", "2010", "allison", "white-resin"]
+      "tags": ["female", "plastic", "resin", "knight", "pinup", "scale-painters", "2014", "twilight-knight", "allison", "2010", "white-resin"]
     },
     "pinup-twilight-knight-deserter": {
       "aliases": ["Pinup Twilight Deserter Knight"],
@@ -5844,7 +5882,7 @@
       "name": "Savior (Snow)",
       "notes": "Also offered through the Survivor Level Rewards and Promos of Death.",
       "size": "30",
-      "tags": ["female", "plastic", "2025", "savior", "2010", "snow"]
+      "tags": ["female", "plastic", "2025", "savior", "snow", "2010"]
     },
     "sci-fi-dwelling-keeper": {
       "aliases": ["Sci Fi Dwelling Keeper - Painter's Scale"],
@@ -6091,7 +6129,7 @@
       "name": "10th Anniversary Survivors",
       "notes": "The four starting survivors reimagined for their tenth anniversary.",
       "size": "30",
-      "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "survivor", "white-box", "pattern", "2019", "tier-b", "lucy", "seed", "erza", "allister", "zachary", "anniversary", "core-monster"]
+      "tags": ["female", "plastic", "gameplay", "in-stock", "gear", "survivor", "white-box", "pattern", "2019", "tier-b", "lucy", "seed", "erza", "allister", "zachary", "core-monster", "anniversary"]
     },
     "set-15th-anniversary-survivors": {
       "aliases": ["15th Anniversary Survivors / Perfect Survivors"],
@@ -6286,7 +6324,7 @@
       "kind": "set",
       "name": "Pinups Of Death III",
       "notes": "A pinup collection containing 13 miniatures offered in the Kingdom Death: Monster 1.5 Kickstarter campaign.",
-      "tags": ["female", "plastic", "in-stock", "male", "survivor", "pinup", "2020", "bundle", "trait"]
+      "tags": ["female", "plastic", "in-stock", "male", "survivor", "pinup", "2020", "trait", "bundle"]
     },
     "set-pinups-of-death-series-4": {
       "aliases": ["Pinups of Death IV Collection"],
@@ -6334,7 +6372,7 @@
       "kind": "set",
       "name": "Pinups Of Death V",
       "notes": "A pinup collection containing 11 miniatures offered in the Kingdom Death: Monster 1.5 Kickstarter campaign.",
-      "tags": ["female", "plastic", "in-stock", "male", "survivor", "pinup", "2020", "bundle", "trait"]
+      "tags": ["female", "plastic", "in-stock", "male", "survivor", "pinup", "2020", "trait", "bundle"]
     },
     "set-promos-of-death": {
       "editions": [{ "id": "box", "label": "Box", "format": "physical", "materials": ["Plastic"], "prices": [12500], "releaseWindow": "2027" }],
@@ -6350,7 +6388,7 @@
       ],
       "kind": "set",
       "name": "Promos of Death",
-      "tags": ["plastic", "upcoming", "promo", "2027", "promos-of-death"]
+      "tags": ["plastic", "gear", "knight", "upcoming", "promo", "twilight-knight", "settlement-event", "aya", "seed", "white-speaker", "2027", "character", "pillar", "legendary", "allison", "snow", "legendary-character", "nico", "promos-of-death", "paul"]
     },
     "set-survivors-of-death-1": {
       "aliases": ["Survivors of Death I"],
@@ -6379,8 +6417,8 @@
         "fighting-art",
         "variant",
         "indomitable-survivor",
-        "knowledge",
         "seed",
+        "knowledge",
         "strain",
         "tier-a",
         "monster-frogdog",
@@ -6395,7 +6433,7 @@
       "handle": "survivors-of-death-2",
       "kind": "set",
       "name": "Survivors of Death II",
-      "tags": ["female", "plastic", "generic", "gameplay", "in-stock", "gear", "male", "survivor", "2025", "white-box", "pattern", "resource", "fighting-art", "indomitable-survivor", "knowledge", "seed", "strain", "tier-a", "collective-cognition", "impairment", "monster-tyrant"]
+      "tags": ["female", "plastic", "generic", "gameplay", "in-stock", "gear", "male", "survivor", "2025", "white-box", "pattern", "resource", "fighting-art", "indomitable-survivor", "seed", "knowledge", "strain", "tier-a", "collective-cognition", "impairment", "monster-tyrant"]
     },
     "set-survivors-of-death-3": {
       "announcements": ["2026-09-30"],
@@ -6785,7 +6823,7 @@
       ],
       "kind": "model",
       "name": "Sunstalker Adult",
-      "tags": ["plastic", "monster", "2016", "quarry", "2014", "pot-sun", "monster-sunstalker", "node-3-quarry"]
+      "tags": ["plastic", "monster", "2016", "quarry", "2014", "pot-sun", "node-3-quarry", "monster-sunstalker"]
     },
     "sunstalker-infant-and-caretakers": {
       "aliases": ["Sunstalker Infant"],
@@ -7110,8 +7148,8 @@
         "sim",
         "ai",
         "monster-butcher",
-        "strain",
         "node-1-nemesis",
+        "strain",
         "tier-s",
         "snow",
         "weapon-proficiency",
@@ -7155,7 +7193,7 @@
       "kind": "vignette",
       "name": "Vignette of Death: Super Survivors",
       "size": "30 & 50",
-      "tags": ["female", "plastic", "gameplay", "male", "knight", "survivor", "white-box", "upcoming", "promo", "core-survivor", "2027", "vignette"]
+      "tags": ["female", "plastic", "gameplay", "gear", "male", "knight", "survivor", "white-box", "upcoming", "promo", "core-survivor", "lucy", "settlement-event", "erza", "2027", "allister", "zachary", "monster-dung-beetle-knight", "vignette"]
     },
     "vignette-of-death-white-gigalion": {
       "announcements": ["2019-08-16", "2020-11-27", "2022-12-25", "2023-11-24"],
@@ -7169,7 +7207,7 @@
       "kind": "vignette",
       "name": "Vignette of Death: White Gigalion",
       "size": "100",
-      "tags": ["plastic", "gameplay", "monster", "in-stock", "gear", "white-box", "quarry", "2019", "resource", "sim", "settlement-location", "ai", "hit-location", "monster-white-lion", "node-1-quarry", "strain", "tier-a", "vignette"]
+      "tags": ["plastic", "gameplay", "monster", "in-stock", "gear", "white-box", "quarry", "resource", "2019", "sim", "settlement-location", "ai", "hit-location", "monster-white-lion", "node-1-quarry", "strain", "tier-a", "vignette"]
     },
     "vignette-of-death-white-gigalion-survivors": {
       "aliases": ["Vignette of Death: White Gigalion Survivors (x4)"],
@@ -7854,7 +7892,7 @@
       "kind": "model",
       "name": "Dragon King",
       "size": "135",
-      "tags": ["plastic", "monster", "2016", "quarry", "2021", "monster-dragon-king", "pot-star", "node-3-quarry"]
+      "tags": ["plastic", "monster", "2016", "quarry", "2021", "monster-dragon-king", "node-3-quarry", "pot-stars"]
     },
     "dragon-king-gameplay": {
       "editions": [
@@ -7886,7 +7924,7 @@
       "kind": "model",
       "name": "Tyrant",
       "size": "50",
-      "tags": ["plastic", "monster", "2016", "2021", "monster-dragon-king", "node-1-nemesis", "monster-tyrant", "pot-stars"]
+      "tags": ["plastic", "monster", "2016", "2021", "monster-dragon-king", "node-1-nemesis", "pot-stars", "monster-tyrant"]
     },
     "dragon-king-upgrade": {
       "editions": [{ "id": "1-6", "label": "1.6", "format": "physical", "includedOnly": true, "releaseDate": "2020-11-25" }],
@@ -8227,7 +8265,7 @@
       ],
       "kind": "model",
       "name": "Oblivion Mosquito",
-      "tags": ["plastic", "monster", "2024", "upcoming", "quarry", "naked", "2027", "node-2-quarry", "monster-oblivion-mosquito"]
+      "tags": ["plastic", "monster", "2024", "quarry", "upcoming", "naked", "2027", "node-2-quarry", "monster-oblivion-mosquito"]
     },
     "old-survivor-joe": {
       "editions": [{ "id": "plastic", "label": "Plastic", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "releaseDate": "2017-10-13" }],
@@ -8257,14 +8295,14 @@
       "kind": "model",
       "name": "People of the Stars",
       "size": "30",
-      "tags": ["female", "plastic", "generic", "monster", "2021", "monster-dragon-king", "pot-star"]
+      "tags": ["female", "plastic", "generic", "monster", "2021", "monster-dragon-king", "pot-stars"]
     },
     "people-of-the-stars-intimacy-couple": {
       "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Campaigns of Death", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "releaseWindow": "2026 Q4" }],
       "kind": "model",
       "name": "People of the Stars Intimacy Couple",
       "size": "30",
-      "tags": ["female", "plastic", "generic", "2026", "upcoming", "campaigns-of-death", "pot-star", "intimacy-couple"]
+      "tags": ["female", "plastic", "generic", "2026", "upcoming", "pot-stars", "campaigns-of-death", "intimacy-couple"]
     },
     "people-of-the-sun-intimacy-couple": {
       "editions": [{ "id": "plastic", "label": "Plastic", "expansion": "Campaigns of Death", "format": "physical", "includedOnly": true, "materials": ["Plastic"], "releaseWindow": "2026 Q4" }],
@@ -8902,7 +8940,7 @@
       "releaseDate": "2021-11-26",
       "releaseYear": 2021,
       "shop": "out-of-stock",
-      "tags": ["2021", "shirt", "pot-star"]
+      "tags": ["2021", "shirt", "pot-stars"]
     },
     "shirt-dung-beetle-knight": {
       "accessoryType": "shirt",
@@ -9291,7 +9329,7 @@
       ],
       "name": "Expansions of Death Vol. 1",
       "notes": "Sim edition: Requires Kingdom Death: Simulator and the digital Kingdom Death: Monster core game.",
-      "tags": ["gameplay", "in-stock", "2023", "2016", "expansion", "sim", "pot-sun", "expansions-of-death-vol-1", "pot-star"]
+      "tags": ["gameplay", "in-stock", "2023", "2016", "expansion", "sim", "pot-sun", "expansions-of-death-vol-1", "pot-stars"]
     },
     "halloween-trick-or-treat-bag": {
       "editions": [{ "id": "plastic", "label": "Plastic", "format": "physical", "materials": ["Plastic"], "prices": [10000], "releaseDate": "2016-10-28" }],
@@ -9554,21 +9592,21 @@
         "hunt-event",
         "innovation",
         "member-only",
-        "dice",
         "pot-sun",
+        "dice",
         "crest",
         "monster-phoenix",
         "monster-white-lion",
         "monster-black-knight",
-        "accessory",
         "monster-dragon-king",
+        "accessory",
         "monster-gorm",
         "monster-butcher",
         "monster-screaming-antelope",
         "monster-screaming-god",
-        "monster-frogdog",
+        "pot-stars",
         "monster-sunstalker",
-        "pot-star",
+        "monster-frogdog",
         "monster-bone-eaters",
         "monster-crimson-crocodile",
         "monster-flower-knight",
@@ -9659,7 +9697,7 @@
       "name": "RevampedGame Settlement Locations",
       "price": 0,
       "releaseWindow": "2026",
-      "tags": ["homebrew", "3d-files", "monster", "revampedgame", "core", "settlement-location", "pot-sun", "monster-phoenix", "monster-white-lion", "monster-dragon-king", "monster-gorm", "monster-screaming-antelope", "monster-sunstalker", "pot-star", "model"]
+      "tags": ["homebrew", "3d-files", "monster", "revampedgame", "core", "settlement-location", "pot-sun", "monster-phoenix", "monster-white-lion", "monster-dragon-king", "monster-gorm", "monster-screaming-antelope", "pot-stars", "monster-sunstalker", "model"]
     },
     "satan-pledge": {
       "editions": [{ "id": "pledge", "label": "Pledge", "format": "physical", "prices": [271000], "releaseWindow": "2030" }],
@@ -10293,7 +10331,7 @@
       "kind": "content",
       "name": "Scalding Seas",
       "notes": "Release status: Released. Type: Conversion. Scope: Huge. Subtypes: 30 Year Campaign, Story Focused, Hunt Phase, Nemesis, Quarry, Final Boss.\n\nEffectively replaces the core game and all expansions. Incompatible with most homebrew.\n\nScalding Seas quarries can be added to other campaigns although with limited compatibility.\n\nOptionally compatible with the Dragon King and Sunstalker official expansions.",
-      "tags": ["gameplay", "homebrew", "gear", "ccg", "print-and-play", "quarry", "armor", "campaign", "nemesis", "hunt", "conversion", "finale-monster", "story-focused"],
+      "tags": ["gameplay", "homebrew", "gear", "ccg", "print-and-play", "quarry", "armor", "nemesis", "campaign", "finale-monster", "hunt", "conversion", "story-focused"],
       "url": "https://docs.google.com/spreadsheets/d/1hBB4sGEFVuzstsZvY0nyNlw1ocXa7y5wZNzCXJdAAwY/edit#gid=1415263086&range=A25"
     },
     "ccg-settlement-expansion-event-cards": {
@@ -10451,7 +10489,7 @@
       "kind": "expansion",
       "name": "Harvester Worm",
       "notes": "Release status: Released. Type: Monster Expansion. Scope: Large. Subtypes: Additional Node 3 Nemesis, 5 Year Campaign, Hunt Phase, Legendary Monster.\n\nDoes not replace the Hand.\n\nOptional interaction with Dung Beetle Knight official expansion.\n\nOptional interaction with Settlement Terrain CCG expansion.",
-      "tags": ["gameplay", "homebrew", "monster", "gear", "ccg", "print-and-play", "expansion", "ai", "hit-location", "campaign", "nemesis", "hunt", "legendary", "node-3-nemesis", "minion"],
+      "tags": ["gameplay", "homebrew", "monster", "gear", "ccg", "print-and-play", "expansion", "ai", "hit-location", "nemesis", "campaign", "hunt", "legendary", "node-3-nemesis", "minion"],
       "url": "https://docs.google.com/spreadsheets/d/1hBB4sGEFVuzstsZvY0nyNlw1ocXa7y5wZNzCXJdAAwY/edit#gid=1415263086&range=A37"
     },
     "expansion-ccg-hisspitter": {
@@ -10461,7 +10499,7 @@
       "kind": "expansion",
       "name": "Hisspitter",
       "notes": "Release status: Design Phase. Type: Monster Expansion. Scope: Medium. Subtypes: Node 1 Quarry.",
-      "tags": ["gameplay", "homebrew", "monster", "ccg", "print-and-play", "upcoming", "quarry", "expansion", "node-1-quarry"],
+      "tags": ["gameplay", "homebrew", "monster", "ccg", "print-and-play", "quarry", "upcoming", "expansion", "node-1-quarry"],
       "url": "https://docs.google.com/spreadsheets/d/1hBB4sGEFVuzstsZvY0nyNlw1ocXa7y5wZNzCXJdAAwY/edit#gid=1415263086&range=A42"
     },
     "expansion-ccg-lantern-bear": {
@@ -10471,7 +10509,7 @@
       "kind": "expansion",
       "name": "Lantern Bear",
       "notes": "Release status: Design Phase. Type: Monster Expansion. Scope: Medium. Subtypes: Node 1 Quarry.",
-      "tags": ["gameplay", "homebrew", "monster", "ccg", "print-and-play", "upcoming", "quarry", "expansion", "node-1-quarry"],
+      "tags": ["gameplay", "homebrew", "monster", "ccg", "print-and-play", "quarry", "upcoming", "expansion", "node-1-quarry"],
       "url": "https://docs.google.com/spreadsheets/d/1hBB4sGEFVuzstsZvY0nyNlw1ocXa7y5wZNzCXJdAAwY/edit#gid=1415263086&range=A43"
     },
     "expansion-ccg-scourge-lord": {
@@ -10481,7 +10519,7 @@
       "kind": "expansion",
       "name": "Scourge Lord",
       "notes": "Release status: Released. Type: Monster Expansion. Scope: Medium. Subtypes: Node 1 Nemesis, Prologue.\n\nCan either be added beside the Node 1 Butcher or replace it.",
-      "tags": ["gameplay", "homebrew", "monster", "gear", "ccg", "print-and-play", "expansion", "nemesis", "node-1-nemesis", "vermin", "prologue", "minion", "novel-proficiency"],
+      "tags": ["gameplay", "homebrew", "monster", "gear", "ccg", "print-and-play", "expansion", "nemesis", "node-1-nemesis", "vermin", "minion", "prologue", "novel-proficiency"],
       "url": "https://docs.google.com/spreadsheets/d/1hBB4sGEFVuzstsZvY0nyNlw1ocXa7y5wZNzCXJdAAwY/edit#gid=1415263086&range=A44"
     },
     "expansion-ccg-storm-dancer": {
@@ -10512,7 +10550,7 @@
       "kind": "expansion",
       "name": "The Great Bat",
       "notes": "Release status: Design Phase. Type: Monster Expansion. Subtypes: Node ? Quarry.",
-      "tags": ["gameplay", "homebrew", "monster", "ccg", "print-and-play", "upcoming", "quarry", "expansion"],
+      "tags": ["gameplay", "homebrew", "monster", "ccg", "print-and-play", "quarry", "upcoming", "expansion"],
       "url": "https://docs.google.com/spreadsheets/d/1hBB4sGEFVuzstsZvY0nyNlw1ocXa7y5wZNzCXJdAAwY/edit#gid=1415263086&range=A48"
     },
     "expansion-ccg-veriphidian": {
@@ -10985,7 +11023,7 @@
       "editions": [{ "id": "3d-files", "label": "3D Files", "available": true, "format": "digital", "prices": [0] }],
       "kind": "model",
       "name": "Dead Dragon King",
-      "tags": ["homebrew", "3d-files", "monster", "revampedgame", "monster-dragon-king", "pot-star"],
+      "tags": ["homebrew", "3d-files", "monster", "revampedgame", "monster-dragon-king", "pot-stars"],
       "url": "https://ko-fi.com/s/d6ea3b22de"
     },
     "revampedgame-dead-gorm": {
@@ -11027,7 +11065,7 @@
       "kind": "model",
       "name": "Dragon Armory",
       "requires": ["expansion-dragon-king"],
-      "tags": ["homebrew", "3d-files", "monster", "revampedgame", "settlement-location", "monster-dragon-king", "pot-star"],
+      "tags": ["homebrew", "3d-files", "monster", "revampedgame", "settlement-location", "monster-dragon-king", "pot-stars"],
       "url": "https://ko-fi.com/s/10016e2cd4"
     },
     "revampedgame-eggsack-nest": {

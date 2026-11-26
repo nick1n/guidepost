@@ -3,7 +3,7 @@ import { Cause, Effect, Exit, Fiber, Queue } from "effect";
 import { FetchHttpClient, HttpClient } from "effect/http";
 import { vi } from "vitest";
 import { loadCatalog } from "#lib/kdm/collection/catalog-loader.ts";
-import catalog from "#catalog/data.json";
+import catalog from "#static/kdm/catalog/data.json";
 
 const url = "https://guidepost.test/test-base/kdm/catalog/data.json";
 

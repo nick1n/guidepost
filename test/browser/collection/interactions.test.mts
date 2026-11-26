@@ -1,4 +1,4 @@
-import { readFile } from "node:fs/promises";
+import data from "#static/kdm/catalog/data.json" with { type: "json" };
 import { runBrowser } from "../support/harness.mts";
 
 type StoredRow = { contentId: string; state: { owned?: boolean } };
@@ -194,8 +194,8 @@ await runBrowser(
     const card = (id: string) => `document.getElementById(${JSON.stringify(`card-body-${id}`)})?.closest('article')`;
     const disciple = card("disciple-of-the-witch-6");
     const disciples = card("set-disciples-of-the-witch");
-    const data = JSON.parse(await readFile("static/kdm/catalog/data.json", "utf8"));
-    const label = data.content["disciple-of-the-witch-6"].editions.find((edition: { id: string }) => edition.id === "plastic").label;
+    const label = data.content["disciple-of-the-witch-6"].editions.find((edition) => edition.id === "plastic")?.label;
+    if (!label) throw new Error("Expected a label for the plastic Disciple of the Witch fixture");
     await viewport(590, 900, false);
     await navigate(new URL("/kdm/collection/#/content?q=disciple%20of%20the%20witch", base).href);
     await waitFor(`${disciples} !== undefined`);

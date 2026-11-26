@@ -1,6 +1,12 @@
+import { readFileSync } from "node:fs";
 import { defineConfig, presetIcons } from "unocss";
 import { sectionIcons } from "#lib/kdm/ui/sections/sections.ts";
 import { statusIcons, statuses } from "#lib/kdm/ui/status/statuses.ts";
+import type { KingdomDeathMonsterSchema } from "#lib/types/gen/kdm-gameplay.d.ts";
+import { gameplayIconClass } from "#lib/kdm/gameplay-icon.ts";
+
+const corePath = "static/kdm/data/core.json";
+const core: KingdomDeathMonsterSchema = JSON.parse(readFileSync(new URL(`./${corePath}`, import.meta.url), "utf8"));
 
 const statusIconSafelist = [
   ...new Set(
@@ -11,10 +17,14 @@ const statusIconSafelist = [
 ];
 
 export default defineConfig({
+  configDeps: [corePath],
   safelist: [
     ...Object.values(statusIcons),
     ...statusIconSafelist,
     ...Object.values(sectionIcons),
+    ...Object.values(core.innovation ?? {})
+      .map(({ icon }) => gameplayIconClass(icon))
+      .filter((className) => className !== undefined),
     "i-material-symbols:play-circle-outline",
     "i-material-symbols:inventory-2-outline-sharp",
     "i-material-symbols:route-outline-sharp",

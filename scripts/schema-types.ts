@@ -1,6 +1,7 @@
+import { errorMessage } from "#lib/helpers.ts";
 import { resolve } from "node:path";
 import type { Plugin } from "vite";
-import { catalogPath, generateCoreEditions, generateTypes, schemaPath } from "./generate-types.mts";
+import { catalogPath, gameplaySchemaPath, generateCoreEditions, generateTypes, schemaPath } from "./generate-types.mts";
 
 export function schemaTypes(): Plugin {
   let cleanup = () => {};
@@ -15,8 +16,8 @@ export function schemaTypes(): Plugin {
 
       function onSchemaChange(file: string) {
         const path = resolve(file);
-        if (path !== schemaPath && path !== catalogPath) return;
-        schemaChanged ||= path === schemaPath;
+        if (path !== schemaPath && path !== gameplaySchemaPath && path !== catalogPath) return;
+        schemaChanged ||= path !== catalogPath;
         clearTimeout(timer);
         timer = setTimeout(() => {
           const regenerateTypes = schemaChanged;
@@ -24,17 +25,16 @@ export function schemaTypes(): Plugin {
           pending = pending
             .then(async () => {
               if (regenerateTypes) {
-                if (await generateTypes())
-                  server.config.logger.info("[schema-types] Regenerated catalog types, validator, and core editions");
+                if (await generateTypes()) server.config.logger.info("[schema-types] Regenerated schema outputs");
               } else if (await generateCoreEditions()) server.config.logger.info("[schema-types] Regenerated core editions");
             })
             .catch((error) => {
-              server.config.logger.error(`[schema-types] Generation failed: ${error instanceof Error ? error.message : String(error)}`);
+              server.config.logger.error(`[schema-types] Generation failed: ${errorMessage(error)}`);
             });
         }, 75);
       }
 
-      server.watcher.add([schemaPath, catalogPath]);
+      server.watcher.add([schemaPath, gameplaySchemaPath, catalogPath]);
       server.watcher.on("change", onSchemaChange);
       server.watcher.on("add", onSchemaChange);
       cleanup = () => {

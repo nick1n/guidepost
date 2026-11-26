@@ -1,6 +1,8 @@
+import { readOptional } from "#scripts/read-optional.mts";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { Schema } from "effect";
+import { pluralize } from "#lib/helpers.ts";
 import { refreshNews, keepUrl, postFingerprints, type RefreshOptions } from "../../news/scrape-shop-links.mts";
 import { readSnapshot } from "../snapshot.mts";
 import { ShopClient, ShopError, productUrl } from "../shop.mts";
@@ -12,7 +14,7 @@ import { availabilityFromUrls } from "../availability.mts";
 import { catalogData } from "../paths.mts";
 import { reviewPath, type Review } from "./apply.mts";
 import { CatalogInputError, hash } from "./schema.mts";
-import { captureInputs, digest, readOptional } from "../inputs.mts";
+import { captureInputs, digest } from "../inputs.mts";
 import { itemDifferences, listingDetails, resolutionDetails, type Difference, type Listing } from "./details.mts";
 import type { Evidence } from "../types.mts";
 
@@ -183,7 +185,7 @@ function changedFields(differences: Difference[]) {
 }
 
 export function summarizeReview(review: Review) {
-  const changes = `${review.changes.length} catalog ${review.changes.length === 1 ? "change" : "changes"}`;
+  const changes = pluralize(review.changes.length, "catalog change");
   const decisions = review.unresolved.length === 1 ? "1 product needs a decision" : `${review.unresolved.length} products need decisions`;
   const lines = [`${changes}; ${decisions}.`];
   if (review.monthly?.availability) {

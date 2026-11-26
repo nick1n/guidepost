@@ -1,4 +1,5 @@
 <script module lang="ts">
+  import { clamp } from "#lib/helpers.ts";
   import coreVersions from "#lib/gen/core-editions.json";
 
   type Accents = "primary" | "muted" | "red";
@@ -227,8 +228,8 @@
   function ondeviceorientation(event: DeviceOrientationEvent) {
     if (event.beta === null && event.gamma === null) return;
     onpointermove = null;
-    const x = Math.max(-1, Math.min(1, (event.gamma ?? 0) / 35)) * 4;
-    const y = Math.max(-1, Math.min(1, (event.beta ?? 45) / 45 - 1)) * 3;
+    const x = clamp(-1, (event.gamma ?? 0) / 35, 1) * 4;
+    const y = clamp(-1, (event.beta ?? 45) / 45 - 1, 1) * 3;
     moveLighting(x, y);
   }
 
