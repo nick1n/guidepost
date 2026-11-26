@@ -94,9 +94,7 @@ UnoCSS icons use CSS masks. Filters run before clipping and masking, so shadows 
 
 Safelist icon classes in [uno.config.ts](../uno.config.ts) when extraction is unreliable. Verify production CSS if an icon works only in development.
 
-Edition model scales use [ModelScaleIcon](../src/lib/kdm/ui/ModelScaleIcon.svelte), with pale blue in collection rows.
+Model scale icons are available for comparison at `/test/model-scale/`.
 `editionModelScales` in `kdm-data.ts` uses only `scale-tiny`, `scale-small`, `scale-medium`, `scale-large`, and `scale-painters` tags.
-Millimeter sizes never establish scale. Multiple scales appear as adjacent rulers in ascending order, with a shared tooltip and
-accessible description. Where an item separates `Painters` editions, its painter's tag applies only to those editions; other
-scale tags apply to the remaining physical editions. Otherwise its painter's tag uses XL for physical releases. Missing tags,
-mini, digital, and simulator releases have no icon. Compare colors and sizes at `/test/model-scale/`.
+Millimeter sizes never establish scale. Where an item separates `Painters` editions, its painter's tag applies only to those
+editions. Other scale tags apply to the remaining physical editions. Otherwise its painter's tag maps to XL for physical releases.
