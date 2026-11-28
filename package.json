@@ -69,6 +69,7 @@
   },
   "imports": {
     "#lib/*": "./src/lib/*",
+    "#routes/*": "./src/routes/*",
     "#scripts/*": "./scripts/*",
     "#static/*": "./static/*"
   }

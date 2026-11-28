@@ -1,6 +1,6 @@
 import { crc32, deflateSync, inflateSync } from "node:zlib";
 import { describe, expect, it } from "vitest";
-import { optimizePngUrl } from "../../src/routes/test/reference-cards/png-export";
+import { optimizePngUrl } from "#routes/kdm/reference-card/png-export.ts";
 
 const prefix = "data:image/png;base64,";
 const signature = Buffer.from("89504e470d0a1a0a", "hex");

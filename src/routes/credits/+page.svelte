@@ -12,7 +12,7 @@
         { name: "BoardGameGeek", href: "https://boardgamegeek.com/" },
         { name: "CCG Team", href: "https://www.patreon.com/ccgteam" },
         { name: "Kekasi", href: "https://boardgamegeek.com/filepage/255740/kdm-15-hunt-event-reference-cards" },
-        { name: "Dan @smeghead (reference card banners and ribbons)", href: false },
+        { name: "Dan @smeghead", href: false },
         { name: "RevampedGame", href: "https://ko-fi.com/revampedgame" },
         { name: "Craft of Death", href: "https://ko-fi.com/craftofdeath" },
         { name: "Scribe for KD:M @taboobat", href: "https://gitlab.com/taboobat/kdm-app" },

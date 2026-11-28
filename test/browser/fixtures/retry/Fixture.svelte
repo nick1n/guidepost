@@ -2,7 +2,7 @@
   import { Effect, Layer } from "effect";
   import { createActions, setActions } from "#lib/app/actions.ts";
   import { Notifications } from "#lib/app/notifications/notifications.ts";
-  import ErrorPage from "../../../../src/routes/+error.svelte";
+  import ErrorPage from "#routes/+error.svelte";
   import { notices } from "./kit.ts";
 
   setActions(
