@@ -32,6 +32,7 @@
 
 <script lang="ts">
   import TagRail from "#lib/kdm/collection/ui/TagRail.svelte";
+  import KdCheckbox from "#lib/components/KdCheckbox.svelte";
   import KdIcon from "#lib/components/KdIcon.svelte";
   import HoldRipple from "#lib/components/gestures/HoldRipple.svelte";
   import {
@@ -218,7 +219,7 @@
     style:--edition-count={editions.length}
     style:--notes-count={item.notes || item.aliases?.length || item.gameplayContent ? 1 : 0}
     style:--requirements-count={requirements.length ? 1 : 0}
-    style:--contents-count={item.includes?.length || editions.some((edition) => edition.includesAllSim) ? 1 : 0}
+    style:--contents-count={item.includes?.length ? 1 : 0}
     style:--copy-count={numberedEditions.length}
   >
     {#if ready}
@@ -338,9 +339,6 @@
           {exactCount} of {children.length} owned
         </span>
       </summary>
-      {#if edition.includesAllSim}
-        <p>Includes every current and future Sim edition. This shows the editions currently in the catalog.</p>
-      {/if}
       {#if contentsOpen && selected?.id === edition.id}
         <ul>
           {#each children as child (collectionKey(child.item.id, child.edition.id))}
@@ -350,8 +348,7 @@
             {@const value = collection.getEdition(child.item.id, child.edition.id)}
             <li class="included-row">
               <label class="own">
-                <input
-                  type="checkbox"
+                <KdCheckbox
                   aria-label={child.status.covered ? `Mark ${name}, ${label} missing` : `Have ${name}, ${label}`}
                   checked={child.exactCovered}
                   disabled={!writable}
@@ -438,8 +435,7 @@
     ontransitioncancel={(event) => updateProgressAnimation(event, edition.id)}
   >
     <label class="own">
-      <input
-        type="checkbox"
+      <KdCheckbox
         aria-label={value.owned ? `Remove ownership of ${item.name}, ${edition.label}` : `Have ${item.name}, ${edition.label}`}
         checked={!!value.owned}
         aria-describedby={hasContents ? `ownership-${item.id}-${edition.id}` : undefined}
@@ -819,31 +815,7 @@
     padding-inline: 0.125rem;
     border-radius: var(--radius-control);
 
-    &:has(input:disabled) {
-      cursor: default;
-    }
-  }
-  input[type="checkbox"] {
-    appearance: none;
-    inline-size: 1.25rem;
-    block-size: 1.25rem;
-    padding: var(--border-width);
-    border: var(--border-width) solid var(--foreground);
-    border-radius: 0;
-    background: var(--contrast);
-    cursor: pointer;
-    opacity: 0.5;
-
-    &:is(:hover:not(:disabled), :focus-visible, :checked) {
-      opacity: 1;
-    }
-
-    &:checked {
-      background:
-        linear-gradient(var(--foreground) 0 0) content-box,
-        var(--contrast);
-    }
-    &:disabled {
+    &:has(:global(input:disabled)) {
       cursor: default;
     }
   }
@@ -1055,14 +1027,6 @@
       color: var(--accent);
       text-decoration: underline;
       text-underline-offset: 0.2em;
-    }
-  }
-  @media (forced-colors: active) {
-    input[type="checkbox"] {
-      appearance: auto;
-      padding: 0;
-      border: 0;
-      background: none;
     }
   }
   @container (min-width: 31.5rem) {

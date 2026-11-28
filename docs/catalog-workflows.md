@@ -43,7 +43,7 @@ new facts or replace release-specific confirmation. Resolve classification decis
 pnpm catalog:update --fetch
 ```
 
-This monthly update refreshes news and both shop pages, includes simulator discovery, and stages all unimported announcements.
+This monthly update refreshes news and the shop snapshot, includes simulator discovery, and stages all unimported announcements.
 Inspect `temp/kdm-catalog/reports/kdm-update-review.json` and resolve unknown or ambiguous products before applying.
 Each changed or added item includes field-level `differences` with previous values or list additions/removals, the full proposed item in
 `after`, and related `listings` with media removed and HTML descriptions converted to readable text.
@@ -104,19 +104,20 @@ Catalog tags sort by frequency, with alphabetical ties; master tag arrays stay a
 
 ## Refresh availability or fill editions
 
-| Command                             | Effect                                  |
-| ----------------------------------- | --------------------------------------- |
-| `pnpm catalog:availability`         | Apply saved shop stock and availability |
-| `pnpm catalog:availability --fetch` | Fetch two pages, validate, then publish |
-| `pnpm catalog:editions`             | Fill missing editions from caches       |
-| `pnpm catalog:editions --fetch`     | Fetch variants to fill missing editions |
+| Command                             | Effect                                          |
+| ----------------------------------- | ----------------------------------------------- |
+| `pnpm catalog:availability`         | Apply saved shop stock and availability         |
+| `pnpm catalog:availability --fetch` | Fetch the shop snapshot, validate, then publish |
+| `pnpm catalog:editions`             | Fill missing editions from caches               |
+| `pnpm catalog:editions --fetch`     | Fetch variants to fill missing editions         |
 
 Availability resolves shop listings and release variants conservatively: a matching warehouse in stock makes an edition available;
 unmatched or ambiguous editions are unavailable. Homebrew availability is preserved.
 The weekly availability refresh validates before publishing stock and availability updates for existing catalog editions. It uses only
-shop `products.json?limit=250&page=1` and `page=2`.
-The default reads `.cache/kdm-catalog/shopify-products/products-page-1.json` and `products-page-2.json`;
-`--fetch` downloads those two pages and replaces their caches after both succeed. Missing caches require `--fetch`.
+shop `products.json?limit=250&page=1` and `page=2`, plus `page=3` when page two contains 250 products.
+A full third page stops publication because the snapshot may be incomplete.
+The default reads `.cache/kdm-catalog/shopify-products/products-page-1.json` and `products-page-2.json`, plus `products-page-3.json` when needed.
+`--fetch` downloads all required pages and replaces their caches after validation. Missing caches require `--fetch`.
 Individual product responses are never used for stock or availability.
 Edition retrieval groups warehouses by release and leaves failed listings unchanged. Run `catalog:availability` after importing new editions.
 Both commands reject concurrent catalog edits and write reports to `temp/kdm-catalog/reports/` as

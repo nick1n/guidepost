@@ -150,7 +150,36 @@ it("incomplete variant availability cannot overwrite the catalog", async () => {
   });
 });
 
-it("refuses a potentially truncated snapshot without requesting a third page", async () => {
+it("downloads and saves page three only when page two is full", async () => {
+  await fixture(async ({ catalog, folder }) => {
+    const urls: string[] = [];
+    const otherProducts = Array.from({ length: 250 }, (_, index) => ({
+      ...product,
+      id: index + 2,
+      handle: "other-" + index,
+    }));
+    const result = await refreshAvailability({
+      catalog,
+      offline: false,
+      client: {
+        get: async (url) => {
+          urls.push(url);
+          const products = url.endsWith("page=2") ? otherProducts : url.endsWith("page=3") ? [product] : [];
+          return { url, checkedAt: "2026-10-15T00:00:00.000Z", data: { products } };
+        },
+      },
+    });
+    expect(urls.at(-1)).toBe("https://shop.kingdomdeath.com/products.json?limit=250&page=3");
+    expect(result.pages).toBe(3);
+    expect(JSON.parse(await readFile(join(folder, "products-page-3.json"), "utf8")).products).toEqual([product]);
+    const offline = await readSnapshot({ catalog, client: noNetwork });
+    expect(offline.pages).toBe(3);
+    expect(offline.products.at(-1)?.handle).toBe(product.handle);
+    expect(JSON.parse(await readFile(catalog, "utf8")).content.example.editions[1].shop).toBe("in-stock");
+  });
+});
+
+it("refuses a potentially truncated snapshot when page three is also full", async () => {
   await fixture(async ({ catalog, original }) => {
     const urls: string[] = [];
     await expect(
@@ -164,8 +193,8 @@ it("refuses a potentially truncated snapshot without requesting a third page", a
           },
         },
       }),
-    ).rejects.toThrow("exceeds two pages");
-    expect(urls).toHaveLength(2);
+    ).rejects.toThrow("exceeds three pages");
+    expect(urls).toHaveLength(3);
     expect(await readFile(catalog, "utf8")).toBe(original);
   });
 });

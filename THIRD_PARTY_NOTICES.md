@@ -17,6 +17,12 @@ These names and associated trademarks remain the property of their owners. Refer
 
 The Guidepost logo and derived application icons are original project assets. They are covered by the repository's GNU Affero General Public License v3.0 unless a source file states otherwise.
 
+## Reference card templates
+
+The reference card editor uses Kingdom Death artwork. Thanks to Dan @smeghead for the additional banner and ribbon artwork.
+
+The bundled typefaces are Amplitude Wide by The Font Bureau, Nimbus Sans by URW, and Silverado by Red Rooster Typefounders. These third-party assets retain their respective rights and licenses.
+
 ## Icons
 
 - [Game-icons.net](https://game-icons.net/) icons are available under [Creative Commons Attribution 3.0](https://creativecommons.org/licenses/by/3.0/). Individual icon authors are identified by the upstream project.

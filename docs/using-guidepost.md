@@ -1,5 +1,11 @@
 # Using Guidepost
 
+### Reference card editor
+
+Use **Outline main text** for a light edge around dark text or a dark edge around light text. The outline appears in the preview and the exported PNG.
+
+Open `/test/reference-cards/` to create a square card. Choose a **Starter template** to load an editable example. If you’ve edited the card, choose **Keep my edits** to fill untouched fields, **Replace all fields** to apply the entire starter, or **Cancel** to keep the current card. Use **Card type** to apply a style preset while keeping your body text. Separate paragraphs with a blank line. Use `**bold**`, `*italics*`, `---` on its own line for a divider, and names such as `[activation]` for KD icons. Expand **Body typography** to adjust spacing and placement. **Save PNG** exports the current preview at 672 × 672 pixels.
+
 ### Collection
 
 Open `/kdm/collection/` to search products, view editions, and track ownership and wishes. Entries save locally. Included rows show content coverage; product ownership is recorded separately. Stale tabs block editing and offer refresh. Offline use requires a cached catalog.

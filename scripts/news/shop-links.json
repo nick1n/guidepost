@@ -1,8 +1,8 @@
 {
   "source": "https://kingdomdeath.com/news",
-  "startedAt": "2026-11-01T20:33:53.972Z",
+  "startedAt": "2026-11-27T06:54:19.688Z",
   "complete": true,
-  "discoveredPosts": 134,
+  "discoveredPosts": 137,
   "posts": [
     {
       "date": "2026-08-31",
@@ -941,6 +941,27 @@
       "postUrl": "https://kingdomdeath.com/news/mc-31e90dcb0d",
       "status": "read",
       "linkCount": 28
+    },
+    {
+      "date": "2026-11-27",
+      "title": "Kingdom Death backerkit pledges reopen for Black Friday",
+      "postUrl": "https://kingdomdeath.com/news/mc-3ce667b223",
+      "status": "read",
+      "linkCount": 0
+    },
+    {
+      "date": "2026-11-27",
+      "title": "KDU #124 - Kingdom Death Black Friday 2026",
+      "postUrl": "https://kingdomdeath.com/news/mc-2ae375cc14",
+      "status": "read",
+      "linkCount": 11
+    },
+    {
+      "date": "2026-11-24",
+      "title": "Kingdom Death backerkit pledges reopen for Black Friday",
+      "postUrl": "https://kingdomdeath.com/news/mc-bd22e58d06",
+      "status": "read",
+      "linkCount": 0
     }
   ],
   "links": [
@@ -8566,14 +8587,91 @@
       "postUrl": "https://kingdomdeath.com/news/mc-31e90dcb0d",
       "itemName": "Dung Beetle Knight Expansion 1.7",
       "shopUrl": "https://shop.kingdomdeath.com/products/dung-beetle-knight-expansion-1-7"
+    },
+    {
+      "date": "2026-11-27",
+      "title": "KDU #124 - Kingdom Death Black Friday 2026",
+      "postUrl": "https://kingdomdeath.com/news/mc-2ae375cc14",
+      "itemName": "Kingdom Death: Monster 1.6",
+      "shopUrl": "https://shop.kingdomdeath.com/products/kingdom-death-monster-1-5"
+    },
+    {
+      "date": "2026-11-27",
+      "title": "KDU #124 - Kingdom Death Black Friday 2026",
+      "postUrl": "https://kingdomdeath.com/news/mc-2ae375cc14",
+      "itemName": "People of the Sun - Ashbloom",
+      "shopUrl": "https://shop.kingdomdeath.com/products/people-of-the-sun-ashbloom"
+    },
+    {
+      "date": "2026-11-27",
+      "title": "KDU #124 - Kingdom Death Black Friday 2026",
+      "postUrl": "https://kingdomdeath.com/news/mc-2ae375cc14",
+      "itemName": "Death High Shadow Box",
+      "shopUrl": "https://shop.kingdomdeath.com/products/shadow-box-death-high-issue-one"
+    },
+    {
+      "date": "2026-11-27",
+      "title": "KDU #124 - Kingdom Death Black Friday 2026",
+      "postUrl": "https://kingdomdeath.com/news/mc-2ae375cc14",
+      "itemName": "People of the Sun - Woe Grimmory",
+      "shopUrl": "https://shop.kingdomdeath.com/products/people-of-the-sun-woe-grimmory"
+    },
+    {
+      "date": "2026-11-27",
+      "title": "KDU #124 - Kingdom Death Black Friday 2026",
+      "postUrl": "https://kingdomdeath.com/news/mc-2ae375cc14",
+      "itemName": "Naked Future Bundle 2026",
+      "shopUrl": "https://shop.kingdomdeath.com/collections/in-stock/products/naked-future-2026"
+    },
+    {
+      "date": "2026-11-27",
+      "title": "KDU #124 - Kingdom Death Black Friday 2026",
+      "postUrl": "https://kingdomdeath.com/news/mc-2ae375cc14",
+      "itemName": "Kingdom Death Comics - Death High 1",
+      "shopUrl": "https://shop.kingdomdeath.com/collections/in-stock/products/kingdom-death-comic-death-high-issue-one"
+    },
+    {
+      "date": "2026-11-27",
+      "title": "KDU #124 - Kingdom Death Black Friday 2026",
+      "postUrl": "https://kingdomdeath.com/news/mc-2ae375cc14",
+      "itemName": "Kingdom Death: Simulator",
+      "shopUrl": "https://shop.kingdomdeath.com/products/kingdom-death-simulator-1"
+    },
+    {
+      "date": "2026-11-27",
+      "title": "KDU #124 - Kingdom Death Black Friday 2026",
+      "postUrl": "https://kingdomdeath.com/news/mc-2ae375cc14",
+      "itemName": "Black Friday Death Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/black-friday-death-dice"
+    },
+    {
+      "date": "2026-11-27",
+      "title": "KDU #124 - Kingdom Death Black Friday 2026",
+      "postUrl": "https://kingdomdeath.com/news/mc-2ae375cc14",
+      "itemName": "Black Out Dice",
+      "shopUrl": "https://shop.kingdomdeath.com/products/black-out-dice"
+    },
+    {
+      "date": "2026-11-27",
+      "title": "KDU #124 - Kingdom Death Black Friday 2026",
+      "postUrl": "https://kingdomdeath.com/news/mc-2ae375cc14",
+      "itemName": "Mystery Shirt",
+      "shopUrl": "https://shop.kingdomdeath.com/products/mystery-t-shirt"
+    },
+    {
+      "date": "2026-11-27",
+      "title": "KDU #124 - Kingdom Death Black Friday 2026",
+      "postUrl": "https://kingdomdeath.com/news/mc-2ae375cc14",
+      "itemName": "kingdom death simulator 1",
+      "shopUrl": "https://shop.kingdomdeath.com/collections/kingdom-death-simulator/products/kingdom-death-simulator-1"
     }
   ],
   "errors": [],
-  "requestsThisRun": 0,
-  "skippedPostsThisRun": 134,
+  "requestsThisRun": 1,
+  "skippedPostsThisRun": 137,
   "processedPostsThisRun": 0,
   "removedLinksThisRun": 0,
   "linkHistoryVersion": 3,
   "historyRecovery": { "postsRecovered": 133, "postsMissingCache": 0 },
-  "finishedAt": "2026-11-01T20:33:54.134Z"
+  "finishedAt": "2026-11-27T06:54:20.129Z"
 }

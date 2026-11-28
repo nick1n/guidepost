@@ -196,11 +196,9 @@ export function reviewIndex(catalog: Catalog) {
 
 /** Relationship resolution and its caches share the lifetime of one catalog index. */
 function indexRelationships(entries: readonly CatalogEntry[], byId: ReadonlyMap<string, CatalogEntry>) {
-  const sim = entries.filter((item) => item.category !== "bundles" && item.editions?.some((edition) => edition.simulator === true));
-
   function findInclusions(id: string, editionId: string) {
     const item = byId.get(id);
-    const included = (item?.includes ?? []).flatMap((inclusion) => {
+    return (item?.includes ?? []).flatMap((inclusion) => {
       const reference = typeof inclusion === "string" ? { item: inclusion } : inclusion;
       if (reference.parentEditionIds && !reference.parentEditionIds.includes(editionId)) return [];
       const child = byId.get(reference.item);
@@ -208,26 +206,6 @@ function indexRelationships(entries: readonly CatalogEntry[], byId: ReadonlyMap<
       const childEdition = child.editions?.find((release) => release.id === reference.editionId);
       return [{ ...reference, name: child.name, category: child.category, editionLabel: childEdition?.label }];
     });
-    if (item?.editions?.find((release) => release.id === editionId)?.includesAllSim) {
-      const explicitSim = new Set(
-        included
-          .filter((reference) => byId.get(reference.item)?.editions?.find((release) => release.id === reference.editionId)?.simulator)
-          .map((reference) => reference.item),
-      );
-      for (const child of sim)
-        if (child.id !== id && !explicitSim.has(child.id))
-          for (const release of child.editions ?? []) {
-            if (release.simulator)
-              included.push({
-                item: child.id,
-                editionId: release.id,
-                name: child.name,
-                category: child.category,
-                editionLabel: release.label,
-              });
-          }
-    }
-    return included;
   }
 
   const inclusionCache = new Map<string, ReturnType<typeof findInclusions>>();

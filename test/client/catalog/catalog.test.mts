@@ -939,7 +939,7 @@ describe("review catalog facts", () => {
 });
 
 describe("Simulator key access", () => {
-  function catalog(): Catalog {
+  function simulatorFixture(): Catalog {
     return {
       content: {
         core: {
@@ -964,9 +964,16 @@ describe("Simulator key access", () => {
           editions: [
             { id: "simulator-dwelling-key", label: "Dwelling Key", format: "physical" },
             { id: "simulator-illusionist-key", label: "Illusionist Key", format: "physical" },
-            { id: "simulator-master-dwelling-key", label: "Master Dwelling Key", format: "physical", includesAllSim: true },
+            { id: "simulator-master-dwelling-key", label: "Master Dwelling Key", format: "physical" },
           ],
-          includes: [{ item: "core", editionId: "core-sim", parentEditionIds: ["simulator-dwelling-key", "simulator-illusionist-key"] }],
+          includes: [
+            {
+              item: "core",
+              editionId: "core-sim",
+              parentEditionIds: ["simulator-dwelling-key", "simulator-illusionist-key", "simulator-master-dwelling-key"],
+            },
+            { item: "expansion-flower-knight", editionId: "flower-knight-sim", parentEditionIds: ["simulator-master-dwelling-key"] },
+          ],
         },
       },
       "included-only": {},
@@ -977,7 +984,7 @@ describe("Simulator key access", () => {
   }
 
   it("limits ordinary keys to Core's digital edition", () => {
-    const index = reviewIndex(catalog());
+    const index = reviewIndex(simulatorFixture());
     for (const key of ["simulator-dwelling-key", "simulator-illusionist-key"])
       expect(index.inclusions("kingdom-death-simulator", key).map(({ item, editionId }) => [item, editionId])).toEqual([
         ["core", "core-sim"],
@@ -985,7 +992,7 @@ describe("Simulator key access", () => {
   });
 
   it("excludes Sim bundles while retaining their individual contents", () => {
-    const data = catalog();
+    const data = simulatorFixture();
     data.bundles["expansions-of-death"] = {
       name: "Expansions of Death",
       tags: [],
@@ -1000,45 +1007,28 @@ describe("Simulator key access", () => {
     expect(coverage.edition("expansions-of-death", "sim").covered).toBe(false);
   });
 
-  it("automatically adds future Sim editions without granting physical ownership", () => {
-    const data = catalog();
-    expect(reviewIndex(data).inclusions("kingdom-death-simulator", "simulator-master-dwelling-key")).toHaveLength(2);
-    data.content["expansion-future"] = {
-      name: "Future",
-      tags: ["expansion"],
-      editions: [
-        { id: "future-sim", label: "Sim", format: "digital", simulator: true },
-        { id: "future-box", label: "Box", format: "physical" },
-      ],
-    };
-    data.content["physical-only"] = {
-      name: "Physical",
-      tags: ["model"],
-      editions: [{ id: "physical-plastic", label: "Plastic", format: "physical" }],
-    };
-    expect(
-      reviewIndex(data)
-        .inclusions("kingdom-death-simulator", "simulator-master-dwelling-key")
-        .map(({ item, editionId }) => [item, editionId]),
-    ).toEqual([
-      ["core", "core-sim"],
-      ["expansion-flower-knight", "flower-knight-sim"],
-      ["expansion-future", "future-sim"],
-    ]);
-  });
-
-  it("does not duplicate explicit inclusions covered by the master entitlement", () => {
-    const data = catalog();
-    data.content["kingdom-death-simulator"].includes!.push({
-      item: "core",
-      editionId: "core-sim",
-      parentEditionIds: ["simulator-master-dwelling-key"],
-    });
-    expect(reviewIndex(data).inclusions("kingdom-death-simulator", "simulator-master-dwelling-key")).toHaveLength(2);
+  it("covers the released expansions, vignettes, and first four Wanderers with the Master Key", () => {
+    const master = collectionKey("kingdom-death-simulator", "master-dwelling-key");
+    const snapshot = { [master]: { owned: true } };
+    const coverage = reviewIndex(catalog as Catalog).coverage(snapshot);
+    for (const id of [
+      "core",
+      "expansion-screaming-god",
+      "expansion-green-knight-armor",
+      "vignette-of-death-white-gigalion",
+      "wanderer-aeneas",
+      "wanderer-candy-cola",
+      "wanderer-death-drifter",
+      "wanderer-goth",
+    ])
+      expect(coverage.edition(id, "sim").covered).toBe(true);
+    for (const id of ["indomitable-survivor-greatest-gaxe-morg", "set-echoes-of-death", "philosophies-of-death-gatherism"])
+      expect(coverage.edition(id, "sim").covered).toBe(false);
+    expect(coverage.edition("core", "1-6").covered).toBe(false);
   });
 
   it("keeps cached inclusions separate for each item and edition", () => {
-    const index = reviewIndex(catalog());
+    const index = reviewIndex(simulatorFixture());
     const master = index.inclusions("kingdom-death-simulator", "simulator-master-dwelling-key");
     expect(index.inclusions("kingdom-death-simulator", "simulator-dwelling-key").map(({ item, editionId }) => [item, editionId])).toEqual([
       ["core", "core-sim"],
@@ -1049,7 +1039,7 @@ describe("Simulator key access", () => {
   });
 
   it("resolves included ownership recursively without granting other editions or looping through cycles", () => {
-    const data = catalog();
+    const data = simulatorFixture();
     data.content.core.includes = [{ item: "expansion-flower-knight", editionId: "flower-knight-1-6", parentEditionIds: ["core-1-6"] }];
     data.content["expansion-flower-knight"].includes = [{ item: "core", editionId: "core-1-6", parentEditionIds: ["flower-knight-1-6"] }];
     const index = reviewIndex(data);
@@ -1064,7 +1054,7 @@ describe("Simulator key access", () => {
   });
 
   it("matches material references and chooses one physical edition for unspecified inclusions", () => {
-    const data = catalog();
+    const data = simulatorFixture();
     data.content.core.includes = [{ item: "expansion-flower-knight", materials: ["Resin"] }];
     data.content["expansion-flower-knight"].editions!.push({
       id: "flower-knight-first-run",
@@ -1086,7 +1076,7 @@ describe("Simulator key access", () => {
   });
 
   it("keeps direct bundle contents separate from recursively included ownership after either lookup", () => {
-    const data = catalog();
+    const data = simulatorFixture();
     data.content.core.includes = [{ item: "expansion-flower-knight", editionId: "flower-knight-1-6", parentEditionIds: ["core-sim"] }];
     const index = reviewIndex(data);
     const direct = () =>
@@ -1102,7 +1092,7 @@ describe("Simulator key access", () => {
   });
 
   it("uses explicit editions before format matching and falls back to a physical edition", () => {
-    const data = catalog();
+    const data = simulatorFixture();
     data.content.core.includes = [{ item: "expansion-flower-knight", editionId: "flower-knight-1-6" }];
     expect(
       reviewIndex(data)
@@ -1118,7 +1108,7 @@ describe("Simulator key access", () => {
   });
 
   it("refreshes cached search text and inclusions when the catalog index is rebuilt", () => {
-    const data = catalog();
+    const data = simulatorFixture();
     const before = reviewIndex(data);
     before.inclusions("kingdom-death-simulator", "simulator-master-dwelling-key");
     data.content["expansion-future"] = {
@@ -1127,6 +1117,11 @@ describe("Simulator key access", () => {
       tags: ["monster-lion"],
       editions: [{ id: "future-sim", label: "Sim", format: "digital", simulator: true }],
     };
+    data.content["kingdom-death-simulator"].includes!.push({
+      item: "expansion-future",
+      editionId: "future-sim",
+      parentEditionIds: ["simulator-master-dwelling-key"],
+    });
     const after = reviewIndex(data);
     expect(after.inclusions("kingdom-death-simulator", "simulator-master-dwelling-key")).toHaveLength(3);
     expect(after.search.get("expansion-future")).toContain("future knight expansion-future tomorrow monster-lion lion");

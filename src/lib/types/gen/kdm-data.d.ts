@@ -49,10 +49,6 @@ export type Edition = {
    * True when this edition is available only as part of another product. Omit for other or unconfirmed releases. Collection views may hide these editions.
    */
   includedOnly?: true;
-  /**
-   * Grants every current and future simulator edition. Resolve against editions marked simulator when reading the catalog; do not materialize a static list.
-   */
-  includesAllSim?: true;
   limit?: boolean;
   /**
    * Known materials of this release. Omitted means the material is unspecified.

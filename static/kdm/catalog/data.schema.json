@@ -260,10 +260,6 @@
           "const": true,
           "description": "True when this edition is available only as part of another product. Omit for other or unconfirmed releases. Collection views may hide these editions."
         },
-        "includesAllSim": {
-          "const": true,
-          "description": "Grants every current and future simulator edition. Resolve against editions marked simulator when reading the catalog; do not materialize a static list."
-        },
         "limit": { "type": "boolean" },
         "materials": {
           "type": "array",

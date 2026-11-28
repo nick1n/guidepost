@@ -174,7 +174,7 @@
     min-block-size: 0;
     max-block-size: inherit;
     translate: 0 calc(50dvh + 50%);
-    border: var(--border-width) solid var(--grey-7);
+    border: var(--border-width) solid var(--modal-border-color, var(--grey-7));
     border-radius: var(--radius-card);
     backdrop-filter: var(--filter-glass);
     background: var(--surface-glass);

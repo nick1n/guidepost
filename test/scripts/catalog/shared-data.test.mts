@@ -8,6 +8,7 @@ import { prepareUpdate } from "#scripts/catalog/review/prepare.mts";
 import { applyReview } from "#scripts/catalog/review/apply.mts";
 import { validateCatalog } from "#scripts/catalog/validate.mts";
 import { writeWorkbookMap } from "#scripts/catalog/workbook/map.mts";
+import { postFingerprints } from "#scripts/news/scrape-shop-links.mts";
 
 const roots: string[] = [];
 afterEach(async () => {
@@ -39,10 +40,18 @@ it("validates, maintains workbook mappings, and stages/applies updates without p
   await writeWorkbookMap(f.root);
   expect(JSON.parse(await readFile(mapPath, "utf8"))).toEqual(JSON.parse(originalMap));
   const checkpoint = JSON.parse(await readFile(join(f.news, "shop-links.json"), "utf8"));
-  const post = checkpoint.posts.find((entry: { status: string; error?: string }) => entry.status === "read" && !entry.error);
   const newsUrl = "https://kingdomdeath.com/news";
   const importsPath = join(catalogData(f.catalog), "news-imports.json");
   const imported = JSON.parse(await readFile(importsPath, "utf8"));
+  const fingerprints = postFingerprints(checkpoint);
+  checkpoint.posts = checkpoint.posts.filter(
+    ({ postUrl }: { postUrl: string }) => imported[postUrl] === fingerprints[postUrl] && !!imported[postUrl],
+  );
+  checkpoint.links = checkpoint.links.filter(
+    ({ postUrl }: { postUrl: string }) => imported[postUrl] === fingerprints[postUrl] && !!imported[postUrl],
+  );
+  await writeFile(join(f.news, "shop-links.json"), JSON.stringify(checkpoint), "utf8");
+  const [post] = checkpoint.posts;
   const prepared = await prepareUpdate({
     catalog: f.catalog,
     news: f.news,

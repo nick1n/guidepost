@@ -12,7 +12,7 @@ export interface SnapshotOptions {
   client?: Pick<ShopClient, "get">;
 }
 
-/** Read exactly two shop pages without publishing caches or changing the catalog. */
+/** Read two shop pages, plus a third when page two is full. */
 export async function readSnapshot(options: SnapshotOptions = {}) {
   options.signal?.throwIfAborted();
   const path = resolve(options.catalog ?? "static/kdm/catalog/data.json");
@@ -23,7 +23,10 @@ export async function readSnapshot(options: SnapshotOptions = {}) {
   const baselines: { path: string; text: string | undefined; message: string }[] = [];
   const products: Product[] = [];
   const cacheTimes: number[] = [];
-  for (const page of [1, 2]) {
+  const pageSize = 250;
+  const maxPages = 3;
+  let pages = 0;
+  for (const page of [1, 2, 3]) {
     options.signal?.throwIfAborted();
     const cachePath = join(folder, `products-page-${page}.json`);
     const text = await readOptional(cachePath);
@@ -36,11 +39,15 @@ export async function readSnapshot(options: SnapshotOptions = {}) {
     if (offline && text === undefined) throw new Error(`No saved shop page ${page}; run pnpm catalog:availability --fetch to download it.`);
     const raw = offline
       ? JSON.parse(text ?? "")
-      : (await client.get(`https://shop.kingdomdeath.com/products.json?limit=250&page=${page}`)).data;
+      : (await client.get(`https://shop.kingdomdeath.com/products.json?limit=${pageSize}&page=${page}`)).data;
     if (!raw || typeof raw !== "object" || !Array.isArray((raw as { products?: unknown }).products))
       throw new Error(`Invalid products page ${page}; catalog availability was not changed.`);
     if (offline) cacheTimes.push((await stat(cachePath)).mtimeMs);
     const response = raw as { products: unknown[] };
+    if (response.products.length > pageSize)
+      throw new Error(`Products page ${page} exceeds ${pageSize} products; catalog availability was not changed.`);
+    if (page === maxPages && response.products.length === pageSize)
+      throw new Error("Shop snapshot exceeds three pages; catalog availability was not changed.");
     const normalized = response.products.map((value) => shopProduct(value, "json"));
     if (
       normalized.some((product) => !product.variants.length || product.variants.some((variant) => typeof variant.available !== "boolean"))
@@ -48,10 +55,10 @@ export async function readSnapshot(options: SnapshotOptions = {}) {
       throw new Error(`Missing variant availability on page ${page}; catalog availability was not changed.`);
     if (!offline) files.push({ path: cachePath, json: response });
     products.push(...normalized);
-    if (response.products.length > 250 || (page === 2 && response.products.length === 250))
-      throw new Error("Shop snapshot exceeds two pages; catalog availability was not changed.");
+    pages = page;
+    if (page >= 2 && response.products.length < pageSize) break;
   }
   if (!products.length) throw new Error("Shop returned no products; catalog availability was not changed.");
   const checkedAt = new Date(offline ? Math.min(...cacheTimes) : Date.now()).toISOString();
-  return { products, checkedAt, files, baselines, pages: 2, folder };
+  return { products, checkedAt, files, baselines: baselines.slice(0, pages), pages, folder };
 }

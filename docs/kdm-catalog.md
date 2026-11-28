@@ -14,7 +14,8 @@ For update, tag, availability, and mapping commands, see [catalog workflows](cat
 The news scraper collects announcement links. Product `.js` caches retain complete storefront responses, with prices in cents;
 Sim `products.json` prices are dollars and normalize to cents. Source tags are evidence, not reviewed assignments.
 Offline updates prefer `.js` caches and also accept existing `.json` product caches.
-Stock and availability use only the complete two-page shop snapshot: `products.json?limit=250&page=1` and `page=2`.
+Stock and availability use only the complete shop snapshot. The CLI reads `products.json?limit=250&page=1` and `page=2`,
+and reads `page=3` when page two contains 250 products.
 Individual product responses and HEAD checks never supply stock or availability.
 
 Reviewed fallback: undated Encore without a release window inherits First Run's date, or Deathgrey's if First Run has none.
@@ -66,10 +67,10 @@ Current data rules:
   a gameplay-bearing item tagged `beta` requires a Beta edition. Beta sculpt/prototype tags alone do not establish gameplay.
   Review every edition separately, including physical releases when a Sim edition already has gameplay. Set `beta: true` on confirmed
   Beta gameplay editions, use `kind: "beta"` for all-Beta items, and preserve explicit model-only overrides and unconfirmed editions.
-- Edition availability defaults to false. Store `available: true` only when at least one matching variant or warehouse in the two-page shop snapshot is available. Metadata imports preserve existing stock and availability when the listing is unchanged; new editions wait for `catalog:availability`.
+- Edition availability defaults to false. Store `available: true` only when at least one matching variant or warehouse in the complete shop snapshot is available. Metadata imports preserve existing stock and availability when the listing is unchanged; new editions wait for `catalog:availability`.
 - `shop` stores `in-stock`, `out-of-stock`, or `missing` on editions, or on items without editions. Shared `shopUpdated` is a `YYYY-MM-DD` refresh date.
   Clear the affected `shop` and edition `available` fields after manually changing its handle or external URL.
-  Missing shop evidence displays as stock unknown, independently of `available`. Only current-listing variants in the two-page snapshot
+  Missing shop evidence displays as stock unknown, independently of `available`. Only current-listing variants in the complete shop snapshot
   update stock states and availability. Historical mappings and individual product responses cannot override that snapshot.
   The `in-stock` tag is derived from edition shop states and removed when none remain in stock.
   Tag and metadata updates use existing shop states; `catalog:availability` updates them from the snapshot.
@@ -86,7 +87,7 @@ Current data rules:
 - Exact dates remain edition `releaseDate`, formatted YYYY-MM-DD. Imprecise dates use `releaseWindow`; future quarters use YYYY Qn. Unknown run counts are omitted. Released expansion dates use the public shop launch announcement when only a month was documented.
 - Every explicit edition records `format: "physical"` or `format: "digital"`. Sim entitlements also record `simulator: true`; digital 3D Files do not grant simulator access. Known `materials` and `numbered: true` are explicit facts. A release-specific `name` can supply alternate display wording.
 - `includes` remains on the item. Child `editionId` selects a stable release ID on the referenced child item, and `parentEditionIds` selects releases on the containing item. IDs can repeat across different items. Sim references require explicit parent editions, which can include physical keys that grant digital access. Physical expansion contents are scoped to physical editions. Reverse membership is derived. Satan Pledge preserves its 184 exact release references.
-- Simulator keys share the `kingdom-death-simulator` content item. Dwelling Key and Illusionist Key include Core's Sim edition. Master Dwelling Key's `includesAllSim: true` dynamically grants all current and future non-bundle `simulator: true` editions, without physical ownership. Sim bundles are excluded because their individual contents are already granted.
+- Simulator keys share the `kingdom-death-simulator` content item. All three keys include the Core Sim edition. The Master Dwelling Key also lists the Sim editions of released Monster expansions, vignettes, and the first four Wanderers (Aeneas, Candy & Cola, Death Drifter, and Goth). Add eligible future releases as explicit inclusions when reviewing the catalog. Sim bundles already supply the same expansions individually.
 - Both catalog and master tag files share category and item ordering. Content starts with core, then expansions sorted by release date, then all remaining items alphabetically by `sortKey ?? itemId`. Homebrew puts CCG-tagged items first, sorting each group alphabetically by `sortKey ?? itemId`. Other categories sort alphabetically by `sortKey ?? itemId` within their existing groups. Optional `sortKey` uses lowercase kebab-case and changes ordering only, never identity; equal keys sort by item ID. The master tags file follows this catalog item order. Editions sort with Sim first, then by release date or release window, oldest first. Undated editions come last. Equal dates use the established release-label order as a tie-breaker.
 - Item fields are alphabetical. Edition fields start with `id`, then `label`; inclusion-object fields start with `item`, followed by alphabetical fields. Catalog write commands preserve this property order; array contents and their established ordering remain unchanged.
 

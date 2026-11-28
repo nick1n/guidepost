@@ -12,6 +12,9 @@ The window owns scrolling as the link list grows; do not add a navigation scroll
 
 Use Svelte 5 runes and callback props.
 
+Use the shared [Select component](../src/lib/components/Select.svelte) for single-choice dropdowns. Supply native options and an associated label. The component provides the settings menu styling and native keyboard and touch behavior.
+Use `variant="dark"` when the dropdown should match the text input background.
+
 For UI refactors, use the [UI refactor skill](../.agents/skills/ui-refactor/SKILL.md) to capture and compare working-tree behavior.
 
 Use event shorthand when a local handler matches the attribute, including on `<svelte:window>` and `<svelte:document>`. Name handlers used by only one binding after that event. Keep explicit attributes for argument passing, event transformations, propagation control, or shared/imported handlers with meaningful names. Do not rename domain handlers to force shorthand. Move multiline inline handlers into `<script>`.

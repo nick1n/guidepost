@@ -5,6 +5,7 @@
   import ActionRow from "./actions/ActionRow.svelte";
   import AttackProfile from "./AttackProfile.svelte";
   import KdIcon from "#lib/components/KdIcon.svelte";
+  import Select from "#lib/components/Select.svelte";
   import { pluralize } from "#lib/helpers.ts";
   import Section from "#lib/kdm/ui/sections/Section.svelte";
   import Gear from "#lib/kdm/survivors/ui/Gear.svelte";
@@ -491,15 +492,15 @@
         </button>
         <label class="field" for={`${id}-gender`}>
           Gender
-          <select id={`${id}-gender`} bind:value={sheet.gender}>
+          <Select id={`${id}-gender`} bind:value={sheet.gender}>
             {#each ["Male", "Female", "Non-binary"] as gender (gender)}<option>{gender}</option>{/each}
-          </select>
+          </Select>
         </label>
         <label class="field" for={`${id}-type`}>
           Type
-          <select id={`${id}-type`} bind:value={sheet.type}>
+          <Select id={`${id}-type`} bind:value={sheet.type}>
             {#each survivorTypes as type (type)}<option>{type}</option>{/each}
-          </select>
+          </Select>
         </label>
         <label class="field" for={`${id}-nickname`}>
           Nickname/Surname
@@ -508,12 +509,12 @@
         {#each ["Parent 1", "Parent 2"] as parent, index (parent)}
           <label class="field" for={`${id}-parent-${index}`}>
             {parent}
-            <select id={`${id}-parent-${index}`} bind:value={sheet.parents[index]}>
+            <Select id={`${id}-parent-${index}`} bind:value={sheet.parents[index]}>
               <option value=""></option>
               {#each parentOptions as option (option.survivor)}
                 <option value={option.name}>{option.name}</option>
               {/each}
-            </select>
+            </Select>
           </label>
         {/each}
       </div>
@@ -576,11 +577,11 @@
     <Section title="Armor & Bonuses" meta={`${sheet.armorSet} Set`}>
       <label class="field" for={`${id}-armor-set`}>
         Armor Set
-        <select id={`${id}-armor-set`} bind:value={sheet.armorSet}>
+        <Select id={`${id}-armor-set`} bind:value={sheet.armorSet}>
           {#each ["No Armor", "Clothed & Satiated", "Rawhide", "White Lion", "Screaming Antelope", "Leather", "Lantern", "Phoenix"] as set (set)}
             <option>{set}</option>
           {/each}
-        </select>
+        </Select>
       </label>
       <h3>Attribute Bonuses</h3>
       <div class="stats">
@@ -647,12 +648,12 @@
         {:else}
           <label class="field" for={`${id}-proficiency`}>
             Weapon Proficiency
-            <select id={`${id}-proficiency`} bind:value={sheet.proficiency}>
+            <Select id={`${id}-proficiency`} bind:value={sheet.proficiency}>
               <option value="">Select a weapon proficiency</option>
               {#each ["Fist & Tooth", "Sword", "Shield", "Axe", "Bow", "Club", "Dagger", "Grand Weapon", "Katar", "Spear", "Whip"] as weapon (weapon)}
                 <option>{weapon}</option>
               {/each}
-            </select>
+            </Select>
           </label>
         {/if}
       {/each}
@@ -1271,7 +1272,6 @@
   }
 
   input[type="text"],
-  select,
   textarea {
     inline-size: 100%;
     min-inline-size: 0;

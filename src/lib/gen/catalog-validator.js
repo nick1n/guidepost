@@ -308,11 +308,6 @@ var e = (e, t) => () => (t || (e((t = { exports: {} }).exports, t, t.exports), (
             description:
               "True when this edition is available only as part of another product. Omit for other or unconfirmed releases. Collection views may hide these editions.",
           },
-          includesAllSim: {
-            const: !0,
-            description:
-              "Grants every current and future simulator edition. Resolve against editions marked simulator when reading the catalog; do not materialize a static list.",
-          },
           limit: { type: "boolean" },
           materials: {
             type: "array",
@@ -991,16 +986,6 @@ var e = (e, t) => () => (t || (e((t = { exports: {} }).exports, t, t.exports), (
             };
             (c === null ? (c = [e]) : c.push(e), l++);
           }
-        }
-        if (e.includesAllSim !== void 0 && !0 !== e.includesAllSim) {
-          let e = {
-            instancePath: t + "/includesAllSim",
-            schemaPath: "#/properties/includesAllSim/const",
-            keyword: "const",
-            params: { allowedValue: !0 },
-            message: "must be equal to constant",
-          };
-          (c === null ? (c = [e]) : c.push(e), l++);
         }
         if (e.limit !== void 0 && typeof e.limit != "boolean") {
           let e = {

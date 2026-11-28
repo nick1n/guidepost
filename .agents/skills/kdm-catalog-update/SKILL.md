@@ -50,7 +50,8 @@ task from pre-existing changes. Read and write text explicitly as UTF-8, includi
 
 Use readable descriptions in the review and complete cached product responses for missing details. Product `.js` prices are cents;
 paginated shop prices are dollars before normalization. Inspect the cache shape before interpreting its values.
-Only the complete two-page shop snapshot supplies stock and availability, regardless of individual product responses.
+Only the complete shop snapshot supplies stock and availability. The CLI fetches page three when page two returns 250 products.
+If page three is also full, the CLI stops because the snapshot may be incomplete.
 
 ## Review tags across the update
 
@@ -123,7 +124,7 @@ review, never patched hashes or bypassed guards.
 
 For a list limited to selected items, apply only those approved source changes. Do not apply the entire monthly review, trim away its
 unresolved entries, or acknowledge a whole news post after importing only part of it. Leave the remaining monthly work staged and the
-news ledger unacknowledged. Refresh stock for approved items only from the two-page snapshot using existing stock/availability helpers;
+news ledger unacknowledged. Refresh stock for approved items only from the complete shop snapshot using existing stock/availability helpers;
 run a catalog-wide availability refresh only when that broader change is authorized.
 
 Run the required checks in AGENTS.md, including catalog validation and project checks; format touched files with project Prettier.
