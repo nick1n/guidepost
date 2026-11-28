@@ -224,7 +224,25 @@ function measureWords(ctx: CanvasRenderingContext2D, segments: InlineSegment[], 
       word.width += runWidth(ctx, run);
     }
   }
-  return words.flatMap((word) => (word.width > style.width ? splitWord(ctx, word, style.width) : word));
+  const groups: Word[] = [];
+  for (const [index, word] of words.entries()) {
+    const next = words[index + 1];
+    const space = next?.space;
+    if (
+      space &&
+      /^[+\-−]?\d+(?:[.,]\d+)?$/.test(word.runs.map(({ text }) => text).join("")) &&
+      /^\p{L}/u.test(next.runs[0].text) &&
+      word.width + space.width + next.width <= style.width
+    ) {
+      // Treat the amount and its label as one wrap unit, even across inline formatting.
+      next.runs = [...word.runs, space, ...next.runs];
+      next.width += word.width + space.width;
+      next.space = word.space;
+    } else {
+      groups.push(word);
+    }
+  }
+  return groups.flatMap((word) => (word.width > style.width ? splitWord(ctx, word, style.width) : word));
 }
 
 function splitWord(ctx: CanvasRenderingContext2D, word: Pick<Word, "runs" | "space">, widthLimit: number) {
